@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>4.0.2</version>
         <relativePath/>
     </parent>
 
@@ -20,10 +20,9 @@
 
     <properties>
         <java.version>21</java.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <lombok.version>1.18.30</lombok.version>
-        <jooq.version>3.19.1</jooq.version>
-        <flyway.version>10.6.0</flyway.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <jooq.version>3.20.10</jooq.version>
+        <flyway.version>11.20.3</flyway.version>
     </properties>
 
     <dependencies>
@@ -49,7 +48,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
+            <version>42.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -70,12 +69,6 @@
         </dependency>
 
         <!-- Utilities -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -104,7 +97,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>3.0.1</version>
         </dependency>
 
         <!-- Test -->
@@ -120,14 +113,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -138,19 +123,9 @@
                     <target>21</target>
                     <annotationProcessorPaths>
                         <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
