@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: buurman-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/buurman
+    username: buurman
+    password: buurman_dev
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    schemas: public
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# AWS S3 Configuration
+aws:
+  s3:
+    endpoint: http://localhost:4566
+    region: eu-west-1
+    bucket-name: buurman-documents
+    access-key: test
+    secret-key: test
+
+# Application Configuration
+app:
+  version: @project.version@
+  documents:
+    max-file-size: 52428800
+    allowed-mime-types: application/pdf,image/jpeg,image/png,image/gif
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# Server Configuration
+server:
+  port: 8081
+  error:
+    include-message: always
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.buurman: DEBUG
+    org.springframework.web: INFO

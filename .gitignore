@@ -1,0 +1,32 @@
+# Java artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
+# Node artifacts
+node_modules/
+dist/
+build/
+.vite/
+
+# IDE files
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Environment
+.env
+*.log
+
+# Test coverage
+coverage/
+*.lcov
+
+# Temporary files
+*.tmp
+*.temp
