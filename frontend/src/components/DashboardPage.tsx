@@ -1,9 +1,11 @@
 import { useHealth, useInfo } from '@/hooks/useHealth';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
-import { Activity, Info, Server } from 'lucide-react';
+import { Activity, Info, Server, Home, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
   const { data: health, isLoading: healthLoading, error: healthError } = useHealth();
   const { data: info, isLoading: infoLoading } = useInfo();
 
@@ -20,7 +22,7 @@ export const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Buurman Dashboard
@@ -73,6 +75,28 @@ export const DashboardPage = () => {
             <div className="text-sm text-gray-500 mt-2">
               Infrastructure Setup Complete
             </div>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <button
+              onClick={() => navigate('/properties')}
+              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                  <Home className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-gray-900">Properties</h3>
+                  <p className="text-sm text-gray-600">Manage your rental properties</p>
+                </div>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+            </button>
           </div>
         </div>
 

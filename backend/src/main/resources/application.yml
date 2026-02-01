@@ -83,12 +83,15 @@ server:
   error:
     include-message: always
 
-# Logging Configuration
-logging:
-  level:
-    root: INFO
-    com.buurman: DEBUG
-    org.springframework: INFO
-    org.springframework.web: INFO
-    org.jooq.tools.LoggerListener: DEBUG
-    org.flywaydb: INFO
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true

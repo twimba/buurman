@@ -3,10 +3,6 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * TeamMember domain object (POJO).
- * Represents a member of a team.
- */
 public class TeamMember {
 
     private UUID id;
@@ -17,12 +13,9 @@ public class TeamMember {
     private UUID invitedBy;
     private Instant joinedAt;
 
-
-    // Default constructor for MapStruct
     public TeamMember() {
     }
 
-    // All-args constructor
     public TeamMember(UUID id, UUID teamId, UUID userId, String role, Instant invitedAt, UUID invitedBy, Instant joinedAt) {
         this.id = id;
         this.teamId = teamId;
@@ -33,7 +26,6 @@ public class TeamMember {
         this.joinedAt = joinedAt;
     }
 
-    // Getters and setters
     public UUID getId() {
         return id;
     }

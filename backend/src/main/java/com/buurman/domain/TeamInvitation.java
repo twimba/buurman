@@ -3,10 +3,6 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * TeamInvitation domain object (POJO).
- * Represents an invitation to join a team.
- */
 public class TeamInvitation {
 
     private UUID id;
@@ -20,12 +16,9 @@ public class TeamInvitation {
     private Instant acceptedAt;
     private UUID acceptedBy;
 
-
-    // Default constructor for MapStruct
     public TeamInvitation() {
     }
 
-    // All-args constructor
     public TeamInvitation(UUID id, UUID teamId, String email, String role, String token,
                           Instant expiresAt, UUID invitedBy, Instant invitedAt,
                           Instant acceptedAt, UUID acceptedBy) {
@@ -41,7 +34,6 @@ public class TeamInvitation {
         this.acceptedBy = acceptedBy;
     }
 
-    // Getters and setters
     public UUID getId() {
         return id;
     }

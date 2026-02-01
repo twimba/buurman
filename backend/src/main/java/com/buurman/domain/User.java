@@ -3,10 +3,6 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * User domain object (POJO).
- * Represents a user in the system.
- */
 public class User {
 
     private UUID id;
@@ -17,11 +13,9 @@ public class User {
     private Instant createdAt;
     private Instant updatedAt;
 
-    // Default constructor for MapStruct
     public User() {
     }
 
-    // All-args constructor
     public User(UUID id, String keycloakId, String email, String firstName, String lastName, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.keycloakId = keycloakId;
@@ -32,7 +26,6 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    // Getters and setters
     public UUID getId() {
         return id;
     }

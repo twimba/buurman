@@ -3,34 +3,27 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Team domain object (POJO).
- * Represents a team in the system.
- */
 public class Team {
 
     private UUID id;
-    private String businessId;
+    private String identifier;
     private String name;
     private Instant createdAt;
     private Instant updatedAt;
     private UUID createdBy;
 
-    // Default constructor for MapStruct
     public Team() {
     }
 
-    // All-args constructor
-    public Team(UUID id, String businessId, String name, Instant createdAt, Instant updatedAt, UUID createdBy) {
+    public Team(UUID id, String identifier, String name, Instant createdAt, Instant updatedAt, UUID createdBy) {
         this.id = id;
-        this.businessId = businessId;
+        this.identifier = identifier;
         this.name = name;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;
     }
 
-    // Getters and setters
     public UUID getId() {
         return id;
     }
@@ -39,12 +32,12 @@ public class Team {
         this.id = id;
     }
 
-    public String getBusinessId() {
-        return businessId;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setBusinessId(String businessId) {
-        this.businessId = businessId;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getName() {

@@ -2,7 +2,7 @@ import client from './client';
 
 export interface TeamResponse {
   teamId: string;
-  businessId: string;
+  identifier: string;
   teamName: string;
   memberCount: number;
   createdAt: string;

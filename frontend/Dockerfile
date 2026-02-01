@@ -20,6 +20,7 @@ RUN yarn install
 
 # Copy source and build
 COPY . .
+RUN rm -rf dist
 RUN yarn build
 
 # Runtime stage - Nginx to serve static files

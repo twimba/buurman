@@ -59,7 +59,7 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
 
@@ -133,15 +133,15 @@ const RegisterPage: React.FC = () => {
           <button
             type="submit"
             disabled={registerMutation.isPending}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-700 disabled:opacity-50"
           >
             {registerMutation.isPending ? 'Registering...' : 'Register'}
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-gray-600 text-center">
+        <p className="mt-4 text-sm text-text-secondary text-center">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-primary hover:underline">
             Login
           </a>
         </p>

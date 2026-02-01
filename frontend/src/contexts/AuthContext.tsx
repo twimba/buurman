@@ -11,31 +11,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Flag to track if Keycloak has been initialized
-let keycloakInitialized = false;
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const tokenRefreshInterval = useRef<NodeJS.Timeout | null>(null);
+  const tokenRefreshInterval = useRef<number | null>(null);
+  const initStarted = useRef(false);
 
   useEffect(() => {
     // Prevent double initialization in React Strict Mode
-    if (keycloakInitialized) {
-      setIsAuthenticated(!!keycloak.authenticated);
-      setIsLoading(false);
+    if (initStarted.current) {
       return;
     }
 
-    keycloakInitialized = true;
+    initStarted.current = true;
 
-    keycloak
-      .init({
-        onLoad: 'check-sso',
-        pkceMethod: 'S256',
-        checkLoginIframe: false,
-      })
-      .then((authenticated) => {
+    const initKeycloak = async () => {
+      try {
+        const authenticated = await keycloak.init({
+          onLoad: 'check-sso',
+          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+          pkceMethod: 'S256',
+          checkLoginIframe: false,
+        });
+
+        console.log('Keycloak initialized. Authenticated:', authenticated);
         setIsAuthenticated(authenticated);
         setIsLoading(false);
 
@@ -44,15 +43,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           tokenRefreshInterval.current = setInterval(() => {
             keycloak.updateToken(70).catch(() => {
               console.error('Failed to refresh token');
+              setIsAuthenticated(false);
               keycloak.logout();
             });
-          }, 60000); // Check every 60 seconds
+          }, 60000);
         }
-      })
-      .catch((error) => {
+
+        // Listen to token updates
+        keycloak.onTokenExpired = () => {
+          console.log('Token expired, attempting refresh');
+          keycloak.updateToken(70).catch(() => {
+            console.error('Failed to refresh expired token');
+            setIsAuthenticated(false);
+            keycloak.logout();
+          });
+        };
+
+        keycloak.onAuthSuccess = () => {
+          console.log('Authentication successful');
+          setIsAuthenticated(true);
+        };
+
+        keycloak.onAuthError = () => {
+          console.error('Authentication error');
+          setIsAuthenticated(false);
+        };
+
+        keycloak.onAuthLogout = () => {
+          console.log('Logged out');
+          setIsAuthenticated(false);
+        };
+
+      } catch (error) {
         console.error('Keycloak init failed', error);
+        setIsAuthenticated(false);
         setIsLoading(false);
-      });
+      }
+    };
+
+    initKeycloak();
 
     // Cleanup on unmount
     return () => {

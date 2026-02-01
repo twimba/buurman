@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record TeamResponse(
     UUID teamId,
-    String businessId,
+    String identifier,
     String teamName,
     long memberCount,
     Instant createdAt

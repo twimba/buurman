@@ -56,7 +56,7 @@ public class AuthService {
 
         // Create team
         Team team = new Team();
-        team.setBusinessId(UlidGenerator.generate());
+        team.setIdentifier(UlidGenerator.generate());
         team.setName(teamName);
         team.setCreatedAt(Instant.now());
         team.setUpdatedAt(Instant.now());
