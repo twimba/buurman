@@ -31,8 +31,6 @@ public class MdcFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
                 MDC.put(USER_ID, principal.getUserId().toString());
-                MDC.put(TEAM_ID, principal.getTeamId().toString());
-                MDC.put(USER_EMAIL, principal.getEmail());
             }
 
             filterChain.doFilter(request, response);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
 import {
@@ -7,6 +7,8 @@ import {
   PropertyType,
   PropertyStatus,
 } from '@/types/property';
+import { PropertyMap } from './PropertyMap';
+import { countries } from '@/utils/countries';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -27,12 +29,26 @@ export const PropertyForm = ({
     city: property?.city || '',
     postalCode: property?.postalCode || '',
     country: property?.country || 'Netherlands',
+    latitude: property?.latitude || null,
+    longitude: property?.longitude || null,
     bedrooms: property?.bedrooms || null,
     bathrooms: property?.bathrooms || null,
     squareMeters: property?.squareMeters || null,
     propertyType: property?.propertyType || PropertyType.APARTMENT,
     status: property?.status || PropertyStatus.VACANT,
   });
+
+  // Separate state for committed address values (used for map display)
+  const [committedAddress, setCommittedAddress] = useState({
+    street: property?.street || '',
+    city: property?.city || '',
+    postalCode: property?.postalCode || '',
+    country: property?.country || 'Netherlands',
+  });
+
+  // Track if address has changed to determine if we need new coordinates
+  const [addressChanged, setAddressChanged] = useState(false);
+  const [shouldRegeocode, setShouldRegeocode] = useState(false);
 
   useEffect(() => {
     if (property) {
@@ -41,14 +57,58 @@ export const PropertyForm = ({
         city: property.city,
         postalCode: property.postalCode,
         country: property.country,
+        latitude: property.latitude,
+        longitude: property.longitude,
         bedrooms: property.bedrooms,
         bathrooms: property.bathrooms,
         squareMeters: property.squareMeters,
         propertyType: property.propertyType,
         status: property.status,
       });
+      setCommittedAddress({
+        street: property.street,
+        city: property.city,
+        postalCode: property.postalCode,
+        country: property.country,
+      });
     }
   }, [property]);
+
+  // Debounce address changes for map updates (2 seconds)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // Check if address actually changed from the original
+      const hasChanged = property
+        ? formData.street !== property.street ||
+          formData.city !== property.city ||
+          formData.postalCode !== property.postalCode ||
+          formData.country !== property.country
+        : true;
+
+      setAddressChanged(hasChanged);
+
+      // If address changed, trigger re-geocoding but keep existing coordinates
+      // until new ones are obtained
+      if (hasChanged) {
+        setShouldRegeocode(true);
+      }
+
+      setCommittedAddress({
+        street: formData.street,
+        city: formData.city,
+        postalCode: formData.postalCode,
+        country: formData.country,
+      });
+    }, 2000);
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    formData.street,
+    formData.city,
+    formData.postalCode,
+    formData.country,
+    property,
+  ]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -79,7 +139,12 @@ export const PropertyForm = ({
 
     try {
       await onSubmit(formData);
-      navigate('/properties');
+      // Navigate to property detail page if editing, otherwise to list
+      if (property) {
+        navigate(`/properties/${property.id}`);
+      } else {
+        navigate('/properties');
+      }
     } catch (error) {
       console.error('Failed to save property:', error);
     }
@@ -95,6 +160,42 @@ export const PropertyForm = ({
     }
   };
 
+  // Immediately commit address values on blur
+  const handleAddressBlur = () => {
+    // Check if address actually changed from the original
+    const hasChanged = property
+      ? formData.street !== property.street ||
+        formData.city !== property.city ||
+        formData.postalCode !== property.postalCode ||
+        formData.country !== property.country
+      : true;
+
+    setAddressChanged(hasChanged);
+
+    // If address changed, trigger re-geocoding but keep existing coordinates
+    // until new ones are obtained
+    if (hasChanged) {
+      setShouldRegeocode(true);
+    }
+
+    setCommittedAddress({
+      street: formData.street,
+      city: formData.city,
+      postalCode: formData.postalCode,
+      country: formData.country,
+    });
+  };
+
+  // Handle geocoded coordinates from map
+  const handleCoordinatesChange = useCallback((lat: number, lng: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }));
+    setShouldRegeocode(false); // Reset flag once new coordinates are obtained
+  }, []);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Address Section */}
@@ -109,6 +210,7 @@ export const PropertyForm = ({
               type="text"
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
+              onBlur={handleAddressBlur}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="Main Street 123"
             />
@@ -125,6 +227,7 @@ export const PropertyForm = ({
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
+              onBlur={handleAddressBlur}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="Amsterdam"
             />
@@ -141,6 +244,7 @@ export const PropertyForm = ({
               type="text"
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
+              onBlur={handleAddressBlur}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1012 AB"
             />
@@ -156,31 +260,41 @@ export const PropertyForm = ({
             <select
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
+              onBlur={handleAddressBlur}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             >
-              <option value="Netherlands">Netherlands</option>
-              <option value="Belgium">Belgium</option>
-              <option value="Germany">Germany</option>
-              <option value="France">France</option>
-              <option value="Spain">Spain</option>
-              <option value="Italy">Italy</option>
-              <option value="Portugal">Portugal</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="Ireland">Ireland</option>
-              <option value="Switzerland">Switzerland</option>
-              <option value="Austria">Austria</option>
-              <option value="Denmark">Denmark</option>
-              <option value="Sweden">Sweden</option>
-              <option value="Norway">Norway</option>
-              <option value="Poland">Poland</option>
-              <option value="Czech Republic">Czech Republic</option>
-              <option value="Other">Other</option>
+              {countries.map((country) => (
+                <option key={country.code} value={country.name}>
+                  {country.flag} {country.name}
+                </option>
+              ))}
             </select>
             {errors.country && (
               <p className="text-red-600 text-sm mt-1">{errors.country}</p>
             )}
           </div>
         </div>
+
+        {/* Location Preview */}
+        {committedAddress.street &&
+          committedAddress.city &&
+          committedAddress.postalCode &&
+          committedAddress.country && (
+            <div className="mt-6">
+              <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                Location Preview
+              </h4>
+              <PropertyMap
+                street={committedAddress.street}
+                city={committedAddress.city}
+                postalCode={committedAddress.postalCode}
+                country={committedAddress.country}
+                latitude={shouldRegeocode ? null : formData.latitude}
+                longitude={shouldRegeocode ? null : formData.longitude}
+                onCoordinatesChange={handleCoordinatesChange}
+              />
+            </div>
+          )}
       </div>
 
       {/* Specifications Section */}

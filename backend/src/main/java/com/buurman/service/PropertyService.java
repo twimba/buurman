@@ -1,10 +1,12 @@
 package com.buurman.service;
 
+import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,11 +26,20 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final PropertyMapper propertyMapper;
     private final AuditService auditService;
+    private final DocumentRepository documentRepository;
+    private final S3StorageService s3StorageService;
 
-    public PropertyService(PropertyRepository propertyRepository, PropertyMapper propertyMapper, AuditService auditService) {
+    public PropertyService(
+            PropertyRepository propertyRepository,
+            PropertyMapper propertyMapper,
+            AuditService auditService,
+            DocumentRepository documentRepository,
+            S3StorageService s3StorageService) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
+        this.documentRepository = documentRepository;
+        this.s3StorageService = s3StorageService;
     }
 
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
@@ -49,7 +61,7 @@ public class PropertyService {
                 savedProperty
         );
 
-        return propertyMapper.toResponse(savedProperty);
+        return toResponseWithMainPhoto(savedProperty, principal.getTeamId());
     }
 
     public List<PropertyResponse> getProperties(UserPrincipal principal, Property.PropertyStatus status) {
@@ -61,7 +73,7 @@ public class PropertyService {
         }
 
         return properties.stream()
-                .map(propertyMapper::toResponse)
+                .map(property -> toResponseWithMainPhoto(property, principal.getTeamId()))
                 .toList();
     }
 
@@ -69,7 +81,7 @@ public class PropertyService {
         Property property = propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
-        return propertyMapper.toResponse(property);
+        return toResponseWithMainPhoto(property, principal.getTeamId());
     }
 
     public PropertyResponse updateProperty(
@@ -81,13 +93,13 @@ public class PropertyService {
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
         // Create a simple representation of the old state for audit (just store the request data)
-        PropertyResponse oldState = propertyMapper.toResponse(property);
+        PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId());
 
         propertyMapper.updateEntity(property, request);
         property.setUpdatedBy(principal.getUserId());
 
         Property updatedProperty = propertyRepository.save(property);
-        PropertyResponse newState = propertyMapper.toResponse(updatedProperty);
+        PropertyResponse newState = toResponseWithMainPhoto(updatedProperty, principal.getTeamId());
 
         log.info("Property updated: {} for team {}", propertyId, principal.getTeamId());
 
@@ -119,6 +131,46 @@ public class PropertyService {
                 propertyId,
                 principal.getUserId(),
                 property
+        );
+    }
+
+    private PropertyResponse toResponseWithMainPhoto(Property property, UUID teamId) {
+        PropertyResponse response = propertyMapper.toResponse(property);
+
+        // Find main photo for this property
+        List<Document> photos = documentRepository.findByEntityAndTeamIdAndCategory(
+                "PROPERTY",
+                property.getId(),
+                teamId,
+                Document.Category.PHOTO.name()
+        );
+
+        Optional<Document> mainPhoto = photos.stream()
+                .filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto()))
+                .findFirst();
+
+        String mainPhotoUrl = mainPhoto
+                .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
+                .orElse(null);
+
+        return new PropertyResponse(
+                response.id(),
+                response.identifier(),
+                response.teamId(),
+                response.street(),
+                response.city(),
+                response.postalCode(),
+                response.country(),
+                response.latitude(),
+                response.longitude(),
+                response.bedrooms(),
+                response.bathrooms(),
+                response.squareMeters(),
+                response.propertyType(),
+                response.status(),
+                mainPhotoUrl,
+                response.createdAt(),
+                response.updatedAt()
         );
     }
 }

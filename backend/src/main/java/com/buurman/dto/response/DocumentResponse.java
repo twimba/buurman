@@ -14,6 +14,8 @@ public record DocumentResponse(
         String mimeType,
         String title,
         String notes,
+        String category,
+        Boolean isMainPhoto,
         UUID uploadedBy,
         Instant uploadedAt,
         String downloadUrl

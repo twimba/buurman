@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PropertyMapper {
 
+    @Mapping(target = "mainPhotoUrl", ignore = true)
     PropertyResponse toResponse(Property property);
 
     @Mapping(target = "id", ignore = true)

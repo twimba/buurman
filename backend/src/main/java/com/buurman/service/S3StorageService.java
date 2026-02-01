@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.UUID;
@@ -28,14 +29,17 @@ public class S3StorageService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final String bucketName;
+    private final String s3Endpoint;
 
     public S3StorageService(
             S3Client s3Client,
             S3Presigner s3Presigner,
-            @Value("${aws.s3.bucket-name}") String bucketName) {
+            @Value("${aws.s3.bucket-name}") String bucketName,
+            @Value("${aws.s3.endpoint}") String s3Endpoint) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
         this.bucketName = bucketName;
+        this.s3Endpoint = s3Endpoint;
     }
 
     /**
@@ -68,23 +72,37 @@ public class S3StorageService {
     /**
      * Generate presigned URL for downloading a file.
      * URL is valid for 15 minutes.
+     * For LocalStack, uses direct URLs without presigning to avoid CORS issues.
      */
     public URL generatePresignedUrl(String fileKey) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileKey)
-                .build();
+        try {
+            // For LocalStack (localhost), use direct URLs without presigning
+            if (s3Endpoint.contains("localhost") || s3Endpoint.contains("127.0.0.1")) {
+                String directUrl = s3Endpoint + "/" + bucketName + "/" + fileKey;
+                log.debug("Generated direct URL for LocalStack: {}", directUrl);
+                return URI.create(directUrl).toURL();
+            }
 
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(PRESIGNED_URL_DURATION)
-                .getObjectRequest(getObjectRequest)
-                .build();
+            // For production AWS, use presigned URLs
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileKey)
+                    .build();
 
-        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
-        URL url = presignedRequest.url();
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(PRESIGNED_URL_DURATION)
+                    .getObjectRequest(getObjectRequest)
+                    .build();
 
-        log.info("Generated presigned URL for file: {}", fileKey);
-        return url;
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+            URL url = presignedRequest.url();
+
+            log.info("Generated presigned URL for file: {} -> {}", fileKey, url.toString());
+            return url;
+        } catch (Exception e) {
+            log.error("Failed to generate URL for file: {}", fileKey, e);
+            throw new RuntimeException("Failed to generate download URL", e);
+        }
     }
 
     /**

@@ -13,6 +13,8 @@ public class Property {
     private String city;
     private String postalCode;
     private String country;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private Integer bedrooms;
     private Integer bathrooms;
     private BigDecimal squareMeters;
@@ -28,8 +30,9 @@ public class Property {
     }
 
     public Property(UUID id, String identifier, UUID teamId, String street, String city,
-                    String postalCode, String country, Integer bedrooms, Integer bathrooms,
-                    BigDecimal squareMeters, PropertyType propertyType, PropertyStatus status,
+                    String postalCode, String country, BigDecimal latitude, BigDecimal longitude,
+                    Integer bedrooms, Integer bathrooms, BigDecimal squareMeters,
+                    PropertyType propertyType, PropertyStatus status,
                     Instant createdAt, Instant updatedAt, UUID createdBy, UUID updatedBy,
                     Instant deletedAt) {
         this.id = id;
@@ -39,6 +42,8 @@ public class Property {
         this.city = city;
         this.postalCode = postalCode;
         this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.bedrooms = bedrooms;
         this.bathrooms = bathrooms;
         this.squareMeters = squareMeters;
@@ -105,6 +110,22 @@ public class Property {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
     }
 
     public Integer getBedrooms() {

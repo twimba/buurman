@@ -28,9 +28,17 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
       onClick={() => navigate(`/properties/${property.id}`)}
     >
-      {/* Property Image Placeholder */}
-      <div className="relative bg-gray-200 h-48 flex items-center justify-center">
-        <Home className="h-16 w-16 text-gray-400" />
+      {/* Property Image */}
+      <div className="relative bg-gray-200 h-48 flex items-center justify-center overflow-hidden">
+        {property.mainPhotoUrl ? (
+          <img
+            src={property.mainPhotoUrl}
+            alt={property.street}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Home className="h-16 w-16 text-gray-400" />
+        )}
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
           <span

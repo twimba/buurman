@@ -132,6 +132,9 @@ public class AuditService {
                         AUDIT_LOG.ENTITY_ID,
                         AUDIT_LOG.ACTION,
                         AUDIT_LOG.TIMESTAMP,
+                        AUDIT_LOG.CHANGED_FIELDS,
+                        AUDIT_LOG.OLD_VALUES,
+                        AUDIT_LOG.NEW_VALUES,
                         USERS.FIRST_NAME,
                         USERS.LAST_NAME
                 )
@@ -152,6 +155,11 @@ public class AuditService {
 
                     String description = buildActivityDescription(action, entityType, userName);
 
+                    // Parse JSON fields
+                    Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
+                    Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
+                    Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+
                     return new RecentActivityResponse(
                             record.get(AUDIT_LOG.ID),
                             entityType,
@@ -160,9 +168,25 @@ public class AuditService {
                             action,
                             userName,
                             record.get(AUDIT_LOG.TIMESTAMP).toInstant(ZoneOffset.UTC),
-                            description
+                            description,
+                            changedFields,
+                            oldValues,
+                            newValues
                     );
                 });
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseJsonbField(JSONB jsonb) {
+        if (jsonb == null || jsonb.data() == null) {
+            return Map.of();
+        }
+        try {
+            return objectMapper.readValue(jsonb.data(), Map.class);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse JSONB field", e);
+            return Map.of();
+        }
     }
 
     private String buildActivityDescription(String action, String entityType, String userName) {

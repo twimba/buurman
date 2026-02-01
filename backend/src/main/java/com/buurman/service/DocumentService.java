@@ -77,17 +77,27 @@ public class DocumentService {
         document.setNotes(notes);
         document.setUploadedBy(principal.getUserId());
 
-        Document savedDocument = documentRepository.save(document);
-        log.info("Document uploaded: {} for entity {}/{}", savedDocument.getId(), entityType, entityId);
+        // Automatically categorize as PHOTO if it's an image
+        if (mimeType != null && mimeType.startsWith("image/")) {
+            document.setCategory(Document.Category.PHOTO.name());
+            document.setIsMainPhoto(false);
+        } else {
+            document.setCategory(Document.Category.DOCUMENT.name());
+            document.setIsMainPhoto(false);
+        }
 
-        return documentMapper.toResponse(savedDocument);
+        Document savedDocument = documentRepository.save(document);
+        log.info("Document uploaded: {} (category: {}) for entity {}/{}",
+                savedDocument.getId(), savedDocument.getCategory(), entityType, entityId);
+
+        return toResponseWithDownloadUrl(savedDocument);
     }
 
     public List<DocumentResponse> getDocuments(String entityType, UUID entityId, UserPrincipal principal) {
         List<Document> documents = documentRepository.findByEntityAndTeamId(
                 entityType, entityId, principal.getTeamId());
         return documents.stream()
-                .map(documentMapper::toResponse)
+                .map(this::toResponseWithDownloadUrl)
                 .toList();
     }
 
@@ -109,5 +119,63 @@ public class DocumentService {
         s3StorageService.deleteFile(document.getFileKey());
 
         log.info("Document deleted: {}", documentId);
+    }
+
+    public List<DocumentResponse> getPhotos(String entityType, UUID entityId, UserPrincipal principal) {
+        List<Document> photos = documentRepository.findByEntityAndTeamIdAndCategory(
+                entityType, entityId, principal.getTeamId(), Document.Category.PHOTO.name());
+        return photos.stream()
+                .map(this::toResponseWithDownloadUrl)
+                .toList();
+    }
+
+    public DocumentResponse setMainPhoto(UUID photoId, String entityType, UUID entityId, UserPrincipal principal) {
+        // Verify the photo exists and belongs to the team
+        Document photo = documentRepository.findByIdAndTeamId(photoId, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+
+        // Verify it's actually a photo
+        if (!Document.Category.PHOTO.name().equals(photo.getCategory())) {
+            throw new IllegalArgumentException("Document is not a photo");
+        }
+
+        // Verify it belongs to the correct entity
+        if (!entityType.equals(photo.getEntityType()) || !entityId.equals(photo.getEntityId())) {
+            throw new IllegalArgumentException("Photo does not belong to this entity");
+        }
+
+        // Unset any existing main photo for this entity
+        documentRepository.unsetMainPhotoForEntity(entityType, entityId, principal.getTeamId());
+
+        // Set this photo as main
+        photo.setIsMainPhoto(true);
+        Document savedPhoto = documentRepository.save(photo);
+
+        log.info("Main photo set: {} for entity {}/{}", photoId, entityType, entityId);
+
+        return toResponseWithDownloadUrl(savedPhoto);
+    }
+
+    private DocumentResponse toResponseWithDownloadUrl(Document document) {
+        DocumentResponse response = documentMapper.toResponse(document);
+        String downloadUrl = s3StorageService.generatePresignedUrl(document.getFileKey()).toString();
+
+        return new DocumentResponse(
+                response.id(),
+                response.teamId(),
+                response.entityType(),
+                response.entityId(),
+                response.fileKey(),
+                response.fileName(),
+                response.fileSize(),
+                response.mimeType(),
+                response.title(),
+                response.notes(),
+                response.category(),
+                response.isMainPhoto(),
+                response.uploadedBy(),
+                response.uploadedAt(),
+                downloadUrl
+        );
     }
 }

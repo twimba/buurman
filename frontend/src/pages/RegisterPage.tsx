@@ -86,7 +86,9 @@ const RegisterPage: React.FC = () => {
                 <Home className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Manage Properties</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  Manage Properties
+                </h3>
                 <p className="text-blue-100">
                   Keep track of all your rental properties in one place
                 </p>
@@ -122,7 +124,9 @@ const RegisterPage: React.FC = () => {
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Grow Your Business</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  Grow Your Business
+                </h3>
                 <p className="text-blue-100">
                   Scale your rental portfolio with confidence
                 </p>
@@ -179,7 +183,9 @@ const RegisterPage: React.FC = () => {
                     placeholder="John"
                   />
                   {errors.firstName && (
-                    <p className="text-red-600 text-xs mt-1">{errors.firstName}</p>
+                    <p className="text-red-600 text-xs mt-1">
+                      {errors.firstName}
+                    </p>
                   )}
                 </div>
 
@@ -196,7 +202,9 @@ const RegisterPage: React.FC = () => {
                     placeholder="Doe"
                   />
                   {errors.lastName && (
-                    <p className="text-red-600 text-xs mt-1">{errors.lastName}</p>
+                    <p className="text-red-600 text-xs mt-1">
+                      {errors.lastName}
+                    </p>
                   )}
                 </div>
               </div>
@@ -266,7 +274,9 @@ const RegisterPage: React.FC = () => {
                 className="w-full bg-blue-600 text-white py-3.5 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 <UserPlus className="h-5 w-5" />
-                {registerMutation.isPending ? 'Creating account...' : 'Create account'}
+                {registerMutation.isPending
+                  ? 'Creating account...'
+                  : 'Create account'}
               </button>
             </form>
 

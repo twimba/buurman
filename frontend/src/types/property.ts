@@ -20,11 +20,14 @@ export interface PropertyResponse {
   city: string;
   postalCode: string;
   country: string;
+  latitude: number | null;
+  longitude: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
   squareMeters: number | null;
   propertyType: PropertyType;
   status: PropertyStatus;
+  mainPhotoUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +37,8 @@ export interface CreatePropertyRequest {
   city: string;
   postalCode: string;
   country: string;
+  latitude?: number | null;
+  longitude?: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
   squareMeters: number | null;
@@ -54,6 +59,8 @@ export interface DocumentResponse {
   mimeType: string;
   title: string | null;
   notes: string | null;
+  category: string;
+  isMainPhoto: boolean;
   uploadedBy: string;
   uploadedAt: string;
   downloadUrl: string | null;

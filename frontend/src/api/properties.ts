@@ -89,3 +89,43 @@ export const getPropertyAuditLog = async (
   const response = await client.get(`/properties/${propertyId}/audit-log`);
   return response.data;
 };
+
+export const getPropertyPhotos = async (
+  propertyId: string
+): Promise<DocumentResponse[]> => {
+  const response = await client.get(`/properties/${propertyId}/photos`);
+  return response.data;
+};
+
+export const uploadPropertyPhoto = async (
+  propertyId: string,
+  file: File,
+  title?: string,
+  notes?: string
+): Promise<DocumentResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (title) formData.append('title', title);
+  if (notes) formData.append('notes', notes);
+
+  const response = await client.post(
+    `/properties/${propertyId}/photos`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};
+
+export const setMainPhoto = async (
+  propertyId: string,
+  photoId: string
+): Promise<DocumentResponse> => {
+  const response = await client.put(
+    `/properties/${propertyId}/photos/${photoId}/set-main`
+  );
+  return response.data;
+};

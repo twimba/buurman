@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 Buurman is a property management dashboard application for small landlords to manage rental properties, tenants, contracts, and finances. The application uses:
@@ -40,7 +38,6 @@ Buurman is a property management dashboard application for small landlords to ma
 - Migrations are in: `src/main/resources/db/migration/`
 - Naming convention: `V<version>__<description>.sql` (e.g., `V001__create_base_schema.sql`)
 - **Migrations run automatically on application startup** - Flyway is configured to apply all pending migrations before the application starts
-- Configuration: `spring.flyway.enabled=true` in `application.yml`
 - Check migration status via API: `GET /api/info` (includes database.currentVersion)
 - Check migration history in database: Query `flyway_schema_history` table
 - Migration logs appear on startup with clear status information
@@ -63,11 +60,11 @@ Buurman is a property management dashboard application for small landlords to ma
 5. `JwtAuthenticationFilter` extracts claims and populates `SecurityContext`
 6. All API requests include `Authorization: Bearer <token>` header
 
-### Business ID Pattern
+### IDs Pattern
 - Internal IDs use UUID (primary keys)
-- External/business IDs use ULID (26 characters, sortable, user-facing)
-- Every entity has both `id` (UUID) and `business_id` (ULID)
-- Use `UlidGenerator.java` utility for generating business IDs
+- External IDs/Identifiers use ULID (26 characters, sortable, user-facing)
+- Every entity has both `id` (UUID) and `indentifier` (ULID)
+- Use `UlidGenerator.java` utility for generating identifiers
 
 ### Audit Pattern
 - All entities have audit columns: `created_at`, `updated_at`, `created_by`, `updated_by`
@@ -153,13 +150,13 @@ export const useCreateProperty = () => {
 ## Database Schema Conventions
 
 - **Primary keys**: `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-- **Business IDs**: `business_id VARCHAR(26) NOT NULL` (ULID format)
+- **Identifiers**: `identifier VARCHAR(26) NOT NULL` (ULID format)
 - **Team isolation**: `team_id UUID NOT NULL REFERENCES teams(id)`
 - **Audit fields**: `created_at`, `updated_at`, `created_by`, `updated_by`
 - **Soft deletes**: `deleted_at TIMESTAMP` (NULL means active)
 - **Indexes**: Always index `team_id`, status columns, foreign keys, and date columns
 - **Constraints**: Use CHECK constraints for validation (e.g., positive amounts, date ranges)
-- **Unique constraints**: Combine `team_id` + `business_id` for uniqueness within team
+- **Unique constraints**: Combine `team_id` + `identifier` for uniqueness within team
 
 ## Testing Strategy
 
@@ -175,27 +172,6 @@ export const useCreateProperty = () => {
 - **Integration tests**: User flows with MSW (Mock Service Worker) for API mocking
 - Target: 70% code coverage
 - Test accessibility (screen reader support, keyboard navigation)
-
-## Environment Variables
-
-### Backend (.env or application.yml)
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/buurman
-SPRING_DATASOURCE_PASSWORD=<password>
-KEYCLOAK_URL=http://localhost:8080
-KEYCLOAK_CLIENT_SECRET=<secret>
-S3_ENDPOINT=http://localhost:4566  # LocalStack
-S3_ACCESS_KEY=<key>
-S3_SECRET_KEY=<secret>
-```
-
-### Frontend (.env)
-```
-VITE_API_URL=/api
-VITE_KEYCLOAK_URL=http://localhost:8080
-VITE_KEYCLOAK_REALM=buurman
-VITE_KEYCLOAK_CLIENT_ID=buurman-web
-```
 
 ## Common Development Tasks
 
@@ -217,11 +193,11 @@ VITE_KEYCLOAK_CLIENT_ID=buurman-web
 3. Include:
    - `team_id UUID NOT NULL REFERENCES teams(id)`
    - `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-   - `business_id VARCHAR(26) NOT NULL`
+   - `identifier VARCHAR(26) NOT NULL`
    - Audit columns (created_at, updated_at, created_by, updated_by)
    - `deleted_at TIMESTAMP` for soft deletes
    - Indexes on `team_id`, foreign keys, frequently queried columns
-   - `UNIQUE(team_id, business_id)` constraint
+   - `UNIQUE(team_id, identifier)` constraint
 4. Test migration: Restart application and verify schema
 
 ### Adding a New API Endpoint
@@ -243,7 +219,7 @@ VITE_KEYCLOAK_CLIENT_ID=buurman-web
 - ALWAYS validate JWT tokens on backend
 - NEVER trust client-side data (validate on backend)
 - USE `@PreAuthorize` for role-based access control
-- NEVER expose internal UUIDs in URLs (use business_id)
+- NEVER expose internal UUIDs in URLs (use identifier)
 
 ### Data Integrity
 - ALWAYS use soft deletes (`deleted_at` column)
@@ -283,13 +259,7 @@ VITE_KEYCLOAK_CLIENT_ID=buurman-web
 - **JWT validation failed**: Check Keycloak is running and realm configured
 - **CORS errors**: Verify backend SecurityConfig has correct frontend origin
 - **Flyway migration failed**: Check migration syntax, rollback may require manual intervention
-
-## Project Status
-
-This project is currently in the planning phase. The comprehensive plan is documented in `plan.md` which outlines:
-- Phase 1: Foundation & Core Features (Authentication, Properties, Dashboard)
-- Phase 2: Tenant & Contract Management
-- Phase 3: Financial Tracking (Payments, Expenses)
-- Phase 4: Financial Reporting & Analytics
-
-When implementing features, follow the phased approach in the plan document.
+- **S3/LocalStack image display issues**: 
+  - For LocalStack, S3StorageService uses direct URLs (localhost:4566/bucket/key) instead of presigned URLs
+  - CORS is configured for LocalStack S3 bucket to allow browser access
+  - Production uses presigned URLs for security

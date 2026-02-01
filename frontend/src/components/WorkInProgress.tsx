@@ -16,7 +16,10 @@ export const WorkInProgress = ({
         <div className="mb-8 flex justify-center">
           <div className="relative">
             <div className="absolute inset-0 bg-blue-100 rounded-full blur-2xl opacity-50 animate-pulse" />
-            <Construction className="h-32 w-32 text-blue-600 relative" strokeWidth={1.5} />
+            <Construction
+              className="h-32 w-32 text-blue-600 relative"
+              strokeWidth={1.5}
+            />
           </div>
         </div>
 
@@ -35,9 +38,18 @@ export const WorkInProgress = ({
 
         {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '0ms' }} />
-          <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '150ms' }} />
-          <div className="h-2 w-2 rounded-full bg-blue-600 animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div
+            className="h-2 w-2 rounded-full bg-blue-600 animate-bounce"
+            style={{ animationDelay: '0ms' }}
+          />
+          <div
+            className="h-2 w-2 rounded-full bg-blue-600 animate-bounce"
+            style={{ animationDelay: '150ms' }}
+          />
+          <div
+            className="h-2 w-2 rounded-full bg-blue-600 animate-bounce"
+            style={{ animationDelay: '300ms' }}
+          />
         </div>
       </div>
     </div>

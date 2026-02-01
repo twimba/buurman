@@ -39,7 +39,9 @@ const LoginPage: React.FC = () => {
                 <Home className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Manage Properties</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  Manage Properties
+                </h3>
                 <p className="text-blue-100">
                   Keep track of all your rental properties in one place
                 </p>
@@ -75,7 +77,9 @@ const LoginPage: React.FC = () => {
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Grow Your Business</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  Grow Your Business
+                </h3>
                 <p className="text-blue-100">
                   Scale your rental portfolio with confidence
                 </p>
@@ -112,9 +116,7 @@ const LoginPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Welcome back
               </h2>
-              <p className="text-gray-600">
-                Sign in to manage your properties
-              </p>
+              <p className="text-gray-600">Sign in to manage your properties</p>
             </div>
 
             <button

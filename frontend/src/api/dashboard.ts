@@ -21,6 +21,9 @@ export interface RecentActivity {
   userName: string;
   timestamp: string;
   description: string;
+  changedFields?: Record<string, unknown>;
+  oldValues?: Record<string, unknown>;
+  newValues?: Record<string, unknown>;
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {

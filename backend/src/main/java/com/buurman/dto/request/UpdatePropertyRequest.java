@@ -20,6 +20,10 @@ public record UpdatePropertyRequest(
         @NotBlank(message = "Country is required")
         String country,
 
+        BigDecimal latitude,
+
+        BigDecimal longitude,
+
         @Min(value = 0, message = "Bedrooms must be non-negative")
         Integer bedrooms,
 

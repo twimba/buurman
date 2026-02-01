@@ -151,9 +151,10 @@ export const DashboardPage = () => {
                   </div>
                 </div>
                 <div className="text-sm text-green-700">
-                  {((stats.occupiedUnits / stats.totalProperties) * 100).toFixed(
-                    0
-                  )}
+                  {(
+                    (stats.occupiedUnits / stats.totalProperties) *
+                    100
+                  ).toFixed(0)}
                   %
                 </div>
               </div>
@@ -167,7 +168,9 @@ export const DashboardPage = () => {
                   </div>
                 </div>
                 <div className="text-sm text-yellow-700">
-                  {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(0)}
+                  {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(
+                    0
+                  )}
                   %
                 </div>
               </div>

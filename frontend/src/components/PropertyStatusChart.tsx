@@ -1,4 +1,11 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from 'recharts';
 
 interface PropertyStatusChartProps {
   occupied: number;
@@ -34,7 +41,8 @@ export const PropertyStatusChart = ({
         <div className="bg-white px-4 py-2 shadow-lg rounded-lg border border-gray-200">
           <p className="font-semibold">{payload[0].name}</p>
           <p className="text-sm text-gray-600">
-            {payload[0].value} {payload[0].value === 1 ? 'property' : 'properties'} ({percentage}%)
+            {payload[0].value}{' '}
+            {payload[0].value === 1 ? 'property' : 'properties'} ({percentage}%)
           </p>
         </div>
       );
@@ -53,7 +61,8 @@ export const PropertyStatusChart = ({
               style={{ backgroundColor: entry.color }}
             />
             <span className="text-sm text-gray-700">
-              {entry.value} ({((entry.payload.value / total) * 100).toFixed(0)}%)
+              {entry.value} ({((entry.payload.value / total) * 100).toFixed(0)}
+              %)
             </span>
           </div>
         ))}

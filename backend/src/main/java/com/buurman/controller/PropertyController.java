@@ -134,4 +134,35 @@ public class PropertyController {
             @AuthenticationPrincipal UserPrincipal principal) {
         return auditService.getEntityAuditLog(principal.getTeamId(), "PROPERTY", id);
     }
+
+    @Operation(summary = "List photos", description = "Get all photos for a property")
+    @GetMapping("/{id}/photos")
+    public List<DocumentResponse> getPhotos(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return documentService.getPhotos("PROPERTY", id, principal);
+    }
+
+    @Operation(summary = "Upload photo", description = "Upload a photo for a property (Admin/Editor)")
+    @PostMapping("/{id}/photos")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public DocumentResponse uploadPhoto(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String notes,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return documentService.uploadDocument(file, "PROPERTY", id, title, notes, principal);
+    }
+
+    @Operation(summary = "Set main photo", description = "Set a photo as the main photo for a property (Admin/Editor)")
+    @PutMapping("/{id}/photos/{photoId}/set-main")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public DocumentResponse setMainPhoto(
+            @PathVariable UUID id,
+            @PathVariable UUID photoId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return documentService.setMainPhoto(photoId, "PROPERTY", id, principal);
+    }
 }

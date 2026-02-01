@@ -62,6 +62,8 @@ public class DocumentRepository {
                     .set(DOCUMENTS.MIME_TYPE, document.getMimeType())
                     .set(DOCUMENTS.TITLE, document.getTitle())
                     .set(DOCUMENTS.NOTES, document.getNotes())
+                    .set(DOCUMENTS.CATEGORY, document.getCategory())
+                    .set(DOCUMENTS.IS_MAIN_PHOTO, document.getIsMainPhoto())
                     .set(DOCUMENTS.UPLOADED_BY, document.getUploadedBy())
                     .set(DOCUMENTS.UPLOADED_AT, now)
                     .execute();
@@ -69,10 +71,11 @@ public class DocumentRepository {
             document.setId(newId);
             document.setUploadedAt(now.toInstant(ZoneOffset.UTC));
         } else {
-            // UPDATE (only title and notes are updatable)
+            // UPDATE (title, notes, and isMainPhoto are updatable)
             dsl.update(DOCUMENTS)
                     .set(DOCUMENTS.TITLE, document.getTitle())
                     .set(DOCUMENTS.NOTES, document.getNotes())
+                    .set(DOCUMENTS.IS_MAIN_PHOTO, document.getIsMainPhoto())
                     .where(DOCUMENTS.ID.eq(document.getId())
                             .and(DOCUMENTS.TEAM_ID.eq(document.getTeamId())))
                     .execute();
@@ -87,6 +90,29 @@ public class DocumentRepository {
                 .set(DOCUMENTS.DELETED_AT, now)
                 .where(DOCUMENTS.ID.eq(id)
                         .and(DOCUMENTS.TEAM_ID.eq(teamId)))
+                .execute();
+    }
+
+    public List<Document> findByEntityAndTeamIdAndCategory(String entityType, UUID entityId, UUID teamId, String category) {
+        return dsl.selectFrom(DOCUMENTS)
+                .where(DOCUMENTS.ENTITY_TYPE.eq(entityType)
+                        .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                        .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                        .and(DOCUMENTS.CATEGORY.eq(category))
+                        .and(DOCUMENTS.DELETED_AT.isNull()))
+                .orderBy(DOCUMENTS.IS_MAIN_PHOTO.desc(), DOCUMENTS.UPLOADED_AT.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public void unsetMainPhotoForEntity(String entityType, UUID entityId, UUID teamId) {
+        dsl.update(DOCUMENTS)
+                .set(DOCUMENTS.IS_MAIN_PHOTO, false)
+                .where(DOCUMENTS.ENTITY_TYPE.eq(entityType)
+                        .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                        .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                        .and(DOCUMENTS.IS_MAIN_PHOTO.eq(true))
+                        .and(DOCUMENTS.DELETED_AT.isNull()))
                 .execute();
     }
 }

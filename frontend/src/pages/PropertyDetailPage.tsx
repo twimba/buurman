@@ -7,11 +7,16 @@ import {
   useUploadPropertyDocument,
   useDeleteDocument,
   usePropertyAuditLog,
+  usePropertyPhotos,
+  useUploadPropertyPhoto,
+  useSetMainPhoto,
 } from '@/hooks/usePropertyHooks';
 import { PropertyStatus } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
+import { PhotoGallery } from '@/components/properties/PhotoGallery';
+import { PropertyMap } from '@/components/properties/PropertyMap';
 import {
   ArrowLeft,
   Edit,
@@ -22,6 +27,7 @@ import {
   MapPin,
   X,
   History,
+  Image,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -42,15 +48,28 @@ const statusLabels: Record<PropertyStatus, string> = {
 export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'info' | 'documents' | 'audit'>('info');
+  const [activeTab, setActiveTab] = useState<
+    'info' | 'photos' | 'documents' | 'audit'
+  >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
+    new Set()
+  );
 
   const { data: property, isLoading, error } = useProperty(id);
   const {
-    data: documents = [],
+    data: allDocuments = [],
     isLoading: docsLoading,
     error: docsError,
   } = usePropertyDocuments(id);
+  const {
+    data: photos = [],
+    isLoading: photosLoading,
+    error: photosError,
+  } = usePropertyPhotos(id);
+
+  // Filter out photos from documents list
+  const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
   const {
     data: auditLog = [],
     isLoading: auditLoading,
@@ -58,6 +77,8 @@ export const PropertyDetailPage = () => {
   } = usePropertyAuditLog(id);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
+  const uploadPhotoMutation = useUploadPropertyPhoto(id!);
+  const setMainPhotoMutation = useSetMainPhoto(id!);
   const deleteDocumentMutation = useDeleteDocument(id!);
 
   const handleDelete = async () => {
@@ -80,6 +101,43 @@ export const PropertyDetailPage = () => {
 
   const handleDeleteDocument = async (documentId: string) => {
     await deleteDocumentMutation.mutateAsync(documentId);
+  };
+
+  const handleUploadPhoto = async (
+    file: File,
+    title?: string,
+    notes?: string
+  ) => {
+    await uploadPhotoMutation.mutateAsync({ file, title, notes });
+  };
+
+  const handleSetMainPhoto = async (photoId: string) => {
+    await setMainPhotoMutation.mutateAsync(photoId);
+  };
+
+  const toggleAuditItem = (itemId: string) => {
+    const newExpanded = new Set(expandedAuditItems);
+    if (newExpanded.has(itemId)) {
+      newExpanded.delete(itemId);
+    } else {
+      newExpanded.add(itemId);
+    }
+    setExpandedAuditItems(newExpanded);
+  };
+
+  const formatFieldName = (field: string): string => {
+    // Convert camelCase to Title Case with spaces
+    return field
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase())
+      .trim();
+  };
+
+  const formatFieldValue = (value: unknown): string => {
+    if (value === null || value === undefined) return 'N/A';
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
   };
 
   if (isLoading) {
@@ -149,6 +207,17 @@ export const PropertyDetailPage = () => {
               }`}
             >
               Info
+            </button>
+            <button
+              onClick={() => setActiveTab('photos')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'photos'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Image className="h-4 w-4" />
+              Photos {photos.length > 0 && `(${photos.length})`}
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -267,6 +336,21 @@ export const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Map */}
+            <div className="pt-6 border-t">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                Location
+              </h3>
+              <PropertyMap
+                street={property.street}
+                city={property.city}
+                postalCode={property.postalCode}
+                country={property.country}
+                latitude={property.latitude}
+                longitude={property.longitude}
+              />
+            </div>
+
             {/* Metadata */}
             <div className="pt-6 border-t">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">
@@ -289,6 +373,22 @@ export const PropertyDetailPage = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'photos' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <PhotoGallery
+              propertyId={id!}
+              photos={photos}
+              isLoading={photosLoading}
+              error={photosError}
+              onUpload={handleUploadPhoto}
+              onSetMain={handleSetMainPhoto}
+              onDelete={handleDeleteDocument}
+              isUploading={uploadPhotoMutation.isPending}
+              isDeleting={deleteDocumentMutation.isPending}
+            />
           </div>
         )}
 
@@ -319,50 +419,119 @@ export const PropertyDetailPage = () => {
               <ErrorMessage message="Failed to load history" />
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
-                {auditLog.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
-                  >
+                {auditLog.map((activity) => {
+                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const hasChanges =
+                    activity.action === 'UPDATE' &&
+                    activity.changedFields &&
+                    Object.keys(activity.changedFields).length > 0;
+
+                  return (
                     <div
-                      className={`
-                        flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                        ${
-                          activity.action === 'CREATE'
-                            ? 'bg-green-100'
-                            : activity.action === 'UPDATE'
-                              ? 'bg-blue-100'
-                              : 'bg-red-100'
-                        }
-                      `}
+                      key={activity.id}
+                      className="border border-gray-200 rounded-lg overflow-hidden"
                     >
-                      <span
-                        className={`
-                          text-xs font-semibold
-                          ${
-                            activity.action === 'CREATE'
-                              ? 'text-green-700'
-                              : activity.action === 'UPDATE'
-                                ? 'text-blue-700'
-                                : 'text-red-700'
-                          }
-                        `}
+                      <div
+                        className={`flex items-start gap-4 p-4 transition-colors cursor-pointer ${
+                          hasChanges ? 'hover:bg-gray-50' : ''
+                        }`}
+                        onClick={() =>
+                          hasChanges && toggleAuditItem(activity.id)
+                        }
                       >
-                        {activity.action.charAt(0)}
-                      </span>
+                        <div
+                          className={`
+                            flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+                            ${
+                              activity.action === 'CREATE'
+                                ? 'bg-green-100'
+                                : activity.action === 'UPDATE'
+                                  ? 'bg-blue-100'
+                                  : 'bg-red-100'
+                            }
+                          `}
+                        >
+                          <span
+                            className={`
+                              text-xs font-semibold
+                              ${
+                                activity.action === 'CREATE'
+                                  ? 'text-green-700'
+                                  : activity.action === 'UPDATE'
+                                    ? 'text-blue-700'
+                                    : 'text-red-700'
+                              }
+                            `}
+                          >
+                            {activity.action.charAt(0)}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {activity.description}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {formatDistanceToNow(new Date(activity.timestamp), {
+                              addSuffix: true,
+                            })}
+                          </p>
+                          {hasChanges && (
+                            <p className="text-xs text-blue-600 mt-1">
+                              {isExpanded
+                                ? 'Click to hide changes'
+                                : 'Click to view changes'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {isExpanded && hasChanges && (
+                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">
+                            Changed Fields
+                          </h4>
+                          <div className="space-y-2">
+                            {Object.keys(activity.changedFields!).map(
+                              (field) => (
+                                <div
+                                  key={field}
+                                  className="bg-white rounded p-2 text-xs"
+                                >
+                                  <div className="font-semibold text-gray-700 mb-1">
+                                    {formatFieldName(field)}
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <span className="text-gray-500">
+                                        Old:{' '}
+                                      </span>
+                                      <span className="text-red-600 line-through">
+                                        {formatFieldValue(
+                                          activity.oldValues?.[field]
+                                        )}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-500">
+                                        New:{' '}
+                                      </span>
+                                      <span className="text-green-600 font-medium">
+                                        {formatFieldValue(
+                                          activity.newValues?.[field]
+                                        )}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
-                        {activity.description}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {formatDistanceToNow(new Date(activity.timestamp), {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-8">

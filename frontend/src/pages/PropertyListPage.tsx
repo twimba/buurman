@@ -37,7 +37,9 @@ export const PropertyListPage = () => {
   const properties = useMemo(() => {
     if (!allProperties) return [];
     if (!typeFilter) return allProperties;
-    return allProperties.filter((property) => property.propertyType === typeFilter);
+    return allProperties.filter(
+      (property) => property.propertyType === typeFilter
+    );
   }, [allProperties, typeFilter]);
 
   if (isLoading) {
@@ -78,7 +80,7 @@ export const PropertyListPage = () => {
             <h2 className="font-semibold text-gray-900">Filters</h2>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Property Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

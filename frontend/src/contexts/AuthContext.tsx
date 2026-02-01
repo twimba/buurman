@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
 import keycloak, { keycloakInitOptions } from '../config/keycloak';
 import type Keycloak from 'keycloak-js';
 
@@ -44,15 +50,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           // Update token every time it's refreshed
           keycloak.onTokenExpired = () => {
             console.log('Token expired, refreshing...');
-            keycloak.updateToken(30).then((refreshed) => {
-              if (refreshed) {
-                console.log('Token refreshed');
-                setToken(keycloak.token);
-              }
-            }).catch(() => {
-              console.error('Failed to refresh token');
-              setIsAuthenticated(false);
-            });
+            keycloak
+              .updateToken(30)
+              .then((refreshed) => {
+                if (refreshed) {
+                  console.log('Token refreshed');
+                  setToken(keycloak.token);
+                }
+              })
+              .catch(() => {
+                console.error('Failed to refresh token');
+                setIsAuthenticated(false);
+              });
           };
 
           // Update token state when it changes
