@@ -1,4 +1,7 @@
 #!/bin/bash
-awslocal s3 mb s3://buurman-documents
-awslocal s3api put-bucket-acl --bucket buurman-documents --acl public-read
+
+set -e -u -o pipefail
+
+awslocal s3 mb s3://buurman-documentss --region eu-west-1
+
 echo "S3 bucket 'buurman-documents' created successfully"

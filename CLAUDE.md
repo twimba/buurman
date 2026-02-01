@@ -39,8 +39,12 @@ Buurman is a property management dashboard application for small landlords to ma
 ### Database Migrations (Flyway)
 - Migrations are in: `src/main/resources/db/migration/`
 - Naming convention: `V<version>__<description>.sql` (e.g., `V001__create_base_schema.sql`)
-- Migrations run automatically on application startup
-- Check migration history: Query `flyway_schema_history` table
+- **Migrations run automatically on application startup** - Flyway is configured to apply all pending migrations before the application starts
+- Configuration: `spring.flyway.enabled=true` in `application.yml`
+- Check migration status via API: `GET /api/info` (includes database.currentVersion)
+- Check migration history in database: Query `flyway_schema_history` table
+- Migration logs appear on startup with clear status information
+- **Never modify existing migrations** - always create new migration files for schema changes
 
 ## Architecture & Key Concepts
 
@@ -187,7 +191,7 @@ S3_SECRET_KEY=<secret>
 
 ### Frontend (.env)
 ```
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=/api
 VITE_KEYCLOAK_URL=http://localhost:8080
 VITE_KEYCLOAK_REALM=buurman
 VITE_KEYCLOAK_CLIENT_ID=buurman-web

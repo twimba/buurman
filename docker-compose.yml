@@ -1,13 +1,10 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:16
+    image: postgres:18.1-alpine3.23
     container_name: buurman-postgres
     environment:
-      POSTGRES_DB: buurman
-      POSTGRES_USER: buurman
-      POSTGRES_PASSWORD: buurman_dev
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
     volumes:
@@ -22,20 +19,23 @@ services:
       - buurman-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0.5
+    image: keycloak/keycloak:26.5.2
     container_name: buurman-keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: buurman
-      KC_DB_PASSWORD: buurman_dev
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
-    command: start-dev
+    command: start-dev --import-realm
     ports:
       - "8080:8080"
+    volumes:
+      - ./docker/keycloak/buurman-realm.json:/opt/keycloak/data/import/buurman-realm.json
+      - ./docker/keycloak/themes:/opt/keycloak/themes
     depends_on:
       postgres:
         condition: service_healthy
@@ -46,20 +46,77 @@ services:
     image: localstack/localstack:latest
     container_name: buurman-localstack
     environment:
-      SERVICES: s3
-      DEFAULT_REGION: eu-west-1
-      DATA_DIR: /tmp/localstack/data
+      DEBUG: ${DEBUG:-0}
+      DATA_DIR: /var/lib/localstack
     ports:
       - "4566:4566"
     volumes:
       - ./docker/localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
-      - localstack_data:/tmp/localstack
+      - localstack-data:/var/lib/localstack
+    networks:
+      - buurman-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: buurman-backend
+    user: "0:991"  # Run as root with docker group to access socket
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/buurman
+      SPRING_DATASOURCE_USERNAME: buurman
+      SPRING_DATASOURCE_PASSWORD: buurman
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/buurman
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/buurman/protocol/openid-connect/certs
+      KEYCLOAK_ADMIN_SERVER_URL: http://keycloak:8080
+      AWS_S3_ENDPOINT: http://localstack:4566
+    ports:
+      - "8081:8081"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      localstack:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks:
+      - buurman-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+        VITE_KEYCLOAK_URL: http://localhost:8080
+        VITE_KEYCLOAK_REALM: buurman
+        VITE_KEYCLOAK_CLIENT_ID: buurman-web
+    container_name: buurman-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     networks:
       - buurman-network
 
 volumes:
   postgres_data:
-  localstack_data:
+  localstack-data:
 
 networks:
   buurman-network:

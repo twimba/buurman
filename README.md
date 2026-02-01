@@ -11,40 +11,52 @@ Modern dashboard application to help small landlords manage rental properties, t
 ## Prerequisites
 
 - Docker & Docker Compose
-- Java 21 (for local backend development)
-- Node.js 24+ (for local frontend development)
-- Maven 3.9+ (for local backend development)
+- Java 21 (optional, only for local backend development)
+- Node.js 22+ (optional, only for local frontend development)
+- Maven 3.9+ (optional, only for local backend development)
+- Yarn (optional, only for local frontend development)
 
 ## Quick Start
 
-### 1. Start Infrastructure Services
+### Option 1: Complete Docker Setup (Recommended)
+
+Start everything with a single command:
 
 ```bash
-# Start PostgreSQL, Keycloak, and LocalStack
-docker-compose up -d
-
-# Verify services are healthy
-docker-compose ps
+docker compose up -d
 ```
 
-### 2. Run Backend (Development Mode)
+This starts the complete application stack:
+- PostgreSQL (port 5432)
+- Keycloak (port 8080)
+- LocalStack (port 4566)
+- Backend API (port 8081)
+- Frontend App (port 5173)
+
+Wait ~90 seconds for all services to become healthy, then open http://localhost:5173
+
+For detailed setup instructions, see [SETUP.md](./SETUP.md)
+
+### Option 2: Development Mode with Hot Reload
+
+Start only infrastructure, run backend and frontend manually:
 
 ```bash
+# Start databases and services
+docker compose up -d postgres keycloak localstack
+
+# In terminal 1: Start backend with hot reload
 cd backend
 mvn spring-boot:run
-```
 
-Backend will be available at http://localhost:8081
-
-### 3. Run Frontend (Development Mode)
-
-```bash
+# In terminal 2: Start frontend with hot reload
 cd frontend
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
-Frontend will be available at http://localhost:5173
+Backend: http://localhost:8081
+Frontend: http://localhost:5173
 
 ## Project Structure
 

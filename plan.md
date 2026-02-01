@@ -1454,7 +1454,7 @@ export const useCreateProperty = () => {
 
 **Environment Variables (.env)**
 ```
-VITE_API_URL=http://localhost:8080/api
+VITE_API_URL=/api
 VITE_KEYCLOAK_URL=http://localhost:8080
 VITE_KEYCLOAK_REALM=buurman
 VITE_KEYCLOAK_CLIENT_ID=buurman-web
@@ -1630,7 +1630,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      VITE_API_URL: http://backend:8080/api
+      VITE_API_URL: /api
       VITE_KEYCLOAK_URL: http://keycloak:8080
     depends_on:
       - backend
