@@ -1,6 +1,7 @@
 import { useDashboardStats, useRecentActivities } from '@/hooks/useDashboard';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
+import { PropertyStatusChart } from './PropertyStatusChart';
 import {
   Home,
   Users,
@@ -60,7 +61,7 @@ export const DashboardPage = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-blue-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-600">
               Total Properties
@@ -78,7 +79,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* Occupied Units */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-green-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-600">Occupied</h3>
             <div className="p-2 bg-green-100 rounded-lg">
@@ -95,7 +96,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* Occupancy Rate */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-purple-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-600">
               Occupancy Rate
@@ -113,7 +114,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* Monthly Income */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-emerald-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-600">
               Monthly Income
@@ -133,58 +134,73 @@ export const DashboardPage = () => {
 
       {/* Property Status Distribution */}
       {stats && stats.totalProperties > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Property Status Distribution
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-              <div>
-                <div className="text-sm font-medium text-green-900">
-                  Occupied
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Status Cards */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Property Status Breakdown
+            </h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                <div>
+                  <div className="text-sm font-medium text-green-900">
+                    Occupied
+                  </div>
+                  <div className="text-2xl font-bold text-green-600 mt-1">
+                    {stats.occupiedUnits}
+                  </div>
                 </div>
-                <div className="text-2xl font-bold text-green-600 mt-1">
-                  {stats.occupiedUnits}
+                <div className="text-sm text-green-700">
+                  {((stats.occupiedUnits / stats.totalProperties) * 100).toFixed(
+                    0
+                  )}
+                  %
                 </div>
               </div>
-              <div className="text-sm text-green-700">
-                {((stats.occupiedUnits / stats.totalProperties) * 100).toFixed(
-                  0
-                )}
-                %
+              <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div>
+                  <div className="text-sm font-medium text-yellow-900">
+                    Vacant
+                  </div>
+                  <div className="text-2xl font-bold text-yellow-600 mt-1">
+                    {stats.vacantUnits}
+                  </div>
+                </div>
+                <div className="text-sm text-yellow-700">
+                  {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(0)}
+                  %
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-200">
+                <div>
+                  <div className="text-sm font-medium text-orange-900">
+                    Maintenance
+                  </div>
+                  <div className="text-2xl font-bold text-orange-600 mt-1">
+                    {stats.maintenanceUnits}
+                  </div>
+                </div>
+                <div className="text-sm text-orange-700">
+                  {(
+                    (stats.maintenanceUnits / stats.totalProperties) *
+                    100
+                  ).toFixed(0)}
+                  %
+                </div>
               </div>
             </div>
-            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <div>
-                <div className="text-sm font-medium text-yellow-900">
-                  Vacant
-                </div>
-                <div className="text-2xl font-bold text-yellow-600 mt-1">
-                  {stats.vacantUnits}
-                </div>
-              </div>
-              <div className="text-sm text-yellow-700">
-                {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(0)}
-                %
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-200">
-              <div>
-                <div className="text-sm font-medium text-orange-900">
-                  Maintenance
-                </div>
-                <div className="text-2xl font-bold text-orange-600 mt-1">
-                  {stats.maintenanceUnits}
-                </div>
-              </div>
-              <div className="text-sm text-orange-700">
-                {(
-                  (stats.maintenanceUnits / stats.totalProperties) *
-                  100
-                ).toFixed(0)}
-                %
-              </div>
-            </div>
+          </div>
+
+          {/* Status Chart */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Distribution Overview
+            </h2>
+            <PropertyStatusChart
+              occupied={stats.occupiedUnits}
+              vacant={stats.vacantUnits}
+              maintenance={stats.maintenanceUnits}
+            />
           </div>
         </div>
       )}
