@@ -3,7 +3,7 @@ import * as propertiesApi from '../api/properties';
 import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
-  PropertyStatus
+  PropertyStatus,
 } from '../types/property';
 
 export const useProperties = (status?: PropertyStatus) => {
@@ -24,7 +24,8 @@ export const useProperty = (id: string | undefined) => {
 export const useCreateProperty = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreatePropertyRequest) => propertiesApi.createProperty(data),
+    mutationFn: (data: CreatePropertyRequest) =>
+      propertiesApi.createProperty(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
@@ -34,7 +35,8 @@ export const useCreateProperty = () => {
 export const useUpdateProperty = (id: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: UpdatePropertyRequest) => propertiesApi.updateProperty(id, data),
+    mutationFn: (data: UpdatePropertyRequest) =>
+      propertiesApi.updateProperty(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', id] });
@@ -63,10 +65,19 @@ export const usePropertyDocuments = (propertyId: string | undefined) => {
 export const useUploadPropertyDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ file, title, notes }: { file: File; title?: string; notes?: string }) =>
-      propertiesApi.uploadPropertyDocument(propertyId, file, title, notes),
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) => propertiesApi.uploadPropertyDocument(propertyId, file, title, notes),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['propertyDocuments', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyDocuments', propertyId],
+      });
     },
   });
 };
@@ -74,9 +85,12 @@ export const useUploadPropertyDocument = (propertyId: string) => {
 export const useDeleteDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (documentId: string) => propertiesApi.deleteDocument(documentId),
+    mutationFn: (documentId: string) =>
+      propertiesApi.deleteDocument(documentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['propertyDocuments', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyDocuments', propertyId],
+      });
     },
   });
 };

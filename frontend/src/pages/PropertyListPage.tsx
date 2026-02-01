@@ -17,7 +17,9 @@ const statusFilters = [
 
 export const PropertyListPage = () => {
   const navigate = useNavigate();
-  const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
+    undefined
+  );
   const { data: properties, isLoading, error } = useProperties(statusFilter);
 
   if (isLoading) {
@@ -44,7 +46,7 @@ export const PropertyListPage = () => {
           <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
           <button
             onClick={() => navigate('/properties/new')}
-            className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors flex items-center gap-2"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
             Add Property
@@ -59,8 +61,8 @@ export const PropertyListPage = () => {
               onClick={() => setStatusFilter(filter.value)}
               className={`px-4 py-2 rounded transition-colors ${
                 statusFilter === filter.value
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-background'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
               }`}
             >
               {filter.label}
@@ -70,7 +72,8 @@ export const PropertyListPage = () => {
 
         {/* Property Count */}
         <p className="text-sm text-gray-600 mb-4">
-          {properties?.length || 0} {properties?.length === 1 ? 'property' : 'properties'}
+          {properties?.length || 0}{' '}
+          {properties?.length === 1 ? 'property' : 'properties'}
         </p>
 
         {/* Properties Grid */}
@@ -84,11 +87,15 @@ export const PropertyListPage = () => {
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg">
             <Home className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No properties yet</h3>
-            <p className="text-gray-600 mb-6">Get started by adding your first property</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No properties yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Get started by adding your first property
+            </p>
             <button
               onClick={() => navigate('/properties/new')}
-              className="bg-primary text-white px-6 py-2 rounded hover:bg-primary-700 transition-colors flex items-center gap-2"
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
               <Plus className="h-5 w-5" />
               Add Property

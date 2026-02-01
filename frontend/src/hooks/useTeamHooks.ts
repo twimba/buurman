@@ -40,8 +40,13 @@ export const useRemoveMember = (teamId: string) => {
 export const useUpdateMemberRole = (teamId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ memberId, data }: { memberId: string; data: teamsApi.UpdateMemberRoleRequest }) =>
-      teamsApi.updateMemberRole(teamId, memberId, data),
+    mutationFn: ({
+      memberId,
+      data,
+    }: {
+      memberId: string;
+      data: teamsApi.UpdateMemberRoleRequest;
+    }) => teamsApi.updateMemberRole(teamId, memberId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
     },

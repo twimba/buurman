@@ -23,7 +23,9 @@ export interface UpdateProfileRequest {
   lastName: string;
 }
 
-export const register = async (data: RegisterRequest): Promise<UserResponse> => {
+export const register = async (
+  data: RegisterRequest
+): Promise<UserResponse> => {
   const response = await client.post('/auth/register', data);
   return response.data;
 };
@@ -33,7 +35,9 @@ export const getCurrentUser = async (): Promise<UserResponse> => {
   return response.data;
 };
 
-export const updateProfile = async (data: UpdateProfileRequest): Promise<UserResponse> => {
+export const updateProfile = async (
+  data: UpdateProfileRequest
+): Promise<UserResponse> => {
   const response = await client.put('/auth/me', data);
   return response.data;
 };

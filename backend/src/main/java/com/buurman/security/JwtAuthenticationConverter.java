@@ -54,9 +54,9 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
             new SimpleGrantedAuthority("ROLE_" + membership.getRole())
         );
 
-        JwtAuthenticationToken token = new JwtAuthenticationToken(jwt, authorities);
-        token.setDetails(principal);
-        return token;
+        // Return custom authentication with UserPrincipal as the principal
+        // This ensures @AuthenticationPrincipal correctly retrieves UserPrincipal
+        return new UserAuthentication(principal, authorities);
     }
 
     private User createUserFromJwt(String keycloakId, String email, String name) {

@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { DocumentResponse } from '@/types/property';
-import { Upload, FileText, Image as ImageIcon, Download, Trash2 } from 'lucide-react';
+import {
+  Upload,
+  FileText,
+  Image as ImageIcon,
+  Download,
+  Trash2,
+} from 'lucide-react';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
 import { getDocumentDownloadUrl } from '@/api/properties';
@@ -56,7 +62,9 @@ export const DocumentList = ({
       setNotes('');
       setUploadError(null);
       // Reset file input
-      const fileInput = document.getElementById('file-input') as HTMLInputElement;
+      const fileInput = document.getElementById(
+        'file-input'
+      ) as HTMLInputElement;
       if (fileInput) fileInput.value = '';
     } catch (err) {
       setUploadError('Failed to upload document');
@@ -75,7 +83,7 @@ export const DocumentList = ({
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) {
-      return <ImageIcon className="h-8 w-8 text-primary" />;
+      return <ImageIcon className="h-8 w-8 text-blue-600" />;
     }
     return <FileText className="h-8 w-8 text-gray-500" />;
   };
@@ -108,11 +116,12 @@ export const DocumentList = ({
               type="file"
               accept=".pdf,.jpg,.jpeg,.png,.gif"
               onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {selectedFile && (
               <p className="text-sm text-gray-600 mt-2">
-                Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})
+                Selected: {selectedFile.name} (
+                {formatFileSize(selectedFile.size)})
               </p>
             )}
           </div>
@@ -127,7 +136,7 @@ export const DocumentList = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Floor Plan"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             />
           </div>
 
@@ -141,7 +150,7 @@ export const DocumentList = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Main floor layout"
               rows={3}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             />
           </div>
 
@@ -149,14 +158,13 @@ export const DocumentList = ({
           <button
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
-            className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
+            <Upload className="h-4 w-4" />
             {isUploading ? 'Uploading...' : 'Upload'}
           </button>
 
-          {uploadError && (
-            <p className="text-red-600 text-sm">{uploadError}</p>
-          )}
+          {uploadError && <p className="text-red-600 text-sm">{uploadError}</p>}
         </div>
       </div>
 
@@ -198,9 +206,7 @@ export const DocumentList = ({
                       {formatFileSize(doc.fileSize)}
                     </p>
                     {doc.notes && (
-                      <p className="text-sm text-gray-600 mt-2">
-                        {doc.notes}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-2">{doc.notes}</p>
                     )}
                   </div>
 
@@ -208,7 +214,7 @@ export const DocumentList = ({
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleDownload(doc.id)}
-                      className="p-2 text-primary hover:bg-primary-50 rounded transition-colors"
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                       title="Download"
                     >
                       <Download className="h-4 w-4" />

@@ -42,7 +42,9 @@ export const getCurrentTeam = async (): Promise<TeamResponse> => {
   return response.data;
 };
 
-export const getTeamMembers = async (teamId: string): Promise<TeamMemberResponse[]> => {
+export const getTeamMembers = async (
+  teamId: string
+): Promise<TeamMemberResponse[]> => {
   const response = await client.get(`/teams/${teamId}/members`);
   return response.data;
 };
@@ -55,7 +57,10 @@ export const createInvitation = async (
   return response.data;
 };
 
-export const removeMember = async (teamId: string, memberId: string): Promise<void> => {
+export const removeMember = async (
+  teamId: string,
+  memberId: string
+): Promise<void> => {
   await client.delete(`/teams/${teamId}/members/${memberId}`);
 };
 
@@ -64,11 +69,16 @@ export const updateMemberRole = async (
   memberId: string,
   data: UpdateMemberRoleRequest
 ): Promise<TeamMemberResponse> => {
-  const response = await client.put(`/teams/${teamId}/members/${memberId}/role`, data);
+  const response = await client.put(
+    `/teams/${teamId}/members/${memberId}/role`,
+    data
+  );
   return response.data;
 };
 
-export const getInvitation = async (token: string): Promise<InvitationResponse> => {
+export const getInvitation = async (
+  token: string
+): Promise<InvitationResponse> => {
   const response = await client.get(`/invitations/${token}`);
   return response.data;
 };

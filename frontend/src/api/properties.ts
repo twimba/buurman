@@ -4,10 +4,12 @@ import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
   PropertyStatus,
-  DocumentResponse
+  DocumentResponse,
 } from '../types/property';
 
-export const getProperties = async (status?: PropertyStatus): Promise<PropertyResponse[]> => {
+export const getProperties = async (
+  status?: PropertyStatus
+): Promise<PropertyResponse[]> => {
   const params = status ? { status } : {};
   const response = await client.get('/properties', { params });
   return response.data;
@@ -18,7 +20,9 @@ export const getProperty = async (id: string): Promise<PropertyResponse> => {
   return response.data;
 };
 
-export const createProperty = async (data: CreatePropertyRequest): Promise<PropertyResponse> => {
+export const createProperty = async (
+  data: CreatePropertyRequest
+): Promise<PropertyResponse> => {
   const response = await client.post('/properties', data);
   return response.data;
 };
@@ -35,7 +39,9 @@ export const deleteProperty = async (id: string): Promise<void> => {
   await client.delete(`/properties/${id}`);
 };
 
-export const getPropertyDocuments = async (propertyId: string): Promise<DocumentResponse[]> => {
+export const getPropertyDocuments = async (
+  propertyId: string
+): Promise<DocumentResponse[]> => {
   const response = await client.get(`/properties/${propertyId}/documents`);
   return response.data;
 };
@@ -51,16 +57,24 @@ export const uploadPropertyDocument = async (
   if (title) formData.append('title', title);
   if (notes) formData.append('notes', notes);
 
-  const response = await client.post(`/properties/${propertyId}/documents`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  const response = await client.post(
+    `/properties/${propertyId}/documents`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
   return response.data;
 };
 
-export const getDocumentDownloadUrl = async (documentId: string): Promise<{ url: string }> => {
-  const response = await client.get(`/properties/documents/${documentId}/download`);
+export const getDocumentDownloadUrl = async (
+  documentId: string
+): Promise<{ url: string }> => {
+  const response = await client.get(
+    `/properties/documents/${documentId}/download`
+  );
   return response.data;
 };
 

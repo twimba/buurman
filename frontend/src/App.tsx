@@ -8,7 +8,14 @@ import { PropertyListPage } from './pages/PropertyListPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { PropertyCreatePage } from './pages/PropertyCreatePage';
 import { PropertyEditPage } from './pages/PropertyEditPage';
+import { TenantsPage } from './pages/TenantsPage';
+import { ContractsPage } from './pages/ContractsPage';
+import { PaymentsPage } from './pages/PaymentsPage';
+import { ExpensesPage } from './pages/ExpensesPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { SettingsPage } from './pages/SettingsPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import { Layout } from './components/Layout';
 
 function App() {
   return (
@@ -22,7 +29,9 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <Layout>
+                    <DashboardPage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -30,7 +39,9 @@ function App() {
               path="/properties"
               element={
                 <ProtectedRoute>
-                  <PropertyListPage />
+                  <Layout>
+                    <PropertyListPage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -38,7 +49,9 @@ function App() {
               path="/properties/new"
               element={
                 <ProtectedRoute>
-                  <PropertyCreatePage />
+                  <Layout>
+                    <PropertyCreatePage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -46,7 +59,9 @@ function App() {
               path="/properties/:id"
               element={
                 <ProtectedRoute>
-                  <PropertyDetailPage />
+                  <Layout>
+                    <PropertyDetailPage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -54,7 +69,69 @@ function App() {
               path="/properties/:id/edit"
               element={
                 <ProtectedRoute>
-                  <PropertyEditPage />
+                  <Layout>
+                    <PropertyEditPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tenants"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TenantsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contracts"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ContractsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payments"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <PaymentsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/expenses"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ExpensesPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ReportsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <SettingsPage />
+                  </Layout>
                 </ProtectedRoute>
               }
             />

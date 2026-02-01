@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { RefreshCw } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +28,9 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex items-center justify-center min-h-screen bg-background">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md">
-            <h1 className="text-2xl font-bold mb-4 text-red-600">Something went wrong</h1>
+            <h1 className="text-2xl font-bold mb-4 text-red-600">
+              Something went wrong
+            </h1>
             <p className="text-gray-700 mb-4">
               An error occurred while loading the application.
             </p>
@@ -43,8 +46,9 @@ class ErrorBoundary extends Component<Props, State> {
             )}
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary-700"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
             >
+              <RefreshCw className="h-4 w-4" />
               Reload Page
             </button>
           </div>

@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PropertyResponse, CreatePropertyRequest, PropertyType, PropertyStatus } from '@/types/property';
+import { X, Save } from 'lucide-react';
+import {
+  PropertyResponse,
+  CreatePropertyRequest,
+  PropertyType,
+  PropertyStatus,
+} from '@/types/property';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -8,7 +14,11 @@ interface PropertyFormProps {
   isLoading: boolean;
 }
 
-export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProps) => {
+export const PropertyForm = ({
+  property,
+  onSubmit,
+  isLoading,
+}: PropertyFormProps) => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -45,7 +55,8 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
 
     if (!formData.street.trim()) newErrors.street = 'Street is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.postalCode.trim()) newErrors.postalCode = 'Postal code is required';
+    if (!formData.postalCode.trim())
+      newErrors.postalCode = 'Postal code is required';
     if (!formData.country.trim()) newErrors.country = 'Country is required';
 
     if (formData.bedrooms !== null && formData.bedrooms < 0) {
@@ -74,10 +85,13 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
     }
   };
 
-  const handleChange = (field: keyof CreatePropertyRequest, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (
+    field: keyof CreatePropertyRequest,
+    value: string | number | null
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -95,10 +109,12 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="text"
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="Main Street 123"
             />
-            {errors.street && <p className="text-red-600 text-sm mt-1">{errors.street}</p>}
+            {errors.street && (
+              <p className="text-red-600 text-sm mt-1">{errors.street}</p>
+            )}
           </div>
 
           <div>
@@ -109,10 +125,12 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="Amsterdam"
             />
-            {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city}</p>}
+            {errors.city && (
+              <p className="text-red-600 text-sm mt-1">{errors.city}</p>
+            )}
           </div>
 
           <div>
@@ -123,10 +141,12 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="text"
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1012 AB"
             />
-            {errors.postalCode && <p className="text-red-600 text-sm mt-1">{errors.postalCode}</p>}
+            {errors.postalCode && (
+              <p className="text-red-600 text-sm mt-1">{errors.postalCode}</p>
+            )}
           </div>
 
           <div>
@@ -137,17 +157,21 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="text"
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="Netherlands"
             />
-            {errors.country && <p className="text-red-600 text-sm mt-1">{errors.country}</p>}
+            {errors.country && (
+              <p className="text-red-600 text-sm mt-1">{errors.country}</p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Specifications Section */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Specifications
+        </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -157,11 +181,18 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="number"
               min="0"
               value={formData.bedrooms ?? ''}
-              onChange={(e) => handleChange('bedrooms', e.target.value ? parseInt(e.target.value) : null)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                handleChange(
+                  'bedrooms',
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="2"
             />
-            {errors.bedrooms && <p className="text-red-600 text-sm mt-1">{errors.bedrooms}</p>}
+            {errors.bedrooms && (
+              <p className="text-red-600 text-sm mt-1">{errors.bedrooms}</p>
+            )}
           </div>
 
           <div>
@@ -172,11 +203,18 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               type="number"
               min="0"
               value={formData.bathrooms ?? ''}
-              onChange={(e) => handleChange('bathrooms', e.target.value ? parseInt(e.target.value) : null)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                handleChange(
+                  'bathrooms',
+                  e.target.value ? parseInt(e.target.value) : null
+                )
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1"
             />
-            {errors.bathrooms && <p className="text-red-600 text-sm mt-1">{errors.bathrooms}</p>}
+            {errors.bathrooms && (
+              <p className="text-red-600 text-sm mt-1">{errors.bathrooms}</p>
+            )}
           </div>
 
           <div>
@@ -188,11 +226,18 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
               min="0"
               step="0.01"
               value={formData.squareMeters ?? ''}
-              onChange={(e) => handleChange('squareMeters', e.target.value ? parseFloat(e.target.value) : null)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                handleChange(
+                  'squareMeters',
+                  e.target.value ? parseFloat(e.target.value) : null
+                )
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="75.5"
             />
-            {errors.squareMeters && <p className="text-red-600 text-sm mt-1">{errors.squareMeters}</p>}
+            {errors.squareMeters && (
+              <p className="text-red-600 text-sm mt-1">{errors.squareMeters}</p>
+            )}
           </div>
 
           <div>
@@ -201,8 +246,10 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
             </label>
             <select
               value={formData.propertyType}
-              onChange={(e) => handleChange('propertyType', e.target.value as PropertyType)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                handleChange('propertyType', e.target.value as PropertyType)
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             >
               <option value={PropertyType.APARTMENT}>Apartment</option>
               <option value={PropertyType.HOUSE}>House</option>
@@ -217,8 +264,10 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
             </label>
             <select
               value={formData.status}
-              onChange={(e) => handleChange('status', e.target.value as PropertyStatus)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-primary focus:ring-1 focus:ring-primary"
+              onChange={(e) =>
+                handleChange('status', e.target.value as PropertyStatus)
+              }
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             >
               <option value={PropertyStatus.VACANT}>Vacant</option>
               <option value={PropertyStatus.OCCUPIED}>Occupied</option>
@@ -234,17 +283,23 @@ export const PropertyForm = ({ property, onSubmit, isLoading }: PropertyFormProp
         <button
           type="button"
           onClick={() => navigate('/properties')}
-          className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors"
+          className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors flex items-center gap-2"
           disabled={isLoading}
         >
+          <X className="h-4 w-4" />
           Cancel
         </button>
         <button
           type="submit"
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
-          {isLoading ? 'Saving...' : property ? 'Update Property' : 'Create Property'}
+          <Save className="h-4 w-4" />
+          {isLoading
+            ? 'Saving...'
+            : property
+              ? 'Update Property'
+              : 'Create Property'}
         </button>
       </div>
     </form>

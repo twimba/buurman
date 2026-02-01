@@ -2,14 +2,14 @@ export enum PropertyType {
   APARTMENT = 'APARTMENT',
   HOUSE = 'HOUSE',
   STUDIO = 'STUDIO',
-  COMMERCIAL = 'COMMERCIAL'
+  COMMERCIAL = 'COMMERCIAL',
 }
 
 export enum PropertyStatus {
   VACANT = 'VACANT',
   OCCUPIED = 'OCCUPIED',
   MAINTENANCE = 'MAINTENANCE',
-  UNAVAILABLE = 'UNAVAILABLE'
+  UNAVAILABLE = 'UNAVAILABLE',
 }
 
 export interface PropertyResponse {

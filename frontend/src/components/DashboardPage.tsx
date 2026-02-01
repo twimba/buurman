@@ -1,131 +1,291 @@
-import { useHealth, useInfo } from '@/hooks/useHealth';
+import { useDashboardStats, useRecentActivities } from '@/hooks/useDashboard';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
-import { Activity, Info, Server, Home, ArrowRight } from 'lucide-react';
+import {
+  Home,
+  Users,
+  DollarSign,
+  TrendingUp,
+  Plus,
+  ArrowRight,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { data: health, isLoading: healthLoading, error: healthError } = useHealth();
-  const { data: info, isLoading: infoLoading } = useInfo();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+  } = useDashboardStats();
+  const { data: activities, isLoading: activitiesLoading } =
+    useRecentActivities(10);
 
-  if (healthLoading) {
-    return <LoadingSpinner />;
+  if (statsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
-  if (healthError) {
+  if (statsError) {
     return (
       <div className="p-8">
-        <ErrorMessage message="Failed to connect to backend. Make sure the backend is running on port 8081." />
+        <ErrorMessage message="Failed to load dashboard statistics. Please try again." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Buurman Dashboard
-        </h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Health Status Card */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Backend Status</h3>
-              <Server className="h-6 w-6 text-primary-500" />
-            </div>
-            <div className="text-2xl font-bold text-green-600">
-              {health?.status || 'UNKNOWN'}
-            </div>
-            <div className="text-sm text-gray-500 mt-2">
-              Last checked: {health?.timestamp ? new Date(health.timestamp).toLocaleTimeString() : 'N/A'}
-            </div>
-          </div>
-
-          {/* Version Info Card */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Version Info</h3>
-              <Info className="h-6 w-6 text-primary-500" />
-            </div>
-            {infoLoading ? (
-              <LoadingSpinner />
-            ) : (
-              <>
-                <div className="text-2xl font-bold text-gray-900">
-                  v{info?.version || '0.1.0'}
-                </div>
-                <div className="text-sm text-gray-500 mt-2">
-                  Environment: {info?.environment || 'default'}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Phase Status Card */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Phase Status</h3>
-              <Activity className="h-6 w-6 text-primary-500" />
-            </div>
-            <div className="text-2xl font-bold text-blue-600">
-              Phase 1.1
-            </div>
-            <div className="text-sm text-gray-500 mt-2">
-              Infrastructure Setup Complete
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Links */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Links</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <button
-              onClick={() => navigate('/properties')}
-              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                  <Home className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-gray-900">Properties</h3>
-                  <p className="text-sm text-gray-600">Manage your rental properties</p>
-                </div>
-              </div>
-              <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
-            </button>
-          </div>
-        </div>
-
-        {/* Information Panel */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Welcome to Buurman
-          </h2>
-          <p className="text-gray-600 mb-4">
-            The infrastructure setup is complete! You now have:
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">
+            Welcome back! Here&apos;s an overview of your properties.
           </p>
-          <ul className="list-disc list-inside space-y-2 text-gray-600 mb-6">
-            <li>Spring Boot backend running with database migrations</li>
-            <li>React frontend with TypeScript and TailwindCSS</li>
-            <li>PostgreSQL database with complete schema</li>
-            <li>LocalStack for S3 simulation</li>
-            <li>Keycloak ready for authentication (Phase 1.2)</li>
-          </ul>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">Next Steps (Phase 1.2):</h3>
-            <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm">
-              <li>Implement JWT authentication with Keycloak</li>
-              <li>Add user registration and team creation</li>
-              <li>Create protected routes and role-based access</li>
-              <li>Build team invitation system</li>
-            </ul>
+        </div>
+        <button
+          onClick={() => navigate('/properties/new')}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="h-5 w-5" />
+          Add Property
+        </button>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Properties */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">
+              Total Properties
+            </h3>
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Home className="h-5 w-5 text-blue-600" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-gray-900">
+            {stats?.totalProperties || 0}
+          </div>
+          <div className="text-sm text-gray-500 mt-2">
+            Active properties in portfolio
+          </div>
+        </div>
+
+        {/* Occupied Units */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">Occupied</h3>
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Users className="h-5 w-5 text-green-600" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-gray-900">
+            {stats?.occupiedUnits || 0}
+          </div>
+          <div className="text-sm text-gray-500 mt-2">
+            {stats?.vacantUnits || 0} vacant, {stats?.maintenanceUnits || 0} in
+            maintenance
+          </div>
+        </div>
+
+        {/* Occupancy Rate */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">
+              Occupancy Rate
+            </h3>
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-gray-900">
+            {stats?.occupancyRate?.toFixed(1) || 0}%
+          </div>
+          <div className="text-sm text-gray-500 mt-2">
+            Current occupancy level
+          </div>
+        </div>
+
+        {/* Monthly Income */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-600">
+              Monthly Income
+            </h3>
+            <div className="p-2 bg-emerald-100 rounded-lg">
+              <DollarSign className="h-5 w-5 text-emerald-600" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-gray-900">
+            €{stats?.monthlyIncome?.amount?.toFixed(0) || 0}
+          </div>
+          <div className="text-sm text-gray-500 mt-2">
+            Expected monthly revenue
           </div>
         </div>
       </div>
+
+      {/* Property Status Distribution */}
+      {stats && stats.totalProperties > 0 && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Property Status Distribution
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+              <div>
+                <div className="text-sm font-medium text-green-900">
+                  Occupied
+                </div>
+                <div className="text-2xl font-bold text-green-600 mt-1">
+                  {stats.occupiedUnits}
+                </div>
+              </div>
+              <div className="text-sm text-green-700">
+                {((stats.occupiedUnits / stats.totalProperties) * 100).toFixed(
+                  0
+                )}
+                %
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div>
+                <div className="text-sm font-medium text-yellow-900">
+                  Vacant
+                </div>
+                <div className="text-2xl font-bold text-yellow-600 mt-1">
+                  {stats.vacantUnits}
+                </div>
+              </div>
+              <div className="text-sm text-yellow-700">
+                {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(0)}
+                %
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-200">
+              <div>
+                <div className="text-sm font-medium text-orange-900">
+                  Maintenance
+                </div>
+                <div className="text-2xl font-bold text-orange-600 mt-1">
+                  {stats.maintenanceUnits}
+                </div>
+              </div>
+              <div className="text-sm text-orange-700">
+                {(
+                  (stats.maintenanceUnits / stats.totalProperties) *
+                  100
+                ).toFixed(0)}
+                %
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recent Activities */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Recent Activities
+          </h2>
+          {activities && activities.length > 0 && (
+            <button
+              onClick={() => navigate('/audit-log')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            >
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {activitiesLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner />
+          </div>
+        ) : activities && activities.length > 0 ? (
+          <div className="space-y-4">
+            {activities.map((activity) => (
+              <div
+                key={activity.id}
+                className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <div
+                  className={`
+                    flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+                    ${
+                      activity.action === 'CREATE'
+                        ? 'bg-green-100'
+                        : activity.action === 'UPDATE'
+                          ? 'bg-blue-100'
+                          : 'bg-red-100'
+                    }
+                  `}
+                >
+                  <span
+                    className={`
+                      text-xs font-semibold
+                      ${
+                        activity.action === 'CREATE'
+                          ? 'text-green-700'
+                          : activity.action === 'UPDATE'
+                            ? 'text-blue-700'
+                            : 'text-red-700'
+                      }
+                    `}
+                  >
+                    {activity.action.charAt(0)}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-900">
+                    {activity.description}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formatDistanceToNow(new Date(activity.timestamp), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No recent activities</p>
+            <p className="text-sm text-gray-400 mt-1">
+              Activities will appear here as you use the system
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Quick Actions */}
+      {stats && stats.totalProperties === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+            Get Started with Buurman
+          </h3>
+          <p className="text-blue-800 mb-4">
+            You haven&apos;t added any properties yet. Start by adding your
+            first property to begin managing your rental portfolio.
+          </p>
+          <button
+            onClick={() => navigate('/properties/new')}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            Add Your First Property
+          </button>
+        </div>
+      )}
     </div>
   );
 };

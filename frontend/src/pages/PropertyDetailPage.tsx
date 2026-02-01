@@ -11,11 +11,20 @@ import { PropertyStatus } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { ArrowLeft, Edit, Trash2, Bed, Bath, Ruler, MapPin } from 'lucide-react';
+import {
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Bed,
+  Bath,
+  Ruler,
+  MapPin,
+  X,
+} from 'lucide-react';
 
 const statusColors: Record<PropertyStatus, string> = {
-  VACANT: 'bg-accent-100 text-accent-800',
-  OCCUPIED: 'bg-primary-100 text-primary-800',
+  VACANT: 'bg-green-100 text-green-800',
+  OCCUPIED: 'bg-blue-100 text-blue-800',
   MAINTENANCE: 'bg-yellow-100 text-yellow-800',
   UNAVAILABLE: 'bg-gray-100 text-gray-800',
 };
@@ -34,7 +43,11 @@ export const PropertyDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: property, isLoading, error } = useProperty(id);
-  const { data: documents = [], isLoading: docsLoading, error: docsError } = usePropertyDocuments(id);
+  const {
+    data: documents = [],
+    isLoading: docsLoading,
+    error: docsError,
+  } = usePropertyDocuments(id);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const deleteDocumentMutation = useDeleteDocument(id!);
@@ -49,7 +62,11 @@ export const PropertyDetailPage = () => {
     }
   };
 
-  const handleUploadDocument = async (file: File, title?: string, notes?: string) => {
+  const handleUploadDocument = async (
+    file: File,
+    title?: string,
+    notes?: string
+  ) => {
     await uploadDocumentMutation.mutateAsync({ file, title, notes });
   };
 
@@ -119,7 +136,7 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('info')}
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'info'
-                  ? 'border-primary text-primary font-semibold'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -129,7 +146,7 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'documents'
-                  ? 'border-primary text-primary font-semibold'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -143,7 +160,9 @@ export const PropertyDetailPage = () => {
           <div className="bg-white rounded-lg shadow p-6 space-y-6">
             {/* Status Badge */}
             <div>
-              <span className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status]}`}>
+              <span
+                className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status]}`}
+              >
                 {statusLabels[property.status]}
               </span>
             </div>
@@ -156,7 +175,9 @@ export const PropertyDetailPage = () => {
                     <Bed className="h-5 w-5" />
                     <span className="text-sm font-medium">Bedrooms</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">{property.bedrooms}</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {property.bedrooms}
+                  </p>
                 </div>
               )}
 
@@ -166,7 +187,9 @@ export const PropertyDetailPage = () => {
                     <Bath className="h-5 w-5" />
                     <span className="text-sm font-medium">Bathrooms</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">{property.bathrooms}</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {property.bathrooms}
+                  </p>
                 </div>
               )}
 
@@ -176,7 +199,9 @@ export const PropertyDetailPage = () => {
                     <Ruler className="h-5 w-5" />
                     <span className="text-sm font-medium">Square Meters</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">{property.squareMeters}m²</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {property.squareMeters}m²
+                  </p>
                 </div>
               )}
 
@@ -225,7 +250,9 @@ export const PropertyDetailPage = () => {
 
             {/* Metadata */}
             <div className="pt-6 border-t">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Metadata</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                Metadata
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-600">Created:</span>{' '}
@@ -274,16 +301,18 @@ export const PropertyDetailPage = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="border border-gray-300 px-4 py-2 rounded hover:bg-background transition-colors"
+                className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors flex items-center gap-2"
                 disabled={deletePropertyMutation.isPending}
               >
+                <X className="h-4 w-4" />
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                 disabled={deletePropertyMutation.isPending}
               >
+                <Trash2 className="h-4 w-4" />
                 {deletePropertyMutation.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>

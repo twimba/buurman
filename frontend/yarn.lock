@@ -180,6 +180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.9.0":
+  version: 7.28.6
+  resolution: "@babel/runtime@npm:7.28.6"
+  checksum: 10c0/358cf2429992ac1c466df1a21c1601d595c46930a13c1d4662fde908d44ee78ec3c183aaff513ecb01ef8c55c3624afe0309eeeb34715672dbfadb7feedb2c0d
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.28.6":
   version: 7.28.6
   resolution: "@babel/template@npm:7.28.6"
@@ -644,6 +651,36 @@ __metadata:
   dependencies:
     semver: "npm:^7.3.5"
   checksum: 10c0/26e376d780f60ff16e874a0ac9bc3399186846baae0b6e1352286385ac134d900cc5dafaded77f38d77f86898fc923ae1cee9d7399f0275b1aa24878915d722b
+  languageName: node
+  linkType: hard
+
+"@react-keycloak/core@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@react-keycloak/core@npm:3.2.0"
+  dependencies:
+    react-fast-compare: "npm:^3.2.0"
+  peerDependencies:
+    react: ">=16"
+  checksum: 10c0/1bfc5fcab4e50ee6785bd5715f8e0fc109360bafcf74a664c1df37e69685e82e452eee7a2c2d8cbb0c69d7b09e77e8044f00122396ae560f03ab533b75b9aa84
+  languageName: node
+  linkType: hard
+
+"@react-keycloak/web@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@react-keycloak/web@npm:3.4.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.9.0"
+    "@react-keycloak/core": "npm:^3.2.0"
+    hoist-non-react-statics: "npm:^3.3.2"
+  peerDependencies:
+    keycloak-js: ">=9.0.2"
+    react: ">=16.8"
+    react-dom: ">=16.8"
+    typescript: ">=3.8"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/f38b1682d31a999706b624f47927168ef9ecacd827fd9422ad060fdc4eb2ceb6253b87172a4a3cf079efff48b13d5acc8fc5e2f8f9cfb41f255642e6d83e5f99
   languageName: node
   linkType: hard
 
@@ -1505,6 +1542,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "buurman-frontend@workspace:."
   dependencies:
+    "@react-keycloak/web": "npm:^3.4.0"
     "@tailwindcss/postcss": "npm:^4.1.0"
     "@tanstack/react-query": "npm:^5.17.9"
     "@types/react": "npm:^19.2.0"
@@ -2549,6 +2587,15 @@ __metadata:
   dependencies:
     function-bind: "npm:^1.1.2"
   checksum: 10c0/3769d434703b8ac66b209a4cca0737519925bbdb61dd887f93a16372b14694c63ff4e797686d87c90f08168e81082248b9b028bad60d4da9e0d1148766f56eb9
+  languageName: node
+  linkType: hard
+
+"hoist-non-react-statics@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "hoist-non-react-statics@npm:3.3.2"
+  dependencies:
+    react-is: "npm:^16.7.0"
+  checksum: 10c0/fe0889169e845d738b59b64badf5e55fa3cf20454f9203d1eb088df322d49d4318df774828e789898dcb280e8a5521bb59b3203385662ca5e9218a6ca5820e74
   languageName: node
   linkType: hard
 
@@ -3676,7 +3723,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1":
+"react-fast-compare@npm:^3.2.0":
+  version: 3.2.2
+  resolution: "react-fast-compare@npm:3.2.2"
+  checksum: 10c0/0bbd2f3eb41ab2ff7380daaa55105db698d965c396df73e6874831dbafec8c4b5b08ba36ff09df01526caa3c61595247e3269558c284e37646241cba2b90a367
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10c0/33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1

@@ -7,8 +7,8 @@ interface PropertyCardProps {
 }
 
 const statusColors: Record<PropertyStatus, string> = {
-  VACANT: 'bg-accent-100 text-accent-800',
-  OCCUPIED: 'bg-primary-100 text-primary-800',
+  VACANT: 'bg-green-100 text-green-800',
+  OCCUPIED: 'bg-blue-100 text-blue-800',
   MAINTENANCE: 'bg-yellow-100 text-yellow-800',
   UNAVAILABLE: 'bg-gray-100 text-gray-800',
 };
@@ -33,7 +33,9 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <Home className="h-16 w-16 text-gray-400" />
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status]}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status]}`}
+          >
             {statusLabels[property.status]}
           </span>
         </div>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import keycloak from '../config/keycloak';
+import keycloak, { keycloakInitOptions } from '../config/keycloak';
+import type Keycloak from 'keycloak-js';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -7,114 +8,100 @@ interface AuthContextType {
   login: () => void;
   logout: () => void;
   token: string | undefined;
+  keycloak: Keycloak;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+// Custom provider that's React 18 StrictMode compatible
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
-  const tokenRefreshInterval = useRef<number | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | undefined>(undefined);
   const initStarted = useRef(false);
 
   useEffect(() => {
-    // Prevent double initialization in React Strict Mode
+    // Prevent double initialization in React StrictMode
     if (initStarted.current) {
       return;
     }
-
     initStarted.current = true;
 
     const initKeycloak = async () => {
       try {
-        const authenticated = await keycloak.init({
-          onLoad: 'check-sso',
-          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-          pkceMethod: 'S256',
-          checkLoginIframe: false,
-        });
-
+        console.log('Initializing Keycloak...');
+        const authenticated = await keycloak.init(keycloakInitOptions);
         console.log('Keycloak initialized. Authenticated:', authenticated);
+
         setIsAuthenticated(authenticated);
+        setToken(keycloak.token);
         setIsLoading(false);
 
-        // Token refresh timer
-        if (authenticated && !tokenRefreshInterval.current) {
-          tokenRefreshInterval.current = setInterval(() => {
-            keycloak.updateToken(70).catch(() => {
+        // Set up token refresh
+        if (authenticated) {
+          // Update token every time it's refreshed
+          keycloak.onTokenExpired = () => {
+            console.log('Token expired, refreshing...');
+            keycloak.updateToken(30).then((refreshed) => {
+              if (refreshed) {
+                console.log('Token refreshed');
+                setToken(keycloak.token);
+              }
+            }).catch(() => {
               console.error('Failed to refresh token');
               setIsAuthenticated(false);
-              keycloak.logout();
             });
-          }, 60000);
-        }
+          };
 
-        // Listen to token updates
-        keycloak.onTokenExpired = () => {
-          console.log('Token expired, attempting refresh');
-          keycloak.updateToken(70).catch(() => {
-            console.error('Failed to refresh expired token');
+          // Update token state when it changes
+          keycloak.onAuthSuccess = () => {
+            console.log('Auth success');
+            setIsAuthenticated(true);
+            setToken(keycloak.token);
+          };
+
+          keycloak.onAuthLogout = () => {
+            console.log('Auth logout');
             setIsAuthenticated(false);
-            keycloak.logout();
-          });
-        };
-
-        keycloak.onAuthSuccess = () => {
-          console.log('Authentication successful');
-          setIsAuthenticated(true);
-        };
-
-        keycloak.onAuthError = () => {
-          console.error('Authentication error');
-          setIsAuthenticated(false);
-        };
-
-        keycloak.onAuthLogout = () => {
-          console.log('Logged out');
-          setIsAuthenticated(false);
-        };
-
+            setToken(undefined);
+          };
+        }
       } catch (error) {
-        console.error('Keycloak init failed', error);
-        setIsAuthenticated(false);
+        console.error('Keycloak initialization failed:', error);
         setIsLoading(false);
       }
     };
 
     initKeycloak();
-
-    // Cleanup on unmount
-    return () => {
-      if (tokenRefreshInterval.current) {
-        clearInterval(tokenRefreshInterval.current);
-        tokenRefreshInterval.current = null;
-      }
-    };
   }, []);
 
   const login = () => {
-    keycloak.login();
+    keycloak.login({
+      redirectUri: window.location.origin + '/dashboard',
+    });
   };
 
   const logout = () => {
-    keycloak.logout({ redirectUri: window.location.origin });
+    keycloak.logout({
+      redirectUri: window.location.origin,
+    });
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        isLoading,
-        login,
-        logout,
-        token: keycloak.token,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const value: AuthContextType = {
+    isAuthenticated,
+    isLoading,
+    login,
+    logout,
+    token,
+    keycloak,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// Custom hook to use auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
