@@ -22,10 +22,12 @@ public class PropertyService {
 
     private final PropertyRepository propertyRepository;
     private final PropertyMapper propertyMapper;
+    private final AuditService auditService;
 
-    public PropertyService(PropertyRepository propertyRepository, PropertyMapper propertyMapper) {
+    public PropertyService(PropertyRepository propertyRepository, PropertyMapper propertyMapper, AuditService auditService) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
+        this.auditService = auditService;
     }
 
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
@@ -37,6 +39,15 @@ public class PropertyService {
 
         Property savedProperty = propertyRepository.save(property);
         log.info("Property created: {} for team {}", savedProperty.getId(), principal.getTeamId());
+
+        // Log to audit trail
+        auditService.logCreate(
+                principal.getTeamId(),
+                "PROPERTY",
+                savedProperty.getId(),
+                principal.getUserId(),
+                savedProperty
+        );
 
         return propertyMapper.toResponse(savedProperty);
     }
@@ -69,13 +80,29 @@ public class PropertyService {
         Property property = propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
 
+        // Create a simple representation of the old state for audit (just store the request data)
+        PropertyResponse oldState = propertyMapper.toResponse(property);
+
         propertyMapper.updateEntity(property, request);
         property.setUpdatedBy(principal.getUserId());
 
         Property updatedProperty = propertyRepository.save(property);
+        PropertyResponse newState = propertyMapper.toResponse(updatedProperty);
+
         log.info("Property updated: {} for team {}", propertyId, principal.getTeamId());
 
-        return propertyMapper.toResponse(updatedProperty);
+        // Log to audit trail
+        auditService.logUpdate(
+                principal.getTeamId(),
+                "PROPERTY",
+                updatedProperty.getId(),
+                principal.getUserId(),
+                oldState,
+                newState,
+                auditService.getChangedFields(oldState, newState)
+        );
+
+        return newState;
     }
 
     public void deleteProperty(UUID propertyId, UserPrincipal principal) {
@@ -84,5 +111,14 @@ public class PropertyService {
 
         propertyRepository.softDeleteByIdAndTeamId(propertyId, principal.getTeamId());
         log.info("Property deleted: {} for team {}", propertyId, principal.getTeamId());
+
+        // Log to audit trail
+        auditService.logDelete(
+                principal.getTeamId(),
+                "PROPERTY",
+                propertyId,
+                principal.getUserId(),
+                property
+        );
     }
 }

@@ -6,6 +6,7 @@ import {
   PropertyStatus,
   DocumentResponse,
 } from '../types/property';
+import { RecentActivity } from './dashboard';
 
 export const getProperties = async (
   status?: PropertyStatus
@@ -80,4 +81,11 @@ export const getDocumentDownloadUrl = async (
 
 export const deleteDocument = async (documentId: string): Promise<void> => {
   await client.delete(`/properties/documents/${documentId}`);
+};
+
+export const getPropertyAuditLog = async (
+  propertyId: string
+): Promise<RecentActivity[]> => {
+  const response = await client.get(`/properties/${propertyId}/audit-log`);
+  return response.data;
 };

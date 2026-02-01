@@ -6,6 +6,7 @@ import {
   usePropertyDocuments,
   useUploadPropertyDocument,
   useDeleteDocument,
+  usePropertyAuditLog,
 } from '@/hooks/usePropertyHooks';
 import { PropertyStatus } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -20,7 +21,9 @@ import {
   Ruler,
   MapPin,
   X,
+  History,
 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 const statusColors: Record<PropertyStatus, string> = {
   VACANT: 'bg-green-100 text-green-800',
@@ -39,7 +42,7 @@ const statusLabels: Record<PropertyStatus, string> = {
 export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'info' | 'documents'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'documents' | 'audit'>('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: property, isLoading, error } = useProperty(id);
@@ -48,6 +51,11 @@ export const PropertyDetailPage = () => {
     isLoading: docsLoading,
     error: docsError,
   } = usePropertyDocuments(id);
+  const {
+    data: auditLog = [],
+    isLoading: auditLoading,
+    error: auditError,
+  } = usePropertyAuditLog(id);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const deleteDocumentMutation = useDeleteDocument(id!);
@@ -152,11 +160,22 @@ export const PropertyDetailPage = () => {
             >
               Documents {documents.length > 0 && `(${documents.length})`}
             </button>
+            <button
+              onClick={() => setActiveTab('audit')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'audit'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <History className="h-4 w-4" />
+              History {auditLog.length > 0 && `(${auditLog.length})`}
+            </button>
           </div>
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'info' ? (
+        {activeTab === 'info' && (
           <div className="bg-white rounded-lg shadow p-6 space-y-6">
             {/* Status Badge */}
             <div>
@@ -271,7 +290,9 @@ export const PropertyDetailPage = () => {
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'documents' && (
           <DocumentList
             propertyId={id!}
             documents={documents}
@@ -282,6 +303,77 @@ export const PropertyDetailPage = () => {
             isUploading={uploadDocumentMutation.isPending}
             isDeleting={deleteDocumentMutation.isPending}
           />
+        )}
+
+        {activeTab === 'audit' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Property History
+            </h2>
+
+            {auditLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : auditError ? (
+              <ErrorMessage message="Failed to load history" />
+            ) : auditLog.length > 0 ? (
+              <div className="space-y-4">
+                {auditLog.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                  >
+                    <div
+                      className={`
+                        flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+                        ${
+                          activity.action === 'CREATE'
+                            ? 'bg-green-100'
+                            : activity.action === 'UPDATE'
+                              ? 'bg-blue-100'
+                              : 'bg-red-100'
+                        }
+                      `}
+                    >
+                      <span
+                        className={`
+                          text-xs font-semibold
+                          ${
+                            activity.action === 'CREATE'
+                              ? 'text-green-700'
+                              : activity.action === 'UPDATE'
+                                ? 'text-blue-700'
+                                : 'text-red-700'
+                          }
+                        `}
+                      >
+                        {activity.action.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900">
+                        {activity.description}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {formatDistanceToNow(new Date(activity.timestamp), {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No history available</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Changes to this property will appear here
+                </p>
+              </div>
+            )}
+          </div>
         )}
       </div>
 

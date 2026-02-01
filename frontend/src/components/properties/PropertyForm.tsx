@@ -153,13 +153,29 @@ export const PropertyForm = ({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Country <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <select
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              placeholder="Netherlands"
-            />
+            >
+              <option value="Netherlands">Netherlands</option>
+              <option value="Belgium">Belgium</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="Spain">Spain</option>
+              <option value="Italy">Italy</option>
+              <option value="Portugal">Portugal</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Ireland">Ireland</option>
+              <option value="Switzerland">Switzerland</option>
+              <option value="Austria">Austria</option>
+              <option value="Denmark">Denmark</option>
+              <option value="Sweden">Sweden</option>
+              <option value="Norway">Norway</option>
+              <option value="Poland">Poland</option>
+              <option value="Czech Republic">Czech Republic</option>
+              <option value="Other">Other</option>
+            </select>
             {errors.country && (
               <p className="text-red-600 text-sm mt-1">{errors.country}</p>
             )}

@@ -28,6 +28,7 @@ export const useCreateProperty = () => {
       propertiesApi.createProperty(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 };
@@ -40,6 +41,7 @@ export const useUpdateProperty = (id: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', id] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 };
@@ -50,6 +52,7 @@ export const useDeleteProperty = () => {
     mutationFn: (id: string) => propertiesApi.deleteProperty(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 };
@@ -58,6 +61,14 @@ export const usePropertyDocuments = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyDocuments', propertyId],
     queryFn: () => propertiesApi.getPropertyDocuments(propertyId!),
+    enabled: !!propertyId,
+  });
+};
+
+export const usePropertyAuditLog = (propertyId: string | undefined) => {
+  return useQuery({
+    queryKey: ['propertyAuditLog', propertyId],
+    queryFn: () => propertiesApi.getPropertyAuditLog(propertyId!),
     enabled: !!propertyId,
   });
 };

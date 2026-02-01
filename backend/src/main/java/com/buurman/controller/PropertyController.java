@@ -5,7 +5,9 @@ import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PropertyResponse;
+import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.AuditService;
 import com.buurman.service.DocumentService;
 import com.buurman.service.PropertyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,10 +33,12 @@ public class PropertyController {
 
     private final PropertyService propertyService;
     private final DocumentService documentService;
+    private final AuditService auditService;
 
-    public PropertyController(PropertyService propertyService, DocumentService documentService) {
+    public PropertyController(PropertyService propertyService, DocumentService documentService, AuditService auditService) {
         this.propertyService = propertyService;
         this.documentService = documentService;
+        this.auditService = auditService;
     }
 
     @Operation(summary = "Create property", description = "Create a new property (Admin/Editor)")
@@ -121,5 +125,13 @@ public class PropertyController {
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {
         documentService.deleteDocument(documentId, principal);
+    }
+
+    @Operation(summary = "Get audit log", description = "Get audit history for a property")
+    @GetMapping("/{id}/audit-log")
+    public List<RecentActivityResponse> getPropertyAuditLog(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return auditService.getEntityAuditLog(principal.getTeamId(), "PROPERTY", id);
     }
 }

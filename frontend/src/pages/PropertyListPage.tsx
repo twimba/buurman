@@ -1,18 +1,26 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PropertyStatus } from '@/types/property';
+import { PropertyStatus, PropertyType } from '@/types/property';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Plus, Home } from 'lucide-react';
+import { Plus, Home, Filter } from 'lucide-react';
 
 const statusFilters = [
-  { value: undefined, label: 'All' },
+  { value: undefined, label: 'All Statuses' },
   { value: PropertyStatus.VACANT, label: 'Vacant' },
   { value: PropertyStatus.OCCUPIED, label: 'Occupied' },
   { value: PropertyStatus.MAINTENANCE, label: 'Maintenance' },
   { value: PropertyStatus.UNAVAILABLE, label: 'Unavailable' },
+];
+
+const typeFilters = [
+  { value: undefined, label: 'All Types' },
+  { value: PropertyType.APARTMENT, label: 'Apartment' },
+  { value: PropertyType.HOUSE, label: 'House' },
+  { value: PropertyType.STUDIO, label: 'Studio' },
+  { value: PropertyType.COMMERCIAL, label: 'Commercial' },
 ];
 
 export const PropertyListPage = () => {
@@ -20,7 +28,17 @@ export const PropertyListPage = () => {
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined
   );
-  const { data: properties, isLoading, error } = useProperties(statusFilter);
+  const [typeFilter, setTypeFilter] = useState<PropertyType | undefined>(
+    undefined
+  );
+  const { data: allProperties, isLoading, error } = useProperties(statusFilter);
+
+  // Client-side filtering by property type
+  const properties = useMemo(() => {
+    if (!allProperties) return [];
+    if (!typeFilter) return allProperties;
+    return allProperties.filter((property) => property.propertyType === typeFilter);
+  }, [allProperties, typeFilter]);
 
   if (isLoading) {
     return (
@@ -54,20 +72,57 @@ export const PropertyListPage = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="mb-6 flex gap-2 flex-wrap">
-          {statusFilters.map((filter) => (
-            <button
-              key={filter.label}
-              onClick={() => setStatusFilter(filter.value)}
-              className={`px-4 py-2 rounded transition-colors ${
-                statusFilter === filter.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="h-5 w-5 text-gray-600" />
+            <h2 className="font-semibold text-gray-900">Filters</h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Property Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Property Type
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {typeFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => setTypeFilter(filter.value)}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      typeFilter === filter.value
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {statusFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => setStatusFilter(filter.value)}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      statusFilter === filter.value
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Property Count */}
