@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
 import { TenantResponse, CreateTenantRequest } from '@/types/tenant';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface TenantFormProps {
   tenant?: TenantResponse;
@@ -23,6 +24,7 @@ export const TenantForm = ({
     phone: tenant?.phone || '',
     taxNumber: tenant?.taxNumber || '',
     idNumber: tenant?.idNumber || '',
+    additionalInfo: tenant?.additionalInfo || '',
   });
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export const TenantForm = ({
         phone: tenant.phone || '',
         taxNumber: tenant.taxNumber || '',
         idNumber: tenant.idNumber || '',
+        additionalInfo: tenant.additionalInfo || '',
       });
     }
   }, [tenant]);
@@ -122,31 +125,23 @@ export const TenantForm = ({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tax Number
-            </label>
-            <input
-              type="text"
-              value={formData.taxNumber || ''}
-              onChange={(e) => handleChange('taxNumber', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              placeholder="123456789"
-            />
-          </div>
+        </div>
+      </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ID Number
-            </label>
-            <input
-              type="text"
-              value={formData.idNumber || ''}
-              onChange={(e) => handleChange('idNumber', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              placeholder="AB123456"
-            />
-          </div>
+      {/* Additional Information */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Additional Information
+        </h3>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Notes
+          </label>
+          <RichTextEditor
+            value={formData.additionalInfo || ''}
+            onChange={(value) => handleChange('additionalInfo', value)}
+            placeholder="Add any additional information about the tenant (tax number, ID number, notes, etc.)"
+          />
         </div>
       </div>
 

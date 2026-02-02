@@ -9,6 +9,7 @@ export interface TenantResponse {
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
+  additionalInfo?: string;
   currentProperty?: PropertySummary;
   createdAt: string;
   updatedAt: string;
@@ -28,6 +29,7 @@ export interface CreateTenantRequest {
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
+  additionalInfo?: string;
 }
 
 export interface UpdateTenantRequest {
@@ -36,6 +38,7 @@ export interface UpdateTenantRequest {
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
+  additionalInfo?: string;
 }
 
 export interface LinkTenantToPropertyRequest {

@@ -8,6 +8,7 @@ import {
 } from '@/hooks/useTenantHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   ArrowLeft,
   Edit,
@@ -15,8 +16,6 @@ import {
   Mail,
   Phone,
   User,
-  CreditCard,
-  IdCard,
   Home,
   X,
   Unlink,
@@ -174,35 +173,13 @@ export const TenantDetailPage = () => {
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Additional Information
               </h2>
-              <div className="space-y-4">
-                {tenant.taxNumber && (
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tax Number</p>
-                      <p className="font-medium text-gray-900">
-                        {tenant.taxNumber}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {tenant.idNumber && (
-                  <div className="flex items-center gap-3">
-                    <IdCard className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">ID Number</p>
-                      <p className="font-medium text-gray-900">
-                        {tenant.idNumber}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {!tenant.taxNumber && !tenant.idNumber && (
-                  <p className="text-sm text-gray-400 italic">
-                    No additional information available
-                  </p>
-                )}
-              </div>
+              {tenant.additionalInfo ? (
+                <RichTextDisplay content={tenant.additionalInfo} />
+              ) : (
+                <p className="text-sm text-gray-400 italic">
+                  No additional information available
+                </p>
+              )}
             </div>
 
             {/* Current Property */}
