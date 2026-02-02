@@ -8,7 +8,10 @@ import { PropertyListPage } from './pages/PropertyListPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
 import { PropertyCreatePage } from './pages/PropertyCreatePage';
 import { PropertyEditPage } from './pages/PropertyEditPage';
-import { TenantsPage } from './pages/TenantsPage';
+import { TenantListPage } from './pages/TenantListPage';
+import { TenantDetailPage } from './pages/TenantDetailPage';
+import { TenantCreatePage } from './pages/TenantCreatePage';
+import { TenantEditPage } from './pages/TenantEditPage';
 import { ContractsPage } from './pages/ContractsPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ExpensesPage } from './pages/ExpensesPage';
@@ -80,7 +83,37 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <TenantsPage />
+                    <TenantListPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tenants/new"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TenantCreatePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tenants/:id"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TenantDetailPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tenants/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <TenantEditPage />
                   </Layout>
                 </ProtectedRoute>
               }

@@ -47,7 +47,6 @@ export const PropertyForm = ({
   });
 
   // Track if address has changed to determine if we need new coordinates
-  const [addressChanged, setAddressChanged] = useState(false);
   const [shouldRegeocode, setShouldRegeocode] = useState(false);
 
   useEffect(() => {
@@ -84,8 +83,6 @@ export const PropertyForm = ({
           formData.postalCode !== property.postalCode ||
           formData.country !== property.country
         : true;
-
-      setAddressChanged(hasChanged);
 
       // If address changed, trigger re-geocoding but keep existing coordinates
       // until new ones are obtained
@@ -169,8 +166,6 @@ export const PropertyForm = ({
         formData.postalCode !== property.postalCode ||
         formData.country !== property.country
       : true;
-
-    setAddressChanged(hasChanged);
 
     // If address changed, trigger re-geocoding but keep existing coordinates
     // until new ones are obtained

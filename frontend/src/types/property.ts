@@ -12,6 +12,16 @@ export enum PropertyStatus {
   UNAVAILABLE = 'UNAVAILABLE',
 }
 
+export interface PropertySummary {
+  id: string;
+  identifier: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  propertyType: PropertyType;
+  status: PropertyStatus;
+}
+
 export interface PropertyResponse {
   id: string;
   identifier: string;
