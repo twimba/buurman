@@ -33,7 +33,7 @@ export const WorkInProgress = ({
 
         {/* Subtext */}
         <p className="text-sm text-gray-500">
-          We're working hard to bring you this feature. Stay tuned!
+          We&apos;re working hard to bring you this feature. Stay tuned!
         </p>
 
         {/* Decorative dots */}

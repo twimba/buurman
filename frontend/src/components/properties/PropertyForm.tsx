@@ -48,9 +48,13 @@ export const PropertyForm = ({
 
   // Track if address has changed to determine if we need new coordinates
   const [shouldRegeocode, setShouldRegeocode] = useState(false);
+  const [propertyId, setPropertyId] = useState(property?.id);
 
   useEffect(() => {
-    if (property) {
+    // Only update if property ID changed (editing a different property)
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (property && property.id !== propertyId) {
+      setPropertyId(property.id);
       setFormData({
         street: property.street,
         city: property.city,
@@ -71,7 +75,8 @@ export const PropertyForm = ({
         country: property.country,
       });
     }
-  }, [property]);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [property, propertyId]);
 
   // Debounce address changes for map updates (2 seconds)
   useEffect(() => {

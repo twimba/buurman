@@ -8,7 +8,8 @@ public class Tenant {
     private UUID id;
     private String identifier;
     private UUID teamId;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
     private String taxNumber;
@@ -24,14 +25,15 @@ public class Tenant {
     public Tenant() {
     }
 
-    public Tenant(UUID id, String identifier, UUID teamId, String name, String email,
-                  String phone, String taxNumber, String idNumber, String additionalInfo,
-                  UUID currentPropertyId, Instant createdAt, Instant updatedAt,
-                  UUID createdBy, UUID updatedBy, Instant deletedAt) {
+    public Tenant(UUID id, String identifier, UUID teamId, String firstName, String lastName,
+                  String email, String phone, String taxNumber, String idNumber,
+                  String additionalInfo, UUID currentPropertyId, Instant createdAt,
+                  Instant updatedAt, UUID createdBy, UUID updatedBy, Instant deletedAt) {
         this.id = id;
         this.identifier = identifier;
         this.teamId = teamId;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.taxNumber = taxNumber;
@@ -69,12 +71,20 @@ public class Tenant {
         this.teamId = teamId;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

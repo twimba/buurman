@@ -5,8 +5,12 @@ import {
   UpdateTenantRequest,
   LinkTenantToPropertyRequest,
   PropertyTenantHistoryResponse,
+  TenantAddressResponse,
+  CreateTenantAddressRequest,
+  UpdateTenantAddressRequest,
 } from '../types/tenant';
 import { DocumentResponse } from '../types/property';
+import { RecentActivity } from './dashboard';
 
 export const getTenants = async (
   search?: string
@@ -135,4 +139,45 @@ export const deleteTenantDocument = async (
   documentId: string
 ): Promise<void> => {
   await client.delete(`/tenants/documents/${documentId}`);
+};
+
+export const getTenantAuditLog = async (
+  tenantId: string
+): Promise<RecentActivity[]> => {
+  const response = await client.get(`/tenants/${tenantId}/audit-log`);
+  return response.data;
+};
+
+export const getTenantAddresses = async (
+  tenantId: string
+): Promise<TenantAddressResponse[]> => {
+  const response = await client.get(`/tenants/${tenantId}/addresses`);
+  return response.data;
+};
+
+export const createTenantAddress = async (
+  tenantId: string,
+  data: CreateTenantAddressRequest
+): Promise<TenantAddressResponse> => {
+  const response = await client.post(`/tenants/${tenantId}/addresses`, data);
+  return response.data;
+};
+
+export const updateTenantAddress = async (
+  tenantId: string,
+  addressId: string,
+  data: UpdateTenantAddressRequest
+): Promise<TenantAddressResponse> => {
+  const response = await client.put(
+    `/tenants/${tenantId}/addresses/${addressId}`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteTenantAddress = async (
+  tenantId: string,
+  addressId: string
+): Promise<void> => {
+  await client.delete(`/tenants/${tenantId}/addresses/${addressId}`);
 };

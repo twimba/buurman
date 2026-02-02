@@ -7,6 +7,7 @@ import {
   DollarSign,
   Receipt,
   BarChart3,
+  ClipboardList,
   Settings,
   LogOut,
   Menu,
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Payments', href: '/payments', icon: DollarSign },
   { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
+  { name: 'Audit Log', href: '/audit-log', icon: ClipboardList },
 ];
 
 export const Sidebar = () => {

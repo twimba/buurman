@@ -17,6 +17,7 @@ import { PaymentsPage } from './pages/PaymentsPage';
 import { ExpensesPage } from './pages/ExpensesPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AuditLogPage } from './pages/AuditLogPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 
@@ -154,6 +155,16 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <ReportsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit-log"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <AuditLogPage />
                   </Layout>
                 </ProtectedRoute>
               }

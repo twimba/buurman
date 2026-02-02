@@ -4,6 +4,8 @@ import {
   CreateTenantRequest,
   UpdateTenantRequest,
   LinkTenantToPropertyRequest,
+  CreateTenantAddressRequest,
+  UpdateTenantAddressRequest,
 } from '../types/tenant';
 
 export const useTenants = (search?: string) => {
@@ -40,6 +42,7 @@ export const useUpdateTenant = (id: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['tenant', id] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
@@ -89,6 +92,14 @@ export const useTenantHistory = (tenantId: string | undefined) => {
   });
 };
 
+export const useTenantAuditLog = (tenantId: string | undefined) => {
+  return useQuery({
+    queryKey: ['tenantAuditLog', tenantId],
+    queryFn: () => tenantsApi.getTenantAuditLog(tenantId!),
+    enabled: !!tenantId,
+  });
+};
+
 export const useTenantDocuments = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantDocuments', tenantId],
@@ -118,7 +129,9 @@ export const useUploadTenantDocument = (tenantId: string) => {
       notes?: string;
     }) => tenantsApi.uploadTenantDocument(tenantId, file, title, notes),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenantDocuments', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['tenantDocuments', tenantId],
+      });
     },
   });
 };
@@ -161,8 +174,60 @@ export const useDeleteTenantDocument = (tenantId: string) => {
     mutationFn: (documentId: string) =>
       tenantsApi.deleteTenantDocument(documentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenantDocuments', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['tenantDocuments', tenantId],
+      });
       queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
+};
+
+export const useTenantAddresses = (tenantId: string | undefined) => {
+  return useQuery({
+    queryKey: ['tenantAddresses', tenantId],
+    queryFn: () => tenantsApi.getTenantAddresses(tenantId!),
+    enabled: !!tenantId,
+  });
+};
+
+export const useCreateTenantAddress = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateTenantAddressRequest) =>
+      tenantsApi.createTenantAddress(tenantId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAddresses', tenantId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
+};
+
+export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UpdateTenantAddressRequest) =>
+      tenantsApi.updateTenantAddress(tenantId, addressId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAddresses', tenantId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
+};
+
+export const useDeleteTenantAddress = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (addressId: string) =>
+      tenantsApi.deleteTenantAddress(tenantId, addressId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAddresses', tenantId],
+      });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
     },
   });

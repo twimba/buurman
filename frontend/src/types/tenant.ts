@@ -4,12 +4,14 @@ export interface TenantResponse {
   id: string;
   identifier: string;
   teamId: string;
-  name: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
   additionalInfo?: string;
+  mainPhotoUrl?: string;
   currentProperty?: PropertySummary;
   createdAt: string;
   updatedAt: string;
@@ -18,13 +20,15 @@ export interface TenantResponse {
 export interface TenantSummary {
   id: string;
   identifier: string;
-  name: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   phone?: string;
 }
 
 export interface CreateTenantRequest {
-  name: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   phone?: string;
   taxNumber?: string;
@@ -33,7 +37,8 @@ export interface CreateTenantRequest {
 }
 
 export interface UpdateTenantRequest {
-  name: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   phone?: string;
   taxNumber?: string;
@@ -59,4 +64,55 @@ export interface PropertyTenantHistoryResponse {
   actionType: PropertyTenantActionType;
   performedBy: string;
   performedAt: string;
+}
+
+export enum AddressType {
+  CURRENT = 'CURRENT',
+  MAILING = 'MAILING',
+  RELATIVE = 'RELATIVE',
+  WORK = 'WORK',
+  HISTORIC = 'HISTORIC',
+}
+
+export enum AddressStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+export interface TenantAddressResponse {
+  id: string;
+  tenantId: string;
+  teamId: string;
+  street: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+  addressType: AddressType;
+  status: AddressStatus;
+  latitude?: number | null;
+  longitude?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTenantAddressRequest {
+  street: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+  addressType: AddressType;
+  status?: AddressStatus;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+export interface UpdateTenantAddressRequest {
+  street: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+  addressType: AddressType;
+  status: AddressStatus;
+  latitude?: number | null;
+  longitude?: number | null;
 }

@@ -5,7 +5,8 @@ import java.util.UUID;
 public record TenantSummary(
         UUID id,
         String identifier,
-        String name,
+        String firstName,
+        String lastName,
         String email,
         String phone
 ) {}

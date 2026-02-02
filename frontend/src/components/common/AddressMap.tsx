@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { MapPin } from 'lucide-react';
 
-interface PropertyMapProps {
+interface AddressMapProps {
   street: string;
   city: string;
   postalCode: string;
@@ -10,6 +10,7 @@ interface PropertyMapProps {
   latitude?: number | null;
   longitude?: number | null;
   onCoordinatesChange?: (lat: number, lng: number) => void;
+  height?: string;
 }
 
 interface Coordinates {
@@ -17,7 +18,7 @@ interface Coordinates {
   lng: number;
 }
 
-export const PropertyMap = ({
+export const AddressMap = ({
   street,
   city,
   postalCode,
@@ -25,7 +26,8 @@ export const PropertyMap = ({
   latitude,
   longitude,
   onCoordinatesChange,
-}: PropertyMapProps) => {
+  height = 'h-96',
+}: AddressMapProps) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -131,12 +133,14 @@ export const PropertyMap = ({
   }
 
   return (
-    <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-200">
+    <div
+      className={`w-full ${height} rounded-lg overflow-hidden border border-gray-200`}
+    >
       <APIProvider apiKey={apiKey}>
         <Map
           center={coordinates}
           zoom={15}
-          mapId="property-map"
+          mapId="address-map"
           gestureHandling="cooperative"
           disableDefaultUI={false}
         >

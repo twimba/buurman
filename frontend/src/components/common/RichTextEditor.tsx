@@ -1,14 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import DOMPurify from 'dompurify';
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Undo,
-  Redo,
-} from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Undo, Redo } from 'lucide-react';
 
 interface RichTextEditorProps {
   value: string;

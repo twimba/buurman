@@ -12,7 +12,7 @@ interface PhotoGalleryProps {
   propertyId: string;
   photos: DocumentResponse[];
   isLoading: boolean;
-  error: any;
+  error: unknown;
   onUpload: (file: File, title?: string, notes?: string) => Promise<void>;
   onSetMain: (photoId: string) => Promise<void>;
   onDelete: (photoId: string) => Promise<void>;

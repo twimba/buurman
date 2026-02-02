@@ -121,12 +121,16 @@ public class DashboardService {
                     .fetchOptional()
                     .map(r -> r.get(PROPERTIES.STREET) + ", " + r.get(PROPERTIES.CITY))
                     .orElse("Unknown Property");
-            case "tenant" -> dsl.select(TENANTS.NAME)
+            case "tenant" -> dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
                     .from(TENANTS)
                     .where(TENANTS.ID.eq(entityId)
                             .and(TENANTS.TEAM_ID.eq(teamId)))
                     .fetchOptional()
-                    .map(r -> r.get(TENANTS.NAME))
+                    .map(r -> {
+                        String firstName = r.get(TENANTS.FIRST_NAME);
+                        String lastName = r.get(TENANTS.LAST_NAME);
+                        return lastName != null ? firstName + " " + lastName : firstName;
+                    })
                     .orElse("Unknown Tenant");
             case "team" -> dsl.select(TEAMS.NAME)
                     .from(TEAMS)

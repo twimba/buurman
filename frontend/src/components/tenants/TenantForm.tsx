@@ -19,31 +19,39 @@ export const TenantForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateTenantRequest>({
-    name: tenant?.name || '',
+    firstName: tenant?.firstName || '',
+    lastName: tenant?.lastName || '',
     email: tenant?.email || '',
     phone: tenant?.phone || '',
     taxNumber: tenant?.taxNumber || '',
     idNumber: tenant?.idNumber || '',
     additionalInfo: tenant?.additionalInfo || '',
   });
+  const [tenantId, setTenantId] = useState(tenant?.id);
 
   useEffect(() => {
-    if (tenant) {
+    // Only update if tenant ID changed (editing a different tenant)
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (tenant && tenant.id !== tenantId) {
+      setTenantId(tenant.id);
       setFormData({
-        name: tenant.name,
+        firstName: tenant.firstName,
+        lastName: tenant.lastName || '',
         email: tenant.email,
         phone: tenant.phone || '',
-        taxNumber: tenant.taxNumber || '',
-        idNumber: tenant.idNumber || '',
+        taxNumber: tenant?.taxNumber || '',
+        idNumber: tenant?.idNumber || '',
         additionalInfo: tenant.additionalInfo || '',
       });
     }
-  }, [tenant]);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [tenant, tenantId]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    if (!formData.firstName.trim())
+      newErrors.firstName = 'First name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Email must be valid';
@@ -82,18 +90,31 @@ export const TenantForm = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name <span className="text-red-500">*</span>
+              First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
+              value={formData.firstName}
+              onChange={(e) => handleChange('firstName', e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-              placeholder="John Doe"
+              placeholder="John"
             />
-            {errors.name && (
-              <p className="text-red-600 text-sm mt-1">{errors.name}</p>
+            {errors.firstName && (
+              <p className="text-red-600 text-sm mt-1">{errors.firstName}</p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={formData.lastName || ''}
+              onChange={(e) => handleChange('lastName', e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              placeholder="Doe"
+            />
           </div>
 
           <div>
@@ -125,6 +146,31 @@ export const TenantForm = ({
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tax Number
+            </label>
+            <input
+              type="text"
+              value={formData.taxNumber || ''}
+              onChange={(e) => handleChange('taxNumber', e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              placeholder="123456789"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Government ID Number
+            </label>
+            <input
+              type="text"
+              value={formData.idNumber || ''}
+              onChange={(e) => handleChange('idNumber', e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              placeholder="AB123456"
+            />
+          </div>
         </div>
       </div>
 
@@ -134,13 +180,10 @@ export const TenantForm = ({
           Additional Information
         </h3>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Notes
-          </label>
           <RichTextEditor
             value={formData.additionalInfo || ''}
             onChange={(value) => handleChange('additionalInfo', value)}
-            placeholder="Add any additional information about the tenant (tax number, ID number, notes, etc.)"
+            placeholder="Add any additional information about the tenant"
           />
         </div>
       </div>

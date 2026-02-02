@@ -1,13 +1,19 @@
 package com.buurman.controller;
 
+import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
+import com.buurman.dto.request.UpdateTenantAddressRequest;
 import com.buurman.dto.request.UpdateTenantRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PropertyTenantHistoryResponse;
+import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.TenantAddressResponse;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.AuditService;
 import com.buurman.service.DocumentService;
+import com.buurman.service.TenantAddressService;
 import com.buurman.service.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,11 +37,16 @@ import java.util.UUID;
 public class TenantController {
 
     private final TenantService tenantService;
+    private final TenantAddressService addressService;
     private final DocumentService documentService;
+    private final AuditService auditService;
 
-    public TenantController(TenantService tenantService, DocumentService documentService) {
+    public TenantController(TenantService tenantService, TenantAddressService addressService,
+                           DocumentService documentService, AuditService auditService) {
         this.tenantService = tenantService;
+        this.addressService = addressService;
         this.documentService = documentService;
+        this.auditService = auditService;
     }
 
     @Operation(summary = "Create tenant", description = "Create a new tenant (Admin/Editor)")
@@ -114,6 +125,14 @@ public class TenantController {
         return tenantService.getTenantHistory(id, principal);
     }
 
+    @Operation(summary = "Get audit log", description = "Get audit history for a tenant")
+    @GetMapping("/{id}/audit-log")
+    public List<RecentActivityResponse> getTenantAuditLog(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return auditService.getEntityAuditLog(principal.getTeamId(), "TENANT", id);
+    }
+
     @Operation(summary = "Upload document", description = "Upload a document for a tenant (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
@@ -183,5 +202,55 @@ public class TenantController {
             @PathVariable UUID photoId,
             @AuthenticationPrincipal UserPrincipal principal) {
         return documentService.setMainPhoto(photoId, "TENANT", id, principal);
+    }
+
+    @Operation(summary = "Create address", description = "Create a new address for a tenant (Admin/Editor)")
+    @PostMapping("/{tenantId}/addresses")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public TenantAddressResponse createAddress(
+            @PathVariable UUID tenantId,
+            @Valid @RequestBody CreateTenantAddressRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return addressService.createAddress(tenantId, request, principal);
+    }
+
+    @Operation(summary = "List addresses", description = "Get all addresses for a tenant")
+    @GetMapping("/{tenantId}/addresses")
+    public List<TenantAddressResponse> getAddresses(
+            @PathVariable UUID tenantId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return addressService.getAddresses(tenantId, principal);
+    }
+
+    @Operation(summary = "Get address", description = "Get a specific address by ID")
+    @GetMapping("/{tenantId}/addresses/{addressId}")
+    public TenantAddressResponse getAddress(
+            @PathVariable UUID tenantId,
+            @PathVariable UUID addressId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return addressService.getAddress(addressId, principal);
+    }
+
+    @Operation(summary = "Update address", description = "Update an existing address (Admin/Editor)")
+    @PutMapping("/{tenantId}/addresses/{addressId}")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public TenantAddressResponse updateAddress(
+            @PathVariable UUID tenantId,
+            @PathVariable UUID addressId,
+            @Valid @RequestBody UpdateTenantAddressRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return addressService.updateAddress(addressId, request, principal);
+    }
+
+    @Operation(summary = "Delete address", description = "Soft delete an address (Admin/Editor)")
+    @DeleteMapping("/{tenantId}/addresses/{addressId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public void deleteAddress(
+            @PathVariable UUID tenantId,
+            @PathVariable UUID addressId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        addressService.deleteAddress(addressId, principal);
     }
 }

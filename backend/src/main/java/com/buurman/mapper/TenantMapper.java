@@ -17,7 +17,8 @@ public interface TenantMapper {
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "identifier", source = "identifier")
-    @Mapping(target = "name", source = "name")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "email", source = "email")
     @Mapping(target = "phone", source = "phone")
     TenantSummary toSummary(Tenant tenant);
