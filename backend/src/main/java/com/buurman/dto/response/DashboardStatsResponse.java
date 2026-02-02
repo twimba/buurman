@@ -7,6 +7,7 @@ public record DashboardStatsResponse(
         int occupiedUnits,
         int vacantUnits,
         int maintenanceUnits,
+        int unavailableUnits,
         MonthlyIncome monthlyIncome,
         BigDecimal occupancyRate
 ) {

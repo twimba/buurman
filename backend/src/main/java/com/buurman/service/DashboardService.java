@@ -40,11 +40,15 @@ public class DashboardService {
         int maintenanceUnits = (int) allProperties.stream()
                 .filter(p -> p.getStatus() == Property.PropertyStatus.MAINTENANCE)
                 .count();
+        int unavailableUnits = (int) allProperties.stream()
+                .filter(p -> p.getStatus() == Property.PropertyStatus.UNAVAILABLE)
+                .count();
 
-        // Calculate occupancy rate
-        BigDecimal occupancyRate = totalProperties > 0
+        // Calculate occupancy rate (excluding unavailable units)
+        int availableUnits = totalProperties - unavailableUnits;
+        BigDecimal occupancyRate = availableUnits > 0
                 ? BigDecimal.valueOf(occupiedUnits)
-                    .divide(BigDecimal.valueOf(totalProperties), 4, RoundingMode.HALF_UP)
+                    .divide(BigDecimal.valueOf(availableUnits), 4, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
 
@@ -57,6 +61,7 @@ public class DashboardService {
                 occupiedUnits,
                 vacantUnits,
                 maintenanceUnits,
+                unavailableUnits,
                 monthlyIncome,
                 occupancyRate
         );
@@ -116,6 +121,13 @@ public class DashboardService {
                     .fetchOptional()
                     .map(r -> r.get(PROPERTIES.STREET) + ", " + r.get(PROPERTIES.CITY))
                     .orElse("Unknown Property");
+            case "tenant" -> dsl.select(TENANTS.NAME)
+                    .from(TENANTS)
+                    .where(TENANTS.ID.eq(entityId)
+                            .and(TENANTS.TEAM_ID.eq(teamId)))
+                    .fetchOptional()
+                    .map(r -> r.get(TENANTS.NAME))
+                    .orElse("Unknown Tenant");
             case "team" -> dsl.select(TEAMS.NAME)
                     .from(TEAMS)
                     .where(TEAMS.ID.eq(entityId))

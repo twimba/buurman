@@ -11,20 +11,23 @@ interface PropertyStatusChartProps {
   occupied: number;
   vacant: number;
   maintenance: number;
+  unavailable: number;
 }
 
 export const PropertyStatusChart = ({
   occupied,
   vacant,
   maintenance,
+  unavailable,
 }: PropertyStatusChartProps) => {
   const data = [
     { name: 'Occupied', value: occupied, color: '#10b981' },
     { name: 'Vacant', value: vacant, color: '#f59e0b' },
     { name: 'Maintenance', value: maintenance, color: '#f97316' },
+    { name: 'Unavailable', value: unavailable, color: '#6b7280' },
   ].filter((item) => item.value > 0);
 
-  const total = occupied + vacant + maintenance;
+  const total = occupied + vacant + maintenance + unavailable;
 
   if (total === 0) {
     return (

@@ -172,6 +172,7 @@ export const PropertyDetailPage = () => {
               <h1 className="text-2xl font-bold text-gray-900">
                 {property.street}
               </h1>
+              <p className="text-sm text-gray-500">#{property.identifier}</p>
               <p className="text-gray-600">
                 {property.city}, {property.postalCode}
               </p>

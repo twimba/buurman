@@ -91,7 +91,7 @@ export const DashboardPage = () => {
           </div>
           <div className="text-sm text-gray-500 mt-2">
             {stats?.vacantUnits || 0} vacant, {stats?.maintenanceUnits || 0} in
-            maintenance
+            maintenance, {stats?.unavailableUnits || 0} unavailable
           </div>
         </div>
 
@@ -191,6 +191,23 @@ export const DashboardPage = () => {
                   %
                 </div>
               </div>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div>
+                  <div className="text-sm font-medium text-gray-900">
+                    Unavailable
+                  </div>
+                  <div className="text-2xl font-bold text-gray-600 mt-1">
+                    {stats.unavailableUnits}
+                  </div>
+                </div>
+                <div className="text-sm text-gray-700">
+                  {(
+                    (stats.unavailableUnits / stats.totalProperties) *
+                    100
+                  ).toFixed(0)}
+                  %
+                </div>
+              </div>
             </div>
           </div>
 
@@ -203,6 +220,7 @@ export const DashboardPage = () => {
               occupied={stats.occupiedUnits}
               vacant={stats.vacantUnits}
               maintenance={stats.maintenanceUnits}
+              unavailable={stats.unavailableUnits}
             />
           </div>
         </div>

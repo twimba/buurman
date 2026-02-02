@@ -55,6 +55,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         <h3 className="text-lg font-semibold text-gray-900 mb-1">
           {property.street}
         </h3>
+        <p className="text-sm text-gray-500 mb-1">#{property.identifier}</p>
         <p className="text-sm text-gray-600 mb-3">
           {property.city}, {property.postalCode}
         </p>

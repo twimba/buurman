@@ -3,6 +3,7 @@ package com.buurman.service;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyTenantHistory;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.User;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
 import com.buurman.dto.request.UpdateTenantRequest;
@@ -14,6 +15,7 @@ import com.buurman.mapper.TenantMapper;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyTenantHistoryRepository;
 import com.buurman.repository.TenantRepository;
+import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ public class TenantService {
     private final TenantMapper tenantMapper;
     private final PropertyMapper propertyMapper;
     private final AuditService auditService;
+    private final UserRepository userRepository;
 
     public TenantService(
             TenantRepository tenantRepository,
@@ -43,13 +46,15 @@ public class TenantService {
             PropertyTenantHistoryRepository historyRepository,
             TenantMapper tenantMapper,
             PropertyMapper propertyMapper,
-            AuditService auditService) {
+            AuditService auditService,
+            UserRepository userRepository) {
         this.tenantRepository = tenantRepository;
         this.propertyRepository = propertyRepository;
         this.historyRepository = historyRepository;
         this.tenantMapper = tenantMapper;
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
+        this.userRepository = userRepository;
     }
 
     public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
@@ -311,13 +316,18 @@ public class TenantService {
                 property.getStatus()
         );
 
+        // Fetch user name
+        String userName = userRepository.findById(history.getPerformedBy())
+                .map(user -> user.getFirstName() + " " + user.getLastName())
+                .orElse("Unknown User");
+
         return new PropertyTenantHistoryResponse(
                 history.getId(),
                 propertySummary,
                 history.getMovedInAt(),
                 history.getMovedOutAt(),
                 history.getActionType(),
-                "User", // TODO: Fetch user name from users table
+                userName,
                 history.getPerformedAt()
         );
     }
