@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyTenantHistory;
 import com.buurman.domain.Tenant;
@@ -12,6 +13,7 @@ import com.buurman.dto.response.PropertyTenantHistoryResponse;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyTenantHistoryRepository;
 import com.buurman.repository.TenantRepository;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,6 +42,8 @@ public class TenantService {
     private final PropertyMapper propertyMapper;
     private final AuditService auditService;
     private final UserRepository userRepository;
+    private final DocumentRepository documentRepository;
+    private final S3StorageService s3StorageService;
 
     public TenantService(
             TenantRepository tenantRepository,
@@ -47,7 +52,9 @@ public class TenantService {
             TenantMapper tenantMapper,
             PropertyMapper propertyMapper,
             AuditService auditService,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            DocumentRepository documentRepository,
+            S3StorageService s3StorageService) {
         this.tenantRepository = tenantRepository;
         this.propertyRepository = propertyRepository;
         this.historyRepository = historyRepository;
@@ -55,6 +62,8 @@ public class TenantService {
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
         this.userRepository = userRepository;
+        this.documentRepository = documentRepository;
+        this.s3StorageService = s3StorageService;
     }
 
     public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
@@ -269,12 +278,29 @@ public class TenantService {
     private TenantResponse toResponse(Tenant tenant, UUID teamId) {
         TenantResponse response = tenantMapper.toResponse(tenant);
 
+        // Load main photo URL
+        List<Document> photos = documentRepository.findByEntityAndTeamIdAndCategory(
+                "TENANT",
+                tenant.getId(),
+                teamId,
+                Document.Category.PHOTO.name()
+        );
+
+        Optional<Document> mainPhoto = photos.stream()
+                .filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto()))
+                .findFirst();
+
+        String mainPhotoUrl = mainPhoto
+                .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
+                .orElse(null);
+
         // Load current property if linked
+        PropertySummary propertySummary = null;
         if (tenant.getCurrentPropertyId() != null) {
             Property property = propertyRepository.findByIdAndTeamId(tenant.getCurrentPropertyId(), teamId)
                     .orElse(null);
             if (property != null) {
-                PropertySummary propertySummary = new PropertySummary(
+                propertySummary = new PropertySummary(
                         property.getId(),
                         property.getIdentifier(),
                         property.getStreet(),
@@ -283,24 +309,24 @@ public class TenantService {
                         property.getPropertyType(),
                         property.getStatus()
                 );
-                return new TenantResponse(
-                        response.id(),
-                        response.identifier(),
-                        response.teamId(),
-                        response.name(),
-                        response.email(),
-                        response.phone(),
-                        response.taxNumber(),
-                        response.idNumber(),
-                        response.additionalInfo(),
-                        propertySummary,
-                        response.createdAt(),
-                        response.updatedAt()
-                );
             }
         }
 
-        return response;
+        return new TenantResponse(
+                response.id(),
+                response.identifier(),
+                response.teamId(),
+                response.name(),
+                response.email(),
+                response.phone(),
+                response.taxNumber(),
+                response.idNumber(),
+                response.additionalInfo(),
+                mainPhotoUrl,
+                propertySummary,
+                response.createdAt(),
+                response.updatedAt()
+        );
     }
 
     private PropertyTenantHistoryResponse toHistoryResponse(PropertyTenantHistory history, UUID teamId) {
