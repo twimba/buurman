@@ -13,6 +13,7 @@ public class Tenant {
     private String phone;
     private String taxNumber;
     private String idNumber;
+    private String additionalInfo;
     private UUID currentPropertyId;
     private Instant createdAt;
     private Instant updatedAt;
@@ -24,9 +25,9 @@ public class Tenant {
     }
 
     public Tenant(UUID id, String identifier, UUID teamId, String name, String email,
-                  String phone, String taxNumber, String idNumber, UUID currentPropertyId,
-                  Instant createdAt, Instant updatedAt, UUID createdBy, UUID updatedBy,
-                  Instant deletedAt) {
+                  String phone, String taxNumber, String idNumber, String additionalInfo,
+                  UUID currentPropertyId, Instant createdAt, Instant updatedAt,
+                  UUID createdBy, UUID updatedBy, Instant deletedAt) {
         this.id = id;
         this.identifier = identifier;
         this.teamId = teamId;
@@ -35,6 +36,7 @@ public class Tenant {
         this.phone = phone;
         this.taxNumber = taxNumber;
         this.idNumber = idNumber;
+        this.additionalInfo = additionalInfo;
         this.currentPropertyId = currentPropertyId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -105,6 +107,14 @@ public class Tenant {
 
     public void setIdNumber(String idNumber) {
         this.idNumber = idNumber;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }
 
     public UUID getCurrentPropertyId() {

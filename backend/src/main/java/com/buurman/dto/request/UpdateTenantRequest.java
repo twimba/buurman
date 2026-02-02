@@ -15,5 +15,7 @@ public record UpdateTenantRequest(
 
         String taxNumber,
 
-        String idNumber
+        String idNumber,
+
+        String additionalInfo
 ) {}

@@ -12,6 +12,7 @@ public record TenantResponse(
         String phone,
         String taxNumber,
         String idNumber,
+        String additionalInfo,
         PropertySummary currentProperty,
         Instant createdAt,
         Instant updatedAt

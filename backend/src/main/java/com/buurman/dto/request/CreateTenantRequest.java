@@ -15,5 +15,7 @@ public record CreateTenantRequest(
 
         String taxNumber,
 
-        String idNumber
+        String idNumber,
+
+        String additionalInfo
 ) {}

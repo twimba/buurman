@@ -342,6 +342,7 @@ public class TenantService {
                 tenant.getPhone(),
                 tenant.getTaxNumber(),
                 tenant.getIdNumber(),
+                tenant.getAdditionalInfo(),
                 tenant.getCurrentPropertyId(),
                 tenant.getCreatedAt(),
                 tenant.getUpdatedAt(),
