@@ -30,7 +30,8 @@ export const TenantDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: tenant, isLoading, error } = useTenant(id);
-  const { data: history = [], isLoading: historyLoading } = useTenantHistory(id);
+  const { data: history = [], isLoading: historyLoading } =
+    useTenantHistory(id);
   const deleteTenantMutation = useDeleteTenant();
   const unlinkMutation = useUnlinkTenantFromProperty(id!);
 

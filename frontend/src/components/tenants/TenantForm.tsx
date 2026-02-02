@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
-import {
-  TenantResponse,
-  CreateTenantRequest,
-} from '@/types/tenant';
+import { TenantResponse, CreateTenantRequest } from '@/types/tenant';
 
 interface TenantFormProps {
   tenant?: TenantResponse;

@@ -7,7 +7,9 @@ import {
   PropertyTenantHistoryResponse,
 } from '../types/tenant';
 
-export const getTenants = async (search?: string): Promise<TenantResponse[]> => {
+export const getTenants = async (
+  search?: string
+): Promise<TenantResponse[]> => {
   const params = search ? { search } : {};
   const response = await client.get('/tenants', { params });
   return response.data;
