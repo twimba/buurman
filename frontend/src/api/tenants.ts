@@ -6,7 +6,7 @@ import {
   LinkTenantToPropertyRequest,
   PropertyTenantHistoryResponse,
 } from '../types/tenant';
-import { DocumentResponse } from '../types/document';
+import { DocumentResponse } from '../types/property';
 
 export const getTenants = async (
   search?: string

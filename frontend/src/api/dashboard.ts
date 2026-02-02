@@ -5,6 +5,7 @@ export interface DashboardStats {
   occupiedUnits: number;
   vacantUnits: number;
   maintenanceUnits: number;
+  unavailableUnits: number;
   monthlyIncome: {
     amount: number;
     currency: string;
