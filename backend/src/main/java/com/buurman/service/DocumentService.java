@@ -11,10 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class DocumentService {
@@ -24,6 +28,7 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final S3StorageService s3StorageService;
     private final DocumentMapper documentMapper;
+    private final AuditService auditService;
     private final long maxFileSize;
     private final List<String> allowedMimeTypes;
 
@@ -31,11 +36,13 @@ public class DocumentService {
             DocumentRepository documentRepository,
             S3StorageService s3StorageService,
             DocumentMapper documentMapper,
+            AuditService auditService,
             @Value("${app.documents.max-file-size}") long maxFileSize,
             @Value("${app.documents.allowed-mime-types}") String allowedMimeTypesStr) {
         this.documentRepository = documentRepository;
         this.s3StorageService = s3StorageService;
         this.documentMapper = documentMapper;
+        this.auditService = auditService;
         this.maxFileSize = maxFileSize;
         this.allowedMimeTypes = Arrays.asList(allowedMimeTypesStr.split(","));
     }
@@ -90,6 +97,25 @@ public class DocumentService {
         log.info("Document uploaded: {} (category: {}) for entity {}/{}",
                 savedDocument.getId(), savedDocument.getCategory(), entityType, entityId);
 
+        // Log to audit trail for the parent entity
+        // Use a custom audit entry to indicate document upload
+        java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
+        changedFields.put("documentAdded", savedDocument.getFileName());
+        if (savedDocument.getTitle() != null && !savedDocument.getTitle().isEmpty()) {
+            changedFields.put("title", savedDocument.getTitle());
+        }
+        changedFields.put("category", savedDocument.getCategory());
+
+        auditService.logUpdate(
+                principal.getTeamId(),
+                entityType.toUpperCase(),
+                entityId,
+                principal.getUserId(),
+                java.util.Map.of("documentCount", "unchanged"),
+                java.util.Map.of("documentCount", "increased"),
+                changedFields
+        );
+
         return toResponseWithDownloadUrl(savedDocument);
     }
 
@@ -119,6 +145,25 @@ public class DocumentService {
         s3StorageService.deleteFile(document.getFileKey());
 
         log.info("Document deleted: {}", documentId);
+
+        // Log to audit trail for the parent entity
+        // Use a custom audit entry to indicate document removal
+        java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
+        changedFields.put("documentRemoved", document.getFileName());
+        if (document.getTitle() != null && !document.getTitle().isEmpty()) {
+            changedFields.put("title", document.getTitle());
+        }
+        changedFields.put("category", document.getCategory());
+
+        auditService.logUpdate(
+                principal.getTeamId(),
+                document.getEntityType().toUpperCase(),
+                document.getEntityId(),
+                principal.getUserId(),
+                java.util.Map.of("documentCount", "unchanged"),
+                java.util.Map.of("documentCount", "decreased"),
+                changedFields
+        );
     }
 
     public List<DocumentResponse> getPhotos(String entityType, UUID entityId, UserPrincipal principal) {
@@ -177,5 +222,75 @@ public class DocumentService {
                 response.uploadedAt(),
                 downloadUrl
         );
+    }
+
+    public List<DocumentResponse> searchDocuments(String searchTerm, String entityType, UserPrincipal principal) {
+        List<Document> documents = documentRepository.searchDocuments(searchTerm, entityType, principal.getTeamId());
+        return documents.stream()
+                .map(this::toResponseWithDownloadUrl)
+                .toList();
+    }
+
+    public DocumentResponse getDocument(UUID documentId, UserPrincipal principal) {
+        Document document = documentRepository.findByIdAndTeamId(documentId, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+        return toResponseWithDownloadUrl(document);
+    }
+
+    public byte[] bulkDownload(List<UUID> documentIds, UserPrincipal principal) {
+        if (documentIds == null || documentIds.isEmpty()) {
+            throw new IllegalArgumentException("No documents selected for download");
+        }
+
+        // Fetch all documents
+        List<Document> documents = documentRepository.findByIdsAndTeamId(documentIds, principal.getTeamId());
+
+        if (documents.isEmpty()) {
+            throw new IllegalArgumentException("No documents found");
+        }
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ZipOutputStream zos = new ZipOutputStream(baos)) {
+
+            for (Document document : documents) {
+                try {
+                    // Download file from S3
+                    InputStream fileStream = s3StorageService.downloadFile(document.getFileKey());
+
+                    // Create zip entry with unique filename
+                    String fileName = sanitizeFilename(document.getFileName());
+                    ZipEntry zipEntry = new ZipEntry(fileName);
+                    zos.putNextEntry(zipEntry);
+
+                    // Copy file to zip
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fileStream.read(buffer)) > 0) {
+                        zos.write(buffer, 0, length);
+                    }
+
+                    zos.closeEntry();
+                    fileStream.close();
+
+                    log.debug("Added document to zip: {}", fileName);
+                } catch (Exception e) {
+                    log.error("Failed to add document {} to zip: {}", document.getId(), e.getMessage());
+                    // Continue with other documents even if one fails
+                }
+            }
+
+            zos.finish();
+            log.info("Created zip archive with {} documents for team {}", documents.size(), principal.getTeamId());
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            log.error("Failed to create zip archive: {}", e.getMessage());
+            throw new RuntimeException("Failed to create zip archive", e);
+        }
+    }
+
+    private String sanitizeFilename(String filename) {
+        // Remove any path separators and invalid characters
+        return filename.replaceAll("[/\\\\:*?\"<>|]", "_");
     }
 }

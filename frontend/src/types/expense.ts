@@ -1,0 +1,68 @@
+import { PropertySummary, DocumentResponse } from './property';
+
+export enum ExpenseCategory {
+  MAINTENANCE = 'MAINTENANCE',
+  REPAIR = 'REPAIR',
+  UTILITY = 'UTILITY',
+  TAX = 'TAX',
+  INSURANCE = 'INSURANCE',
+  LEGAL = 'LEGAL',
+  MARKETING = 'MARKETING',
+  CLEANING = 'CLEANING',
+  LANDSCAPING = 'LANDSCAPING',
+  PROPERTY_MANAGEMENT = 'PROPERTY_MANAGEMENT',
+  OTHER = 'OTHER',
+}
+
+export interface ExpenseResponse {
+  id: string;
+  identifier: string;
+  teamId: string;
+  property: PropertySummary;
+  category: ExpenseCategory;
+  amount: number;
+  currency: string;
+  expenseDate: string;
+  description: string;
+  notes?: string;
+  documents: DocumentResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateExpenseRequest {
+  propertyId: string;
+  category: ExpenseCategory;
+  amount: number;
+  currency?: string;
+  expenseDate: string;
+  description: string;
+  notes?: string;
+}
+
+export interface UpdateExpenseRequest {
+  category?: ExpenseCategory;
+  amount?: number;
+  currency?: string;
+  expenseDate?: string;
+  description?: string;
+  notes?: string;
+}
+
+export interface ExpenseSummaryResponse {
+  period: string;
+  byCategory: CategoryTotal[];
+  grandTotal: number;
+  currency: string;
+}
+
+export interface CategoryTotal {
+  category: ExpenseCategory;
+  total: number;
+  count: number;
+}
+
+export interface GetExpensesParams {
+  category?: ExpenseCategory;
+  propertyId?: string;
+}

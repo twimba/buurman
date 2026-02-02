@@ -1,0 +1,37 @@
+package com.buurman.mapper;
+
+import com.buurman.domain.Payment;
+import com.buurman.jooq.generated.tables.records.PaymentsRecord;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PaymentRecordMapper {
+
+    public Payment toDomain(PaymentsRecord record) {
+        if (record == null) {
+            return null;
+        }
+
+        Payment payment = new Payment();
+        payment.setId(record.getId());
+        payment.setIdentifier(record.getIdentifier());
+        payment.setTeamId(record.getTeamId());
+        payment.setContractId(record.getContractId());
+        payment.setAmount(record.getAmount());
+        payment.setCurrency(record.getCurrency());
+        payment.setPaymentDate(record.getPaymentDate());
+        payment.setDueDate(record.getDueDate());
+        payment.setStatus(Payment.PaymentStatus.valueOf(record.getStatus()));
+        payment.setNotes(record.getNotes());
+        payment.setCreatedAt(record.getCreatedAt() != null ?
+                record.getCreatedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+        payment.setUpdatedAt(record.getUpdatedAt() != null ?
+                record.getUpdatedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+        payment.setCreatedBy(record.getCreatedBy());
+        payment.setUpdatedBy(record.getUpdatedBy());
+        payment.setDeletedAt(record.getDeletedAt() != null ?
+                record.getDeletedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+
+        return payment;
+    }
+}

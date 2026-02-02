@@ -1,0 +1,177 @@
+package com.buurman.repository;
+
+import com.buurman.domain.Contract;
+import com.buurman.mapper.ContractRecordMapper;
+import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+
+@Repository
+public class ContractRepository {
+
+    private final DSLContext dsl;
+    private final ContractRecordMapper mapper;
+
+    public ContractRepository(DSLContext dsl, ContractRecordMapper mapper) {
+        this.dsl = dsl;
+        this.mapper = mapper;
+    }
+
+    public Optional<Contract> findByIdAndTeamId(UUID id, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.ID.eq(id)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
+    }
+
+    public List<Contract> findAllByTeamId(UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .orderBy(CONTRACTS.CREATED_AT.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Contract> findByPropertyId(UUID propertyId, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.PROPERTY_ID.eq(propertyId)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .orderBy(CONTRACTS.START_DATE.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Contract> findByTenantId(UUID tenantId, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.TENANT_ID.eq(tenantId)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .orderBy(CONTRACTS.START_DATE.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Contract> findByStatus(Contract.ContractStatus status, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.STATUS.eq(status.name())
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .orderBy(CONTRACTS.START_DATE.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public Optional<Contract> findActiveContractByPropertyId(UUID propertyId, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.PROPERTY_ID.eq(propertyId)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
+    }
+
+    public Contract save(Contract contract) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+
+        if (contract.getId() == null) {
+            // Insert
+            UUID id = UUID.randomUUID();
+            LocalDateTime createdAt = contract.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(contract.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = contract.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
+            dsl.insertInto(CONTRACTS)
+                    .set(CONTRACTS.ID, id)
+                    .set(CONTRACTS.IDENTIFIER, contract.getIdentifier())
+                    .set(CONTRACTS.TEAM_ID, contract.getTeamId())
+                    .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+                    .set(CONTRACTS.TENANT_ID, contract.getTenantId())
+                    .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
+                    .set(CONTRACTS.START_DATE, contract.getStartDate())
+                    .set(CONTRACTS.END_DATE, contract.getEndDate())
+                    .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+                    .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount())
+                    .set(CONTRACTS.DEPOSIT_AMOUNT, contract.getDepositAmount())
+                    .set(CONTRACTS.SECURITY_DEPOSIT, contract.getSecurityDeposit())
+                    .set(CONTRACTS.CURRENCY, contract.getCurrency())
+                    .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
+                    .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+                    .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
+                    .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
+                    .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
+                    .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+                    .set(CONTRACTS.STATUS, contract.getStatus().name())
+                    .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
+                    .set(CONTRACTS.NOTES, contract.getNotes())
+                    .set(CONTRACTS.CREATED_AT, createdAt)
+                    .set(CONTRACTS.UPDATED_AT, updatedAt)
+                    .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
+                    .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
+                    .execute();
+
+            contract.setId(id);
+            contract.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            contract.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+        } else {
+            // Update
+            LocalDateTime updatedAt = contract.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
+            dsl.update(CONTRACTS)
+                    .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+                    .set(CONTRACTS.TENANT_ID, contract.getTenantId())
+                    .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
+                    .set(CONTRACTS.START_DATE, contract.getStartDate())
+                    .set(CONTRACTS.END_DATE, contract.getEndDate())
+                    .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+                    .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount())
+                    .set(CONTRACTS.DEPOSIT_AMOUNT, contract.getDepositAmount())
+                    .set(CONTRACTS.SECURITY_DEPOSIT, contract.getSecurityDeposit())
+                    .set(CONTRACTS.CURRENCY, contract.getCurrency())
+                    .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
+                    .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+                    .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
+                    .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
+                    .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
+                    .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+                    .set(CONTRACTS.STATUS, contract.getStatus().name())
+                    .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
+                    .set(CONTRACTS.NOTES, contract.getNotes())
+                    .set(CONTRACTS.UPDATED_AT, updatedAt)
+                    .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
+                    .where(CONTRACTS.ID.eq(contract.getId())
+                            .and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))
+                    .execute();
+
+            contract.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+        }
+
+        return contract;
+    }
+
+    public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(CONTRACTS)
+                .set(CONTRACTS.DELETED_AT, now)
+                .where(CONTRACTS.ID.eq(id)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId)))
+                .execute();
+    }
+}

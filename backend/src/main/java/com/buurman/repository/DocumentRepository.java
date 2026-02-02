@@ -115,4 +115,38 @@ public class DocumentRepository {
                         .and(DOCUMENTS.DELETED_AT.isNull()))
                 .execute();
     }
+
+    public List<Document> searchDocuments(String searchTerm, String entityType, UUID teamId) {
+        var query = dsl.selectFrom(DOCUMENTS)
+                .where(DOCUMENTS.TEAM_ID.eq(teamId)
+                        .and(DOCUMENTS.DELETED_AT.isNull()));
+
+        // Add search filter if provided
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+            query = query.and(
+                    DOCUMENTS.TITLE.lower().like(searchPattern)
+                            .or(DOCUMENTS.FILE_NAME.lower().like(searchPattern))
+                            .or(DOCUMENTS.NOTES.lower().like(searchPattern))
+            );
+        }
+
+        // Add entity type filter if provided
+        if (entityType != null && !entityType.trim().isEmpty()) {
+            query = query.and(DOCUMENTS.ENTITY_TYPE.eq(entityType));
+        }
+
+        return query.orderBy(DOCUMENTS.UPLOADED_AT.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {
+        return dsl.selectFrom(DOCUMENTS)
+                .where(DOCUMENTS.ID.in(ids)
+                        .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                        .and(DOCUMENTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(mapper::toDomain);
+    }
 }

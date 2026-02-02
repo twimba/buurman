@@ -124,7 +124,8 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
-            €{stats?.monthlyIncome?.amount?.toFixed(0) || 0}
+            {stats?.monthlyIncome?.currency || '€'}
+            {stats?.monthlyIncome?.amount?.toFixed(0) || 0}
           </div>
           <div className="text-sm text-gray-500 mt-2">
             Expected monthly revenue

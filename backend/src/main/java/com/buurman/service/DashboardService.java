@@ -52,9 +52,8 @@ public class DashboardService {
                     .multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
 
-        // Monthly income - will be implemented in Phase 2 with contracts
-        DashboardStatsResponse.MonthlyIncome monthlyIncome =
-                new DashboardStatsResponse.MonthlyIncome(BigDecimal.ZERO, "EUR");
+        // Calculate monthly income from active contracts
+        DashboardStatsResponse.MonthlyIncome monthlyIncome = calculateMonthlyIncome(teamId);
 
         return new DashboardStatsResponse(
                 totalProperties,
@@ -158,5 +157,51 @@ public class DashboardService {
         };
 
         return String.format("%s %s %s", userName, actionText, entityName);
+    }
+
+    private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
+        // Get all active contracts
+        var activeContracts = dsl.select(
+                        CONTRACTS.RENT_AMOUNT,
+                        CONTRACTS.CURRENCY,
+                        CONTRACTS.PAYMENT_FREQUENCY
+                )
+                .from(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch();
+
+        if (activeContracts.isEmpty()) {
+            return new DashboardStatsResponse.MonthlyIncome(BigDecimal.ZERO, "EUR");
+        }
+
+        // Group by currency and calculate monthly income
+        Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
+
+        for (var contract : activeContracts) {
+            BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
+            String currency = contract.get(CONTRACTS.CURRENCY);
+            String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
+
+            // Convert to monthly amount based on payment frequency
+            BigDecimal monthlyAmount = switch (paymentFrequency) {
+                case "MONTHLY" -> rentAmount;
+                case "QUARTERLY" -> rentAmount.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
+                case "ANNUALLY" -> rentAmount.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+                default -> rentAmount;
+            };
+
+            incomePerCurrency.merge(currency, monthlyAmount, BigDecimal::add);
+        }
+
+        // For simplicity, return the first currency (typically EUR)
+        // In a real scenario, you might want to convert all to a base currency
+        Map.Entry<String, BigDecimal> primaryIncome = incomePerCurrency.entrySet().iterator().next();
+
+        return new DashboardStatsResponse.MonthlyIncome(
+                primaryIncome.getValue().setScale(2, RoundingMode.HALF_UP),
+                primaryIncome.getKey()
+        );
     }
 }

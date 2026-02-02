@@ -11,12 +11,14 @@ import {
   useUploadPropertyPhoto,
   useSetMainPhoto,
 } from '@/hooks/usePropertyHooks';
+import { useContracts } from '@/hooks/useContractHooks';
 import { PropertyStatus } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { PropertyMap } from '@/components/properties/PropertyMap';
+import { ContractCard } from '@/components/contracts/ContractCard';
 import {
   ArrowLeft,
   Edit,
@@ -28,6 +30,8 @@ import {
   X,
   History,
   Image,
+  FileText,
+  Plus,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -49,7 +53,7 @@ export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
-    'info' | 'photos' | 'documents' | 'audit'
+    'info' | 'photos' | 'documents' | 'contracts' | 'audit'
   >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
@@ -75,6 +79,11 @@ export const PropertyDetailPage = () => {
     isLoading: auditLoading,
     error: auditError,
   } = usePropertyAuditLog(id);
+  const {
+    data: contracts = [],
+    isLoading: contractsLoading,
+    error: contractsError,
+  } = useContracts(id ? { propertyId: id } : undefined);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const uploadPhotoMutation = useUploadPropertyPhoto(id!);
@@ -126,6 +135,11 @@ export const PropertyDetailPage = () => {
   };
 
   const formatFieldName = (field: string): string => {
+    // Handle special field names
+    if (field === 'documentAdded') return 'Document Added';
+    if (field === 'documentRemoved') return 'Document Removed';
+    if (field === 'documentCount') return 'Document Count';
+
     // Convert camelCase to Title Case with spaces
     return field
       .replace(/([A-Z])/g, ' $1')
@@ -229,6 +243,17 @@ export const PropertyDetailPage = () => {
               }`}
             >
               Documents {documents.length > 0 && `(${documents.length})`}
+            </button>
+            <button
+              onClick={() => setActiveTab('contracts')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'contracts'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Contracts {contracts.length > 0 && `(${contracts.length})`}
             </button>
             <button
               onClick={() => setActiveTab('audit')}
@@ -406,6 +431,46 @@ export const PropertyDetailPage = () => {
           />
         )}
 
+        {activeTab === 'contracts' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Contracts</h2>
+              <button
+                onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Add Contract
+              </button>
+            </div>
+            {contractsLoading ? (
+              <LoadingSpinner />
+            ) : contractsError ? (
+              <ErrorMessage message="Failed to load contracts" />
+            ) : contracts.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600 mb-4">
+                  No contracts for this property
+                </p>
+                <button
+                  onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create First Contract
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {contracts.map((contract) => (
+                  <ContractCard key={contract.id} contract={contract} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'audit' && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -493,39 +558,94 @@ export const PropertyDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.keys(activity.changedFields!).map(
-                              (field) => (
-                                <div
-                                  key={field}
-                                  className="bg-white rounded p-2 text-xs"
-                                >
-                                  <div className="font-semibold text-gray-700 mb-1">
-                                    {formatFieldName(field)}
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                      <span className="text-gray-500">
-                                        Old:{' '}
-                                      </span>
-                                      <span className="text-red-600 line-through">
-                                        {formatFieldValue(
-                                          activity.oldValues?.[field]
-                                        )}
-                                      </span>
+                            {Object.entries(activity.changedFields!).map(
+                              ([field, value]) => {
+                                // Skip internal fields for document operations
+                                if (field === 'documentCount') return null;
+
+                                // Special handling for document operations
+                                if (
+                                  field === 'documentAdded' ||
+                                  field === 'documentRemoved'
+                                ) {
+                                  const category =
+                                    activity.changedFields?.category;
+                                  const title = activity.changedFields?.title;
+                                  return (
+                                    <div
+                                      key={field}
+                                      className="bg-white rounded p-2 text-xs"
+                                    >
+                                      <div className="font-semibold text-gray-700 mb-1">
+                                        File Name
+                                      </div>
+                                      <div className="text-gray-900">
+                                        {String(value)}
+                                      </div>
+                                      {title ? (
+                                        <>
+                                          <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                            Title
+                                          </div>
+                                          <div className="text-gray-900">
+                                            {String(title)}
+                                          </div>
+                                        </>
+                                      ) : null}
+                                      <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                        Type
+                                      </div>
+                                      <div className="text-gray-900">
+                                        {category === 'PHOTO'
+                                          ? 'Photo'
+                                          : 'Document'}
+                                      </div>
                                     </div>
-                                    <div>
-                                      <span className="text-gray-500">
-                                        New:{' '}
-                                      </span>
-                                      <span className="text-green-600 font-medium">
-                                        {formatFieldValue(
-                                          activity.newValues?.[field]
-                                        )}
-                                      </span>
+                                  );
+                                }
+
+                                // Skip category and title for document operations (already shown above)
+                                if (
+                                  (field === 'category' || field === 'title') &&
+                                  (activity.changedFields?.documentAdded ||
+                                    activity.changedFields?.documentRemoved)
+                                ) {
+                                  return null;
+                                }
+
+                                return (
+                                  <div
+                                    key={field}
+                                    className="bg-white rounded p-2 text-xs"
+                                  >
+                                    <div className="font-semibold text-gray-700 mb-1">
+                                      {formatFieldName(field)}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <span className="text-gray-500">
+                                          Old:{' '}
+                                        </span>
+                                        <span className="text-red-600 line-through">
+                                          {formatFieldValue(
+                                            activity.oldValues?.[field]
+                                          )}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">
+                                          New:{' '}
+                                        </span>
+                                        <span className="text-green-600 font-medium">
+                                          {formatFieldValue(
+                                            activity.newValues?.[field]
+                                          )}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              )
+                                );
+                              }
                             )}
                           </div>
                         </div>

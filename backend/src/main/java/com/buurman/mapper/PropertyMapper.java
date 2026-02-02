@@ -4,6 +4,7 @@ import com.buurman.domain.Property;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.PropertyResponse;
+import com.buurman.dto.response.PropertySummary;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -13,6 +14,8 @@ public interface PropertyMapper {
 
     @Mapping(target = "mainPhotoUrl", ignore = true)
     PropertyResponse toResponse(Property property);
+
+    PropertySummary toSummary(Property property);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifier", ignore = true)

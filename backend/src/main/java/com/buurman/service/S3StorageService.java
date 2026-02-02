@@ -5,16 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
@@ -102,6 +105,25 @@ public class S3StorageService {
         } catch (Exception e) {
             log.error("Failed to generate URL for file: {}", fileKey, e);
             throw new RuntimeException("Failed to generate download URL", e);
+        }
+    }
+
+    /**
+     * Download file from S3 and return as InputStream.
+     */
+    public InputStream downloadFile(String fileKey) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileKey)
+                    .build();
+
+            ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
+            log.debug("Downloaded file from S3: {}", fileKey);
+            return s3Object;
+        } catch (Exception e) {
+            log.error("Failed to download file from S3: {}", fileKey, e);
+            throw new RuntimeException("Failed to download file", e);
         }
     }
 

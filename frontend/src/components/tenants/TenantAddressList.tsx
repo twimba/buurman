@@ -7,14 +7,14 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useTenantAddresses,
   useCreateTenantAddress,
-  useUpdateTenantAddress,
   useDeleteTenantAddress,
 } from '@/hooks/useTenantHooks';
+import * as tenantsApi from '@/api/tenants';
 import {
-  TenantAddressResponse,
   AddressType,
   AddressStatus,
   CreateTenantAddressRequest,
@@ -28,9 +28,25 @@ interface TenantAddressListProps {
 }
 
 export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
+  const queryClient = useQueryClient();
   const { data: addresses, isLoading } = useTenantAddresses(tenantId);
   const createMutation = useCreateTenantAddress(tenantId);
   const deleteMutation = useDeleteTenantAddress(tenantId);
+  const updateMutation = useMutation({
+    mutationFn: ({
+      addressId,
+      data,
+    }: {
+      addressId: string;
+      data: UpdateTenantAddressRequest;
+    }) => tenantsApi.updateTenantAddress(tenantId, addressId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAddresses', tenantId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [expandedMapId, setExpandedMapId] = useState<string | null>(null);
@@ -44,8 +60,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
     addressId: string,
     data: UpdateTenantAddressRequest
   ) => {
-    const updateMutation = useUpdateTenantAddress(tenantId, addressId);
-    await updateMutation.mutateAsync(data);
+    await updateMutation.mutateAsync({ addressId, data });
     setEditingAddressId(null);
   };
 
@@ -157,7 +172,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                       )
                     }
                     onCancel={() => setEditingAddressId(null)}
-                    isLoading={false}
+                    isLoading={updateMutation.isPending}
                   />
                 </div>
               ) : (

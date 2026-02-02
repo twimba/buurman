@@ -6,6 +6,7 @@ import {
   FileText,
   DollarSign,
   Receipt,
+  Folder,
   BarChart3,
   ClipboardList,
   Settings,
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Contracts', href: '/contracts', icon: FileText },
   { name: 'Payments', href: '/payments', icon: DollarSign },
   { name: 'Expenses', href: '/expenses', icon: Receipt },
+  { name: 'Documents', href: '/documents', icon: Folder },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
   { name: 'Audit Log', href: '/audit-log', icon: ClipboardList },
 ];

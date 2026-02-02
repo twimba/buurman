@@ -1,0 +1,30 @@
+# Dependency locks (Huge token sinks)
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/pnpm-lock.yaml
+
+# Build & Cache
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.cache/
+frontend/.yarn/
+frontend/node_modules/
+
+# Heavy Media & Data
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.csv
+*.jsonl
+
+# Hidden IDE/System files
+backend/.idea/
+backend/target/classes/
+**/.DS_Store
+
+# Documentation (If you don't need Claude to read it every time)
+docs/
+site/

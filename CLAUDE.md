@@ -1,5 +1,17 @@
 # CLAUDE.md
 
+# Efficiency & Token Management Rules
+* **Response Style**: Be extremely laconic. No conversational filler ("Sure," "I've updated the file," etc.).
+* **Code Output**: Never output the full content of a file unless explicitly requested. Use "Partial File Diffs" or show only the modified functions and then only if super relevant otherwise omit the diff
+* **Explanations**: Provide technical explanations ONLY if the logic is non-obvious or if specifically asked "why."
+* **Context Control**: If the conversation exceeds 5-10 turns, proactively suggest a /compact or /clear to save tokens.
+* **Search Hygiene**: When using grep or find, use the most specific paths possible to avoid reading unnecessary file metadata.
+
+## Strict File Access Rules
+* **Ignore Policy**: You MUST strictly adhere to the patterns in `.claudeignore`. 
+* **Prohibition**: Never attempt to read, search, or index files matched by `.claudeignore`, even if I ask you to or if they are tracked by Git.
+* **Token Efficiency**: If a search or tool would return results from an ignored directory, filter them out before processing to save tokens.
+
 ## Project Overview
 
 Buurman is a property management dashboard application for small landlords to manage rental properties, tenants, contracts, and finances. The application uses:

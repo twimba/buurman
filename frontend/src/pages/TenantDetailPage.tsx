@@ -4,7 +4,6 @@ import {
   useTenant,
   useDeleteTenant,
   useTenantAuditLog,
-  useUnlinkTenantFromProperty,
   useTenantDocuments,
   useTenantPhotos,
   useUploadTenantDocument,
@@ -12,6 +11,7 @@ import {
   useSetTenantMainPhoto,
   useDeleteTenantDocument,
 } from '@/hooks/useTenantHooks';
+import { useContracts } from '@/hooks/useContractHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
@@ -19,6 +19,8 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
 import { TenantAddressList } from '@/components/tenants/TenantAddressList';
+import { ContractCard } from '@/components/contracts/ContractCard';
+import { ContractStatus } from '@/types/contract';
 import {
   ArrowLeft,
   Edit,
@@ -28,11 +30,11 @@ import {
   User,
   Home,
   X,
-  Unlink,
   FileText,
   Image,
   ChevronDown,
   MapPin,
+  Plus,
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 
@@ -40,7 +42,7 @@ export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
-    'info' | 'photos' | 'documents' | 'addresses' | 'history'
+    'info' | 'photos' | 'documents' | 'addresses' | 'contracts' | 'history'
   >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
@@ -63,12 +65,16 @@ export const TenantDetailPage = () => {
     isLoading: photosLoading,
     error: photosError,
   } = useTenantPhotos(id);
+  const {
+    data: contracts = [],
+    isLoading: contractsLoading,
+    error: contractsError,
+  } = useContracts(id ? { tenantId: id } : undefined);
 
   // Filter out photos from documents list
   const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
 
   const deleteTenantMutation = useDeleteTenant();
-  const unlinkMutation = useUnlinkTenantFromProperty(id!);
   const uploadDocumentMutation = useUploadTenantDocument(id!);
   const uploadPhotoMutation = useUploadTenantPhoto(id!);
   const setMainPhotoMutation = useSetTenantMainPhoto(id!);
@@ -81,14 +87,6 @@ export const TenantDetailPage = () => {
       navigate('/tenants');
     } catch (err) {
       console.error('Failed to delete tenant:', err);
-    }
-  };
-
-  const handleUnlink = async () => {
-    try {
-      await unlinkMutation.mutateAsync();
-    } catch (err) {
-      console.error('Failed to unlink tenant:', err);
     }
   };
 
@@ -125,6 +123,17 @@ export const TenantDetailPage = () => {
     }
     setExpandedAuditItems(newExpanded);
   };
+
+  // Get unique properties from active contracts
+  const activeContractProperties = contracts
+    ? contracts
+        .filter((contract) => contract.status === ContractStatus.ACTIVE)
+        .map((contract) => contract.property)
+        .filter(
+          (property, index, self) =>
+            index === self.findIndex((p) => p.id === property.id)
+        )
+    : [];
 
   if (isLoading) {
     return (
@@ -232,6 +241,17 @@ export const TenantDetailPage = () => {
               Addresses
             </button>
             <button
+              onClick={() => setActiveTab('contracts')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'contracts'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Contracts {contracts.length > 0 && `(${contracts.length})`}
+            </button>
+            <button
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
@@ -321,37 +341,42 @@ export const TenantDetailPage = () => {
               )}
             </div>
 
-            {/* Current Property */}
+            {/* Current Properties (from Active Contracts) */}
             <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Current Property
+                Current Properties
               </h2>
-              {tenant.currentProperty ? (
-                <div className="flex items-center justify-between bg-green-50 p-4 rounded">
-                  <div className="flex items-center gap-3">
-                    <Home className="h-8 w-8 text-green-600" />
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {tenant.currentProperty.street}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {tenant.currentProperty.city},{' '}
-                        {tenant.currentProperty.postalCode}
-                      </p>
+              {contractsLoading ? (
+                <LoadingSpinner />
+              ) : activeContractProperties.length > 0 ? (
+                <div className="space-y-3">
+                  {activeContractProperties.map((property) => (
+                    <div
+                      key={property.id}
+                      className="flex items-center justify-between bg-green-50 p-4 rounded border border-green-200"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Home className="h-8 w-8 text-green-600" />
+                        <div>
+                          <button
+                            onClick={() =>
+                              navigate(`/properties/${property.id}`)
+                            }
+                            className="font-medium text-gray-900 hover:text-blue-600 text-left"
+                          >
+                            {property.street}
+                          </button>
+                          <p className="text-sm text-gray-600">
+                            {property.city}, {property.postalCode}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    onClick={handleUnlink}
-                    disabled={unlinkMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded hover:bg-red-50 transition-colors disabled:opacity-50"
-                  >
-                    <Unlink className="h-4 w-4" />
-                    Unlink
-                  </button>
+                  ))}
                 </div>
               ) : (
                 <p className="text-sm text-gray-400 italic">
-                  No property assigned
+                  No active contracts for this tenant
                 </p>
               )}
             </div>
@@ -390,6 +415,46 @@ export const TenantDetailPage = () => {
         {activeTab === 'addresses' && (
           <div className="bg-white rounded-lg shadow p-6">
             <TenantAddressList tenantId={id!} />
+          </div>
+        )}
+
+        {activeTab === 'contracts' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Contracts</h2>
+              <button
+                onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Add Contract
+              </button>
+            </div>
+            {contractsLoading ? (
+              <LoadingSpinner />
+            ) : contractsError ? (
+              <ErrorMessage message="Failed to load contracts" />
+            ) : contracts.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600 mb-4">
+                  No contracts for this tenant
+                </p>
+                <button
+                  onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create First Contract
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {contracts.map((contract) => (
+                  <ContractCard key={contract.id} contract={contract} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -474,7 +539,58 @@ export const TenantDetailPage = () => {
                             <div className="space-y-2">
                               {Object.entries(activity.changedFields!)
                                 .filter(([field]) => field !== 'updatedAt')
-                                .map(([field]) => {
+                                .map(([field, value]) => {
+                                  // Skip internal fields for document operations
+                                  if (field === 'documentCount') return null;
+
+                                  // Special handling for document operations
+                                  if (
+                                    field === 'documentAdded' ||
+                                    field === 'documentRemoved'
+                                  ) {
+                                    const category =
+                                      activity.changedFields?.category;
+                                    const title = activity.changedFields?.title;
+                                    return (
+                                      <div key={field} className="text-sm">
+                                        <div className="font-medium text-gray-700 mb-1">
+                                          File Name
+                                        </div>
+                                        <div className="ml-4 text-gray-900">
+                                          {String(value)}
+                                        </div>
+                                        {title ? (
+                                          <>
+                                            <div className="font-medium text-gray-700 mb-1 mt-2">
+                                              Title
+                                            </div>
+                                            <div className="ml-4 text-gray-900">
+                                              {String(title)}
+                                            </div>
+                                          </>
+                                        ) : null}
+                                        <div className="font-medium text-gray-700 mb-1 mt-2">
+                                          Type
+                                        </div>
+                                        <div className="ml-4 text-gray-900">
+                                          {category === 'PHOTO'
+                                            ? 'Photo'
+                                            : 'Document'}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+
+                                  // Skip category and title for document operations (already shown above)
+                                  if (
+                                    (field === 'category' ||
+                                      field === 'title') &&
+                                    (activity.changedFields?.documentAdded ||
+                                      activity.changedFields?.documentRemoved)
+                                  ) {
+                                    return null;
+                                  }
+
                                   const isRichText = field === 'additionalInfo';
                                   const oldValue = activity.oldValues?.[field];
                                   const newValue = activity.newValues?.[field];

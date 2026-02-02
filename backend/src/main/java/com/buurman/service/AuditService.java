@@ -153,12 +153,13 @@ public class AuditService {
                             ? firstName + " " + lastName
                             : "Unknown";
 
-                    String description = buildActivityDescription(action, entityType, userName);
-
-                    // Parse JSON fields
+                    // Parse JSON fields first
                     Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
                     Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
                     Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+
+                    // Build description based on action and changed fields
+                    String description = buildActivityDescription(action, entityType, userName, changedFields);
 
                     return new RecentActivityResponse(
                             record.get(AUDIT_LOG.ID),
@@ -189,7 +190,23 @@ public class AuditService {
         }
     }
 
-    private String buildActivityDescription(String action, String entityType, String userName) {
+    private String buildActivityDescription(String action, String entityType, String userName, Map<String, Object> changedFields) {
+        // Check for document operations
+        if (changedFields != null && changedFields.containsKey("documentAdded")) {
+            String fileName = (String) changedFields.get("documentAdded");
+            String category = (String) changedFields.get("category");
+            String docType = "PHOTO".equals(category) ? "photo" : "document";
+            return String.format("%s uploaded %s: %s", userName, docType, fileName);
+        }
+
+        if (changedFields != null && changedFields.containsKey("documentRemoved")) {
+            String fileName = (String) changedFields.get("documentRemoved");
+            String category = (String) changedFields.get("category");
+            String docType = "PHOTO".equals(category) ? "photo" : "document";
+            return String.format("%s removed %s: %s", userName, docType, fileName);
+        }
+
+        // Default behavior for other operations
         String actionText = switch (action) {
             case "CREATE" -> "created";
             case "UPDATE" -> "updated";

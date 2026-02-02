@@ -102,19 +102,16 @@ export const PropertyStatusChart = ({
   return (
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
+        <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
           <Pie
             data={data}
             cx="50%"
-            cy="45%"
+            cy="50%"
             innerRadius={60}
-            outerRadius={100}
+            outerRadius={90}
             paddingAngle={2}
             dataKey="value"
-            label={({ name, percent }) =>
-              `${name}: ${((percent || 0) * 100).toFixed(0)}%`
-            }
-            labelLine={true}
+            label={false}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />

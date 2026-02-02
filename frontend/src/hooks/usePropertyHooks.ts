@@ -5,6 +5,8 @@ import {
   UpdatePropertyRequest,
   PropertyStatus,
 } from '../types/property';
+import { useToast } from '../context/ToastContext';
+import { getErrorMessage } from '../utils/errorMessages';
 
 export const useProperties = (status?: PropertyStatus) => {
   return useQuery({
@@ -23,18 +25,24 @@ export const useProperty = (id: string | undefined) => {
 
 export const useCreateProperty = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: CreatePropertyRequest) =>
       propertiesApi.createProperty(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Property created successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateProperty = (id: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: UpdatePropertyRequest) =>
       propertiesApi.updateProperty(id, data),
@@ -43,17 +51,26 @@ export const useUpdateProperty = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['property', id] });
       queryClient.invalidateQueries({ queryKey: ['propertyAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Property updated successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteProperty = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (id: string) => propertiesApi.deleteProperty(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Property deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };

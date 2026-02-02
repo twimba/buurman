@@ -7,6 +7,8 @@ import {
   CreateTenantAddressRequest,
   UpdateTenantAddressRequest,
 } from '../types/tenant';
+import { useToast } from '../context/ToastContext';
+import { getErrorMessage } from '../utils/errorMessages';
 
 export const useTenants = (search?: string) => {
   return useQuery({
@@ -25,17 +27,23 @@ export const useTenant = (id: string | undefined) => {
 
 export const useCreateTenant = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: CreateTenantRequest) => tenantsApi.createTenant(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Tenant created successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useUpdateTenant = (id: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: UpdateTenantRequest) =>
       tenantsApi.updateTenant(id, data),
@@ -44,17 +52,26 @@ export const useUpdateTenant = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['tenant', id] });
       queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Tenant updated successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useDeleteTenant = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (id: string) => tenantsApi.deleteTenant(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Tenant deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -132,6 +149,9 @@ export const useUploadTenantDocument = (tenantId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['tenantDocuments', tenantId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAuditLog', tenantId],
+      });
     },
   });
 };
@@ -150,6 +170,9 @@ export const useUploadTenantPhoto = (tenantId: string) => {
     }) => tenantsApi.uploadTenantPhoto(tenantId, file, title, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAuditLog', tenantId],
+      });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
     },
   });
@@ -179,6 +202,9 @@ export const useDeleteTenantDocument = (tenantId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['tenantAuditLog', tenantId],
+      });
     },
   });
 };

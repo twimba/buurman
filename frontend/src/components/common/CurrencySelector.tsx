@@ -1,0 +1,166 @@
+import { useState, useRef, useEffect } from 'react';
+import {
+  allCurrencies,
+  topCurrencies,
+  formatCurrency,
+} from '@/utils/currencies';
+import { ChevronDown } from 'lucide-react';
+
+interface CurrencySelectorProps {
+  value?: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}
+
+export const CurrencySelector = ({
+  value,
+  onChange,
+  disabled = false,
+}: CurrencySelectorProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const topCurrencyCodes = new Set(topCurrencies.map((c) => c.code));
+  const otherCurrencies = allCurrencies.filter(
+    (c) => !topCurrencyCodes.has(c.code)
+  );
+
+  const filteredTopCurrencies = topCurrencies.filter(
+    (currency) =>
+      currency.code.toLowerCase().includes(search.toLowerCase()) ||
+      currency.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredOtherCurrencies = otherCurrencies.filter(
+    (currency) =>
+      currency.code.toLowerCase().includes(search.toLowerCase()) ||
+      currency.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const selectedCurrency = value
+    ? allCurrencies.find((c) => c.code === value)
+    : undefined;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearch('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (code: string) => {
+    onChange(code);
+    setIsOpen(false);
+    setSearch('');
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen) {
+            setTimeout(() => inputRef.current?.focus(), 100);
+          }
+        }}
+        disabled={disabled}
+        className="w-full flex items-center justify-between border border-gray-300 rounded px-3 py-2 bg-white hover:border-blue-600 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
+      >
+        <span className="text-sm">
+          {selectedCurrency
+            ? formatCurrency(selectedCurrency.code)
+            : 'Select currency'}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-96 overflow-hidden">
+          {/* Search input */}
+          <div className="p-2 border-b border-gray-200">
+            <input
+              ref={inputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search currencies..."
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+            />
+          </div>
+
+          {/* Currency list */}
+          <div className="overflow-y-auto max-h-80">
+            {/* Top currencies */}
+            {filteredTopCurrencies.length > 0 && (
+              <div>
+                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                  Common
+                </div>
+                {filteredTopCurrencies.map((currency) => (
+                  <button
+                    key={currency.code}
+                    type="button"
+                    onClick={() => handleSelect(currency.code)}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${
+                      currency.code === value ? 'bg-blue-100' : ''
+                    }`}
+                  >
+                    {formatCurrency(currency.code)}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Divider */}
+            {filteredTopCurrencies.length > 0 &&
+              filteredOtherCurrencies.length > 0 && (
+                <div className="border-t border-gray-200 my-1" />
+              )}
+
+            {/* Other currencies */}
+            {filteredOtherCurrencies.length > 0 && (
+              <div>
+                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                  Other Currencies
+                </div>
+                {filteredOtherCurrencies.map((currency) => (
+                  <button
+                    key={currency.code}
+                    type="button"
+                    onClick={() => handleSelect(currency.code)}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${
+                      currency.code === value ? 'bg-blue-100' : ''
+                    }`}
+                  >
+                    {formatCurrency(currency.code)}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* No results */}
+            {filteredTopCurrencies.length === 0 &&
+              filteredOtherCurrencies.length === 0 && (
+                <div className="px-3 py-8 text-center text-sm text-gray-500">
+                  No currencies found
+                </div>
+              )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
