@@ -88,3 +88,82 @@ export const useTenantHistory = (tenantId: string | undefined) => {
     enabled: !!tenantId,
   });
 };
+
+export const useTenantDocuments = (tenantId: string | undefined) => {
+  return useQuery({
+    queryKey: ['tenantDocuments', tenantId],
+    queryFn: () => tenantsApi.getTenantDocuments(tenantId!),
+    enabled: !!tenantId,
+  });
+};
+
+export const useTenantPhotos = (tenantId: string | undefined) => {
+  return useQuery({
+    queryKey: ['tenantPhotos', tenantId],
+    queryFn: () => tenantsApi.getTenantPhotos(tenantId!),
+    enabled: !!tenantId,
+  });
+};
+
+export const useUploadTenantDocument = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) => tenantsApi.uploadTenantDocument(tenantId, file, title, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenantDocuments', tenantId] });
+    },
+  });
+};
+
+export const useUploadTenantPhoto = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) => tenantsApi.uploadTenantPhoto(tenantId, file, title, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
+};
+
+export const useSetTenantMainPhoto = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (photoId: string) =>
+      tenantsApi.setTenantMainPhoto(tenantId, photoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+    },
+  });
+};
+
+export const useDeleteTenantDocument = (tenantId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      tenantsApi.deleteTenantDocument(documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tenantDocuments', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+  });
+};

@@ -6,6 +6,7 @@ import {
   LinkTenantToPropertyRequest,
   PropertyTenantHistoryResponse,
 } from '../types/tenant';
+import { DocumentResponse } from '../types/document';
 
 export const getTenants = async (
   search?: string
@@ -62,4 +63,76 @@ export const getTenantHistory = async (
 ): Promise<PropertyTenantHistoryResponse[]> => {
   const response = await client.get(`/tenants/${tenantId}/history`);
   return response.data;
+};
+
+export const getTenantDocuments = async (
+  tenantId: string
+): Promise<DocumentResponse[]> => {
+  const response = await client.get(`/tenants/${tenantId}/documents`);
+  return response.data;
+};
+
+export const getTenantPhotos = async (
+  tenantId: string
+): Promise<DocumentResponse[]> => {
+  const response = await client.get(`/tenants/${tenantId}/photos`);
+  return response.data;
+};
+
+export const uploadTenantDocument = async (
+  tenantId: string,
+  file: File,
+  title?: string,
+  notes?: string
+): Promise<DocumentResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (title) formData.append('title', title);
+  if (notes) formData.append('notes', notes);
+
+  const response = await client.post(
+    `/tenants/${tenantId}/documents`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};
+
+export const uploadTenantPhoto = async (
+  tenantId: string,
+  file: File,
+  title?: string,
+  notes?: string
+): Promise<DocumentResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (title) formData.append('title', title);
+  if (notes) formData.append('notes', notes);
+
+  const response = await client.post(`/tenants/${tenantId}/photos`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const setTenantMainPhoto = async (
+  tenantId: string,
+  photoId: string
+): Promise<DocumentResponse> => {
+  const response = await client.put(
+    `/tenants/${tenantId}/photos/${photoId}/set-main`
+  );
+  return response.data;
+};
+
+export const deleteTenantDocument = async (
+  documentId: string
+): Promise<void> => {
+  await client.delete(`/tenants/documents/${documentId}`);
 };
