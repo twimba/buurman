@@ -292,6 +292,7 @@ public class TenantService {
                         response.phone(),
                         response.taxNumber(),
                         response.idNumber(),
+                        response.additionalInfo(),
                         propertySummary,
                         response.createdAt(),
                         response.updatedAt()
