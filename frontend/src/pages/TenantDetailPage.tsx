@@ -5,10 +5,18 @@ import {
   useDeleteTenant,
   useTenantHistory,
   useUnlinkTenantFromProperty,
+  useTenantDocuments,
+  useTenantPhotos,
+  useUploadTenantDocument,
+  useUploadTenantPhoto,
+  useSetTenantMainPhoto,
+  useDeleteTenantDocument,
 } from '@/hooks/useTenantHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { DocumentList } from '@/components/properties/DocumentList';
+import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import {
   ArrowLeft,
   Edit,
@@ -19,20 +27,42 @@ import {
   Home,
   X,
   Unlink,
+  FileText,
+  Image,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'info' | 'history'>('info');
+  const [activeTab, setActiveTab] = useState<
+    'info' | 'photos' | 'documents' | 'history'
+  >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: tenant, isLoading, error } = useTenant(id);
   const { data: history = [], isLoading: historyLoading } =
     useTenantHistory(id);
+  const {
+    data: allDocuments = [],
+    isLoading: docsLoading,
+    error: docsError,
+  } = useTenantDocuments(id);
+  const {
+    data: photos = [],
+    isLoading: photosLoading,
+    error: photosError,
+  } = useTenantPhotos(id);
+
+  // Filter out photos from documents list
+  const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
+
   const deleteTenantMutation = useDeleteTenant();
   const unlinkMutation = useUnlinkTenantFromProperty(id!);
+  const uploadDocumentMutation = useUploadTenantDocument(id!);
+  const uploadPhotoMutation = useUploadTenantPhoto(id!);
+  const setMainPhotoMutation = useSetTenantMainPhoto(id!);
+  const deleteDocumentMutation = useDeleteTenantDocument(id!);
 
   const handleDelete = async () => {
     if (!id) return;
@@ -50,6 +80,30 @@ export const TenantDetailPage = () => {
     } catch (err) {
       console.error('Failed to unlink tenant:', err);
     }
+  };
+
+  const handleUploadDocument = async (
+    file: File,
+    title?: string,
+    notes?: string
+  ) => {
+    await uploadDocumentMutation.mutateAsync({ file, title, notes });
+  };
+
+  const handleDeleteDocument = async (documentId: string) => {
+    await deleteDocumentMutation.mutateAsync(documentId);
+  };
+
+  const handleUploadPhoto = async (
+    file: File,
+    title?: string,
+    notes?: string
+  ) => {
+    await uploadPhotoMutation.mutateAsync({ file, title, notes });
+  };
+
+  const handleSetMainPhoto = async (photoId: string) => {
+    await setMainPhotoMutation.mutateAsync(photoId);
   };
 
   if (isLoading) {
@@ -117,6 +171,28 @@ export const TenantDetailPage = () => {
               }`}
             >
               Information
+            </button>
+            <button
+              onClick={() => setActiveTab('photos')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'photos'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Image className="h-4 w-4" />
+              Photos {photos.length > 0 && `(${photos.length})`}
+            </button>
+            <button
+              onClick={() => setActiveTab('documents')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'documents'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Documents {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -217,6 +293,35 @@ export const TenantDetailPage = () => {
               )}
             </div>
           </div>
+        )}
+
+        {activeTab === 'photos' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <PhotoGallery
+              propertyId={id!}
+              photos={photos}
+              isLoading={photosLoading}
+              error={photosError}
+              onUpload={handleUploadPhoto}
+              onSetMain={handleSetMainPhoto}
+              onDelete={handleDeleteDocument}
+              isUploading={uploadPhotoMutation.isPending}
+              isDeleting={deleteDocumentMutation.isPending}
+            />
+          </div>
+        )}
+
+        {activeTab === 'documents' && (
+          <DocumentList
+            propertyId={id!}
+            documents={documents}
+            isLoading={docsLoading}
+            error={docsError}
+            onUpload={handleUploadDocument}
+            onDelete={handleDeleteDocument}
+            isUploading={uploadDocumentMutation.isPending}
+            isDeleting={deleteDocumentMutation.isPending}
+          />
         )}
 
         {activeTab === 'history' && (
