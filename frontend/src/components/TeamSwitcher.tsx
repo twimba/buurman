@@ -13,13 +13,8 @@ import {
 } from 'lucide-react';
 
 export const TeamSwitcher = () => {
-  const {
-    teams,
-    activeTeam,
-    defaultTeamId,
-    switchTeam,
-    setAsDefaultTeam,
-  } = useTeam();
+  const { teams, activeTeam, defaultTeamId, switchTeam, setAsDefaultTeam } =
+    useTeam();
   const [isOpen, setIsOpen] = useState(false);
 
   const getRoleIcon = (role: string) => {

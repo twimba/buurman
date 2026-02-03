@@ -30,7 +30,7 @@ public class QuartzConfig {
                 .forJob(paymentGenerationJobDetail)
                 .withIdentity("paymentGenerationTrigger", "payment-scheduling")
                 .withDescription("Trigger for payment generation job (every 4 hours)")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */4 * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 * * * ?"))
                 .build();
     }
 }

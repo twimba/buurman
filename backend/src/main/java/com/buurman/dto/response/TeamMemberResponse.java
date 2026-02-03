@@ -9,6 +9,7 @@ public record TeamMemberResponse(
     String email,
     String name,
     String role,
+    boolean isOwner,
     Instant joinedAt,
     boolean isCurrentUser
 ) {}

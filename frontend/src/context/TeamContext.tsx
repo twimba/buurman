@@ -1,10 +1,21 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  getUserTeams,
+  switchTeam as switchTeamApi,
+  setDefaultTeam as setDefaultTeamApi,
+  UserTeamResponse,
+} from '../api/users';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Team {
   id: string;
   name: string;
+  identifier: string;
   role: 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
   isOwner: boolean;
+  isDefault: boolean;
+  isActive: boolean;
   memberCount: number;
 }
 
@@ -12,67 +23,92 @@ interface TeamContextType {
   teams: Team[];
   activeTeam: Team | null;
   defaultTeamId: string | null;
+  isLoading: boolean;
   switchTeam: (teamId: string) => void;
   setAsDefaultTeam: (teamId: string) => void;
   canEditTeamSettings: boolean;
   canManageMembers: boolean;
+  canEditData: boolean;
+  refetchTeams: () => void;
 }
 
 const TeamContext = createContext<TeamContextType | undefined>(undefined);
 
+const mapApiTeamToTeam = (apiTeam: UserTeamResponse): Team => ({
+  id: apiTeam.teamId,
+  name: apiTeam.teamName,
+  identifier: apiTeam.identifier,
+  role: apiTeam.role,
+  isOwner: apiTeam.isOwner,
+  isDefault: apiTeam.isDefault,
+  isActive: apiTeam.isActive,
+  memberCount: apiTeam.memberCount,
+});
+
 export const TeamProvider = ({ children }: { children: ReactNode }) => {
-  // Mock data - will be replaced with API calls
-  const [teams] = useState<Team[]>([
-    {
-      id: '1',
-      name: 'My Property Empire',
-      role: 'TEAM_ADMIN',
-      isOwner: true,
-      memberCount: 1,
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
+
+  const {
+    data: teamsData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['user-teams'],
+    queryFn: getUserTeams,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: isAuthenticated, // Only fetch when authenticated
+  });
+
+  const teams: Team[] = teamsData?.map(mapApiTeamToTeam) ?? [];
+  const activeTeam = teams.find((t) => t.isActive) ?? teams[0] ?? null;
+  const defaultTeamId = teams.find((t) => t.isDefault)?.id ?? null;
+
+  const switchTeamMutation = useMutation({
+    mutationFn: switchTeamApi,
+    onSuccess: () => {
+      // Invalidate all team-dependent queries
+      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Refresh the page to ensure all data is for the new team
+      window.location.reload();
     },
-    {
-      id: '2',
-      name: 'Downtown Rentals Co.',
-      role: 'TEAM_EDITOR',
-      isOwner: false,
-      memberCount: 5,
+  });
+
+  const setDefaultTeamMutation = useMutation({
+    mutationFn: setDefaultTeamApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
     },
-    {
-      id: '3',
-      name: 'Beach Properties LLC',
-      role: 'TEAM_VIEWER',
-      isOwner: false,
-      memberCount: 12,
+  });
+
+  const switchTeam = useCallback(
+    (teamId: string) => {
+      switchTeamMutation.mutate(teamId);
     },
-  ]);
+    [switchTeamMutation]
+  );
 
-  const [defaultTeamId, setDefaultTeamId] = useState<string>('1');
-  const [activeTeamId, setActiveTeamId] = useState<string>('1');
+  const setAsDefaultTeam = useCallback(
+    (teamId: string) => {
+      setDefaultTeamMutation.mutate(teamId);
+    },
+    [setDefaultTeamMutation]
+  );
 
-  const activeTeam = teams.find((t) => t.id === activeTeamId) || teams[0];
-
-  const switchTeam = (teamId: string) => {
-    setActiveTeamId(teamId);
-    // TODO: API call to switch team context
-    // This should update the JWT or session with the new team context
-    localStorage.setItem('activeTeamId', teamId);
-  };
-
-  const setAsDefaultTeam = (teamId: string) => {
-    setDefaultTeamId(teamId);
-    // TODO: API call to update user's default team
-  };
-
-  // Load active team from localStorage on mount
-  useEffect(() => {
-    const savedTeamId = localStorage.getItem('activeTeamId');
-    if (savedTeamId && teams.some((t) => t.id === savedTeamId)) {
-      setActiveTeamId(savedTeamId);
-    }
-  }, [teams]);
+  const refetchTeams = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const canEditTeamSettings = activeTeam?.role === 'TEAM_ADMIN';
   const canManageMembers = activeTeam?.role === 'TEAM_ADMIN';
+  const canEditData =
+    activeTeam?.role === 'TEAM_ADMIN' || activeTeam?.role === 'TEAM_EDITOR';
 
   return (
     <TeamContext.Provider
@@ -80,10 +116,13 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
         teams,
         activeTeam,
         defaultTeamId,
+        isLoading,
         switchTeam,
         setAsDefaultTeam,
         canEditTeamSettings,
         canManageMembers,
+        canEditData,
+        refetchTeams,
       }}
     >
       {children}

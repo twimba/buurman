@@ -18,6 +18,7 @@ import {
   DollarSign,
   PieChart,
 } from 'lucide-react';
+import { useTeam } from '@/context/TeamContext';
 import {
   format,
   subMonths,
@@ -62,6 +63,7 @@ type SortOrder = 'asc' | 'desc';
 
 export const ExpensesPage = () => {
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [categoryFilter, setCategoryFilter] = useState<
     ExpenseCategory | undefined
   >(undefined);
@@ -234,7 +236,8 @@ export const ExpensesPage = () => {
           </div>
           <button
             onClick={() => navigate('/expenses/new')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+            disabled={!canEditData}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
             <Plus className="h-5 w-5" />
             Add Expense
@@ -537,7 +540,8 @@ export const ExpensesPage = () => {
             {!categoryFilter && !searchTerm && (
               <button
                 onClick={() => navigate('/expenses/new')}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                disabled={!canEditData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <Plus className="h-5 w-5" />
                 Add Expense

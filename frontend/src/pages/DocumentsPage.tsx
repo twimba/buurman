@@ -20,9 +20,11 @@ import {
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { DocumentResponse } from '@/types/property';
 import { format } from 'date-fns';
+import { useTeam } from '@/context/TeamContext';
 
 export const DocumentsPage = () => {
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
@@ -45,7 +47,8 @@ export const DocumentsPage = () => {
   });
 
   // Filter out photos - only show documents
-  const documents = allDocuments?.filter((doc) => doc.category !== 'PHOTO') || [];
+  const documents =
+    allDocuments?.filter((doc) => doc.category !== 'PHOTO') || [];
 
   const deleteMutation = useDeleteDocument();
   const bulkDownloadMutation = useBulkDownload();
@@ -393,13 +396,15 @@ export const DocumentsPage = () => {
                       >
                         <Download className="h-4 w-4" />
                       </a>
-                      <button
-                        onClick={() => handleDelete(doc.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {canEditData && (
+                        <button
+                          onClick={() => handleDelete(doc.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

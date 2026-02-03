@@ -254,7 +254,10 @@ export const useGenerateContractPayments = (contractId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       if (result.generated === result.requested) {
-        showToast(`Generated ${result.generated} payment(s) successfully`, 'success');
+        showToast(
+          `Generated ${result.generated} payment(s) successfully`,
+          'success'
+        );
       } else {
         showToast(
           `Generated ${result.generated} of ${result.requested} payment(s). Some dates already had payments.`,

@@ -73,16 +73,23 @@ export const SettingsPage = () => {
                   🚧 We're Cooking Something Special! 🚧
                 </h3>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Our settings page is like a fine wine - still aging to perfection! 🍷
-                  Some features are fully functional (feel free to click around!), while
-                  others are getting their final polish. Think of it as a "behind the
-                  scenes" tour. Backend magic coming soon! ✨
+                  Our settings page is like a fine wine - still aging to
+                  perfection! 🍷 Some features are fully functional (feel free
+                  to click around!), while others are getting their final
+                  polish. Think of it as a "behind the scenes" tour. Backend
+                  magic coming soon! ✨
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex -space-x-2">
                     <div className="h-6 w-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white animate-pulse" />
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white animate-pulse" style={{ animationDelay: '150ms' }} />
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white animate-pulse" style={{ animationDelay: '300ms' }} />
+                    <div
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white animate-pulse"
+                      style={{ animationDelay: '150ms' }}
+                    />
+                    <div
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white animate-pulse"
+                      style={{ animationDelay: '300ms' }}
+                    />
                   </div>
                   <span className="text-xs text-gray-600 italic">
                     Progress: Frontend 100% • Backend 0% • Vibes 200% 🎉
@@ -122,7 +129,12 @@ export const SettingsPage = () => {
                     Managing: {activeTeam?.name}
                   </p>
                   <p className="text-xs text-gray-600">
-                    Role: {activeTeam?.role === 'TEAM_ADMIN' ? 'Admin' : activeTeam?.role === 'TEAM_EDITOR' ? 'Editor' : 'Viewer'}
+                    Role:{' '}
+                    {activeTeam?.role === 'TEAM_ADMIN'
+                      ? 'Admin'
+                      : activeTeam?.role === 'TEAM_EDITOR'
+                        ? 'Editor'
+                        : 'Viewer'}
                     {activeTeam?.isOwner && ' • Owner'}
                   </p>
                 </div>
@@ -222,7 +234,8 @@ export const SettingsPage = () => {
               <p className="text-xs text-blue-800 flex items-center gap-2">
                 <User className="h-4 w-4 flex-shrink-0" />
                 <span>
-                  <strong>Personal settings</strong> apply to your account across all teams
+                  <strong>Personal settings</strong> apply to your account
+                  across all teams
                 </span>
               </p>
             </div>
@@ -232,35 +245,31 @@ export const SettingsPage = () => {
         {/* Content Area */}
         <div className="pb-12">
           {activeTab === 'profile' && <UserProfileSection />}
-          {activeTab === 'team' && (
-            hasRequiredPermissions ? (
+          {activeTab === 'team' &&
+            (hasRequiredPermissions ? (
               <TeamSettingsSection />
             ) : (
               <PermissionDenied section="Team Management" />
-            )
-          )}
-          {activeTab === 'teamPreferences' && (
-            hasRequiredPermissions ? (
+            ))}
+          {activeTab === 'teamPreferences' &&
+            (hasRequiredPermissions ? (
               <TeamPreferencesSection />
             ) : (
               <PermissionDenied section="Team Preferences" />
-            )
-          )}
+            ))}
           {activeTab === 'preferences' && <UserPreferencesSection />}
-          {activeTab === 'subscription' && (
-            hasRequiredPermissions ? (
+          {activeTab === 'subscription' &&
+            (hasRequiredPermissions ? (
               <SubscriptionSection />
             ) : (
               <PermissionDenied section="Subscription Management" />
-            )
-          )}
-          {activeTab === 'payments' && (
-            hasRequiredPermissions ? (
+            ))}
+          {activeTab === 'payments' &&
+            (hasRequiredPermissions ? (
               <PaymentHistorySection />
             ) : (
               <PermissionDenied section="Billing History" />
-            )
-          )}
+            ))}
         </div>
       </div>
     </div>

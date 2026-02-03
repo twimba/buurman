@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.buurman.util.Constants.SYSTEM_USER_ID;
+
 /**
  * Quartz job that generates future payments for all active contracts.
  * Runs every 4 hours to ensure payments are created ahead of time.
@@ -53,10 +55,7 @@ public class PaymentGenerationJob implements Job {
                 try {
                     log.debug("Processing team: {}", team.getIdentifier());
 
-                    int count = schedulingService.generateFuturePaymentsForTeam(
-                            team.getId(),
-                            Constants.SYSTEM_USER_ID
-                    );
+                    int count = schedulingService.generateFuturePaymentsForTeam(team.getId(), SYSTEM_USER_ID);
 
                     totalPaymentsGenerated += count;
                     teamsProcessed++;

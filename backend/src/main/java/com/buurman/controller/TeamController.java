@@ -2,7 +2,9 @@ package com.buurman.controller;
 
 import com.buurman.domain.TeamSettings;
 import com.buurman.dto.request.CreateInvitationRequest;
+import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
@@ -76,6 +78,15 @@ public class TeamController {
         return teamService.updateMemberRole(teamId, memberId, request, principal);
     }
 
+    @Operation(summary = "Update team", description = "Update team name (Admin only)")
+    @PutMapping("/{teamId}")
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    public TeamResponse updateTeam(@PathVariable UUID teamId,
+                                   @Valid @RequestBody UpdateTeamRequest request,
+                                   @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.updateTeam(teamId, request, principal);
+    }
+
     @Operation(summary = "Update team settings", description = "Update team configuration settings (Admin only)")
     @PutMapping("/{teamId}/settings")
     @PreAuthorize("hasRole('TEAM_ADMIN')")
@@ -90,5 +101,13 @@ public class TeamController {
     public TeamSettings getTeamSettings(@PathVariable UUID teamId,
                                        @AuthenticationPrincipal UserPrincipal principal) {
         return teamService.getTeamSettings(teamId, principal);
+    }
+
+    @Operation(summary = "Transfer ownership", description = "Transfer team ownership to another member (Owner only)")
+    @PostMapping("/{teamId}/transfer-ownership")
+    public TeamMemberResponse transferOwnership(@PathVariable UUID teamId,
+                                                @Valid @RequestBody TransferOwnershipRequest request,
+                                                @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.transferOwnership(teamId, request.newOwnerId(), principal);
     }
 }

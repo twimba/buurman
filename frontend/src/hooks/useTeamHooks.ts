@@ -72,3 +72,46 @@ export const useAcceptInvitation = () => {
     },
   });
 };
+
+export const useTransferOwnership = (teamId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newOwnerId: string) =>
+      teamsApi.transferOwnership(teamId, newOwnerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
+      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+    },
+  });
+};
+
+export const useUpdateTeam = (teamId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: teamsApi.UpdateTeamRequest) =>
+      teamsApi.updateTeam(teamId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
+      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+    },
+  });
+};
+
+export const useTeamSettings = (teamId: string | undefined) => {
+  return useQuery({
+    queryKey: ['teamSettings', teamId],
+    queryFn: () => teamsApi.getTeamSettings(teamId!),
+    enabled: !!teamId,
+  });
+};
+
+export const useUpdateTeamSettings = (teamId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: teamsApi.UpdateTeamSettingsRequest) =>
+      teamsApi.updateTeamSettings(teamId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teamSettings', teamId] });
+    },
+  });
+};

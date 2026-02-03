@@ -138,15 +138,28 @@ export const TransactionHistoryPage = () => {
     });
 
     return filtered;
-  }, [allTransactions, typeFilter, searchTerm, startDate, endDate, sortField, sortOrder]);
+  }, [
+    allTransactions,
+    typeFilter,
+    searchTerm,
+    startDate,
+    endDate,
+    sortField,
+    sortOrder,
+  ]);
 
   // Pagination
   const paginatedTransactions = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredAndSortedTransactions.slice(startIndex, startIndex + itemsPerPage);
+    return filteredAndSortedTransactions.slice(
+      startIndex,
+      startIndex + itemsPerPage
+    );
   }, [filteredAndSortedTransactions, currentPage]);
 
-  const totalPages = Math.ceil(filteredAndSortedTransactions.length / itemsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedTransactions.length / itemsPerPage
+  );
 
   // Calculate totals
   const totals = useMemo(() => {

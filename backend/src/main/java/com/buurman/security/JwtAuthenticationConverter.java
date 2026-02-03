@@ -8,10 +8,11 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
@@ -35,28 +36,75 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         User user = userRepository.findByKeycloakId(keycloakId)
             .orElseGet(() -> createUserFromJwt(keycloakId, email, name));
 
-        // Find team membership
-        TeamMember membership = teamMemberRepository.findByUserId(user.getId())
-            .orElseThrow(() -> new RuntimeException("User not member of any team"));
+        // Find all team memberships
+        List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
 
-        // Create UserPrincipal
-        UserPrincipal principal = new UserPrincipal(
-            user.getId(),
-            keycloakId,
-            email,
-            name,
-            membership.getTeamId(),
-            membership.getRole()
-        );
+        // Select active membership based on priority: activeTeamId → defaultTeamId → first
+        TeamMember membership = selectActiveMembership(user, memberships);
 
-        // Create authorities with ROLE_ prefix
-        List<SimpleGrantedAuthority> authorities = List.of(
-            new SimpleGrantedAuthority("ROLE_" + membership.getRole())
-        );
+        // Create UserPrincipal (membership can be null for users without team)
+        UserPrincipal principal;
+        List<SimpleGrantedAuthority> authorities;
 
-        // Return custom authentication with UserPrincipal as the principal
-        // This ensures @AuthenticationPrincipal correctly retrieves UserPrincipal
+        if (membership != null) {
+            principal = new UserPrincipal(
+                user.getId(),
+                keycloakId,
+                email,
+                name,
+                membership.getTeamId(),
+                membership.getRole(),
+                membership.isOwner()
+            );
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_" + membership.getRole()));
+        } else {
+            // User without team membership (e.g., accepting invitation)
+            principal = new UserPrincipal(
+                user.getId(),
+                keycloakId,
+                email,
+                name,
+                null,
+                null,
+                false
+            );
+            authorities = Collections.emptyList();
+        }
+
         return new UserAuthentication(principal, authorities);
+    }
+
+    private TeamMember selectActiveMembership(User user, List<TeamMember> memberships) {
+        if (memberships.isEmpty()) {
+            return null;
+        }
+
+        // Priority 1: User's active team
+        UUID activeTeamId = user.getActiveTeamId();
+        if (activeTeamId != null) {
+            TeamMember active = memberships.stream()
+                .filter(m -> m.getTeamId().equals(activeTeamId))
+                .findFirst()
+                .orElse(null);
+            if (active != null) {
+                return active;
+            }
+        }
+
+        // Priority 2: User's default team
+        UUID defaultTeamId = user.getDefaultTeamId();
+        if (defaultTeamId != null) {
+            TeamMember defaultMember = memberships.stream()
+                .filter(m -> m.getTeamId().equals(defaultTeamId))
+                .findFirst()
+                .orElse(null);
+            if (defaultMember != null) {
+                return defaultMember;
+            }
+        }
+
+        // Priority 3: First membership (oldest by invited_at)
+        return memberships.get(0);
     }
 
     private User createUserFromJwt(String keycloakId, String email, String name) {
@@ -64,7 +112,6 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         user.setKeycloakId(keycloakId);
         user.setEmail(email);
 
-        // Split name into first and last name (handle case where name might not have a space)
         String[] nameParts = name != null ? name.split(" ", 2) : new String[]{"", ""};
         user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");
         user.setLastName(nameParts.length > 1 ? nameParts[1] : "");

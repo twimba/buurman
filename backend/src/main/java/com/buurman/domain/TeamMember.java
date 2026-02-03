@@ -9,6 +9,7 @@ public class TeamMember {
     private UUID teamId;
     private UUID userId;
     private String role;
+    private boolean isOwner;
     private Instant invitedAt;
     private UUID invitedBy;
     private Instant joinedAt;
@@ -80,5 +81,13 @@ public class TeamMember {
 
     public void setJoinedAt(Instant joinedAt) {
         this.joinedAt = joinedAt;
+    }
+
+    public boolean isOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(boolean isOwner) {
+        this.isOwner = isOwner;
     }
 }

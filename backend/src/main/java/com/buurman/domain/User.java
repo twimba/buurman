@@ -10,6 +10,8 @@ public class User {
     private String email;
     private String firstName;
     private String lastName;
+    private UUID defaultTeamId;
+    private UUID activeTeamId;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -80,5 +82,21 @@ public class User {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public UUID getDefaultTeamId() {
+        return defaultTeamId;
+    }
+
+    public void setDefaultTeamId(UUID defaultTeamId) {
+        this.defaultTeamId = defaultTeamId;
+    }
+
+    public UUID getActiveTeamId() {
+        return activeTeamId;
+    }
+
+    public void setActiveTeamId(UUID activeTeamId) {
+        this.activeTeamId = activeTeamId;
     }
 }

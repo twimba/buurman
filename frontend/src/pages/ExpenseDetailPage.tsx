@@ -14,6 +14,7 @@ import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Button, PageHeader } from '@/components/ui';
+import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
   Trash2,
@@ -35,6 +36,7 @@ import {
 export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState<
@@ -114,6 +116,7 @@ export const ExpenseDetailPage = () => {
                   variant="secondary"
                   leftIcon={<Edit />}
                   onClick={() => setIsEditing(true)}
+                  disabled={!canEditData}
                 >
                   Edit
                 </Button>
@@ -122,6 +125,7 @@ export const ExpenseDetailPage = () => {
                 variant="danger"
                 leftIcon={<Trash2 />}
                 onClick={() => setShowDeleteModal(true)}
+                disabled={!canEditData}
               >
                 Delete
               </Button>

@@ -58,6 +58,15 @@ services:
     networks:
       - buurman-network
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: buurman-mailhog
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    networks:
+      - buurman-network
+
   backend:
     build:
       context: ./backend

@@ -22,12 +22,14 @@ import {
 } from '@/types/tenant';
 import { AddressForm } from './AddressForm';
 import { AddressMap } from '../common/AddressMap';
+import { useTeam } from '@/context/TeamContext';
 
 interface TenantAddressListProps {
   tenantId: string;
 }
 
 export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
+  const { canEditData } = useTeam();
   const queryClient = useQueryClient();
   const { data: addresses, isLoading } = useTenantAddresses(tenantId);
   const createMutation = useCreateTenantAddress(tenantId);
@@ -136,7 +138,8 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
         <div>
           <button
             onClick={() => setIsAddingNew(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={!canEditData}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
             <Plus className="h-4 w-4" />
             Add Address
@@ -191,22 +194,24 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                         {address.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setEditingAddressId(address.id)}
-                        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded"
-                        title="Edit address"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteAddress(address.id)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
-                        title="Delete address"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+                    {canEditData && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setEditingAddressId(address.id)}
+                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded"
+                          title="Edit address"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAddress(address.id)}
+                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
+                          title="Delete address"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Address Details */}

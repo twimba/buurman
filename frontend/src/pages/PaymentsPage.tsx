@@ -36,6 +36,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTeam } from '@/context/TeamContext';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -52,6 +53,7 @@ type SortOrder = 'asc' | 'desc';
 
 export const PaymentsPage = () => {
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
@@ -225,7 +227,8 @@ export const PaymentsPage = () => {
           </div>
           <button
             onClick={() => navigate('/payments/new')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+            disabled={!canEditData}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
             <Plus className="h-5 w-5" />
             Add Payment
@@ -520,7 +523,8 @@ export const PaymentsPage = () => {
             {!statusFilter && !searchTerm && (
               <button
                 onClick={() => navigate('/payments/new')}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                disabled={!canEditData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <Plus className="h-5 w-5" />
                 Add Payment

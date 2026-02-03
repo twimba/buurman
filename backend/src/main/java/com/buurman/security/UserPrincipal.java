@@ -8,17 +8,25 @@ public class UserPrincipal implements Principal {
     private final String keycloakId;
     private final String email;
     private final String name;
-    private final UUID teamId;
-    private final String role;
+    private final UUID teamId;      // nullable for users without team membership
+    private final String role;      // nullable for users without team membership
+    private final boolean isOwner;
 
     public UserPrincipal(UUID userId, String keycloakId, String email, String name,
-                        UUID teamId, String role) {
+                        UUID teamId, String role, boolean isOwner) {
         this.userId = userId;
         this.keycloakId = keycloakId;
         this.email = email;
         this.name = name;
         this.teamId = teamId;
         this.role = role;
+        this.isOwner = isOwner;
+    }
+
+    // Convenience constructor for backward compatibility
+    public UserPrincipal(UUID userId, String keycloakId, String email, String name,
+                        UUID teamId, String role) {
+        this(userId, keycloakId, email, name, teamId, role, false);
     }
 
     public UUID getUserId() {
@@ -44,5 +52,13 @@ public class UserPrincipal implements Principal {
 
     public String getRole() {
         return role;
+    }
+
+    public boolean isOwner() {
+        return isOwner;
+    }
+
+    public boolean hasTeam() {
+        return teamId != null;
     }
 }

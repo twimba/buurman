@@ -52,11 +52,7 @@ export const PageHeader = ({
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-            {avatar && (
-              <div className="flex-shrink-0">
-                {avatar}
-              </div>
-            )}
+            {avatar && <div className="flex-shrink-0">{avatar}</div>}
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
@@ -76,9 +72,7 @@ export const PageHeader = ({
                     <span className="text-gray-300">·</span>
                   )}
                   {description && (
-                    <span className="text-sm text-gray-500">
-                      {description}
-                    </span>
+                    <span className="text-sm text-gray-500">{description}</span>
                   )}
                 </div>
               )}

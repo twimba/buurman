@@ -43,6 +43,8 @@ public class UserRepository {
                     .set(USERS.EMAIL, user.getEmail())
                     .set(USERS.FIRST_NAME, user.getFirstName())
                     .set(USERS.LAST_NAME, user.getLastName())
+                    .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
+                    .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.CREATED_AT, now)
                     .set(USERS.UPDATED_AT, now)
                     .execute();
@@ -57,6 +59,8 @@ public class UserRepository {
                     .set(USERS.EMAIL, user.getEmail())
                     .set(USERS.FIRST_NAME, user.getFirstName())
                     .set(USERS.LAST_NAME, user.getLastName())
+                    .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
+                    .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.UPDATED_AT, now)
                     .where(USERS.ID.eq(user.getId()))
                     .execute();
@@ -92,5 +96,23 @@ public class UserRepository {
                 dsl.selectFrom(USERS)
                         .where(USERS.EMAIL.eq(email))
         );
+    }
+
+    public void updateActiveTeamId(UUID userId, UUID teamId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .set(USERS.ACTIVE_TEAM_ID, teamId)
+                .set(USERS.UPDATED_AT, now)
+                .where(USERS.ID.eq(userId))
+                .execute();
+    }
+
+    public void updateDefaultTeamId(UUID userId, UUID teamId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .set(USERS.DEFAULT_TEAM_ID, teamId)
+                .set(USERS.UPDATED_AT, now)
+                .where(USERS.ID.eq(userId))
+                .execute();
     }
 }

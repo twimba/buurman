@@ -15,6 +15,7 @@ import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { Button, PageHeader } from '@/components/ui';
+import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
   Trash2,
@@ -37,6 +38,7 @@ import {
 export const PaymentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
@@ -138,6 +140,7 @@ export const PaymentDetailPage = () => {
                   variant="success"
                   leftIcon={<CheckCircle />}
                   onClick={() => setShowMarkPaidModal(true)}
+                  disabled={!canEditData}
                 >
                   Mark as Paid
                 </Button>
@@ -147,6 +150,7 @@ export const PaymentDetailPage = () => {
                   variant="secondary"
                   leftIcon={<Edit />}
                   onClick={() => setIsEditing(true)}
+                  disabled={!canEditData}
                 >
                   Edit
                 </Button>
@@ -156,6 +160,7 @@ export const PaymentDetailPage = () => {
                   variant="danger"
                   leftIcon={<Trash2 />}
                   onClick={() => setShowDeleteModal(true)}
+                  disabled={!canEditData}
                 >
                   Delete
                 </Button>

@@ -8,7 +8,11 @@ public record InvitationResponse(
     String token,
     String email,
     UUID teamId,
+    String teamName,
     String role,
+    String inviterName,
     Instant expiresAt,
-    String invitationUrl
+    String invitationUrl,
+    boolean isExpired,
+    boolean isAccepted
 ) {}

@@ -21,6 +21,7 @@ import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge'
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { Button, PageHeader } from '@/components/ui';
+import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
 import {
   Edit,
@@ -47,12 +48,14 @@ import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'payments' | 'documents' | 'history'
   >('overview');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [showGeneratePaymentsModal, setShowGeneratePaymentsModal] = useState(false);
+  const [showGeneratePaymentsModal, setShowGeneratePaymentsModal] =
+    useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -256,10 +259,15 @@ export const ContractDetailPage = () => {
                 leftIcon={<Download />}
                 onClick={async () => {
                   try {
-                    const response = await client.get(`/reports/export/contract/${id}/report`, {
-                      responseType: 'blob',
+                    const response = await client.get(
+                      `/reports/export/contract/${id}/report`,
+                      {
+                        responseType: 'blob',
+                      }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
                     });
-                    const blob = new Blob([response.data], { type: 'application/pdf' });
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
@@ -281,6 +289,7 @@ export const ContractDetailPage = () => {
                   variant="primary"
                   leftIcon={<RefreshCw />}
                   onClick={() => setShowStatusModal(true)}
+                  disabled={!canEditData}
                 >
                   Change Status
                 </Button>
@@ -292,6 +301,7 @@ export const ContractDetailPage = () => {
                   onClick={handleReopen}
                   isLoading={reopenContractMutation.isPending}
                   title="Reopen this contract to draft status"
+                  disabled={!canEditData}
                 >
                   Re-open
                 </Button>
@@ -301,6 +311,7 @@ export const ContractDetailPage = () => {
                   variant="secondary"
                   leftIcon={<Edit />}
                   onClick={() => navigate(`/contracts/${id}/edit`)}
+                  disabled={!canEditData}
                 >
                   Edit
                 </Button>
@@ -311,6 +322,7 @@ export const ContractDetailPage = () => {
                 onClick={handleDuplicate}
                 isLoading={duplicateContractMutation.isPending}
                 title="Create a copy of this contract in draft status"
+                disabled={!canEditData}
               >
                 Duplicate
               </Button>
@@ -319,6 +331,7 @@ export const ContractDetailPage = () => {
                   variant="danger"
                   leftIcon={<Trash2 />}
                   onClick={() => setShowDeleteModal(true)}
+                  disabled={!canEditData}
                 >
                   Delete
                 </Button>
@@ -582,6 +595,7 @@ export const ContractDetailPage = () => {
                     variant="success"
                     leftIcon={<RefreshCw />}
                     onClick={() => setShowGeneratePaymentsModal(true)}
+                    disabled={!canEditData}
                   >
                     Generate Payments
                   </Button>
@@ -590,6 +604,7 @@ export const ContractDetailPage = () => {
                   variant="primary"
                   leftIcon={<Plus />}
                   onClick={() => navigate(`/payments/new?contractId=${id}`)}
+                  disabled={!canEditData}
                 >
                   Add Payment
                 </Button>
@@ -610,6 +625,7 @@ export const ContractDetailPage = () => {
                   variant="primary"
                   leftIcon={<Plus />}
                   onClick={() => navigate(`/payments/new?contractId=${id}`)}
+                  disabled={!canEditData}
                 >
                   Create First Payment
                 </Button>
@@ -795,6 +811,7 @@ export const ContractDetailPage = () => {
               error={docsError}
               isUploading={uploadDocumentMutation.isPending}
               isDeleting={deleteDocumentMutation.isPending}
+              readOnly={!canEditData}
             />
           </div>
         )}
@@ -898,7 +915,8 @@ export const ContractDetailPage = () => {
                                   field === 'documentAdded' ||
                                   field === 'documentRemoved'
                                 ) {
-                                  const category = activity.changedFields?.category;
+                                  const category =
+                                    activity.changedFields?.category;
                                   const title = activity.changedFields?.title;
                                   return (
                                     <div
@@ -950,7 +968,9 @@ export const ContractDetailPage = () => {
                                     <div className="font-semibold text-gray-700 mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
-                                        .replace(/^./, (str) => str.toUpperCase())
+                                        .replace(/^./, (str) =>
+                                          str.toUpperCase()
+                                        )
                                         .trim()}
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">

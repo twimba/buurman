@@ -14,8 +14,45 @@ export interface TeamMemberResponse {
   email: string;
   name: string;
   role: string;
+  isOwner: boolean;
   joinedAt: string;
   isCurrentUser: boolean;
+}
+
+export interface TransferOwnershipRequest {
+  newOwnerId: string;
+}
+
+export interface UpdateTeamRequest {
+  name: string;
+}
+
+export interface TeamSettingsResponse {
+  payments: {
+    paymentsAheadCount: number;
+    autoGenerationEnabled: boolean;
+  };
+  regional: {
+    defaultCurrency: string;
+    defaultCountry: string;
+    timezone: string;
+    dateFormat: string;
+    fiscalYearStartMonth: string;
+  };
+}
+
+export interface UpdateTeamSettingsRequest {
+  payments?: {
+    paymentsAheadCount: number;
+    autoGenerationEnabled: boolean;
+  };
+  regional?: {
+    defaultCurrency?: string;
+    defaultCountry?: string;
+    timezone?: string;
+    dateFormat?: string;
+    fiscalYearStartMonth?: string;
+  };
 }
 
 export interface CreateInvitationRequest {
@@ -27,10 +64,14 @@ export interface InvitationResponse {
   invitationId: string;
   token: string;
   email: string;
+  teamId: string;
   teamName: string;
   role: string;
+  inviterName: string;
   expiresAt: string;
   invitationUrl: string;
+  isExpired: boolean;
+  isAccepted: boolean;
 }
 
 export interface UpdateMemberRoleRequest {
@@ -85,4 +126,37 @@ export const getInvitation = async (
 
 export const acceptInvitation = async (token: string): Promise<void> => {
   await client.post(`/invitations/${token}/accept`);
+};
+
+export const transferOwnership = async (
+  teamId: string,
+  newOwnerId: string
+): Promise<TeamMemberResponse> => {
+  const response = await client.post(`/teams/${teamId}/transfer-ownership`, {
+    newOwnerId,
+  });
+  return response.data;
+};
+
+export const updateTeam = async (
+  teamId: string,
+  data: UpdateTeamRequest
+): Promise<TeamResponse> => {
+  const response = await client.put(`/teams/${teamId}`, data);
+  return response.data;
+};
+
+export const getTeamSettings = async (
+  teamId: string
+): Promise<TeamSettingsResponse> => {
+  const response = await client.get(`/teams/${teamId}/settings`);
+  return response.data;
+};
+
+export const updateTeamSettings = async (
+  teamId: string,
+  data: UpdateTeamSettingsRequest
+): Promise<TeamResponse> => {
+  const response = await client.put(`/teams/${teamId}/settings`, data);
+  return response.data;
 };

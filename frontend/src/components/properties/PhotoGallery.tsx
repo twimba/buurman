@@ -18,6 +18,7 @@ interface PhotoGalleryProps {
   onDelete: (photoId: string) => Promise<void>;
   isUploading: boolean;
   isDeleting: boolean;
+  readOnly?: boolean;
 }
 
 export const PhotoGallery = ({
@@ -29,6 +30,7 @@ export const PhotoGallery = ({
   onDelete,
   isUploading,
   isDeleting,
+  readOnly = false,
 }: PhotoGalleryProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -94,17 +96,19 @@ export const PhotoGallery = ({
       {/* Upload Button */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-gray-900">Photos</h3>
-        <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2">
-          <Upload className="h-4 w-4" />
-          Upload Photo
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={isUploading}
-          />
-        </label>
+        {!readOnly && (
+          <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <Upload className="h-4 w-4" />
+            Upload Photo
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+              disabled={isUploading}
+            />
+          </label>
+        )}
       </div>
 
       {/* Photo Grid */}
@@ -142,26 +146,28 @@ export const PhotoGallery = ({
               )}
 
               {/* Actions Overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                {!photo.isMainPhoto && (
+              {!readOnly && (
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  {!photo.isMainPhoto && (
+                    <button
+                      onClick={() => onSetMain(photo.id)}
+                      className="bg-white text-gray-900 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                      title="Set as main photo"
+                      disabled={isUploading || isDeleting}
+                    >
+                      <StarOff className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
-                    onClick={() => onSetMain(photo.id)}
-                    className="bg-white text-gray-900 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                    title="Set as main photo"
+                    onClick={() => onDelete(photo.id)}
+                    className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors"
+                    title="Delete photo"
                     disabled={isUploading || isDeleting}
                   >
-                    <StarOff className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
-                )}
-                <button
-                  onClick={() => onDelete(photo.id)}
-                  className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors"
-                  title="Delete photo"
-                  disabled={isUploading || isDeleting}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+                </div>
+              )}
 
               {/* Title */}
               {photo.title && (

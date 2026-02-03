@@ -1,63 +1,76 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { User, Mail, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
 import {
-  User,
-  Mail,
-  Lock,
-  Camera,
-  Save,
-  X,
-  Github,
-  Linkedin,
-  Globe,
-} from 'lucide-react';
+  useCurrentUser,
+  useUpdateUserProfile,
+} from '../../hooks/useUserPreferencesHooks';
 
 export const UserProfileSection = () => {
+  const { data: currentUser, isLoading } = useCurrentUser();
+  const updateProfileMutation = useUpdateUserProfile();
+
   const [isEditing, setIsEditing] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-
-  // Mock data - will be replaced with actual user data
   const [userData, setUserData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
+    firstName: '',
+    lastName: '',
+    email: '',
     avatarUrl: null as string | null,
-    socialProfiles: {
-      linkedin: '',
-      github: '',
-      website: '',
-    },
   });
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  useEffect(() => {
+    if (currentUser) {
+      setUserData({
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        email: currentUser.email || '',
+        avatarUrl: null,
+      });
+    }
+  }, [currentUser]);
 
-  const handleSaveProfile = () => {
-    // TODO: API call to save profile
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    if (currentUser) {
+      setUserData({
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        email: currentUser.email || '',
+        avatarUrl: null,
+      });
+    }
     setIsEditing(false);
   };
 
-  const handleChangePassword = () => {
-    // TODO: API call to change password
-    setIsChangingPassword(false);
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
+  const handleSaveProfile = () => {
+    updateProfileMutation.mutate(
+      {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+      },
+      {
+        onSuccess: () => setIsEditing(false),
+      }
+    );
   };
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // TODO: API call to upload avatar
     const file = e.target.files?.[0];
     if (file) {
-      // For now, just create a preview URL
       const previewUrl = URL.createObjectURL(file);
       setUserData({ ...userData, avatarUrl: previewUrl });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -75,7 +88,7 @@ export const UserProfileSection = () => {
             </div>
             {!isEditing && (
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={handleStartEdit}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Edit Profile
@@ -165,99 +178,20 @@ export const UserProfileSection = () => {
                 <input
                   type="email"
                   value={userData.email}
-                  onChange={(e) =>
-                    setUserData({ ...userData, email: e.target.value })
-                  }
-                  disabled={!isEditing}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  disabled
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Email address cannot be changed. Contact support if you need to
+                update it.
+              </p>
             </div>
-
-            {/* Social Profiles */}
-            {isEditing && (
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                  Social Profiles (Optional)
-                </h4>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      LinkedIn
-                    </label>
-                    <div className="relative">
-                      <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="url"
-                        value={userData.socialProfiles.linkedin}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            socialProfiles: {
-                              ...userData.socialProfiles,
-                              linkedin: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="https://linkedin.com/in/yourprofile"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      GitHub
-                    </label>
-                    <div className="relative">
-                      <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="url"
-                        value={userData.socialProfiles.github}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            socialProfiles: {
-                              ...userData.socialProfiles,
-                              github: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="https://github.com/yourusername"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Website
-                    </label>
-                    <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="url"
-                        value={userData.socialProfiles.website}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            socialProfiles: {
-                              ...userData.socialProfiles,
-                              website: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="https://yourwebsite.com"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {isEditing && (
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                 <button
-                  onClick={() => setIsEditing(false)}
+                  onClick={handleCancelEdit}
                   className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
                 >
                   <X className="h-4 w-4" />
@@ -265,9 +199,14 @@ export const UserProfileSection = () => {
                 </button>
                 <button
                   onClick={handleSaveProfile}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  disabled={updateProfileMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
-                  <Save className="h-4 w-4" />
+                  {updateProfileMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
                   Save Changes
                 </button>
               </div>
@@ -292,97 +231,23 @@ export const UserProfileSection = () => {
         </div>
 
         <div className="p-6">
-          {!isChangingPassword ? (
-            <div>
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Lock className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <p className="font-medium text-gray-900">Password</p>
-                    <p className="text-sm text-gray-600">
-                      Last changed 3 months ago
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsChangingPassword(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Change Password
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <Lock className="h-5 w-5 text-gray-600" />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) =>
-                    setPasswordData({
-                      ...passwordData,
-                      currentPassword: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) =>
-                    setPasswordData({
-                      ...passwordData,
-                      newPassword: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-600 mt-1">
-                  Must be at least 8 characters with uppercase, lowercase, and
-                  numbers
+                <p className="font-medium text-gray-900">Password</p>
+                <p className="text-sm text-gray-600">
+                  Password changes are managed through your identity provider
                 </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) =>
-                    setPasswordData({
-                      ...passwordData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                <button
-                  onClick={() => setIsChangingPassword(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleChangePassword}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Update Password
-                </button>
-              </div>
             </div>
-          )}
+            <a
+              href="/auth/change-password"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Change Password
+            </a>
+          </div>
         </div>
       </div>
     </div>

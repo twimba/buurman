@@ -6,6 +6,7 @@ import { PropertyCard } from '@/components/properties/PropertyCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Home, Filter } from 'lucide-react';
+import { useTeam } from '@/context/TeamContext';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -25,6 +26,7 @@ const typeFilters = [
 
 export const PropertyListPage = () => {
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined
   );
@@ -66,7 +68,8 @@ export const PropertyListPage = () => {
           <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
           <button
             onClick={() => navigate('/properties/new')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+            disabled={!canEditData}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
             <Plus className="h-5 w-5" />
             Add Property
@@ -152,7 +155,8 @@ export const PropertyListPage = () => {
             </p>
             <button
               onClick={() => navigate('/properties/new')}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+              disabled={!canEditData}
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
             >
               <Plus className="h-5 w-5" />
               Add Property

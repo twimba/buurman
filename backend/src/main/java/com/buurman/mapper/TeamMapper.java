@@ -23,11 +23,16 @@ public interface TeamMapper {
     @Mapping(target = "userId", source = "member.userId")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "name", expression = "java(user.getFirstName() + \" \" + user.getLastName())")
+    @Mapping(target = "isOwner", source = "member.owner")
     @Mapping(target = "isCurrentUser", expression = "java(member.getUserId().equals(currentUserId))")
     TeamMemberResponse toMemberResponse(TeamMember member, User user, UUID currentUserId);
 
     @Mapping(target = "invitationId", source = "invitation.id")
     @Mapping(target = "teamId", source = "invitation.teamId")
-    @Mapping(target = "invitationUrl", expression = "java(\"http://localhost:5173/invitations/\" + invitation.getToken())")
-    InvitationResponse toInvitationResponse(TeamInvitation invitation);
+    @Mapping(target = "teamName", source = "teamName")
+    @Mapping(target = "inviterName", source = "inviterName")
+    @Mapping(target = "invitationUrl", expression = "java(\"http://localhost:5173/invitation/\" + invitation.getToken())")
+    @Mapping(target = "isExpired", expression = "java(invitation.getExpiresAt().isBefore(java.time.Instant.now()))")
+    @Mapping(target = "isAccepted", expression = "java(invitation.getAcceptedAt() != null)")
+    InvitationResponse toInvitationResponse(TeamInvitation invitation, String teamName, String inviterName);
 }

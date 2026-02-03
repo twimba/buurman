@@ -156,7 +156,9 @@ export const SubscriptionSection = () => {
                   {currentSubscription.planName}
                 </h3>
                 <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-semibold rounded">
-                  {currentSubscription.status === 'active' ? 'Active' : currentSubscription.status}
+                  {currentSubscription.status === 'active'
+                    ? 'Active'
+                    : currentSubscription.status}
                 </span>
               </div>
               <p className="text-3xl font-bold text-blue-600 mt-2">
@@ -193,7 +195,9 @@ export const SubscriptionSection = () => {
               <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-green-600 h-2 rounded-full"
-                  style={{ width: `${(3 / currentSubscription.teamMembersLimit) * 100}%` }}
+                  style={{
+                    width: `${(3 / currentSubscription.teamMembersLimit) * 100}%`,
+                  }}
                 />
               </div>
             </div>
@@ -203,7 +207,9 @@ export const SubscriptionSection = () => {
               <div className="flex items-center gap-2 mt-1">
                 <Calendar className="h-5 w-5 text-gray-600" />
                 <p className="text-lg font-semibold text-gray-900">
-                  {new Date(currentSubscription.nextRenewal).toLocaleDateString()}
+                  {new Date(
+                    currentSubscription.nextRenewal
+                  ).toLocaleDateString()}
                 </p>
               </div>
               <p className="text-xs text-gray-600 mt-1">Auto-renews</p>
@@ -396,14 +402,16 @@ export const SubscriptionSection = () => {
             <div className="p-6">
               <p className="text-gray-700">
                 Are you sure you want to change to the{' '}
-                <strong>{plans.find((p) => p.id === selectedPlan)?.name}</strong>{' '}
+                <strong>
+                  {plans.find((p) => p.id === selectedPlan)?.name}
+                </strong>{' '}
                 plan? Your billing will be adjusted accordingly.
               </p>
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800">
                   You'll be charged €
-                  {plans.find((p) => p.id === selectedPlan)?.price} starting from
-                  your next billing cycle.
+                  {plans.find((p) => p.id === selectedPlan)?.price} starting
+                  from your next billing cycle.
                 </p>
               </div>
             </div>

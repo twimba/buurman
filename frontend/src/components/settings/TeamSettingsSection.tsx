@@ -8,93 +8,135 @@ import {
   Save,
   X,
   Shield,
+  Crown,
+  Loader2,
 } from 'lucide-react';
+import {
+  useCurrentTeam,
+  useTeamMembers,
+  useCreateInvitation,
+  useRemoveMember,
+  useUpdateMemberRole,
+  useTransferOwnership,
+  useUpdateTeam,
+} from '../../hooks/useTeamHooks';
+import { useTeam } from '../../context/TeamContext';
 
-interface TeamMember {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
-  avatarUrl?: string;
-  joinedAt: string;
-  isCurrentUser?: boolean;
-}
+type Role = 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
 
 export const TeamSettingsSection = () => {
+  const { canManageMembers } = useTeam();
+  const { data: team, isLoading: teamLoading } = useCurrentTeam();
+  const { data: members, isLoading: membersLoading } = useTeamMembers(
+    team?.teamId
+  );
+
   const [isEditingTeamName, setIsEditingTeamName] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-
-  // Mock data - will be replaced with actual team data
-  const [teamName, setTeamName] = useState('My Property Management Team');
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<TeamMember['role']>('TEAM_VIEWER');
+  const [inviteRole, setInviteRole] = useState<Role>('TEAM_VIEWER');
+  const [newRole, setNewRole] = useState<Role>('TEAM_VIEWER');
 
-  const [teamMembers] = useState<TeamMember[]>([
-    {
-      id: '1',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      role: 'TEAM_ADMIN',
-      joinedAt: '2024-01-15',
-      isCurrentUser: true,
-    },
-    {
-      id: '2',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane.smith@example.com',
-      role: 'TEAM_EDITOR',
-      joinedAt: '2024-02-20',
-    },
-    {
-      id: '3',
-      firstName: 'Bob',
-      lastName: 'Johnson',
-      email: 'bob.johnson@example.com',
-      role: 'TEAM_VIEWER',
-      joinedAt: '2024-03-10',
-    },
-  ]);
+  const updateTeamMutation = useUpdateTeam(team?.teamId || '');
+  const createInvitationMutation = useCreateInvitation(team?.teamId || '');
+  const removeMemberMutation = useRemoveMember(team?.teamId || '');
+  const updateRoleMutation = useUpdateMemberRole(team?.teamId || '');
+  const transferOwnershipMutation = useTransferOwnership(team?.teamId || '');
 
-  const roleLabels = {
+  const roleLabels: Record<Role, string> = {
     TEAM_ADMIN: 'Admin',
     TEAM_EDITOR: 'Editor',
     TEAM_VIEWER: 'Viewer',
   };
 
-  const roleDescriptions = {
+  const roleDescriptions: Record<Role, string> = {
     TEAM_ADMIN: 'Full access to all features and settings',
     TEAM_EDITOR: 'Can create and edit properties, tenants, and contracts',
     TEAM_VIEWER: 'Read-only access to all data',
   };
 
-  const roleColors = {
+  const roleColors: Record<Role, string> = {
     TEAM_ADMIN: 'bg-purple-100 text-purple-800',
     TEAM_EDITOR: 'bg-blue-100 text-blue-800',
     TEAM_VIEWER: 'bg-gray-100 text-gray-800',
   };
 
+  const selectedMember = members?.find((m) => m.memberId === selectedMemberId);
+
+  const handleStartEditTeamName = () => {
+    setTeamName(team?.teamName || '');
+    setIsEditingTeamName(true);
+  };
+
   const handleSaveTeamName = () => {
-    // TODO: API call to save team name
-    setIsEditingTeamName(false);
+    if (!teamName.trim()) return;
+    updateTeamMutation.mutate(
+      { name: teamName },
+      {
+        onSuccess: () => setIsEditingTeamName(false),
+      }
+    );
   };
 
   const handleInviteMember = () => {
-    // TODO: API call to invite member
-    setShowInviteModal(false);
-    setInviteEmail('');
-    setInviteRole('TEAM_VIEWER');
+    if (!inviteEmail.trim()) return;
+    createInvitationMutation.mutate(
+      { email: inviteEmail, role: inviteRole },
+      {
+        onSuccess: () => {
+          setShowInviteModal(false);
+          setInviteEmail('');
+          setInviteRole('TEAM_VIEWER');
+        },
+      }
+    );
   };
 
   const handleRemoveMember = () => {
-    // TODO: API call to remove member
-    setShowRemoveModal(false);
-    setSelectedMember(null);
+    if (!selectedMemberId) return;
+    removeMemberMutation.mutate(selectedMemberId, {
+      onSuccess: () => {
+        setShowRemoveModal(false);
+        setSelectedMemberId(null);
+      },
+    });
   };
+
+  const handleUpdateRole = () => {
+    if (!selectedMemberId) return;
+    updateRoleMutation.mutate(
+      { memberId: selectedMemberId, data: { role: newRole } },
+      {
+        onSuccess: () => {
+          setShowRoleModal(false);
+          setSelectedMemberId(null);
+        },
+      }
+    );
+  };
+
+  const handleTransferOwnership = () => {
+    if (!selectedMemberId) return;
+    transferOwnershipMutation.mutate(selectedMemberId, {
+      onSuccess: () => {
+        setShowTransferModal(false);
+        setSelectedMemberId(null);
+      },
+    });
+  };
+
+  if (teamLoading || membersLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -121,34 +163,45 @@ export const TeamSettingsSection = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               ) : (
-                <p className="text-lg font-semibold text-gray-900">{teamName}</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {team?.teamName}
+                </p>
               )}
             </div>
-            {isEditingTeamName ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setIsEditingTeamName(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-                >
-                  <X className="h-4 w-4" />
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveTeamName}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Save
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setIsEditingTeamName(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <Edit3 className="h-4 w-4" />
-                Edit
-              </button>
+            {canManageMembers && (
+              <>
+                {isEditingTeamName ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setIsEditingTeamName(false)}
+                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSaveTeamName}
+                      disabled={updateTeamMutation.isPending}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                      {updateTeamMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                      Save
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleStartEditTeamName}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                    Edit
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -163,22 +216,24 @@ export const TeamSettingsSection = () => {
                 Team Members
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                {teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}
+                {members?.length || 0} member{members?.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <button
-              onClick={() => setShowInviteModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <UserPlus className="h-4 w-4" />
-              Invite Member
-            </button>
+            {canManageMembers && (
+              <button
+                onClick={() => setShowInviteModal(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <UserPlus className="h-4 w-4" />
+                Invite Member
+              </button>
+            )}
           </div>
         </div>
 
         <div className="divide-y divide-gray-200">
-          {teamMembers.map((member) => (
-            <div key={member.id} className="p-6 hover:bg-gray-50">
+          {members?.map((member) => (
+            <div key={member.memberId} className="p-6 hover:bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
@@ -187,11 +242,17 @@ export const TeamSettingsSection = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-semibold text-gray-900">
-                        {member.firstName} {member.lastName}
+                        {member.name}
                       </p>
                       {member.isCurrentUser && (
                         <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded">
                           You
+                        </span>
+                      )}
+                      {member.isOwner && (
+                        <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded flex items-center gap-1">
+                          <Crown className="h-3 w-3" />
+                          Owner
                         </span>
                       )}
                     </div>
@@ -205,24 +266,50 @@ export const TeamSettingsSection = () => {
                 <div className="flex items-center gap-3">
                   <div className="text-right">
                     <span
-                      className={`px-3 py-1 text-xs font-semibold rounded ${roleColors[member.role]}`}
+                      className={`px-3 py-1 text-xs font-semibold rounded ${roleColors[member.role as Role]}`}
                     >
-                      {roleLabels[member.role]}
+                      {roleLabels[member.role as Role]}
                     </span>
                     <p className="text-xs text-gray-600 mt-1">
-                      {roleDescriptions[member.role]}
+                      {roleDescriptions[member.role as Role]}
                     </p>
                   </div>
-                  {!member.isCurrentUser && (
-                    <button
-                      onClick={() => {
-                        setSelectedMember(member);
-                        setShowRemoveModal(true);
-                      }}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  {canManageMembers && !member.isCurrentUser && (
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => {
+                          setSelectedMemberId(member.memberId);
+                          setNewRole(member.role as Role);
+                          setShowRoleModal(true);
+                        }}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Change role"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </button>
+                      {!member.isOwner && (
+                        <button
+                          onClick={() => {
+                            setSelectedMemberId(member.memberId);
+                            setShowTransferModal(true);
+                          }}
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                          title="Transfer ownership"
+                        >
+                          <Crown className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setSelectedMemberId(member.memberId);
+                          setShowRemoveModal(true);
+                        }}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Remove member"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -252,7 +339,7 @@ export const TeamSettingsSection = () => {
               <div>
                 <p className="font-semibold text-gray-900">{label}</p>
                 <p className="text-sm text-gray-600">
-                  {roleDescriptions[role as TeamMember['role']]}
+                  {roleDescriptions[role as Role]}
                 </p>
               </div>
             </div>
@@ -296,14 +383,12 @@ export const TeamSettingsSection = () => {
                 </label>
                 <select
                   value={inviteRole}
-                  onChange={(e) =>
-                    setInviteRole(e.target.value as TeamMember['role'])
-                  }
+                  onChange={(e) => setInviteRole(e.target.value as Role)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {Object.entries(roleLabels).map(([role, label]) => (
                     <option key={role} value={role}>
-                      {label} - {roleDescriptions[role as TeamMember['role']]}
+                      {label} - {roleDescriptions[role as Role]}
                     </option>
                   ))}
                 </select>
@@ -319,9 +404,112 @@ export const TeamSettingsSection = () => {
               </button>
               <button
                 onClick={handleInviteMember}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={createInvitationMutation.isPending || !inviteEmail}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
+                {createInvitationMutation.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
                 Send Invitation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Role Modal */}
+      {showRoleModal && selectedMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Change Member Role
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Update role for {selectedMember.name}
+              </p>
+            </div>
+
+            <div className="p-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                New Role
+              </label>
+              <select
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value as Role)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                {Object.entries(roleLabels).map(([role, label]) => (
+                  <option key={role} value={role}>
+                    {label} - {roleDescriptions[role as Role]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowRoleModal(false);
+                  setSelectedMemberId(null);
+                }}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateRole}
+                disabled={updateRoleMutation.isPending}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {updateRoleMutation.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+                Update Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer Ownership Modal */}
+      {showTransferModal && selectedMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Transfer Ownership
+              </h3>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-700">
+                Are you sure you want to transfer team ownership to{' '}
+                <span className="font-semibold">{selectedMember.name}</span>?
+                This action cannot be undone by you. The new owner will have
+                full control of the team.
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowTransferModal(false);
+                  setSelectedMemberId(null);
+                }}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTransferOwnership}
+                disabled={transferOwnershipMutation.isPending}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {transferOwnershipMutation.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+                Transfer Ownership
               </button>
             </div>
           </div>
@@ -341,9 +529,7 @@ export const TeamSettingsSection = () => {
             <div className="p-6">
               <p className="text-gray-700">
                 Are you sure you want to remove{' '}
-                <span className="font-semibold">
-                  {selectedMember.firstName} {selectedMember.lastName}
-                </span>{' '}
+                <span className="font-semibold">{selectedMember.name}</span>{' '}
                 from your team? They will lose access to all team data.
               </p>
             </div>
@@ -352,7 +538,7 @@ export const TeamSettingsSection = () => {
               <button
                 onClick={() => {
                   setShowRemoveModal(false);
-                  setSelectedMember(null);
+                  setSelectedMemberId(null);
                 }}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
@@ -360,8 +546,12 @@ export const TeamSettingsSection = () => {
               </button>
               <button
                 onClick={handleRemoveMember}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                disabled={removeMemberMutation.isPending}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
+                {removeMemberMutation.isPending && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
                 Remove Member
               </button>
             </div>

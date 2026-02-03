@@ -15,9 +15,11 @@ import { useDocuments, useDeleteDocument } from '@/hooks/useDocumentHooks';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { DocumentResponse } from '@/types/property';
 import { format } from 'date-fns';
+import { useTeam } from '@/context/TeamContext';
 
 export const PhotosPage = () => {
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
@@ -310,16 +312,18 @@ export const PhotosPage = () => {
                       >
                         <Download className="h-4 w-4 text-gray-700" />
                       </a>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(photo.id);
-                        }}
-                        className="p-1 bg-white rounded hover:bg-red-100 pointer-events-auto"
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                      </button>
+                      {canEditData && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(photo.id);
+                          }}
+                          className="p-1 bg-white rounded hover:bg-red-100 pointer-events-auto"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-600" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

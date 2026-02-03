@@ -20,16 +20,22 @@ const getKeycloakInstance = () => {
 
 const keycloak = getKeycloakInstance();
 
-// Keycloak initialization options
+// Keycloak initialization options - only check SSO on protected pages
 export const keycloakInitOptions = {
-  // Check SSO to restore session on page reload
-  onLoad: 'check-sso' as const,
   pkceMethod: 'S256' as const,
-  checkLoginIframe: false,
+  // Enable login iframe for silent SSO checks
+  checkLoginIframe: true,
+  silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   // Disable nonce check to avoid validation errors in development
   useNonce: false,
   // Enable token refresh
   enableLogging: import.meta.env.DEV,
+};
+
+// Check if we should auto-check SSO (only on protected routes, not on public pages)
+export const shouldCheckSso = () => {
+  const publicPaths = ['/login', '/register', '/invitation'];
+  return !publicPaths.some((path) => window.location.pathname.startsWith(path));
 };
 
 export default keycloak;

@@ -5,7 +5,10 @@ import React, {
   useState,
   useRef,
 } from 'react';
-import keycloak, { keycloakInitOptions } from '../config/keycloak';
+import keycloak, {
+  keycloakInitOptions,
+  shouldCheckSso,
+} from '../config/keycloak';
 import type Keycloak from 'keycloak-js';
 
 interface AuthContextType {
@@ -38,7 +41,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const initKeycloak = async () => {
       try {
         console.log('Initializing Keycloak...');
-        const authenticated = await keycloak.init(keycloakInitOptions);
+        // Only check SSO on protected pages, not on /login or /register
+        const initOptions = shouldCheckSso()
+          ? { ...keycloakInitOptions, onLoad: 'check-sso' as const }
+          : keycloakInitOptions;
+        const authenticated = await keycloak.init(initOptions);
         console.log('Keycloak initialized. Authenticated:', authenticated);
 
         setIsAuthenticated(authenticated);
@@ -87,8 +94,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = () => {
+    // Check for pending invitation to redirect back after login
+    const pendingInvitation = localStorage.getItem('pendingInvitation');
+    const redirectUri = pendingInvitation
+      ? `${window.location.origin}/invitation/${pendingInvitation}`
+      : `${window.location.origin}/dashboard`;
+
     keycloak.login({
-      redirectUri: window.location.origin + '/dashboard',
+      redirectUri,
     });
   };
 

@@ -22,6 +22,7 @@ import { TenantAddressList } from '@/components/tenants/TenantAddressList';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ContractStatus } from '@/types/contract';
 import { Button, PageHeader } from '@/components/ui';
+import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
   Trash2,
@@ -41,6 +42,7 @@ import { formatDistanceToNow } from 'date-fns';
 export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'addresses' | 'contracts' | 'history'
   >('info');
@@ -163,6 +165,7 @@ export const TenantDetailPage = () => {
                 variant="secondary"
                 leftIcon={<Edit />}
                 onClick={() => navigate(`/tenants/${id}/edit`)}
+                disabled={!canEditData}
               >
                 Edit
               </Button>
@@ -170,6 +173,7 @@ export const TenantDetailPage = () => {
                 variant="danger"
                 leftIcon={<Trash2 />}
                 onClick={() => setShowDeleteModal(true)}
+                disabled={!canEditData}
               >
                 Delete
               </Button>
@@ -378,6 +382,7 @@ export const TenantDetailPage = () => {
               onDelete={handleDeleteDocument}
               isUploading={uploadPhotoMutation.isPending}
               isDeleting={deleteDocumentMutation.isPending}
+              readOnly={!canEditData}
             />
           </div>
         )}
@@ -392,6 +397,7 @@ export const TenantDetailPage = () => {
             onDelete={handleDeleteDocument}
             isUploading={uploadDocumentMutation.isPending}
             isDeleting={deleteDocumentMutation.isPending}
+            readOnly={!canEditData}
           />
         )}
 
@@ -407,7 +413,8 @@ export const TenantDetailPage = () => {
               <h2 className="text-xl font-semibold text-gray-900">Contracts</h2>
               <button
                 onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                disabled={!canEditData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <Plus className="h-4 w-4" />
                 Add Contract
@@ -425,7 +432,8 @@ export const TenantDetailPage = () => {
                 </p>
                 <button
                   onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                  disabled={!canEditData}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Contract
@@ -540,7 +548,8 @@ export const TenantDetailPage = () => {
                                   field === 'documentAdded' ||
                                   field === 'documentRemoved'
                                 ) {
-                                  const category = activity.changedFields?.category;
+                                  const category =
+                                    activity.changedFields?.category;
                                   const title = activity.changedFields?.title;
                                   return (
                                     <div
@@ -592,7 +601,9 @@ export const TenantDetailPage = () => {
                                     <div className="font-semibold text-gray-700 mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
-                                        .replace(/^./, (str) => str.toUpperCase())
+                                        .replace(/^./, (str) =>
+                                          str.toUpperCase()
+                                        )
                                         .trim()}
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">

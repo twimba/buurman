@@ -20,6 +20,7 @@ interface DocumentListProps {
   onDelete: (documentId: string) => Promise<void>;
   isUploading: boolean;
   isDeleting: boolean;
+  readOnly?: boolean;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -36,6 +37,7 @@ export const DocumentList = ({
   onDelete,
   isUploading,
   isDeleting,
+  readOnly = false,
 }: DocumentListProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
@@ -99,74 +101,76 @@ export const DocumentList = ({
   return (
     <div className="space-y-6">
       {/* Upload Section */}
-      <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Upload className="h-5 w-5" />
-          Upload Document
-        </h3>
+      {!readOnly && (
+        <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            Upload Document
+          </h3>
 
-        <div className="space-y-4">
-          {/* File Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select File
-            </label>
-            <input
-              id="file-input"
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,.gif"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            />
-            {selectedFile && (
-              <p className="text-sm text-gray-600 mt-2">
-                Selected: {selectedFile.name} (
-                {formatFileSize(selectedFile.size)})
-              </p>
-            )}
+          <div className="space-y-4">
+            {/* File Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select File
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.gif"
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {selectedFile && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Selected: {selectedFile.name} (
+                  {formatFileSize(selectedFile.size)})
+                </p>
+              )}
+            </div>
+
+            {/* Title Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Title (optional)
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Floor Plan"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Notes Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Notes (optional)
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Main floor layout"
+                rows={3}
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              />
+            </div>
+
+            {/* Upload Button */}
+            <button
+              onClick={handleUpload}
+              disabled={!selectedFile || isUploading}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              {isUploading ? 'Uploading...' : 'Upload'}
+            </button>
+
+            {uploadError && <p className="text-red-600 text-sm">{uploadError}</p>}
           </div>
-
-          {/* Title Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title (optional)
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Floor Plan"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
-
-          {/* Notes Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes (optional)
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Main floor layout"
-              rows={3}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-            />
-          </div>
-
-          {/* Upload Button */}
-          <button
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            {isUploading ? 'Uploading...' : 'Upload'}
-          </button>
-
-          {uploadError && <p className="text-red-600 text-sm">{uploadError}</p>}
         </div>
-      </div>
+      )}
 
       {/* Documents List */}
       <div>
@@ -219,14 +223,16 @@ export const DocumentList = ({
                     >
                       <Download className="h-4 w-4" />
                     </button>
-                    <button
-                      onClick={() => onDelete(doc.id)}
-                      disabled={isDeleting}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {!readOnly && (
+                      <button
+                        onClick={() => onDelete(doc.id)}
+                        disabled={isDeleting}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

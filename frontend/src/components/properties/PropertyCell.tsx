@@ -48,7 +48,8 @@ export const PropertyCell = ({
     }
   };
 
-  const PropertyIcon = propertyType === PropertyType.COMMERCIAL ? Building2 : Home;
+  const PropertyIcon =
+    propertyType === PropertyType.COMMERCIAL ? Building2 : Home;
 
   return (
     <button

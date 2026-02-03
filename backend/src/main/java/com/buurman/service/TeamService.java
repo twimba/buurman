@@ -7,6 +7,7 @@ import com.buurman.domain.TeamSettings;
 import com.buurman.domain.User;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
@@ -30,15 +31,17 @@ public class TeamService {
     private final TeamInvitationRepository invitationRepository;
     private final UserRepository userRepository;
     private final TeamMapper teamMapper;
+    private final EmailService emailService;
 
     public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       TeamInvitationRepository invitationRepository, UserRepository userRepository,
-                      TeamMapper teamMapper) {
+                      TeamMapper teamMapper, EmailService emailService) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.teamMapper = teamMapper;
+        this.emailService = emailService;
     }
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
@@ -84,22 +87,31 @@ public class TeamService {
         invitation.setInvitedAt(Instant.now());
 
         invitation = invitationRepository.save(invitation);
-        return teamMapper.toInvitationResponse(invitation);
+
+        // Send invitation email
+        String inviterName = principal.getName();
+        emailService.sendTeamInvitation(invitation, inviterName, team.getName());
+
+        return teamMapper.toInvitationResponse(invitation, team.getName(), inviterName);
     }
 
     public InvitationResponse getInvitation(String token) {
         TeamInvitation invitation = invitationRepository.findByToken(token)
             .orElseThrow(() -> new RuntimeException("Invitation not found"));
 
-        if (invitation.getAcceptedAt() != null) {
-            throw new RuntimeException("Invitation already accepted");
+        // Fetch team and inviter details for the response
+        Team team = teamRepository.findById(invitation.getTeamId())
+            .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        String inviterName = "Team Admin";
+        if (invitation.getInvitedBy() != null) {
+            User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
+            if (inviter != null) {
+                inviterName = inviter.getFirstName() + " " + inviter.getLastName();
+            }
         }
 
-        if (invitation.getExpiresAt().isBefore(Instant.now())) {
-            throw new RuntimeException("Invitation expired");
-        }
-
-        return teamMapper.toInvitationResponse(invitation);
+        return teamMapper.toInvitationResponse(invitation, team.getName(), inviterName);
     }
 
     @Transactional
@@ -118,9 +130,9 @@ public class TeamService {
             throw new RuntimeException("Invitation email does not match");
         }
 
-        // Check user not already in a team
-        if (teamMemberRepository.findByUserId(principal.getUserId()).isPresent()) {
-            throw new RuntimeException("User already belongs to a team");
+        // Check user not already member of this specific team
+        if (teamMemberRepository.existsByTeamIdAndUserId(invitation.getTeamId(), principal.getUserId())) {
+            throw new RuntimeException("User already member of this team");
         }
 
         // Create team member
@@ -131,6 +143,7 @@ public class TeamService {
         member.setTeamId(invitation.getTeamId());
         member.setUserId(user.getId());
         member.setRole(invitation.getRole());
+        member.setOwner(false); // Invited members are not owners
         member.setInvitedAt(invitation.getInvitedAt());
         member.setInvitedBy(invitation.getInvitedBy());
         member.setJoinedAt(Instant.now());
@@ -140,6 +153,22 @@ public class TeamService {
         invitation.setAcceptedAt(Instant.now());
         invitation.setAcceptedBy(principal.getUserId());
         invitationRepository.save(invitation);
+
+        // If this is the user's first team, set it as default and active
+        if (user.getDefaultTeamId() == null) {
+            user.setDefaultTeamId(invitation.getTeamId());
+        }
+        if (user.getActiveTeamId() == null) {
+            user.setActiveTeamId(invitation.getTeamId());
+        }
+        userRepository.save(user);
+
+        // Notify inviter
+        User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
+        Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
+        if (inviter != null && team != null) {
+            emailService.sendInvitationAccepted(inviter, user, team);
+        }
     }
 
     @Transactional
@@ -186,6 +215,23 @@ public class TeamService {
     }
 
     @Transactional
+    public TeamResponse updateTeam(UUID teamId, UpdateTeamRequest request, UserPrincipal principal) {
+        // Verify user is admin of this team
+        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        team.setName(request.name());
+        team = teamRepository.save(team);
+
+        long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
+        return teamMapper.toResponse(team, memberCount);
+    }
+
+    @Transactional
     public TeamResponse updateTeamSettings(UUID teamId, UpdateTeamSettingsRequest request,
                                           UserPrincipal principal) {
         // Verify user is admin of this team
@@ -210,6 +256,30 @@ public class TeamService {
             settings.setPayments(paymentSettings);
         }
 
+        // Update regional settings
+        if (request.regional() != null) {
+            TeamSettings.RegionalSettings regionalSettings = settings.getRegional();
+            if (regionalSettings == null) {
+                regionalSettings = new TeamSettings.RegionalSettings();
+            }
+            if (request.regional().defaultCurrency() != null) {
+                regionalSettings.setDefaultCurrency(request.regional().defaultCurrency());
+            }
+            if (request.regional().defaultCountry() != null) {
+                regionalSettings.setDefaultCountry(request.regional().defaultCountry());
+            }
+            if (request.regional().timezone() != null) {
+                regionalSettings.setTimezone(request.regional().timezone());
+            }
+            if (request.regional().dateFormat() != null) {
+                regionalSettings.setDateFormat(request.regional().dateFormat());
+            }
+            if (request.regional().fiscalYearStartMonth() != null) {
+                regionalSettings.setFiscalYearStartMonth(request.regional().fiscalYearStartMonth());
+            }
+            settings.setRegional(regionalSettings);
+        }
+
         team.setSettings(settings);
         team = teamRepository.save(team);
 
@@ -232,5 +302,43 @@ public class TeamService {
         }
 
         return settings;
+    }
+
+    @Transactional
+    public TeamMemberResponse transferOwnership(UUID teamId, UUID newOwnerId, UserPrincipal principal) {
+        // Verify user is owner of this team
+        if (!teamId.equals(principal.getTeamId()) || !principal.isOwner()) {
+            throw new RuntimeException("Only team owner can transfer ownership");
+        }
+
+        // Cannot transfer to self
+        if (newOwnerId.equals(principal.getUserId())) {
+            throw new RuntimeException("Cannot transfer ownership to yourself");
+        }
+
+        // Find new owner's membership
+        TeamMember newOwnerMember = teamMemberRepository.findByUserIdAndTeamId(newOwnerId, teamId)
+            .orElseThrow(() -> new RuntimeException("User is not a member of this team"));
+
+        // Find current owner's membership
+        TeamMember currentOwnerMember = teamMemberRepository.findByUserIdAndTeamId(principal.getUserId(), teamId)
+            .orElseThrow(() -> new RuntimeException("Current owner membership not found"));
+
+        // Transfer ownership
+        currentOwnerMember.setOwner(false);
+        teamMemberRepository.save(currentOwnerMember);
+
+        newOwnerMember.setOwner(true);
+        newOwnerMember.setRole("TEAM_ADMIN"); // Owner must be admin
+        newOwnerMember = teamMemberRepository.save(newOwnerMember);
+
+        // Update team's created_by to new owner
+        Team team = teamRepository.findById(teamId)
+            .orElseThrow(() -> new RuntimeException("Team not found"));
+        team.setCreatedBy(newOwnerId);
+        teamRepository.save(team);
+
+        User newOwnerUser = userRepository.findById(newOwnerId).orElseThrow();
+        return teamMapper.toMemberResponse(newOwnerMember, newOwnerUser, principal.getUserId());
     }
 }

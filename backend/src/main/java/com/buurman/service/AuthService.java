@@ -25,15 +25,17 @@ public class AuthService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserMapper userMapper;
+    private final EmailService emailService;
 
     public AuthService(KeycloakService keycloakService, UserRepository userRepository,
                       TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
-                      UserMapper userMapper) {
+                      UserMapper userMapper, EmailService emailService) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userMapper = userMapper;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -54,15 +56,7 @@ public class AuthService {
         // Auto-generate team name from user's name in kebab-case format
         String teamName = generateTeamName(request.firstName(), request.lastName());
 
-        // Create team
-        Team team = new Team();
-        team.setIdentifier(UlidGenerator.generate());
-        team.setName(teamName);
-        team.setCreatedAt(Instant.now());
-        team.setUpdatedAt(Instant.now());
-        team = teamRepository.save(team);
-
-        // Create user
+        // Create user first (need user ID for team.createdBy)
         User user = new User();
         user.setKeycloakId(keycloakId);
         user.setEmail(request.email());
@@ -70,14 +64,32 @@ public class AuthService {
         user.setLastName(request.lastName());
         user = userRepository.save(user);
 
-        // Add user as team admin
+        // Create team
+        Team team = new Team();
+        team.setIdentifier(UlidGenerator.generate());
+        team.setName(teamName);
+        team.setCreatedAt(Instant.now());
+        team.setUpdatedAt(Instant.now());
+        team.setCreatedBy(user.getId());
+        team = teamRepository.save(team);
+
+        // Set user's default and active team
+        user.setDefaultTeamId(team.getId());
+        user.setActiveTeamId(team.getId());
+        user = userRepository.save(user);
+
+        // Add user as team admin and owner
         TeamMember member = new TeamMember();
         member.setTeamId(team.getId());
         member.setUserId(user.getId());
         member.setRole("TEAM_ADMIN");
+        member.setOwner(true);
         member.setInvitedAt(Instant.now());
         member.setJoinedAt(Instant.now());
         teamMemberRepository.save(member);
+
+        // Send welcome email
+        emailService.sendWelcomeEmail(user);
 
         return userMapper.toResponse(user, team.getId(), "TEAM_ADMIN");
     }
@@ -86,10 +98,11 @@ public class AuthService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        TeamMember member = teamMemberRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("User not member of any team"));
+        // Get active membership based on user's activeTeamId
+        TeamMember member = getActiveMembership(user);
 
-        return userMapper.toResponse(user, member.getTeamId(), member.getRole());
+        return userMapper.toResponse(user, member != null ? member.getTeamId() : null,
+                                     member != null ? member.getRole() : null);
     }
 
     @Transactional
@@ -101,10 +114,38 @@ public class AuthService {
         user.setLastName(request.lastName());
         user = userRepository.save(user);
 
-        TeamMember member = teamMemberRepository.findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("User not member of any team"));
+        TeamMember member = getActiveMembership(user);
 
-        return userMapper.toResponse(user, member.getTeamId(), member.getRole());
+        return userMapper.toResponse(user, member != null ? member.getTeamId() : null,
+                                     member != null ? member.getRole() : null);
+    }
+
+    private TeamMember getActiveMembership(User user) {
+        java.util.List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
+        if (memberships.isEmpty()) {
+            return null;
+        }
+
+        // Priority: activeTeamId → defaultTeamId → first membership
+        UUID activeTeamId = user.getActiveTeamId();
+        if (activeTeamId != null) {
+            for (TeamMember m : memberships) {
+                if (m.getTeamId().equals(activeTeamId)) {
+                    return m;
+                }
+            }
+        }
+
+        UUID defaultTeamId = user.getDefaultTeamId();
+        if (defaultTeamId != null) {
+            for (TeamMember m : memberships) {
+                if (m.getTeamId().equals(defaultTeamId)) {
+                    return m;
+                }
+            }
+        }
+
+        return memberships.get(0);
     }
 
     /**

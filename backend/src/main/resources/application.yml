@@ -70,12 +70,29 @@ aws:
     access-key: test
     secret-key: test
 
+# Email Configuration
+spring.mail:
+  host: ${SMTP_HOST:localhost}
+  port: ${SMTP_PORT:1025}
+  username: ${SMTP_USERNAME:}
+  password: ${SMTP_PASSWORD:}
+  properties:
+    mail:
+      smtp:
+        auth: false
+        starttls:
+          enable: false
+
 # Application Configuration
 app:
   version: @project.version@
   documents:
     max-file-size: 52428800
     allowed-mime-types: application/pdf,image/jpeg,image/png,image/gif
+  email:
+    from: ${EMAIL_FROM:noreply@buurman.com}
+    from-name: ${EMAIL_FROM_NAME:Buurman}
+    base-url: ${APP_BASE_URL:http://localhost:5173}
 
 # Actuator Configuration
 management:

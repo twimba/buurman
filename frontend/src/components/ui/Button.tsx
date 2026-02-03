@@ -1,7 +1,12 @@
 import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'ghost'
+  | 'success';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -114,19 +119,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ${variantStyles[variant]}
           ${sizeStyles[size]}
           ${className}
-        `.trim().replace(/\s+/g, ' ')}
+        `
+          .trim()
+          .replace(/\s+/g, ' ')}
         {...props}
       >
         {isLoading ? (
           <Loader2 className={`${iconSizes[size]} animate-spin`} />
         ) : leftIcon ? (
-          <span className={`${iconSizes[size]} flex-shrink-0 [&>svg]:h-full [&>svg]:w-full`}>
+          <span
+            className={`${iconSizes[size]} flex-shrink-0 [&>svg]:h-full [&>svg]:w-full`}
+          >
             {leftIcon}
           </span>
         ) : null}
         <span className="truncate">{children}</span>
         {!isLoading && rightIcon && (
-          <span className={`${iconSizes[size]} flex-shrink-0 [&>svg]:h-full [&>svg]:w-full`}>
+          <span
+            className={`${iconSizes[size]} flex-shrink-0 [&>svg]:h-full [&>svg]:w-full`}
+          >
             {rightIcon}
           </span>
         )}

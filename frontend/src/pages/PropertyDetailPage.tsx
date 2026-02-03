@@ -22,6 +22,7 @@ import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { PropertyMap } from '@/components/properties/PropertyMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { Button, PageHeader } from '@/components/ui';
+import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
 import {
   Edit,
@@ -59,6 +60,7 @@ const statusLabels: Record<PropertyStatus, string> = {
 export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
   >('info');
@@ -360,7 +362,9 @@ export const PropertyDetailPage = () => {
           description={`${property.city}, ${property.postalCode}`}
           backTo="/properties"
           badge={
-            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}>
+            <span
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}
+            >
               {statusLabels[property.status]}
             </span>
           }
@@ -371,10 +375,15 @@ export const PropertyDetailPage = () => {
                 leftIcon={<Download />}
                 onClick={async () => {
                   try {
-                    const response = await client.get(`/reports/export/property/${id}/brochure`, {
-                      responseType: 'blob',
+                    const response = await client.get(
+                      `/reports/export/property/${id}/brochure`,
+                      {
+                        responseType: 'blob',
+                      }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
                     });
-                    const blob = new Blob([response.data], { type: 'application/pdf' });
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
@@ -395,6 +404,7 @@ export const PropertyDetailPage = () => {
                 variant="secondary"
                 leftIcon={<Edit />}
                 onClick={() => navigate(`/properties/${id}/edit`)}
+                disabled={!canEditData}
               >
                 Edit
               </Button>
@@ -402,6 +412,7 @@ export const PropertyDetailPage = () => {
                 variant="danger"
                 leftIcon={<Trash2 />}
                 onClick={() => setShowDeleteModal(true)}
+                disabled={!canEditData}
               >
                 Delete
               </Button>
@@ -624,6 +635,7 @@ export const PropertyDetailPage = () => {
               onDelete={handleDeleteDocument}
               isUploading={uploadPhotoMutation.isPending}
               isDeleting={deleteDocumentMutation.isPending}
+              readOnly={!canEditData}
             />
           </div>
         )}
@@ -638,6 +650,7 @@ export const PropertyDetailPage = () => {
             onDelete={handleDeleteDocument}
             isUploading={uploadDocumentMutation.isPending}
             isDeleting={deleteDocumentMutation.isPending}
+            readOnly={!canEditData}
           />
         )}
 
@@ -649,7 +662,8 @@ export const PropertyDetailPage = () => {
               </h2>
               <button
                 onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                disabled={!canEditData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <Plus className="h-4 w-4" />
                 Add Contract
@@ -668,7 +682,8 @@ export const PropertyDetailPage = () => {
                 </p>
                 <button
                   onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                  disabled={!canEditData}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Contract
@@ -906,7 +921,8 @@ export const PropertyDetailPage = () => {
               </h2>
               <button
                 onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                disabled={!canEditData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
               >
                 <Plus className="h-4 w-4" />
                 Add Expense
@@ -925,7 +941,8 @@ export const PropertyDetailPage = () => {
                 </p>
                 <button
                   onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                  disabled={!canEditData}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Expense

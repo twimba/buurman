@@ -114,80 +114,6 @@
   - Create POST /api/notifications/read-all endpoint
 
   ---
-  5. Subscription Management
-
-  5.1 Subscription Plans
-
-  - Create subscription_plans table (id, name, price, currency, billing_period, properties_limit, features JSONB)
-  - Seed initial plans (Starter, Professional, Enterprise)
-  - Create GET /api/subscription-plans endpoint
-  - Create subscriptions table (id, team_id, plan_id, status, current_period_start, current_period_end, cancel_at_period_end)
-  - Create GET /api/teams/{teamId}/subscription endpoint
-
-  5.2 Subscription Changes
-
-  - Integrate with payment provider (Stripe/Mollie)
-  - Create POST /api/teams/{teamId}/subscription/upgrade endpoint
-  - Create POST /api/teams/{teamId}/subscription/downgrade endpoint
-  - Implement prorated billing for plan changes
-  - Create POST /api/teams/{teamId}/subscription/cancel endpoint
-  - Implement cancellation at period end
-  - Send email confirmation for plan changes
-  - Update audit log for subscription changes
-
-  5.3 Usage Limits
-
-  - Implement property limit enforcement based on subscription
-  - Create middleware to check property limits before creation
-  - Return 402 Payment Required when limit exceeded
-  - Add usage stats to dashboard (properties used / limit)
-
-  ---
-  6. Payment Methods
-
-  6.1 Payment Method Management
-
-  - Create payment_methods table (id, team_id, type, provider_id, last4, brand, expiry_month, expiry_year, is_default)
-  - Integrate with Stripe/Mollie for payment method storage
-  - Create GET /api/teams/{teamId}/payment-methods endpoint
-  - Create POST /api/teams/{teamId}/payment-methods endpoint (via Stripe SetupIntent)
-  - Create DELETE /api/teams/{teamId}/payment-methods/{id} endpoint
-  - Create POST /api/teams/{teamId}/payment-methods/{id}/set-default endpoint
-  - Encrypt sensitive payment data
-  - Implement PCI compliance requirements
-
-  ---
-  7. Payment History & Invoices
-
-  7.1 Invoice Storage
-
-  - Create invoices table (id, team_id, invoice_number, date, amount, currency, status, plan_name, payment_method_id, pdf_url)
-  - Create GET /api/teams/{teamId}/invoices endpoint with pagination
-  - Add filters: status, date range, search
-  - Implement invoice number generation (INV-YYYY-NNN format)
-
-  7.2 Invoice Generation
-
-  - Integrate with payment provider webhooks for invoice creation
-  - Create invoice PDF generation service (using iText or similar)
-  - Include team details, line items, tax info in PDF
-  - Store PDF in S3/LocalStack
-  - Create GET /api/invoices/{id}/download endpoint with presigned URL
-  - Send invoice email after successful payment
-
-  7.3 Payment Processing
-
-  - Implement webhook handling for payment events:
-    - payment_succeeded
-    - payment_failed
-    - subscription_renewed
-    - subscription_cancelled
-  - Update invoice status based on payment events
-  - Send email notifications for payment failures
-  - Implement retry logic for failed payments
-  - Create POST /api/invoices/{id}/retry endpoint for failed payments
-
-  ---
   8. Security & Permissions
 
   8.1 Role-Based Access Control
@@ -234,26 +160,6 @@
   - Implement email template rendering service
   - Configure email provider (SendGrid, AWS SES, Mailgun)
 
-  ---
-  10. Testing & Documentation
-
-  10.1 Testing
-
-  - Write unit tests for all new service methods
-  - Write integration tests for all new endpoints
-  - Test multi-tenancy isolation for all endpoints
-  - Test subscription limit enforcement
-  - Test payment webhook handling
-  - Test email notification delivery
-  - Test invitation flow end-to-end
-
-  10.2 Documentation
-
-  - Update OpenAPI/Swagger documentation for all new endpoints
-  - Document webhook payload formats
-  - Document email template variables
-  - Create setup guide for payment provider integration
-  - Document subscription plan configuration
 
   ---
   Priority Order
@@ -275,25 +181,12 @@
   10. Notification system (4.2)
   11. Email templates (9.1)
 
-  Phase 4 - Subscriptions (Week 5-6)
-  12. Subscription plans (5.1)
-  13. Payment provider integration (5.2, 6.1)
-  14. Subscription changes (5.2)
-  15. Usage limits (5.3)
-
-  Phase 5 - Billing (Week 7)
-  16. Payment methods (6.1)
-  17. Invoice storage (7.1)
-  18. Invoice generation (7.2)
-  19. Payment processing (7.3)
-
   Phase 6 - Polish (Week 8)
   20. Security audit (8.1)
-  21. Comprehensive testing (10.1)
-  22. Documentation (10.2)
 
 
-pdated Backend Implementation Tasks
+
+Updated Backend Implementation Tasks
 
   Phase 1 - Multi-Team Foundation (Week 1-2)
 
@@ -432,22 +325,6 @@ pdated Backend Implementation Tasks
   );
 
   ---
-  Phase 5 - Subscription Updates (Week 6)
-
-  5.1 Team-Based Subscriptions
-
-  - Subscription is owned by team, not individual user
-  - Only TEAM_ADMIN can manage subscription
-  - Only TEAM_OWNER can cancel subscription
-  - Property limits apply per team
-  - Team member limits apply per team
-
-  5.2 Multi-Team Billing
-
-  - Each team has separate subscription
-  - Users don't pay per team they join (team owner pays)
-  - When user creates new team, that team gets free plan
-  - Display subscription info only for teams where user is admin
 
   ---
   Phase 6 - Testing & Documentation (Week 7)

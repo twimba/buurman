@@ -216,7 +216,9 @@ export const PaymentHistorySection = () => {
 
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900 text-sm">Status Filter</h3>
+            <h3 className="font-semibold text-gray-900 text-sm">
+              Status Filter
+            </h3>
           </div>
           <div className="flex gap-2 flex-wrap">
             {statusFilters.map((filter) => (

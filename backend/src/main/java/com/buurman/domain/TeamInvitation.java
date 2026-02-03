@@ -15,6 +15,12 @@ public class TeamInvitation {
     private Instant invitedAt;
     private Instant acceptedAt;
     private UUID acceptedBy;
+    private Instant emailSentAt;
+    private String emailError;
+    private String pendingFirstName;
+    private String pendingLastName;
+    private Instant resentAt;
+    private Integer resentCount;
 
     public TeamInvitation() {
     }
@@ -112,5 +118,53 @@ public class TeamInvitation {
 
     public void setAcceptedBy(UUID acceptedBy) {
         this.acceptedBy = acceptedBy;
+    }
+
+    public Instant getEmailSentAt() {
+        return emailSentAt;
+    }
+
+    public void setEmailSentAt(Instant emailSentAt) {
+        this.emailSentAt = emailSentAt;
+    }
+
+    public String getEmailError() {
+        return emailError;
+    }
+
+    public void setEmailError(String emailError) {
+        this.emailError = emailError;
+    }
+
+    public String getPendingFirstName() {
+        return pendingFirstName;
+    }
+
+    public void setPendingFirstName(String pendingFirstName) {
+        this.pendingFirstName = pendingFirstName;
+    }
+
+    public String getPendingLastName() {
+        return pendingLastName;
+    }
+
+    public void setPendingLastName(String pendingLastName) {
+        this.pendingLastName = pendingLastName;
+    }
+
+    public Instant getResentAt() {
+        return resentAt;
+    }
+
+    public void setResentAt(Instant resentAt) {
+        this.resentAt = resentAt;
+    }
+
+    public Integer getResentCount() {
+        return resentCount;
+    }
+
+    public void setResentCount(Integer resentCount) {
+        this.resentCount = resentCount;
     }
 }

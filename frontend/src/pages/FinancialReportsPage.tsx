@@ -36,7 +36,9 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export const FinancialReportsPage = () => {
   const navigate = useNavigate();
-  const [periodType, setPeriodType] = useState<'month' | 'quarter' | 'year' | 'custom'>('month');
+  const [periodType, setPeriodType] = useState<
+    'month' | 'quarter' | 'year' | 'custom'
+  >('month');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
 
@@ -128,7 +130,13 @@ export const FinancialReportsPage = () => {
     return `${value.toFixed(1)}%`;
   };
 
-  if (overviewError || trendError || breakdownError || comparisonError || occupancyError) {
+  if (
+    overviewError ||
+    trendError ||
+    breakdownError ||
+    comparisonError ||
+    occupancyError
+  ) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
@@ -268,14 +276,18 @@ export const FinancialReportsPage = () => {
               <div className="text-right">
                 <p
                   className={`text-sm font-medium ${
-                    overview.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'
+                    overview.netProfit >= 0
+                      ? 'text-blue-700'
+                      : 'text-orange-700'
                   }`}
                 >
                   Net Profit
                 </p>
                 <p
                   className={`text-3xl font-bold ${
-                    overview.netProfit >= 0 ? 'text-blue-900' : 'text-orange-900'
+                    overview.netProfit >= 0
+                      ? 'text-blue-900'
+                      : 'text-orange-900'
                   }`}
                 >
                   {formatCurrency(overview.netProfit)}
@@ -323,7 +335,9 @@ export const FinancialReportsPage = () => {
                 />
                 <YAxis tick={{ fontSize: 12 }} stroke="#9CA3AF" />
                 <Tooltip
-                  formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : 'N/A'}
+                  formatter={(value: number | undefined) =>
+                    value !== undefined ? formatCurrency(value) : 'N/A'
+                  }
                   contentStyle={{
                     backgroundColor: '#fff',
                     border: '1px solid #e5e7eb',
@@ -368,7 +382,9 @@ export const FinancialReportsPage = () => {
               <h2 className="text-xl font-semibold text-gray-900">
                 Expense Breakdown
               </h2>
-              <p className="text-sm text-gray-600">By category for selected period</p>
+              <p className="text-sm text-gray-600">
+                By category for selected period
+              </p>
             </div>
             <PieChartIcon className="h-6 w-6 text-gray-400" />
           </div>
@@ -397,7 +413,9 @@ export const FinancialReportsPage = () => {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : 'N/A'}
+                    formatter={(value: number | undefined) =>
+                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    }
                     contentStyle={{
                       backgroundColor: '#fff',
                       border: '1px solid #e5e7eb',
@@ -454,36 +472,58 @@ export const FinancialReportsPage = () => {
               <LoadingSpinner />
             </div>
           ) : propertyComparison && propertyComparison.properties.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={450}>
               <BarChart
-                data={propertyComparison.properties.map((p) => {
-                  const fullName = `${p.property.street}, ${p.property.city}`;
-                  const truncatedName = fullName.length > 25 ? fullName.substring(0, 22) + '...' : fullName;
-                  return {
-                    name: truncatedName,
-                    fullName: fullName,
-                    income: p.income,
-                    expenses: p.expenses,
-                    netProfit: p.netProfit,
-                  };
-                })}
-                margin={{ top: 5, right: 15, left: 15, bottom: 120 }}
+                data={propertyComparison.properties.map((p) => ({
+                  street: p.property.street,
+                  city: p.property.city,
+                  income: p.income,
+                  expenses: p.expenses,
+                  netProfit: p.netProfit,
+                }))}
+                margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 9 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={120}
+                  dataKey="street"
+                  tick={(props: any) => {
+                    const { x, y, index } = props;
+                    const data = propertyComparison.properties[index];
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        <text
+                          x={0}
+                          y={0}
+                          dy={24}
+                          textAnchor="middle"
+                          fill="#6B7280"
+                          fontSize={11}
+                        >
+                          <tspan x={0} dy={0}>
+                            {data.property.street}
+                          </tspan>
+                          <tspan x={0} dy={14} fontSize={10} fill="#9CA3AF">
+                            {data.property.city}
+                          </tspan>
+                        </text>
+                      </g>
+                    );
+                  }}
+                  height={60}
                   interval={0}
                   stroke="#6B7280"
                 />
                 <YAxis tick={{ fontSize: 12 }} stroke="#6B7280" />
                 <Tooltip
-                  formatter={(value: number | undefined) => value !== undefined ? formatCurrency(value) : 'N/A'}
+                  formatter={(value: number | undefined) =>
+                    value !== undefined ? formatCurrency(value) : 'N/A'
+                  }
                   labelFormatter={(label, payload) => {
-                    if (Array.isArray(payload) && payload.length > 0 && payload[0].payload?.fullName) {
+                    if (
+                      Array.isArray(payload) &&
+                      payload.length > 0 &&
+                      payload[0].payload?.fullName
+                    ) {
                       return payload[0].payload.fullName;
                     }
                     return label;
@@ -541,7 +581,10 @@ export const FinancialReportsPage = () => {
                   tickFormatter={formatPercent}
                 />
                 <Tooltip
-                  formatter={(value: number | undefined, name: string | undefined) => {
+                  formatter={(
+                    value: number | undefined,
+                    name: string | undefined
+                  ) => {
                     if (value === undefined) return 'N/A';
                     if (name === 'occupancyRate') return formatPercent(value);
                     return value;

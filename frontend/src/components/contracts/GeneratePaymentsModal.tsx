@@ -26,10 +26,7 @@ export default function GeneratePaymentsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-4">Generate Payments</h3>
 
@@ -47,12 +44,17 @@ export default function GeneratePaymentsModal({
               min={1}
               max={24}
               value={count}
-              onChange={(e) => setCount(Math.max(1, Math.min(24, parseInt(e.target.value) || 1)))}
+              onChange={(e) =>
+                setCount(
+                  Math.max(1, Math.min(24, parseInt(e.target.value) || 1))
+                )
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={isLoading}
             />
             <p className="text-xs text-gray-500 mt-1">
-              Payments will be generated for the next {count} period(s) based on the contract's payment frequency.
+              Payments will be generated for the next {count} period(s) based on
+              the contract's payment frequency.
             </p>
           </div>
 
@@ -70,7 +72,9 @@ export default function GeneratePaymentsModal({
               className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? 'Generating...' : `Generate ${count} Payment${count > 1 ? 's' : ''}`}
+              {isLoading
+                ? 'Generating...'
+                : `Generate ${count} Payment${count > 1 ? 's' : ''}`}
             </button>
           </div>
         </form>
