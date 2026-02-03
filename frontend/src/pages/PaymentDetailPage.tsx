@@ -14,8 +14,8 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { Button, PageHeader } from '@/components/ui';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   Calendar,
@@ -24,7 +24,6 @@ import {
   User,
   FileText,
   CheckCircle,
-  X,
   History,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -127,59 +126,43 @@ export const PaymentDetailPage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 -mx-4 px-4 py-4 mb-6">
-          <div className="flex items-center justify-between max-w-6xl mx-auto">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/payments')}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Payment #{payment.identifier}
-                </h1>
-                <p className="text-xs text-gray-500">
-                  Contract #{payment.contract.identifier}
-                </p>
-              </div>
-              <div className="ml-2">
-                <PaymentStatusBadge status={payment.status} />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
+        <PageHeader
+          title={`Payment #${payment.identifier}`}
+          subtitle={`Contract #${payment.contract.identifier}`}
+          backTo="/payments"
+          badge={<PaymentStatusBadge status={payment.status} />}
+          actions={
+            <>
               {canMarkPaid && (
-                <button
+                <Button
+                  variant="success"
+                  leftIcon={<CheckCircle />}
                   onClick={() => setShowMarkPaidModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                 >
-                  <CheckCircle className="h-4 w-4" />
                   Mark as Paid
-                </button>
+                </Button>
               )}
               {canEdit && !isEditing && (
-                <button
+                <Button
+                  variant="secondary"
+                  leftIcon={<Edit />}
                   onClick={() => setIsEditing(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <Edit className="h-4 w-4" />
                   Edit
-                </button>
+                </Button>
               )}
               {canDelete && (
-                <button
+                <Button
+                  variant="danger"
+                  leftIcon={<Trash2 />}
                   onClick={() => setShowDeleteModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-white border border-gray-300 rounded-md hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                 >
-                  <Trash2 className="h-4 w-4" />
                   Delete
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-6">
@@ -578,19 +561,19 @@ export const PaymentDetailPage = () => {
               be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                disabled={deletePaymentMutation.isPending}
+                isLoading={deletePaymentMutation.isPending}
               >
-                {deletePaymentMutation.isPending ? 'Deleting...' : 'Delete'}
-              </button>
+                Delete
+              </Button>
             </div>
           </div>
         </div>
@@ -629,21 +612,20 @@ export const PaymentDetailPage = () => {
               </div>
             </div>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setShowMarkPaidModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center gap-2"
               >
-                <X className="h-4 w-4" />
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="success"
+                leftIcon={<CheckCircle />}
                 onClick={handleMarkPaid}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2"
-                disabled={markPaidMutation.isPending}
+                isLoading={markPaidMutation.isPending}
               >
-                <CheckCircle className="h-4 w-4" />
-                {markPaidMutation.isPending ? 'Saving...' : 'Mark as Paid'}
-              </button>
+                Mark as Paid
+              </Button>
             </div>
           </div>
         </div>

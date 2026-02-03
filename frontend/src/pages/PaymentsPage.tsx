@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PaymentStatus } from '@/types/payment';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
+import { ContractCell } from '@/components/contracts/ContractCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
@@ -405,8 +406,8 @@ export const PaymentsPage = () => {
                       Payment #
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort('contract')}
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 min-w-[280px]"
+                      onClick={() => handleSort('property')}
                     >
                       <div className="flex items-center gap-1">
                         Contract
@@ -414,22 +415,10 @@ export const PaymentsPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleSort('property')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Property
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tenant
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                       onClick={() => handleSort('amount')}
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-end gap-1">
                         Amount
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
@@ -455,20 +444,26 @@ export const PaymentsPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {format(new Date(payment.dueDate), 'MMM d, yyyy')}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {payment.identifier}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-900">
+                          #{payment.identifier}
+                        </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
-                        {payment.contract.identifier}
+                      <td className="px-6 py-3">
+                        <ContractCell
+                          contractId={payment.contract.id}
+                          contractIdentifier={payment.contract.identifier}
+                          contractStatus={payment.contract.status}
+                          propertyStreet={payment.property.street}
+                          propertyCity={payment.property.city}
+                          tenantFirstName={payment.tenant.firstName}
+                          tenantLastName={payment.tenant.lastName}
+                        />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {payment.property.street}, {payment.property.city}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {payment.tenant.firstName} {payment.tenant.lastName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        {payment.currency} {payment.amount.toFixed(2)}
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {payment.currency} {payment.amount.toFixed(2)}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <PaymentStatusBadge status={payment.status} />

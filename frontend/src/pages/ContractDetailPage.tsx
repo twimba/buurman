@@ -10,6 +10,7 @@ import {
   useChangeContractStatus,
   useReopenContract,
   useDuplicateContract,
+  useGenerateContractPayments,
 } from '@/hooks/useContractHooks';
 import { usePaymentsByContract } from '@/hooks/usePaymentHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -18,9 +19,10 @@ import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
+import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
+import { Button, PageHeader } from '@/components/ui';
 import client from '@/api/client';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   FileText,
@@ -50,6 +52,7 @@ export const ContractDetailPage = () => {
   >('overview');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showGeneratePaymentsModal, setShowGeneratePaymentsModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -88,6 +91,7 @@ export const ContractDetailPage = () => {
   const changeStatusMutation = useChangeContractStatus(id!);
   const reopenContractMutation = useReopenContract(id!);
   const duplicateContractMutation = useDuplicateContract();
+  const generatePaymentsMutation = useGenerateContractPayments(id!);
 
   // Payments filtering, sorting, and pagination
   const filteredAndSortedPayments = useMemo(() => {
@@ -240,30 +244,16 @@ export const ContractDetailPage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 -mx-4 px-4 py-4 mb-6">
-          <div className="flex items-center justify-between max-w-6xl mx-auto">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/contracts')}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Contract #{contract.identifier}
-                </h1>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
-                  {contract.contractType.replace('_', ' ')}
-                </p>
-              </div>
-              <div className="ml-2">
-                <ContractStatusBadge status={contract.status} />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
+        <PageHeader
+          title={`Contract #${contract.identifier}`}
+          subtitle={contract.contractType.replace('_', ' ')}
+          backTo="/contracts"
+          badge={<ContractStatusBadge status={contract.status} />}
+          actions={
+            <>
+              <Button
+                variant="secondary"
+                leftIcon={<Download />}
                 onClick={async () => {
                   try {
                     const response = await client.get(`/reports/export/contract/${id}/report`, {
@@ -283,65 +273,59 @@ export const ContractDetailPage = () => {
                     alert('Failed to download report. Please try again.');
                   }
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
-                <Download className="h-4 w-4" />
                 Report
-              </button>
+              </Button>
               {!canReopen && (
-                <button
+                <Button
+                  variant="primary"
+                  leftIcon={<RefreshCw />}
                   onClick={() => setShowStatusModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <RefreshCw className="h-4 w-4" />
                   Change Status
-                </button>
+                </Button>
               )}
               {canReopen && (
-                <button
+                <Button
+                  variant="primary"
+                  leftIcon={<RotateCcw />}
                   onClick={handleReopen}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={reopenContractMutation.isPending}
+                  isLoading={reopenContractMutation.isPending}
                   title="Reopen this contract to draft status"
                 >
-                  <RotateCcw className="h-4 w-4" />
-                  {reopenContractMutation.isPending
-                    ? 'Reopening...'
-                    : 'Re-open'}
-                </button>
+                  Re-open
+                </Button>
               )}
               {canEdit && (
-                <button
+                <Button
+                  variant="secondary"
+                  leftIcon={<Edit />}
                   onClick={() => navigate(`/contracts/${id}/edit`)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  <Edit className="h-4 w-4" />
                   Edit
-                </button>
+                </Button>
               )}
-              <button
+              <Button
+                variant="secondary"
+                leftIcon={<Copy />}
                 onClick={handleDuplicate}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={duplicateContractMutation.isPending}
+                isLoading={duplicateContractMutation.isPending}
                 title="Create a copy of this contract in draft status"
               >
-                <Copy className="h-4 w-4" />
-                {duplicateContractMutation.isPending
-                  ? 'Duplicating...'
-                  : 'Duplicate'}
-              </button>
+                Duplicate
+              </Button>
               {canDelete && (
-                <button
+                <Button
+                  variant="danger"
+                  leftIcon={<Trash2 />}
                   onClick={() => setShowDeleteModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-white border border-gray-300 rounded-md hover:bg-red-50 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
                 >
-                  <Trash2 className="h-4 w-4" />
                   Delete
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-6">
@@ -592,13 +576,24 @@ export const ContractDetailPage = () => {
               <h2 className="text-xl font-semibold text-gray-900">
                 Payments ({filteredAndSortedPayments.length})
               </h2>
-              <button
-                onClick={() => navigate(`/payments/new?contractId=${id}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
-              >
-                <Plus className="h-4 w-4" />
-                Add Payment
-              </button>
+              <div className="flex items-center gap-2">
+                {contract?.status === ContractStatus.ACTIVE && (
+                  <Button
+                    variant="success"
+                    leftIcon={<RefreshCw />}
+                    onClick={() => setShowGeneratePaymentsModal(true)}
+                  >
+                    Generate Payments
+                  </Button>
+                )}
+                <Button
+                  variant="primary"
+                  leftIcon={<Plus />}
+                  onClick={() => navigate(`/payments/new?contractId=${id}`)}
+                >
+                  Add Payment
+                </Button>
+              </div>
             </div>
 
             {paymentsLoading ? (
@@ -611,13 +606,13 @@ export const ContractDetailPage = () => {
                 <p className="text-gray-600 mb-4">
                   No payments for this contract
                 </p>
-                <button
+                <Button
+                  variant="primary"
+                  leftIcon={<Plus />}
                   onClick={() => navigate(`/payments/new?contractId=${id}`)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
                 >
-                  <Plus className="h-4 w-4" />
                   Create First Payment
-                </button>
+                </Button>
               </div>
             ) : (
               <>
@@ -1015,19 +1010,19 @@ export const ContractDetailPage = () => {
               be undone.
             </p>
             <div className="flex justify-end gap-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                disabled={deleteContractMutation.isPending}
+                isLoading={deleteContractMutation.isPending}
               >
-                {deleteContractMutation.isPending ? 'Deleting...' : 'Delete'}
-              </button>
+                Delete
+              </Button>
             </div>
           </div>
         </div>
@@ -1042,6 +1037,16 @@ export const ContractDetailPage = () => {
           isLoading={changeStatusMutation.isPending}
         />
       )}
+
+      {/* Generate Payments Modal */}
+      <GeneratePaymentsModal
+        isOpen={showGeneratePaymentsModal}
+        onClose={() => setShowGeneratePaymentsModal(false)}
+        onSubmit={async (count) => {
+          await generatePaymentsMutation.mutateAsync(count);
+        }}
+        isLoading={generatePaymentsMutation.isPending}
+      />
     </div>
   );
 };

@@ -21,16 +21,15 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { PropertyMap } from '@/components/properties/PropertyMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
+import { Button, PageHeader } from '@/components/ui';
 import client from '@/api/client';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   Bed,
   Bath,
   Ruler,
   MapPin,
-  X,
   History,
   Image,
   FileText,
@@ -355,66 +354,60 @@ export const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/properties')}
-              className="p-2 hover:bg-gray-200 rounded transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {property.street}
-              </h1>
-              <p className="text-sm text-gray-500">#{property.identifier}</p>
-              <p className="text-gray-600">
-                {property.city}, {property.postalCode}
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={async () => {
-                try {
-                  const response = await client.get(`/reports/export/property/${id}/brochure`, {
-                    responseType: 'blob',
-                  });
-                  const blob = new Blob([response.data], { type: 'application/pdf' });
-                  const url = window.URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = 'property-brochure.pdf';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  window.URL.revokeObjectURL(url);
-                } catch (error) {
-                  console.error('Failed to download brochure:', error);
-                  alert('Failed to download brochure. Please try again.');
-                }
-              }}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Brochure
-            </button>
-            <button
-              onClick={() => navigate(`/properties/${id}/edit`)}
-              className="bg-white border border-gray-300 px-4 py-2 rounded hover:bg-background transition-colors flex items-center gap-2"
-            >
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors flex items-center gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          title={property.street}
+          subtitle={`#${property.identifier}`}
+          description={`${property.city}, ${property.postalCode}`}
+          backTo="/properties"
+          badge={
+            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}>
+              {statusLabels[property.status]}
+            </span>
+          }
+          actions={
+            <>
+              <Button
+                variant="primary"
+                leftIcon={<Download />}
+                onClick={async () => {
+                  try {
+                    const response = await client.get(`/reports/export/property/${id}/brochure`, {
+                      responseType: 'blob',
+                    });
+                    const blob = new Blob([response.data], { type: 'application/pdf' });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'property-brochure.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download brochure:', error);
+                    alert('Failed to download brochure. Please try again.');
+                  }
+                }}
+              >
+                Brochure
+              </Button>
+              <Button
+                variant="secondary"
+                leftIcon={<Edit />}
+                onClick={() => navigate(`/properties/${id}/edit`)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                leftIcon={<Trash2 />}
+                onClick={() => setShowDeleteModal(true)}
+              >
+                Delete
+              </Button>
+            </>
+          }
+        />
 
         {/* Tabs */}
         <div className="border-b mb-6">
@@ -1319,22 +1312,21 @@ export const PropertyDetailPage = () => {
               This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
-                className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors flex items-center gap-2"
                 disabled={deletePropertyMutation.isPending}
               >
-                <X className="h-4 w-4" />
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
+                leftIcon={<Trash2 />}
                 onClick={handleDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-                disabled={deletePropertyMutation.isPending}
+                isLoading={deletePropertyMutation.isPending}
               >
-                <Trash2 className="h-4 w-4" />
-                {deletePropertyMutation.isPending ? 'Deleting...' : 'Delete'}
-              </button>
+                Delete
+              </Button>
             </div>
           </div>
         </div>

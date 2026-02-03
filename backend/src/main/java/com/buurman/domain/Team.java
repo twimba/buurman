@@ -8,6 +8,7 @@ public class Team {
     private UUID id;
     private String identifier;
     private String name;
+    private TeamSettings settings;
     private Instant createdAt;
     private Instant updatedAt;
     private UUID createdBy;
@@ -15,10 +16,12 @@ public class Team {
     public Team() {
     }
 
-    public Team(UUID id, String identifier, String name, Instant createdAt, Instant updatedAt, UUID createdBy) {
+    public Team(UUID id, String identifier, String name, TeamSettings settings,
+                Instant createdAt, Instant updatedAt, UUID createdBy) {
         this.id = id;
         this.identifier = identifier;
         this.name = name;
+        this.settings = settings;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;
@@ -46,6 +49,14 @@ public class Team {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TeamSettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(TeamSettings settings) {
+        this.settings = settings;
     }
 
     public Instant getCreatedAt() {

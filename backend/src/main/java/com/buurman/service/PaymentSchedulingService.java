@@ -1,0 +1,396 @@
+package com.buurman.service;
+
+import com.buurman.domain.Contract;
+import com.buurman.domain.Payment;
+import com.buurman.domain.Team;
+import com.buurman.domain.TeamSettings;
+import com.buurman.repository.ContractRepository;
+import com.buurman.repository.PaymentRepository;
+import com.buurman.repository.TeamRepository;
+import com.buurman.util.UlidGenerator;
+import org.jooq.DSLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+
+@Service
+public class PaymentSchedulingService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentSchedulingService.class);
+
+    private final ContractRepository contractRepository;
+    private final PaymentRepository paymentRepository;
+    private final TeamRepository teamRepository;
+    private final AuditService auditService;
+    private final DSLContext dsl;
+
+    public PaymentSchedulingService(ContractRepository contractRepository,
+                                   PaymentRepository paymentRepository,
+                                   TeamRepository teamRepository,
+                                   AuditService auditService,
+                                   DSLContext dsl) {
+        this.contractRepository = contractRepository;
+        this.paymentRepository = paymentRepository;
+        this.teamRepository = teamRepository;
+        this.auditService = auditService;
+        this.dsl = dsl;
+    }
+
+    /**
+     * Generate future payments for a single contract based on team settings
+     *
+     * @param contractId Contract ID
+     * @param teamId Team ID
+     * @param userId User ID (or SYSTEM_USER_ID for automated operations)
+     * @return Number of payments created
+     */
+    @Transactional
+    public int generateFuturePaymentsForContract(UUID contractId, UUID teamId, UUID userId) {
+        // Load contract
+        Contract contract = contractRepository.findByIdAndTeamId(contractId, teamId)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        // Only generate for ACTIVE contracts
+        if (contract.getStatus() != Contract.ContractStatus.ACTIVE) {
+            log.debug("Skipping payment generation for non-ACTIVE contract: {}", contract.getIdentifier());
+            return 0;
+        }
+
+        // Load team settings
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        TeamSettings settings = team.getSettings();
+        if (settings == null || settings.getPayments() == null) {
+            settings = new TeamSettings(); // Use defaults
+        }
+
+        TeamSettings.PaymentSettings paymentSettings = settings.getPayments();
+        if (!paymentSettings.getAutoGenerationEnabled()) {
+            log.debug("Auto-generation disabled for team: {}", team.getIdentifier());
+            return 0;
+        }
+
+        int paymentsAheadCount = paymentSettings.getPaymentsAheadCount();
+        int paymentsCreated = 0;
+
+        // Start from today
+        LocalDate currentDate = LocalDate.now();
+
+        for (int i = 0; i < paymentsAheadCount; i++) {
+            // Calculate next due date
+            LocalDate nextDueDate = calculateNextDueDate(currentDate, i, contract);
+
+            // Don't generate beyond contract end date
+            if (contract.getEndDate() != null && nextDueDate.isAfter(contract.getEndDate())) {
+                log.debug("Stopping payment generation: next due date {} is after contract end date {}",
+                        nextDueDate, contract.getEndDate());
+                break;
+            }
+
+            // Check if payment already exists for this due date
+            boolean paymentExists = dsl.fetchExists(
+                    dsl.selectFrom(PAYMENTS)
+                            .where(PAYMENTS.CONTRACT_ID.eq(contractId)
+                                    .and(PAYMENTS.DUE_DATE.eq(nextDueDate))
+                                    .and(PAYMENTS.DELETED_AT.isNull()))
+            );
+
+            if (paymentExists) {
+                log.debug("Payment already exists for contract {} on due date {}, skipping",
+                        contract.getIdentifier(), nextDueDate);
+                continue;
+            }
+
+            // Create payment
+            try {
+                Payment payment = new Payment();
+                // Don't set ID - let repository generate it on insert
+                payment.setIdentifier(UlidGenerator.generate());
+                payment.setTeamId(teamId);
+                payment.setContractId(contractId);
+                payment.setAmount(contract.getRentAmount());
+                payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
+                payment.setDueDate(nextDueDate);
+                payment.setStatus(Payment.PaymentStatus.PENDING);
+                payment.setNotes("Auto-generated payment");
+                payment.setAutoGenerated(true);
+                payment.setCreatedAt(Instant.now());
+                payment.setUpdatedAt(Instant.now());
+                payment.setCreatedBy(userId);
+                payment.setUpdatedBy(userId);
+
+                paymentRepository.save(payment);
+                paymentsCreated++;
+
+                log.debug("Created auto-generated payment for contract {} with due date {}",
+                        contract.getIdentifier(), nextDueDate);
+
+                // Audit log
+                auditService.logCreate(teamId, "payment", payment.getId(), userId, payment);
+
+            } catch (DataIntegrityViolationException e) {
+                // Unique constraint violation - payment already exists (race condition)
+                log.info("Payment already exists for contract {} on due date {} (caught race condition)",
+                        contract.getIdentifier(), nextDueDate);
+            }
+        }
+
+        log.info("Generated {} payments for contract {}", paymentsCreated, contract.getIdentifier());
+        return paymentsCreated;
+    }
+
+    /**
+     * Manually generate N payments for a contract (user-triggered from UI)
+     * Does not check team settings - generates exactly the requested number
+     *
+     * @param contractId Contract ID
+     * @param teamId Team ID
+     * @param userId User ID who triggered the generation
+     * @param count Number of payments to generate
+     * @return Number of payments actually created (may be less if some dates already have payments)
+     */
+    @Transactional
+    public int generatePaymentsManually(UUID contractId, UUID teamId, UUID userId, int count) {
+        Contract contract = contractRepository.findByIdAndTeamId(contractId, teamId)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+
+        // Only generate for ACTIVE contracts
+        if (contract.getStatus() != Contract.ContractStatus.ACTIVE) {
+            throw new IllegalStateException("Can only generate payments for ACTIVE contracts");
+        }
+
+        int paymentsCreated = 0;
+        LocalDate currentDate = LocalDate.now();
+
+        for (int i = 0; i < count; i++) {
+            LocalDate nextDueDate = calculateNextDueDate(currentDate, i, contract);
+
+            // Don't generate beyond contract end date
+            if (contract.getEndDate() != null && nextDueDate.isAfter(contract.getEndDate())) {
+                log.debug("Stopping payment generation: next due date {} is after contract end date {}",
+                        nextDueDate, contract.getEndDate());
+                break;
+            }
+
+            // Check if payment already exists for this due date
+            boolean paymentExists = dsl.fetchExists(
+                    dsl.selectFrom(PAYMENTS)
+                            .where(PAYMENTS.CONTRACT_ID.eq(contractId)
+                                    .and(PAYMENTS.DUE_DATE.eq(nextDueDate))
+                                    .and(PAYMENTS.DELETED_AT.isNull()))
+            );
+
+            if (paymentExists) {
+                log.debug("Payment already exists for contract {} on due date {}, skipping",
+                        contract.getIdentifier(), nextDueDate);
+                continue;
+            }
+
+            try {
+                Payment payment = new Payment();
+                // Don't set ID - let repository generate it on insert
+                payment.setIdentifier(UlidGenerator.generate());
+                payment.setTeamId(teamId);
+                payment.setContractId(contractId);
+                payment.setAmount(contract.getRentAmount());
+                payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
+                payment.setDueDate(nextDueDate);
+                payment.setStatus(Payment.PaymentStatus.PENDING);
+                payment.setNotes("Manually generated payment");
+                payment.setAutoGenerated(false);
+                payment.setCreatedAt(Instant.now());
+                payment.setUpdatedAt(Instant.now());
+                payment.setCreatedBy(userId);
+                payment.setUpdatedBy(userId);
+
+                paymentRepository.save(payment);
+                paymentsCreated++;
+
+                log.debug("Created manually generated payment for contract {} with due date {}",
+                        contract.getIdentifier(), nextDueDate);
+
+                auditService.logCreate(teamId, "payment", payment.getId(), userId, payment);
+
+            } catch (DataIntegrityViolationException e) {
+                log.info("Payment already exists for contract {} on due date {} (caught race condition)",
+                        contract.getIdentifier(), nextDueDate);
+            }
+        }
+
+        log.info("Manually generated {} payments for contract {}", paymentsCreated, contract.getIdentifier());
+        return paymentsCreated;
+    }
+
+    /**
+     * Calculate next due date based on payment frequency
+     */
+    private LocalDate calculateNextDueDate(LocalDate startDate, int periodIndex, Contract contract) {
+        LocalDate nextDueDate = startDate;
+
+        // Add periods based on frequency
+        switch (contract.getPaymentFrequency()) {
+            case MONTHLY:
+                nextDueDate = nextDueDate.plusMonths(periodIndex + 1);
+                break;
+            case QUARTERLY:
+                nextDueDate = nextDueDate.plusMonths((periodIndex + 1) * 3);
+                break;
+            case ANNUALLY:
+                nextDueDate = nextDueDate.plusYears(periodIndex + 1);
+                break;
+        }
+
+        // Apply payment due day (handle month-end edge cases)
+        int paymentDueDay = contract.getPaymentDueDay() != null ? contract.getPaymentDueDay() : 1;
+        int daysInMonth = nextDueDate.lengthOfMonth();
+        int actualDay = Math.min(paymentDueDay, daysInMonth);
+
+        return nextDueDate.withDayOfMonth(actualDay);
+    }
+
+    /**
+     * Generate future payments for all ACTIVE contracts in a team
+     *
+     * @param teamId Team ID
+     * @param userId User ID (or SYSTEM_USER_ID for automated operations)
+     * @return Total number of payments created
+     */
+    @Transactional
+    public int generateFuturePaymentsForTeam(UUID teamId, UUID userId) {
+        log.debug("Generating future payments for team {}", teamId);
+
+        // Find all ACTIVE contracts for team
+        List<Contract> activeContracts = dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(record -> {
+                    // Use mapper to convert record to domain
+                    // For simplicity, fetching via repository
+                    return contractRepository.findByIdAndTeamId(record.getId(), teamId).orElse(null);
+                })
+                .stream()
+                .filter(contract -> contract != null)
+                .toList();
+
+        int totalPaymentsCreated = 0;
+
+        for (Contract contract : activeContracts) {
+            try {
+                int count = generateFuturePaymentsForContract(contract.getId(), teamId, userId);
+                totalPaymentsCreated += count;
+            } catch (Exception e) {
+                log.error("Failed to generate payments for contract {}: {}",
+                        contract.getIdentifier(), e.getMessage(), e);
+                // Continue with other contracts (fault isolation)
+            }
+        }
+
+        log.info("Generated {} payments for team {} ({} active contracts)",
+                totalPaymentsCreated, teamId, activeContracts.size());
+
+        return totalPaymentsCreated;
+    }
+
+    /**
+     * Cancel/delete future pending payments for a contract (soft delete)
+     *
+     * @param contractId Contract ID
+     * @param teamId Team ID
+     * @param userId User ID
+     * @return Number of payments cancelled
+     */
+    @Transactional
+    public int cancelFuturePaymentsForContract(UUID contractId, UUID teamId, UUID userId) {
+        log.debug("Cancelling future payments for contract {}", contractId);
+
+        LocalDate today = LocalDate.now();
+
+        // Find all PENDING payments with due date in the future
+        List<Payment> futurePayments = dsl.selectFrom(PAYMENTS)
+                .where(PAYMENTS.CONTRACT_ID.eq(contractId)
+                        .and(PAYMENTS.TEAM_ID.eq(teamId))
+                        .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                        .and(PAYMENTS.DUE_DATE.gt(today))
+                        .and(PAYMENTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(record -> paymentRepository.findByIdAndTeamId(record.getId(), teamId).orElse(null))
+                .stream()
+                .filter(payment -> payment != null)
+                .toList();
+
+        int cancelledCount = 0;
+
+        for (Payment payment : futurePayments) {
+            try {
+                // Soft delete
+                paymentRepository.softDeleteByIdAndTeamId(payment.getId(), teamId);
+                cancelledCount++;
+
+                log.debug("Soft-deleted future payment {} (due: {})",
+                        payment.getIdentifier(), payment.getDueDate());
+
+                // Audit log
+                auditService.logDelete(teamId, "payment", payment.getId(), userId, payment);
+
+            } catch (Exception e) {
+                log.error("Failed to delete payment {}: {}",
+                        payment.getIdentifier(), e.getMessage(), e);
+            }
+        }
+
+        log.info("Cancelled {} future payments for contract {}", cancelledCount, contractId);
+        return cancelledCount;
+    }
+
+    /**
+     * Handle contract status change - trigger payment generation or cancellation
+     *
+     * @param contractId Contract ID
+     * @param newStatus New contract status
+     * @param teamId Team ID
+     * @param userId User ID
+     */
+    @Transactional
+    public void handleContractStatusChange(UUID contractId, Contract.ContractStatus newStatus,
+                                          UUID teamId, UUID userId) {
+        log.debug("Handling contract status change to {} for contract {}", newStatus, contractId);
+
+        switch (newStatus) {
+            case ACTIVE:
+                // Generate future payments when contract becomes active
+                int paymentsCreated = generateFuturePaymentsForContract(contractId, teamId, userId);
+                log.info("Contract {} activated: generated {} future payments", contractId, paymentsCreated);
+                break;
+
+            case EXPIRED:
+            case TERMINATED:
+            case DRAFT:
+                // Cancel future pending payments when contract becomes inactive
+                int paymentsCancelled = cancelFuturePaymentsForContract(contractId, teamId, userId);
+                log.info("Contract {} changed to {}: cancelled {} future payments",
+                        contractId, newStatus, paymentsCancelled);
+                break;
+
+            case PENDING_SIGNATURE:
+                // No action needed for pending signature
+                log.debug("Contract {} moved to PENDING_SIGNATURE, no payment action needed", contractId);
+                break;
+
+            default:
+                log.warn("Unknown contract status: {}", newStatus);
+        }
+    }
+}

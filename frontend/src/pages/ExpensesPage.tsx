@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
+import { PropertyCell } from '@/components/properties/PropertyCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
@@ -430,7 +431,7 @@ export const ExpensesPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 min-w-[220px]"
                       onClick={() => handleSort('property')}
                     >
                       <div className="flex items-center gap-1">
@@ -439,10 +440,10 @@ export const ExpensesPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                       onClick={() => handleSort('amount')}
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-end gap-1">
                         Amount
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
@@ -468,11 +469,21 @@ export const ExpensesPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <ExpenseCategoryBadge category={expense.category} />
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {expense.property.street}, {expense.property.city}
+                      <td className="px-6 py-3">
+                        <PropertyCell
+                          propertyId={expense.property.id}
+                          propertyIdentifier={expense.property.identifier}
+                          propertyStatus={expense.property.status}
+                          propertyType={expense.property.propertyType}
+                          street={expense.property.street}
+                          city={expense.property.city}
+                          postalCode={expense.property.postalCode}
+                        />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        {expense.currency} {expense.amount.toFixed(2)}
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {expense.currency} {expense.amount.toFixed(2)}
+                        </span>
                       </td>
                     </tr>
                   ))}

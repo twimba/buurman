@@ -1,13 +1,20 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Team;
+import com.buurman.domain.TeamSettings;
 import com.buurman.mapper.TeamRecordMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,12 +23,16 @@ import static com.buurman.jooq.generated.Tables.TEAMS;
 @Repository
 public class TeamRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(TeamRepository.class);
+
     private final DSLContext dsl;
     private final TeamRecordMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    public TeamRepository(DSLContext dsl, TeamRecordMapper mapper) {
+    public TeamRepository(DSLContext dsl, TeamRecordMapper mapper, ObjectMapper objectMapper) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<Team> findById(UUID id) {
@@ -34,6 +45,9 @@ public class TeamRepository {
     public Team save(Team team) {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
 
+        // Serialize settings to JSONB
+        JSONB settingsJsonb = serializeSettings(team.getSettings());
+
         if (team.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
@@ -41,6 +55,7 @@ public class TeamRepository {
                     .set(TEAMS.ID, newId)
                     .set(TEAMS.IDENTIFIER, team.getIdentifier())
                     .set(TEAMS.NAME, team.getName())
+                    .set(TEAMS.SETTINGS, settingsJsonb)
                     .set(TEAMS.CREATED_AT, now)
                     .set(TEAMS.UPDATED_AT, now)
                     .set(TEAMS.CREATED_BY, team.getCreatedBy())
@@ -54,6 +69,7 @@ public class TeamRepository {
             dsl.update(TEAMS)
                     .set(TEAMS.IDENTIFIER, team.getIdentifier())
                     .set(TEAMS.NAME, team.getName())
+                    .set(TEAMS.SETTINGS, settingsJsonb)
                     .set(TEAMS.UPDATED_AT, now)
                     .set(TEAMS.CREATED_BY, team.getCreatedBy())
                     .where(TEAMS.ID.eq(team.getId()))
@@ -63,6 +79,27 @@ public class TeamRepository {
         }
 
         return team;
+    }
+
+    public List<Team> findAllWithAutoGenerationEnabled() {
+        // Query teams where settings->payments->autoGenerationEnabled = true
+        return dsl.selectFrom(TEAMS)
+                .where("settings->'payments'->>'autoGenerationEnabled' = 'true'")
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    private JSONB serializeSettings(TeamSettings settings) {
+        if (settings == null) {
+            settings = new TeamSettings(); // Use defaults
+        }
+        try {
+            String json = objectMapper.writeValueAsString(settings);
+            return JSONB.valueOf(json);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize team settings", e);
+            return JSONB.valueOf("{}");
+        }
     }
 
     public void deleteById(UUID id) {

@@ -3,6 +3,7 @@ package com.buurman.controller;
 import com.buurman.domain.Contract;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
+import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.DocumentResponse;
@@ -11,6 +12,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuditService;
 import com.buurman.service.ContractService;
 import com.buurman.service.DocumentService;
+import com.buurman.service.PaymentSchedulingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,11 +37,14 @@ public class ContractController {
     private final ContractService contractService;
     private final DocumentService documentService;
     private final AuditService auditService;
+    private final PaymentSchedulingService paymentSchedulingService;
 
-    public ContractController(ContractService contractService, DocumentService documentService, AuditService auditService) {
+    public ContractController(ContractService contractService, DocumentService documentService,
+                             AuditService auditService, PaymentSchedulingService paymentSchedulingService) {
         this.contractService = contractService;
         this.documentService = documentService;
         this.auditService = auditService;
+        this.paymentSchedulingService = paymentSchedulingService;
     }
 
     @Operation(summary = "Create contract", description = "Create a new rental agreement (Admin/Editor)")
@@ -183,5 +188,24 @@ public class ContractController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
         return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", id);
+    }
+
+    @Operation(summary = "Generate payments", description = "Manually generate N future payments for a contract (Admin/Editor)")
+    @PostMapping("/{id}/generate-payments")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public Map<String, Object> generatePayments(
+            @PathVariable UUID id,
+            @Valid @RequestBody GeneratePaymentsRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        int generated = paymentSchedulingService.generatePaymentsManually(
+                id,
+                principal.getTeamId(),
+                principal.getUserId(),
+                request.count()
+        );
+        return Map.of(
+                "generated", generated,
+                "requested", request.count()
+        );
     }
 }

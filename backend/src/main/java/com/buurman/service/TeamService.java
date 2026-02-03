@@ -3,9 +3,11 @@ package com.buurman.service;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
+import com.buurman.domain.TeamSettings;
 import com.buurman.domain.User;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
@@ -181,5 +183,54 @@ public class TeamService {
         User user = userRepository.findById(member.getUserId()).orElseThrow();
 
         return teamMapper.toMemberResponse(member, user, principal.getUserId());
+    }
+
+    @Transactional
+    public TeamResponse updateTeamSettings(UUID teamId, UpdateTeamSettingsRequest request,
+                                          UserPrincipal principal) {
+        // Verify user is admin of this team
+        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        // Update settings
+        TeamSettings settings = team.getSettings();
+        if (settings == null) {
+            settings = new TeamSettings();
+        }
+
+        // Update payment settings
+        if (request.payments() != null) {
+            TeamSettings.PaymentSettings paymentSettings = new TeamSettings.PaymentSettings();
+            paymentSettings.setPaymentsAheadCount(request.payments().paymentsAheadCount());
+            paymentSettings.setAutoGenerationEnabled(request.payments().autoGenerationEnabled());
+            settings.setPayments(paymentSettings);
+        }
+
+        team.setSettings(settings);
+        team = teamRepository.save(team);
+
+        long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
+        return teamMapper.toResponse(team, memberCount);
+    }
+
+    public TeamSettings getTeamSettings(UUID teamId, UserPrincipal principal) {
+        // Verify user belongs to this team
+        if (!teamId.equals(principal.getTeamId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+
+        TeamSettings settings = team.getSettings();
+        if (settings == null) {
+            settings = new TeamSettings(); // Return defaults
+        }
+
+        return settings;
     }
 }

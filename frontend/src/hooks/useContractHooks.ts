@@ -76,6 +76,9 @@ export const useUpdateContract = (id: string) => {
         queryKey: ['tenant', updatedContract.tenant.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Contract changes may affect payment display
+      queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       showToast('Contract updated successfully', 'success');
     },
     onError: (error) => {
@@ -121,6 +124,9 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['tenant', updatedContract.tenant.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Status changes can generate or cancel payments
+      queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
     },
   });
 };
@@ -144,6 +150,9 @@ export const useReopenContract = (id: string) => {
         queryKey: ['tenant', updatedContract.tenant.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Reopening cancels future payments
+      queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       showToast('Contract reopened successfully', 'success');
     },
     onError: (error) => {
@@ -226,5 +235,35 @@ export const useContractAuditLog = (contractId: string | undefined) => {
     queryKey: ['contractAuditLog', contractId],
     queryFn: () => contractsApi.getContractAuditLog(contractId!),
     enabled: !!contractId,
+  });
+};
+
+export const useGenerateContractPayments = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (count: number) =>
+      contractsApi.generateContractPayments(contractId, { count }),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({
+        queryKey: ['paymentsByContract', contractId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      if (result.generated === result.requested) {
+        showToast(`Generated ${result.generated} payment(s) successfully`, 'success');
+      } else {
+        showToast(
+          `Generated ${result.generated} of ${result.requested} payment(s). Some dates already had payments.`,
+          'success'
+        );
+      }
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };

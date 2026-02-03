@@ -24,6 +24,20 @@ spring:
     clean-disabled: true
     out-of-order: false
 
+  # Quartz Scheduler Configuration
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never  # Flyway manages schema
+    properties:
+      org.quartz.scheduler.instanceName: BuurmanScheduler
+      org.quartz.scheduler.instanceId: AUTO
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      org.quartz.jobStore.tablePrefix: QRTZ_
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 20000
+      org.quartz.threadPool.threadCount: 5
+
   servlet:
     multipart:
       max-file-size: 50MB

@@ -116,3 +116,23 @@ export const getContractAuditLog = async (
   const response = await client.get(`/contracts/${contractId}/audit-log`);
   return response.data;
 };
+
+export interface GeneratePaymentsRequest {
+  count: number;
+}
+
+export interface GeneratePaymentsResponse {
+  generated: number;
+  requested: number;
+}
+
+export const generateContractPayments = async (
+  contractId: string,
+  data: GeneratePaymentsRequest
+): Promise<GeneratePaymentsResponse> => {
+  const response = await client.post(
+    `/contracts/${contractId}/generate-payments`,
+    data
+  );
+  return response.data;
+};

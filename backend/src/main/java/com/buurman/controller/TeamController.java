@@ -1,7 +1,9 @@
 package com.buurman.controller;
 
+import com.buurman.domain.TeamSettings;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
+import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
@@ -72,5 +74,21 @@ public class TeamController {
                                               @Valid @RequestBody UpdateMemberRoleRequest request,
                                               @AuthenticationPrincipal UserPrincipal principal) {
         return teamService.updateMemberRole(teamId, memberId, request, principal);
+    }
+
+    @Operation(summary = "Update team settings", description = "Update team configuration settings (Admin only)")
+    @PutMapping("/{teamId}/settings")
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    public TeamResponse updateTeamSettings(@PathVariable UUID teamId,
+                                          @Valid @RequestBody UpdateTeamSettingsRequest request,
+                                          @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.updateTeamSettings(teamId, request, principal);
+    }
+
+    @Operation(summary = "Get team settings", description = "Get team configuration settings")
+    @GetMapping("/{teamId}/settings")
+    public TeamSettings getTeamSettings(@PathVariable UUID teamId,
+                                       @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.getTeamSettings(teamId, principal);
     }
 }

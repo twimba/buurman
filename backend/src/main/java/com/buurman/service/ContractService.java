@@ -40,6 +40,7 @@ public class ContractService {
     private final PropertyMapper propertyMapper;
     private final TenantMapper tenantMapper;
     private final AuditService auditService;
+    private final PaymentSchedulingService paymentSchedulingService;
 
     public ContractService(
             ContractRepository contractRepository,
@@ -48,7 +49,8 @@ public class ContractService {
             ContractMapper contractMapper,
             PropertyMapper propertyMapper,
             TenantMapper tenantMapper,
-            AuditService auditService) {
+            AuditService auditService,
+            PaymentSchedulingService paymentSchedulingService) {
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
@@ -56,6 +58,7 @@ public class ContractService {
         this.propertyMapper = propertyMapper;
         this.tenantMapper = tenantMapper;
         this.auditService = auditService;
+        this.paymentSchedulingService = paymentSchedulingService;
     }
 
     @Transactional
@@ -340,6 +343,14 @@ public class ContractService {
         Contract updatedContract = contractRepository.save(contract);
         log.info("Contract status changed: {} from {} to {} in team {}",
                 contractId, oldStatus, newStatus, principal.getTeamId());
+
+        // Trigger payment scheduling on status change
+        paymentSchedulingService.handleContractStatusChange(
+                contractId,
+                newStatus,
+                principal.getTeamId(),
+                principal.getUserId()
+        );
 
         // Update property status based on contract status
         updatePropertyStatusBasedOnContract(contract.getPropertyId(), newStatus, oldStatus, principal);

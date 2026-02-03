@@ -148,6 +148,12 @@
             <version>3.0.1</version>
         </dependency>
 
+        <!-- Quartz Scheduler -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
         <!-- PDF and CSV Generation -->
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -184,6 +190,25 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-jooq-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jooq</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -238,7 +263,7 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <phase>generate-sources</phase>
+                        <phase>none</phase><!-- Disabled - use jooq-codegen:generate@generate-jooq-direct instead -->
                         <configuration>
                             <database>
                                 <type>POSTGRES</type>

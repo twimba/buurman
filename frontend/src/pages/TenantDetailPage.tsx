@@ -21,8 +21,8 @@ import { Avatar } from '@/components/common/Avatar';
 import { TenantAddressList } from '@/components/tenants/TenantAddressList';
 import { ContractCard } from '@/components/contracts/ContractCard';
 import { ContractStatus } from '@/types/contract';
+import { Button, PageHeader } from '@/components/ui';
 import {
-  ArrowLeft,
   Edit,
   Trash2,
   Mail,
@@ -145,44 +145,37 @@ export const TenantDetailPage = () => {
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/tenants')}
-              className="p-2 hover:bg-gray-200 rounded transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+        <PageHeader
+          title={`${tenant.firstName} ${tenant.lastName}`}
+          subtitle={`#${tenant.identifier}`}
+          backTo="/tenants"
+          avatar={
             <Avatar
               firstName={tenant.firstName}
               lastName={tenant.lastName}
               photoUrl={tenant.mainPhotoUrl}
               size="xl"
             />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {tenant.firstName} {tenant.lastName}
-              </h1>
-              <p className="text-sm text-gray-500">#{tenant.identifier}</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => navigate(`/tenants/${id}/edit`)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-            >
-              <Edit className="h-4 w-4" />
-              Edit
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded hover:bg-red-50 transition-colors"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </button>
-          </div>
-        </div>
+          }
+          actions={
+            <>
+              <Button
+                variant="secondary"
+                leftIcon={<Edit />}
+                onClick={() => navigate(`/tenants/${id}/edit`)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="danger"
+                leftIcon={<Trash2 />}
+                onClick={() => setShowDeleteModal(true)}
+              >
+                Delete
+              </Button>
+            </>
+          }
+        />
 
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-6">
@@ -666,19 +659,20 @@ export const TenantDetailPage = () => {
                 be undone.
               </p>
               <div className="flex gap-3 justify-end">
-                <button
+                <Button
+                  variant="secondary"
                   onClick={() => setShowDeleteModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
+                  leftIcon={<Trash2 />}
                   onClick={handleDelete}
-                  disabled={deleteTenantMutation.isPending}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                  isLoading={deleteTenantMutation.isPending}
                 >
-                  {deleteTenantMutation.isPending ? 'Deleting...' : 'Delete'}
-                </button>
+                  Delete
+                </Button>
               </div>
             </div>
           </div>
