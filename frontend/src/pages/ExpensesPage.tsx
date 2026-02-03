@@ -330,8 +330,8 @@ export const ExpensesPage = () => {
                   />
                   <YAxis hide />
                   <Tooltip
-                    formatter={(value: number) => [
-                      `EUR ${value.toFixed(2)}`,
+                    formatter={(value: number | undefined) => [
+                      value !== undefined ? `EUR ${value.toFixed(2)}` : 'N/A',
                       'Expenses',
                     ]}
                     contentStyle={{ fontSize: 12 }}

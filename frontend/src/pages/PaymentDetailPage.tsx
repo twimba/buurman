@@ -7,7 +7,6 @@ import {
   useMarkPaymentAsPaid,
   usePaymentAuditLog,
   usePaymentDocuments,
-  useUploadPaymentDocument,
   useDeletePaymentDocument,
 } from '@/hooks/usePaymentHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -19,7 +18,6 @@ import {
   ArrowLeft,
   Edit,
   Trash2,
-  Receipt,
   Calendar,
   DollarSign,
   Home,
@@ -30,7 +28,6 @@ import {
   History,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { DocumentList } from '@/components/properties/DocumentList';
 import {
   PaymentStatus,
   UpdatePaymentRequest,
@@ -69,7 +66,6 @@ export const PaymentDetailPage = () => {
   const deletePaymentMutation = useDeletePayment();
   const updatePaymentMutation = useUpdatePayment(id!);
   const markPaidMutation = useMarkPaymentAsPaid();
-  const uploadDocumentMutation = useUploadPaymentDocument(id!);
   const deleteDocumentMutation = useDeletePaymentDocument(id!);
 
   const handleDelete = async () => {
@@ -514,7 +510,7 @@ export const PaymentDetailPage = () => {
                           </h4>
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields!).map(
-                              ([field, value]) => (
+                              ([field]) => (
                                 <div
                                   key={field}
                                   className="bg-white rounded p-2 text-xs"

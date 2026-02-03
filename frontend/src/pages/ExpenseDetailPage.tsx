@@ -6,7 +6,6 @@ import {
   useUpdateExpense,
   useExpenseAuditLog,
   useExpenseDocuments,
-  useUploadExpenseDocument,
   useDeleteExpenseDocument,
 } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -58,7 +57,6 @@ export const ExpenseDetailPage = () => {
   } = useExpenseDocuments(id);
   const deleteExpenseMutation = useDeleteExpense();
   const updateExpenseMutation = useUpdateExpense(id!);
-  const uploadDocumentMutation = useUploadExpenseDocument(id!);
   const deleteDocumentMutation = useDeleteExpenseDocument(id!);
 
   const handleDelete = async () => {
@@ -452,7 +450,7 @@ export const ExpenseDetailPage = () => {
                           </h4>
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields!).map(
-                              ([field, value]) => (
+                              ([field]) => (
                                 <div
                                   key={field}
                                   className="bg-white rounded p-2 text-xs"

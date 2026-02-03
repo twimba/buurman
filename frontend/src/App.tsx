@@ -25,7 +25,8 @@ import { ExpenseCreatePage } from './pages/ExpenseCreatePage';
 import { ExpenseDetailPage } from './pages/ExpenseDetailPage';
 import { DocumentsPage } from './pages/DocumentsPage';
 import { PhotosPage } from './pages/PhotosPage';
-import { ReportsPage } from './pages/ReportsPage';
+import { FinancialReportsPage } from './pages/FinancialReportsPage';
+import { TransactionHistoryPage } from './pages/TransactionHistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuditLogPage } from './pages/AuditLogPage';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -255,7 +256,17 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Layout>
-                      <ReportsPage />
+                      <FinancialReportsPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reports/transactions"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <TransactionHistoryPage />
                     </Layout>
                   </ProtectedRoute>
                 }

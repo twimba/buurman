@@ -31,7 +31,7 @@ export const ContractSelector = ({
       contract.identifier.toLowerCase().includes(search.toLowerCase()) ||
       contract.property.street.toLowerCase().includes(search.toLowerCase()) ||
       contract.tenant.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      contract.tenant.lastName.toLowerCase().includes(search.toLowerCase())
+      contract.tenant.lastName?.toLowerCase().includes(search.toLowerCase())
   );
 
   useEffect(() => {

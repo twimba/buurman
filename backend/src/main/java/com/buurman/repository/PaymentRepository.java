@@ -86,6 +86,17 @@ public class PaymentRepository {
                 .map(mapper::toDomain);
     }
 
+    public List<Payment> findByDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
+        return dsl.selectFrom(PAYMENTS)
+                .where(PAYMENTS.TEAM_ID.eq(teamId)
+                        .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                        .and(PAYMENTS.PAYMENT_DATE.between(startDate, endDate))
+                        .and(PAYMENTS.DELETED_AT.isNull()))
+                .orderBy(PAYMENTS.PAYMENT_DATE.asc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
     public Payment save(Payment payment) {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
 

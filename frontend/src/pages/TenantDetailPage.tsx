@@ -32,11 +32,11 @@ import {
   X,
   FileText,
   Image,
-  ChevronDown,
   MapPin,
   Plus,
+  History,
 } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,16 +112,6 @@ export const TenantDetailPage = () => {
 
   const handleSetMainPhoto = async (photoId: string) => {
     await setMainPhotoMutation.mutateAsync(photoId);
-  };
-
-  const toggleAuditItem = (itemId: string) => {
-    const newExpanded = new Set(expandedAuditItems);
-    if (newExpanded.has(itemId)) {
-      newExpanded.delete(itemId);
-    } else {
-      newExpanded.add(itemId);
-    }
-    setExpandedAuditItems(newExpanded);
   };
 
   // Get unique properties from active contracts
@@ -459,201 +449,200 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                History
-              </h2>
-              {auditLoading ? (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Tenant History
+            </h2>
+            {auditLoading ? (
+              <div className="flex items-center justify-center py-8">
                 <LoadingSpinner />
-              ) : auditError ? (
-                <ErrorMessage message="Failed to load audit log" />
-              ) : auditLog.length > 0 ? (
-                <div className="space-y-3">
-                  {auditLog.map((activity) => {
-                    const isExpanded = expandedAuditItems.has(activity.id);
-                    const hasChanges =
-                      activity.changedFields &&
-                      Object.keys(activity.changedFields).length > 0;
+              </div>
+            ) : auditError ? (
+              <ErrorMessage message="Failed to load history" />
+            ) : auditLog.length > 0 ? (
+              <div className="space-y-4">
+                {auditLog.map((activity) => {
+                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const hasChanges =
+                    activity.action === 'UPDATE' &&
+                    activity.changedFields &&
+                    Object.keys(activity.changedFields).length > 0;
 
-                    return (
+                  return (
+                    <div
+                      key={activity.id}
+                      className="border border-gray-200 rounded-lg overflow-hidden"
+                    >
                       <div
-                        key={activity.id}
-                        className="border border-gray-200 rounded-lg"
+                        className={`flex items-start gap-4 p-4 transition-colors ${
+                          hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
+                        }`}
+                        onClick={() =>
+                          hasChanges &&
+                          setExpandedAuditItems((prev) => {
+                            const newSet = new Set(prev);
+                            if (newSet.has(activity.id)) {
+                              newSet.delete(activity.id);
+                            } else {
+                              newSet.add(activity.id);
+                            }
+                            return newSet;
+                          })
+                        }
                       >
                         <div
-                          className={`p-4 ${
-                            hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
+                          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                            activity.action === 'CREATE'
+                              ? 'bg-green-100'
+                              : activity.action === 'UPDATE'
+                                ? 'bg-blue-100'
+                                : 'bg-red-100'
                           }`}
-                          onClick={() =>
-                            hasChanges && toggleAuditItem(activity.id)
-                          }
                         >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900">
-                                  {activity.action}
-                                </span>
-                                <span className="text-gray-500">·</span>
-                                <span className="text-sm text-gray-600">
-                                  {activity.entityName}
-                                </span>
-                              </div>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {activity.description}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                                <span>{activity.userName}</span>
-                                <span>·</span>
-                                <span
-                                  title={format(
-                                    new Date(activity.timestamp),
-                                    "PPpp 'UTC'"
-                                  )}
-                                  className="cursor-help"
-                                >
-                                  {formatDistanceToNow(
-                                    new Date(activity.timestamp),
-                                    {
-                                      addSuffix: true,
-                                    }
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                            {hasChanges && (
-                              <ChevronDown
-                                className={`h-5 w-5 text-gray-400 transition-transform ${
-                                  isExpanded ? 'rotate-180' : ''
-                                }`}
-                              />
-                            )}
-                          </div>
+                          <span
+                            className={`text-xs font-semibold ${
+                              activity.action === 'CREATE'
+                                ? 'text-green-700'
+                                : activity.action === 'UPDATE'
+                                  ? 'text-blue-700'
+                                  : 'text-red-700'
+                            }`}
+                          >
+                            {activity.action.charAt(0)}
+                          </span>
                         </div>
-                        {isExpanded && hasChanges && (
-                          <div className="border-t border-gray-200 p-4 bg-gray-50">
-                            <h4 className="text-sm font-medium text-gray-900 mb-2">
-                              Changes
-                            </h4>
-                            <div className="space-y-2">
-                              {Object.entries(activity.changedFields!)
-                                .filter(([field]) => field !== 'updatedAt')
-                                .map(([field, value]) => {
-                                  // Skip internal fields for document operations
-                                  if (field === 'documentCount') return null;
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {activity.description}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {formatDistanceToNow(new Date(activity.timestamp), {
+                              addSuffix: true,
+                            })}
+                          </p>
+                          {hasChanges && (
+                            <p className="text-xs text-blue-600 mt-1">
+                              {isExpanded
+                                ? 'Click to hide changes'
+                                : 'Click to view changes'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-                                  // Special handling for document operations
-                                  if (
-                                    field === 'documentAdded' ||
-                                    field === 'documentRemoved'
-                                  ) {
-                                    const category =
-                                      activity.changedFields?.category;
-                                    const title = activity.changedFields?.title;
-                                    return (
-                                      <div key={field} className="text-sm">
-                                        <div className="font-medium text-gray-700 mb-1">
-                                          File Name
-                                        </div>
-                                        <div className="ml-4 text-gray-900">
-                                          {String(value)}
-                                        </div>
-                                        {title ? (
-                                          <>
-                                            <div className="font-medium text-gray-700 mb-1 mt-2">
-                                              Title
-                                            </div>
-                                            <div className="ml-4 text-gray-900">
-                                              {String(title)}
-                                            </div>
-                                          </>
-                                        ) : null}
-                                        <div className="font-medium text-gray-700 mb-1 mt-2">
-                                          Type
-                                        </div>
-                                        <div className="ml-4 text-gray-900">
-                                          {category === 'PHOTO'
-                                            ? 'Photo'
-                                            : 'Document'}
-                                        </div>
-                                      </div>
-                                    );
-                                  }
+                      {isExpanded && hasChanges && (
+                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">
+                            Changed Fields
+                          </h4>
+                          <div className="space-y-2">
+                            {Object.entries(activity.changedFields!)
+                              .filter(([field]) => field !== 'updatedAt')
+                              .map(([field, value]) => {
+                                // Skip internal fields for document operations
+                                if (field === 'documentCount') return null;
 
-                                  // Skip category and title for document operations (already shown above)
-                                  if (
-                                    (field === 'category' ||
-                                      field === 'title') &&
-                                    (activity.changedFields?.documentAdded ||
-                                      activity.changedFields?.documentRemoved)
-                                  ) {
-                                    return null;
-                                  }
-
-                                  const isRichText = field === 'additionalInfo';
-                                  const oldValue = activity.oldValues?.[field];
-                                  const newValue = activity.newValues?.[field];
-
+                                // Special handling for document operations
+                                if (
+                                  field === 'documentAdded' ||
+                                  field === 'documentRemoved'
+                                ) {
+                                  const category = activity.changedFields?.category;
+                                  const title = activity.changedFields?.title;
                                   return (
-                                    <div key={field} className="text-sm">
-                                      <span className="font-medium text-gray-700">
-                                        {field}:
-                                      </span>
-                                      <div className="ml-4 mt-1">
-                                        {oldValue !== undefined && (
-                                          <div className="text-red-600">
-                                            <div className="flex gap-1">
-                                              <span>-</span>
-                                              {isRichText && oldValue ? (
-                                                <div className="flex-1">
-                                                  <RichTextDisplay
-                                                    content={String(oldValue)}
-                                                  />
-                                                </div>
-                                              ) : (
-                                                <span>
-                                                  {String(oldValue ?? '')}
-                                                </span>
-                                              )}
-                                            </div>
+                                    <div
+                                      key={field}
+                                      className="bg-white rounded p-2 text-xs"
+                                    >
+                                      <div className="font-semibold text-gray-700 mb-1">
+                                        File Name
+                                      </div>
+                                      <div className="text-gray-900">
+                                        {String(value)}
+                                      </div>
+                                      {title ? (
+                                        <>
+                                          <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                            Title
                                           </div>
-                                        )}
-                                        {newValue !== undefined && (
-                                          <div className="text-green-600">
-                                            <div className="flex gap-1">
-                                              <span>+</span>
-                                              {isRichText && newValue ? (
-                                                <div className="flex-1">
-                                                  <RichTextDisplay
-                                                    content={String(newValue)}
-                                                  />
-                                                </div>
-                                              ) : (
-                                                <span>
-                                                  {String(newValue ?? '')}
-                                                </span>
-                                              )}
-                                            </div>
+                                          <div className="text-gray-900">
+                                            {String(title)}
                                           </div>
-                                        )}
+                                        </>
+                                      ) : null}
+                                      <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                        Type
+                                      </div>
+                                      <div className="text-gray-900">
+                                        {category === 'PHOTO'
+                                          ? 'Photo'
+                                          : 'Document'}
                                       </div>
                                     </div>
                                   );
-                                })}
-                            </div>
+                                }
+
+                                // Skip category and title for document operations (already shown above)
+                                if (
+                                  (field === 'category' || field === 'title') &&
+                                  (activity.changedFields?.documentAdded ||
+                                    activity.changedFields?.documentRemoved)
+                                ) {
+                                  return null;
+                                }
+
+                                return (
+                                  <div
+                                    key={field}
+                                    className="bg-white rounded p-2 text-xs"
+                                  >
+                                    <div className="font-semibold text-gray-700 mb-1">
+                                      {field
+                                        .replace(/([A-Z])/g, ' $1')
+                                        .replace(/^./, (str) => str.toUpperCase())
+                                        .trim()}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <span className="text-gray-500">
+                                          Old:{' '}
+                                        </span>
+                                        <span className="text-red-600 line-through">
+                                          {String(
+                                            activity.oldValues?.[field] ?? 'N/A'
+                                          )}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">
+                                          New:{' '}
+                                        </span>
+                                        <span className="text-green-600 font-medium">
+                                          {String(
+                                            activity.newValues?.[field] ?? 'N/A'
+                                          )}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-400 italic">
-                  No audit log entries yet
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No history available</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Changes to this tenant will appear here
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 

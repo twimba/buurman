@@ -20,8 +20,8 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { PropertyMap } from '@/components/properties/PropertyMap';
-import { ContractCard } from '@/components/contracts/ContractCard';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
+import client from '@/api/client';
 import {
   ArrowLeft,
   Edit,
@@ -39,6 +39,7 @@ import {
   Search,
   ChevronUp,
   ChevronDown,
+  Download,
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 
@@ -373,6 +374,31 @@ export const PropertyDetailPage = () => {
             </div>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  const response = await client.get(`/reports/export/property/${id}/brochure`, {
+                    responseType: 'blob',
+                  });
+                  const blob = new Blob([response.data], { type: 'application/pdf' });
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = 'property-brochure.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                } catch (error) {
+                  console.error('Failed to download brochure:', error);
+                  alert('Failed to download brochure. Please try again.');
+                }
+              }}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Brochure
+            </button>
             <button
               onClick={() => navigate(`/properties/${id}/edit`)}
               className="bg-white border border-gray-300 px-4 py-2 rounded hover:bg-background transition-colors flex items-center gap-2"

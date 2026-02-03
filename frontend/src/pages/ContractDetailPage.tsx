@@ -18,6 +18,7 @@ import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
+import client from '@/api/client';
 import {
   ArrowLeft,
   Edit,
@@ -34,11 +35,12 @@ import {
   Copy,
   Search,
   History,
+  Plus,
+  Download,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
-import { Plus } from 'lucide-react';
 
 export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -212,16 +214,6 @@ export const ContractDetailPage = () => {
     }
   };
 
-  const toggleAuditItem = (itemId: string) => {
-    const newExpanded = new Set(expandedAuditItems);
-    if (newExpanded.has(itemId)) {
-      newExpanded.delete(itemId);
-    } else {
-      newExpanded.add(itemId);
-    }
-    setExpandedAuditItems(newExpanded);
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -271,6 +263,31 @@ export const ContractDetailPage = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await client.get(`/reports/export/contract/${id}/report`, {
+                      responseType: 'blob',
+                    });
+                    const blob = new Blob([response.data], { type: 'application/pdf' });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'contract-report.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download report:', error);
+                    alert('Failed to download report. Please try again.');
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                Report
+              </button>
               {!canReopen && (
                 <button
                   onClick={() => setShowStatusModal(true)}

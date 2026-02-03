@@ -75,3 +75,17 @@ export interface DocumentResponse {
   uploadedAt: string;
   downloadUrl: string | null;
 }
+
+export interface AuditLogEntry {
+  id: string;
+  entityType: string;
+  entityId: string;
+  entityName: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  userName: string;
+  timestamp: string;
+  description: string;
+  changedFields?: Record<string, any>;
+  oldValues?: Record<string, any>;
+  newValues?: Record<string, any>;
+}

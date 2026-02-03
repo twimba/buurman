@@ -78,7 +78,7 @@ export const PaymentsPage = () => {
           p.contract.identifier.toLowerCase().includes(search) ||
           p.property.street.toLowerCase().includes(search) ||
           p.tenant.firstName.toLowerCase().includes(search) ||
-          p.tenant.lastName.toLowerCase().includes(search)
+          p.tenant.lastName?.toLowerCase().includes(search)
       );
     }
 
@@ -323,8 +323,8 @@ export const PaymentsPage = () => {
                   />
                   <YAxis hide />
                   <Tooltip
-                    formatter={(value: number) => [
-                      `EUR ${value.toFixed(2)}`,
+                    formatter={(value: number | undefined) => [
+                      value !== undefined ? `EUR ${value.toFixed(2)}` : 'N/A',
                       'Received',
                     ]}
                     contentStyle={{ fontSize: 12 }}
