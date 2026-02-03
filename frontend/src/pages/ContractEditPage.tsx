@@ -18,7 +18,7 @@ export const ContractEditPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -26,14 +26,14 @@ export const ContractEditPage = () => {
 
   if (error || !contract) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
         <ErrorMessage message="Failed to load contract" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -43,7 +43,9 @@ export const ContractEditPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Contract</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Edit Contract
+          </h1>
         </div>
 
         {/* Form */}

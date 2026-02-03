@@ -9,7 +9,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,7 +72,6 @@ public class DocumentController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete document", description = "Soft delete a document")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ResponseEntity<Void> deleteDocument(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {

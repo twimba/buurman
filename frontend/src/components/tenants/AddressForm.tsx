@@ -9,6 +9,7 @@ import {
 } from '@/types/tenant';
 import { AddressMap } from '../common/AddressMap';
 import { countries } from '@/utils/countries';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface AddressFormProps {
   address?: TenantAddressResponse;
@@ -29,13 +30,14 @@ export const AddressForm = ({
   showTypeSelector = true,
   showStatusSelector = true,
 }: AddressFormProps) => {
+  const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     street: address?.street || '',
     city: address?.city || '',
     postalCode: address?.postalCode || '',
-    country: address?.country || 'Netherlands',
+    country: address?.country || defaultCountry || '',
     addressType: address?.addressType || AddressType.CURRENT,
     status: address?.status || AddressStatus.ACTIVE,
     latitude: address?.latitude || null,
@@ -47,7 +49,7 @@ export const AddressForm = ({
     street: address?.street || '',
     city: address?.city || '',
     postalCode: address?.postalCode || '',
-    country: address?.country || 'Netherlands',
+    country: address?.country || '',
   });
 
   // Track if address has changed to determine if we need new coordinates
@@ -162,16 +164,16 @@ export const AddressForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white border border-gray-200 rounded-lg p-6"
+      className="space-y-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {address ? 'Edit Address' : 'Add New Address'}
         </h3>
         <button
           type="button"
           onClick={onCancel}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
         >
           <X className="h-5 w-5" />
         </button>
@@ -180,7 +182,7 @@ export const AddressForm = ({
       {/* Address Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Street <span className="text-red-500">*</span>
           </label>
           <input
@@ -188,7 +190,7 @@ export const AddressForm = ({
             value={formData.street}
             onChange={(e) => handleChange('street', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             placeholder="Main Street 123"
           />
           {errors.street && (
@@ -197,7 +199,7 @@ export const AddressForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             City <span className="text-red-500">*</span>
           </label>
           <input
@@ -205,7 +207,7 @@ export const AddressForm = ({
             value={formData.city}
             onChange={(e) => handleChange('city', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             placeholder="Amsterdam"
           />
           {errors.city && (
@@ -214,7 +216,7 @@ export const AddressForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Postal Code
           </label>
           <input
@@ -222,21 +224,22 @@ export const AddressForm = ({
             value={formData.postalCode}
             onChange={(e) => handleChange('postalCode', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             placeholder="1012 AB"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Country <span className="text-red-500">*</span>
           </label>
           <select
             value={formData.country}
             onChange={(e) => handleChange('country', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
           >
+            <option value="">Select a country</option>
             {countries.map((country) => (
               <option key={country.code} value={country.name}>
                 {country.flag} {country.name}
@@ -251,7 +254,7 @@ export const AddressForm = ({
         {/* Address Type Selector */}
         {showTypeSelector && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Address Type <span className="text-red-500">*</span>
             </label>
             <select
@@ -259,7 +262,7 @@ export const AddressForm = ({
               onChange={(e) =>
                 handleChange('addressType', e.target.value as AddressType)
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             >
               {Object.values(AddressType).map((type) => (
                 <option key={type} value={type}>
@@ -273,7 +276,7 @@ export const AddressForm = ({
         {/* Status Selector */}
         {showStatusSelector && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Status <span className="text-red-500">*</span>
             </label>
             <select
@@ -281,7 +284,7 @@ export const AddressForm = ({
               onChange={(e) =>
                 handleChange('status', e.target.value as AddressStatus)
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             >
               <option value={AddressStatus.ACTIVE}>Active</option>
               <option value={AddressStatus.INACTIVE}>Inactive</option>
@@ -295,7 +298,7 @@ export const AddressForm = ({
         committedAddress.city &&
         committedAddress.country && (
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Location Preview
             </h4>
             <AddressMap
@@ -316,7 +319,7 @@ export const AddressForm = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+          className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
         >
           Cancel
         </button>

@@ -11,6 +11,7 @@ import {
   Square,
   ChevronUp,
   ChevronDown,
+  Folder,
 } from 'lucide-react';
 import {
   useDocuments,
@@ -19,12 +20,13 @@ import {
 } from '@/hooks/useDocumentHooks';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { DocumentResponse } from '@/types/property';
-import { format } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 
 export const DocumentsPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
@@ -47,8 +49,10 @@ export const DocumentsPage = () => {
   });
 
   // Filter out photos - only show documents
-  const documents =
-    allDocuments?.filter((doc) => doc.category !== 'PHOTO') || [];
+  const documents = useMemo(
+    () => allDocuments?.filter((doc) => doc.category !== 'PHOTO') || [],
+    [allDocuments]
+  );
 
   const deleteMutation = useDeleteDocument();
   const bulkDownloadMutation = useBulkDownload();
@@ -59,7 +63,7 @@ export const DocumentsPage = () => {
 
     const sorted = [...documents];
     sorted.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       switch (sortField) {
         case 'title':
@@ -157,18 +161,21 @@ export const DocumentsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Document Library
-        </h1>
-        <p className="text-gray-600">
+        <div className="flex items-center gap-3 mb-1">
+          <Folder className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Document Library
+          </h1>
+        </div>
+        <p className="text-gray-600 dark:text-gray-400 ml-11">
           Search and manage all your documents in one place
         </p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
@@ -178,7 +185,7 @@ export const DocumentsPage = () => {
               placeholder="Search documents by title, filename, or notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -188,7 +195,7 @@ export const DocumentsPage = () => {
             <select
               value={entityTypeFilter}
               onChange={(e) => setEntityTypeFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -202,8 +209,8 @@ export const DocumentsPage = () => {
 
         {/* Bulk Actions */}
         {selectedDocuments.size > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 flex items-center gap-4">
-            <span className="text-sm text-gray-600">
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedDocuments.size} document(s) selected
             </span>
             <button
@@ -223,18 +230,20 @@ export const DocumentsPage = () => {
       {/* Document List */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="mt-2 text-gray-600">Loading documents...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Loading documents...
+          </p>
         </div>
       ) : !documents || documents.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900">
           <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">No documents found</p>
+          <p className="text-gray-600 dark:text-gray-400">No documents found</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="px-6 py-3 text-left">
                   <button
@@ -381,7 +390,7 @@ export const DocumentsPage = () => {
                     {formatFileSize(doc.fileSize)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(doc.uploadedAt), 'MMM d, yyyy')}
+                    {formatDate(doc.uploadedAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div
@@ -390,7 +399,8 @@ export const DocumentsPage = () => {
                     >
                       <a
                         href={doc.downloadUrl || undefined}
-                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-900"
                         title="Download"
                       >

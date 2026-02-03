@@ -37,7 +37,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 export const FinancialReportsPage = () => {
   const navigate = useNavigate();
   const [periodType, setPeriodType] = useState<
-    'month' | 'quarter' | 'year' | 'custom'
+    'month' | 'quarter' | 'year' | 'all' | 'custom'
   >('month');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -52,12 +52,16 @@ export const FinancialReportsPage = () => {
       case 'month':
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
         break;
-      case 'quarter':
+      case 'quarter': {
         const quarter = Math.floor(today.getMonth() / 3);
         startDate = new Date(today.getFullYear(), quarter * 3, 1);
         break;
+      }
       case 'year':
         startDate = new Date(today.getFullYear(), 0, 1);
+        break;
+      case 'all':
+        startDate = new Date(1982, 6, 24);
         break;
       case 'custom':
         if (customStartDate && customEndDate) {
@@ -74,6 +78,38 @@ export const FinancialReportsPage = () => {
       endDate: endDate.toISOString().split('T')[0],
     };
   }, [periodType, customStartDate, customEndDate]);
+
+  // Pre-fill custom date fields when switching to a predefined period
+  const handlePeriodChange = (type: typeof periodType) => {
+    setPeriodType(type);
+    if (type !== 'custom') {
+      const today = new Date();
+      let start: Date;
+      const end = today;
+
+      switch (type) {
+        case 'month':
+          start = new Date(today.getFullYear(), today.getMonth(), 1);
+          break;
+        case 'quarter': {
+          const quarter = Math.floor(today.getMonth() / 3);
+          start = new Date(today.getFullYear(), quarter * 3, 1);
+          break;
+        }
+        case 'year':
+          start = new Date(today.getFullYear(), 0, 1);
+          break;
+        case 'all':
+          start = new Date(1982, 6, 24);
+          break;
+        default:
+          start = new Date(today.getFullYear(), today.getMonth(), 1);
+      }
+
+      setCustomStartDate(start.toISOString().split('T')[0]);
+      setCustomEndDate(end.toISOString().split('T')[0]);
+    }
+  };
 
   const {
     data: overview,
@@ -138,8 +174,8 @@ export const FinancialReportsPage = () => {
     occupancyError
   ) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <div className="px-4 py-8">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
           Failed to load financial reports
         </div>
       </div>
@@ -147,14 +183,17 @@ export const FinancialReportsPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Financial Reports
-          </h1>
-          <p className="text-gray-600">
+          <div className="flex items-center gap-3 mb-1">
+            <BarChart3 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              Financial Reports
+            </h1>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 ml-11">
             Comprehensive financial overview and analytics
           </p>
         </div>
@@ -168,45 +207,57 @@ export const FinancialReportsPage = () => {
       </div>
 
       {/* Period Selector */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-gray-500" />
-            <span className="font-medium text-gray-900">Period:</span>
-            <div className="flex gap-2">
-              {['month', 'quarter', 'year', 'custom'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setPeriodType(type as typeof periodType)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    periodType === type
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-6 mb-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <span className="font-medium text-gray-900 dark:text-gray-100">
+                Period:
+              </span>
+              <div className="flex gap-2 flex-wrap">
+                {['month', 'quarter', 'year', 'all', 'custom'].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() =>
+                      handlePeriodChange(type as typeof periodType)
+                    }
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      periodType === type
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {type === 'all'
+                      ? 'All Time'
+                      : type.charAt(0).toUpperCase() + type.slice(1)}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {periodType === 'custom' && (
             <div className="flex gap-3">
               <input
                 type="date"
-                value={customStartDate}
-                onChange={(e) => setCustomStartDate(e.target.value)}
+                value={customStartDate || dateRange.startDate}
+                onChange={(e) => {
+                  setCustomStartDate(e.target.value);
+                  setPeriodType('custom');
+                }}
                 className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <span className="text-gray-500 self-center">to</span>
               <input
                 type="date"
-                value={customEndDate}
-                onChange={(e) => setCustomEndDate(e.target.value)}
+                value={customEndDate || dateRange.endDate}
+                onChange={(e) => {
+                  setCustomEndDate(e.target.value);
+                  setPeriodType('custom');
+                }}
                 className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -232,9 +283,6 @@ export const FinancialReportsPage = () => {
                 </p>
               </div>
             </div>
-            <div className="text-xs text-green-700">
-              {overview.period.startDate} to {overview.period.endDate}
-            </div>
           </div>
 
           {/* Total Expenses */}
@@ -251,9 +299,6 @@ export const FinancialReportsPage = () => {
                   {formatCurrency(overview.expenses.total)}
                 </p>
               </div>
-            </div>
-            <div className="text-xs text-red-700">
-              {overview.period.startDate} to {overview.period.endDate}
             </div>
           </div>
 
@@ -293,13 +338,6 @@ export const FinancialReportsPage = () => {
                   {formatCurrency(overview.netProfit)}
                 </p>
               </div>
-            </div>
-            <div
-              className={`text-xs ${
-                overview.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'
-              }`}
-            >
-              {overview.period.startDate} to {overview.period.endDate}
             </div>
           </div>
         </div>
@@ -401,9 +439,13 @@ export const FinancialReportsPage = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }: any) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
+                    label={({
+                      name,
+                      percent,
+                    }: {
+                      name?: string;
+                      percent?: number;
+                    }) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -486,7 +528,11 @@ export const FinancialReportsPage = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis
                   dataKey="street"
-                  tick={(props: any) => {
+                  tick={(props: {
+                    x: string | number;
+                    y: string | number;
+                    index: number;
+                  }) => {
                     const { x, y, index } = props;
                     const data = propertyComparison.properties[index];
                     return (

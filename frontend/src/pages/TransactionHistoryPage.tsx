@@ -9,13 +9,14 @@ import {
   ArrowUpDown,
   Download,
   FileText,
+  List,
 } from 'lucide-react';
-import { format } from 'date-fns';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
 
@@ -32,6 +33,7 @@ interface Transaction {
 
 export const TransactionHistoryPage = () => {
   const navigate = useNavigate();
+  const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType>('ALL');
   const [startDate, setStartDate] = useState('');
@@ -120,7 +122,7 @@ export const TransactionHistoryPage = () => {
 
     // Sort
     filtered.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       if (sortField === 'date') {
         aVal = new Date(a.date).getTime();
@@ -250,21 +252,24 @@ export const TransactionHistoryPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Transaction History
-          </h1>
-          <p className="text-gray-600">
+          <div className="flex items-center gap-3 mb-1">
+            <List className="h-8 w-8 text-blue-600" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              Transaction History
+            </h1>
+          </div>
+          <p className="text-gray-600 dark:text-gray-400 ml-11">
             Complete history of income and expenses
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleDownloadCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
           >
             <Download className="h-4 w-4" />
             CSV
@@ -281,7 +286,7 @@ export const TransactionHistoryPage = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-sm p-6 border border-green-200">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-sm dark:shadow-gray-900 p-6 border border-green-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-green-700 font-medium mb-1">
@@ -295,7 +300,7 @@ export const TransactionHistoryPage = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg shadow-sm p-6 border border-red-200">
+        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg shadow-sm dark:shadow-gray-900 p-6 border border-red-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-red-700 font-medium mb-1">
@@ -314,7 +319,7 @@ export const TransactionHistoryPage = () => {
             totals.net >= 0
               ? 'from-blue-50 to-blue-100 border-blue-200'
               : 'from-orange-50 to-orange-100 border-orange-200'
-          } rounded-lg shadow-sm p-6 border`}
+          } rounded-lg shadow-sm dark:shadow-gray-900 p-6 border`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -343,7 +348,7 @@ export const TransactionHistoryPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
@@ -356,7 +361,7 @@ export const TransactionHistoryPage = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -369,7 +374,7 @@ export const TransactionHistoryPage = () => {
                 setTypeFilter(e.target.value as TransactionType);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Types</option>
               <option value="INCOME">Income Only</option>
@@ -387,7 +392,7 @@ export const TransactionHistoryPage = () => {
                 setStartDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -401,7 +406,7 @@ export const TransactionHistoryPage = () => {
                 setEndDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -413,16 +418,18 @@ export const TransactionHistoryPage = () => {
           <LoadingSpinner />
         </div>
       ) : filteredAndSortedTransactions.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-          <p className="text-gray-500">No transactions found</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400">
+            No transactions found
+          </p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
                   onClick={() => handleSort('date')}
                 >
                   <div className="flex items-center gap-1">
@@ -432,17 +439,17 @@ export const TransactionHistoryPage = () => {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Property
                 </th>
                 <th
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
                   onClick={() => handleSort('amount')}
                 >
                   <div className="flex items-center justify-end gap-1">
@@ -454,15 +461,15 @@ export const TransactionHistoryPage = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
               {paginatedTransactions.map((transaction) => (
                 <tr
                   key={`${transaction.type}-${transaction.id}`}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 cursor-pointer transition-colors"
                   onClick={() => handleRowClick(transaction)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {format(new Date(transaction.date), 'MMM d, yyyy')}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {formatDate(transaction.date)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -480,10 +487,10 @@ export const TransactionHistoryPage = () => {
                       {transaction.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                     {transaction.description}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                     {transaction.property}
                   </td>
                   <td
@@ -503,8 +510,8 @@ export const TransactionHistoryPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
                 {Math.min(
                   currentPage * itemsPerPage,
@@ -516,17 +523,17 @@ export const TransactionHistoryPage = () => {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Previous
                 </button>
-                <span className="px-3 py-1 text-sm text-gray-600">
+                <span className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
                 >
                   Next
                 </button>

@@ -15,6 +15,7 @@ import com.buurman.dto.response.TeamResponse;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,7 @@ public class TeamService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public InvitationResponse createInvitation(UUID teamId, CreateInvitationRequest request,
                                                UserPrincipal principal) {
         // Verify user is admin of this team
@@ -172,6 +174,7 @@ public class TeamService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void removeMember(UUID teamId, UUID memberId, UserPrincipal principal) {
         // Verify user is admin of this team
         if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
@@ -190,6 +193,7 @@ public class TeamService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamMemberResponse updateMemberRole(UUID teamId, UUID memberId,
                                                UpdateMemberRoleRequest request,
                                                UserPrincipal principal) {
@@ -215,6 +219,7 @@ public class TeamService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamResponse updateTeam(UUID teamId, UpdateTeamRequest request, UserPrincipal principal) {
         // Verify user is admin of this team
         if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
@@ -232,6 +237,7 @@ public class TeamService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamResponse updateTeamSettings(UUID teamId, UpdateTeamSettingsRequest request,
                                           UserPrincipal principal) {
         // Verify user is admin of this team

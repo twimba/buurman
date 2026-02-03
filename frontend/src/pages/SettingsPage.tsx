@@ -57,11 +57,11 @@ export const SettingsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Work in Progress Banner */}
         {showBanner && (
           <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-[2px] shadow-xl">
-            <div className="relative bg-white rounded-2xl p-6 flex items-start gap-4">
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="relative">
                   <Construction className="h-8 w-8 text-purple-600 animate-bounce" />
@@ -69,39 +69,39 @@ export const SettingsPage = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">
-                  🚧 We're Cooking Something Special! 🚧
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+                  🚧 We&apos;re Cooking Something Special! 🚧
                 </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                   Our settings page is like a fine wine - still aging to
                   perfection! 🍷 Some features are fully functional (feel free
                   to click around!), while others are getting their final
-                  polish. Think of it as a "behind the scenes" tour. Backend
-                  magic coming soon! ✨
+                  polish. Think of it as a &quot;behind the scenes&quot; tour.
+                  Backend magic coming soon! ✨
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white animate-pulse" />
+                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white dark:border-gray-800 animate-pulse" />
                     <div
-                      className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white animate-pulse"
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white dark:border-gray-800 animate-pulse"
                       style={{ animationDelay: '150ms' }}
                     />
                     <div
-                      className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white animate-pulse"
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white dark:border-gray-800 animate-pulse"
                       style={{ animationDelay: '300ms' }}
                     />
                   </div>
-                  <span className="text-xs text-gray-600 italic">
+                  <span className="text-xs text-gray-600 dark:text-gray-400 italic">
                     Progress: Frontend 100% • Backend 0% • Vibes 200% 🎉
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowBanner(false)}
-                className="flex-shrink-0 p-2 rounded-lg hover:bg-gray-100 transition-colors group"
+                className="flex-shrink-0 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
                 aria-label="Dismiss banner"
               >
-                <X className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                <X className="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
               </button>
             </div>
           </div>
@@ -110,25 +110,27 @@ export const SettingsPage = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="mb-6">
-            <div className="flex items-center gap-3 mb-2">
-              <SettingsIcon className="h-7 w-7 text-gray-900" />
-              <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+            <div className="flex items-center gap-3 mb-1">
+              <SettingsIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Settings
+              </h1>
             </div>
-            <p className="text-sm text-gray-600 ml-10">
+            <p className="text-gray-600 dark:text-gray-400 ml-11">
               Manage your personal profile and team-specific settings
             </p>
           </div>
 
           {/* Active Team Info Bar - Only show for team tabs */}
           {requiresAdminAccess && (
-            <div className="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-lg">
+            <div className="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-100 dark:border-blue-800 rounded-lg">
               <div className="flex items-center gap-3">
-                <Shield className="h-5 w-5 text-blue-600" />
+                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     Managing: {activeTeam?.name}
                   </p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     Role:{' '}
                     {activeTeam?.role === 'TEAM_ADMIN'
                       ? 'Admin'
@@ -140,9 +142,9 @@ export const SettingsPage = () => {
                 </div>
               </div>
               {!canEditTeamSettings && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 border border-yellow-200 rounded-lg">
-                  <AlertCircle className="h-4 w-4 text-yellow-700" />
-                  <p className="text-xs font-medium text-yellow-700">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                  <AlertCircle className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
+                  <p className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
                     View-only access
                   </p>
                 </div>
@@ -151,11 +153,11 @@ export const SettingsPage = () => {
           )}
 
           {/* Horizontal Tabs with Sections */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-gray-200 dark:border-gray-700">
             <nav className="-mb-px flex space-x-1 overflow-x-auto">
               {/* Personal Section */}
               <div className="flex items-center gap-1">
-                <div className="flex items-center px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <div className="flex items-center px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                   Personal
                 </div>
                 {personalTabs.map((tab) => {
@@ -169,16 +171,16 @@ export const SettingsPage = () => {
                         group inline-flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
                         ${
                           isActive
-                            ? 'border-blue-600 text-blue-600'
-                            : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                            : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                         }
                       `}
                     >
                       <Icon
                         className={`h-5 w-5 ${
                           isActive
-                            ? 'text-blue-600'
-                            : 'text-gray-400 group-hover:text-gray-600'
+                            ? 'text-blue-600 dark:text-blue-400'
+                            : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                         }`}
                       />
                       {tab.label}
@@ -289,8 +291,8 @@ const PermissionDenied = ({ section }: { section: string }) => {
         Admin Access Required
       </h3>
       <p className="text-gray-600 mb-4">
-        You don't have permission to access <strong>{section}</strong> for this
-        team.
+        You don&apos;t have permission to access <strong>{section}</strong> for
+        this team.
       </p>
       <p className="text-sm text-gray-500">
         Only team administrators can manage these settings. Contact your team

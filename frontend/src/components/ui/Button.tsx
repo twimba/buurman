@@ -31,35 +31,35 @@ const variantStyles: Record<ButtonVariant, string> = {
     disabled:from-blue-300 disabled:to-blue-400 disabled:border-blue-300 disabled:shadow-none
   `,
   secondary: `
-    bg-white
-    text-gray-700
-    border border-gray-200
+    bg-white dark:bg-gray-800
+    text-gray-700 dark:text-gray-300
+    border border-gray-200 dark:border-gray-600
     shadow-sm
-    hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900
+    hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-100
     hover:shadow
-    active:bg-gray-100
+    active:bg-gray-100 dark:active:bg-gray-600
     focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2
-    disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200 disabled:shadow-none
+    disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:border-gray-200 dark:disabled:border-gray-600 disabled:shadow-none
   `,
   danger: `
-    bg-white
-    text-red-600
-    border border-red-200
+    bg-white dark:bg-gray-800
+    text-red-600 dark:text-red-400
+    border border-red-200 dark:border-red-900
     shadow-sm
-    hover:bg-red-50 hover:border-red-300 hover:text-red-700
+    hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-300 dark:hover:border-red-700 hover:text-red-700 dark:hover:text-red-300
     hover:shadow
-    active:bg-red-100
+    active:bg-red-100 dark:active:bg-red-900
     focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2
-    disabled:bg-gray-50 disabled:text-gray-400 disabled:border-gray-200 disabled:shadow-none
+    disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:border-gray-200 dark:disabled:border-gray-600 disabled:shadow-none
   `,
   ghost: `
     bg-transparent
-    text-gray-600
+    text-gray-600 dark:text-gray-400
     border border-transparent
-    hover:bg-gray-100 hover:text-gray-900
-    active:bg-gray-200
+    hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100
+    active:bg-gray-200 dark:active:bg-gray-600
     focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2
-    disabled:text-gray-400 disabled:bg-transparent
+    disabled:text-gray-400 dark:disabled:text-gray-500 disabled:bg-transparent
   `,
   success: `
     bg-gradient-to-b from-emerald-500 to-emerald-600

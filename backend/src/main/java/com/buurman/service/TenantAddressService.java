@@ -11,6 +11,7 @@ import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,7 @@ public class TenantAddressService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantAddressResponse createAddress(
             UUID tenantId,
             CreateTenantAddressRequest request,
@@ -111,6 +113,7 @@ public class TenantAddressService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantAddressResponse updateAddress(
             UUID addressId,
             UpdateTenantAddressRequest request,
@@ -209,6 +212,7 @@ public class TenantAddressService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteAddress(UUID addressId, UserPrincipal principal) {
         TenantAddress address = addressRepository.findByIdAndTeamId(addressId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));

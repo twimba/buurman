@@ -153,17 +153,17 @@ const RegisterPage: React.FC = () => {
             <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Buurman
             </h1>
-            <p className="text-gray-600 mt-2 text-center">
+            <p className="text-gray-600 dark:text-gray-400 mt-2 text-center">
               Property management for small landlords
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 lg:p-10">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Create your account
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Start managing your properties today
               </p>
             </div>
@@ -171,7 +171,7 @@ const RegisterPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                     First Name
                   </label>
                   <input
@@ -179,7 +179,7 @@ const RegisterPage: React.FC = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
                     placeholder="John"
                   />
                   {errors.firstName && (
@@ -190,7 +190,7 @@ const RegisterPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                     Last Name
                   </label>
                   <input
@@ -198,7 +198,7 @@ const RegisterPage: React.FC = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
                     placeholder="Doe"
                   />
                   {errors.lastName && (
@@ -210,7 +210,7 @@ const RegisterPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Email
                 </label>
                 <input
@@ -218,7 +218,7 @@ const RegisterPage: React.FC = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
                   placeholder="john.doe@example.com"
                 />
                 {errors.email && (
@@ -227,7 +227,7 @@ const RegisterPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Password
                 </label>
                 <input
@@ -235,7 +235,7 @@ const RegisterPage: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
                   placeholder="At least 8 characters"
                 />
                 {errors.password && (
@@ -244,7 +244,7 @@ const RegisterPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Confirm Password
                 </label>
                 <input
@@ -252,7 +252,7 @@ const RegisterPage: React.FC = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-20 transition-colors"
                   placeholder="Re-enter your password"
                 />
                 {errors.confirmPassword && (
@@ -281,7 +281,7 @@ const RegisterPage: React.FC = () => {
             </form>
 
             <div className="mt-8 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}
                 <a
                   href="/login"
@@ -293,8 +293,8 @@ const RegisterPage: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 By creating an account, you agree to our Terms of Service
               </p>
             </div>
@@ -302,7 +302,7 @@ const RegisterPage: React.FC = () => {
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Need help?{' '}
               <a href="#" className="text-blue-600 hover:underline">
                 Contact support

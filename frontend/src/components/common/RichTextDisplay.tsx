@@ -18,7 +18,7 @@ export const RichTextDisplay = ({
 
   return (
     <div
-      className={`prose max-w-none ${className}`}
+      className={`prose dark:prose-invert max-w-none ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );

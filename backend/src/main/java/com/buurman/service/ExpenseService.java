@@ -16,6 +16,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,6 +55,7 @@ public class ExpenseService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ExpenseResponse createExpense(CreateExpenseRequest request, UserPrincipal principal) {
         // Validate property exists and belongs to team
         Property property = propertyRepository.findByIdAndTeamId(request.propertyId(), principal.getTeamId())
@@ -122,6 +124,7 @@ public class ExpenseService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ExpenseResponse updateExpense(UUID id, UpdateExpenseRequest request, UserPrincipal principal) {
         Expense expense = expenseRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
@@ -144,6 +147,7 @@ public class ExpenseService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteExpense(UUID id, UserPrincipal principal) {
         Expense expense = expenseRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));

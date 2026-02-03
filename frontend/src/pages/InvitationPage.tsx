@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { getInvitation, acceptInvitation } from '../api/teams';
 import { useAuth } from '../contexts/AuthContext';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 const formatRole = (role: string) => {
   switch (role) {
@@ -25,15 +26,8 @@ const formatRole = (role: string) => {
   }
 };
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
 export const InvitationPage = () => {
+  const { formatDate } = useFormatDate();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
@@ -77,10 +71,12 @@ export const InvitationPage = () => {
 
   if (isLoading || authLoading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading invitation...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Loading invitation...
+          </p>
         </div>
       </div>
     );
@@ -88,13 +84,13 @@ export const InvitationPage = () => {
 
   if (error || !invitation) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8 max-w-md w-full text-center">
           <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Invalid Invitation
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             This invitation link is invalid, has already been used, or has
             expired.
           </p>
@@ -111,13 +107,13 @@ export const InvitationPage = () => {
 
   if (invitation.isAccepted) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8 max-w-md w-full text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Already Accepted
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             This invitation has already been accepted. You can log in to access
             the team.
           </p>
@@ -134,13 +130,13 @@ export const InvitationPage = () => {
 
   if (invitation.isExpired) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8 max-w-md w-full text-center">
           <Clock className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Invitation Expired
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             This invitation has expired. Please contact the team administrator
             to request a new invitation.
           </p>
@@ -156,26 +152,26 @@ export const InvitationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8 max-w-md w-full">
         <div className="text-center mb-6">
           <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Users className="h-8 w-8 text-blue-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            You're Invited!
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            You&apos;re Invited!
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             <span className="font-medium">{invitation.inviterName}</span> has
             invited you to join
           </p>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-4 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             {invitation.teamName}
           </h2>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p>
               <span className="font-medium">Your role:</span>{' '}
               {formatRole(invitation.role)}
@@ -219,13 +215,13 @@ export const InvitationPage = () => {
                 </>
               )}
             </button>
-            <p className="text-xs text-center text-gray-500">
-              By accepting, you'll join this team with the specified role.
+            <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+              By accepting, you&apos;ll join this team with the specified role.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-gray-600 text-center mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
               To accept this invitation, please log in or create an account.
             </p>
             <button
@@ -237,7 +233,7 @@ export const InvitationPage = () => {
             </button>
             <button
               onClick={handleRegister}
-              className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
             >
               <UserPlus className="h-5 w-5" />
               Create Account

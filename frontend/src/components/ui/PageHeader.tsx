@@ -31,8 +31,8 @@ export const PageHeader = ({
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white border-b border-gray-100 -mx-4 px-4 py-4 mb-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 -mx-4 px-4 py-4 mb-6">
+      <div>
         <div className="flex items-center justify-between gap-6">
           {/* Left side: Back button + content */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -41,9 +41,9 @@ export const PageHeader = ({
               className="
                 flex-shrink-0
                 p-2 -ml-2
-                text-gray-400
-                hover:text-gray-600
-                hover:bg-gray-100
+                text-gray-400 dark:text-gray-500
+                hover:text-gray-600 dark:hover:text-gray-300
+                hover:bg-gray-100 dark:hover:bg-gray-700
                 rounded-lg
                 transition-colors
               "
@@ -56,7 +56,7 @@ export const PageHeader = ({
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-lg font-semibold text-gray-900 truncate">
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {title}
                 </h1>
                 {badge}
@@ -64,15 +64,17 @@ export const PageHeader = ({
               {(subtitle || description) && (
                 <div className="flex items-center gap-2 mt-0.5">
                   {subtitle && (
-                    <span className="text-sm text-gray-500 font-medium">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                       {subtitle}
                     </span>
                   )}
                   {subtitle && description && (
-                    <span className="text-gray-300">·</span>
+                    <span className="text-gray-300 dark:text-gray-600">·</span>
                   )}
                   {description && (
-                    <span className="text-sm text-gray-500">{description}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {description}
+                    </span>
                   )}
                 </div>
               )}

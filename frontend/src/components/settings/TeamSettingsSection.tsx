@@ -21,10 +21,12 @@ import {
   useUpdateTeam,
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 type Role = 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
 
 export const TeamSettingsSection = () => {
+  const { formatDate } = useFormatDate();
   const { canManageMembers } = useTeam();
   const { data: team, isLoading: teamLoading } = useCurrentTeam();
   const { data: members, isLoading: membersLoading } = useTeamMembers(
@@ -141,10 +143,12 @@ export const TeamSettingsSection = () => {
   return (
     <div className="space-y-6">
       {/* Team Name Card */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Team Settings</h2>
-          <p className="text-sm text-gray-600 mt-1">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Team Settings
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Manage your team name and basic information
           </p>
         </div>
@@ -152,7 +156,7 @@ export const TeamSettingsSection = () => {
         <div className="p-6">
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Team Name
               </label>
               {isEditingTeamName ? (
@@ -160,10 +164,10 @@ export const TeamSettingsSection = () => {
                   type="text"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               ) : (
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {team?.teamName}
                 </p>
               )}
@@ -174,7 +178,7 @@ export const TeamSettingsSection = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setIsEditingTeamName(false)}
-                      className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                     >
                       <X className="h-4 w-4" />
                       Cancel
@@ -208,14 +212,14 @@ export const TeamSettingsSection = () => {
       </div>
 
       {/* Team Members Card */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Team Members
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {members?.length || 0} member{members?.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -231,9 +235,12 @@ export const TeamSettingsSection = () => {
           </div>
         </div>
 
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {members?.map((member) => (
-            <div key={member.memberId} className="p-6 hover:bg-gray-50">
+            <div
+              key={member.memberId}
+              className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
@@ -241,7 +248,7 @@ export const TeamSettingsSection = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">
                         {member.name}
                       </p>
                       {member.isCurrentUser && (
@@ -256,9 +263,11 @@ export const TeamSettingsSection = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600">{member.email}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Joined {new Date(member.joinedAt).toLocaleDateString()}
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {member.email}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Joined {formatDate(member.joinedAt)}
                     </p>
                   </div>
                 </div>
@@ -270,7 +279,7 @@ export const TeamSettingsSection = () => {
                     >
                       {roleLabels[member.role as Role]}
                     </span>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       {roleDescriptions[member.role as Role]}
                     </p>
                   </div>
@@ -319,12 +328,12 @@ export const TeamSettingsSection = () => {
       </div>
 
       {/* Roles Reference Card */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             Roles & Permissions
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Understanding team member roles
           </p>
         </div>
@@ -333,12 +342,14 @@ export const TeamSettingsSection = () => {
           {Object.entries(roleLabels).map(([role, label]) => (
             <div
               key={role}
-              className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg"
+              className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
             >
-              <Shield className="h-5 w-5 text-gray-600 mt-0.5" />
+              <Shield className="h-5 w-5 text-gray-600 dark:text-gray-400 mt-0.5" />
               <div>
-                <p className="font-semibold text-gray-900">{label}</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {label}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {roleDescriptions[role as Role]}
                 </p>
               </div>
@@ -350,12 +361,12 @@ export const TeamSettingsSection = () => {
       {/* Invite Member Modal */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Invite Team Member
               </h3>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Send an invitation to join your team
               </p>
             </div>
@@ -366,7 +377,7 @@ export const TeamSettingsSection = () => {
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                   <input
                     type="email"
                     value={inviteEmail}
@@ -384,7 +395,7 @@ export const TeamSettingsSection = () => {
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as Role)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {Object.entries(roleLabels).map(([role, label]) => (
                     <option key={role} value={role}>
@@ -420,12 +431,12 @@ export const TeamSettingsSection = () => {
       {/* Change Role Modal */}
       {showRoleModal && selectedMember && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Change Member Role
               </h3>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Update role for {selectedMember.name}
               </p>
             </div>
@@ -475,9 +486,9 @@ export const TeamSettingsSection = () => {
       {/* Transfer Ownership Modal */}
       {showTransferModal && selectedMember && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Transfer Ownership
               </h3>
             </div>
@@ -519,9 +530,9 @@ export const TeamSettingsSection = () => {
       {/* Remove Member Modal */}
       {showRemoveModal && selectedMember && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Remove Team Member
               </h3>
             </div>

@@ -19,6 +19,7 @@ import {
   PieChart,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   format,
   subMonths,
@@ -64,6 +65,7 @@ type SortOrder = 'asc' | 'desc';
 export const ExpensesPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [categoryFilter, setCategoryFilter] = useState<
     ExpenseCategory | undefined
   >(undefined);
@@ -95,8 +97,8 @@ export const ExpensesPage = () => {
     }
 
     filtered.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: string | number;
+      let bVal: string | number;
 
       switch (sortField) {
         case 'expenseDate':
@@ -225,12 +227,17 @@ export const ExpensesPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <div className="flex items-center gap-3 mb-1">
+              <Receipt className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Expenses
+              </h1>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 ml-11">
               Track property expenses and costs
             </p>
           </div>
@@ -248,17 +255,17 @@ export const ExpensesPage = () => {
         {expenses && expenses.length > 0 && (
           <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Total Expenses */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Total Expenses
                 </h3>
                 <DollarSign className="h-5 w-5 text-red-500" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                 EUR {totalAmount.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
                 {categoryFilter &&
                   ` in ${formatExpenseCategory(categoryFilter)}`}
@@ -266,9 +273,9 @@ export const ExpensesPage = () => {
             </div>
 
             {/* Top Categories */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Top Categories
                 </h3>
                 <PieChart className="h-5 w-5 text-purple-500" />
@@ -289,25 +296,27 @@ export const ExpensesPage = () => {
                               : 'bg-purple-300'
                         }`}
                       />
-                      <span className="text-sm text-gray-700 truncate">
+                      <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
                         {cat.label}
                       </span>
                     </div>
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       EUR {cat.total.toFixed(0)}
                     </span>
                   </div>
                 ))}
                 {topCategories.length === 0 && (
-                  <p className="text-sm text-gray-500">No data available</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No data available
+                  </p>
                 )}
               </div>
             </div>
 
             {/* 6-Month Expenses Chart */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Last 6 Months
                 </h3>
                 <TrendingDown className="h-5 w-5 text-red-500" />
@@ -355,7 +364,7 @@ export const ExpensesPage = () => {
         )}
 
         {/* Search and Filter Bar */}
-        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -367,14 +376,16 @@ export const ExpensesPage = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2 mb-2">
-            <Filter className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900">Category Filter</h3>
+            <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+              Category Filter
+            </h3>
           </div>
           <div className="flex gap-2 flex-wrap">
             {categoryFilters.map((filter) => (
@@ -387,7 +398,7 @@ export const ExpensesPage = () => {
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   categoryFilter === filter.value
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {filter.label}
@@ -461,7 +472,7 @@ export const ExpensesPage = () => {
                       onClick={() => navigate(`/expenses/${expense.id}`)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {format(new Date(expense.expenseDate), 'MMM d, yyyy')}
+                        {formatDate(expense.expenseDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {expense.identifier}

@@ -60,7 +60,7 @@ export const ContractCell = ({
         p-2
         -m-2
         rounded-lg
-        hover:bg-blue-50
+        hover:bg-blue-50 dark:hover:bg-gray-700
         transition-colors
         focus:outline-none
         focus:ring-2
@@ -79,26 +79,26 @@ export const ContractCell = ({
         {/* Content */}
         <div className="min-w-0 flex-1">
           {/* Property */}
-          <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-            <Home className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <Home className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
             <span className="truncate">{propertyStreet}</span>
           </div>
 
           {/* Tenant & City */}
           <div className="flex items-center gap-3 mt-0.5">
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <User className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">
                 {tenantFirstName} {tenantLastName}
               </span>
             </div>
-            <span className="text-xs text-gray-400 truncate hidden sm:inline">
+            <span className="text-xs text-gray-400 dark:text-gray-500 truncate hidden sm:inline">
               {propertyCity}
             </span>
           </div>
 
           {/* Contract ID */}
-          <div className="text-[10px] text-gray-400 mt-0.5 font-mono">
+          <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono">
             #{contractIdentifier}
           </div>
         </div>

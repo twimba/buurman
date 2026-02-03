@@ -145,7 +145,7 @@ export const TenantDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
           title={`${tenant.firstName} ${tenant.lastName}`}
@@ -182,14 +182,14 @@ export const TenantDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('info')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'info'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Information
@@ -198,8 +198,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('photos')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'photos'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <Image className="h-4 w-4" />
@@ -209,8 +209,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -220,8 +220,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('addresses')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'addresses'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <MapPin className="h-4 w-4" />
@@ -231,8 +231,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('contracts')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'contracts'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -242,8 +242,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               History {auditLog.length > 0 && `(${auditLog.length})`}
@@ -255,16 +255,18 @@ export const TenantDetailPage = () => {
         {activeTab === 'info' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Contact Information */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Contact Information
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-500">Name</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Name
+                    </p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
                       {tenant.firstName} {tenant.lastName}
                     </p>
                   </div>
@@ -272,16 +274,22 @@ export const TenantDetailPage = () => {
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="font-medium text-gray-900">{tenant.email}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Email
+                    </p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {tenant.email}
+                    </p>
                   </div>
                 </div>
                 {tenant.phone && (
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500">Phone</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Phone
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
                         {tenant.phone}
                       </p>
                     </div>
@@ -291,8 +299,10 @@ export const TenantDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500">Tax Number</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Tax Number
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
                         {tenant.taxNumber}
                       </p>
                     </div>
@@ -302,10 +312,10 @@ export const TenantDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         Government ID Number
                       </p>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 dark:text-gray-100">
                         {tenant.idNumber}
                       </p>
                     </div>
@@ -315,22 +325,22 @@ export const TenantDetailPage = () => {
             </div>
 
             {/* Additional Information */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Additional Information
               </h2>
               {tenant.additionalInfo ? (
                 <RichTextDisplay content={tenant.additionalInfo} />
               ) : (
-                <p className="text-sm text-gray-400 italic">
+                <p className="text-sm text-gray-400 dark:text-gray-500 italic">
                   No additional information available
                 </p>
               )}
             </div>
 
             {/* Current Properties (from Active Contracts) */}
-            <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Current Properties
               </h2>
               {contractsLoading ? (
@@ -340,7 +350,7 @@ export const TenantDetailPage = () => {
                   {activeContractProperties.map((property) => (
                     <div
                       key={property.id}
-                      className="flex items-center justify-between bg-green-50 p-4 rounded border border-green-200"
+                      className="flex items-center justify-between bg-green-50 dark:bg-green-900/30 p-4 rounded border border-green-200 dark:border-green-900/50"
                     >
                       <div className="flex items-center gap-3">
                         <Home className="h-8 w-8 text-green-600" />
@@ -349,11 +359,11 @@ export const TenantDetailPage = () => {
                             onClick={() =>
                               navigate(`/properties/${property.id}`)
                             }
-                            className="font-medium text-gray-900 hover:text-blue-600 text-left"
+                            className="font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 text-left"
                           >
                             {property.street}
                           </button>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             {property.city}, {property.postalCode}
                           </p>
                         </div>
@@ -362,7 +372,7 @@ export const TenantDetailPage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 italic">
+                <p className="text-sm text-gray-400 dark:text-gray-500 italic">
                   No active contracts for this tenant
                 </p>
               )}
@@ -371,7 +381,7 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'photos' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <PhotoGallery
               propertyId={id!}
               photos={photos}
@@ -402,13 +412,13 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'addresses' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <TenantAddressList tenantId={id!} />
           </div>
         )}
 
         {activeTab === 'contracts' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Contracts</h2>
               <button
@@ -450,7 +460,7 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Tenant History
             </h2>
@@ -472,11 +482,13 @@ export const TenantDetailPage = () => {
                   return (
                     <div
                       key={activity.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
+                          hasChanges
+                            ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : ''
                         }`}
                         onClick={() =>
                           hasChanges &&
@@ -513,10 +525,10 @@ export const TenantDetailPage = () => {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}

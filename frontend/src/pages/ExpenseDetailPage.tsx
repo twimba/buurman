@@ -26,7 +26,8 @@ import {
   Package,
   History,
 } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   UpdateExpenseRequest,
   CreateExpenseRequest,
@@ -37,6 +38,7 @@ export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState<
@@ -102,7 +104,7 @@ export const ExpenseDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
           title={`Expense #${expense.identifier}`}
@@ -141,7 +143,7 @@ export const ExpenseDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'details'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Details
@@ -151,7 +153,7 @@ export const ExpenseDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -162,7 +164,7 @@ export const ExpenseDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'history'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <History className="h-4 w-4" />
@@ -174,7 +176,7 @@ export const ExpenseDetailPage = () => {
         {/* Content */}
         {activeTab === 'details' &&
           (isEditing ? (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Edit Expense
               </h2>
@@ -188,7 +190,7 @@ export const ExpenseDetailPage = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Expense Details */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Expense Details
                 </h2>
@@ -207,7 +209,7 @@ export const ExpenseDetailPage = () => {
                     <div>
                       <p className="text-sm text-gray-500">Expense Date</p>
                       <p className="font-medium text-gray-900">
-                        {format(new Date(expense.expenseDate), 'MMMM d, yyyy')}
+                        {formatDate(expense.expenseDate)}
                       </p>
                     </div>
                   </div>
@@ -233,7 +235,7 @@ export const ExpenseDetailPage = () => {
               </div>
 
               {/* Property Info */}
-              <div className="bg-white rounded-lg shadow p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Property Information
                 </h2>
@@ -260,7 +262,7 @@ export const ExpenseDetailPage = () => {
 
               {/* Notes */}
               {expense.notes && (
-                <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4">
                     Notes
                   </h2>
@@ -269,7 +271,7 @@ export const ExpenseDetailPage = () => {
               )}
 
               {/* Metadata */}
-              <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Metadata
                 </h2>
@@ -277,14 +279,14 @@ export const ExpenseDetailPage = () => {
                   <div>
                     <span className="text-gray-600">Created:</span>{' '}
                     <span className="text-gray-900">
-                      {new Date(expense.createdAt).toLocaleDateString()} at{' '}
+                      {formatDate(expense.createdAt)} at{' '}
                       {new Date(expense.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Last Updated:</span>{' '}
                     <span className="text-gray-900">
-                      {new Date(expense.updatedAt).toLocaleDateString()} at{' '}
+                      {formatDate(expense.updatedAt)} at{' '}
                       {new Date(expense.updatedAt).toLocaleTimeString()}
                     </span>
                   </div>
@@ -294,7 +296,7 @@ export const ExpenseDetailPage = () => {
           ))}
 
         {activeTab === 'documents' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Documents ({documents.length})
             </h2>
@@ -352,7 +354,7 @@ export const ExpenseDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Expense History
             </h2>

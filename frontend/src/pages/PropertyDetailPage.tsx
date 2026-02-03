@@ -41,13 +41,16 @@ import {
   ChevronDown,
   Download,
 } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 const statusColors: Record<PropertyStatus, string> = {
-  VACANT: 'bg-green-100 text-green-800',
-  OCCUPIED: 'bg-blue-100 text-blue-800',
-  MAINTENANCE: 'bg-yellow-100 text-yellow-800',
-  UNAVAILABLE: 'bg-gray-100 text-gray-800',
+  VACANT:
+    'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+  OCCUPIED: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+  MAINTENANCE:
+    'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+  UNAVAILABLE: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
 };
 
 const statusLabels: Record<PropertyStatus, string> = {
@@ -61,6 +64,7 @@ export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
   >('info');
@@ -147,7 +151,7 @@ export const PropertyDetailPage = () => {
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       switch (contractsSortField) {
         case 'startDate':
@@ -221,7 +225,7 @@ export const PropertyDetailPage = () => {
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       switch (expensesSortField) {
         case 'expenseDate':
@@ -354,7 +358,7 @@ export const PropertyDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
           title={property.street}
@@ -428,7 +432,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'info'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Info
@@ -438,7 +442,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'photos'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <Image className="h-4 w-4" />
@@ -449,7 +453,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'documents'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Documents {documents.length > 0 && `(${documents.length})`}
@@ -459,7 +463,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'contracts'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -470,7 +474,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'expenses'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <Receipt className="h-4 w-4" />
@@ -481,7 +485,7 @@ export const PropertyDetailPage = () => {
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'audit'
                   ? 'border-blue-600 text-blue-600 font-semibold'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <History className="h-4 w-4" />
@@ -492,7 +496,7 @@ export const PropertyDetailPage = () => {
 
         {/* Tab Content */}
         {activeTab === 'info' && (
-          <div className="bg-white rounded-lg shadow p-6 space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
             {/* Status Badge */}
             <div>
               <span
@@ -506,11 +510,11 @@ export const PropertyDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {property.bedrooms !== null && (
                 <div>
-                  <div className="flex items-center gap-2 text-gray-600 mb-1">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                     <Bed className="h-5 w-5" />
                     <span className="text-sm font-medium">Bedrooms</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                     {property.bedrooms}
                   </p>
                 </div>
@@ -518,11 +522,11 @@ export const PropertyDetailPage = () => {
 
               {property.bathrooms !== null && (
                 <div>
-                  <div className="flex items-center gap-2 text-gray-600 mb-1">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                     <Bath className="h-5 w-5" />
                     <span className="text-sm font-medium">Bathrooms</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                     {property.bathrooms}
                   </p>
                 </div>
@@ -530,18 +534,18 @@ export const PropertyDetailPage = () => {
 
               {property.squareMeters !== null && (
                 <div>
-                  <div className="flex items-center gap-2 text-gray-600 mb-1">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                     <Ruler className="h-5 w-5" />
                     <span className="text-sm font-medium">Square Meters</span>
                   </div>
-                  <p className="text-2xl font-semibold text-gray-900">
+                  <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                     {property.squareMeters}m²
                   </p>
                 </div>
               )}
 
               <div>
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                   <MapPin className="h-5 w-5" />
                   <span className="text-sm font-medium">Type</span>
                 </div>
@@ -551,41 +555,49 @@ export const PropertyDetailPage = () => {
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                   <MapPin className="h-5 w-5" />
                   <span className="text-sm font-medium">Street</span>
                 </div>
-                <p className="text-lg text-gray-900">{property.street}</p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  {property.street}
+                </p>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                   <MapPin className="h-5 w-5" />
                   <span className="text-sm font-medium">City</span>
                 </div>
-                <p className="text-lg text-gray-900">{property.city}</p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  {property.city}
+                </p>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                   <MapPin className="h-5 w-5" />
                   <span className="text-sm font-medium">Postal Code</span>
                 </div>
-                <p className="text-lg text-gray-900">{property.postalCode}</p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  {property.postalCode}
+                </p>
               </div>
 
               <div>
-                <div className="flex items-center gap-2 text-gray-600 mb-1">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-1">
                   <MapPin className="h-5 w-5" />
                   <span className="text-sm font-medium">Country</span>
                 </div>
-                <p className="text-lg text-gray-900">{property.country}</p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  {property.country}
+                </p>
               </div>
             </div>
 
             {/* Map */}
             <div className="pt-6 border-t">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Location
               </h3>
               <PropertyMap
@@ -600,21 +612,25 @@ export const PropertyDetailPage = () => {
 
             {/* Metadata */}
             <div className="pt-6 border-t">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Metadata
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">Created:</span>{' '}
-                  <span className="text-gray-900">
-                    {new Date(property.createdAt).toLocaleDateString()} at{' '}
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Created:
+                  </span>{' '}
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {formatDate(property.createdAt)} at{' '}
                     {new Date(property.createdAt).toLocaleTimeString()}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-600">Last Updated:</span>{' '}
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Last Updated:
+                  </span>{' '}
                   <span className="text-gray-900">
-                    {new Date(property.updatedAt).toLocaleDateString()} at{' '}
+                    {formatDate(property.updatedAt)} at{' '}
                     {new Date(property.updatedAt).toLocaleTimeString()}
                   </span>
                 </div>
@@ -624,7 +640,7 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'photos' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <PhotoGallery
               propertyId={id!}
               photos={photos}
@@ -655,9 +671,9 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'contracts' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Contracts ({filteredAndSortedContracts.length})
               </h2>
               <button
@@ -676,8 +692,8 @@ export const PropertyDetailPage = () => {
               <ErrorMessage message="Failed to load contracts" />
             ) : contracts.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600 mb-4">
+                <FileText className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   No contracts for this property
                 </p>
                 <button
@@ -694,7 +710,7 @@ export const PropertyDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                     <input
                       type="text"
                       placeholder="Search by contract #, tenant, type..."
@@ -703,18 +719,18 @@ export const PropertyDetailPage = () => {
                         setContractsSearchTerm(e.target.value);
                         setContractsCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -728,7 +744,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('tenant')}
                         >
                           <div className="flex items-center gap-1">
@@ -742,7 +758,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('contractType')}
                         >
                           <div className="flex items-center gap-1">
@@ -756,7 +772,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -769,11 +785,11 @@ export const PropertyDetailPage = () => {
                               ))}
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           End Date
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('rentAmount')}
                         >
                           <div className="flex items-center gap-1">
@@ -787,7 +803,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleContractsSort('status')}
                         >
                           <div className="flex items-center gap-1">
@@ -802,12 +818,12 @@ export const PropertyDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedContracts.length === 0 ? (
                         <tr>
                           <td
                             colSpan={7}
-                            className="px-6 py-12 text-center text-gray-500"
+                            className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                           >
                             No contracts found matching your search
                           </td>
@@ -819,44 +835,38 @@ export const PropertyDetailPage = () => {
                             onClick={() =>
                               navigate(`/contracts/${contract.id}`)
                             }
-                            className="hover:bg-gray-50 cursor-pointer transition-colors"
+                            className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-blue-600">
+                              <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
                                 #{contract.identifier}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-gray-900 dark:text-gray-100">
                                 {contract.tenant.firstName}{' '}
                                 {contract.tenant.lastName}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-gray-900 dark:text-gray-100">
                                 {contract.contractType.replace('_', ' ')}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {format(
-                                  new Date(contract.startDate),
-                                  'MMM d, yyyy'
-                                )}
+                              <div className="text-sm text-gray-900 dark:text-gray-100">
+                                {formatDate(contract.startDate)}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
+                              <div className="text-sm text-gray-900 dark:text-gray-100">
                                 {contract.endDate
-                                  ? format(
-                                      new Date(contract.endDate),
-                                      'MMM d, yyyy'
-                                    )
+                                  ? formatDate(contract.endDate)
                                   : '-'}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {contract.currency}{' '}
                                 {contract.rentAmount.toFixed(2)}
                               </div>
@@ -873,8 +883,8 @@ export const PropertyDetailPage = () => {
 
                 {/* Pagination */}
                 {contractsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                    <div className="text-sm text-gray-600">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       Showing{' '}
                       {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
                       {Math.min(
@@ -889,7 +899,7 @@ export const PropertyDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage - 1)
                         }
                         disabled={contractsCurrentPage === 1}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
                       >
                         Previous
                       </button>
@@ -901,7 +911,7 @@ export const PropertyDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage + 1)
                         }
                         disabled={contractsCurrentPage === contractsTotalPages}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
                       >
                         Next
                       </button>
@@ -914,9 +924,9 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'expenses' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Expenses ({filteredAndSortedExpenses.length})
               </h2>
               <button
@@ -935,8 +945,8 @@ export const PropertyDetailPage = () => {
               <ErrorMessage message="Failed to load expenses" />
             ) : expenses.length === 0 ? (
               <div className="text-center py-12">
-                <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600 mb-4">
+                <Receipt className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   No expenses for this property
                 </p>
                 <button
@@ -953,7 +963,7 @@ export const PropertyDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                     <input
                       type="text"
                       placeholder="Search by expense #, description, category..."
@@ -962,21 +972,21 @@ export const PropertyDetailPage = () => {
                         setExpensesSearchTerm(e.target.value);
                         setExpensesCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Expense #
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleExpensesSort('expenseDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -990,7 +1000,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleExpensesSort('description')}
                         >
                           <div className="flex items-center gap-1">
@@ -1004,7 +1014,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleExpensesSort('category')}
                         >
                           <div className="flex items-center gap-1">
@@ -1018,7 +1028,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                           onClick={() => handleExpensesSort('amount')}
                         >
                           <div className="flex items-center gap-1">
@@ -1033,12 +1043,12 @@ export const PropertyDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {paginatedExpenses.length === 0 ? (
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-12 text-center text-gray-500"
+                            className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                           >
                             No expenses found matching your search
                           </td>
@@ -1050,16 +1060,13 @@ export const PropertyDetailPage = () => {
                             className="hover:bg-gray-50 cursor-pointer"
                             onClick={() => navigate(`/expenses/${expense.id}`)}
                           >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
                               #{expense.identifier}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {format(
-                                new Date(expense.expenseDate),
-                                'MMM d, yyyy'
-                              )}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {formatDate(expense.expenseDate)}
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-900">
+                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                               {expense.description}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -1079,8 +1086,8 @@ export const PropertyDetailPage = () => {
 
                 {/* Pagination */}
                 {expensesTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                    <div className="text-sm text-gray-600">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       Showing {(expensesCurrentPage - 1) * expensesPerPage + 1}{' '}
                       to{' '}
                       {Math.min(
@@ -1095,7 +1102,7 @@ export const PropertyDetailPage = () => {
                           setExpensesCurrentPage(expensesCurrentPage - 1)
                         }
                         disabled={expensesCurrentPage === 1}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
                       >
                         Previous
                       </button>
@@ -1107,7 +1114,7 @@ export const PropertyDetailPage = () => {
                           setExpensesCurrentPage(expensesCurrentPage + 1)
                         }
                         disabled={expensesCurrentPage === expensesTotalPages}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-300"
                       >
                         Next
                       </button>
@@ -1120,7 +1127,7 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'audit' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Property History
             </h2>
@@ -1143,11 +1150,13 @@ export const PropertyDetailPage = () => {
                   return (
                     <div
                       key={activity.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors cursor-pointer ${
-                          hasChanges ? 'hover:bg-gray-50' : ''
+                          hasChanges
+                            ? 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : ''
                         }`}
                         onClick={() =>
                           hasChanges && toggleAuditItem(activity.id)
@@ -1158,10 +1167,10 @@ export const PropertyDetailPage = () => {
                             flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
                             ${
                               activity.action === 'CREATE'
-                                ? 'bg-green-100'
+                                ? 'bg-green-100 dark:bg-green-900/30'
                                 : activity.action === 'UPDATE'
-                                  ? 'bg-blue-100'
-                                  : 'bg-red-100'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30'
+                                  : 'bg-red-100 dark:bg-red-900/30'
                             }
                           `}
                         >
@@ -1170,10 +1179,10 @@ export const PropertyDetailPage = () => {
                               text-xs font-semibold
                               ${
                                 activity.action === 'CREATE'
-                                  ? 'text-green-700'
+                                  ? 'text-green-700 dark:text-green-300'
                                   : activity.action === 'UPDATE'
-                                    ? 'text-blue-700'
-                                    : 'text-red-700'
+                                    ? 'text-blue-700 dark:text-blue-300'
+                                    : 'text-red-700 dark:text-red-300'
                               }
                             `}
                           >
@@ -1181,7 +1190,7 @@ export const PropertyDetailPage = () => {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {activity.description}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">

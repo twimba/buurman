@@ -25,7 +25,7 @@ export const PaymentCreatePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -35,13 +35,15 @@ export const PaymentCreatePage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Add New Payment</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Add New Payment
+          </h1>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Contract <span className="text-red-500">*</span>
             </label>
             <ContractSelector
@@ -50,7 +52,7 @@ export const PaymentCreatePage = () => {
               disabled={createPaymentMutation.isPending}
             />
             {!selectedContractId && (
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Please select a contract first
               </p>
             )}

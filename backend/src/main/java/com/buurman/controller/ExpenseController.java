@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +43,6 @@ public class ExpenseController {
     @Operation(summary = "Create expense", description = "Record a new property expense (Admin/Editor)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ExpenseResponse createExpense(
             @Valid @RequestBody CreateExpenseRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -84,7 +82,6 @@ public class ExpenseController {
 
     @Operation(summary = "Update expense", description = "Update expense information (Admin/Editor)")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ExpenseResponse updateExpense(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateExpenseRequest request,
@@ -95,7 +92,6 @@ public class ExpenseController {
     @Operation(summary = "Delete expense", description = "Soft delete an expense (Admin only)")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteExpense(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -105,7 +101,6 @@ public class ExpenseController {
     @Operation(summary = "Upload document", description = "Upload a document for an expense (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -135,7 +130,6 @@ public class ExpenseController {
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {

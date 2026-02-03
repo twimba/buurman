@@ -8,6 +8,7 @@ import com.buurman.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,6 +48,7 @@ public class DocumentService {
         this.allowedMimeTypes = Arrays.asList(allowedMimeTypesStr.split(","));
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             MultipartFile file,
             String entityType,
@@ -134,6 +136,7 @@ public class DocumentService {
         return s3StorageService.generatePresignedUrl(document.getFileKey());
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(UUID documentId, UserPrincipal principal) {
         Document document = documentRepository.findByIdAndTeamId(documentId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Document not found"));
@@ -174,6 +177,7 @@ public class DocumentService {
                 .toList();
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse setMainPhoto(UUID photoId, String entityType, UUID entityId, UserPrincipal principal) {
         // Verify the photo exists and belongs to the team
         Document photo = documentRepository.findByIdAndTeamId(photoId, principal.getTeamId())

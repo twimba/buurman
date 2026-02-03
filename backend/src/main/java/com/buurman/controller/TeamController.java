@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +50,6 @@ public class TeamController {
     @Operation(summary = "Create invitation", description = "Invite new member to team (Admin only)")
     @PostMapping("/{teamId}/invitations")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public InvitationResponse createInvitation(@PathVariable UUID teamId,
                                                @Valid @RequestBody CreateInvitationRequest request,
                                                @AuthenticationPrincipal UserPrincipal principal) {
@@ -61,7 +59,6 @@ public class TeamController {
     @Operation(summary = "Remove team member", description = "Remove member from team (Admin only)")
     @DeleteMapping("/{teamId}/members/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void removeMember(@PathVariable UUID teamId,
                             @PathVariable UUID memberId,
                             @AuthenticationPrincipal UserPrincipal principal) {
@@ -70,7 +67,6 @@ public class TeamController {
 
     @Operation(summary = "Update member role", description = "Change member's role (Admin only)")
     @PutMapping("/{teamId}/members/{memberId}/role")
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamMemberResponse updateMemberRole(@PathVariable UUID teamId,
                                               @PathVariable UUID memberId,
                                               @Valid @RequestBody UpdateMemberRoleRequest request,
@@ -80,7 +76,6 @@ public class TeamController {
 
     @Operation(summary = "Update team", description = "Update team name (Admin only)")
     @PutMapping("/{teamId}")
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamResponse updateTeam(@PathVariable UUID teamId,
                                    @Valid @RequestBody UpdateTeamRequest request,
                                    @AuthenticationPrincipal UserPrincipal principal) {
@@ -89,7 +84,6 @@ public class TeamController {
 
     @Operation(summary = "Update team settings", description = "Update team configuration settings (Admin only)")
     @PutMapping("/{teamId}/settings")
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public TeamResponse updateTeamSettings(@PathVariable UUID teamId,
                                           @Valid @RequestBody UpdateTeamSettingsRequest request,
                                           @AuthenticationPrincipal UserPrincipal principal) {

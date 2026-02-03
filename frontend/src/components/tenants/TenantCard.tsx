@@ -12,7 +12,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
   return (
     <div
-      className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
       onClick={() => navigate(`/tenants/${tenant.id}`)}
     >
       {/* Tenant Name with Avatar */}
@@ -24,21 +24,23 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           size="md"
         />
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {tenant.firstName} {tenant.lastName}
           </h3>
-          <p className="text-sm text-gray-500">#{tenant.identifier}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            #{tenant.identifier}
+          </p>
         </div>
       </div>
 
       {/* Contact Info */}
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-gray-600">
+        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
           <Mail className="h-4 w-4" />
           <span className="text-sm">{tenant.email}</span>
         </div>
         {tenant.phone && (
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <Phone className="h-4 w-4" />
             <span className="text-sm">{tenant.phone}</span>
           </div>
@@ -47,14 +49,16 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
       {/* Current Property */}
       {tenant.currentProperty ? (
-        <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded">
+        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200 px-3 py-2 rounded">
           <Home className="h-4 w-4" />
           <span className="text-sm font-medium">
             {tenant.currentProperty.street}, {tenant.currentProperty.city}
           </span>
         </div>
       ) : (
-        <div className="text-sm text-gray-400 italic">No property assigned</div>
+        <div className="text-sm text-gray-400 dark:text-gray-500 italic">
+          No property assigned
+        </div>
       )}
     </div>
   );

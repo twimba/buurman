@@ -5,7 +5,10 @@ import com.buurman.mapper.ContractRecordMapper;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import org.jooq.Record;
+
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -164,6 +167,40 @@ public class ContractRepository {
         }
 
         return contract;
+    }
+
+    public List<Contract> findActiveByTeamId(UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Record> findActiveContractIncomeByTeamId(UUID teamId) {
+        return dsl.select(
+                        CONTRACTS.RENT_AMOUNT,
+                        CONTRACTS.CURRENCY,
+                        CONTRACTS.PAYMENT_FREQUENCY
+                )
+                .from(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch()
+                .stream().map(r -> (Record) r).toList();
+    }
+
+    public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId)
+                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.END_DATE.isNotNull())
+                        .and(CONTRACTS.END_DATE.le(beforeDate))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(mapper::toDomain);
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

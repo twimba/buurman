@@ -106,17 +106,19 @@ const LoginPage: React.FC = () => {
             <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Buurman
             </h1>
-            <p className="text-gray-600 mt-2 text-center">
+            <p className="text-gray-600 dark:text-gray-400 mt-2 text-center">
               Property management for small landlords
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 lg:p-10">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                 Welcome back
               </h2>
-              <p className="text-gray-600">Sign in to manage your properties</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                Sign in to manage your properties
+              </p>
             </div>
 
             <button
@@ -128,7 +130,7 @@ const LoginPage: React.FC = () => {
             </button>
 
             <div className="mt-8 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Don&apos;t have an account?{' '}
                 <a
                   href="/register"
@@ -140,8 +142,8 @@ const LoginPage: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 Secure authentication
               </p>
             </div>
@@ -149,7 +151,7 @@ const LoginPage: React.FC = () => {
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Need help?{' '}
               <a href="#" className="text-blue-600 hover:underline">
                 Contact support

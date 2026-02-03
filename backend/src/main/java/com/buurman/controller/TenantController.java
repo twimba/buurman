@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,7 +52,6 @@ public class TenantController {
     @Operation(summary = "Create tenant", description = "Create a new tenant (Admin/Editor)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse createTenant(
             @Valid @RequestBody CreateTenantRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -80,7 +79,6 @@ public class TenantController {
 
     @Operation(summary = "Update tenant", description = "Update tenant information (Admin/Editor)")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse updateTenant(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTenantRequest request,
@@ -91,7 +89,6 @@ public class TenantController {
     @Operation(summary = "Delete tenant", description = "Soft delete a tenant (Admin only)")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteTenant(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -100,7 +97,6 @@ public class TenantController {
 
     @Operation(summary = "Link tenant to property", description = "Assign tenant to a property (Admin/Editor)")
     @PostMapping("/{id}/link-property")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse linkTenantToProperty(
             @PathVariable UUID id,
             @Valid @RequestBody LinkTenantToPropertyRequest request,
@@ -110,7 +106,6 @@ public class TenantController {
 
     @Operation(summary = "Unlink tenant from property", description = "Remove tenant from current property (Admin/Editor)")
     @PostMapping("/{id}/unlink-property")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse unlinkTenantFromProperty(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -136,7 +131,6 @@ public class TenantController {
     @Operation(summary = "Upload document", description = "Upload a document for a tenant (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -166,7 +160,6 @@ public class TenantController {
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -184,7 +177,6 @@ public class TenantController {
     @Operation(summary = "Upload photo", description = "Upload a photo for a tenant (Admin/Editor)")
     @PostMapping("/{id}/photos")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadPhoto(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -196,7 +188,6 @@ public class TenantController {
 
     @Operation(summary = "Set main photo", description = "Set a photo as the main photo for a tenant (Admin/Editor)")
     @PutMapping("/{id}/photos/{photoId}/set-main")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse setMainPhoto(
             @PathVariable UUID id,
             @PathVariable UUID photoId,
@@ -207,7 +198,6 @@ public class TenantController {
     @Operation(summary = "Create address", description = "Create a new address for a tenant (Admin/Editor)")
     @PostMapping("/{tenantId}/addresses")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantAddressResponse createAddress(
             @PathVariable UUID tenantId,
             @Valid @RequestBody CreateTenantAddressRequest request,
@@ -234,7 +224,6 @@ public class TenantController {
 
     @Operation(summary = "Update address", description = "Update an existing address (Admin/Editor)")
     @PutMapping("/{tenantId}/addresses/{addressId}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantAddressResponse updateAddress(
             @PathVariable UUID tenantId,
             @PathVariable UUID addressId,
@@ -246,7 +235,6 @@ public class TenantController {
     @Operation(summary = "Delete address", description = "Soft delete an address (Admin/Editor)")
     @DeleteMapping("/{tenantId}/addresses/{addressId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteAddress(
             @PathVariable UUID tenantId,
             @PathVariable UUID addressId,

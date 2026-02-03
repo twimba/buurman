@@ -95,7 +95,9 @@ export const PhotoGallery = ({
     <div className="space-y-4">
       {/* Upload Button */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900">Photos</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Photos
+        </h3>
         {!readOnly && (
           <label className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
@@ -123,7 +125,7 @@ export const PhotoGallery = ({
               }}
             >
               {/* Photo */}
-              <div className="aspect-square bg-gray-100">
+              <div className="aspect-square bg-gray-100 dark:bg-gray-700">
                 <img
                   src={photo.downloadUrl || PLACEHOLDER_IMAGE}
                   alt={photo.title || photo.fileName}
@@ -151,7 +153,7 @@ export const PhotoGallery = ({
                   {!photo.isMainPhoto && (
                     <button
                       onClick={() => onSetMain(photo.id)}
-                      className="bg-white text-gray-900 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       title="Set as main photo"
                       disabled={isUploading || isDeleting}
                     >
@@ -171,7 +173,7 @@ export const PhotoGallery = ({
 
               {/* Title */}
               {photo.title && (
-                <div className="p-2 bg-white text-sm text-gray-700 truncate">
+                <div className="p-2 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 truncate">
                   {photo.title}
                 </div>
               )}
@@ -179,10 +181,10 @@ export const PhotoGallery = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <Upload className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No photos yet</p>
-          <p className="text-sm text-gray-400 mt-1">
+        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <Upload className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-gray-400">No photos yet</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
             Upload photos to showcase this property
           </p>
         </div>
@@ -191,14 +193,14 @@ export const PhotoGallery = ({
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Upload Photo
               </h3>
               <button
                 onClick={handleCancelUpload}
-                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                 disabled={isUploading}
               >
                 <X className="h-5 w-5" />
@@ -219,27 +221,27 @@ export const PhotoGallery = ({
             {/* Form Fields */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Title (optional)
                 </label>
                 <input
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2"
                   placeholder="e.g., Living room"
                   disabled={isUploading}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Notes (optional)
                 </label>
                 <textarea
                   value={uploadNotes}
                   onChange={(e) => setUploadNotes(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded px-3 py-2"
                   placeholder="Additional notes about this photo"
                   rows={3}
                   disabled={isUploading}
@@ -251,7 +253,7 @@ export const PhotoGallery = ({
             <div className="flex gap-2 justify-end mt-6">
               <button
                 onClick={handleCancelUpload}
-                className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors"
+                className="border border-gray-300 dark:border-gray-600 dark:text-gray-300 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 disabled={isUploading}
               >
                 Cancel

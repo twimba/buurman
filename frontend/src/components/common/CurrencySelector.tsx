@@ -75,7 +75,7 @@ export const CurrencySelector = ({
           }
         }}
         disabled={disabled}
-        className="w-full flex items-center justify-between border border-gray-300 rounded px-3 py-2 bg-white hover:border-blue-600 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-800 hover:border-blue-600 dark:hover:border-blue-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
       >
         <span className="text-sm">
           {selectedCurrency
@@ -83,21 +83,21 @@ export const CurrencySelector = ({
             : 'Select currency'}
         </span>
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-96 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg dark:shadow-gray-900 max-h-96 overflow-hidden">
           {/* Search input */}
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-2 border-b border-gray-200 dark:border-gray-700">
             <input
               ref={inputRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search currencies..."
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
             />
           </div>
 
@@ -106,7 +106,7 @@ export const CurrencySelector = ({
             {/* Top currencies */}
             {filteredTopCurrencies.length > 0 && (
               <div>
-                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 sticky top-0">
                   Common
                 </div>
                 {filteredTopCurrencies.map((currency) => (
@@ -114,8 +114,10 @@ export const CurrencySelector = ({
                     key={currency.code}
                     type="button"
                     onClick={() => handleSelect(currency.code)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${
-                      currency.code === value ? 'bg-blue-100' : ''
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+                      currency.code === value
+                        ? 'bg-blue-100 dark:bg-blue-900/30'
+                        : ''
                     }`}
                   >
                     {formatCurrency(currency.code)}
@@ -127,13 +129,13 @@ export const CurrencySelector = ({
             {/* Divider */}
             {filteredTopCurrencies.length > 0 &&
               filteredOtherCurrencies.length > 0 && (
-                <div className="border-t border-gray-200 my-1" />
+                <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
               )}
 
             {/* Other currencies */}
             {filteredOtherCurrencies.length > 0 && (
               <div>
-                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 sticky top-0">
                   Other Currencies
                 </div>
                 {filteredOtherCurrencies.map((currency) => (
@@ -141,8 +143,10 @@ export const CurrencySelector = ({
                     key={currency.code}
                     type="button"
                     onClick={() => handleSelect(currency.code)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 ${
-                      currency.code === value ? 'bg-blue-100' : ''
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+                      currency.code === value
+                        ? 'bg-blue-100 dark:bg-blue-900/30'
+                        : ''
                     }`}
                   >
                     {formatCurrency(currency.code)}
@@ -154,7 +158,7 @@ export const CurrencySelector = ({
             {/* No results */}
             {filteredTopCurrencies.length === 0 &&
               filteredOtherCurrencies.length === 0 && (
-                <div className="px-3 py-8 text-center text-sm text-gray-500">
+                <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                   No currencies found
                 </div>
               )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { User, Mail, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
 import {
   useCurrentUser,
@@ -17,16 +17,16 @@ export const UserProfileSection = () => {
     avatarUrl: null as string | null,
   });
 
-  useEffect(() => {
-    if (currentUser) {
-      setUserData({
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        email: currentUser.email || '',
-        avatarUrl: null,
-      });
-    }
-  }, [currentUser]);
+  const [lastSyncedUser, setLastSyncedUser] = useState(currentUser);
+  if (currentUser && currentUser !== lastSyncedUser) {
+    setLastSyncedUser(currentUser);
+    setUserData({
+      firstName: currentUser.firstName || '',
+      lastName: currentUser.lastName || '',
+      email: currentUser.email || '',
+      avatarUrl: null,
+    });
+  }
 
   const handleStartEdit = () => {
     setIsEditing(true);
@@ -75,21 +75,21 @@ export const UserProfileSection = () => {
   return (
     <div className="space-y-6">
       {/* Profile Information Card */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Profile Information
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Update your personal information and avatar
               </p>
             </div>
             {!isEditing && (
               <button
                 onClick={handleStartEdit}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
               >
                 Edit Profile
               </button>
@@ -99,7 +99,7 @@ export const UserProfileSection = () => {
 
         <div className="p-6">
           {/* Avatar Section */}
-          <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200">
+          <div className="flex items-center gap-6 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
             <div className="relative">
               {userData.avatarUrl ? (
                 <img
@@ -108,14 +108,14 @@ export const UserProfileSection = () => {
                   className="h-24 w-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="h-24 w-24 rounded-full bg-blue-100 flex items-center justify-center">
-                  <User className="h-12 w-12 text-blue-600" />
+                <div className="h-24 w-24 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                  <User className="h-12 w-12 text-blue-600 dark:text-blue-400" />
                 </div>
               )}
               {isEditing && (
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors"
+                  className="absolute bottom-0 right-0 h-8 w-8 bg-blue-600 dark:bg-blue-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                 >
                   <Camera className="h-4 w-4 text-white" />
                   <input
@@ -129,10 +129,12 @@ export const UserProfileSection = () => {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {userData.firstName} {userData.lastName}
               </h3>
-              <p className="text-sm text-gray-600">{userData.email}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {userData.email}
+              </p>
             </div>
           </div>
 
@@ -140,7 +142,7 @@ export const UserProfileSection = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   First Name
                 </label>
                 <input
@@ -150,11 +152,11 @@ export const UserProfileSection = () => {
                     setUserData({ ...userData, firstName: e.target.value })
                   }
                   disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Last Name
                 </label>
                 <input
@@ -164,35 +166,35 @@ export const UserProfileSection = () => {
                     setUserData({ ...userData, lastName: e.target.value })
                   }
                   disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-600" />
                 <input
                   type="email"
                   value={userData.email}
                   disabled
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                 Email address cannot be changed. Contact support if you need to
                 update it.
               </p>
             </div>
 
             {isEditing && (
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={handleCancelEdit}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                 >
                   <X className="h-4 w-4" />
                   Cancel
@@ -216,14 +218,14 @@ export const UserProfileSection = () => {
       </div>
 
       {/* Security Settings Card */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Security Settings
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Manage your password and security preferences
               </p>
             </div>
@@ -231,12 +233,14 @@ export const UserProfileSection = () => {
         </div>
 
         <div className="p-6">
-          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div className="flex items-center gap-3">
-              <Lock className="h-5 w-5 text-gray-600" />
+              <Lock className="h-5 w-5 text-gray-600 dark:text-gray-400" />
               <div>
-                <p className="font-medium text-gray-900">Password</p>
-                <p className="text-sm text-gray-600">
+                <p className="font-medium text-gray-900 dark:text-gray-100">
+                  Password
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Password changes are managed through your identity provider
                 </p>
               </div>

@@ -10,7 +10,7 @@ import {
   Search,
   Filter,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface Invoice {
   id: string;
@@ -25,6 +25,7 @@ interface Invoice {
 }
 
 export const PaymentHistorySection = () => {
+  const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined
@@ -146,42 +147,50 @@ export const PaymentHistorySection = () => {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Next Payment</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Next Payment
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {nextPayment.currency} {nextPayment.amount.toFixed(2)}
               </p>
-              <p className="text-xs text-gray-600 mt-1">
-                {format(new Date(nextPayment.date), 'MMM d, yyyy')}
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                {formatDate(nextPayment.date)}
               </p>
             </div>
             <Calendar className="h-12 w-12 text-blue-600" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Paid</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Paid
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 EUR {totalPaid.toFixed(2)}
               </p>
-              <p className="text-xs text-gray-600 mt-1">All time</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                All time
+              </p>
             </div>
             <CreditCard className="h-12 w-12 text-green-600" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Invoices
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                 {invoices.length}
               </p>
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                 {invoices.filter((i) => i.status === 'paid').length} paid
               </p>
             </div>
@@ -191,32 +200,32 @@ export const PaymentHistorySection = () => {
       </div>
 
       {/* Payment History Table */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             Payment History
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             View and download your invoices
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="p-6 border-b border-gray-200 space-y-4">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by invoice number, plan, or payment method..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900 text-sm">
+            <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
               Status Filter
             </h3>
           </div>
@@ -228,7 +237,7 @@ export const PaymentHistorySection = () => {
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   statusFilter === filter.value
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {filter.label}
@@ -239,55 +248,58 @@ export const PaymentHistorySection = () => {
 
         {/* Invoices List */}
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Invoice
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Plan
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Payment Method
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredInvoices.map((invoice) => {
                 const StatusIcon = statusConfig[invoice.status].icon;
                 return (
-                  <tr key={invoice.id} className="hover:bg-gray-50">
+                  <tr
+                    key={invoice.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Receipt className="h-4 w-4 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">
+                        <Receipt className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {invoice.invoiceNumber}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {format(new Date(invoice.date), 'MMM d, yyyy')}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                      {formatDate(invoice.date)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {invoice.plan}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                       {invoice.paymentMethod}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {invoice.currency} {invoice.amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -308,8 +320,8 @@ export const PaymentHistorySection = () => {
                         disabled={invoice.status !== 'paid'}
                         className={`flex items-center gap-1 ${
                           invoice.status === 'paid'
-                            ? 'text-blue-600 hover:text-blue-800'
-                            : 'text-gray-400 cursor-not-allowed'
+                            ? 'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300'
+                            : 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
                         }`}
                       >
                         <Download className="h-4 w-4" />
@@ -325,11 +337,11 @@ export const PaymentHistorySection = () => {
 
         {filteredInvoices.length === 0 && (
           <div className="p-12 text-center">
-            <Receipt className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <Receipt className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               No invoices found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               {statusFilter || searchTerm
                 ? 'Try adjusting your filters or search'
                 : 'Your payment history will appear here'}

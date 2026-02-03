@@ -53,6 +53,10 @@ export const useCreateExpense = () => {
         queryKey: ['property', newExpense.property.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
+      queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
       showToast('Expense created successfully', 'success');
     },
     onError: (error) => {
@@ -74,6 +78,10 @@ export const useUpdateExpense = (id: string) => {
         queryKey: ['property', updatedExpense.property.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
+      queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
       showToast('Expense updated successfully', 'success');
     },
     onError: (error) => {
@@ -91,6 +99,10 @@ export const useDeleteExpense = () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
+      queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
       showToast('Expense deleted successfully', 'success');
     },
     onError: (error) => {

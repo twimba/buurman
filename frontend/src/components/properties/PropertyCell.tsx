@@ -61,7 +61,7 @@ export const PropertyCell = ({
         p-2
         -m-2
         rounded-lg
-        hover:bg-blue-50
+        hover:bg-blue-50 dark:hover:bg-gray-700
         transition-colors
         focus:outline-none
         focus:ring-2
@@ -80,13 +80,13 @@ export const PropertyCell = ({
         {/* Content */}
         <div className="min-w-0 flex-1">
           {/* Street */}
-          <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-            <PropertyIcon className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <PropertyIcon className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
             <span className="truncate">{street}</span>
           </div>
 
           {/* City & Postal */}
-          <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
+          <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500 dark:text-gray-400">
             <MapPin className="h-3 w-3 flex-shrink-0" />
             <span className="truncate">
               {city}, {postalCode}
@@ -94,7 +94,7 @@ export const PropertyCell = ({
           </div>
 
           {/* Property ID */}
-          <div className="text-[10px] text-gray-400 mt-0.5 font-mono">
+          <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono">
             #{propertyIdentifier}
           </div>
         </div>

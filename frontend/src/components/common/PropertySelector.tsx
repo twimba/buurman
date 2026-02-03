@@ -66,7 +66,7 @@ export const PropertySelector = ({
           }
         }}
         disabled={disabled}
-        className="w-full flex items-center justify-between border border-gray-300 rounded px-3 py-2 bg-white hover:border-blue-600 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 disabled:cursor-not-allowed text-left"
+        className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 hover:border-blue-600 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-left text-gray-900 dark:text-gray-100"
       >
         {selectedProperty ? (
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -77,40 +77,42 @@ export const PropertySelector = ({
                 className="w-8 h-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <Home className="h-4 w-4 text-gray-400" />
+              <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+                <Home className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">
                 {selectedProperty.street}
               </div>
-              <div className="text-xs text-gray-500 truncate">
+              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                 {selectedProperty.city} • #{selectedProperty.identifier}
               </div>
             </div>
           </div>
         ) : (
-          <span className="text-sm text-gray-500">Select a property</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Select a property
+          </span>
         )}
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-96 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg dark:shadow-gray-900 max-h-96 overflow-hidden">
           {/* Search input */}
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-2 border-b border-gray-200 dark:border-gray-600">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
               <input
                 ref={inputRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search properties..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
               />
             </div>
           </div>
@@ -118,11 +120,11 @@ export const PropertySelector = ({
           {/* Property list */}
           <div className="overflow-y-auto max-h-80">
             {isLoading ? (
-              <div className="px-3 py-8 text-center text-sm text-gray-500">
+              <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                 Loading properties...
               </div>
             ) : filteredProperties.length === 0 ? (
-              <div className="px-3 py-8 text-center text-sm text-gray-500">
+              <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                 No properties found
               </div>
             ) : (
@@ -131,8 +133,8 @@ export const PropertySelector = ({
                   key={property.id}
                   type="button"
                   onClick={() => handleSelect(property.id)}
-                  className={`w-full text-left px-3 py-3 hover:bg-blue-50 flex items-center gap-3 ${
-                    property.id === value ? 'bg-blue-100' : ''
+                  className={`w-full text-left px-3 py-3 hover:bg-blue-50 dark:hover:bg-gray-600 flex items-center gap-3 ${
+                    property.id === value ? 'bg-blue-100 dark:bg-blue-900' : ''
                   }`}
                 >
                   {property.mainPhotoUrl ? (
@@ -142,18 +144,18 @@ export const PropertySelector = ({
                       className="w-10 h-10 rounded object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                      <Home className="h-5 w-5 text-gray-400" />
+                    <div className="w-10 h-10 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+                      <Home className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {property.street}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {property.city}, {property.postalCode}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-400 dark:text-gray-500">
                       #{property.identifier}
                     </div>
                   </div>

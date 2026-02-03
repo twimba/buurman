@@ -54,6 +54,8 @@ export const useCreatePayment = () => {
         queryKey: ['contract', newPayment.contract.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment created successfully', 'success');
     },
     onError: (error) => {
@@ -75,6 +77,8 @@ export const useUpdatePayment = (id: string) => {
         queryKey: ['contract', updatedPayment.contract.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment updated successfully', 'success');
     },
     onError: (error) => {
@@ -92,6 +96,8 @@ export const useDeletePayment = () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment deleted successfully', 'success');
     },
     onError: (error) => {
@@ -115,6 +121,8 @@ export const useMarkPaymentAsPaid = () => {
         queryKey: ['contract', updatedPayment.contract.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment marked as paid successfully', 'success');
     },
     onError: (error) => {
@@ -133,6 +141,8 @@ export const useBulkGeneratePayments = () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast(
         `Generated ${generatedPayments.length} payment(s) successfully`,
         'success'

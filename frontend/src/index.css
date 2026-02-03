@@ -50,6 +50,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Dark mode base styles */
+.dark body,
+.dark {
+  color-scheme: dark;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -67,4 +73,29 @@ body {
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+/* Dark mode form element overrides */
+.dark select,
+.dark input[type='text'],
+.dark input[type='number'],
+.dark input[type='email'],
+.dark input[type='password'],
+.dark input[type='date'],
+.dark input[type='search'],
+.dark textarea {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark select:focus,
+.dark input:focus,
+.dark textarea:focus {
+  border-color: #3b82f6;
+}
+
+.dark select option {
+  background-color: #1f2937;
+  color: #f3f4f6;
 }

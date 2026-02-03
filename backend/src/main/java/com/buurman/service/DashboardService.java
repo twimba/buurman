@@ -3,8 +3,10 @@ package com.buurman.service;
 import com.buurman.domain.Property;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.repository.AuditLogRepository;
+import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,12 +21,14 @@ import static com.buurman.jooq.generated.Tables.*;
 @Service
 public class DashboardService {
 
-    private final DSLContext dsl;
+    private final AuditLogRepository auditLogRepository;
     private final PropertyRepository propertyRepository;
+    private final ContractRepository contractRepository;
 
-    public DashboardService(DSLContext dsl, PropertyRepository propertyRepository) {
-        this.dsl = dsl;
+    public DashboardService(AuditLogRepository auditLogRepository, PropertyRepository propertyRepository, ContractRepository contractRepository) {
+        this.auditLogRepository = auditLogRepository;
         this.propertyRepository = propertyRepository;
+        this.contractRepository = contractRepository;
     }
 
     public DashboardStatsResponse getDashboardStats(UUID teamId) {
@@ -67,21 +71,8 @@ public class DashboardService {
     }
 
     public List<RecentActivityResponse> getRecentActivities(UUID teamId, int limit) {
-        return dsl.select(
-                        AUDIT_LOG.ID,
-                        AUDIT_LOG.ENTITY_TYPE,
-                        AUDIT_LOG.ENTITY_ID,
-                        AUDIT_LOG.ACTION,
-                        AUDIT_LOG.TIMESTAMP,
-                        USERS.FIRST_NAME,
-                        USERS.LAST_NAME
-                )
-                .from(AUDIT_LOG)
-                .leftJoin(USERS).on(AUDIT_LOG.USER_ID.eq(USERS.ID))
-                .where(AUDIT_LOG.TEAM_ID.eq(teamId))
-                .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-                .limit(limit)
-                .fetch()
+        return auditLogRepository.findRecentByTeamId(teamId, limit)
+                .stream()
                 .map(record -> {
                     String entityType = record.get(AUDIT_LOG.ENTITY_TYPE);
                     UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
@@ -93,7 +84,8 @@ public class DashboardService {
                             : "Unknown";
 
                     // Get entity name based on type
-                    String entityName = getEntityName(entityType, entityId, teamId);
+                    String entityName = auditLogRepository.findEntityName(entityType, entityId, teamId)
+                            .orElse("Unknown");
 
                     // Build description
                     String description = buildActivityDescription(action, entityType, entityName, userName);
@@ -108,43 +100,8 @@ public class DashboardService {
                             record.get(AUDIT_LOG.TIMESTAMP).toInstant(java.time.ZoneOffset.UTC),
                             description
                     );
-                });
-    }
-
-    private String getEntityName(String entityType, UUID entityId, UUID teamId) {
-        return switch (entityType.toLowerCase()) {
-            case "property" -> dsl.select(PROPERTIES.STREET, PROPERTIES.CITY)
-                    .from(PROPERTIES)
-                    .where(PROPERTIES.ID.eq(entityId)
-                            .and(PROPERTIES.TEAM_ID.eq(teamId)))
-                    .fetchOptional()
-                    .map(r -> r.get(PROPERTIES.STREET) + ", " + r.get(PROPERTIES.CITY))
-                    .orElse("Unknown Property");
-            case "tenant" -> dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
-                    .from(TENANTS)
-                    .where(TENANTS.ID.eq(entityId)
-                            .and(TENANTS.TEAM_ID.eq(teamId)))
-                    .fetchOptional()
-                    .map(r -> {
-                        String firstName = r.get(TENANTS.FIRST_NAME);
-                        String lastName = r.get(TENANTS.LAST_NAME);
-                        return lastName != null ? firstName + " " + lastName : firstName;
-                    })
-                    .orElse("Unknown Tenant");
-            case "team" -> dsl.select(TEAMS.NAME)
-                    .from(TEAMS)
-                    .where(TEAMS.ID.eq(entityId))
-                    .fetchOptional()
-                    .map(r -> r.get(TEAMS.NAME))
-                    .orElse("Unknown Team");
-            case "user" -> dsl.select(USERS.FIRST_NAME, USERS.LAST_NAME)
-                    .from(USERS)
-                    .where(USERS.ID.eq(entityId))
-                    .fetchOptional()
-                    .map(r -> r.get(USERS.FIRST_NAME) + " " + r.get(USERS.LAST_NAME))
-                    .orElse("Unknown User");
-            default -> "Unknown";
-        };
+                })
+                .toList();
     }
 
     private String buildActivityDescription(String action, String entityType, String entityName, String userName) {
@@ -160,17 +117,7 @@ public class DashboardService {
     }
 
     private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
-        // Get all active contracts
-        var activeContracts = dsl.select(
-                        CONTRACTS.RENT_AMOUNT,
-                        CONTRACTS.CURRENCY,
-                        CONTRACTS.PAYMENT_FREQUENCY
-                )
-                .from(CONTRACTS)
-                .where(CONTRACTS.TEAM_ID.eq(teamId)
-                        .and(CONTRACTS.STATUS.eq("ACTIVE"))
-                        .and(CONTRACTS.DELETED_AT.isNull()))
-                .fetch();
+        List<Record> activeContracts = contractRepository.findActiveContractIncomeByTeamId(teamId);
 
         if (activeContracts.isEmpty()) {
             return new DashboardStatsResponse.MonthlyIncome(BigDecimal.ZERO, "EUR");
@@ -196,7 +143,6 @@ public class DashboardService {
         }
 
         // For simplicity, return the first currency (typically EUR)
-        // In a real scenario, you might want to convert all to a base currency
         Map.Entry<String, BigDecimal> primaryIncome = incomePerCurrency.entrySet().iterator().next();
 
         return new DashboardStatsResponse.MonthlyIncome(

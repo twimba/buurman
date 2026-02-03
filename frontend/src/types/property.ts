@@ -85,7 +85,7 @@ export interface AuditLogEntry {
   userName: string;
   timestamp: string;
   description: string;
-  changedFields?: Record<string, any>;
-  oldValues?: Record<string, any>;
-  newValues?: Record<string, any>;
+  changedFields?: Record<string, unknown>;
+  oldValues?: Record<string, unknown>;
+  newValues?: Record<string, unknown>;
 }

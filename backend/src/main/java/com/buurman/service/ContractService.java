@@ -19,6 +19,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +63,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse createContract(CreateContractRequest request, UserPrincipal principal) {
         // Validate property exists and belongs to team
         Property property = propertyRepository.findByIdAndTeamId(request.propertyId(), principal.getTeamId())
@@ -164,6 +166,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse updateContract(UUID contractId, UpdateContractRequest request, UserPrincipal principal) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
@@ -279,6 +282,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteContract(UUID contractId, UserPrincipal principal) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
@@ -302,6 +306,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse changeContractStatus(UUID contractId, ChangeContractStatusRequest request, UserPrincipal principal) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
@@ -376,6 +381,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse reopenContract(UUID contractId, UserPrincipal principal) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
@@ -429,6 +435,7 @@ public class ContractService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse duplicateContract(UUID contractId, UserPrincipal principal) {
         Contract sourceContract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));

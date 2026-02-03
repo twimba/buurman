@@ -22,6 +22,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,7 @@ public class TenantService {
         this.s3StorageService = s3StorageService;
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
         // Check if email already exists
         tenantRepository.findByEmailAndTeamId(request.email(), principal.getTeamId())
@@ -116,6 +118,7 @@ public class TenantService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse updateTenant(UUID tenantId, UpdateTenantRequest request, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdAndTeamId(tenantId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
@@ -152,6 +155,7 @@ public class TenantService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteTenant(UUID tenantId, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdAndTeamId(tenantId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
@@ -175,6 +179,7 @@ public class TenantService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse linkTenantToProperty(UUID tenantId, LinkTenantToPropertyRequest request, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdAndTeamId(tenantId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
@@ -224,6 +229,7 @@ public class TenantService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse unlinkTenantFromProperty(UUID tenantId, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdAndTeamId(tenantId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));

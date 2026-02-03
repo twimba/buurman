@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,7 +50,6 @@ public class ContractController {
     @Operation(summary = "Create contract", description = "Create a new rental agreement (Admin/Editor)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse createContract(
             @Valid @RequestBody CreateContractRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -95,7 +94,6 @@ public class ContractController {
 
     @Operation(summary = "Update contract", description = "Update contract information (Admin/Editor)")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse updateContract(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateContractRequest request,
@@ -106,7 +104,6 @@ public class ContractController {
     @Operation(summary = "Delete contract", description = "Soft delete a contract (Admin only)")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteContract(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -115,7 +112,6 @@ public class ContractController {
 
     @Operation(summary = "Change contract status", description = "Change the status of a contract (Admin/Editor)")
     @PostMapping("/{id}/change-status")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse changeContractStatus(
             @PathVariable UUID id,
             @Valid @RequestBody ChangeContractStatusRequest request,
@@ -125,7 +121,6 @@ public class ContractController {
 
     @Operation(summary = "Reopen contract", description = "Reopen a terminated or expired contract back to draft status (Admin/Editor)")
     @PostMapping("/{id}/reopen")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse reopenContract(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -135,7 +130,6 @@ public class ContractController {
     @Operation(summary = "Duplicate contract", description = "Create a new contract with the same data in draft status (Admin/Editor)")
     @PostMapping("/{id}/duplicate")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse duplicateContract(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -145,7 +139,6 @@ public class ContractController {
     @Operation(summary = "Upload document", description = "Upload a document for a contract (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -175,7 +168,6 @@ public class ContractController {
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -192,7 +184,6 @@ public class ContractController {
 
     @Operation(summary = "Generate payments", description = "Manually generate N future payments for a contract (Admin/Editor)")
     @PostMapping("/{id}/generate-payments")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public Map<String, Object> generatePayments(
             @PathVariable UUID id,
             @Valid @RequestBody GeneratePaymentsRequest request,

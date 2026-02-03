@@ -41,7 +41,8 @@ import {
   Plus,
   Download,
 } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 
@@ -49,6 +50,7 @@ export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'payments' | 'documents' | 'history'
   >('overview');
@@ -114,7 +116,7 @@ export const ContractDetailPage = () => {
 
     // Apply sorting
     filtered.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       switch (paymentsSortField) {
         case 'dueDate':
@@ -245,7 +247,7 @@ export const ContractDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
           title={`Contract #${contract.identifier}`}
@@ -348,7 +350,7 @@ export const ContractDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'overview'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Overview
@@ -358,7 +360,7 @@ export const ContractDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'payments'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <DollarSign className="h-4 w-4" />
@@ -369,7 +371,7 @@ export const ContractDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -380,7 +382,7 @@ export const ContractDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               History {auditLog.length > 0 && `(${auditLog.length})`}
@@ -392,7 +394,7 @@ export const ContractDetailPage = () => {
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Property and Tenant */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Contract Parties
               </h2>
@@ -433,7 +435,7 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Contract Dates */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Important Dates
               </h2>
@@ -443,7 +445,7 @@ export const ContractDetailPage = () => {
                   <div>
                     <p className="text-sm text-gray-500">Start Date</p>
                     <p className="font-medium text-gray-900">
-                      {format(new Date(contract.startDate), 'MMMM d, yyyy')}
+                      {formatDate(contract.startDate)}
                     </p>
                   </div>
                 </div>
@@ -453,7 +455,7 @@ export const ContractDetailPage = () => {
                     <div>
                       <p className="text-sm text-gray-500">End Date</p>
                       <p className="font-medium text-gray-900">
-                        {format(new Date(contract.endDate), 'MMMM d, yyyy')}
+                        {formatDate(contract.endDate)}
                       </p>
                     </div>
                   </div>
@@ -464,7 +466,7 @@ export const ContractDetailPage = () => {
                     <div>
                       <p className="text-sm text-gray-500">Signed Date</p>
                       <p className="font-medium text-gray-900">
-                        {format(new Date(contract.signedDate), 'MMMM d, yyyy')}
+                        {formatDate(contract.signedDate)}
                       </p>
                     </div>
                   </div>
@@ -473,7 +475,7 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Financial Terms */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Financial Terms
               </h2>
@@ -523,7 +525,7 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Additional Terms */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Additional Terms
               </h2>
@@ -563,7 +565,7 @@ export const ContractDetailPage = () => {
 
             {/* Terms and Conditions */}
             {contract.termsAndConditions && (
-              <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Terms and Conditions
                 </h2>
@@ -573,7 +575,7 @@ export const ContractDetailPage = () => {
 
             {/* Notes */}
             {contract.notes && (
-              <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Notes
                 </h2>
@@ -584,7 +586,7 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'payments' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-gray-900">
                 Payments ({filteredAndSortedPayments.length})
@@ -736,7 +738,7 @@ export const ContractDetailPage = () => {
                               #{payment.identifier}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {format(new Date(payment.dueDate), 'MMM d, yyyy')}
+                              {formatDate(payment.dueDate)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                               {payment.currency} {payment.amount.toFixed(2)}
@@ -746,10 +748,7 @@ export const ContractDetailPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {payment.paymentDate
-                                ? format(
-                                    new Date(payment.paymentDate),
-                                    'MMM d, yyyy'
-                                  )
+                                ? formatDate(payment.paymentDate)
                                 : '-'}
                             </td>
                           </tr>
@@ -802,7 +801,7 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'documents' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <DocumentList
               documents={documents}
               onUpload={handleUploadDocument}
@@ -817,7 +816,7 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Contract History
             </h2>

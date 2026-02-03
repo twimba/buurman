@@ -18,10 +18,11 @@ export const useUpdateUserProfile = () => {
   });
 };
 
-export const useUserPreferences = () => {
+export const useUserPreferences = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ['userPreferences'],
     queryFn: usersApi.getUserPreferences,
+    enabled,
   });
 };
 

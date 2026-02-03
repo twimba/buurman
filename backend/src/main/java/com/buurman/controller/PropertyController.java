@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +43,6 @@ public class PropertyController {
     @Operation(summary = "Create property", description = "Create a new property (Admin/Editor)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse createProperty(
             @Valid @RequestBody CreatePropertyRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -69,7 +67,6 @@ public class PropertyController {
 
     @Operation(summary = "Update property", description = "Update property details (Admin/Editor)")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse updateProperty(
             @PathVariable UUID id,
             @Valid @RequestBody UpdatePropertyRequest request,
@@ -80,7 +77,6 @@ public class PropertyController {
     @Operation(summary = "Delete property", description = "Soft delete a property (Admin only)")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteProperty(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -90,7 +86,6 @@ public class PropertyController {
     @Operation(summary = "Upload document", description = "Upload a document for a property (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -120,7 +115,6 @@ public class PropertyController {
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -146,7 +140,6 @@ public class PropertyController {
     @Operation(summary = "Upload photo", description = "Upload a photo for a property (Admin/Editor)")
     @PostMapping("/{id}/photos")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadPhoto(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -158,7 +151,6 @@ public class PropertyController {
 
     @Operation(summary = "Set main photo", description = "Set a photo as the main photo for a property (Admin/Editor)")
     @PutMapping("/{id}/photos/{photoId}/set-main")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse setMainPhoto(
             @PathVariable UUID id,
             @PathVariable UUID photoId,

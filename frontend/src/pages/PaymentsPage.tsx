@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PaymentStatus } from '@/types/payment';
-import { usePayments } from '@/hooks/usePaymentHooks';
+import { usePayments, useOverduePayments } from '@/hooks/usePaymentHooks';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -37,6 +37,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -54,6 +55,7 @@ type SortOrder = 'asc' | 'desc';
 export const PaymentsPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
@@ -67,6 +69,10 @@ export const PaymentsPage = () => {
     isLoading,
     error,
   } = usePayments(statusFilter ? { status: statusFilter } : undefined);
+
+  // Always fetch all payments for metrics (independent of status filter)
+  const { data: allPayments } = usePayments();
+  const { data: overduePaymentsData } = useOverduePayments();
 
   const filteredAndSortedPayments = useMemo(() => {
     if (!payments) return [];
@@ -86,8 +92,8 @@ export const PaymentsPage = () => {
     }
 
     filtered.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: string | number;
+      let bVal: string | number;
 
       switch (sortField) {
         case 'dueDate':
@@ -124,23 +130,23 @@ export const PaymentsPage = () => {
     return filtered;
   }, [payments, searchTerm, sortField, sortOrder]);
 
-  // Calculate metrics (before conditional returns)
-  const pendingPayments = useMemo(
-    () => payments?.filter((p) => p.status === PaymentStatus.PENDING) || [],
-    [payments]
-  );
+  // Calculate metrics from unfiltered data (independent of status filter)
   const overduePayments = useMemo(
+    () => overduePaymentsData || [],
+    [overduePaymentsData]
+  );
+  const pendingPayments = useMemo(
     () =>
-      payments?.filter(
+      allPayments?.filter(
         (p) =>
           p.status === PaymentStatus.PENDING &&
-          isBefore(parseISO(p.dueDate), new Date())
+          !isBefore(parseISO(p.dueDate), new Date())
       ) || [],
-    [payments]
+    [allPayments]
   );
   const paidPayments = useMemo(
-    () => payments?.filter((p) => p.status === PaymentStatus.PAID) || [],
-    [payments]
+    () => allPayments?.filter((p) => p.status === PaymentStatus.PAID) || [],
+    [allPayments]
   );
 
   const totalPending = useMemo(
@@ -154,7 +160,7 @@ export const PaymentsPage = () => {
 
   // Calculate last 6 months data (before conditional returns)
   const chartData = useMemo(() => {
-    if (!payments) return [];
+    if (!allPayments) return [];
 
     const monthsData = [];
     const now = new Date();
@@ -179,7 +185,7 @@ export const PaymentsPage = () => {
     }
 
     return monthsData;
-  }, [payments, paidPayments]);
+  }, [allPayments, paidPayments]);
 
   const totalPages = Math.ceil(
     filteredAndSortedPayments.length / ITEMS_PER_PAGE
@@ -216,12 +222,17 @@ export const PaymentsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
-            <p className="text-sm text-gray-600 mt-1">
+            <div className="flex items-center gap-3 mb-1">
+              <DollarSign className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Payments
+              </h1>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 ml-11">
               Track rent payments and income
             </p>
           </div>
@@ -236,20 +247,20 @@ export const PaymentsPage = () => {
         </div>
 
         {/* Metrics Dashboard */}
-        {payments && payments.length > 0 && (
+        {allPayments && allPayments.length > 0 && (
           <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Pending Payments */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Pending Payments
                 </h3>
                 <Clock className="h-5 w-5 text-yellow-500" />
               </div>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                 EUR {totalPending.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {pendingPayments.length} payment
                 {pendingPayments.length !== 1 ? 's' : ''}
               </p>
@@ -257,18 +268,18 @@ export const PaymentsPage = () => {
 
             {/* Overdue Payments */}
             <div
-              className={`rounded-lg shadow p-6 transition-colors ${
+              className={`rounded-lg shadow dark:shadow-gray-900 p-6 transition-colors ${
                 overduePayments.length > 0
-                  ? 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200'
-                  : 'bg-white'
+                  ? 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border-2 border-red-200 dark:border-red-800'
+                  : 'bg-white dark:bg-gray-800'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <h3
                   className={`text-sm font-medium ${
                     overduePayments.length > 0
-                      ? 'text-red-700'
-                      : 'text-gray-600'
+                      ? 'text-red-700 dark:text-red-300'
+                      : 'text-gray-600 dark:text-gray-400'
                   }`}
                 >
                   Overdue Payments
@@ -281,22 +292,26 @@ export const PaymentsPage = () => {
               </div>
               {overduePayments.length > 0 ? (
                 <>
-                  <p className="text-3xl font-bold text-red-600">
+                  <p className="text-3xl font-bold text-red-600 dark:text-red-400">
                     EUR {totalOverdue.toFixed(2)}
                   </p>
-                  <p className="text-sm text-red-700 mt-1 font-medium">
+                  <p className="text-sm text-red-700 dark:text-red-300 mt-1 font-medium">
                     {overduePayments.length} payment
                     {overduePayments.length !== 1 ? 's' : ''} past due
                   </p>
-                  <p className="text-xs text-red-600 mt-2">
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-2">
                     ⚠️ Action required: Review overdue payments
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-green-600">EUR 0.00</p>
-                  <p className="text-sm text-gray-600 mt-1">All caught up!</p>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    EUR 0.00
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    All caught up!
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     ✨ No overdue payments. Keep up the great work!
                   </p>
                 </>
@@ -304,9 +319,9 @@ export const PaymentsPage = () => {
             </div>
 
             {/* 6-Month Revenue Chart */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Last 6 Months
                 </h3>
                 <TrendingUp className="h-5 w-5 text-green-500" />
@@ -348,7 +363,7 @@ export const PaymentsPage = () => {
         )}
 
         {/* Search and Filter Bar */}
-        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
+        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -360,14 +375,16 @@ export const PaymentsPage = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2 mb-2">
-            <Filter className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold text-gray-900">Status Filter</h3>
+            <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+              Status Filter
+            </h3>
           </div>
           <div className="flex gap-2 flex-wrap">
             {statusFilters.map((filter) => (
@@ -380,7 +397,7 @@ export const PaymentsPage = () => {
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   statusFilter === filter.value
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {filter.label}
@@ -392,12 +409,12 @@ export const PaymentsPage = () => {
         {/* Payments Table */}
         {filteredAndSortedPayments.length > 0 ? (
           <>
-            <div className="bg-white rounded-lg shadow overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 overflow-hidden mb-4">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('dueDate')}
                     >
                       <div className="flex items-center gap-1">
@@ -445,7 +462,7 @@ export const PaymentsPage = () => {
                       onClick={() => navigate(`/payments/${payment.id}`)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {format(new Date(payment.dueDate), 'MMM d, yyyy')}
+                        {formatDate(payment.dueDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium text-gray-900">

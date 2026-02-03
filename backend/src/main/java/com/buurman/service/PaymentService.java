@@ -24,6 +24,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,6 +79,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse createPayment(CreatePaymentRequest request, UserPrincipal principal) {
         // Validate contract exists and belongs to team
         Contract contract = contractRepository.findByIdAndTeamId(request.contractId(), principal.getTeamId())
@@ -154,6 +156,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse updatePayment(UUID id, UpdatePaymentRequest request, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
@@ -176,6 +179,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse markPaymentAsPaid(UUID id, MarkPaidRequest request, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
@@ -212,6 +216,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deletePayment(UUID id, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
@@ -229,6 +234,7 @@ public class PaymentService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public List<PaymentResponse> bulkGeneratePayments(BulkGeneratePaymentsRequest request, UserPrincipal principal) {
         // Parse the month (YYYY-MM format)
         YearMonth month = YearMonth.parse(request.forMonth());

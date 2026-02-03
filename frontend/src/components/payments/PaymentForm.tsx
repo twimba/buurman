@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, Save } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface PaymentFormProps {
   payment?: PaymentResponse;
@@ -19,27 +20,32 @@ export const PaymentForm = ({
   isLoading,
   contractId,
 }: PaymentFormProps) => {
+  const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [formData, setFormData] = useState<CreatePaymentRequest>({
+  const [formData, setFormData] = useState<
+    CreatePaymentRequest & { paymentDate?: string }
+  >({
     contractId: contractId,
     amount: payment?.amount || 0,
-    currency: payment?.currency || 'EUR',
+    currency: payment?.currency || defaultCurrency || 'EUR',
     dueDate: payment?.dueDate || '',
     notes: payment?.notes || '',
+    paymentDate: payment?.paymentDate || '',
   });
 
-  useEffect(() => {
-    if (payment) {
-      setFormData({
-        contractId: payment.contract.id,
-        amount: payment.amount,
-        currency: payment.currency,
-        dueDate: payment.dueDate,
-        notes: payment.notes || '',
-      });
-    }
-  }, [payment]);
+  const [lastSyncedPayment, setLastSyncedPayment] = useState(payment);
+  if (payment && payment !== lastSyncedPayment) {
+    setLastSyncedPayment(payment);
+    setFormData({
+      contractId: payment.contract.id,
+      amount: payment.amount,
+      currency: payment.currency,
+      dueDate: payment.dueDate,
+      notes: payment.notes || '',
+      paymentDate: payment.paymentDate || '',
+    });
+  }
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -63,7 +69,7 @@ export const PaymentForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
         <input
@@ -74,7 +80,9 @@ export const PaymentForm = ({
             setFormData({ ...formData, amount: parseFloat(e.target.value) })
           }
           className={`w-full px-3 py-2 border rounded-md ${
-            errors.amount ? 'border-red-500' : 'border-gray-300'
+            errors.amount
+              ? 'border-red-500'
+              : 'border-gray-300 dark:border-gray-600'
           }`}
           disabled={isLoading}
         />
@@ -85,11 +93,11 @@ export const PaymentForm = ({
 
       {/* Currency */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Currency
         </label>
         <CurrencySelector
-          value={formData.currency || 'EUR'}
+          value={formData.currency || defaultCurrency || 'EUR'}
           onChange={(currency) => setFormData({ ...formData, currency })}
           disabled={isLoading}
         />
@@ -130,6 +138,36 @@ export const PaymentForm = ({
           <p className="mt-1 text-sm text-red-500">{errors.dueDate}</p>
         )}
       </div>
+
+      {/* Payment Date - only show when editing */}
+      {payment && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Payment Date
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="date"
+              value={formData.paymentDate || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, paymentDate: e.target.value })
+              }
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+              disabled={isLoading}
+            />
+            {formData.paymentDate && (
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, paymentDate: '' })}
+                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+                disabled={isLoading}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Notes */}
       <div>

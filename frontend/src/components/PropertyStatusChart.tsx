@@ -32,9 +32,11 @@ const CustomTooltip = ({
     const value = payload[0].value;
     const percentage = ((value / total) * 100).toFixed(1);
     return (
-      <div className="bg-white px-4 py-2 shadow-lg rounded-lg border border-gray-200">
-        <p className="font-semibold">{payload[0].name}</p>
-        <p className="text-sm text-gray-600">
+      <div className="bg-white dark:bg-gray-800 px-4 py-2 shadow-lg dark:shadow-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p className="font-semibold text-gray-900 dark:text-gray-100">
+          {payload[0].name}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           {value} {value === 1 ? 'property' : 'properties'} ({percentage}%)
         </p>
       </div>
@@ -81,7 +83,7 @@ export const PropertyStatusChart = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-gray-700 dark:text-gray-300">
                 {entry.value} ({((value / total) * 100).toFixed(0)}%)
               </span>
             </div>
@@ -93,7 +95,7 @@ export const PropertyStatusChart = ({
 
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
+      <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
         <p>No properties to display</p>
       </div>
     );

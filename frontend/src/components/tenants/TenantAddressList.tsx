@@ -162,7 +162,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
           {addresses.map((address) => (
             <div
               key={address.id}
-              className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
             >
               {editingAddressId === address.id ? (
                 <div className="p-6">
@@ -198,14 +198,14 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingAddressId(address.id)}
-                          className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded"
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded"
                           title="Edit address"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteAddress(address.id)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
+                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 rounded"
                           title="Delete address"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -216,8 +216,8 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
 
                   {/* Address Details */}
                   <div className="flex items-start gap-3 mb-3">
-                    <MapPin className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-gray-700">
+                    <MapPin className="h-5 w-5 text-gray-400 dark:text-gray-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-gray-700 dark:text-gray-300">
                       <div>{address.street}</div>
                       <div>
                         {address.city}
@@ -273,10 +273,12 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
         </div>
       ) : (
         !isAddingNew && (
-          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-600 font-medium mb-1">No addresses yet</p>
-            <p className="text-sm text-gray-500 mb-4">
+          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+            <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">
+              No addresses yet
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
               Add an address to get started
             </p>
             <button

@@ -15,24 +15,24 @@ export const DocumentPreviewModal = ({
   const canPreview = isImage || isPDF;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
+      <div className="flex items-center justify-center min-h-screen px-4 py-8">
         {/* Background overlay */}
-        <div
-          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-60" />
 
         {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        <div
+          className="relative bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl dark:shadow-gray-900 w-full max-w-4xl"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
-          <div className="bg-white px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+          <div className="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-medium text-gray-900 truncate">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
                 {document.title ?? document.fileName}
               </h3>
               {document.title && document.title !== document.fileName ? (
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {document.fileName}
                 </p>
               ) : null}
@@ -78,6 +78,7 @@ export const DocumentPreviewModal = ({
                       src={document.downloadUrl || undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
+                      crossOrigin="anonymous"
                     />
                   </div>
                 )}

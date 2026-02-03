@@ -27,7 +27,8 @@ import {
   CheckCircle,
   History,
 } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   PaymentStatus,
   UpdatePaymentRequest,
@@ -39,6 +40,7 @@ export const PaymentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
@@ -126,7 +128,7 @@ export const PaymentDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
           title={`Payment #${payment.identifier}`}
@@ -170,14 +172,14 @@ export const PaymentDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('details')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'details'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               Details
@@ -187,7 +189,7 @@ export const PaymentDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -198,7 +200,7 @@ export const PaymentDetailPage = () => {
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'history'
                   ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
               }`}
             >
               <History className="h-4 w-4" />
@@ -210,8 +212,8 @@ export const PaymentDetailPage = () => {
         {/* Content */}
         {activeTab === 'details' &&
           (isEditing ? (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Edit Payment
               </h2>
               <PaymentForm
@@ -225,16 +227,18 @@ export const PaymentDetailPage = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Payment Details */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Payment Details
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500">Amount</p>
-                      <p className="font-medium text-gray-900 text-lg">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Amount
+                      </p>
+                      <p className="font-medium text-gray-900 text-lg dark:text-gray-100">
                         {payment.currency} {payment.amount.toFixed(2)}
                       </p>
                     </div>
@@ -242,9 +246,11 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500">Due Date</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Due Date
+                      </p>
                       <p className="font-medium text-gray-900">
-                        {format(new Date(payment.dueDate), 'MMMM d, yyyy')}
+                        {formatDate(payment.dueDate)}
                       </p>
                     </div>
                   </div>
@@ -252,12 +258,11 @@ export const PaymentDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <CheckCircle className="h-5 w-5 text-green-600" />
                       <div>
-                        <p className="text-sm text-gray-500">Payment Date</p>
-                        <p className="font-medium text-green-700">
-                          {format(
-                            new Date(payment.paymentDate),
-                            'MMMM d, yyyy'
-                          )}
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Payment Date
+                        </p>
+                        <p className="font-medium text-green-700 dark:text-green-300">
+                          {formatDate(payment.paymentDate)}
                         </p>
                       </div>
                     </div>
@@ -266,20 +271,22 @@ export const PaymentDetailPage = () => {
               </div>
 
               {/* Contract & Parties */}
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Related Information
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <FileText className="h-5 w-5 text-gray-400 mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500">Contract</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Contract
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/contracts/${payment.contract.id}`)
                         }
-                        className="font-medium text-blue-600 hover:underline text-left"
+                        className="font-medium text-blue-600 dark:text-blue-400 hover:underline text-left"
                       >
                         Contract #{payment.contract.identifier}
                       </button>
@@ -288,12 +295,14 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <Home className="h-5 w-5 text-gray-400 mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500">Property</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Property
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${payment.property.id}`)
                         }
-                        className="font-medium text-blue-600 hover:underline text-left"
+                        className="font-medium text-blue-600 dark:text-blue-400 hover:underline text-left"
                       >
                         {payment.property.street}, {payment.property.city}
                       </button>
@@ -302,12 +311,14 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-gray-400 mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500">Tenant</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Tenant
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/tenants/${payment.tenant.id}`)
                         }
-                        className="font-medium text-blue-600 hover:underline text-left"
+                        className="font-medium text-blue-600 dark:text-blue-400 hover:underline text-left"
                       >
                         {payment.tenant.firstName} {payment.tenant.lastName}
                       </button>
@@ -318,8 +329,8 @@ export const PaymentDetailPage = () => {
 
               {/* Notes */}
               {payment.notes && (
-                <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     Notes
                   </h2>
                   <RichTextDisplay content={payment.notes} />
@@ -327,22 +338,22 @@ export const PaymentDetailPage = () => {
               )}
 
               {/* Metadata */}
-              <div className="bg-white rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Metadata
                 </h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Created:</span>{' '}
                     <span className="text-gray-900">
-                      {new Date(payment.createdAt).toLocaleDateString()} at{' '}
+                      {formatDate(payment.createdAt)} at{' '}
                       {new Date(payment.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Last Updated:</span>{' '}
                     <span className="text-gray-900">
-                      {new Date(payment.updatedAt).toLocaleDateString()} at{' '}
+                      {formatDate(payment.updatedAt)} at{' '}
                       {new Date(payment.updatedAt).toLocaleTimeString()}
                     </span>
                   </div>
@@ -352,7 +363,7 @@ export const PaymentDetailPage = () => {
           ))}
 
         {activeTab === 'documents' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Documents ({documents.length})
             </h2>
@@ -410,7 +421,7 @@ export const PaymentDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Payment History
             </h2>
@@ -558,7 +569,7 @@ export const PaymentDetailPage = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Delete Payment
             </h2>
             <p className="text-gray-700 mb-6">
@@ -588,7 +599,7 @@ export const PaymentDetailPage = () => {
       {showMarkPaidModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Mark Payment as Paid
             </h2>
             <div className="space-y-4 mb-6">

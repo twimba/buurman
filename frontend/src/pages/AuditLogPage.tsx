@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
+import type { RecentActivity } from '@/api/dashboard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
-  History,
+  ClipboardList,
   Search,
   Filter,
   ArrowUpDown,
@@ -14,6 +15,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 const entityTypeFilters = [
   { value: undefined, label: 'All Types' },
@@ -40,37 +42,38 @@ type SortOrder = 'asc' | 'desc';
 const getActionColor = (action: string) => {
   switch (action) {
     case 'CREATE':
-      return 'bg-green-100 text-green-800';
+      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200';
     case 'UPDATE':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200';
     case 'DELETE':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200';
     case 'RESTORE':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
   }
 };
 
 const getEntityTypeColor = (entityType: string) => {
   switch (entityType) {
     case 'PROPERTY':
-      return 'bg-indigo-100 text-indigo-800';
+      return 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200';
     case 'TENANT':
-      return 'bg-pink-100 text-pink-800';
+      return 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200';
     case 'CONTRACT':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200';
     case 'PAYMENT':
-      return 'bg-emerald-100 text-emerald-800';
+      return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200';
     case 'EXPENSE':
-      return 'bg-orange-100 text-orange-800';
+      return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
   }
 };
 
 export const AuditLogPage = () => {
   const navigate = useNavigate();
+  const { formatDate } = useFormatDate();
   const [entityTypeFilter, setEntityTypeFilter] = useState<string | undefined>(
     undefined
   );
@@ -88,15 +91,11 @@ export const AuditLogPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
     }, 500);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch, entityTypeFilter, actionFilter]);
 
   const {
     data: activities,
@@ -114,8 +113,8 @@ export const AuditLogPage = () => {
     const sorted = [...activities];
 
     sorted.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: string | number;
+      let bVal: string | number;
 
       switch (sortField) {
         case 'timestamp':
@@ -174,7 +173,7 @@ export const AuditLogPage = () => {
     setExpandedItems(newExpanded);
   };
 
-  const handleRowClick = (activity: any) => {
+  const handleRowClick = (activity: RecentActivity) => {
     // Navigate to the entity detail page
     const entityType = activity.entityType.toLowerCase();
     if (entityType === 'property') {
@@ -208,12 +207,19 @@ export const AuditLogPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <History className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Activity Log</h1>
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <ClipboardList className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                Activity Log
+              </h1>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 ml-11">
+              Track all changes and actions across your data
+            </p>
           </div>
         </div>
 
@@ -226,62 +232,74 @@ export const AuditLogPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by user, property address, tenant name/email, identifier..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
             />
           </div>
         </div>
 
         {/* Filters */}
-        <div className="mb-6 bg-white rounded-lg border border-gray-200 p-4">
-          {/* Entity Type Filter */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Filter className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Entity Type</h3>
+        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Entity Type Filter */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                  Entity Type
+                </h3>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {entityTypeFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => {
+                      setEntityTypeFilter(filter.value);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      entityTypeFilter === filter.value
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              {entityTypeFilters.map((filter) => (
-                <button
-                  key={filter.label}
-                  onClick={() => setEntityTypeFilter(filter.value)}
-                  className={`px-4 py-2 rounded transition-colors text-sm ${
-                    entityTypeFilter === filter.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Action Filter */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <Filter className="h-5 w-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Action</h3>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {actionFilters.map((filter) => (
-                <button
-                  key={filter.label}
-                  onClick={() => setActionFilter(filter.value)}
-                  className={`px-4 py-2 rounded transition-colors text-sm ${
-                    actionFilter === filter.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
+            {/* Action Filter */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                  Action
+                </h3>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {actionFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => {
+                      setActionFilter(filter.value);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      actionFilter === filter.value
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Activity Count */}
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           {sortedActivities.length}{' '}
           {sortedActivities.length === 1 ? 'activity' : 'activities'}
         </p>
@@ -289,12 +307,12 @@ export const AuditLogPage = () => {
         {/* Activities Table */}
         {sortedActivities.length > 0 ? (
           <>
-            <div className="bg-white rounded-lg shadow overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 overflow-hidden mb-4">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('timestamp')}
                     >
                       <div className="flex items-center gap-1">
@@ -303,7 +321,7 @@ export const AuditLogPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('entityType')}
                     >
                       <div className="flex items-center gap-1">
@@ -312,7 +330,7 @@ export const AuditLogPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('action')}
                     >
                       <div className="flex items-center gap-1">
@@ -320,11 +338,11 @@ export const AuditLogPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Description
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleSort('userName')}
                     >
                       <div className="flex items-center gap-1">
@@ -332,12 +350,12 @@ export const AuditLogPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Details
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {paginatedActivities.map((activity) => {
                     const isExpanded = expandedItems.has(activity.id);
                     const hasChanges =
@@ -349,19 +367,14 @@ export const AuditLogPage = () => {
                       <>
                         <tr
                           key={activity.id}
-                          className="hover:bg-gray-50 cursor-pointer"
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                         >
                           <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
                             onClick={() => handleRowClick(activity)}
                           >
-                            <div>
-                              {format(
-                                new Date(activity.timestamp),
-                                'MMM d, yyyy'
-                              )}
-                            </div>
-                            <div className="text-xs text-gray-500">
+                            <div>{formatDate(activity.timestamp)}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {format(new Date(activity.timestamp), 'HH:mm:ss')}
                             </div>
                           </td>
@@ -386,25 +399,25 @@ export const AuditLogPage = () => {
                             </span>
                           </td>
                           <td
-                            className="px-6 py-4 text-sm text-gray-900"
+                            className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100"
                             onClick={() => handleRowClick(activity)}
                           >
                             {activity.description}
                           </td>
                           <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
                             onClick={() => handleRowClick(activity)}
                           >
                             {activity.userName}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {hasChanges && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleExpanded(activity.id);
                                 }}
-                                className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1"
                               >
                                 {isExpanded ? (
                                   <>
@@ -423,9 +436,12 @@ export const AuditLogPage = () => {
                         </tr>
                         {isExpanded && hasChanges && (
                           <tr key={`${activity.id}-details`}>
-                            <td colSpan={6} className="px-6 py-4 bg-gray-50">
+                            <td
+                              colSpan={6}
+                              className="px-6 py-4 bg-gray-50 dark:bg-gray-900"
+                            >
                               <div className="space-y-2">
-                                <h4 className="text-xs font-semibold text-gray-700 uppercase mb-2">
+                                <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-2">
                                   Changed Fields
                                 </h4>
                                 {Object.entries(activity.changedFields!).map(
@@ -441,12 +457,12 @@ export const AuditLogPage = () => {
                                       return (
                                         <div
                                           key={field}
-                                          className="bg-white rounded p-3 text-xs"
+                                          className="bg-white dark:bg-gray-800 rounded p-3 text-xs"
                                         >
-                                          <div className="font-semibold text-gray-700 mb-1">
+                                          <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
                                             File Name
                                           </div>
-                                          <div className="text-gray-900">
+                                          <div className="text-gray-900 dark:text-gray-100">
                                             {String(value)}
                                           </div>
                                         </div>
@@ -461,17 +477,17 @@ export const AuditLogPage = () => {
                                     return (
                                       <div
                                         key={field}
-                                        className="bg-white rounded p-3 text-xs"
+                                        className="bg-white dark:bg-gray-800 rounded p-3 text-xs"
                                       >
-                                        <div className="font-semibold text-gray-700 mb-1 capitalize">
+                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1 capitalize">
                                           {field.replace(/([A-Z])/g, ' $1')}
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <div className="text-gray-500 mb-1">
+                                            <div className="text-gray-500 dark:text-gray-400 mb-1">
                                               Before
                                             </div>
-                                            <div className="text-gray-900">
+                                            <div className="text-gray-900 dark:text-gray-100">
                                               {oldValue !== null &&
                                               oldValue !== undefined
                                                 ? String(oldValue)
@@ -479,10 +495,10 @@ export const AuditLogPage = () => {
                                             </div>
                                           </div>
                                           <div>
-                                            <div className="text-gray-500 mb-1">
+                                            <div className="text-gray-500 dark:text-gray-400 mb-1">
                                               After
                                             </div>
-                                            <div className="text-gray-900 font-semibold">
+                                            <div className="text-gray-900 dark:text-gray-100 font-semibold">
                                               {newValue !== null &&
                                               newValue !== undefined
                                                 ? String(newValue)
@@ -507,8 +523,8 @@ export const AuditLogPage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white px-4 py-3 rounded-lg border border-gray-200">
-                <div className="text-sm text-gray-700">
+              <div className="flex items-center justify-between bg-white dark:bg-gray-800 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-700 dark:text-gray-300">
                   Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
                   {Math.min(
                     currentPage * ITEMS_PER_PAGE,
@@ -520,18 +536,18 @@ export const AuditLogPage = () => {
                   <button
                     onClick={() => setCurrentPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-gray-700 dark:text-gray-300"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                   </button>
-                  <span className="px-3 py-1 text-sm text-gray-700">
+                  <span className="px-3 py-1 text-sm text-gray-700 dark:text-gray-300">
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-gray-700 dark:text-gray-300"
                   >
                     Next
                     <ChevronRight className="h-4 w-4" />
@@ -541,12 +557,12 @@ export const AuditLogPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+            <ClipboardList className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               No activities found
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               {entityTypeFilter || actionFilter || searchTerm
                 ? 'Try adjusting your filters or search'
                 : 'No activity has been logged yet'}

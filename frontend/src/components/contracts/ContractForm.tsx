@@ -11,6 +11,7 @@ import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { TenantSelector } from '@/components/common/TenantSelector';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface ContractFormProps {
   contract?: ContractResponse;
@@ -28,6 +29,7 @@ export const ContractForm = ({
   prefilledTenantId,
 }: ContractFormProps) => {
   const navigate = useNavigate();
+  const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateContractRequest>({
@@ -40,7 +42,7 @@ export const ContractForm = ({
     rentAmount: contract?.rentAmount || 0,
     depositAmount: contract?.depositAmount || undefined,
     securityDeposit: contract?.securityDeposit || undefined,
-    currency: contract?.currency || 'EUR',
+    currency: contract?.currency || defaultCurrency || 'EUR',
     paymentFrequency: contract?.paymentFrequency || PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay || 1,
     autoRenewal: contract?.autoRenewal || false,
@@ -149,12 +151,12 @@ export const ContractForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Property and Tenant Selection */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Contract Parties
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Property <span className="text-red-500">*</span>
             </label>
             <PropertySelector
@@ -168,7 +170,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Tenant <span className="text-red-500">*</span>
             </label>
             <TenantSelector
@@ -185,12 +187,12 @@ export const ContractForm = ({
 
       {/* Contract Details */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Contract Details
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contract Type <span className="text-red-500">*</span>
             </label>
             <select
@@ -198,7 +200,7 @@ export const ContractForm = ({
               onChange={(e) =>
                 handleChange('contractType', e.target.value as ContractType)
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               disabled={isLoading}
             >
               <option value={ContractType.FIXED_TERM}>Fixed Term</option>
@@ -209,7 +211,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Start Date <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
@@ -217,7 +219,7 @@ export const ContractForm = ({
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => handleChange('startDate', e.target.value)}
-                className="flex-1 border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 disabled={isLoading}
               />
               <button
@@ -228,7 +230,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today
@@ -240,7 +242,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               End Date{' '}
               {formData.contractType === ContractType.FIXED_TERM && (
                 <span className="text-red-500">*</span>
@@ -250,7 +252,7 @@ export const ContractForm = ({
               type="date"
               value={formData.endDate}
               onChange={(e) => handleChange('endDate', e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               disabled={isLoading}
             />
             {errors.endDate && (
@@ -259,7 +261,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Signed Date
             </label>
             <div className="flex gap-2">
@@ -267,7 +269,7 @@ export const ContractForm = ({
                 type="date"
                 value={formData.signedDate}
                 onChange={(e) => handleChange('signedDate', e.target.value)}
-                className="flex-1 border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                className="flex-1 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 disabled={isLoading}
               />
               <button
@@ -278,7 +280,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today
@@ -290,12 +292,12 @@ export const ContractForm = ({
 
       {/* Financial Terms */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Financial Terms
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Rent Amount <span className="text-red-500">*</span>
             </label>
             <input
@@ -305,7 +307,7 @@ export const ContractForm = ({
               onChange={(e) =>
                 handleChange('rentAmount', parseFloat(e.target.value) || 0)
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1000.00"
               disabled={isLoading}
             />
@@ -315,7 +317,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Currency
             </label>
             <CurrencySelector
@@ -326,7 +328,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Deposit Amount
             </label>
             <input
@@ -339,14 +341,14 @@ export const ContractForm = ({
                   e.target.value ? parseFloat(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1000.00"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Security Deposit
             </label>
             <input
@@ -359,7 +361,7 @@ export const ContractForm = ({
                   e.target.value ? parseFloat(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1000.00"
               disabled={isLoading}
             />
@@ -369,12 +371,12 @@ export const ContractForm = ({
 
       {/* Payment Terms */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Payment Terms
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Payment Frequency <span className="text-red-500">*</span>
             </label>
             <select
@@ -385,7 +387,7 @@ export const ContractForm = ({
                   e.target.value as PaymentFrequency
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               disabled={isLoading}
             >
               <option value={PaymentFrequency.MONTHLY}>Monthly</option>
@@ -395,7 +397,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Payment Due Day (1-31)
             </label>
             <input
@@ -409,7 +411,7 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="1"
               disabled={isLoading}
             />
@@ -421,7 +423,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Late Fee Percentage
             </label>
             <input
@@ -436,7 +438,7 @@ export const ContractForm = ({
                   e.target.value ? parseFloat(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="2.5"
               disabled={isLoading}
             />
@@ -446,7 +448,7 @@ export const ContractForm = ({
 
       {/* Renewal and Termination */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Renewal and Termination
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -461,14 +463,14 @@ export const ContractForm = ({
             />
             <label
               htmlFor="autoRenewal"
-              className="ml-2 block text-sm text-gray-900"
+              className="ml-2 block text-sm text-gray-900 dark:text-gray-100"
             >
               Auto-renewal
             </label>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Renewal Notice Days
             </label>
             <input
@@ -481,14 +483,14 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="30"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Termination Notice Days
             </label>
             <input
@@ -501,7 +503,7 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
               placeholder="30"
               disabled={isLoading}
             />
@@ -511,7 +513,7 @@ export const ContractForm = ({
 
       {/* Terms and Conditions */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Terms and Conditions
         </h3>
         <div>
@@ -525,7 +527,9 @@ export const ContractForm = ({
 
       {/* Notes */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Notes</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Notes
+        </h3>
         <div>
           <RichTextEditor
             value={formData.notes || ''}
@@ -536,11 +540,11 @@ export const ContractForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={() => navigate('/contracts')}
-          className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors flex items-center gap-2"
+          className="border border-gray-300 dark:border-gray-600 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />

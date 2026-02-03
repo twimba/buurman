@@ -91,15 +91,15 @@ export const AddressMap = ({
 
   if (!apiKey) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
+        <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+        <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">
           Map Preview Unavailable
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-500">
           Configure VITE_GOOGLE_MAPS_API_KEY to enable maps
         </p>
-        <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-700 rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {country}
         </div>
       </div>
@@ -108,10 +108,10 @@ export const AddressMap = ({
 
   if (loading) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
         <div className="animate-pulse">
-          <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Loading map...</p>
+          <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-gray-400">Loading map...</p>
         </div>
       </div>
     );
@@ -119,13 +119,15 @@ export const AddressMap = ({
 
   if (error || !coordinates) {
     return (
-      <div className="bg-gray-50 rounded-lg p-8 text-center">
-        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">Location Not Found</p>
-        <p className="text-sm text-gray-500">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center">
+        <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+        <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">
+          Location Not Found
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
           {error || 'Could not find this address on the map'}
         </p>
-        <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-gray-400 dark:text-gray-600 bg-gray-100 dark:bg-gray-700 rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {country}
         </div>
       </div>
@@ -134,7 +136,7 @@ export const AddressMap = ({
 
   return (
     <div
-      className={`w-full ${height} rounded-lg overflow-hidden border border-gray-200`}
+      className={`w-full ${height} rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700`}
     >
       <APIProvider apiKey={apiKey}>
         <Map

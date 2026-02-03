@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, Save } from 'lucide-react';
 import {
   ExpenseResponse,
@@ -9,6 +9,7 @@ import {
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface ExpenseFormProps {
   expense?: ExpenseResponse;
@@ -25,31 +26,32 @@ export const ExpenseForm = ({
   isLoading,
   prefilledPropertyId,
 }: ExpenseFormProps) => {
+  const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateExpenseRequest>({
     propertyId: prefilledPropertyId || expense?.property.id || '',
     category: expense?.category || ExpenseCategory.MAINTENANCE,
     amount: expense?.amount || 0,
-    currency: expense?.currency || 'EUR',
+    currency: expense?.currency || defaultCurrency || 'EUR',
     expenseDate: expense?.expenseDate || '',
     description: expense?.description || '',
     notes: expense?.notes || '',
   });
 
-  useEffect(() => {
-    if (expense) {
-      setFormData({
-        propertyId: expense.property.id,
-        category: expense.category,
-        amount: expense.amount,
-        currency: expense.currency,
-        expenseDate: expense.expenseDate,
-        description: expense.description,
-        notes: expense.notes || '',
-      });
-    }
-  }, [expense]);
+  const [lastSyncedExpense, setLastSyncedExpense] = useState(expense);
+  if (expense && expense !== lastSyncedExpense) {
+    setLastSyncedExpense(expense);
+    setFormData({
+      propertyId: expense.property.id,
+      category: expense.category,
+      amount: expense.amount,
+      currency: expense.currency,
+      expenseDate: expense.expenseDate,
+      description: expense.description,
+      notes: expense.notes || '',
+    });
+  }
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -77,7 +79,7 @@ export const ExpenseForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Property */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Property <span className="text-red-500">*</span>
         </label>
         <PropertySelector
@@ -94,7 +96,7 @@ export const ExpenseForm = ({
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Category <span className="text-red-500">*</span>
         </label>
         <select
@@ -105,7 +107,7 @@ export const ExpenseForm = ({
               category: e.target.value as ExpenseCategory,
             })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
           disabled={isLoading}
         >
           {Object.values(ExpenseCategory).map((cat) => (
@@ -118,7 +120,7 @@ export const ExpenseForm = ({
 
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
         <input
@@ -129,7 +131,9 @@ export const ExpenseForm = ({
             setFormData({ ...formData, amount: parseFloat(e.target.value) })
           }
           className={`w-full px-3 py-2 border rounded-md ${
-            errors.amount ? 'border-red-500' : 'border-gray-300'
+            errors.amount
+              ? 'border-red-500'
+              : 'border-gray-300 dark:border-gray-600'
           }`}
           disabled={isLoading}
         />
@@ -140,11 +144,11 @@ export const ExpenseForm = ({
 
       {/* Currency */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Currency
         </label>
         <CurrencySelector
-          value={formData.currency || 'EUR'}
+          value={formData.currency || defaultCurrency || 'EUR'}
           onChange={(currency) => setFormData({ ...formData, currency })}
           disabled={isLoading}
         />
@@ -152,7 +156,7 @@ export const ExpenseForm = ({
 
       {/* Expense Date */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Expense Date <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2">
@@ -163,7 +167,9 @@ export const ExpenseForm = ({
               setFormData({ ...formData, expenseDate: e.target.value })
             }
             className={`flex-1 px-3 py-2 border rounded-md ${
-              errors.expenseDate ? 'border-red-500' : 'border-gray-300'
+              errors.expenseDate
+                ? 'border-red-500'
+                : 'border-gray-300 dark:border-gray-600'
             }`}
             disabled={isLoading}
           />
@@ -175,7 +181,7 @@ export const ExpenseForm = ({
                 expenseDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
             disabled={isLoading}
           >
             Today
@@ -188,7 +194,7 @@ export const ExpenseForm = ({
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Description <span className="text-red-500">*</span>
         </label>
         <input
@@ -198,7 +204,9 @@ export const ExpenseForm = ({
             setFormData({ ...formData, description: e.target.value })
           }
           className={`w-full px-3 py-2 border rounded-md ${
-            errors.description ? 'border-red-500' : 'border-gray-300'
+            errors.description
+              ? 'border-red-500'
+              : 'border-gray-300 dark:border-gray-600'
           }`}
           disabled={isLoading}
           placeholder="e.g., Plumbing repair in bathroom"
@@ -210,7 +218,7 @@ export const ExpenseForm = ({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Notes
         </label>
         <RichTextEditor
@@ -222,11 +230,11 @@ export const ExpenseForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"
+          className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />

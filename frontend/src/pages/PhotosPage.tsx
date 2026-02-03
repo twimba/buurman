@@ -14,12 +14,13 @@ import {
 import { useDocuments, useDeleteDocument } from '@/hooks/useDocumentHooks';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { DocumentResponse } from '@/types/property';
-import { format } from 'date-fns';
 import { useTeam } from '@/context/TeamContext';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const PhotosPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
@@ -41,13 +42,16 @@ export const PhotosPage = () => {
     entityType: entityTypeFilter || undefined,
   });
 
-  const photos = allDocuments?.filter((doc) => doc.category === 'PHOTO') || [];
+  const photos = useMemo(
+    () => allDocuments?.filter((doc) => doc.category === 'PHOTO') || [],
+    [allDocuments]
+  );
 
   // Sorting and pagination
   const sortedPhotos = useMemo(() => {
     const sorted = [...photos];
     sorted.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: string | number, bVal: string | number;
 
       switch (sortField) {
         case 'title':
@@ -126,16 +130,21 @@ export const PhotosPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Photo Library</h1>
-        <p className="text-gray-600">
+        <div className="flex items-center gap-3 mb-1">
+          <ImageIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Photo Library
+          </h1>
+        </div>
+        <p className="text-gray-600 dark:text-gray-400 ml-11">
           Browse and manage all your photos in one place
         </p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
@@ -145,7 +154,7 @@ export const PhotosPage = () => {
               placeholder="Search photos by title, filename, or notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -155,7 +164,7 @@ export const PhotosPage = () => {
             <select
               value={entityTypeFilter}
               onChange={(e) => setEntityTypeFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -169,8 +178,8 @@ export const PhotosPage = () => {
 
         {/* Bulk Actions */}
         {selectedPhotos.size > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 flex items-center gap-4">
-            <span className="text-sm text-gray-600">
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedPhotos.size} photo(s) selected
             </span>
           </div>
@@ -180,16 +189,18 @@ export const PhotosPage = () => {
       {/* Photo Grid */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="mt-2 text-gray-600">Loading photos...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Loading photos...
+          </p>
         </div>
       ) : !photos || photos.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900">
           <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">No photos found</p>
+          <p className="text-gray-600 dark:text-gray-400">No photos found</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <button
@@ -305,7 +316,8 @@ export const PhotosPage = () => {
                     <div className="flex gap-2">
                       <a
                         href={photo.downloadUrl || undefined}
-                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className="p-1 bg-white rounded hover:bg-gray-100 pointer-events-auto"
                         title="Download"
@@ -360,7 +372,7 @@ export const PhotosPage = () => {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    {format(new Date(photo.uploadedAt), 'MMM d, yyyy')}
+                    {formatDate(photo.uploadedAt)}
                   </p>
                 </div>
               </div>

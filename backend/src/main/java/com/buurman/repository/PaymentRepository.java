@@ -156,6 +156,27 @@ public class PaymentRepository {
         return payment;
     }
 
+    public boolean existsByContractIdAndDueDate(UUID contractId, LocalDate dueDate) {
+        return dsl.fetchExists(
+                dsl.selectFrom(PAYMENTS)
+                        .where(PAYMENTS.CONTRACT_ID.eq(contractId)
+                                .and(PAYMENTS.DUE_DATE.eq(dueDate))
+                                .and(PAYMENTS.DELETED_AT.isNull()))
+        );
+    }
+
+    public List<Payment> findFuturePendingByContractId(UUID contractId, UUID teamId) {
+        LocalDate today = LocalDate.now();
+        return dsl.selectFrom(PAYMENTS)
+                .where(PAYMENTS.CONTRACT_ID.eq(contractId)
+                        .and(PAYMENTS.TEAM_ID.eq(teamId))
+                        .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                        .and(PAYMENTS.DUE_DATE.gt(today))
+                        .and(PAYMENTS.DELETED_AT.isNull()))
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         dsl.update(PAYMENTS)

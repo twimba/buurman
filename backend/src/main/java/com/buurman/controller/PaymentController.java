@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,7 +46,6 @@ public class PaymentController {
     @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse createPayment(
             @Valid @RequestBody CreatePaymentRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -56,7 +55,6 @@ public class PaymentController {
     @Operation(summary = "Bulk generate payments", description = "Generate payments for all active contracts for a given month (Admin/Editor)")
     @PostMapping("/bulk-generate")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public List<PaymentResponse> bulkGeneratePayments(
             @Valid @RequestBody BulkGeneratePaymentsRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -101,7 +99,6 @@ public class PaymentController {
 
     @Operation(summary = "Update payment", description = "Update payment information (Admin/Editor)")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse updatePayment(
             @PathVariable UUID id,
             @Valid @RequestBody UpdatePaymentRequest request,
@@ -111,7 +108,6 @@ public class PaymentController {
 
     @Operation(summary = "Mark payment as paid", description = "Mark a payment as paid with payment date (Admin/Editor)")
     @PutMapping("/{id}/mark-paid")
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse markPaymentAsPaid(
             @PathVariable UUID id,
             @Valid @RequestBody MarkPaidRequest request,
@@ -122,7 +118,6 @@ public class PaymentController {
     @Operation(summary = "Delete payment", description = "Soft delete a payment (Admin only, cannot delete paid payments)")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deletePayment(
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -132,7 +127,6 @@ public class PaymentController {
     @Operation(summary = "Upload document", description = "Upload a document for a payment (Admin/Editor)")
     @PostMapping("/{id}/documents")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public DocumentResponse uploadDocument(
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file,
@@ -162,7 +156,6 @@ public class PaymentController {
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void deleteDocument(
             @PathVariable UUID documentId,
             @AuthenticationPrincipal UserPrincipal principal) {

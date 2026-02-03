@@ -1,20 +1,29 @@
+import { useMemo, useState } from 'react';
 import { useDashboardStats, useRecentActivities } from '@/hooks/useDashboard';
+import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
+import { useTeam } from '@/context/TeamContext';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
 import { PropertyStatusChart } from './PropertyStatusChart';
 import {
+  LayoutDashboard,
   Home,
   Users,
   DollarSign,
   TrendingUp,
-  Plus,
   ArrowRight,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const { formatDate, formatRelative } = useFormatDate();
+  const { canEditData } = useTeam();
   const {
     data: stats,
     isLoading: statsLoading,
@@ -22,6 +31,35 @@ export const DashboardPage = () => {
   } = useDashboardStats();
   const { data: activities, isLoading: activitiesLoading } =
     useRecentActivities(10);
+  const { data: allPayments, isLoading: paymentsLoading } = usePayments();
+  const markPaidMutation = useMarkPaymentAsPaid();
+  const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
+
+  const unpaidPayments = useMemo(() => {
+    if (!allPayments) return [];
+    return allPayments
+      .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE')
+      .sort(
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      );
+  }, [allPayments]);
+
+  const totalPending = useMemo(() => {
+    return unpaidPayments.reduce((sum, p) => sum + p.amount, 0);
+  }, [unpaidPayments]);
+
+  const pendingCurrency = unpaidPayments[0]?.currency || '€';
+
+  const handleMarkPaid = (paymentId: string) => {
+    setMarkingPaidId(paymentId);
+    markPaidMutation.mutate(
+      {
+        id: paymentId,
+        data: { paymentDate: new Date().toISOString().split('T')[0] },
+      },
+      { onSettled: () => setMarkingPaidId(null) }
+    );
+  };
 
   if (statsLoading) {
     return (
@@ -41,93 +79,89 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">
-            Welcome back! Here&apos;s an overview of your properties.
-          </p>
-        </div>
-        <button
-          onClick={() => navigate('/properties/new')}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="h-5 w-5" />
-          Add Property
-        </button>
+      <div className="flex items-center gap-3">
+        <LayoutDashboard className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          Dashboard
+        </h1>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
-        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-blue-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700 hover:border-blue-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Total Properties
             </h3>
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Home className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Home className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {stats?.totalProperties || 0}
           </div>
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Active properties in portfolio
           </div>
         </div>
 
         {/* Occupied Units */}
-        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-green-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700 hover:border-green-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">Occupied</h3>
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Users className="h-5 w-5 text-green-600" />
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              Occupied
+            </h3>
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {stats?.occupiedUnits || 0}
           </div>
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             {stats?.vacantUnits || 0} vacant, {stats?.maintenanceUnits || 0} in
             maintenance, {stats?.unavailableUnits || 0} unavailable
           </div>
         </div>
 
         {/* Occupancy Rate */}
-        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-purple-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700 hover:border-purple-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Occupancy Rate
             </h3>
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {stats?.occupancyRate?.toFixed(1) || 0}%
           </div>
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Current occupancy level
           </div>
         </div>
 
         {/* Monthly Income */}
-        <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 hover:border-emerald-200">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6 hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700 hover:border-emerald-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-600">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Monthly Income
             </h3>
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <DollarSign className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+              <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-gray-900">
-            {stats?.monthlyIncome?.currency || '€'}
-            {stats?.monthlyIncome?.amount?.toFixed(0) || 0}
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {new Intl.NumberFormat('nl-NL', {
+              style: 'currency',
+              currency: stats?.monthlyIncome?.currency || 'EUR',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(stats?.monthlyIncome?.amount || 0)}
           </div>
-          <div className="text-sm text-gray-500 mt-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Expected monthly revenue
           </div>
         </div>
@@ -137,21 +171,21 @@ export const DashboardPage = () => {
       {stats && stats.totalProperties > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Status Cards */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
               Property Status Breakdown
             </h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
                 <div>
-                  <div className="text-sm font-medium text-green-900">
+                  <div className="text-sm font-medium text-green-900 dark:text-green-100">
                     Occupied
                   </div>
-                  <div className="text-2xl font-bold text-green-600 mt-1">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
                     {stats.occupiedUnits}
                   </div>
                 </div>
-                <div className="text-sm text-green-700">
+                <div className="text-sm text-green-700 dark:text-green-300">
                   {(
                     (stats.occupiedUnits / stats.totalProperties) *
                     100
@@ -159,32 +193,32 @@ export const DashboardPage = () => {
                   %
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
                 <div>
-                  <div className="text-sm font-medium text-yellow-900">
+                  <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
                     Vacant
                   </div>
-                  <div className="text-2xl font-bold text-yellow-600 mt-1">
+                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
                     {stats.vacantUnits}
                   </div>
                 </div>
-                <div className="text-sm text-yellow-700">
+                <div className="text-sm text-yellow-700 dark:text-yellow-300">
                   {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(
                     0
                   )}
                   %
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg border border-orange-200">
+              <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
                 <div>
-                  <div className="text-sm font-medium text-orange-900">
+                  <div className="text-sm font-medium text-orange-900 dark:text-orange-100">
                     Maintenance
                   </div>
-                  <div className="text-2xl font-bold text-orange-600 mt-1">
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">
                     {stats.maintenanceUnits}
                   </div>
                 </div>
-                <div className="text-sm text-orange-700">
+                <div className="text-sm text-orange-700 dark:text-orange-300">
                   {(
                     (stats.maintenanceUnits / stats.totalProperties) *
                     100
@@ -192,16 +226,16 @@ export const DashboardPage = () => {
                   %
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div>
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     Unavailable
                   </div>
-                  <div className="text-2xl font-bold text-gray-600 mt-1">
+                  <div className="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">
                     {stats.unavailableUnits}
                   </div>
                 </div>
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-gray-700 dark:text-gray-300">
                   {(
                     (stats.unavailableUnits / stats.totalProperties) *
                     100
@@ -213,8 +247,8 @@ export const DashboardPage = () => {
           </div>
 
           {/* Status Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
               Distribution Overview
             </h2>
             <PropertyStatusChart
@@ -226,6 +260,141 @@ export const DashboardPage = () => {
           </div>
         </div>
       )}
+
+      {/* Unpaid Payments */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              Unpaid Payments
+            </h2>
+            {unpaidPayments.length > 0 && (
+              <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300">
+                {unpaidPayments.length}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-4">
+            {unpaidPayments.length > 0 && (
+              <div className="text-right">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Total pending
+                </div>
+                <div className="text-lg font-bold text-amber-600">
+                  {pendingCurrency}
+                  {totalPending.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => navigate('/payments')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            >
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        {paymentsLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <LoadingSpinner />
+          </div>
+        ) : unpaidPayments.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {unpaidPayments.slice(0, 10).map((payment) => {
+              const isOverdue = payment.status === 'OVERDUE';
+              return (
+                <div
+                  key={payment.id}
+                  className="flex items-center justify-between py-3 gap-4"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                      className={`flex-shrink-0 p-2 rounded-lg ${isOverdue ? 'bg-red-100' : 'bg-amber-100'}`}
+                    >
+                      {isOverdue ? (
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-amber-600" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            navigate(`/payments/${payment.identifier}`)
+                          }
+                          className="text-sm font-medium text-gray-900 hover:text-blue-600 truncate"
+                        >
+                          {payment.property?.street || 'Payment'} &mdash;{' '}
+                          {payment.tenant?.firstName} {payment.tenant?.lastName}
+                        </button>
+                        <span
+                          className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${isOverdue ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}
+                        >
+                          {payment.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Due {formatDate(payment.dueDate)}
+                        {isOverdue && (
+                          <span className="text-red-500 ml-1">
+                            (
+                            {formatDistanceToNow(new Date(payment.dueDate), {
+                              addSuffix: false,
+                            })}{' '}
+                            overdue)
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-sm font-semibold text-gray-900">
+                      {payment.currency}
+                      {payment.amount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                    {canEditData && (
+                      <button
+                        onClick={() => handleMarkPaid(payment.id)}
+                        disabled={markingPaidId === payment.id}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors disabled:opacity-50"
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        {markingPaidId === payment.id
+                          ? 'Saving...'
+                          : 'Mark Paid'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {unpaidPayments.length > 10 && (
+              <div className="pt-3 text-center">
+                <button
+                  onClick={() => navigate('/payments')}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  +{unpaidPayments.length - 10} more unpaid payments
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-2" />
+            <p className="text-gray-500">All payments are up to date</p>
+          </div>
+        )}
+      </div>
 
       {/* Recent Activities */}
       <div className="bg-white rounded-lg shadow p-6">
@@ -287,9 +456,7 @@ export const DashboardPage = () => {
                     {activity.description}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {formatDistanceToNow(new Date(activity.timestamp), {
-                      addSuffix: true,
-                    })}
+                    {formatRelative(activity.timestamp)}
                   </p>
                 </div>
               </div>
@@ -304,26 +471,6 @@ export const DashboardPage = () => {
           </div>
         )}
       </div>
-
-      {/* Quick Actions */}
-      {stats && stats.totalProperties === 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">
-            Get Started with Buurman
-          </h3>
-          <p className="text-blue-800 mb-4">
-            You haven&apos;t added any properties yet. Start by adding your
-            first property to begin managing your rental portfolio.
-          </p>
-          <button
-            onClick={() => navigate('/properties/new')}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus className="h-5 w-5" />
-            Add Your First Property
-          </button>
-        </div>
-      )}
     </div>
   );
 };

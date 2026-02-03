@@ -12,6 +12,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class PropertyService {
         this.s3StorageService = s3StorageService;
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
         Property property = propertyMapper.toEntity(request);
         property.setIdentifier(UlidGenerator.generate());
@@ -84,6 +86,7 @@ public class PropertyService {
         return toResponseWithMainPhoto(property, principal.getTeamId());
     }
 
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse updateProperty(
             UUID propertyId,
             UpdatePropertyRequest request,
@@ -117,6 +120,7 @@ public class PropertyService {
         return newState;
     }
 
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteProperty(UUID propertyId, UserPrincipal principal) {
         Property property = propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
