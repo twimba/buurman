@@ -40,3 +40,18 @@ export const getRecentActivities = async (
   });
   return response.data;
 };
+
+export interface AuditLogFilters {
+  entityType?: string;
+  action?: string;
+  search?: string;
+}
+
+export const getAllAuditLogs = async (
+  filters?: AuditLogFilters
+): Promise<RecentActivity[]> => {
+  const response = await client.get('/audit-logs', {
+    params: filters,
+  });
+  return response.data;
+};

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { TeamSwitcher } from './TeamSwitcher';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -71,6 +72,13 @@ export const Sidebar = () => {
               />
             )}
           </div>
+
+          {/* Team Switcher */}
+          {isOpen && (
+            <div className="px-3 py-4 border-b border-gray-200">
+              <TeamSwitcher />
+            </div>
+          )}
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-4 px-2">

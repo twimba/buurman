@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { getDashboardStats, getRecentActivities } from '@/api/dashboard';
+import {
+  getDashboardStats,
+  getRecentActivities,
+  getAllAuditLogs,
+  AuditLogFilters,
+} from '@/api/dashboard';
 
 export const useDashboardStats = () => {
   return useQuery({
@@ -13,6 +18,14 @@ export const useRecentActivities = (limit = 10) => {
   return useQuery({
     queryKey: ['dashboard', 'activities', limit],
     queryFn: () => getRecentActivities(limit),
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+};
+
+export const useAllAuditLogs = (filters?: AuditLogFilters) => {
+  return useQuery({
+    queryKey: ['auditLogs', filters],
+    queryFn: () => getAllAuditLogs(filters),
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 };

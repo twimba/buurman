@@ -20,6 +20,11 @@ import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
 
 @Service
 public class AuditService {
@@ -145,36 +150,121 @@ public class AuditService {
                         .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
                 .orderBy(AUDIT_LOG.TIMESTAMP.desc())
                 .fetch()
-                .map(record -> {
-                    String action = record.get(AUDIT_LOG.ACTION);
-                    String firstName = record.get(USERS.FIRST_NAME);
-                    String lastName = record.get(USERS.LAST_NAME);
-                    String userName = (firstName != null && lastName != null)
-                            ? firstName + " " + lastName
-                            : "Unknown";
+                .map(record -> mapRecordToRecentActivity(record, entityType));
+    }
 
-                    // Parse JSON fields first
-                    Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
-                    Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
-                    Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+    public List<RecentActivityResponse> getAllAuditLogs(UUID teamId, String entityType, String action, String search) {
+        var query = dsl.select(
+                        AUDIT_LOG.ID,
+                        AUDIT_LOG.ENTITY_TYPE,
+                        AUDIT_LOG.ENTITY_ID,
+                        AUDIT_LOG.ACTION,
+                        AUDIT_LOG.TIMESTAMP,
+                        AUDIT_LOG.CHANGED_FIELDS,
+                        AUDIT_LOG.OLD_VALUES,
+                        AUDIT_LOG.NEW_VALUES,
+                        USERS.FIRST_NAME,
+                        USERS.LAST_NAME
+                )
+                .from(AUDIT_LOG)
+                .leftJoin(USERS).on(AUDIT_LOG.USER_ID.eq(USERS.ID))
+                .leftJoin(PROPERTIES).on(
+                        AUDIT_LOG.ENTITY_TYPE.eq("PROPERTY")
+                                .and(AUDIT_LOG.ENTITY_ID.eq(PROPERTIES.ID))
+                )
+                .leftJoin(TENANTS).on(
+                        AUDIT_LOG.ENTITY_TYPE.eq("TENANT")
+                                .and(AUDIT_LOG.ENTITY_ID.eq(TENANTS.ID))
+                )
+                .leftJoin(CONTRACTS).on(
+                        AUDIT_LOG.ENTITY_TYPE.eq("CONTRACT")
+                                .and(AUDIT_LOG.ENTITY_ID.eq(CONTRACTS.ID))
+                )
+                .leftJoin(PAYMENTS).on(
+                        AUDIT_LOG.ENTITY_TYPE.eq("PAYMENT")
+                                .and(AUDIT_LOG.ENTITY_ID.eq(PAYMENTS.ID))
+                )
+                .leftJoin(EXPENSES).on(
+                        AUDIT_LOG.ENTITY_TYPE.eq("EXPENSE")
+                                .and(AUDIT_LOG.ENTITY_ID.eq(EXPENSES.ID))
+                )
+                .where(AUDIT_LOG.TEAM_ID.eq(teamId));
 
-                    // Build description based on action and changed fields
-                    String description = buildActivityDescription(action, entityType, userName, changedFields);
+        // Apply filters
+        if (entityType != null && !entityType.isEmpty()) {
+            query = query.and(AUDIT_LOG.ENTITY_TYPE.eq(entityType));
+        }
 
-                    return new RecentActivityResponse(
-                            record.get(AUDIT_LOG.ID),
-                            entityType,
-                            entityId,
-                            entityType, // entityName - can be enhanced later
-                            action,
-                            userName,
-                            record.get(AUDIT_LOG.TIMESTAMP).toInstant(ZoneOffset.UTC),
-                            description,
-                            changedFields,
-                            oldValues,
-                            newValues
-                    );
-                });
+        if (action != null && !action.isEmpty()) {
+            query = query.and(AUDIT_LOG.ACTION.eq(action));
+        }
+
+        if (search != null && !search.isEmpty()) {
+            String searchPattern = "%" + search.toLowerCase() + "%";
+            query = query.and(
+                    USERS.FIRST_NAME.lower().like(searchPattern)
+                            .or(USERS.LAST_NAME.lower().like(searchPattern))
+                            .or(AUDIT_LOG.ENTITY_TYPE.lower().like(searchPattern))
+                            .or(AUDIT_LOG.ACTION.lower().like(searchPattern))
+                            // Property search (address: street, city, postal code, identifier)
+                            .or(PROPERTIES.IDENTIFIER.lower().like(searchPattern))
+                            .or(PROPERTIES.STREET.lower().like(searchPattern))
+                            .or(PROPERTIES.CITY.lower().like(searchPattern))
+                            .or(PROPERTIES.POSTAL_CODE.lower().like(searchPattern))
+                            .or(PROPERTIES.COUNTRY.lower().like(searchPattern))
+                            // Tenant search (name, email, phone, identifier)
+                            .or(TENANTS.IDENTIFIER.lower().like(searchPattern))
+                            .or(TENANTS.FIRST_NAME.lower().like(searchPattern))
+                            .or(TENANTS.LAST_NAME.lower().like(searchPattern))
+                            .or(TENANTS.EMAIL.lower().like(searchPattern))
+                            .or(TENANTS.PHONE.lower().like(searchPattern))
+                            // Contract search
+                            .or(CONTRACTS.IDENTIFIER.lower().like(searchPattern))
+                            // Payment search
+                            .or(PAYMENTS.IDENTIFIER.lower().like(searchPattern))
+                            // Expense search
+                            .or(EXPENSES.IDENTIFIER.lower().like(searchPattern))
+                            .or(EXPENSES.DESCRIPTION.lower().like(searchPattern))
+            );
+        }
+
+        return query.orderBy(AUDIT_LOG.TIMESTAMP.desc())
+                .fetch()
+                .map(record -> mapRecordToRecentActivity(
+                        record,
+                        record.get(AUDIT_LOG.ENTITY_TYPE)
+                ));
+    }
+
+    private RecentActivityResponse mapRecordToRecentActivity(org.jooq.Record record, String entityType) {
+        String action = record.get(AUDIT_LOG.ACTION);
+        String firstName = record.get(USERS.FIRST_NAME);
+        String lastName = record.get(USERS.LAST_NAME);
+        String userName = (firstName != null && lastName != null)
+                ? firstName + " " + lastName
+                : "Unknown";
+
+        // Parse JSON fields first
+        Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
+        Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
+        Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+
+        // Build description based on action and changed fields
+        String description = buildActivityDescription(action, entityType, userName, changedFields);
+
+        return new RecentActivityResponse(
+                record.get(AUDIT_LOG.ID),
+                entityType,
+                record.get(AUDIT_LOG.ENTITY_ID),
+                entityType, // entityName - can be enhanced later
+                action,
+                userName,
+                record.get(AUDIT_LOG.TIMESTAMP).toInstant(ZoneOffset.UTC),
+                description,
+                changedFields,
+                oldValues,
+                newValues
+        );
     }
 
     @SuppressWarnings("unchecked")
