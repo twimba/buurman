@@ -24,6 +24,7 @@ import { ExpensesPage } from './pages/ExpensesPage';
 import { ExpenseCreatePage } from './pages/ExpenseCreatePage';
 import { ExpenseDetailPage } from './pages/ExpenseDetailPage';
 import { DocumentsPage } from './pages/DocumentsPage';
+import { PhotosPage } from './pages/PhotosPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuditLogPage } from './pages/AuditLogPage';
@@ -235,6 +236,16 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <DocumentsPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/photos"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <PhotosPage />
                     </Layout>
                   </ProtectedRoute>
                 }

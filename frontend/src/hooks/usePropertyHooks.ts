@@ -155,6 +155,9 @@ export const useUploadPropertyDocument = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['propertyAuditLog', propertyId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
+      });
     },
   });
 };
@@ -173,6 +176,9 @@ export const useDeleteDocument = (propertyId: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: ['propertyAuditLog', propertyId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
       });
     },
   });

@@ -126,18 +126,21 @@ public class ExpenseService {
         Expense expense = expenseRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
 
+        ExpenseResponse oldState = enrichExpenseResponse(expense, principal.getTeamId());
+
         expenseMapper.updateEntity(expense, request);
         expense.setUpdatedBy(principal.getUserId());
         expense.setUpdatedAt(Instant.now());
 
         Expense updatedExpense = expenseRepository.save(expense);
+        ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.getTeamId());
 
         log.info("Updated expense {} by user {}", updatedExpense.getIdentifier(), principal.getUserId());
 
         auditService.logUpdate(principal.getTeamId(), "EXPENSE", updatedExpense.getId(), principal.getUserId(),
-                expense, updatedExpense, new java.util.HashMap<>());
+                oldState, newState, auditService.getChangedFields(oldState, newState));
 
-        return enrichExpenseResponse(updatedExpense, principal.getTeamId());
+        return newState;
     }
 
     @Transactional

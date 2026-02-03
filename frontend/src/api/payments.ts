@@ -7,6 +7,7 @@ import {
   BulkGeneratePaymentsRequest,
   GetPaymentsParams,
 } from '../types/payment';
+import { DocumentResponse, AuditLogEntry } from '../types/property';
 
 export const getPayments = async (
   params?: GetPaymentsParams
@@ -65,5 +66,49 @@ export const getPaymentsByContract = async (
   const response = await client.get('/payments', {
     params: { contractId },
   });
+  return response.data;
+};
+
+export const uploadPaymentDocument = async (
+  paymentId: string,
+  file: File,
+  title?: string,
+  notes?: string
+): Promise<DocumentResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (title) formData.append('title', title);
+  if (notes) formData.append('notes', notes);
+
+  const response = await client.post(
+    `/payments/${paymentId}/documents`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};
+
+export const deletePaymentDocument = async (
+  paymentId: string,
+  documentId: string
+): Promise<void> => {
+  await client.delete(`/payments/${paymentId}/documents/${documentId}`);
+};
+
+export const getPaymentDocuments = async (
+  paymentId: string
+): Promise<DocumentResponse[]> => {
+  const response = await client.get(`/payments/${paymentId}/documents`);
+  return response.data;
+};
+
+export const getPaymentAuditLog = async (
+  paymentId: string
+): Promise<AuditLogEntry[]> => {
+  const response = await client.get(`/payments/${paymentId}/audit-log`);
   return response.data;
 };

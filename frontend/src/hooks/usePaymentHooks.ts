@@ -143,3 +143,66 @@ export const useBulkGeneratePayments = () => {
     },
   });
 };
+
+export const usePaymentDocuments = (paymentId: string | undefined) => {
+  return useQuery({
+    queryKey: ['paymentDocuments', paymentId],
+    queryFn: () => paymentsApi.getPaymentDocuments(paymentId!),
+    enabled: !!paymentId,
+  });
+};
+
+export const useUploadPaymentDocument = (paymentId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) => paymentsApi.uploadPaymentDocument(paymentId, file, title, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['paymentDocuments', paymentId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      showToast('Document uploaded successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeletePaymentDocument = (paymentId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      paymentsApi.deletePaymentDocument(paymentId, documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['paymentDocuments', paymentId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      showToast('Document deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const usePaymentAuditLog = (paymentId: string | undefined) => {
+  return useQuery({
+    queryKey: ['paymentAuditLog', paymentId],
+    queryFn: () => paymentsApi.getPaymentAuditLog(paymentId!),
+    enabled: !!paymentId,
+  });
+};

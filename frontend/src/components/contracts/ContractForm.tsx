@@ -228,7 +228,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors whitespace-nowrap"
+                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today
@@ -278,7 +278,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors whitespace-nowrap"
+                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today

@@ -158,23 +158,21 @@ public class PaymentService {
         Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        // Prevent updating paid payments
-        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
-            throw new IllegalArgumentException("Cannot update a paid payment. Please cancel it first.");
-        }
+        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
 
         paymentMapper.updateEntity(payment, request);
         payment.setUpdatedBy(principal.getUserId());
         payment.setUpdatedAt(Instant.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
+        PaymentResponse newState = enrichPaymentResponse(updatedPayment, principal.getTeamId());
 
         log.info("Updated payment {} by user {}", updatedPayment.getIdentifier(), principal.getUserId());
 
         auditService.logUpdate(principal.getTeamId(), "PAYMENT", updatedPayment.getId(), principal.getUserId(),
-                payment, updatedPayment, new java.util.HashMap<>());
+                oldState, newState, auditService.getChangedFields(oldState, newState));
 
-        return enrichPaymentResponse(updatedPayment, principal.getTeamId());
+        return newState;
     }
 
     @Transactional
@@ -191,6 +189,8 @@ public class PaymentService {
             throw new IllegalArgumentException("Cannot mark a cancelled payment as paid");
         }
 
+        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+
         payment.setPaymentDate(request.paymentDate());
         payment.setStatus(Payment.PaymentStatus.PAID);
         if (request.notes() != null && !request.notes().isEmpty()) {
@@ -200,14 +200,15 @@ public class PaymentService {
         payment.setUpdatedAt(Instant.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
+        PaymentResponse newState = enrichPaymentResponse(updatedPayment, principal.getTeamId());
 
         log.info("Marked payment {} as PAID on {} by user {}",
                 updatedPayment.getIdentifier(), request.paymentDate(), principal.getUserId());
 
         auditService.logUpdate(principal.getTeamId(), "PAYMENT", updatedPayment.getId(), principal.getUserId(),
-                payment, updatedPayment, new java.util.HashMap<>());
+                oldState, newState, auditService.getChangedFields(oldState, newState));
 
-        return enrichPaymentResponse(updatedPayment, principal.getTeamId());
+        return newState;
     }
 
     @Transactional

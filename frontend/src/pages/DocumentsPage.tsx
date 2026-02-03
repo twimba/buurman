@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Download,
@@ -8,6 +9,8 @@ import {
   Filter,
   CheckSquare,
   Square,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import {
   useDocuments,
@@ -19,6 +22,7 @@ import { DocumentResponse } from '@/types/property';
 import { format } from 'date-fns';
 
 export const DocumentsPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
@@ -27,13 +31,78 @@ export const DocumentsPage = () => {
   const [previewDocument, setPreviewDocument] =
     useState<DocumentResponse | null>(null);
 
-  const { data: documents, isLoading } = useDocuments({
+  // Sorting and pagination state
+  const [sortField, setSortField] = useState<
+    'title' | 'entityType' | 'fileSize' | 'uploadedAt'
+  >('uploadedAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  const { data: allDocuments, isLoading } = useDocuments({
     search: searchTerm || undefined,
     entityType: entityTypeFilter || undefined,
   });
 
+  // Filter out photos - only show documents
+  const documents = allDocuments?.filter((doc) => doc.category !== 'PHOTO') || [];
+
   const deleteMutation = useDeleteDocument();
   const bulkDownloadMutation = useBulkDownload();
+
+  // Sorting and pagination
+  const sortedDocuments = useMemo(() => {
+    if (!documents) return [];
+
+    const sorted = [...documents];
+    sorted.sort((a, b) => {
+      let aVal: any, bVal: any;
+
+      switch (sortField) {
+        case 'title':
+          aVal = (a.title ?? a.fileName).toLowerCase();
+          bVal = (b.title ?? b.fileName).toLowerCase();
+          break;
+        case 'entityType':
+          aVal = a.entityType;
+          bVal = b.entityType;
+          break;
+        case 'fileSize':
+          aVal = a.fileSize;
+          bVal = b.fileSize;
+          break;
+        case 'uploadedAt':
+          aVal = new Date(a.uploadedAt).getTime();
+          bVal = new Date(b.uploadedAt).getTime();
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [documents, sortField, sortOrder]);
+
+  const paginatedDocuments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sortedDocuments.slice(startIndex, endIndex);
+  }, [sortedDocuments, currentPage]);
+
+  const totalPages = Math.ceil((sortedDocuments?.length || 0) / itemsPerPage);
+
+  const handleSort = (field: typeof sortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this document?')) {
@@ -52,8 +121,8 @@ export const DocumentsPage = () => {
   };
 
   const handleSelectAll = () => {
-    if (documents && selectedDocuments.size < documents.length) {
-      setSelectedDocuments(new Set(documents.map((doc) => doc.id)));
+    if (sortedDocuments && selectedDocuments.size < sortedDocuments.length) {
+      setSelectedDocuments(new Set(sortedDocuments.map((doc) => doc.id)));
     } else {
       setSelectedDocuments(new Set());
     }
@@ -169,25 +238,69 @@ export const DocumentsPage = () => {
                     onClick={handleSelectAll}
                     className="text-gray-500 hover:text-gray-700"
                   >
-                    {documents &&
-                    selectedDocuments.size === documents.length ? (
+                    {sortedDocuments &&
+                    selectedDocuments.size === sortedDocuments.length ? (
                       <CheckSquare className="h-5 w-5" />
                     ) : (
                       <Square className="h-5 w-5" />
                     )}
                   </button>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Document
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('title')}
+                >
+                  <div className="flex items-center gap-1">
+                    Document
+                    {sortField === 'title' &&
+                      (sortOrder === 'asc' ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      ))}
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('entityType')}
+                >
+                  <div className="flex items-center gap-1">
+                    Type
+                    {sortField === 'entityType' &&
+                      (sortOrder === 'asc' ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      ))}
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Size
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('fileSize')}
+                >
+                  <div className="flex items-center gap-1">
+                    Size
+                    {sortField === 'fileSize' &&
+                      (sortOrder === 'asc' ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      ))}
+                  </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Uploaded
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('uploadedAt')}
+                >
+                  <div className="flex items-center gap-1">
+                    Uploaded
+                    {sortField === 'uploadedAt' &&
+                      (sortOrder === 'asc' ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      ))}
+                  </div>
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -195,7 +308,7 @@ export const DocumentsPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {documents.map((doc) => (
+              {paginatedDocuments.map((doc) => (
                 <tr
                   key={doc.id}
                   className={`hover:bg-gray-50 cursor-pointer ${
@@ -239,9 +352,27 @@ export const DocumentsPage = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const entityPath =
+                          doc.entityType.toLowerCase() === 'property'
+                            ? `/properties/${doc.entityId}`
+                            : doc.entityType.toLowerCase() === 'tenant'
+                              ? `/tenants/${doc.entityId}`
+                              : doc.entityType.toLowerCase() === 'contract'
+                                ? `/contracts/${doc.entityId}`
+                                : doc.entityType.toLowerCase() === 'payment'
+                                  ? `/payments/${doc.entityId}`
+                                  : doc.entityType.toLowerCase() === 'expense'
+                                    ? `/expenses/${doc.entityId}`
+                                    : '#';
+                        if (entityPath !== '#') navigate(entityPath);
+                      }}
+                      className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 hover:bg-blue-100 hover:text-blue-800 transition-colors"
+                    >
                       {doc.entityType}
-                    </span>
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatFileSize(doc.fileSize)}
@@ -275,6 +406,36 @@ export const DocumentsPage = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
+                {Math.min(currentPage * itemsPerPage, sortedDocuments.length)}{' '}
+                of {sortedDocuments.length} documents
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 text-sm text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

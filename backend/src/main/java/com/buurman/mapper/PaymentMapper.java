@@ -37,6 +37,8 @@ public interface PaymentMapper {
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)
     @Mapping(target = "contractId", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "paymentDate", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)

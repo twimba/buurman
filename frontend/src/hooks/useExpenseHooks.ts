@@ -98,3 +98,66 @@ export const useDeleteExpense = () => {
     },
   });
 };
+
+export const useExpenseDocuments = (expenseId: string | undefined) => {
+  return useQuery({
+    queryKey: ['expenseDocuments', expenseId],
+    queryFn: () => expensesApi.getExpenseDocuments(expenseId!),
+    enabled: !!expenseId,
+  });
+};
+
+export const useUploadExpenseDocument = (expenseId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) => expensesApi.uploadExpenseDocument(expenseId, file, title, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['expenseDocuments', expenseId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['expense', expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      showToast('Document uploaded successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteExpenseDocument = (expenseId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      expensesApi.deleteExpenseDocument(expenseId, documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['expenseDocuments', expenseId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['expense', expenseId] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      showToast('Document deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useExpenseAuditLog = (expenseId: string | undefined) => {
+  return useQuery({
+    queryKey: ['expenseAuditLog', expenseId],
+    queryFn: () => expensesApi.getExpenseAuditLog(expenseId!),
+    enabled: !!expenseId,
+  });
+};

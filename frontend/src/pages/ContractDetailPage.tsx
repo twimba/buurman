@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useContract,
@@ -11,6 +11,7 @@ import {
   useReopenContract,
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
+import { usePaymentsByContract } from '@/hooks/usePaymentHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
@@ -27,24 +28,40 @@ import {
   Home,
   User,
   ChevronDown,
+  ChevronUp,
   RefreshCw,
   RotateCcw,
   Copy,
+  Search,
+  History,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
+import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
+import { Plus } from 'lucide-react';
 
 export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'documents' | 'history'
+    'overview' | 'payments' | 'documents' | 'history'
   >('overview');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
+
+  // Payments table state
+  const [paymentsSearchTerm, setPaymentsSearchTerm] = useState('');
+  const [paymentsSortField, setPaymentsSortField] = useState<
+    'dueDate' | 'amount' | 'status' | 'paymentDate'
+  >('dueDate');
+  const [paymentsSortOrder, setPaymentsSortOrder] = useState<'asc' | 'desc'>(
+    'asc'
+  );
+  const [paymentsCurrentPage, setPaymentsCurrentPage] = useState(1);
+  const paymentsPerPage = 10;
 
   const { data: contract, isLoading, error } = useContract(id);
   const {
@@ -57,6 +74,11 @@ export const ContractDetailPage = () => {
     isLoading: docsLoading,
     error: docsError,
   } = useContractDocuments(id);
+  const {
+    data: payments = [],
+    isLoading: paymentsLoading,
+    error: paymentsError,
+  } = usePaymentsByContract(id);
 
   const deleteContractMutation = useDeleteContract();
   const uploadDocumentMutation = useUploadContractDocument(id!);
@@ -64,6 +86,75 @@ export const ContractDetailPage = () => {
   const changeStatusMutation = useChangeContractStatus(id!);
   const reopenContractMutation = useReopenContract(id!);
   const duplicateContractMutation = useDuplicateContract();
+
+  // Payments filtering, sorting, and pagination
+  const filteredAndSortedPayments = useMemo(() => {
+    if (!payments) return [];
+
+    let filtered = [...payments];
+
+    // Apply search filter
+    if (paymentsSearchTerm) {
+      const search = paymentsSearchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (payment) =>
+          payment.identifier.toLowerCase().includes(search) ||
+          payment.status.toLowerCase().includes(search)
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aVal: any, bVal: any;
+
+      switch (paymentsSortField) {
+        case 'dueDate':
+          aVal = new Date(a.dueDate).getTime();
+          bVal = new Date(b.dueDate).getTime();
+          break;
+        case 'amount':
+          aVal = a.amount;
+          bVal = b.amount;
+          break;
+        case 'status':
+          aVal = a.status;
+          bVal = b.status;
+          break;
+        case 'paymentDate':
+          aVal = a.paymentDate ? new Date(a.paymentDate).getTime() : 0;
+          bVal = b.paymentDate ? new Date(b.paymentDate).getTime() : 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return paymentsSortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return paymentsSortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [payments, paymentsSearchTerm, paymentsSortField, paymentsSortOrder]);
+
+  // Paginated payments
+  const paginatedPayments = useMemo(() => {
+    const startIndex = (paymentsCurrentPage - 1) * paymentsPerPage;
+    const endIndex = startIndex + paymentsPerPage;
+    return filteredAndSortedPayments.slice(startIndex, endIndex);
+  }, [filteredAndSortedPayments, paymentsCurrentPage]);
+
+  const paymentsTotalPages = Math.ceil(
+    filteredAndSortedPayments.length / paymentsPerPage
+  );
+
+  const handlePaymentsSort = (field: typeof paymentsSortField) => {
+    if (paymentsSortField === field) {
+      setPaymentsSortOrder(paymentsSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPaymentsSortField(field);
+      setPaymentsSortOrder('asc');
+    }
+  };
 
   const handleDelete = async () => {
     if (!id) return;
@@ -247,6 +338,17 @@ export const ContractDetailPage = () => {
               }`}
             >
               Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('payments')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'payments'
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <DollarSign className="h-4 w-4" />
+              Payments {payments.length > 0 && `(${payments.length})`}
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -467,6 +569,210 @@ export const ContractDetailPage = () => {
           </div>
         )}
 
+        {activeTab === 'payments' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Payments ({filteredAndSortedPayments.length})
+              </h2>
+              <button
+                onClick={() => navigate(`/payments/new?contractId=${id}`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Add Payment
+              </button>
+            </div>
+
+            {paymentsLoading ? (
+              <LoadingSpinner />
+            ) : paymentsError ? (
+              <ErrorMessage message="Failed to load payments" />
+            ) : payments.length === 0 ? (
+              <div className="text-center py-12">
+                <DollarSign className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600 mb-4">
+                  No payments for this contract
+                </p>
+                <button
+                  onClick={() => navigate(`/payments/new?contractId=${id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create First Payment
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by payment #, status..."
+                      value={paymentsSearchTerm}
+                      onChange={(e) => {
+                        setPaymentsSearchTerm(e.target.value);
+                        setPaymentsCurrentPage(1);
+                      }}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Payment #
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handlePaymentsSort('dueDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Due Date
+                            {paymentsSortField === 'dueDate' &&
+                              (paymentsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handlePaymentsSort('amount')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Amount
+                            {paymentsSortField === 'amount' &&
+                              (paymentsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handlePaymentsSort('status')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Status
+                            {paymentsSortField === 'status' &&
+                              (paymentsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handlePaymentsSort('paymentDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Payment Date
+                            {paymentsSortField === 'paymentDate' &&
+                              (paymentsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedPayments.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-6 py-12 text-center text-gray-500"
+                          >
+                            No payments found matching your search
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedPayments.map((payment) => (
+                          <tr
+                            key={payment.id}
+                            className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => navigate(`/payments/${payment.id}`)}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                              #{payment.identifier}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {format(new Date(payment.dueDate), 'MMM d, yyyy')}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                              {payment.currency} {payment.amount.toFixed(2)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <PaymentStatusBadge status={payment.status} />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {payment.paymentDate
+                                ? format(
+                                    new Date(payment.paymentDate),
+                                    'MMM d, yyyy'
+                                  )
+                                : '-'}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {paymentsTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-600">
+                      Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1}{' '}
+                      to{' '}
+                      {Math.min(
+                        paymentsCurrentPage * paymentsPerPage,
+                        filteredAndSortedPayments.length
+                      )}{' '}
+                      of {filteredAndSortedPayments.length} payments
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setPaymentsCurrentPage(paymentsCurrentPage - 1)
+                        }
+                        disabled={paymentsCurrentPage === 1}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-1 text-sm text-gray-600">
+                        Page {paymentsCurrentPage} of {paymentsTotalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setPaymentsCurrentPage(paymentsCurrentPage + 1)
+                        }
+                        disabled={paymentsCurrentPage === paymentsTotalPages}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {activeTab === 'documents' && (
           <div className="bg-white rounded-lg shadow p-6">
             <DocumentList
@@ -483,80 +789,93 @@ export const ContractDetailPage = () => {
 
         {activeTab === 'history' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Audit History
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Contract History
             </h2>
             {auditLoading ? (
-              <LoadingSpinner />
+              <div className="flex items-center justify-center py-8">
+                <LoadingSpinner />
+              </div>
             ) : auditError ? (
-              <ErrorMessage message="Failed to load audit history" />
-            ) : auditLog.length === 0 ? (
-              <p className="text-gray-600">No history available</p>
-            ) : (
-              <div className="space-y-3">
-                {auditLog.map((item) => {
-                  const isExpanded = expandedAuditItems.has(item.id);
+              <ErrorMessage message="Failed to load history" />
+            ) : auditLog.length > 0 ? (
+              <div className="space-y-4">
+                {auditLog.map((activity) => {
+                  const isExpanded = expandedAuditItems.has(activity.id);
                   const hasChanges =
-                    item.changedFields &&
-                    Object.keys(item.changedFields).length > 0;
+                    activity.action === 'UPDATE' &&
+                    activity.changedFields &&
+                    Object.keys(activity.changedFields).length > 0;
 
                   return (
                     <div
-                      key={item.id}
-                      className="border border-gray-200 rounded-lg"
+                      key={activity.id}
+                      className="border border-gray-200 rounded-lg overflow-hidden"
                     >
                       <div
-                        className={`p-4 ${
+                        className={`flex items-start gap-4 p-4 transition-colors ${
                           hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
                         }`}
-                        onClick={() => hasChanges && toggleAuditItem(item.id)}
+                        onClick={() =>
+                          hasChanges &&
+                          setExpandedAuditItems((prev) => {
+                            const newSet = new Set(prev);
+                            if (newSet.has(activity.id)) {
+                              newSet.delete(activity.id);
+                            } else {
+                              newSet.add(activity.id);
+                            }
+                            return newSet;
+                          })
+                        }
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900">
-                                {item.action}
-                              </span>
-                              <span className="text-gray-500">·</span>
-                              <span className="text-sm text-gray-600">
-                                {item.entityName || 'Contract'}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {item.description}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                              <span>{item.userName || 'System'}</span>
-                              <span>·</span>
-                              <span
-                                title={format(
-                                  new Date(item.timestamp),
-                                  "PPpp 'UTC'"
-                                )}
-                                className="cursor-help"
-                              >
-                                {formatDistanceToNow(new Date(item.timestamp), {
-                                  addSuffix: true,
-                                })}
-                              </span>
-                            </div>
-                          </div>
+                        <div
+                          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                            activity.action === 'CREATE'
+                              ? 'bg-green-100'
+                              : activity.action === 'UPDATE'
+                                ? 'bg-blue-100'
+                                : 'bg-red-100'
+                          }`}
+                        >
+                          <span
+                            className={`text-xs font-semibold ${
+                              activity.action === 'CREATE'
+                                ? 'text-green-700'
+                                : activity.action === 'UPDATE'
+                                  ? 'text-blue-700'
+                                  : 'text-red-700'
+                            }`}
+                          >
+                            {activity.action.charAt(0)}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {activity.description}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {formatDistanceToNow(new Date(activity.timestamp), {
+                              addSuffix: true,
+                            })}
+                          </p>
                           {hasChanges && (
-                            <ChevronDown
-                              className={`h-5 w-5 text-gray-400 transition-transform ${
-                                isExpanded ? 'rotate-180' : ''
-                              }`}
-                            />
+                            <p className="text-xs text-blue-600 mt-1">
+                              {isExpanded
+                                ? 'Click to hide changes'
+                                : 'Click to view changes'}
+                            </p>
                           )}
                         </div>
                       </div>
+
                       {isExpanded && hasChanges && (
-                        <div className="border-t border-gray-200 p-4 bg-gray-50">
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">
-                            Changes
+                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">
+                            Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(item.changedFields!)
+                            {Object.entries(activity.changedFields!)
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal fields for document operations
@@ -567,30 +886,33 @@ export const ContractDetailPage = () => {
                                   field === 'documentAdded' ||
                                   field === 'documentRemoved'
                                 ) {
-                                  const category = item.changedFields?.category;
-                                  const title = item.changedFields?.title;
+                                  const category = activity.changedFields?.category;
+                                  const title = activity.changedFields?.title;
                                   return (
-                                    <div key={field} className="text-sm">
-                                      <div className="font-medium text-gray-700 mb-1">
+                                    <div
+                                      key={field}
+                                      className="bg-white rounded p-2 text-xs"
+                                    >
+                                      <div className="font-semibold text-gray-700 mb-1">
                                         File Name
                                       </div>
-                                      <div className="ml-4 text-gray-900">
+                                      <div className="text-gray-900">
                                         {String(value)}
                                       </div>
                                       {title ? (
                                         <>
-                                          <div className="font-medium text-gray-700 mb-1 mt-2">
+                                          <div className="font-semibold text-gray-700 mb-1 mt-2">
                                             Title
                                           </div>
-                                          <div className="ml-4 text-gray-900">
+                                          <div className="text-gray-900">
                                             {String(title)}
                                           </div>
                                         </>
                                       ) : null}
-                                      <div className="font-medium text-gray-700 mb-1 mt-2">
+                                      <div className="font-semibold text-gray-700 mb-1 mt-2">
                                         Type
                                       </div>
-                                      <div className="ml-4 text-gray-900">
+                                      <div className="text-gray-900">
                                         {category === 'PHOTO'
                                           ? 'Photo'
                                           : 'Document'}
@@ -602,82 +924,44 @@ export const ContractDetailPage = () => {
                                 // Skip category and title for document operations (already shown above)
                                 if (
                                   (field === 'category' || field === 'title') &&
-                                  (item.changedFields?.documentAdded ||
-                                    item.changedFields?.documentRemoved)
+                                  (activity.changedFields?.documentAdded ||
+                                    activity.changedFields?.documentRemoved)
                                 ) {
                                   return null;
                                 }
 
-                                const isRichText =
-                                  field === 'notes' ||
-                                  field === 'termsAndConditions' ||
-                                  field === 'statusChangeReason';
-                                const oldValue = item.oldValues?.[field];
-                                const newValue = item.newValues?.[field];
-
-                                // For statusChangeReason, only show the new value (it's metadata, not a change)
-                                if (field === 'statusChangeReason') {
-                                  return (
-                                    <div key={field} className="text-sm">
-                                      <span className="font-medium text-gray-700">
-                                        Reason:
-                                      </span>
-                                      <div className="ml-4 mt-1">
-                                        <div className="text-gray-900">
-                                          {value &&
-                                          typeof value === 'string' ? (
-                                            <RichTextDisplay content={value} />
-                                          ) : (
-                                            <span>{String(value ?? '')}</span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                }
-
                                 return (
-                                  <div key={field} className="text-sm">
-                                    <span className="font-medium text-gray-700">
-                                      {field}:
-                                    </span>
-                                    <div className="ml-4 mt-1">
-                                      {oldValue !== undefined && (
-                                        <div className="text-red-600">
-                                          <div className="flex gap-1">
-                                            <span>-</span>
-                                            {isRichText && oldValue ? (
-                                              <div className="flex-1">
-                                                <RichTextDisplay
-                                                  content={String(oldValue)}
-                                                />
-                                              </div>
-                                            ) : (
-                                              <span>
-                                                {String(oldValue ?? '')}
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {newValue !== undefined && (
-                                        <div className="text-green-600">
-                                          <div className="flex gap-1">
-                                            <span>+</span>
-                                            {isRichText && newValue ? (
-                                              <div className="flex-1">
-                                                <RichTextDisplay
-                                                  content={String(newValue)}
-                                                />
-                                              </div>
-                                            ) : (
-                                              <span>
-                                                {String(newValue ?? '')}
-                                              </span>
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
+                                  <div
+                                    key={field}
+                                    className="bg-white rounded p-2 text-xs"
+                                  >
+                                    <div className="font-semibold text-gray-700 mb-1">
+                                      {field
+                                        .replace(/([A-Z])/g, ' $1')
+                                        .replace(/^./, (str) => str.toUpperCase())
+                                        .trim()}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <span className="text-gray-500">
+                                          Old:{' '}
+                                        </span>
+                                        <span className="text-red-600 line-through">
+                                          {String(
+                                            activity.oldValues?.[field] ?? 'N/A'
+                                          )}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-500">
+                                          New:{' '}
+                                        </span>
+                                        <span className="text-green-600 font-medium">
+                                          {String(
+                                            activity.newValues?.[field] ?? 'N/A'
+                                          )}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 );
@@ -688,6 +972,14 @@ export const ContractDetailPage = () => {
                     </div>
                   );
                 })}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">No history available</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Changes to this contract will appear here
+                </p>
               </div>
             )}
           </div>

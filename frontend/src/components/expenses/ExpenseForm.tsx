@@ -4,9 +4,11 @@ import {
   ExpenseResponse,
   CreateExpenseRequest,
   ExpenseCategory,
+  formatExpenseCategory,
 } from '@/types/expense';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { PropertySelector } from '@/components/common/PropertySelector';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface ExpenseFormProps {
   expense?: ExpenseResponse;
@@ -108,7 +110,7 @@ export const ExpenseForm = ({
         >
           {Object.values(ExpenseCategory).map((cat) => (
             <option key={cat} value={cat}>
-              {cat.replace('_', ' ')}
+              {formatExpenseCategory(cat)}
             </option>
           ))}
         </select>
@@ -153,17 +155,32 @@ export const ExpenseForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Expense Date <span className="text-red-500">*</span>
         </label>
-        <input
-          type="date"
-          value={formData.expenseDate}
-          onChange={(e) =>
-            setFormData({ ...formData, expenseDate: e.target.value })
-          }
-          className={`w-full px-3 py-2 border rounded-md ${
-            errors.expenseDate ? 'border-red-500' : 'border-gray-300'
-          }`}
-          disabled={isLoading}
-        />
+        <div className="flex gap-2">
+          <input
+            type="date"
+            value={formData.expenseDate}
+            onChange={(e) =>
+              setFormData({ ...formData, expenseDate: e.target.value })
+            }
+            className={`flex-1 px-3 py-2 border rounded-md ${
+              errors.expenseDate ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setFormData({
+                ...formData,
+                expenseDate: new Date().toISOString().split('T')[0],
+              })
+            }
+            className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+            disabled={isLoading}
+          >
+            Today
+          </button>
+        </div>
         {errors.expenseDate && (
           <p className="mt-1 text-sm text-red-500">{errors.expenseDate}</p>
         )}
@@ -196,12 +213,11 @@ export const ExpenseForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Notes
         </label>
-        <textarea
-          value={formData.notes}
-          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          disabled={isLoading}
+        <RichTextEditor
+          value={formData.notes || ''}
+          onChange={(value) => setFormData({ ...formData, notes: value })}
+          placeholder="Add any additional notes about this expense..."
+          readOnly={isLoading}
         />
       </div>
 

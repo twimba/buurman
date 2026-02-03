@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface PaymentFormProps {
   payment?: PaymentResponse;
@@ -99,17 +100,32 @@ export const PaymentForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Due Date <span className="text-red-500">*</span>
         </label>
-        <input
-          type="date"
-          value={formData.dueDate}
-          onChange={(e) =>
-            setFormData({ ...formData, dueDate: e.target.value })
-          }
-          className={`w-full px-3 py-2 border rounded-md ${
-            errors.dueDate ? 'border-red-500' : 'border-gray-300'
-          }`}
-          disabled={isLoading}
-        />
+        <div className="flex gap-2">
+          <input
+            type="date"
+            value={formData.dueDate}
+            onChange={(e) =>
+              setFormData({ ...formData, dueDate: e.target.value })
+            }
+            className={`flex-1 px-3 py-2 border rounded-md ${
+              errors.dueDate ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setFormData({
+                ...formData,
+                dueDate: new Date().toISOString().split('T')[0],
+              })
+            }
+            className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+            disabled={isLoading}
+          >
+            Today
+          </button>
+        </div>
         {errors.dueDate && (
           <p className="mt-1 text-sm text-red-500">{errors.dueDate}</p>
         )}
@@ -120,12 +136,11 @@ export const PaymentForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Notes
         </label>
-        <textarea
-          value={formData.notes}
-          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          disabled={isLoading}
+        <RichTextEditor
+          value={formData.notes || ''}
+          onChange={(value) => setFormData({ ...formData, notes: value })}
+          placeholder="Add any additional notes about this payment..."
+          readOnly={isLoading}
         />
       </div>
 

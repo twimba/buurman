@@ -152,6 +152,9 @@ export const useUploadTenantDocument = (tenantId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['tenantAuditLog', tenantId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
+      });
     },
   });
 };
@@ -174,6 +177,9 @@ export const useUploadTenantPhoto = (tenantId: string) => {
         queryKey: ['tenantAuditLog', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
+      });
     },
   });
 };
@@ -204,6 +210,9 @@ export const useDeleteTenantDocument = (tenantId: string) => {
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
       queryClient.invalidateQueries({
         queryKey: ['tenantAuditLog', tenantId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
       });
     },
   });

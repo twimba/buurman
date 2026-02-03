@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useProperty,
@@ -12,6 +12,8 @@ import {
   useSetMainPhoto,
 } from '@/hooks/usePropertyHooks';
 import { useContracts } from '@/hooks/useContractHooks';
+import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
+import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { PropertyStatus } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -19,6 +21,7 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { PropertyMap } from '@/components/properties/PropertyMap';
 import { ContractCard } from '@/components/contracts/ContractCard';
+import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import {
   ArrowLeft,
   Edit,
@@ -32,8 +35,12 @@ import {
   Image,
   FileText,
   Plus,
+  Receipt,
+  Search,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 
 const statusColors: Record<PropertyStatus, string> = {
   VACANT: 'bg-green-100 text-green-800',
@@ -53,12 +60,34 @@ export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
-    'info' | 'photos' | 'documents' | 'contracts' | 'audit'
+    'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
   >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
+
+  // Contracts table state
+  const [contractsSearchTerm, setContractsSearchTerm] = useState('');
+  const [contractsSortField, setContractsSortField] = useState<
+    'startDate' | 'rentAmount' | 'status' | 'tenant' | 'contractType'
+  >('startDate');
+  const [contractsSortOrder, setContractsSortOrder] = useState<'asc' | 'desc'>(
+    'desc'
+  );
+  const [contractsCurrentPage, setContractsCurrentPage] = useState(1);
+  const contractsPerPage = 10;
+
+  // Expenses table state
+  const [expensesSearchTerm, setExpensesSearchTerm] = useState('');
+  const [expensesSortField, setExpensesSortField] = useState<
+    'expenseDate' | 'amount' | 'category' | 'description'
+  >('expenseDate');
+  const [expensesSortOrder, setExpensesSortOrder] = useState<'asc' | 'desc'>(
+    'desc'
+  );
+  const [expensesCurrentPage, setExpensesCurrentPage] = useState(1);
+  const expensesPerPage = 10;
 
   const { data: property, isLoading, error } = useProperty(id);
   const {
@@ -84,11 +113,162 @@ export const PropertyDetailPage = () => {
     isLoading: contractsLoading,
     error: contractsError,
   } = useContracts(id ? { propertyId: id } : undefined);
+  const {
+    data: expenses = [],
+    isLoading: expensesLoading,
+    error: expensesError,
+  } = useExpensesByProperty(id);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const uploadPhotoMutation = useUploadPropertyPhoto(id!);
   const setMainPhotoMutation = useSetMainPhoto(id!);
   const deleteDocumentMutation = useDeleteDocument(id!);
+
+  // Contracts filtering, sorting, and pagination
+  const filteredAndSortedContracts = useMemo(() => {
+    if (!contracts) return [];
+
+    let filtered = [...contracts];
+
+    // Apply search filter
+    if (contractsSearchTerm) {
+      const search = contractsSearchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (contract) =>
+          contract.identifier.toLowerCase().includes(search) ||
+          `${contract.tenant.firstName} ${contract.tenant.lastName}`
+            .toLowerCase()
+            .includes(search) ||
+          contract.contractType.toLowerCase().includes(search)
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aVal: any, bVal: any;
+
+      switch (contractsSortField) {
+        case 'startDate':
+          aVal = new Date(a.startDate).getTime();
+          bVal = new Date(b.startDate).getTime();
+          break;
+        case 'rentAmount':
+          aVal = a.rentAmount;
+          bVal = b.rentAmount;
+          break;
+        case 'status':
+          aVal = a.status;
+          bVal = b.status;
+          break;
+        case 'tenant':
+          aVal = `${a.tenant.firstName} ${a.tenant.lastName}`;
+          bVal = `${b.tenant.firstName} ${b.tenant.lastName}`;
+          break;
+        case 'contractType':
+          aVal = a.contractType;
+          bVal = b.contractType;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return contractsSortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return contractsSortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [contracts, contractsSearchTerm, contractsSortField, contractsSortOrder]);
+
+  // Paginated contracts
+  const paginatedContracts = useMemo(() => {
+    const startIndex = (contractsCurrentPage - 1) * contractsPerPage;
+    const endIndex = startIndex + contractsPerPage;
+    return filteredAndSortedContracts.slice(startIndex, endIndex);
+  }, [filteredAndSortedContracts, contractsCurrentPage]);
+
+  const contractsTotalPages = Math.ceil(
+    filteredAndSortedContracts.length / contractsPerPage
+  );
+
+  const handleContractsSort = (field: typeof contractsSortField) => {
+    if (contractsSortField === field) {
+      setContractsSortOrder(contractsSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setContractsSortField(field);
+      setContractsSortOrder('asc');
+    }
+  };
+
+  // Expenses filtering, sorting, and pagination
+  const filteredAndSortedExpenses = useMemo(() => {
+    if (!expenses) return [];
+
+    let filtered = [...expenses];
+
+    // Apply search filter
+    if (expensesSearchTerm) {
+      const search = expensesSearchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (expense) =>
+          expense.identifier.toLowerCase().includes(search) ||
+          expense.description.toLowerCase().includes(search) ||
+          expense.category.toLowerCase().includes(search)
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aVal: any, bVal: any;
+
+      switch (expensesSortField) {
+        case 'expenseDate':
+          aVal = new Date(a.expenseDate).getTime();
+          bVal = new Date(b.expenseDate).getTime();
+          break;
+        case 'amount':
+          aVal = a.amount;
+          bVal = b.amount;
+          break;
+        case 'category':
+          aVal = a.category;
+          bVal = b.category;
+          break;
+        case 'description':
+          aVal = a.description;
+          bVal = b.description;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return expensesSortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return expensesSortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [expenses, expensesSearchTerm, expensesSortField, expensesSortOrder]);
+
+  // Paginated expenses
+  const paginatedExpenses = useMemo(() => {
+    const startIndex = (expensesCurrentPage - 1) * expensesPerPage;
+    const endIndex = startIndex + expensesPerPage;
+    return filteredAndSortedExpenses.slice(startIndex, endIndex);
+  }, [filteredAndSortedExpenses, expensesCurrentPage]);
+
+  const expensesTotalPages = Math.ceil(
+    filteredAndSortedExpenses.length / expensesPerPage
+  );
+
+  const handleExpensesSort = (field: typeof expensesSortField) => {
+    if (expensesSortField === field) {
+      setExpensesSortOrder(expensesSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setExpensesSortField(field);
+      setExpensesSortOrder('asc');
+    }
+  };
 
   const handleDelete = async () => {
     if (!id) return;
@@ -254,6 +434,17 @@ export const PropertyDetailPage = () => {
             >
               <FileText className="h-4 w-4" />
               Contracts {contracts.length > 0 && `(${contracts.length})`}
+            </button>
+            <button
+              onClick={() => setActiveTab('expenses')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'expenses'
+                  ? 'border-blue-600 text-blue-600 font-semibold'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Receipt className="h-4 w-4" />
+              Expenses {expenses.length > 0 && `(${expenses.length})`}
             </button>
             <button
               onClick={() => setActiveTab('audit')}
@@ -434,7 +625,9 @@ export const PropertyDetailPage = () => {
         {activeTab === 'contracts' && (
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Contracts</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Contracts ({filteredAndSortedContracts.length})
+              </h2>
               <button
                 onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
@@ -443,6 +636,7 @@ export const PropertyDetailPage = () => {
                 Add Contract
               </button>
             </div>
+
             {contractsLoading ? (
               <LoadingSpinner />
             ) : contractsError ? (
@@ -462,11 +656,429 @@ export const PropertyDetailPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {contracts.map((contract) => (
-                  <ContractCard key={contract.id} contract={contract} />
-                ))}
+              <>
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by contract #, tenant, type..."
+                      value={contractsSearchTerm}
+                      onChange={(e) => {
+                        setContractsSearchTerm(e.target.value);
+                        setContractsCurrentPage(1);
+                      }}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('startDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Contract #
+                            {contractsSortField === 'startDate' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('tenant')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Tenant
+                            {contractsSortField === 'tenant' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('contractType')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Type
+                            {contractsSortField === 'contractType' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('startDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Start Date
+                            {contractsSortField === 'startDate' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          End Date
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('rentAmount')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Rent Amount
+                            {contractsSortField === 'rentAmount' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleContractsSort('status')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Status
+                            {contractsSortField === 'status' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedContracts.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={7}
+                            className="px-6 py-12 text-center text-gray-500"
+                          >
+                            No contracts found matching your search
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedContracts.map((contract) => (
+                          <tr
+                            key={contract.id}
+                            onClick={() =>
+                              navigate(`/contracts/${contract.id}`)
+                            }
+                            className="hover:bg-gray-50 cursor-pointer transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-blue-600">
+                                #{contract.identifier}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {contract.tenant.firstName}{' '}
+                                {contract.tenant.lastName}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {contract.contractType.replace('_', ' ')}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {format(
+                                  new Date(contract.startDate),
+                                  'MMM d, yyyy'
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">
+                                {contract.endDate
+                                  ? format(
+                                      new Date(contract.endDate),
+                                      'MMM d, yyyy'
+                                    )
+                                  : '-'}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {contract.currency}{' '}
+                                {contract.rentAmount.toFixed(2)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <ContractStatusBadge status={contract.status} />
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {contractsTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-600">
+                      Showing{' '}
+                      {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
+                      {Math.min(
+                        contractsCurrentPage * contractsPerPage,
+                        filteredAndSortedContracts.length
+                      )}{' '}
+                      of {filteredAndSortedContracts.length} contracts
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setContractsCurrentPage(contractsCurrentPage - 1)
+                        }
+                        disabled={contractsCurrentPage === 1}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-1 text-sm text-gray-600">
+                        Page {contractsCurrentPage} of {contractsTotalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setContractsCurrentPage(contractsCurrentPage + 1)
+                        }
+                        disabled={contractsCurrentPage === contractsTotalPages}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'expenses' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Expenses ({filteredAndSortedExpenses.length})
+              </h2>
+              <button
+                onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                Add Expense
+              </button>
+            </div>
+
+            {expensesLoading ? (
+              <LoadingSpinner />
+            ) : expensesError ? (
+              <ErrorMessage message="Failed to load expenses" />
+            ) : expenses.length === 0 ? (
+              <div className="text-center py-12">
+                <Receipt className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-600 mb-4">
+                  No expenses for this property
+                </p>
+                <button
+                  onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Create First Expense
+                </button>
               </div>
+            ) : (
+              <>
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by expense #, description, category..."
+                      value={expensesSearchTerm}
+                      onChange={(e) => {
+                        setExpensesSearchTerm(e.target.value);
+                        setExpensesCurrentPage(1);
+                      }}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Expense #
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleExpensesSort('expenseDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Date
+                            {expensesSortField === 'expenseDate' &&
+                              (expensesSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleExpensesSort('description')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Description
+                            {expensesSortField === 'description' &&
+                              (expensesSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleExpensesSort('category')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Category
+                            {expensesSortField === 'category' &&
+                              (expensesSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleExpensesSort('amount')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Amount
+                            {expensesSortField === 'amount' &&
+                              (expensesSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedExpenses.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-6 py-12 text-center text-gray-500"
+                          >
+                            No expenses found matching your search
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedExpenses.map((expense) => (
+                          <tr
+                            key={expense.id}
+                            className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => navigate(`/expenses/${expense.id}`)}
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                              #{expense.identifier}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {format(
+                                new Date(expense.expenseDate),
+                                'MMM d, yyyy'
+                              )}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-900">
+                              {expense.description}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <ExpenseCategoryBadge
+                                category={expense.category}
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                              {expense.currency} {expense.amount.toFixed(2)}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {expensesTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-600">
+                      Showing {(expensesCurrentPage - 1) * expensesPerPage + 1}{' '}
+                      to{' '}
+                      {Math.min(
+                        expensesCurrentPage * expensesPerPage,
+                        filteredAndSortedExpenses.length
+                      )}{' '}
+                      of {filteredAndSortedExpenses.length} expenses
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setExpensesCurrentPage(expensesCurrentPage - 1)
+                        }
+                        disabled={expensesCurrentPage === 1}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-1 text-sm text-gray-600">
+                        Page {expensesCurrentPage} of {expensesTotalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setExpensesCurrentPage(expensesCurrentPage + 1)
+                        }
+                        disabled={expensesCurrentPage === expensesTotalPages}
+                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

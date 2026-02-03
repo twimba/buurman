@@ -66,3 +66,20 @@ export interface GetExpensesParams {
   category?: ExpenseCategory;
   propertyId?: string;
 }
+
+export const formatExpenseCategory = (category: ExpenseCategory): string => {
+  const categoryLabels: Record<ExpenseCategory, string> = {
+    [ExpenseCategory.MAINTENANCE]: 'Maintenance',
+    [ExpenseCategory.REPAIR]: 'Repair',
+    [ExpenseCategory.UTILITY]: 'Utility',
+    [ExpenseCategory.TAX]: 'Tax',
+    [ExpenseCategory.INSURANCE]: 'Insurance',
+    [ExpenseCategory.LEGAL]: 'Legal',
+    [ExpenseCategory.MARKETING]: 'Marketing',
+    [ExpenseCategory.CLEANING]: 'Cleaning',
+    [ExpenseCategory.LANDSCAPING]: 'Landscaping',
+    [ExpenseCategory.PROPERTY_MANAGEMENT]: 'Property Management',
+    [ExpenseCategory.OTHER]: 'Other',
+  };
+  return categoryLabels[category];
+};

@@ -5,8 +5,12 @@ import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PaymentResponse;
+import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.AuditService;
+import com.buurman.service.DocumentService;
 import com.buurman.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,8 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -27,9 +34,13 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final DocumentService documentService;
+    private final AuditService auditService;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, DocumentService documentService, AuditService auditService) {
         this.paymentService = paymentService;
+        this.documentService = documentService;
+        this.auditService = auditService;
     }
 
     @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
@@ -116,5 +127,53 @@ public class PaymentController {
             @PathVariable UUID id,
             @AuthenticationPrincipal UserPrincipal principal) {
         paymentService.deletePayment(id, principal);
+    }
+
+    @Operation(summary = "Upload document", description = "Upload a document for a payment (Admin/Editor)")
+    @PostMapping("/{id}/documents")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public DocumentResponse uploadDocument(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String notes,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return documentService.uploadDocument(file, "PAYMENT", id, title, notes, principal);
+    }
+
+    @Operation(summary = "List documents", description = "Get all documents for a payment")
+    @GetMapping("/{id}/documents")
+    public List<DocumentResponse> getDocuments(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return documentService.getDocuments("PAYMENT", id, principal);
+    }
+
+    @Operation(summary = "Get download URL", description = "Get presigned download URL for a document")
+    @GetMapping("/documents/{documentId}/download")
+    public Map<String, String> getDownloadUrl(
+            @PathVariable UUID documentId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        URL url = documentService.getDownloadUrl(documentId, principal);
+        return Map.of("url", url.toString());
+    }
+
+    @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
+    @DeleteMapping("/documents/{documentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+    public void deleteDocument(
+            @PathVariable UUID documentId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        documentService.deleteDocument(documentId, principal);
+    }
+
+    @Operation(summary = "Get audit log", description = "Get audit history for a payment")
+    @GetMapping("/{id}/audit-log")
+    public List<RecentActivityResponse> getPaymentAuditLog(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", id);
     }
 }
