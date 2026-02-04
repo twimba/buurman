@@ -66,7 +66,7 @@ export const PropertySelector = ({
           }
         }}
         disabled={disabled}
-        className="w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 hover:border-blue-600 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 disabled:bg-gray-100 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-left text-gray-900 dark:text-gray-100"
+        className="w-full flex items-center justify-between border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 bg-white dark:bg-[#1e2130] hover:border-[#5c7cfa] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:bg-[#1e2130] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed text-left text-[#1a1d2e] dark:text-[#eef0f6]"
       >
         {selectedProperty ? (
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -77,42 +77,42 @@ export const PropertySelector = ({
                 className="w-8 h-8 rounded object-cover flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
-                <Home className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <div className="w-8 h-8 rounded bg-[#e8ecf4] dark:bg-[#1e2130] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">
+                <Home className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
               </div>
             )}
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">
                 {selectedProperty.street}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              <div className="text-xs text-[#6b7194] dark:text-[#8b90a8] truncate">
                 {selectedProperty.city} • #{selectedProperty.identifier}
               </div>
             </div>
           </div>
         ) : (
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
             Select a property
           </span>
         )}
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg dark:shadow-gray-900 max-h-96 overflow-hidden">
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-96 overflow-hidden">
           {/* Search input */}
-          <div className="p-2 border-b border-gray-200 dark:border-gray-600">
+          <div className="p-2 border-b border-[#e2e6f0] dark:border-[#3a3f54]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
               <input
                 ref={inputRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search properties..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] focus:outline-none bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] dark:placeholder-[#9ca0b8]"
               />
             </div>
           </div>
@@ -120,11 +120,11 @@ export const PropertySelector = ({
           {/* Property list */}
           <div className="overflow-y-auto max-h-80">
             {isLoading ? (
-              <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Loading properties...
               </div>
             ) : filteredProperties.length === 0 ? (
-              <div className="px-3 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 No properties found
               </div>
             ) : (
@@ -133,7 +133,7 @@ export const PropertySelector = ({
                   key={property.id}
                   type="button"
                   onClick={() => handleSelect(property.id)}
-                  className={`w-full text-left px-3 py-3 hover:bg-blue-50 dark:hover:bg-gray-600 flex items-center gap-3 ${
+                  className={`w-full text-left px-3 py-3 hover:bg-blue-50 dark:hover:bg-[#3a3f54] flex items-center gap-3 ${
                     property.id === value ? 'bg-blue-100 dark:bg-blue-900' : ''
                   }`}
                 >
@@ -144,18 +144,18 @@ export const PropertySelector = ({
                       className="w-10 h-10 rounded object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
-                      <Home className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <div className="w-10 h-10 rounded bg-[#e8ecf4] dark:bg-[#1e2130] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">
+                      <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {property.street}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                       {property.city}, {property.postalCode}
                     </div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500">
+                    <div className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
                       #{property.identifier}
                     </div>
                   </div>

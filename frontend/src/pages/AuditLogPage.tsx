@@ -44,13 +44,13 @@ const getActionColor = (action: string) => {
     case 'CREATE':
       return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200';
     case 'UPDATE':
-      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200';
+      return 'bg-primary-100 dark:bg-primary-500/10 text-blue-800 dark:text-blue-200';
     case 'DELETE':
       return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200';
     case 'RESTORE':
       return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200';
     default:
-      return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
+      return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]';
   }
 };
 
@@ -67,7 +67,7 @@ const getEntityTypeColor = (entityType: string) => {
     case 'EXPENSE':
       return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200';
     default:
-      return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
+      return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]';
   }
 };
 
@@ -212,12 +212,12 @@ export const AuditLogPage = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <ClipboardList className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              <ClipboardList className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Activity Log
               </h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 ml-11">
+            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
               Track all changes and actions across your data
             </p>
           </div>
@@ -226,25 +226,25 @@ export const AuditLogPage = () => {
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by user, property address, tenant name/email, identifier..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             />
           </div>
         </div>
 
         {/* Filters */}
-        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Entity Type Filter */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                   Entity Type
                 </h3>
               </div>
@@ -258,8 +258,8 @@ export const AuditLogPage = () => {
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       entityTypeFilter === filter.value
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        ? 'bg-[#5c7cfa] text-white'
+                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
                     }`}
                   >
                     {filter.label}
@@ -271,8 +271,8 @@ export const AuditLogPage = () => {
             {/* Action Filter */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                   Action
                 </h3>
               </div>
@@ -286,8 +286,8 @@ export const AuditLogPage = () => {
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       actionFilter === filter.value
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        ? 'bg-[#5c7cfa] text-white'
+                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
                     }`}
                   >
                     {filter.label}
@@ -299,7 +299,7 @@ export const AuditLogPage = () => {
         </div>
 
         {/* Activity Count */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
           {sortedActivities.length}{' '}
           {sortedActivities.length === 1 ? 'activity' : 'activities'}
         </p>
@@ -307,12 +307,12 @@ export const AuditLogPage = () => {
         {/* Activities Table */}
         {sortedActivities.length > 0 ? (
           <>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden mb-4">
+              <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+                <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       onClick={() => handleSort('timestamp')}
                     >
                       <div className="flex items-center gap-1">
@@ -321,7 +321,7 @@ export const AuditLogPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       onClick={() => handleSort('entityType')}
                     >
                       <div className="flex items-center gap-1">
@@ -330,7 +330,7 @@ export const AuditLogPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       onClick={() => handleSort('action')}
                     >
                       <div className="flex items-center gap-1">
@@ -338,11 +338,11 @@ export const AuditLogPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                       Description
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       onClick={() => handleSort('userName')}
                     >
                       <div className="flex items-center gap-1">
@@ -350,12 +350,12 @@ export const AuditLogPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                       Details
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
                   {paginatedActivities.map((activity) => {
                     const isExpanded = expandedItems.has(activity.id);
                     const hasChanges =
@@ -367,14 +367,14 @@ export const AuditLogPage = () => {
                       <>
                         <tr
                           key={activity.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                          className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
                         >
                           <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                            className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
                             onClick={() => handleRowClick(activity)}
                           >
                             <div>{formatDate(activity.timestamp)}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                               {format(new Date(activity.timestamp), 'HH:mm:ss')}
                             </div>
                           </td>
@@ -399,25 +399,25 @@ export const AuditLogPage = () => {
                             </span>
                           </td>
                           <td
-                            className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100"
+                            className="px-6 py-4 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
                             onClick={() => handleRowClick(activity)}
                           >
                             {activity.description}
                           </td>
                           <td
-                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+                            className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
                             onClick={() => handleRowClick(activity)}
                           >
                             {activity.userName}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
                             {hasChanges && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleExpanded(activity.id);
                                 }}
-                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1"
+                                className="text-primary-500 dark:text-primary-300 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1"
                               >
                                 {isExpanded ? (
                                   <>
@@ -438,10 +438,10 @@ export const AuditLogPage = () => {
                           <tr key={`${activity.id}-details`}>
                             <td
                               colSpan={6}
-                              className="px-6 py-4 bg-gray-50 dark:bg-gray-900"
+                              className="px-6 py-4 bg-[#f8f9fc] dark:bg-[#0c0d14]"
                             >
                               <div className="space-y-2">
-                                <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase mb-2">
+                                <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase mb-2">
                                   Changed Fields
                                 </h4>
                                 {Object.entries(activity.changedFields!).map(
@@ -457,12 +457,12 @@ export const AuditLogPage = () => {
                                       return (
                                         <div
                                           key={field}
-                                          className="bg-white dark:bg-gray-800 rounded p-3 text-xs"
+                                          className="bg-white dark:bg-[#14161f] rounded p-3 text-xs"
                                         >
-                                          <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
                                             File Name
                                           </div>
-                                          <div className="text-gray-900 dark:text-gray-100">
+                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                             {String(value)}
                                           </div>
                                         </div>
@@ -477,17 +477,17 @@ export const AuditLogPage = () => {
                                     return (
                                       <div
                                         key={field}
-                                        className="bg-white dark:bg-gray-800 rounded p-3 text-xs"
+                                        className="bg-white dark:bg-[#14161f] rounded p-3 text-xs"
                                       >
-                                        <div className="font-semibold text-gray-700 dark:text-gray-300 mb-1 capitalize">
+                                        <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 capitalize">
                                           {field.replace(/([A-Z])/g, ' $1')}
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <div className="text-gray-500 dark:text-gray-400 mb-1">
+                                            <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
                                               Before
                                             </div>
-                                            <div className="text-gray-900 dark:text-gray-100">
+                                            <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                               {oldValue !== null &&
                                               oldValue !== undefined
                                                 ? String(oldValue)
@@ -495,10 +495,10 @@ export const AuditLogPage = () => {
                                             </div>
                                           </div>
                                           <div>
-                                            <div className="text-gray-500 dark:text-gray-400 mb-1">
+                                            <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
                                               After
                                             </div>
-                                            <div className="text-gray-900 dark:text-gray-100 font-semibold">
+                                            <div className="text-[#1a1d2e] dark:text-[#eef0f6] font-semibold">
                                               {newValue !== null &&
                                               newValue !== undefined
                                                 ? String(newValue)
@@ -523,8 +523,8 @@ export const AuditLogPage = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-gray-800 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                <div className="text-sm text-gray-700 dark:text-gray-300">
+              <div className="flex items-center justify-between bg-white dark:bg-[#14161f] px-4 py-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
+                <div className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
                   Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
                   {Math.min(
                     currentPage * ITEMS_PER_PAGE,
@@ -536,18 +536,18 @@ export const AuditLogPage = () => {
                   <button
                     onClick={() => setCurrentPage(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-gray-700 dark:text-gray-300"
+                    className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                   </button>
-                  <span className="px-3 py-1 text-sm text-gray-700 dark:text-gray-300">
+                  <span className="px-3 py-1 text-sm text-[#3d4463] dark:text-[#c4c8db]">
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-gray-700 dark:text-gray-300"
+                    className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
                   >
                     Next
                     <ChevronRight className="h-4 w-4" />
@@ -557,12 +557,12 @@ export const AuditLogPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
-            <ClipboardList className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-12 text-center">
+            <ClipboardList className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
               No activities found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-[#6b7194] dark:text-[#8b90a8]">
               {entityTypeFilter || actionFilter || searchTerm
                 ? 'Try adjusting your filters or search'
                 : 'No activity has been logged yet'}

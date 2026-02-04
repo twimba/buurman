@@ -20,46 +20,50 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: `
-    bg-gradient-to-b from-blue-500 to-blue-600
+    bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5]
     text-white
-    border border-blue-600
-    shadow-sm shadow-blue-500/25
-    hover:from-blue-600 hover:to-blue-700 hover:border-blue-700
-    hover:shadow-md hover:shadow-blue-500/30
-    active:from-blue-700 active:to-blue-800
-    focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2
-    disabled:from-blue-300 disabled:to-blue-400 disabled:border-blue-300 disabled:shadow-none
+    border border-[#4263eb]
+    shadow-sm shadow-[#5c7cfa]/20
+    hover:from-[#4c6ef5] hover:to-[#4263eb] hover:border-[#3b5bdb]
+    hover:shadow-md hover:shadow-[#5c7cfa]/30
+    active:from-[#4263eb] active:to-[#3b5bdb]
+    focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/50 focus-visible:ring-offset-2
+    dark:focus-visible:ring-offset-[#14161f]
+    disabled:from-[#bac8ff] disabled:to-[#bac8ff] disabled:border-[#bac8ff] disabled:shadow-none
   `,
   secondary: `
-    bg-white dark:bg-gray-800
-    text-gray-700 dark:text-gray-300
-    border border-gray-200 dark:border-gray-600
+    bg-white dark:bg-[#1a1d28]
+    text-[#3d4463] dark:text-[#c4c8db]
+    border border-[#e2e6f0] dark:border-[#2a2e3f]
     shadow-sm
-    hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 hover:text-gray-900 dark:hover:text-gray-100
+    hover:bg-[#f1f3f9] dark:hover:bg-[#262a3a] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]
     hover:shadow
-    active:bg-gray-100 dark:active:bg-gray-600
-    focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2
-    disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:border-gray-200 dark:disabled:border-gray-600 disabled:shadow-none
+    active:bg-[#e8ecf4] dark:active:bg-[#2a2e3f]
+    focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/30 focus-visible:ring-offset-2
+    dark:focus-visible:ring-offset-[#14161f]
+    disabled:bg-[#f1f3f9] dark:disabled:bg-[#1a1d28] disabled:text-[#9ca0b8] disabled:border-[#e2e6f0] dark:disabled:border-[#2a2e3f] disabled:shadow-none
   `,
   danger: `
-    bg-white dark:bg-gray-800
+    bg-white dark:bg-[#1a1d28]
     text-red-600 dark:text-red-400
-    border border-red-200 dark:border-red-900
+    border border-red-200 dark:border-red-500/25
     shadow-sm
-    hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-300 dark:hover:border-red-700 hover:text-red-700 dark:hover:text-red-300
+    hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-300 dark:hover:border-red-500/40 hover:text-red-700 dark:hover:text-red-300
     hover:shadow
-    active:bg-red-100 dark:active:bg-red-900
+    active:bg-red-100 dark:active:bg-red-500/15
     focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2
-    disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 disabled:border-gray-200 dark:disabled:border-gray-600 disabled:shadow-none
+    dark:focus-visible:ring-offset-[#14161f]
+    disabled:bg-[#f1f3f9] dark:disabled:bg-[#1a1d28] disabled:text-[#9ca0b8] disabled:border-[#e2e6f0] dark:disabled:border-[#2a2e3f] disabled:shadow-none
   `,
   ghost: `
     bg-transparent
-    text-gray-600 dark:text-gray-400
+    text-[#6b7194] dark:text-[#8b90a8]
     border border-transparent
-    hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100
-    active:bg-gray-200 dark:active:bg-gray-600
-    focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2
-    disabled:text-gray-400 dark:disabled:text-gray-500 disabled:bg-transparent
+    hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]
+    active:bg-[#e8ecf4] dark:active:bg-[#262a3a]
+    focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/30 focus-visible:ring-offset-2
+    dark:focus-visible:ring-offset-[#14161f]
+    disabled:text-[#9ca0b8] dark:disabled:text-[#5c6180] disabled:bg-transparent
   `,
   success: `
     bg-gradient-to-b from-emerald-500 to-emerald-600
@@ -70,6 +74,7 @@ const variantStyles: Record<ButtonVariant, string> = {
     hover:shadow-md hover:shadow-emerald-500/30
     active:from-emerald-700 active:to-emerald-800
     focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2
+    dark:focus-visible:ring-offset-[#14161f]
     disabled:from-emerald-300 disabled:to-emerald-400 disabled:border-emerald-300 disabled:shadow-none
   `,
 };

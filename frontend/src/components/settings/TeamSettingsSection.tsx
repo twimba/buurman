@@ -63,9 +63,9 @@ export const TeamSettingsSection = () => {
   };
 
   const roleColors: Record<Role, string> = {
-    TEAM_ADMIN: 'bg-purple-100 text-purple-800',
-    TEAM_EDITOR: 'bg-blue-100 text-blue-800',
-    TEAM_VIEWER: 'bg-gray-100 text-gray-800',
+    TEAM_ADMIN: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+    TEAM_EDITOR: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+    TEAM_VIEWER: 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
   };
 
   const selectedMember = members?.find((m) => m.memberId === selectedMemberId);
@@ -135,7 +135,7 @@ export const TeamSettingsSection = () => {
   if (teamLoading || membersLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
       </div>
     );
   }
@@ -143,12 +143,12 @@ export const TeamSettingsSection = () => {
   return (
     <div className="space-y-6">
       {/* Team Name Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
+        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
             Team Settings
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
             Manage your team name and basic information
           </p>
         </div>
@@ -156,7 +156,7 @@ export const TeamSettingsSection = () => {
         <div className="p-6">
           <div className="flex items-center gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 Team Name
               </label>
               {isEditingTeamName ? (
@@ -164,10 +164,10 @@ export const TeamSettingsSection = () => {
                   type="text"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               ) : (
-                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                   {team?.teamName}
                 </p>
               )}
@@ -178,7 +178,7 @@ export const TeamSettingsSection = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setIsEditingTeamName(false)}
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                      className="px-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
                     >
                       <X className="h-4 w-4" />
                       Cancel
@@ -186,7 +186,7 @@ export const TeamSettingsSection = () => {
                     <button
                       onClick={handleSaveTeamName}
                       disabled={updateTeamMutation.isPending}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                      className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50"
                     >
                       {updateTeamMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -199,7 +199,7 @@ export const TeamSettingsSection = () => {
                 ) : (
                   <button
                     onClick={handleStartEditTeamName}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2"
                   >
                     <Edit3 className="h-4 w-4" />
                     Edit
@@ -212,21 +212,21 @@ export const TeamSettingsSection = () => {
       </div>
 
       {/* Team Members Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
+        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Team Members
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 {members?.length || 0} member{members?.length !== 1 ? 's' : ''}
               </p>
             </div>
             {canManageMembers && (
               <button
                 onClick={() => setShowInviteModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2"
               >
                 <UserPlus className="h-4 w-4" />
                 Invite Member
@@ -235,38 +235,38 @@ export const TeamSettingsSection = () => {
           </div>
         </div>
 
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
           {members?.map((member) => (
             <div
               key={member.memberId}
-              className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="p-6 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-blue-600" />
+                  <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-[#5c7cfa] dark:text-[#91a7ff]" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-900 dark:text-gray-100">
+                      <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                         {member.name}
                       </p>
                       {member.isCurrentUser && (
-                        <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded">
+                        <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-semibold rounded">
                           You
                         </span>
                       )}
                       {member.isOwner && (
-                        <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded flex items-center gap-1">
+                        <span className="px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs font-semibold rounded flex items-center gap-1">
                           <Crown className="h-3 w-3" />
                           Owner
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                       {member.email}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                       Joined {formatDate(member.joinedAt)}
                     </p>
                   </div>
@@ -279,7 +279,7 @@ export const TeamSettingsSection = () => {
                     >
                       {roleLabels[member.role as Role]}
                     </span>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                       {roleDescriptions[member.role as Role]}
                     </p>
                   </div>
@@ -291,7 +291,7 @@ export const TeamSettingsSection = () => {
                           setNewRole(member.role as Role);
                           setShowRoleModal(true);
                         }}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                         title="Change role"
                       >
                         <Edit3 className="h-4 w-4" />
@@ -313,7 +313,7 @@ export const TeamSettingsSection = () => {
                           setSelectedMemberId(member.memberId);
                           setShowRemoveModal(true);
                         }}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Remove member"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -328,12 +328,12 @@ export const TeamSettingsSection = () => {
       </div>
 
       {/* Roles Reference Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
+        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
             Roles & Permissions
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
             Understanding team member roles
           </p>
         </div>
@@ -342,14 +342,14 @@ export const TeamSettingsSection = () => {
           {Object.entries(roleLabels).map(([role, label]) => (
             <div
               key={role}
-              className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+              className="flex items-start gap-3 p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg"
             >
-              <Shield className="h-5 w-5 text-gray-600 dark:text-gray-400 mt-0.5" />
+              <Shield className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] mt-0.5" />
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                   {label}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                   {roleDescriptions[role as Role]}
                 </p>
               </div>
@@ -360,42 +360,42 @@ export const TeamSettingsSection = () => {
 
       {/* Invite Member Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Invite Team Member
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 Send an invitation to join your team
               </p>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="member@example.com"
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-3 py-2 border border-[#c9cfd9] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                   Role
                 </label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as Role)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   {Object.entries(roleLabels).map(([role, label]) => (
                     <option key={role} value={role}>
@@ -406,17 +406,17 @@ export const TeamSettingsSection = () => {
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-[#e2e6f0] flex justify-end gap-3">
               <button
                 onClick={() => setShowInviteModal(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-[#c9cfd9] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleInviteMember}
                 disabled={createInvitationMutation.isPending || !inviteEmail}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {createInvitationMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -430,25 +430,25 @@ export const TeamSettingsSection = () => {
 
       {/* Change Role Modal */}
       {showRoleModal && selectedMember && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Change Member Role
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 Update role for {selectedMember.name}
               </p>
             </div>
 
             <div className="p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 New Role
               </label>
               <select
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value as Role)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[#c9cfd9] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {Object.entries(roleLabels).map(([role, label]) => (
                   <option key={role} value={role}>
@@ -458,20 +458,20 @@ export const TeamSettingsSection = () => {
               </select>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-[#e2e6f0] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowRoleModal(false);
                   setSelectedMemberId(null);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-[#c9cfd9] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateRole}
                 disabled={updateRoleMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {updateRoleMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -485,16 +485,16 @@ export const TeamSettingsSection = () => {
 
       {/* Transfer Ownership Modal */}
       {showTransferModal && selectedMember && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Transfer Ownership
               </h3>
             </div>
 
             <div className="p-6">
-              <p className="text-gray-700">
+              <p className="text-[#3d4463] dark:text-[#c4c8db]">
                 Are you sure you want to transfer team ownership to{' '}
                 <span className="font-semibold">{selectedMember.name}</span>?
                 This action cannot be undone by you. The new owner will have
@@ -502,13 +502,13 @@ export const TeamSettingsSection = () => {
               </p>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-[#e2e6f0] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowTransferModal(false);
                   setSelectedMemberId(null);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-[#c9cfd9] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
               >
                 Cancel
               </button>
@@ -529,29 +529,29 @@ export const TeamSettingsSection = () => {
 
       {/* Remove Member Modal */}
       {showRemoveModal && selectedMember && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Remove Team Member
               </h3>
             </div>
 
             <div className="p-6">
-              <p className="text-gray-700">
+              <p className="text-[#3d4463] dark:text-[#c4c8db]">
                 Are you sure you want to remove{' '}
                 <span className="font-semibold">{selectedMember.name}</span>{' '}
                 from your team? They will lose access to all team data.
               </p>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+            <div className="p-6 border-t border-[#e2e6f0] flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowRemoveModal(false);
                   setSelectedMemberId(null);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-[#c9cfd9] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
               >
                 Cancel
               </button>

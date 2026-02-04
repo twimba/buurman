@@ -27,8 +27,8 @@ export default function GeneratePaymentsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-900 w-full max-w-md p-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+      <div className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-md p-6">
+        <h3 className="text-lg font-semibold mb-4 text-[#1a1d2e] dark:text-[#eef0f6]">
           Generate Payments
         </h3>
 
@@ -36,7 +36,7 @@ export default function GeneratePaymentsModal({
           <div className="mb-4">
             <label
               htmlFor="count"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1"
             >
               Number of payments to generate
             </label>
@@ -51,10 +51,10 @@ export default function GeneratePaymentsModal({
                   Math.max(1, Math.min(24, parseInt(e.target.value) || 1))
                 )
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               disabled={isLoading}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
               Payments will be generated for the next {count} period(s) based on
               the contract&apos;s payment frequency.
             </p>
@@ -64,14 +64,14 @@ export default function GeneratePaymentsModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+              className="px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
               disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50"
+              className="px-4 py-2 text-sm text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md disabled:opacity-50"
               disabled={isLoading}
             >
               {isLoading

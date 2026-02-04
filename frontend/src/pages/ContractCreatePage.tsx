@@ -17,23 +17,23 @@ export const ContractCreatePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#0c0d14]">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => navigate('/contracts')}
-            className="p-2 hover:bg-gray-200 rounded transition-colors"
+            className="p-2 hover:bg-[#e8ecf4] dark:bg-[#1e2130] rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
             Add New Contract
           </h1>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
           <ContractForm
             onSubmit={handleSubmit}
             isLoading={createContractMutation.isPending}

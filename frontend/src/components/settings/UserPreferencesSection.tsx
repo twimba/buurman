@@ -13,10 +13,12 @@ import {
   useUserPreferences,
   useUpdateUserPreferences,
 } from '../../hooks/useUserPreferencesHooks';
+import { useTheme } from '../../context/ThemeContext';
 
 export const UserPreferencesSection = () => {
   const { data: preferencesData, isLoading } = useUserPreferences();
   const updatePreferencesMutation = useUpdateUserPreferences();
+  const { setTheme } = useTheme();
 
   const [preferences, setPreferences] = useState({
     theme: 'light',
@@ -45,6 +47,8 @@ export const UserPreferencesSection = () => {
   const handleThemeChange = (theme: string) => {
     setPreferences((prev) => ({ ...prev, theme }));
     setHasChanges(true);
+    // Apply theme immediately without waiting for save
+    setTheme(theme as 'light' | 'dark' | 'system');
   };
 
   const handleLanguageChange = (language: string) => {
@@ -111,21 +115,21 @@ export const UserPreferencesSection = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
+        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 User Preferences
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 Customize your personal experience
               </p>
             </div>
@@ -133,7 +137,7 @@ export const UserPreferencesSection = () => {
               <button
                 onClick={handleSave}
                 disabled={updatePreferencesMutation.isPending}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 {updatePreferencesMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -150,14 +154,14 @@ export const UserPreferencesSection = () => {
           {/* Theme Settings */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <Moon className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Appearance
               </h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-3">
                 Theme
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -165,12 +169,12 @@ export const UserPreferencesSection = () => {
                   onClick={() => handleThemeChange('light')}
                   className={`p-4 border-2 rounded-lg transition-colors ${
                     preferences.theme === 'light'
-                      ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                      ? 'border-[#5c7cfa] dark:border-blue-400 bg-primary-50 dark:bg-primary-500/10'
+                      : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9] dark:hover:border-[#c9cfd9] dark:border-[#3a3f54]'
                   }`}
                 >
                   <Sun className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     Light
                   </p>
                 </button>
@@ -178,12 +182,12 @@ export const UserPreferencesSection = () => {
                   onClick={() => handleThemeChange('dark')}
                   className={`p-4 border-2 rounded-lg transition-colors ${
                     preferences.theme === 'dark'
-                      ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                      ? 'border-[#5c7cfa] dark:border-blue-400 bg-primary-50 dark:bg-primary-500/10'
+                      : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9] dark:hover:border-[#c9cfd9] dark:border-[#3a3f54]'
                   }`}
                 >
                   <Moon className="h-6 w-6 mx-auto text-indigo-500 mb-2" />
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     Dark
                   </p>
                 </button>
@@ -191,43 +195,43 @@ export const UserPreferencesSection = () => {
                   onClick={() => handleThemeChange('system')}
                   className={`p-4 border-2 rounded-lg transition-colors ${
                     preferences.theme === 'system'
-                      ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                      ? 'border-[#5c7cfa] dark:border-blue-400 bg-primary-50 dark:bg-primary-500/10'
+                      : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9] dark:hover:border-[#c9cfd9] dark:border-[#3a3f54]'
                   }`}
                 >
                   <div className="flex justify-center gap-1 mb-2">
                     <Sun className="h-5 w-5 text-yellow-500" />
                     <Moon className="h-5 w-5 text-indigo-500" />
                   </div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     Auto
                   </p>
                 </button>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
                 Auto mode follows your system preferences
               </p>
             </div>
           </div>
 
           {/* Language & Region */}
-          <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="space-y-4 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
             <div className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <Globe className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Language & Region
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                   Language
                 </label>
                 <select
                   value={preferences.language}
                   onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#1e2130] dark:text-[#eef0f6]"
                 >
                   {languages.map((lang) => (
                     <option key={lang.value} value={lang.value}>
@@ -238,13 +242,13 @@ export const UserPreferencesSection = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                   Date Format
                 </label>
                 <select
                   value={preferences.dateFormat}
                   onChange={(e) => handleDateFormatChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#1e2130] dark:text-[#eef0f6]"
                 >
                   {dateFormats.map((format) => (
                     <option key={format.value} value={format.value}>
@@ -257,10 +261,10 @@ export const UserPreferencesSection = () => {
           </div>
 
           {/* Timezone */}
-          <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="space-y-4 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
             <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <Clock className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Timezone
               </h3>
             </div>
@@ -269,7 +273,7 @@ export const UserPreferencesSection = () => {
               <select
                 value={preferences.timezone}
                 onChange={(e) => handleTimezoneChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-[#1e2130] dark:text-[#eef0f6]"
               >
                 {timezones.map((tz) => (
                   <option key={tz.value} value={tz.value}>
@@ -281,23 +285,23 @@ export const UserPreferencesSection = () => {
           </div>
 
           {/* Notification Settings */}
-          <div className="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="space-y-4 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
             <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <Bell className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Notifications
               </h3>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       Email Notifications
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                       Receive important updates via email
                     </p>
                   </div>
@@ -306,8 +310,8 @@ export const UserPreferencesSection = () => {
                   onClick={handleEmailNotificationsToggle}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     preferences.emailNotifications
-                      ? 'bg-blue-600'
-                      : 'bg-gray-300'
+                      ? 'bg-[#5c7cfa]'
+                      : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
                   }`}
                 >
                   <span
@@ -320,14 +324,14 @@ export const UserPreferencesSection = () => {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
                 <div className="flex items-center gap-3">
-                  <Bell className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  <Bell className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       In-App Notifications
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                       Show notifications within the application
                     </p>
                   </div>
@@ -336,8 +340,8 @@ export const UserPreferencesSection = () => {
                   onClick={handleInAppNotificationsToggle}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     preferences.inAppNotifications
-                      ? 'bg-blue-600'
-                      : 'bg-gray-300'
+                      ? 'bg-[#5c7cfa]'
+                      : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
                   }`}
                 >
                   <span
@@ -351,7 +355,7 @@ export const UserPreferencesSection = () => {
               </div>
             </div>
 
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
               Team-specific notification settings can be configured in the Team
               Preferences section
             </p>

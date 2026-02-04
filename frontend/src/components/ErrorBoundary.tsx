@@ -26,27 +26,27 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-background dark:bg-gray-900">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md dark:shadow-gray-900 max-w-md">
+        <div className="flex items-center justify-center min-h-screen bg-background dark:bg-[#0c0d14]">
+          <div className="bg-white dark:bg-[#14161f] p-8 rounded-lg shadow-md max-w-md">
             <h1 className="text-2xl font-bold mb-4 text-red-600 dark:text-red-400">
               Something went wrong
             </h1>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
+            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-4">
               An error occurred while loading the application.
             </p>
             {this.state.error && (
               <details className="mb-4">
-                <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400">
+                <summary className="cursor-pointer text-sm text-[#6b7194] dark:text-[#8b90a8]">
                   Error details
                 </summary>
-                <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 dark:text-gray-300 p-2 rounded overflow-auto">
+                <pre className="mt-2 text-xs bg-[#f1f3f9] dark:bg-[#1e2130] dark:text-[#c4c8db] p-2 rounded overflow-auto">
                   {this.state.error.message}
                 </pre>
               </details>
             )}
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-[#5c7cfa] text-white py-2 px-4 rounded hover:bg-[#4c6ef5] dark:hover:bg-[#5c7cfa] transition-colors flex items-center justify-center gap-2"
             >
               <RefreshCw className="h-4 w-4" />
               Reload Page

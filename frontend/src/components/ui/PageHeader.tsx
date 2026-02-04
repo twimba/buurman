@@ -31,7 +31,7 @@ export const PageHeader = ({
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 -mx-4 px-4 py-4 mb-6">
+    <div className="bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm border-b border-[#e2e6f0] dark:border-[#2a2e3f] -mx-4 px-4 py-4 mb-6">
       <div>
         <div className="flex items-center justify-between gap-6">
           {/* Left side: Back button + content */}
@@ -41,9 +41,9 @@ export const PageHeader = ({
               className="
                 flex-shrink-0
                 p-2 -ml-2
-                text-gray-400 dark:text-gray-500
-                hover:text-gray-600 dark:hover:text-gray-300
-                hover:bg-gray-100 dark:hover:bg-gray-700
+                text-[#9ca0b8] dark:text-[#5c6180]
+                hover:text-[#3d4463] dark:hover:text-[#c4c8db]
+                hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]
                 rounded-lg
                 transition-colors
               "
@@ -56,7 +56,7 @@ export const PageHeader = ({
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+                <h1 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] truncate">
                   {title}
                 </h1>
                 {badge}
@@ -64,15 +64,15 @@ export const PageHeader = ({
               {(subtitle || description) && (
                 <div className="flex items-center gap-2 mt-0.5">
                   {subtitle && (
-                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] font-medium">
                       {subtitle}
                     </span>
                   )}
                   {subtitle && description && (
-                    <span className="text-gray-300 dark:text-gray-600">·</span>
+                    <span className="text-[#c9cfd9] dark:text-[#3a3f54]">·</span>
                   )}
                   {description && (
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                       {description}
                     </span>
                   )}

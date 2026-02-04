@@ -54,16 +54,16 @@ export const ChangeContractStatusModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-900 max-w-md w-full mx-4">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-md w-full mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <div className="flex items-center justify-between p-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
             Change Contract Status
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:text-[#8b90a8] dark:hover:text-[#c4c8db]"
             disabled={isLoading}
           >
             <X className="h-5 w-5" />
@@ -75,10 +75,10 @@ export const ChangeContractStatusModal = ({
           <div className="p-4 space-y-4">
             {/* Current Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 Current Status
               </label>
-              <p className="text-sm text-gray-900 dark:text-gray-100">
+              <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                 {statusLabels[currentStatus]}
               </p>
             </div>
@@ -89,7 +89,7 @@ export const ChangeContractStatusModal = ({
                 <div>
                   <label
                     htmlFor="newStatus"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1"
                   >
                     New Status
                   </label>
@@ -99,7 +99,7 @@ export const ChangeContractStatusModal = ({
                     onChange={(e) =>
                       setSelectedStatus(e.target.value as ContractStatus)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
                     disabled={isLoading}
                   >
                     {validTransitions.map((status) => (
@@ -114,7 +114,7 @@ export const ChangeContractStatusModal = ({
                 <div>
                   <label
                     htmlFor="reason"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1"
                   >
                     Reason (Optional)
                   </label>
@@ -126,7 +126,7 @@ export const ChangeContractStatusModal = ({
                 </div>
               </>
             ) : (
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 No valid status transitions available from{' '}
                 {statusLabels[currentStatus]}.
               </div>
@@ -134,11 +134,11 @@ export const ChangeContractStatusModal = ({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-3 p-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
+              className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#3a3f54]"
               disabled={isLoading}
             >
               Cancel
@@ -146,7 +146,7 @@ export const ChangeContractStatusModal = ({
             {validTransitions.length > 0 && (
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? 'Changing...' : 'Change Status'}

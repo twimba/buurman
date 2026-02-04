@@ -49,18 +49,18 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
       case 'error':
         return <AlertCircle className="h-5 w-5 text-red-600" />;
       case 'info':
-        return <Info className="h-5 w-5 text-blue-600" />;
+        return <Info className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff]" />;
     }
   };
 
   const getStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200 text-green-900';
+        return 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-900 dark:text-green-200';
       case 'error':
-        return 'bg-red-50 border-red-200 text-red-900';
+        return 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-900 dark:text-red-200';
       case 'info':
-        return 'bg-blue-50 border-blue-200 text-blue-900';
+        return 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-200';
     }
   };
 

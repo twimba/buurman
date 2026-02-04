@@ -12,7 +12,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
   return (
     <div
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
+      className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
       onClick={() => navigate(`/tenants/${tenant.id}`)}
     >
       {/* Tenant Name with Avatar */}
@@ -24,10 +24,10 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           size="md"
         />
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
             {tenant.firstName} {tenant.lastName}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
             #{tenant.identifier}
           </p>
         </div>
@@ -35,12 +35,12 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
       {/* Contact Info */}
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8]">
           <Mail className="h-4 w-4" />
           <span className="text-sm">{tenant.email}</span>
         </div>
         {tenant.phone && (
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8]">
             <Phone className="h-4 w-4" />
             <span className="text-sm">{tenant.phone}</span>
           </div>
@@ -56,7 +56,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           </span>
         </div>
       ) : (
-        <div className="text-sm text-gray-400 dark:text-gray-500 italic">
+        <div className="text-sm text-[#9ca0b8] dark:text-[#5c6180] italic">
           No property assigned
         </div>
       )}

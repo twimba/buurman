@@ -61,7 +61,7 @@ export const SettingsPage = () => {
         {/* Work in Progress Banner */}
         {showBanner && (
           <div className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-[2px] shadow-xl">
-            <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-6 flex items-start gap-4">
+            <div className="relative bg-white dark:bg-[#14161f] rounded-2xl p-6 flex items-start gap-4">
               <div className="flex-shrink-0">
                 <div className="relative">
                   <Construction className="h-8 w-8 text-purple-600 animate-bounce" />
@@ -69,10 +69,10 @@ export const SettingsPage = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+                <h3 className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-1">
                   🚧 We&apos;re Cooking Something Special! 🚧
                 </h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                <p className="text-[#3d4463] dark:text-[#c4c8db] text-sm leading-relaxed">
                   Our settings page is like a fine wine - still aging to
                   perfection! 🍷 Some features are fully functional (feel free
                   to click around!), while others are getting their final
@@ -81,27 +81,27 @@ export const SettingsPage = () => {
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white dark:border-gray-800 animate-pulse" />
+                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white dark:border-[#2a2e3f] animate-pulse" />
                     <div
-                      className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white dark:border-gray-800 animate-pulse"
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white dark:border-[#2a2e3f] animate-pulse"
                       style={{ animationDelay: '150ms' }}
                     />
                     <div
-                      className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white dark:border-gray-800 animate-pulse"
+                      className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white dark:border-[#2a2e3f] animate-pulse"
                       style={{ animationDelay: '300ms' }}
                     />
                   </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 italic">
+                  <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] italic">
                     Progress: Frontend 100% • Backend 0% • Vibes 200% 🎉
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowBanner(false)}
-                className="flex-shrink-0 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+                className="flex-shrink-0 p-2 rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors group"
                 aria-label="Dismiss banner"
               >
-                <X className="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
+                <X className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] group-hover:text-[#6b7194] dark:text-[#8b90a8] dark:group-hover:text-[#c4c8db]" />
               </button>
             </div>
           </div>
@@ -111,12 +111,12 @@ export const SettingsPage = () => {
         <div className="mb-8">
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
-              <SettingsIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              <SettingsIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Settings
               </h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 ml-11">
+            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
               Manage your personal profile and team-specific settings
             </p>
           </div>
@@ -125,12 +125,12 @@ export const SettingsPage = () => {
           {requiresAdminAccess && (
             <div className="mb-6 flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-100 dark:border-blue-800 rounded-lg">
               <div className="flex items-center gap-3">
-                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Shield className="h-5 w-5 text-primary-500 dark:text-primary-300" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                     Managing: {activeTeam?.name}
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                     Role:{' '}
                     {activeTeam?.role === 'TEAM_ADMIN'
                       ? 'Admin'
@@ -153,11 +153,11 @@ export const SettingsPage = () => {
           )}
 
           {/* Horizontal Tabs with Sections */}
-          <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
             <nav className="-mb-px flex space-x-1 overflow-x-auto">
               {/* Personal Section */}
               <div className="flex items-center gap-1">
-                <div className="flex items-center px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                <div className="flex items-center px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                   Personal
                 </div>
                 {personalTabs.map((tab) => {
@@ -171,16 +171,16 @@ export const SettingsPage = () => {
                         group inline-flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
                         ${
                           isActive
-                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                            : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+                            ? 'border-[#5c7cfa] text-primary-500 dark:text-primary-300 dark:border-blue-400'
+                            : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54]'
                         }
                       `}
                     >
                       <Icon
                         className={`h-5 w-5 ${
                           isActive
-                            ? 'text-blue-600 dark:text-blue-400'
-                            : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
+                            ? 'text-primary-500 dark:text-primary-300'
+                            : 'text-[#9ca0b8] dark:text-[#5c6180] group-hover:text-[#6b7194] dark:text-[#8b90a8] dark:group-hover:text-[#c4c8db]'
                         }`}
                       />
                       {tab.label}
@@ -191,12 +191,12 @@ export const SettingsPage = () => {
 
               {/* Divider */}
               <div className="flex items-center px-2">
-                <div className="h-8 w-px bg-gray-300"></div>
+                <div className="h-8 w-px bg-[#c9cfd9] dark:bg-[#3a3f54]"></div>
               </div>
 
               {/* Team Section */}
               <div className="flex items-center gap-1">
-                <div className="flex items-center px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <div className="flex items-center px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                   Team
                 </div>
                 {teamTabs.map((tab) => {
@@ -210,8 +210,8 @@ export const SettingsPage = () => {
                         group inline-flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
                         ${
                           isActive
-                            ? 'border-blue-600 text-blue-600'
-                            : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                            ? 'border-[#5c7cfa] text-blue-600'
+                            : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:border-[#c9cfd9]'
                         }
                       `}
                     >
@@ -219,7 +219,7 @@ export const SettingsPage = () => {
                         className={`h-5 w-5 ${
                           isActive
                             ? 'text-blue-600'
-                            : 'text-gray-400 group-hover:text-gray-600'
+                            : 'text-[#9ca0b8] dark:text-[#5c6180] group-hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
                         }`}
                       />
                       {tab.label}
@@ -232,8 +232,8 @@ export const SettingsPage = () => {
 
           {/* Helper Text */}
           {!requiresAdminAccess && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-              <p className="text-xs text-blue-800 flex items-center gap-2">
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg">
+              <p className="text-xs text-blue-800 dark:text-blue-300 flex items-center gap-2">
                 <User className="h-4 w-4 flex-shrink-0" />
                 <span>
                   <strong>Personal settings</strong> apply to your account
@@ -281,20 +281,20 @@ export const SettingsPage = () => {
 // Permission Denied Component
 const PermissionDenied = ({ section }: { section: string }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-12 text-center">
+    <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-12 text-center">
       <div className="flex justify-center mb-4">
-        <div className="h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
+        <div className="h-16 w-16 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
           <Shield className="h-8 w-8 text-yellow-600" />
         </div>
       </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">
+      <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
         Admin Access Required
       </h3>
-      <p className="text-gray-600 mb-4">
+      <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
         You don&apos;t have permission to access <strong>{section}</strong> for
         this team.
       </p>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
         Only team administrators can manage these settings. Contact your team
         owner if you need access.
       </p>

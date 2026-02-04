@@ -151,7 +151,7 @@ export const DocumentsPage = () => {
     if (mimeType.startsWith('image/')) {
       return <ImageIcon className="h-8 w-8 text-blue-500" />;
     }
-    return <FileText className="h-8 w-8 text-gray-500" />;
+    return <FileText className="h-8 w-8 text-[#6b7194] dark:text-[#8b90a8]" />;
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -164,38 +164,38 @@ export const DocumentsPage = () => {
     <div className="px-4 py-8">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
-          <Folder className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <Folder className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+          <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
             Document Library
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 ml-11">
+        <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
           Search and manage all your documents in one place
         </p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-4 mb-6">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="text"
               placeholder="Search documents by title, filename, or notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6]"
             />
           </div>
 
           {/* Entity Type Filter */}
           <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <select
               value={entityTypeFilter}
               onChange={(e) => setEntityTypeFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6]"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -209,14 +209,14 @@ export const DocumentsPage = () => {
 
         {/* Bulk Actions */}
         {selectedDocuments.size > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center gap-4">
+            <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               {selectedDocuments.size} document(s) selected
             </span>
             <button
               onClick={handleBulkDownload}
               disabled={bulkDownloadMutation.isPending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] flex items-center gap-2 disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               {bulkDownloadMutation.isPending
@@ -230,25 +230,25 @@ export const DocumentsPage = () => {
       {/* Document List */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e2130] dark:border-[#edf0f7] dark:border-[#2a2e3f]"></div>
+          <p className="mt-2 text-[#6b7194] dark:text-[#8b90a8]">
             Loading documents...
           </p>
         </div>
       ) : !documents || documents.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900">
-          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">No documents found</p>
+        <div className="text-center py-12 bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
+          <FileText className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
+          <p className="text-[#6b7194] dark:text-[#8b90a8]">No documents found</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
+        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden">
+          <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+            <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
               <tr>
                 <th className="px-6 py-3 text-left">
                   <button
                     onClick={handleSelectAll}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
                   >
                     {sortedDocuments &&
                     selectedDocuments.size === sortedDocuments.length ? (
@@ -259,7 +259,7 @@ export const DocumentsPage = () => {
                   </button>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                   onClick={() => handleSort('title')}
                 >
                   <div className="flex items-center gap-1">
@@ -273,7 +273,7 @@ export const DocumentsPage = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                   onClick={() => handleSort('entityType')}
                 >
                   <div className="flex items-center gap-1">
@@ -287,7 +287,7 @@ export const DocumentsPage = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                   onClick={() => handleSort('fileSize')}
                 >
                   <div className="flex items-center gap-1">
@@ -301,7 +301,7 @@ export const DocumentsPage = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                   onClick={() => handleSort('uploadedAt')}
                 >
                   <div className="flex items-center gap-1">
@@ -314,17 +314,17 @@ export const DocumentsPage = () => {
                       ))}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
               {paginatedDocuments.map((doc) => (
                 <tr
                   key={doc.id}
-                  className={`hover:bg-gray-50 cursor-pointer ${
-                    selectedDocuments.has(doc.id) ? 'bg-blue-50' : ''
+                  className={`hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer ${
+                    selectedDocuments.has(doc.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                   }`}
                   onClick={() => setPreviewDocument(doc)}
                 >
@@ -334,10 +334,10 @@ export const DocumentsPage = () => {
                   >
                     <button
                       onClick={() => handleSelectDocument(doc.id)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
                     >
                       {selectedDocuments.has(doc.id) ? (
-                        <CheckSquare className="h-5 w-5 text-blue-600" />
+                        <CheckSquare className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff]" />
                       ) : (
                         <Square className="h-5 w-5" />
                       )}
@@ -347,16 +347,16 @@ export const DocumentsPage = () => {
                     <div className="flex items-center gap-3">
                       {getFileIcon(doc.mimeType)}
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                           {doc.title ?? doc.fileName}
                         </div>
                         {doc.title && doc.title !== doc.fileName ? (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                             {doc.fileName}
                           </div>
                         ) : null}
                         {doc.notes ? (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                             {doc.notes}
                           </div>
                         ) : null}
@@ -381,15 +381,15 @@ export const DocumentsPage = () => {
                                     : '#';
                         if (entityPath !== '#') navigate(entityPath);
                       }}
-                      className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 hover:bg-blue-100 hover:text-blue-800 transition-colors"
+                      className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db] hover:bg-blue-100 hover:text-blue-800 transition-colors"
                     >
                       {doc.entityType}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
                     {formatFileSize(doc.fileSize)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
                     {formatDate(doc.uploadedAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -401,7 +401,7 @@ export const DocumentsPage = () => {
                         href={doc.downloadUrl || undefined}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-[#5c7cfa] hover:text-blue-900"
                         title="Download"
                       >
                         <Download className="h-4 w-4" />
@@ -424,8 +424,8 @@ export const DocumentsPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+            <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
+              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
                 {Math.min(currentPage * itemsPerPage, sortedDocuments.length)}{' '}
                 of {sortedDocuments.length} documents
@@ -434,17 +434,17 @@ export const DocumentsPage = () => {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
                 >
                   Previous
                 </button>
-                <span className="px-3 py-1 text-sm text-gray-600">
+                <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
                 >
                   Next
                 </button>

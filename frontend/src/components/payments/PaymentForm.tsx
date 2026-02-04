@@ -69,7 +69,7 @@ export const PaymentForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
         <input
@@ -82,7 +82,7 @@ export const PaymentForm = ({
           className={`w-full px-3 py-2 border rounded-md ${
             errors.amount
               ? 'border-red-500'
-              : 'border-gray-300 dark:border-gray-600'
+              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
           }`}
           disabled={isLoading}
         />
@@ -93,7 +93,7 @@ export const PaymentForm = ({
 
       {/* Currency */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Currency
         </label>
         <CurrencySelector
@@ -105,7 +105,7 @@ export const PaymentForm = ({
 
       {/* Due Date */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Due Date <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2">
@@ -116,7 +116,7 @@ export const PaymentForm = ({
               setFormData({ ...formData, dueDate: e.target.value })
             }
             className={`flex-1 px-3 py-2 border rounded-md ${
-              errors.dueDate ? 'border-red-500' : 'border-gray-300'
+              errors.dueDate ? 'border-red-500' : 'border-[#c9cfd9] dark:border-[#3a3f54]'
             }`}
             disabled={isLoading}
           />
@@ -128,7 +128,7 @@ export const PaymentForm = ({
                 dueDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] border border-[#c9cfd9] rounded-md transition-colors"
             disabled={isLoading}
           >
             Today
@@ -142,7 +142,7 @@ export const PaymentForm = ({
       {/* Payment Date - only show when editing */}
       {payment && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
             Payment Date
           </label>
           <div className="flex gap-2">
@@ -152,14 +152,14 @@ export const PaymentForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, paymentDate: e.target.value })
               }
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
+              className="flex-1 px-3 py-2 border border-[#c9cfd9] rounded-md"
               disabled={isLoading}
             />
             {formData.paymentDate && (
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, paymentDate: '' })}
-                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] border border-[#c9cfd9] rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Clear
@@ -171,7 +171,7 @@ export const PaymentForm = ({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Notes
         </label>
         <RichTextEditor
@@ -183,11 +183,11 @@ export const PaymentForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"
+          className="px-4 py-2 text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -195,7 +195,7 @@ export const PaymentForm = ({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50"
+          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-2 disabled:opacity-50"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

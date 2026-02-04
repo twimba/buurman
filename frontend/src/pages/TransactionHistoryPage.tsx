@@ -257,26 +257,26 @@ export const TransactionHistoryPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <List className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <List className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />
+            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
               Transaction History
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 ml-11">
+          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
             Complete history of income and expenses
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleDownloadCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"
           >
             <Download className="h-4 w-4" />
             CSV
           </button>
           <button
             onClick={handleDownloadPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
           >
             <FileText className="h-4 w-4" />
             PDF
@@ -286,7 +286,7 @@ export const TransactionHistoryPage = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-sm dark:shadow-gray-900 p-6 border border-green-200">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm p-6 border border-green-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-green-700 font-medium mb-1">
@@ -300,7 +300,7 @@ export const TransactionHistoryPage = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg shadow-sm dark:shadow-gray-900 p-6 border border-red-200">
+        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border border-red-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-red-700 font-medium mb-1">
@@ -319,7 +319,7 @@ export const TransactionHistoryPage = () => {
             totals.net >= 0
               ? 'from-blue-50 to-blue-100 border-blue-200'
               : 'from-orange-50 to-orange-100 border-orange-200'
-          } rounded-lg shadow-sm dark:shadow-gray-900 p-6 border`}
+          } rounded-xl shadow-sm p-6 border`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -348,11 +348,11 @@ export const TransactionHistoryPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-6 mb-6">
+      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="text"
               placeholder="Search transactions..."
@@ -361,20 +361,20 @@ export const TransactionHistoryPage = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Type Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <select
               value={typeFilter}
               onChange={(e) => {
                 setTypeFilter(e.target.value as TransactionType);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Types</option>
               <option value="INCOME">Income Only</option>
@@ -384,7 +384,7 @@ export const TransactionHistoryPage = () => {
 
           {/* Start Date */}
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="date"
               value={startDate}
@@ -392,13 +392,13 @@ export const TransactionHistoryPage = () => {
                 setStartDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* End Date */}
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="date"
               value={endDate}
@@ -406,7 +406,7 @@ export const TransactionHistoryPage = () => {
                 setEndDate(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -418,18 +418,18 @@ export const TransactionHistoryPage = () => {
           <LoadingSpinner />
         </div>
       ) : filteredAndSortedTransactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-12 text-center">
+          <p className="text-[#6b7194] dark:text-[#8b90a8]">
             No transactions found
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 dark:bg-gray-900">
+        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden">
+          <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+            <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
               <tr>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#1e2130]"
                   onClick={() => handleSort('date')}
                 >
                   <div className="flex items-center gap-1">
@@ -439,17 +439,17 @@ export const TransactionHistoryPage = () => {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                   Property
                 </th>
                 <th
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#1e2130]"
                   onClick={() => handleSort('amount')}
                 >
                   <div className="flex items-center justify-end gap-1">
@@ -461,22 +461,22 @@ export const TransactionHistoryPage = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
               {paginatedTransactions.map((transaction) => (
                 <tr
                   key={`${transaction.type}-${transaction.id}`}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900 cursor-pointer transition-colors"
+                  className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] cursor-pointer transition-colors"
                   onClick={() => handleRowClick(transaction)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                     {formatDate(transaction.date)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         transaction.type === 'INCOME'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                       }`}
                     >
                       {transaction.type === 'INCOME' ? (
@@ -487,10 +487,10 @@ export const TransactionHistoryPage = () => {
                       {transaction.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                     {transaction.description}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 text-sm text-[#6b7194] dark:text-[#8b90a8]">
                     {transaction.property}
                   </td>
                   <td
@@ -510,8 +510,8 @@ export const TransactionHistoryPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
+              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
                 {Math.min(
                   currentPage * itemsPerPage,
@@ -523,17 +523,17 @@ export const TransactionHistoryPage = () => {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14]"
                 >
                   Previous
                 </button>
-                <span className="px-3 py-1 text-sm text-gray-600 dark:text-gray-400">
+                <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-900"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14]"
                 >
                   Next
                 </button>

@@ -32,11 +32,11 @@ const CustomTooltip = ({
     const value = payload[0].value;
     const percentage = ((value / total) * 100).toFixed(1);
     return (
-      <div className="bg-white dark:bg-gray-800 px-4 py-2 shadow-lg dark:shadow-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-        <p className="font-semibold text-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-[#14161f] px-4 py-2 shadow-lg rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
+        <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
           {payload[0].name}
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
           {value} {value === 1 ? 'property' : 'properties'} ({percentage}%)
         </p>
       </div>
@@ -55,9 +55,9 @@ export const PropertyStatusChart = ({
     () =>
       [
         { name: 'Occupied', value: occupied, color: '#10b981' },
-        { name: 'Vacant', value: vacant, color: '#f59e0b' },
-        { name: 'Maintenance', value: maintenance, color: '#f97316' },
-        { name: 'Unavailable', value: unavailable, color: '#6b7280' },
+        { name: 'Vacant', value: vacant, color: '#fcc419' },
+        { name: 'Maintenance', value: maintenance, color: '#f59f00' },
+        { name: 'Unavailable', value: unavailable, color: '#6b7194' },
       ].filter((item) => item.value > 0),
     [occupied, vacant, maintenance, unavailable]
   );
@@ -83,7 +83,7 @@ export const PropertyStatusChart = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
+              <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
                 {entry.value} ({((value / total) * 100).toFixed(0)}%)
               </span>
             </div>
@@ -95,7 +95,7 @@ export const PropertyStatusChart = ({
 
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-center h-64 text-[#6b7194] dark:text-[#8b90a8]">
         <p>No properties to display</p>
       </div>
     );

@@ -17,39 +17,39 @@ export const WorkInProgress = ({
           <div className="relative">
             <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900 rounded-full blur-2xl opacity-50 animate-pulse" />
             <Construction
-              className="h-32 w-32 text-blue-600 dark:text-blue-400 relative"
+              className="h-32 w-32 text-primary-500 dark:text-primary-300 relative"
               strokeWidth={1.5}
             />
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+        <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
           {pageName ? `${pageName} Coming Soon` : 'Coming Soon'}
         </h1>
 
         {/* Message */}
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">
+        <p className="text-lg text-[#6b7194] dark:text-[#8b90a8] mb-2">
           {message}
         </p>
 
         {/* Subtext */}
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
           We&apos;re working hard to bring you this feature. Stay tuned!
         </p>
 
         {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-2">
           <div
-            className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
             style={{ animationDelay: '0ms' }}
           />
           <div
-            className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
             style={{ animationDelay: '150ms' }}
           />
           <div
-            className="h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
             style={{ animationDelay: '300ms' }}
           />
         </div>

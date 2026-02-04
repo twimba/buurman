@@ -133,38 +133,38 @@ export const PhotosPage = () => {
     <div className="px-4 py-8">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
-          <ImageIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <ImageIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+          <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
             Photo Library
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 ml-11">
+        <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
           Browse and manage all your photos in one place
         </p>
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-4 mb-6">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <input
               type="text"
               placeholder="Search photos by title, filename, or notes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
             />
           </div>
 
           {/* Entity Type Filter */}
           <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
             <select
               value={entityTypeFilter}
               onChange={(e) => setEntityTypeFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -178,8 +178,8 @@ export const PhotosPage = () => {
 
         {/* Bulk Actions */}
         {selectedPhotos.size > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center gap-4">
+            <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               {selectedPhotos.size} photo(s) selected
             </span>
           </div>
@@ -189,23 +189,23 @@ export const PhotosPage = () => {
       {/* Photo Grid */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e2130] dark:border-[#edf0f7] dark:border-[#2a2e3f]"></div>
+          <p className="mt-2 text-[#6b7194] dark:text-[#8b90a8]">
             Loading photos...
           </p>
         </div>
       ) : !photos || photos.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900">
-          <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">No photos found</p>
+        <div className="text-center py-12 bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
+          <ImageIcon className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
+          <p className="text-[#6b7194] dark:text-[#8b90a8]">No photos found</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-900 p-6">
+        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleSelectAll}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
               >
                 {sortedPhotos && selectedPhotos.size === sortedPhotos.length ? (
                   <CheckSquare className="h-5 w-5" />
@@ -213,7 +213,7 @@ export const PhotosPage = () => {
                   <Square className="h-5 w-5" />
                 )}
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 {sortedPhotos.length} photo
                 {sortedPhotos.length !== 1 ? 's' : ''}
               </span>
@@ -221,7 +221,7 @@ export const PhotosPage = () => {
 
             {/* Sort Controls */}
             <div className="flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-gray-400" />
+              <ArrowUpDown className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
               <select
                 value={`${sortField}-${sortOrder}`}
                 onChange={(e) => {
@@ -233,7 +233,7 @@ export const PhotosPage = () => {
                   setSortOrder(order);
                   setCurrentPage(1);
                 }}
-                className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="text-sm border border-[#c9cfd9] rounded-md px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="uploadedAt-desc">Newest First</option>
                 <option value="uploadedAt-asc">Oldest First</option>
@@ -254,11 +254,11 @@ export const PhotosPage = () => {
                 className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
                   selectedPhotos.has(photo.id)
                     ? 'border-blue-500'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-[#e2e6f0] hover:border-[#c9cfd9]'
                 }`}
               >
                 <div
-                  className="w-full h-64 cursor-pointer bg-gray-100 relative"
+                  className="w-full h-64 cursor-pointer bg-[#f1f3f9] dark:bg-[#1e2130] relative"
                   onClick={() =>
                     !imageErrors.has(photo.id) && setPreviewPhoto(photo)
                   }
@@ -266,18 +266,18 @@ export const PhotosPage = () => {
                   {!photo.downloadUrl ? (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center p-4">
-                        <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-xs text-gray-500">No URL</p>
+                        <AlertCircle className="h-8 w-8 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-2" />
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">No URL</p>
                       </div>
                     </div>
                   ) : imageErrors.has(photo.id) ? (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center p-4">
                         <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-                        <p className="text-xs text-gray-600 font-medium">
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-medium">
                           Failed to load
                         </p>
-                        <p className="text-xs text-gray-500 mt-1 break-all px-2">
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1 break-all px-2">
                           {photo.downloadUrl.substring(0, 50)}...
                         </p>
                       </div>
@@ -319,10 +319,10 @@ export const PhotosPage = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="p-1 bg-white rounded hover:bg-gray-100 pointer-events-auto"
+                        className="p-1 bg-white dark:bg-[#1e2130] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#3a3f54] pointer-events-auto"
                         title="Download"
                       >
-                        <Download className="h-4 w-4 text-gray-700" />
+                        <Download className="h-4 w-4 text-[#3d4463] dark:text-[#c4c8db]" />
                       </a>
                       {canEditData && (
                         <button
@@ -330,7 +330,7 @@ export const PhotosPage = () => {
                             e.stopPropagation();
                             handleDelete(photo.id);
                           }}
-                          className="p-1 bg-white rounded hover:bg-red-100 pointer-events-auto"
+                          className="p-1 bg-white dark:bg-[#1e2130] rounded hover:bg-red-100 dark:hover:bg-red-900/30 pointer-events-auto"
                           title="Delete"
                         >
                           <Trash2 className="h-4 w-4 text-red-600" />
@@ -341,8 +341,8 @@ export const PhotosPage = () => {
                 </div>
 
                 {/* Info */}
-                <div className="p-2 bg-white">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                <div className="p-2 bg-white dark:bg-[#14161f]">
+                  <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
                     {photo.title ?? photo.fileName}
                   </p>
                   <div className="flex items-center justify-between mt-1">
@@ -363,15 +363,15 @@ export const PhotosPage = () => {
                                     : '#';
                         if (entityPath !== '#') navigate(entityPath);
                       }}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-[#5c7cfa] hover:underline"
                     >
                       {photo.entityType}
                     </button>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                       {formatFileSize(photo.fileSize)}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                     {formatDate(photo.uploadedAt)}
                   </p>
                 </div>
@@ -381,8 +381,8 @@ export const PhotosPage = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-6 pt-6 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-600">
+            <div className="mt-6 pt-6 border-t border-[#e2e6f0] flex items-center justify-between">
+              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
                 {Math.min(currentPage * itemsPerPage, sortedPhotos.length)} of{' '}
                 {sortedPhotos.length} photos
@@ -391,17 +391,17 @@ export const PhotosPage = () => {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
                 >
                   Previous
                 </button>
-                <span className="px-3 py-1 text-sm text-gray-600">
+                <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
                 >
                   Next
                 </button>

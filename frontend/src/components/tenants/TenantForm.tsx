@@ -84,19 +84,19 @@ export const TenantForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Personal Information */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
           Personal Information
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               First Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="John"
             />
             {errors.firstName && (
@@ -107,27 +107,27 @@ export const TenantForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Last Name
             </label>
             <input
               type="text"
               value={formData.lastName || ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="Doe"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="john@example.com"
             />
             {errors.email && (
@@ -138,40 +138,40 @@ export const TenantForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Phone
             </label>
             <input
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="+31 6 1234 5678"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Tax Number
             </label>
             <input
               type="text"
               value={formData.taxNumber || ''}
               onChange={(e) => handleChange('taxNumber', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="123456789"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Government ID Number
             </label>
             <input
               type="text"
               value={formData.idNumber || ''}
               onChange={(e) => handleChange('idNumber', e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="AB123456"
             />
           </div>
@@ -180,7 +180,7 @@ export const TenantForm = ({
 
       {/* Additional Information */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
           Additional Information
         </h3>
         <div>
@@ -193,11 +193,11 @@ export const TenantForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
         <button
           type="button"
           onClick={() => navigate('/tenants')}
-          className="border border-gray-300 dark:border-gray-600 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300"
+          className="border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2 text-[#3d4463] dark:text-[#c4c8db]"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -205,7 +205,7 @@ export const TenantForm = ({
         </button>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

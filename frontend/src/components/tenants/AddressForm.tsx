@@ -164,16 +164,16 @@ export const AddressForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+      className="space-y-6 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg p-6"
     >
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
           {address ? 'Edit Address' : 'Add New Address'}
         </h3>
         <button
           type="button"
           onClick={onCancel}
-          className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+          className="text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:text-[#8b90a8] dark:hover:text-[#9ca0b8] dark:text-[#5c6180]"
         >
           <X className="h-5 w-5" />
         </button>
@@ -182,7 +182,7 @@ export const AddressForm = ({
       {/* Address Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
             Street <span className="text-red-500">*</span>
           </label>
           <input
@@ -190,7 +190,7 @@ export const AddressForm = ({
             value={formData.street}
             onChange={(e) => handleChange('street', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="Main Street 123"
           />
           {errors.street && (
@@ -199,7 +199,7 @@ export const AddressForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
             City <span className="text-red-500">*</span>
           </label>
           <input
@@ -207,7 +207,7 @@ export const AddressForm = ({
             value={formData.city}
             onChange={(e) => handleChange('city', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="Amsterdam"
           />
           {errors.city && (
@@ -216,7 +216,7 @@ export const AddressForm = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
             Postal Code
           </label>
           <input
@@ -224,20 +224,20 @@ export const AddressForm = ({
             value={formData.postalCode}
             onChange={(e) => handleChange('postalCode', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="1012 AB"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
             Country <span className="text-red-500">*</span>
           </label>
           <select
             value={formData.country}
             onChange={(e) => handleChange('country', e.target.value)}
             onBlur={handleAddressBlur}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+            className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
           >
             <option value="">Select a country</option>
             {countries.map((country) => (
@@ -254,7 +254,7 @@ export const AddressForm = ({
         {/* Address Type Selector */}
         {showTypeSelector && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Address Type <span className="text-red-500">*</span>
             </label>
             <select
@@ -262,7 +262,7 @@ export const AddressForm = ({
               onChange={(e) =>
                 handleChange('addressType', e.target.value as AddressType)
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             >
               {Object.values(AddressType).map((type) => (
                 <option key={type} value={type}>
@@ -276,7 +276,7 @@ export const AddressForm = ({
         {/* Status Selector */}
         {showStatusSelector && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Status <span className="text-red-500">*</span>
             </label>
             <select
@@ -284,7 +284,7 @@ export const AddressForm = ({
               onChange={(e) =>
                 handleChange('status', e.target.value as AddressStatus)
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             >
               <option value={AddressStatus.ACTIVE}>Active</option>
               <option value={AddressStatus.INACTIVE}>Inactive</option>
@@ -298,7 +298,7 @@ export const AddressForm = ({
         committedAddress.city &&
         committedAddress.country && (
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
               Location Preview
             </h4>
             <AddressMap
@@ -319,14 +319,14 @@ export const AddressForm = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+          className="px-4 py-2 text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+          className="px-4 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] disabled:opacity-50 flex items-center gap-2"
         >
           <Save className="h-4 w-4" />
           {isLoading ? 'Saving...' : 'Save Address'}

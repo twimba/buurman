@@ -79,7 +79,7 @@ export const ExpenseForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Property */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Property <span className="text-red-500">*</span>
         </label>
         <PropertySelector
@@ -96,7 +96,7 @@ export const ExpenseForm = ({
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Category <span className="text-red-500">*</span>
         </label>
         <select
@@ -107,7 +107,7 @@ export const ExpenseForm = ({
               category: e.target.value as ExpenseCategory,
             })
           }
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md"
+          className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md"
           disabled={isLoading}
         >
           {Object.values(ExpenseCategory).map((cat) => (
@@ -120,7 +120,7 @@ export const ExpenseForm = ({
 
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
         <input
@@ -133,7 +133,7 @@ export const ExpenseForm = ({
           className={`w-full px-3 py-2 border rounded-md ${
             errors.amount
               ? 'border-red-500'
-              : 'border-gray-300 dark:border-gray-600'
+              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
           }`}
           disabled={isLoading}
         />
@@ -144,7 +144,7 @@ export const ExpenseForm = ({
 
       {/* Currency */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Currency
         </label>
         <CurrencySelector
@@ -156,7 +156,7 @@ export const ExpenseForm = ({
 
       {/* Expense Date */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Expense Date <span className="text-red-500">*</span>
         </label>
         <div className="flex gap-2">
@@ -169,7 +169,7 @@ export const ExpenseForm = ({
             className={`flex-1 px-3 py-2 border rounded-md ${
               errors.expenseDate
                 ? 'border-red-500'
-                : 'border-gray-300 dark:border-gray-600'
+                : 'border-[#c9cfd9] dark:border-[#3a3f54]'
             }`}
             disabled={isLoading}
           />
@@ -181,7 +181,7 @@ export const ExpenseForm = ({
                 expenseDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md transition-colors"
             disabled={isLoading}
           >
             Today
@@ -194,7 +194,7 @@ export const ExpenseForm = ({
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Description <span className="text-red-500">*</span>
         </label>
         <input
@@ -206,7 +206,7 @@ export const ExpenseForm = ({
           className={`w-full px-3 py-2 border rounded-md ${
             errors.description
               ? 'border-red-500'
-              : 'border-gray-300 dark:border-gray-600'
+              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
           }`}
           disabled={isLoading}
           placeholder="e.g., Plumbing repair in bathroom"
@@ -218,7 +218,7 @@ export const ExpenseForm = ({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Notes
         </label>
         <RichTextEditor
@@ -230,11 +230,11 @@ export const ExpenseForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+          className="px-4 py-2 text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -242,7 +242,7 @@ export const ExpenseForm = ({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50"
+          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-2 disabled:opacity-50"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

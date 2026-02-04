@@ -53,19 +53,19 @@ export const ContractsPage = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <FileText className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              <FileText className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Contracts
               </h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 ml-11">
+            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
               Manage rental agreements and lease terms
             </p>
           </div>
           <button
             onClick={() => navigate('/contracts/new')}
             disabled={!canEditData}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+            className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
           >
             <Plus className="h-5 w-5" />
             Add Contract
@@ -73,16 +73,16 @@ export const ContractsPage = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Filter className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            <h2 className="font-semibold text-gray-900 dark:text-gray-100">
+            <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+            <h2 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
               Filters
             </h2>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
               Status
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -92,8 +92,8 @@ export const ContractsPage = () => {
                   onClick={() => setStatusFilter(filter.value)}
                   className={`px-4 py-2 rounded transition-colors text-sm ${
                     statusFilter === filter.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      ? 'bg-[#5c7cfa] text-white'
+                      : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
                   }`}
                 >
                   {filter.label}
@@ -104,7 +104,7 @@ export const ContractsPage = () => {
         </div>
 
         {/* Contract Count */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
           {contracts?.length || 0}{' '}
           {contracts?.length === 1 ? 'contract' : 'contracts'}
         </p>
@@ -118,18 +118,18 @@ export const ContractsPage = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-gray-800 rounded-lg">
-            <FileText className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-lg">
+            <FileText className="h-16 w-16 text-[#c9cfd9] dark:text-[#3a3f54] dark:text-[#6b7194] dark:text-[#8b90a8] mb-4" />
+            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
               No contracts yet
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
               Get started by creating your first rental agreement
             </p>
             <button
               onClick={() => navigate('/contracts/new')}
               disabled={!canEditData}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+              className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
             >
               <Plus className="h-5 w-5" />
               Add Contract

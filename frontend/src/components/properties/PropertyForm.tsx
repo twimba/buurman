@@ -202,12 +202,12 @@ export const PropertyForm = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Address Section */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
           Address
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Street <span className="text-red-500">*</span>
             </label>
             <input
@@ -215,7 +215,7 @@ export const PropertyForm = ({
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
               onBlur={handleAddressBlur}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="Main Street 123"
             />
             {errors.street && (
@@ -224,7 +224,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               City <span className="text-red-500">*</span>
             </label>
             <input
@@ -232,7 +232,7 @@ export const PropertyForm = ({
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
               onBlur={handleAddressBlur}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="Amsterdam"
             />
             {errors.city && (
@@ -241,7 +241,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Postal Code <span className="text-red-500">*</span>
             </label>
             <input
@@ -249,7 +249,7 @@ export const PropertyForm = ({
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
               onBlur={handleAddressBlur}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="1012 AB"
             />
             {errors.postalCode && (
@@ -258,14 +258,14 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Country <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.country}
               onChange={(e) => handleChange('country', e.target.value)}
               onBlur={handleAddressBlur}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             >
               <option value="">Select a country</option>
               {countries.map((country) => (
@@ -286,7 +286,7 @@ export const PropertyForm = ({
           committedAddress.postalCode &&
           committedAddress.country && (
             <div className="mt-6">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
                 Location Preview
               </h4>
               <PropertyMap
@@ -304,12 +304,12 @@ export const PropertyForm = ({
 
       {/* Specifications Section */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
           Specifications
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Bedrooms
             </label>
             <input
@@ -322,7 +322,7 @@ export const PropertyForm = ({
                   e.target.value ? parseInt(e.target.value) : null
                 )
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="2"
             />
             {errors.bedrooms && (
@@ -331,7 +331,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Bathrooms
             </label>
             <input
@@ -344,7 +344,7 @@ export const PropertyForm = ({
                   e.target.value ? parseInt(e.target.value) : null
                 )
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="1"
             />
             {errors.bathrooms && (
@@ -353,7 +353,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Square Meters
             </label>
             <input
@@ -367,7 +367,7 @@ export const PropertyForm = ({
                   e.target.value ? parseFloat(e.target.value) : null
                 )
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="75.5"
             />
             {errors.squareMeters && (
@@ -376,7 +376,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Property Type <span className="text-red-500">*</span>
             </label>
             <select
@@ -384,7 +384,7 @@ export const PropertyForm = ({
               onChange={(e) =>
                 handleChange('propertyType', e.target.value as PropertyType)
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             >
               <option value={PropertyType.APARTMENT}>Apartment</option>
               <option value={PropertyType.HOUSE}>House</option>
@@ -394,7 +394,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Status <span className="text-red-500">*</span>
             </label>
             <select
@@ -402,7 +402,7 @@ export const PropertyForm = ({
               onChange={(e) =>
                 handleChange('status', e.target.value as PropertyStatus)
               }
-              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             >
               <option value={PropertyStatus.VACANT}>Vacant</option>
               <option value={PropertyStatus.OCCUPIED}>Occupied</option>
@@ -414,11 +414,11 @@ export const PropertyForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
         <button
           type="button"
           onClick={() => navigate('/properties')}
-          className="border border-gray-300 dark:border-gray-600 px-4 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+          className="border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -426,7 +426,7 @@ export const PropertyForm = ({
         </button>
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

@@ -7,10 +7,10 @@ interface PaymentStatusBadgeProps {
 
 const statusColors: Record<PaymentStatus, string> = {
   PENDING:
-    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  PAID: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  OVERDUE: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  CANCELLED: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+    'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20',
+  PAID: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20',
+  OVERDUE: 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20',
+  CANCELLED: 'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-400 dark:ring-slate-500/20',
 };
 
 const statusLabels: Record<PaymentStatus, string> = {
@@ -26,7 +26,7 @@ export const PaymentStatusBadge = ({
 }: PaymentStatusBadgeProps) => {
   return (
     <span
-      className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[status]} ${className}`}
+      className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${statusColors[status]} ${className}`}
     >
       {statusLabels[status]}
     </span>

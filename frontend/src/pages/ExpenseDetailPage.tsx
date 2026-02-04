@@ -136,14 +136,14 @@ export const ExpenseDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-[#e2e6f0] mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('details')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'details'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               Details
@@ -152,8 +152,8 @@ export const ExpenseDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -163,8 +163,8 @@ export const ExpenseDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               <History className="h-4 w-4" />
@@ -176,8 +176,8 @@ export const ExpenseDetailPage = () => {
         {/* Content */}
         {activeTab === 'details' &&
           (isEditing ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                 Edit Expense
               </h2>
               <ExpenseForm
@@ -190,43 +190,43 @@ export const ExpenseDetailPage = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Expense Details */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                   Expense Details
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-gray-400" />
+                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Amount</p>
-                      <p className="font-medium text-gray-900 text-lg">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Amount</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] text-lg">
                         {expense.currency} {expense.amount.toFixed(2)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Expense Date</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Expense Date</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(expense.expenseDate)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-gray-400" />
+                    <Package className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Category</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Category</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatExpenseCategory(expense.category)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Receipt className="h-5 w-5 text-gray-400 mt-1" />
+                    <Receipt className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                     <div>
-                      <p className="text-sm text-gray-500">Description</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Description</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {expense.description}
                       </p>
                     </div>
@@ -235,24 +235,24 @@ export const ExpenseDetailPage = () => {
               </div>
 
               {/* Property Info */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                   Property Information
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <Home className="h-5 w-5 text-gray-400 mt-1" />
+                    <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500">Property</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Property</p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${expense.property.id}`)
                         }
-                        className="font-medium text-blue-600 hover:underline text-left"
+                        className="font-medium text-[#5c7cfa] hover:underline text-left"
                       >
                         {expense.property.street}, {expense.property.city}
                       </button>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                         #{expense.property.identifier}
                       </p>
                     </div>
@@ -262,8 +262,8 @@ export const ExpenseDetailPage = () => {
 
               {/* Notes */}
               {expense.notes && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                     Notes
                   </h2>
                   <RichTextDisplay content={expense.notes} />
@@ -271,21 +271,21 @@ export const ExpenseDetailPage = () => {
               )}
 
               {/* Metadata */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                   Metadata
                 </h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Created:</span>{' '}
-                    <span className="text-gray-900">
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">Created:</span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(expense.createdAt)} at{' '}
                       {new Date(expense.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Last Updated:</span>{' '}
-                    <span className="text-gray-900">
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">Last Updated:</span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(expense.updatedAt)} at{' '}
                       {new Date(expense.updatedAt).toLocaleTimeString()}
                     </span>
@@ -296,8 +296,8 @@ export const ExpenseDetailPage = () => {
           ))}
 
         {activeTab === 'documents' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Documents ({documents.length})
             </h2>
             {docsLoading ? (
@@ -306,8 +306,8 @@ export const ExpenseDetailPage = () => {
               <ErrorMessage message="Failed to load documents" />
             ) : documents.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600">
+                <FileText className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">
                   No documents attached to this expense
                 </p>
               </div>
@@ -316,22 +316,22 @@ export const ExpenseDetailPage = () => {
                 {documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                    className="border border-[#e2e6f0] rounded-lg p-4 hover:border-blue-300 transition-colors"
                   >
                     <div className="flex items-start gap-3">
-                      <FileText className="h-5 w-5 text-gray-400 mt-1" />
+                      <FileText className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate">
+                        <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
                           {doc.title || doc.fileName}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] truncate">
                           {doc.fileName}
                         </p>
                         <div className="flex gap-2 mt-2">
                           <a
                             href={doc.downloadUrl || undefined}
                             download
-                            className="text-xs text-blue-600 hover:underline"
+                            className="text-xs text-[#5c7cfa] hover:underline"
                           >
                             Download
                           </a>
@@ -354,8 +354,8 @@ export const ExpenseDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Expense History
             </h2>
             {auditLoading ? (
@@ -376,11 +376,11 @@ export const ExpenseDetailPage = () => {
                   return (
                     <div
                       key={activity.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
+                      className="border border-[#e2e6f0] rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
+                          hasChanges ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]' : ''
                         }`}
                         onClick={() =>
                           hasChanges &&
@@ -398,10 +398,10 @@ export const ExpenseDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100'
+                              ? 'bg-green-100 dark:bg-green-900/30'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100'
-                                : 'bg-red-100'
+                                ? 'bg-blue-100 dark:bg-blue-900/30'
+                                : 'bg-red-100 dark:bg-red-900/30'
                           }`}
                         >
                           <span
@@ -417,16 +417,16 @@ export const ExpenseDetailPage = () => {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-blue-600 mt-1">
+                            <p className="text-xs text-[#5c7cfa] mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -436,8 +436,8 @@ export const ExpenseDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">
+                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -445,9 +445,9 @@ export const ExpenseDetailPage = () => {
                               ([field]) => (
                                 <div
                                   key={field}
-                                  className="bg-white rounded p-2 text-xs"
+                                  className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
                                 >
-                                  <div className="font-semibold text-gray-700 mb-1">
+                                  <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
                                     {field
                                       .replace(/([A-Z])/g, ' $1')
                                       .replace(/^./, (str) => str.toUpperCase())
@@ -455,7 +455,7 @@ export const ExpenseDetailPage = () => {
                                   </div>
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                      <span className="text-gray-500">
+                                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                         Old:{' '}
                                       </span>
                                       <span className="text-red-600 line-through">
@@ -465,7 +465,7 @@ export const ExpenseDetailPage = () => {
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-gray-500">
+                                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                         New:{' '}
                                       </span>
                                       <span className="text-green-600 font-medium">
@@ -487,9 +487,9 @@ export const ExpenseDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No history available</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this expense will appear here
                 </p>
               </div>
@@ -500,12 +500,12 @@ export const ExpenseDetailPage = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Delete Expense
             </h2>
-            <p className="text-gray-700 mb-6">
+            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-6">
               Are you sure you want to delete this expense? This action cannot
               be undone.
             </p>

@@ -80,28 +80,28 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
   const getTypeBadgeColor = (type: AddressType) => {
     switch (type) {
       case AddressType.CURRENT:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
       case AddressType.MAILING:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
       case AddressType.RELATIVE:
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300';
       case AddressType.WORK:
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300';
       case AddressType.HISTORIC:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]';
     }
   };
 
   const getStatusBadgeColor = (status: AddressStatus) => {
     switch (status) {
       case AddressStatus.ACTIVE:
-        return 'bg-green-100 text-green-600';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400';
       case AddressStatus.INACTIVE:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]';
     }
   };
 
@@ -125,8 +125,8 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
   if (isLoading) {
     return (
       <div className="text-center py-12">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p className="mt-2 text-gray-600">Loading addresses...</p>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#5c7cfa]"></div>
+        <p className="mt-2 text-[#6b7194] dark:text-[#8b90a8]">Loading addresses...</p>
       </div>
     );
   }
@@ -139,7 +139,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
           <button
             onClick={() => setIsAddingNew(true)}
             disabled={!canEditData}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
           >
             <Plus className="h-4 w-4" />
             Add Address
@@ -162,7 +162,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
           {addresses.map((address) => (
             <div
               key={address.id}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+              className="bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden"
             >
               {editingAddressId === address.id ? (
                 <div className="p-6">
@@ -198,14 +198,14 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingAddressId(address.id)}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 rounded"
+                          className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded"
                           title="Edit address"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteAddress(address.id)}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 rounded"
+                          className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-[#1e2130] rounded"
                           title="Delete address"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -216,8 +216,8 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
 
                   {/* Address Details */}
                   <div className="flex items-start gap-3 mb-3">
-                    <MapPin className="h-5 w-5 text-gray-400 dark:text-gray-600 mt-0.5 flex-shrink-0" />
-                    <div className="text-gray-700 dark:text-gray-300">
+                    <MapPin className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-0.5 flex-shrink-0" />
+                    <div className="text-[#3d4463] dark:text-[#c4c8db]">
                       <div>{address.street}</div>
                       <div>
                         {address.city}
@@ -236,7 +236,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                             expandedMapId === address.id ? null : address.id
                           )
                         }
-                        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+                        className="flex items-center gap-2 text-sm text-[#5c7cfa] hover:text-[#4263eb]"
                       >
                         {expandedMapId === address.id ? (
                           <>
@@ -273,17 +273,17 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
         </div>
       ) : (
         !isAddingNew && (
-          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-            <MapPin className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">
+          <div className="text-center py-12 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg border-2 border-dashed border-[#c9cfd9] dark:border-[#3a3f54]">
+            <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] dark:text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
+            <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
               No addresses yet
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
+            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] dark:text-[#5c6180] mb-4">
               Add an address to get started
             </p>
             <button
               onClick={() => setIsAddingNew(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded hover:bg-blue-700"
             >
               <Plus className="h-4 w-4" />
               Add First Address

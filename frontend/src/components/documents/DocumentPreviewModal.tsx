@@ -22,17 +22,17 @@ export const DocumentPreviewModal = ({
 
         {/* Modal panel */}
         <div
-          className="relative bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl dark:shadow-gray-900 w-full max-w-4xl"
+          className="relative bg-white dark:bg-[#14161f] rounded-lg text-left overflow-hidden shadow-xl dark:shadow-black/20 w-full max-w-4xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="bg-white dark:bg-[#14161f] px-4 py-3 border-b border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 truncate">
+              <h3 className="text-lg font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
                 {document.title ?? document.fileName}
               </h3>
               {document.title && document.title !== document.fileName ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] truncate">
                   {document.fileName}
                 </p>
               ) : null}
@@ -41,7 +41,7 @@ export const DocumentPreviewModal = ({
               <a
                 href={document.downloadUrl || undefined}
                 download
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
                 title="Download"
               >
                 <Download className="h-5 w-5" />
@@ -50,14 +50,14 @@ export const DocumentPreviewModal = ({
                 href={document.downloadUrl || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
                 title="Open in new tab"
               >
                 <ExternalLink className="h-5 w-5" />
               </a>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
                 title="Close"
               >
                 <X className="h-5 w-5" />
@@ -67,7 +67,7 @@ export const DocumentPreviewModal = ({
 
           {/* Preview Content */}
           <div
-            className="bg-gray-100 p-4"
+            className="bg-[#f1f3f9] dark:bg-[#1e2130] p-4"
             style={{ maxHeight: '70vh', overflow: 'auto' }}
           >
             {canPreview ? (
@@ -95,13 +95,13 @@ export const DocumentPreviewModal = ({
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">
+                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
                   Preview not available for this file type ({document.mimeType})
                 </p>
                 <a
                   href={document.downloadUrl || undefined}
                   download
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-blue-700"
                 >
                   <Download className="h-4 w-4" />
                   Download File
@@ -112,8 +112,8 @@ export const DocumentPreviewModal = ({
 
           {/* Footer with document info */}
           {document.notes ? (
-            <div className="bg-white px-4 py-3 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
+            <div className="bg-white dark:bg-[#14161f] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 <span className="font-medium">Notes:</span> {document.notes}
               </p>
             </div>

@@ -343,14 +343,14 @@ export const ContractDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-6">
+        <div className="border-b border-[#e2e6f0] mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('overview')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'overview'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               Overview
@@ -359,8 +359,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('payments')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'payments'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               <DollarSign className="h-4 w-4" />
@@ -370,8 +370,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -381,8 +381,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-blue-600 text-blue-600'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
               }`}
             >
               History {auditLog.length > 0 && `(${auditLog.length})`}
@@ -394,39 +394,39 @@ export const ContractDetailPage = () => {
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Property and Tenant */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                 Contract Parties
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Home className="h-5 w-5 text-gray-400 mt-1" />
+                  <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500">Property</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Property</p>
                     <button
                       onClick={() =>
                         navigate(`/properties/${contract.property.id}`)
                       }
-                      className="font-medium text-blue-600 hover:underline text-left"
+                      className="font-medium text-[#5c7cfa] hover:underline text-left"
                     >
                       {contract.property.street}, {contract.property.city}
                     </button>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                       #{contract.property.identifier}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-gray-400 mt-1" />
+                  <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500">Tenant</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Tenant</p>
                     <button
                       onClick={() => navigate(`/tenants/${contract.tenant.id}`)}
-                      className="font-medium text-blue-600 hover:underline text-left"
+                      className="font-medium text-[#5c7cfa] hover:underline text-left"
                     >
                       {contract.tenant.firstName} {contract.tenant.lastName}
                     </button>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                       #{contract.tenant.identifier}
                     </p>
                   </div>
@@ -435,26 +435,26 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Contract Dates */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                 Important Dates
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                   <div>
-                    <p className="text-sm text-gray-500">Start Date</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Start Date</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(contract.startDate)}
                     </p>
                   </div>
                 </div>
                 {contract.endDate && (
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">End Date</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">End Date</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(contract.endDate)}
                       </p>
                     </div>
@@ -462,10 +462,10 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.signedDate && (
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-gray-400" />
+                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Signed Date</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Signed Date</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(contract.signedDate)}
                       </p>
                     </div>
@@ -475,16 +475,16 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Financial Terms */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                 Financial Terms
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
+                  <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                   <div>
-                    <p className="text-sm text-gray-500">Rent Amount</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Rent Amount</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.currency} {contract.rentAmount.toFixed(2)} /{' '}
                       {contract.paymentFrequency.toLowerCase()}
                     </p>
@@ -492,10 +492,10 @@ export const ContractDetailPage = () => {
                 </div>
                 {contract.depositAmount && (
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-gray-400" />
+                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Deposit</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Deposit</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {contract.currency} {contract.depositAmount.toFixed(2)}
                       </p>
                     </div>
@@ -503,10 +503,10 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.securityDeposit && (
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-gray-400" />
+                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-gray-500">Security Deposit</p>
-                      <p className="font-medium text-gray-900">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Security Deposit</p>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {contract.currency}{' '}
                         {contract.securityDeposit.toFixed(2)}
                       </p>
@@ -515,8 +515,8 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.paymentDueDay && (
                   <div>
-                    <p className="text-sm text-gray-500">Payment Due Day</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Payment Due Day</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       Day {contract.paymentDueDay} of each period
                     </p>
                   </div>
@@ -525,37 +525,37 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Additional Terms */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                 Additional Terms
               </h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-gray-500">Auto-renewal</p>
-                  <p className="font-medium text-gray-900">
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Auto-renewal</p>
+                  <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {contract.autoRenewal ? 'Yes' : 'No'}
                   </p>
                 </div>
                 {contract.renewalNoticeDays && (
                   <div>
-                    <p className="text-sm text-gray-500">Renewal Notice</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Renewal Notice</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.renewalNoticeDays} days
                     </p>
                   </div>
                 )}
                 {contract.terminationNoticeDays && (
                   <div>
-                    <p className="text-sm text-gray-500">Termination Notice</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Termination Notice</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.terminationNoticeDays} days
                     </p>
                   </div>
                 )}
                 {contract.lateFeePercentage && (
                   <div>
-                    <p className="text-sm text-gray-500">Late Fee</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Late Fee</p>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.lateFeePercentage}%
                     </p>
                   </div>
@@ -565,8 +565,8 @@ export const ContractDetailPage = () => {
 
             {/* Terms and Conditions */}
             {contract.termsAndConditions && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                   Terms and Conditions
                 </h2>
                 <RichTextDisplay content={contract.termsAndConditions} />
@@ -575,8 +575,8 @@ export const ContractDetailPage = () => {
 
             {/* Notes */}
             {contract.notes && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
                   Notes
                 </h2>
                 <RichTextDisplay content={contract.notes} />
@@ -586,9 +586,9 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'payments' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 Payments ({filteredAndSortedPayments.length})
               </h2>
               <div className="flex items-center gap-2">
@@ -619,8 +619,8 @@ export const ContractDetailPage = () => {
               <ErrorMessage message="Failed to load payments" />
             ) : payments.length === 0 ? (
               <div className="text-center py-12">
-                <DollarSign className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-600 mb-4">
+                <DollarSign className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
+                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
                   No payments for this contract
                 </p>
                 <Button
@@ -637,7 +637,7 @@ export const ContractDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <input
                       type="text"
                       placeholder="Search by payment #, status..."
@@ -646,21 +646,21 @@ export const ContractDetailPage = () => {
                         setPaymentsSearchTerm(e.target.value);
                         setPaymentsCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                           Payment #
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                           onClick={() => handlePaymentsSort('dueDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -674,7 +674,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                           onClick={() => handlePaymentsSort('amount')}
                         >
                           <div className="flex items-center gap-1">
@@ -688,7 +688,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                           onClick={() => handlePaymentsSort('status')}
                         >
                           <div className="flex items-center gap-1">
@@ -702,7 +702,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                           onClick={() => handlePaymentsSort('paymentDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -717,12 +717,12 @@ export const ContractDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
                       {paginatedPayments.length === 0 ? (
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-12 text-center text-gray-500"
+                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
                           >
                             No payments found matching your search
                           </td>
@@ -731,22 +731,22 @@ export const ContractDetailPage = () => {
                         paginatedPayments.map((payment) => (
                           <tr
                             key={payment.id}
-                            className="hover:bg-gray-50 cursor-pointer"
+                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
                             onClick={() => navigate(`/payments/${payment.id}`)}
                           >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#5c7cfa] dark:text-[#91a7ff]">
                               #{payment.identifier}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                               {formatDate(payment.dueDate)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                               {payment.currency} {payment.amount.toFixed(2)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <PaymentStatusBadge status={payment.status} />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                               {payment.paymentDate
                                 ? formatDate(payment.paymentDate)
                                 : '-'}
@@ -760,8 +760,8 @@ export const ContractDetailPage = () => {
 
                 {/* Pagination */}
                 {paymentsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                    <div className="text-sm text-gray-600">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                       Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1}{' '}
                       to{' '}
                       {Math.min(
@@ -776,11 +776,11 @@ export const ContractDetailPage = () => {
                           setPaymentsCurrentPage(paymentsCurrentPage - 1)
                         }
                         disabled={paymentsCurrentPage === 1}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-[#c9cfd9] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       >
                         Previous
                       </button>
-                      <span className="px-3 py-1 text-sm text-gray-600">
+                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
                         Page {paymentsCurrentPage} of {paymentsTotalPages}
                       </span>
                       <button
@@ -788,7 +788,7 @@ export const ContractDetailPage = () => {
                           setPaymentsCurrentPage(paymentsCurrentPage + 1)
                         }
                         disabled={paymentsCurrentPage === paymentsTotalPages}
-                        className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-3 py-1 border border-[#c9cfd9] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                       >
                         Next
                       </button>
@@ -801,7 +801,7 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'documents' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <DocumentList
               documents={documents}
               onUpload={handleUploadDocument}
@@ -816,8 +816,8 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Contract History
             </h2>
             {auditLoading ? (
@@ -838,11 +838,11 @@ export const ContractDetailPage = () => {
                   return (
                     <div
                       key={activity.id}
-                      className="border border-gray-200 rounded-lg overflow-hidden"
+                      className="border border-[#e2e6f0] rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges ? 'cursor-pointer hover:bg-gray-50' : ''
+                          hasChanges ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]' : ''
                         }`}
                         onClick={() =>
                           hasChanges &&
@@ -860,10 +860,10 @@ export const ContractDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100'
+                              ? 'bg-green-100 dark:bg-green-900/30'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100'
-                                : 'bg-red-100'
+                                ? 'bg-blue-100 dark:bg-blue-900/30'
+                                : 'bg-red-100 dark:bg-red-900/30'
                           }`}
                         >
                           <span
@@ -879,16 +879,16 @@ export const ContractDetailPage = () => {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-blue-600 mt-1">
+                            <p className="text-xs text-[#5c7cfa] mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -898,8 +898,8 @@ export const ContractDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-                          <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase">
+                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -920,28 +920,28 @@ export const ContractDetailPage = () => {
                                   return (
                                     <div
                                       key={field}
-                                      className="bg-white rounded p-2 text-xs"
+                                      className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
                                     >
-                                      <div className="font-semibold text-gray-700 mb-1">
+                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
                                         File Name
                                       </div>
-                                      <div className="text-gray-900">
+                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                         {String(value)}
                                       </div>
                                       {title ? (
                                         <>
-                                          <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
                                             Title
                                           </div>
-                                          <div className="text-gray-900">
+                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                             {String(title)}
                                           </div>
                                         </>
                                       ) : null}
-                                      <div className="font-semibold text-gray-700 mb-1 mt-2">
+                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
                                         Type
                                       </div>
-                                      <div className="text-gray-900">
+                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                         {category === 'PHOTO'
                                           ? 'Photo'
                                           : 'Document'}
@@ -962,9 +962,9 @@ export const ContractDetailPage = () => {
                                 return (
                                   <div
                                     key={field}
-                                    className="bg-white rounded p-2 text-xs"
+                                    className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
                                   >
-                                    <div className="font-semibold text-gray-700 mb-1">
+                                    <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
                                         .replace(/^./, (str) =>
@@ -974,7 +974,7 @@ export const ContractDetailPage = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
-                                        <span className="text-gray-500">
+                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           Old:{' '}
                                         </span>
                                         <span className="text-red-600 line-through">
@@ -984,7 +984,7 @@ export const ContractDetailPage = () => {
                                         </span>
                                       </div>
                                       <div>
-                                        <span className="text-gray-500">
+                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           New:{' '}
                                         </span>
                                         <span className="text-green-600 font-medium">
@@ -1006,9 +1006,9 @@ export const ContractDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No history available</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this contract will appear here
                 </p>
               </div>
@@ -1019,12 +1019,12 @@ export const ContractDetailPage = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Delete Contract
             </h2>
-            <p className="text-gray-700 mb-6">
+            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-6">
               Are you sure you want to delete this contract? This action cannot
               be undone.
             </p>

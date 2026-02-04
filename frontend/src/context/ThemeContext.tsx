@@ -3,17 +3,22 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
   ReactNode,
 } from 'react';
 import { useUserPreferences } from '../hooks/useUserPreferencesHooks';
 import { useAuth } from '../contexts/AuthContext';
 
 type Theme = 'light' | 'dark';
+type ThemePreference = 'light' | 'dark' | 'system';
 
 interface ThemeContextType {
-  theme: Theme;
+  theme: ThemePreference;
   effectiveTheme: Theme;
+  setTheme: (theme: ThemePreference) => void;
 }
+
+const STORAGE_KEY = 'buurman-theme';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -23,11 +28,45 @@ function getSystemTheme(): Theme {
     : 'light';
 }
 
+function getStoredTheme(): ThemePreference {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      return stored;
+    }
+  } catch {
+    // localStorage unavailable
+  }
+  return 'system';
+}
+
+function applyThemeToDOM(effectiveTheme: Theme) {
+  const root = document.documentElement;
+  if (effectiveTheme === 'dark') {
+    root.classList.add('dark');
+  } else {
+    root.classList.remove('dark');
+  }
+}
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuth();
   const { data: preferences } = useUserPreferences(isAuthenticated);
-  const userTheme = preferences?.theme || 'system';
   const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
+  const [themePreference, setThemePreference] = useState<ThemePreference>(getStoredTheme);
+
+  // Sync from backend preferences when they load
+  useEffect(() => {
+    if (preferences?.theme) {
+      const backendTheme = preferences.theme as ThemePreference;
+      setThemePreference(backendTheme);
+      try {
+        localStorage.setItem(STORAGE_KEY, backendTheme);
+      } catch {
+        // ignore
+      }
+    }
+  }, [preferences?.theme]);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -40,21 +79,25 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const effectiveTheme: Theme =
-    userTheme === 'system' ? systemTheme : (userTheme as Theme);
+    themePreference === 'system' ? systemTheme : themePreference;
 
-  // Apply dark class to document
+  // Apply dark class to document immediately on change
   useEffect(() => {
-    const root = document.documentElement;
-    if (effectiveTheme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    applyThemeToDOM(effectiveTheme);
   }, [effectiveTheme]);
+
+  const setTheme = useCallback((newTheme: ThemePreference) => {
+    setThemePreference(newTheme);
+    try {
+      localStorage.setItem(STORAGE_KEY, newTheme);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   return (
     <ThemeContext.Provider
-      value={{ theme: userTheme as Theme, effectiveTheme }}
+      value={{ theme: themePreference, effectiveTheme, setTheme }}
     >
       {children}
     </ThemeContext.Provider>

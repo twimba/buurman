@@ -6,13 +6,13 @@ interface ContractStatusBadgeProps {
 }
 
 const statusColors: Record<ContractStatus, string> = {
-  DRAFT: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+  DRAFT: 'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-400 dark:ring-slate-500/20',
   PENDING_SIGNATURE:
-    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  ACTIVE: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20',
+  ACTIVE: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20',
   EXPIRED:
-    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  TERMINATED: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    'bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20',
+  TERMINATED: 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20',
 };
 
 const statusLabels: Record<ContractStatus, string> = {
@@ -29,7 +29,7 @@ export const ContractStatusBadge = ({
 }: ContractStatusBadgeProps) => {
   return (
     <span
-      className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[status]} ${className}`}
+      className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${statusColors[status]} ${className}`}
     >
       {statusLabels[status]}
     </span>
