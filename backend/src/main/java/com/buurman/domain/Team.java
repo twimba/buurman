@@ -12,12 +12,13 @@ public class Team {
     private Instant createdAt;
     private Instant updatedAt;
     private UUID createdBy;
+    private UUID updatedBy;
 
     public Team() {
     }
 
     public Team(UUID id, String identifier, String name, TeamSettings settings,
-                Instant createdAt, Instant updatedAt, UUID createdBy) {
+                Instant createdAt, Instant updatedAt, UUID createdBy, UUID updatedBy) {
         this.id = id;
         this.identifier = identifier;
         this.name = name;
@@ -25,6 +26,7 @@ public class Team {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
 
     public UUID getId() {
@@ -81,5 +83,13 @@ public class Team {
 
     public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

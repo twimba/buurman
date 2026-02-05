@@ -230,6 +230,7 @@ public class TeamService {
             .orElseThrow(() -> new RuntimeException("Team not found"));
 
         team.setName(request.name());
+        team.setUpdatedBy(principal.getUserId());
         team = teamRepository.save(team);
 
         long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
@@ -287,6 +288,7 @@ public class TeamService {
         }
 
         team.setSettings(settings);
+        team.setUpdatedBy(principal.getUserId());
         team = teamRepository.save(team);
 
         long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
@@ -342,6 +344,7 @@ public class TeamService {
         Team team = teamRepository.findById(teamId)
             .orElseThrow(() -> new RuntimeException("Team not found"));
         team.setCreatedBy(newOwnerId);
+        team.setUpdatedBy(principal.getUserId());
         teamRepository.save(team);
 
         User newOwnerUser = userRepository.findById(newOwnerId).orElseThrow();

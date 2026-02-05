@@ -71,7 +71,7 @@ public class TeamRepository {
                     .set(TEAMS.NAME, team.getName())
                     .set(TEAMS.SETTINGS, settingsJsonb)
                     .set(TEAMS.UPDATED_AT, now)
-                    .set(TEAMS.CREATED_BY, team.getCreatedBy())
+                    .set(TEAMS.UPDATED_BY, team.getUpdatedBy())
                     .where(TEAMS.ID.eq(team.getId()))
                     .execute();
 
