@@ -15,6 +15,7 @@ public record CreatePaymentRequest(
         @Positive(message = "Amount must be positive")
         BigDecimal amount,
 
+        @NotNull(message = "Currency is required")
         String currency,
 
         @NotNull(message = "Due date is required")
