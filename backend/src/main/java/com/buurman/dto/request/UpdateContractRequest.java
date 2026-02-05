@@ -4,6 +4,7 @@ import com.buurman.domain.Contract;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,8 +31,10 @@ public record UpdateContractRequest(
         @Positive(message = "Rent amount must be positive")
         BigDecimal rentAmount,
 
+        @PositiveOrZero(message = "Deposit amount must be zero or positive")
         BigDecimal depositAmount,
 
+        @PositiveOrZero(message = "Security deposit must be zero or positive")
         BigDecimal securityDeposit,
 
         String currency,
@@ -47,6 +50,7 @@ public record UpdateContractRequest(
 
         Integer terminationNoticeDays,
 
+        @PositiveOrZero(message = "Late fee percentage must be zero or positive")
         BigDecimal lateFeePercentage,
 
         String termsAndConditions,
