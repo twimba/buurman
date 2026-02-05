@@ -1,8 +1,10 @@
 package com.buurman.controller;
 
+import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ByteArrayResource;
@@ -83,12 +85,12 @@ public class DocumentController {
     }
 
     @PostMapping("/bulk-download")
-    @Operation(summary = "Bulk download documents", description = "Download multiple documents as a zip archive")
+    @Operation(summary = "Bulk download documents", description = "Download multiple documents as a zip archive (max 50)")
     public ResponseEntity<ByteArrayResource> bulkDownload(
-            @RequestBody List<UUID> documentIds,
+            @Valid @RequestBody BulkDownloadRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        byte[] zipData = documentService.bulkDownload(documentIds, principal);
+        byte[] zipData = documentService.bulkDownload(request.documentIds(), principal);
 
         ByteArrayResource resource = new ByteArrayResource(zipData);
 
