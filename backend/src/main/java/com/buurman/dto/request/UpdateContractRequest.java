@@ -1,6 +1,7 @@
 package com.buurman.dto.request;
 
 import com.buurman.domain.Contract;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -52,4 +53,8 @@ public record UpdateContractRequest(
 
         String notes
 ) {
+    @AssertTrue(message = "End date must be after start date")
+    public boolean isEndDateAfterStartDate() {
+        return endDate == null || startDate == null || !endDate.isBefore(startDate);
+    }
 }

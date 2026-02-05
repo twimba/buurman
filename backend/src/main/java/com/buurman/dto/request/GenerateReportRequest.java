@@ -1,5 +1,6 @@
 package com.buurman.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -14,6 +15,11 @@ public record GenerateReportRequest(
         List<UUID> propertyIds,
         Boolean includeDocuments
 ) {
+    @AssertTrue(message = "End date must be after start date")
+    public boolean isEndDateAfterStartDate() {
+        return endDate == null || startDate == null || !endDate.isBefore(startDate);
+    }
+
     public enum ReportType {
         INCOME_STATEMENT,
         EXPENSE_REPORT,

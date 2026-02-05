@@ -1,5 +1,6 @@
 package com.buurman.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -11,4 +12,9 @@ public record FinancialOverviewRequest(
         @NotNull LocalDate endDate,
         List<UUID> propertyIds,
         String currency
-) {}
+) {
+    @AssertTrue(message = "End date must be after start date")
+    public boolean isEndDateAfterStartDate() {
+        return endDate == null || startDate == null || !endDate.isBefore(startDate);
+    }
+}
