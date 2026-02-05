@@ -15,12 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Property;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,11 +74,15 @@ public class ReportService {
         UUID teamId = principal.getTeamId();
         String activeCurrency = currency != null ? currency : "EUR";
 
+        // Pre-fetch all contracts for the team to resolve payment→property mapping
+        Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
+                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+
         // Get all payments in period (PAID status only)
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
                 .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
                 .filter(p -> propertyIds == null || propertyIds.isEmpty() ||
-                        propertyIds.contains(getPropertyIdForPayment(p, teamId)))
+                        propertyIds.contains(getPropertyIdFromContract(p.getContractId(), contractsById)))
                 .toList();
 
         // Get all expenses in period
@@ -92,7 +98,7 @@ public class ReportService {
         // Calculate income by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
                 .collect(Collectors.groupingBy(
-                        p -> getPropertyIdForPayment(p, teamId),
+                        p -> getPropertyIdFromContract(p.getContractId(), contractsById),
                         Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
@@ -115,38 +121,47 @@ public class ReportService {
         Set<UUID> allPropertyIds = new HashSet<>();
         allPropertyIds.addAll(incomeByProperty.keySet());
         allPropertyIds.addAll(expensesByProperty.keySet());
+        allPropertyIds.remove(null);
+
+        // Batch-fetch all properties
+        Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
+                .collect(Collectors.toMap(Property::getId, Function.identity()));
+
+        // Pre-group contracts by property for occupancy calculation
+        Map<UUID, List<Contract>> contractsByProperty = contractsById.values().stream()
+                .filter(c -> c.getPropertyId() != null)
+                .collect(Collectors.groupingBy(Contract::getPropertyId));
 
         List<PropertyFinancialSummary> incomeByPropertyList = allPropertyIds.stream()
                 .map(propId -> {
+                    Property prop = propertiesById.get(propId);
+                    if (prop == null) return null;
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                    return propertyRepository.findByIdAndTeamId(propId, teamId)
-                            .map(prop -> new PropertyFinancialSummary(
-                                    propertyMapper.toSummary(prop),
-                                    income,
-                                    BigDecimal.ZERO,
-                                    income,
-                                    calculateOccupancyDays(propId, startDate, endDate, teamId)
-                            ))
-                            .orElse(null);
+                    return new PropertyFinancialSummary(
+                            propertyMapper.toSummary(prop),
+                            income,
+                            BigDecimal.ZERO,
+                            income,
+                            calculateOccupancyDays(contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate)
+                    );
                 })
                 .filter(Objects::nonNull)
                 .toList();
 
         List<PropertyFinancialSummary> expensesByPropertyList = allPropertyIds.stream()
                 .map(propId -> {
+                    Property prop = propertiesById.get(propId);
+                    if (prop == null) return null;
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);
-
-                    return propertyRepository.findByIdAndTeamId(propId, teamId)
-                            .map(prop -> new PropertyFinancialSummary(
-                                    propertyMapper.toSummary(prop),
-                                    income,
-                                    expense,
-                                    netProfit,
-                                    calculateOccupancyDays(propId, startDate, endDate, teamId)
-                            ))
-                            .orElse(null);
+                    return new PropertyFinancialSummary(
+                            propertyMapper.toSummary(prop),
+                            income,
+                            expense,
+                            netProfit,
+                            calculateOccupancyDays(contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate)
+                    );
                 })
                 .filter(Objects::nonNull)
                 .toList();
@@ -171,25 +186,32 @@ public class ReportService {
         UUID teamId = principal.getTeamId();
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
+        LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
+
+        // Fetch full range once
+        List<Payment> allPayments = paymentRepository.findByDateRange(startDate, rangeEnd, teamId).stream()
+                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .toList();
+        List<Expense> allExpenses = expenseRepository.findByDateRange(startDate, rangeEnd, teamId);
+
+        // Group by month
+        Map<YearMonth, BigDecimal> incomeByMonth = allPayments.stream()
+                .collect(Collectors.groupingBy(
+                        p -> YearMonth.from(p.getPaymentDate() != null ? p.getPaymentDate() : p.getDueDate()),
+                        Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
+                ));
+        Map<YearMonth, BigDecimal> expensesByMonth = allExpenses.stream()
+                .collect(Collectors.groupingBy(
+                        e -> YearMonth.from(e.getExpenseDate()),
+                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                ));
 
         List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
 
         for (int i = 0; i < months; i++) {
             YearMonth month = YearMonth.from(startDate.plusMonths(i));
-            LocalDate monthStart = month.atDay(1);
-            LocalDate monthEnd = month.atEndOfMonth();
-
-            // Get paid payments for the month
-            BigDecimal monthIncome = paymentRepository.findByDateRange(monthStart, monthEnd, teamId).stream()
-                    .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
-                    .map(Payment::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            // Get expenses for the month
-            BigDecimal monthExpenses = expenseRepository.findByDateRange(monthStart, monthEnd, teamId).stream()
-                    .map(Expense::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+            BigDecimal monthIncome = incomeByMonth.getOrDefault(month, BigDecimal.ZERO);
+            BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, BigDecimal.ZERO);
             BigDecimal monthNetProfit = monthIncome.subtract(monthExpenses);
 
             dataPoints.add(new IncomeTrendResponse.DataPoint(
@@ -243,6 +265,10 @@ public class ReportService {
 
         UUID teamId = principal.getTeamId();
 
+        // Pre-fetch all contracts for payment→property mapping
+        Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
+                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+
         // Get all payments and expenses in period
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
                 .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
@@ -253,7 +279,7 @@ public class ReportService {
         // Group by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
                 .collect(Collectors.groupingBy(
-                        p -> getPropertyIdForPayment(p, teamId),
+                        p -> getPropertyIdFromContract(p.getContractId(), contractsById),
                         Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
@@ -266,21 +292,25 @@ public class ReportService {
         Set<UUID> allPropertyIds = new HashSet<>();
         allPropertyIds.addAll(incomeByProperty.keySet());
         allPropertyIds.addAll(expensesByProperty.keySet());
+        allPropertyIds.remove(null);
+
+        // Batch-fetch all properties
+        Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
+                .collect(Collectors.toMap(Property::getId, Function.identity()));
 
         List<PropertyComparisonResponse.PropertyData> propertyData = allPropertyIds.stream()
                 .map(propId -> {
+                    Property prop = propertiesById.get(propId);
+                    if (prop == null) return null;
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);
-
-                    return propertyRepository.findByIdAndTeamId(propId, teamId)
-                            .map(prop -> new PropertyComparisonResponse.PropertyData(
-                                    propertyMapper.toSummary(prop),
-                                    income,
-                                    expense,
-                                    netProfit
-                            ))
-                            .orElse(null);
+                    return new PropertyComparisonResponse.PropertyData(
+                            propertyMapper.toSummary(prop),
+                            income,
+                            expense,
+                            netProfit
+                    );
                 })
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(PropertyComparisonResponse.PropertyData::netProfit).reversed())
@@ -298,7 +328,12 @@ public class ReportService {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
 
-        int totalProperties = (int) propertyRepository.findAllByTeamId(teamId).size();
+        int totalProperties = propertyRepository.findAllByTeamId(teamId).size();
+
+        // Fetch all active contracts once, outside the loop
+        List<Contract> allActiveContracts = contractRepository.findAllByTeamId(teamId).stream()
+                .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+                .toList();
 
         List<OccupancyTrendResponse.DataPoint> dataPoints = new ArrayList<>();
 
@@ -307,17 +342,15 @@ public class ReportService {
             LocalDate monthStart = month.atDay(1);
             LocalDate monthEnd = month.atEndOfMonth();
 
-            // Get active contracts for the month
-            List<Contract> activeContracts = contractRepository.findAllByTeamId(teamId).stream()
-                    .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+            // Filter pre-fetched contracts for this month
+            long occupiedUnits = allActiveContracts.stream()
                     .filter(c -> {
                         LocalDate contractStart = c.getStartDate();
                         LocalDate contractEnd = c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
                         return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                     })
-                    .toList();
+                    .count();
 
-            int occupiedUnits = activeContracts.size();
             double occupancyRate = totalProperties > 0
                     ? (occupiedUnits * 100.0) / totalProperties
                     : 0.0;
@@ -326,7 +359,7 @@ public class ReportService {
                     month.toString(),
                     Math.round(occupancyRate * 100.0) / 100.0,
                     totalProperties,
-                    occupiedUnits
+                    (int) occupiedUnits
             ));
         }
 
@@ -341,6 +374,10 @@ public class ReportService {
         UUID teamId = principal.getTeamId();
         LocalDate startDate = LocalDate.of(year, 1, 1);
         LocalDate endDate = LocalDate.of(year, 12, 31);
+
+        // Pre-fetch all contracts for payment→property mapping and occupancy
+        Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
+                .collect(Collectors.toMap(Contract::getId, Function.identity()));
 
         // Get all paid payments for the year
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
@@ -366,7 +403,7 @@ public class ReportService {
         // Calculate by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
                 .collect(Collectors.groupingBy(
-                        p -> getPropertyIdForPayment(p, teamId),
+                        p -> getPropertyIdFromContract(p.getContractId(), contractsById),
                         Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
@@ -379,22 +416,31 @@ public class ReportService {
         Set<UUID> allPropertyIds = new HashSet<>();
         allPropertyIds.addAll(incomeByProperty.keySet());
         allPropertyIds.addAll(expensesByProperty.keySet());
+        allPropertyIds.remove(null);
+
+        // Batch-fetch all properties
+        Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
+                .collect(Collectors.toMap(Property::getId, Function.identity()));
+
+        // Pre-group contracts by property for occupancy
+        Map<UUID, List<Contract>> contractsByProperty = contractsById.values().stream()
+                .filter(c -> c.getPropertyId() != null)
+                .collect(Collectors.groupingBy(Contract::getPropertyId));
 
         List<PropertyFinancialSummary> properties = allPropertyIds.stream()
                 .map(propId -> {
+                    Property prop = propertiesById.get(propId);
+                    if (prop == null) return null;
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);
-
-                    return propertyRepository.findByIdAndTeamId(propId, teamId)
-                            .map(prop -> new PropertyFinancialSummary(
-                                    propertyMapper.toSummary(prop),
-                                    income,
-                                    expense,
-                                    netProfit,
-                                    calculateOccupancyDays(propId, startDate, endDate, teamId)
-                            ))
-                            .orElse(null);
+                    return new PropertyFinancialSummary(
+                            propertyMapper.toSummary(prop),
+                            income,
+                            expense,
+                            netProfit,
+                            calculateOccupancyDays(contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate)
+                    );
                 })
                 .filter(Objects::nonNull)
                 .toList();
@@ -412,10 +458,9 @@ public class ReportService {
 
     // Helper methods
 
-    private UUID getPropertyIdForPayment(Payment payment, UUID teamId) {
-        return contractRepository.findByIdAndTeamId(payment.getContractId(), teamId)
-                .map(Contract::getPropertyId)
-                .orElse(null);
+    private UUID getPropertyIdFromContract(UUID contractId, Map<UUID, Contract> contractsById) {
+        Contract contract = contractsById.get(contractId);
+        return contract != null ? contract.getPropertyId() : null;
     }
 
     private List<CategoryExpenseSummary> calculateExpensesByCategory(
@@ -450,9 +495,7 @@ public class ReportService {
                 .toList();
     }
 
-    private int calculateOccupancyDays(UUID propertyId, LocalDate startDate, LocalDate endDate, UUID teamId) {
-        List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
-
+    private int calculateOccupancyDays(List<Contract> contracts, LocalDate startDate, LocalDate endDate) {
         long totalDays = 0;
         for (Contract contract : contracts) {
             if (contract.getStatus() != Contract.ContractStatus.ACTIVE) {

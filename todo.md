@@ -36,3 +36,25 @@ A few more feaatures and improvimentes:
     * Make it look professional, friendly, modern, clean, easy to use, intuitive, simple, elegant, convey trust, convey empathy, convey security, convey reliability
 
 - In the property replace the square meters with "area" and make it a value and a unit (ie: 100 sqm, 100 m2, etc)
+- Add the following data points/properties to the Property entity:
+ * Year built
+ * Parking arragement - parking spaces, parking type (underground, surface, etc)
+ * outside areas (garden, terrace, etc) and their size (value + unit as above
+ * Energy efficiency rating (A, B, C, etc
+ * Heating type (gas, electric, etc
+ * Cooling type (AC, none, etc
+ * Other amenities (pool, gym, built in vaccum, fireplace, laundry, sauna, etc and notes for each). Make it flexible so that we can add more amenities in the future without changing the database schema; make it so that the user can select as many or as little as they want
+ * Window type (double glazed, single glazed, etc)
+ * Type of internet connection (fiber, cable, etc) installed or available in the property
+ * Type and capacity of electricity connection (ie: single phase, three phase, etc and its capacity in amps)
+ * Type and capacity of water connection (ie: standard, high capacity, etc)
+ * secuirty features (ie: alarm system, security cameras, etc)
+ * Accessibility features (ie: wheelchair accessible, etc)
+ * type of flooring (ie: hardwood, carpet, etc)
+ * type of walls (ie: drywall, concrete, etc)
+ * type of roof (ie: flat, gable, etc)
+ * type of foundation (ie: slab, crawl space, etc)
+ * other structural features (ie: open floor plan, vaulted ceilings, etc)
+ * type of construction (ie: wood frame, brick, etc)
+
+ -> make the UI to manage these as simple as possible; The user should not be overwhelmed by the amount of data points; make it so that they can easily add or remove data points as they want; use good UI/UX practices to make it easy to use and understand; use tooltips or help icons to explain what each data point means and how to fill it out; make it so that they can easily skip any data points they don't want to fill out

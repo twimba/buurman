@@ -24,7 +24,7 @@
 - [x] 11.2 Update mappers missing nullValuePropertyMappingStrategy=IGNORE ✅ commit 7a66ed7 (also 11.3)
 - [x] 6.1 N+1 in PaymentService.enrichPaymentResponse ✅
 - [x] 6.2 N+1 in TeamService.getTeamMembers ✅
-- [ ] 6.3 N+1 in ReportService (Large effort — TODO)
+- [x] 6.3 N+1 in ReportService ✅
 - [ ] 7.1 No pagination on any endpoint (Large — deferred)
 - [ ] 12.2 Outdated Keycloak/AWS SDK dependencies (Medium — TODO)
 - [ ] 14.1 Zero test coverage (Large — deferred)
