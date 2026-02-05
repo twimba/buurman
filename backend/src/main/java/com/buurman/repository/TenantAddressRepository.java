@@ -71,7 +71,8 @@ public class TenantAddressRepository {
                     .set(TENANT_ADDRESSES.LONGITUDE, address.getLongitude() != null ? BigDecimal.valueOf(address.getLongitude()) : null)
                     .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
                     .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
-                    .where(TENANT_ADDRESSES.ID.eq(address.getId()))
+                    .where(TENANT_ADDRESSES.ID.eq(address.getId())
+                            .and(TENANT_ADDRESSES.TEAM_ID.eq(address.getTeamId())))
                     .execute();
         }
         return address;
