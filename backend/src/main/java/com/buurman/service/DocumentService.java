@@ -12,9 +12,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -63,11 +66,22 @@ public class DocumentService {
                     "File size exceeds maximum allowed size of " + (maxFileSize / 1024 / 1024) + " MB");
         }
 
-        // Validate MIME type
+        // Validate MIME type from Content-Type header
         String mimeType = file.getContentType();
         if (mimeType == null || !allowedMimeTypes.contains(mimeType)) {
             throw new IllegalArgumentException(
                     "File type not allowed. Allowed types: " + String.join(", ", allowedMimeTypes));
+        }
+
+        // Validate MIME type from file content (magic bytes) to prevent spoofed Content-Type
+        try (BufferedInputStream bis = new BufferedInputStream(file.getInputStream())) {
+            String detectedType = URLConnection.guessContentTypeFromStream(bis);
+            if (detectedType != null && !allowedMimeTypes.contains(detectedType)) {
+                throw new IllegalArgumentException(
+                        "File content does not match an allowed type. Detected: " + detectedType);
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to read file content for validation");
         }
 
         // Upload to S3
