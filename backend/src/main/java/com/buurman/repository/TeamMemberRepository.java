@@ -28,7 +28,8 @@ public class TeamMemberRepository {
     public Optional<TeamMember> findByIdAndTeamId(UUID id, UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)
                 .where(TEAM_MEMBERS.ID.eq(id)
-                        .and(TEAM_MEMBERS.TEAM_ID.eq(teamId)))
+                        .and(TEAM_MEMBERS.TEAM_ID.eq(teamId))
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
                 .fetchOptional()
                 .map(mapper::toDomain);
     }
@@ -68,15 +69,18 @@ public class TeamMemberRepository {
         return teamMember;
     }
 
-    public void deleteById(UUID id) {
-        dsl.deleteFrom(TEAM_MEMBERS)
+    public void softDeleteById(UUID id) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(TEAM_MEMBERS)
+                .set(TEAM_MEMBERS.DELETED_AT, now)
                 .where(TEAM_MEMBERS.ID.eq(id))
                 .execute();
     }
 
     public List<TeamMember> findAllByUserId(UUID userId) {
         return dsl.selectFrom(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.USER_ID.eq(userId))
+                .where(TEAM_MEMBERS.USER_ID.eq(userId)
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
                 .orderBy(TEAM_MEMBERS.INVITED_AT.asc())
                 .fetch()
                 .map(mapper::toDomain);
@@ -84,23 +88,26 @@ public class TeamMemberRepository {
 
     public Optional<TeamMember> findByUserIdAndTeamId(UUID userId, UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.USER_ID.eq(userId))
-                .and(TEAM_MEMBERS.TEAM_ID.eq(teamId))
+                .where(TEAM_MEMBERS.USER_ID.eq(userId)
+                        .and(TEAM_MEMBERS.TEAM_ID.eq(teamId))
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
                 .fetchOptional()
                 .map(mapper::toDomain);
     }
 
     public Optional<TeamMember> findOwnerByTeamId(UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.TEAM_ID.eq(teamId))
-                .and(TEAM_MEMBERS.IS_OWNER.eq(true))
+                .where(TEAM_MEMBERS.TEAM_ID.eq(teamId)
+                        .and(TEAM_MEMBERS.IS_OWNER.eq(true))
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
                 .fetchOptional()
                 .map(mapper::toDomain);
     }
 
     public List<TeamMember> findByTeamId(UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.TEAM_ID.eq(teamId))
+                .where(TEAM_MEMBERS.TEAM_ID.eq(teamId)
+                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
                 .fetch()
                 .map(mapper::toDomain);
     }
@@ -108,8 +115,9 @@ public class TeamMemberRepository {
     public boolean existsByTeamIdAndUserId(UUID teamId, UUID userId) {
         return dsl.fetchExists(
                 dsl.selectFrom(TEAM_MEMBERS)
-                        .where(TEAM_MEMBERS.TEAM_ID.eq(teamId))
-                        .and(TEAM_MEMBERS.USER_ID.eq(userId))
+                        .where(TEAM_MEMBERS.TEAM_ID.eq(teamId)
+                                .and(TEAM_MEMBERS.USER_ID.eq(userId))
+                                .and(TEAM_MEMBERS.DELETED_AT.isNull()))
         );
     }
 }

@@ -102,8 +102,10 @@ public class TeamRepository {
         }
     }
 
-    public void deleteById(UUID id) {
-        dsl.deleteFrom(TEAMS)
+    public void softDeleteById(UUID id) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(TEAMS)
+                .set(TEAMS.DELETED_AT, now)
                 .where(TEAMS.ID.eq(id))
                 .execute();
     }

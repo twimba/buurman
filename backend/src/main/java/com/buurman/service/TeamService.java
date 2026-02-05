@@ -189,7 +189,7 @@ public class TeamService {
             throw new RuntimeException("Cannot remove yourself");
         }
 
-        teamMemberRepository.deleteById(member.getId());
+        teamMemberRepository.softDeleteById(member.getId());
     }
 
     @Transactional

@@ -71,8 +71,10 @@ public class UserRepository {
         return user;
     }
 
-    public void deleteById(UUID id) {
-        dsl.deleteFrom(USERS)
+    public void softDeleteById(UUID id) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .set(USERS.DELETED_AT, now)
                 .where(USERS.ID.eq(id))
                 .execute();
     }

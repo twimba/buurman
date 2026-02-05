@@ -158,7 +158,7 @@ public class UserTeamService {
         }
 
         // Delete membership
-        teamMemberRepository.deleteById(membership.getId());
+        teamMemberRepository.softDeleteById(membership.getId());
 
         // If this was active or default team, update user
         User user = userRepository.findById(principal.getUserId())

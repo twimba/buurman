@@ -76,8 +76,10 @@ public class TeamInvitationRepository {
         return invitation;
     }
 
-    public void deleteById(UUID id) {
-        dsl.deleteFrom(TEAM_INVITATIONS)
+    public void softDeleteById(UUID id) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(TEAM_INVITATIONS)
+                .set(TEAM_INVITATIONS.DELETED_AT, now)
                 .where(TEAM_INVITATIONS.ID.eq(id))
                 .execute();
     }
