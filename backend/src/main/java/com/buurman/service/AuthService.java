@@ -11,6 +11,8 @@ import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.util.UlidGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,8 @@ import java.util.UUID;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final KeycloakService keycloakService;
     private final UserRepository userRepository;
@@ -45,7 +49,7 @@ public class AuthService {
             throw new RuntimeException("Email already registered");
         }
 
-        // Create user in Keycloak
+        // Create user in Keycloak first (external system)
         String keycloakId = keycloakService.createUser(
             request.email(),
             request.firstName(),
@@ -53,45 +57,56 @@ public class AuthService {
             request.password()
         );
 
-        // Auto-generate team name from user's name in kebab-case format
-        String teamName = generateTeamName(request.firstName(), request.lastName());
+        try {
+            // Auto-generate team name from user's name in kebab-case format
+            String teamName = generateTeamName(request.firstName(), request.lastName());
 
-        // Create user first (need user ID for team.createdBy)
-        User user = new User();
-        user.setKeycloakId(keycloakId);
-        user.setEmail(request.email());
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user = userRepository.save(user);
+            // Create user first (need user ID for team.createdBy)
+            User user = new User();
+            user.setKeycloakId(keycloakId);
+            user.setEmail(request.email());
+            user.setFirstName(request.firstName());
+            user.setLastName(request.lastName());
+            user = userRepository.save(user);
 
-        // Create team
-        Team team = new Team();
-        team.setIdentifier(UlidGenerator.generate());
-        team.setName(teamName);
-        team.setCreatedAt(Instant.now());
-        team.setUpdatedAt(Instant.now());
-        team.setCreatedBy(user.getId());
-        team = teamRepository.save(team);
+            // Create team
+            Team team = new Team();
+            team.setIdentifier(UlidGenerator.generate());
+            team.setName(teamName);
+            team.setCreatedAt(Instant.now());
+            team.setUpdatedAt(Instant.now());
+            team.setCreatedBy(user.getId());
+            team = teamRepository.save(team);
 
-        // Set user's default and active team
-        user.setDefaultTeamId(team.getId());
-        user.setActiveTeamId(team.getId());
-        user = userRepository.save(user);
+            // Set user's default and active team
+            user.setDefaultTeamId(team.getId());
+            user.setActiveTeamId(team.getId());
+            user = userRepository.save(user);
 
-        // Add user as team admin and owner
-        TeamMember member = new TeamMember();
-        member.setTeamId(team.getId());
-        member.setUserId(user.getId());
-        member.setRole("TEAM_ADMIN");
-        member.setOwner(true);
-        member.setInvitedAt(Instant.now());
-        member.setJoinedAt(Instant.now());
-        teamMemberRepository.save(member);
+            // Add user as team admin and owner
+            TeamMember member = new TeamMember();
+            member.setTeamId(team.getId());
+            member.setUserId(user.getId());
+            member.setRole("TEAM_ADMIN");
+            member.setOwner(true);
+            member.setInvitedAt(Instant.now());
+            member.setJoinedAt(Instant.now());
+            teamMemberRepository.save(member);
 
-        // Send welcome email
-        emailService.sendWelcomeEmail(user);
+            // Send welcome email
+            emailService.sendWelcomeEmail(user);
 
-        return userMapper.toResponse(user, team.getId(), "TEAM_ADMIN");
+            return userMapper.toResponse(user, team.getId(), "TEAM_ADMIN");
+        } catch (Exception e) {
+            // Compensate: remove orphaned Keycloak user if DB operations fail
+            log.error("Registration failed after Keycloak user creation, compensating", e);
+            try {
+                keycloakService.deleteUser(keycloakId);
+            } catch (Exception compensationEx) {
+                log.error("Failed to delete orphaned Keycloak user: {}", keycloakId, compensationEx);
+            }
+            throw e;
+        }
     }
 
     public UserResponse getCurrentUser(UUID userId) {

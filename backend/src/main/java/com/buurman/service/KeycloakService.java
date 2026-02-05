@@ -59,4 +59,9 @@ public class KeycloakService {
         response.close();
         return userId; // This is the Keycloak user ID
     }
+
+    public void deleteUser(String keycloakUserId) {
+        RealmResource realmResource = keycloak.realm(realm);
+        realmResource.users().delete(keycloakUserId);
+    }
 }
