@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class PropertyService {
         this.s3StorageService = s3StorageService;
     }
 
+    @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
         Property property = propertyMapper.toEntity(request);
@@ -86,6 +88,7 @@ public class PropertyService {
         return toResponseWithMainPhoto(property, principal.getTeamId());
     }
 
+    @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse updateProperty(
             UUID propertyId,
@@ -120,6 +123,7 @@ public class PropertyService {
         return newState;
     }
 
+    @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteProperty(UUID propertyId, UserPrincipal principal) {
         Property property = propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId())
