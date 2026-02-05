@@ -5,9 +5,11 @@ import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.PropertySummary;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface PropertyMapper {
@@ -27,6 +29,7 @@ public interface PropertyMapper {
     @Mapping(target = "deletedAt", ignore = true)
     Property toEntity(CreatePropertyRequest request);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)

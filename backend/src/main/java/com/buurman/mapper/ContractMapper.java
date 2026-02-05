@@ -5,9 +5,11 @@ import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.ContractSummary;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface ContractMapper {
@@ -31,6 +33,7 @@ public interface ContractMapper {
     @Mapping(target = "tenant", ignore = true)
     ContractSummary toSummary(Contract contract);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)

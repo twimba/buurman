@@ -5,9 +5,11 @@ import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentSummary;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
@@ -36,6 +38,7 @@ public interface PaymentMapper {
 
     PaymentSummary toSummary(Payment payment);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)
