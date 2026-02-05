@@ -78,6 +78,7 @@ export const useDeleteTenant = () => {
 
 export const useLinkTenantToProperty = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: LinkTenantToPropertyRequest) =>
       tenantsApi.linkTenantToProperty(tenantId, data),
@@ -86,17 +87,24 @@ export const useLinkTenantToProperty = (tenantId: string) => {
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useUnlinkTenantFromProperty = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: () => tenantsApi.unlinkTenantFromProperty(tenantId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -135,6 +143,7 @@ export const useTenantPhotos = (tenantId: string | undefined) => {
 
 export const useUploadTenantDocument = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({
       file,
@@ -156,11 +165,15 @@ export const useUploadTenantDocument = (tenantId: string) => {
         queryKey: ['documents'],
       });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useUploadTenantPhoto = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({
       file,
@@ -181,11 +194,15 @@ export const useUploadTenantPhoto = (tenantId: string) => {
         queryKey: ['documents'],
       });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useSetTenantMainPhoto = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (photoId: string) =>
       tenantsApi.setTenantMainPhoto(tenantId, photoId),
@@ -194,11 +211,15 @@ export const useSetTenantMainPhoto = (tenantId: string) => {
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useDeleteTenantDocument = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (documentId: string) =>
       tenantsApi.deleteTenantDocument(documentId),
@@ -215,6 +236,9 @@ export const useDeleteTenantDocument = (tenantId: string) => {
         queryKey: ['documents'],
       });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
@@ -228,6 +252,7 @@ export const useTenantAddresses = (tenantId: string | undefined) => {
 
 export const useCreateTenantAddress = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: CreateTenantAddressRequest) =>
       tenantsApi.createTenantAddress(tenantId, data),
@@ -237,11 +262,15 @@ export const useCreateTenantAddress = (tenantId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: UpdateTenantAddressRequest) =>
       tenantsApi.updateTenantAddress(tenantId, addressId, data),
@@ -251,11 +280,15 @@ export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useDeleteTenantAddress = (tenantId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (addressId: string) =>
       tenantsApi.deleteTenantAddress(tenantId, addressId),
@@ -264,6 +297,9 @@ export const useDeleteTenantAddress = (tenantId: string) => {
         queryKey: ['tenantAddresses', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };

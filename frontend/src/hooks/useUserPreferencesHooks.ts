@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as usersApi from '../api/users';
+import { useToast } from '../context/ToastContext';
+import { getErrorMessage } from '../utils/errorMessages';
 
 export const useCurrentUser = () => {
   return useQuery({
@@ -10,10 +12,14 @@ export const useCurrentUser = () => {
 
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: usersApi.updateUserProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -28,10 +34,14 @@ export const useUserPreferences = (enabled: boolean = true) => {
 
 export const useUpdateUserPreferences = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: usersApi.updateUserPreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -46,6 +56,7 @@ export const useTeamNotificationPreferences = (teamId: string | undefined) => {
 
 export const useUpdateTeamNotificationPreferences = (teamId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: usersApi.UpdateTeamNotificationPreferencesRequest) =>
       usersApi.updateTeamNotificationPreferences(teamId, data),
@@ -53,6 +64,9 @@ export const useUpdateTeamNotificationPreferences = (teamId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['teamNotificationPreferences', teamId],
       });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -67,6 +81,7 @@ export const useUserTeams = () => {
 
 export const useSwitchTeam = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: usersApi.switchTeam,
     onSuccess: () => {
@@ -74,26 +89,37 @@ export const useSwitchTeam = () => {
       queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useSetDefaultTeam = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: usersApi.setDefaultTeam,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
 
 export const useLeaveTeam = () => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: usersApi.leaveTeam,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-teams'] });
       queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };

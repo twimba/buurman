@@ -1,11 +1,13 @@
 package com.buurman.controller;
 
-import com.buurman.domain.Payment;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
+import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
+import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PaymentReceivalResponse;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
@@ -76,7 +78,6 @@ public class PaymentController {
             if ("OVERDUE".equalsIgnoreCase(status)) {
                 return paymentService.getOverduePayments(principal);
             }
-            // Could add other status filters here
         }
 
         return paymentService.getAllPayments(principal);
@@ -114,6 +115,47 @@ public class PaymentController {
             @AuthenticationPrincipal UserPrincipal principal) {
         return paymentService.markPaymentAsPaid(id, request, principal);
     }
+
+    // --- Receival endpoints ---
+
+    @Operation(summary = "Register receival", description = "Register a partial or full payment receival (Admin/Editor)")
+    @PostMapping("/{id}/receivals")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PaymentResponse registerReceival(
+            @PathVariable UUID id,
+            @Valid @RequestBody CreatePaymentReceivalRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return paymentService.registerReceival(id, request, principal);
+    }
+
+    @Operation(summary = "List receivals", description = "Get all receivals for a payment")
+    @GetMapping("/{id}/receivals")
+    public List<PaymentReceivalResponse> getReceivals(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return paymentService.getReceivalsForPayment(id, principal);
+    }
+
+    @Operation(summary = "Update receival", description = "Update a receival's amount, date, or notes (Admin/Editor)")
+    @PutMapping("/{id}/receivals/{receivalId}")
+    public PaymentResponse updateReceival(
+            @PathVariable UUID id,
+            @PathVariable UUID receivalId,
+            @Valid @RequestBody UpdatePaymentReceivalRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return paymentService.updateReceival(id, receivalId, request, principal);
+    }
+
+    @Operation(summary = "Delete receival", description = "Soft delete a receival (Admin/Editor)")
+    @DeleteMapping("/{id}/receivals/{receivalId}")
+    public PaymentResponse deleteReceival(
+            @PathVariable UUID id,
+            @PathVariable UUID receivalId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return paymentService.deleteReceival(id, receivalId, principal);
+    }
+
+    // --- End receival endpoints ---
 
     @Operation(summary = "Delete payment", description = "Soft delete a payment (Admin only, cannot delete paid payments)")
     @DeleteMapping("/{id}")

@@ -47,10 +47,12 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 const statusColors: Record<PropertyStatus, string> = {
   VACANT:
     'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-  OCCUPIED: 'bg-primary-100 dark:bg-primary-500/10 text-blue-800 dark:text-blue-300',
+  OCCUPIED:
+    'bg-primary-100 dark:bg-primary-500/10 text-blue-800 dark:text-blue-300',
   MAINTENANCE:
     'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
-  UNAVAILABLE: 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
+  UNAVAILABLE:
+    'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
 };
 
 const statusLabels: Record<PropertyStatus, string> = {
@@ -1314,7 +1316,9 @@ export const PropertyDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  No history available
+                </p>
                 <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this property will appear here
                 </p>

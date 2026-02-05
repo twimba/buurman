@@ -107,6 +107,7 @@ export const useDeleteContract = () => {
 
 export const useChangeContractStatus = (id: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: ChangeContractStatusRequest) =>
       contractsApi.changeContractStatus(id, data),
@@ -124,9 +125,11 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['tenant', updatedContract.tenant.id],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      // Status changes can generate or cancel payments
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
@@ -193,6 +196,7 @@ export const useContractDocuments = (contractId: string | undefined) => {
 
 export const useUploadContractDocument = (contractId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({
       file,
@@ -211,11 +215,15 @@ export const useUploadContractDocument = (contractId: string) => {
         queryKey: ['contractAuditLog', contractId],
       });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useDeleteContractDocument = (contractId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (documentId: string) =>
       contractsApi.deleteContractDocument(documentId),
@@ -226,6 +234,9 @@ export const useDeleteContractDocument = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['contractAuditLog', contractId],
       });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };

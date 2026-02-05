@@ -238,7 +238,9 @@ export const DocumentsPage = () => {
       ) : !documents || documents.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
           <FileText className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">No documents found</p>
+          <p className="text-[#6b7194] dark:text-[#8b90a8]">
+            No documents found
+          </p>
         </div>
       ) : (
         <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden">
@@ -324,7 +326,9 @@ export const DocumentsPage = () => {
                 <tr
                   key={doc.id}
                   className={`hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer ${
-                    selectedDocuments.has(doc.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                    selectedDocuments.has(doc.id)
+                      ? 'bg-blue-50 dark:bg-blue-900/20'
+                      : ''
                   }`}
                   onClick={() => setPreviewDocument(doc)}
                 >

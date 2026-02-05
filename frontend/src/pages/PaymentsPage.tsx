@@ -18,6 +18,7 @@ import {
   Clock,
   CheckCircle,
   TrendingUp,
+  Eye,
 } from 'lucide-react';
 import {
   isBefore,
@@ -38,10 +39,12 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { getCurrencySymbol } from '@/utils/currencies';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
   { value: PaymentStatus.PENDING, label: 'Pending' },
+  { value: PaymentStatus.PARTIALLY_PAID, label: 'Partial' },
   { value: PaymentStatus.PAID, label: 'Paid' },
   { value: PaymentStatus.OVERDUE, label: 'Overdue' },
   { value: PaymentStatus.CANCELLED, label: 'Cancelled' },
@@ -139,7 +142,8 @@ export const PaymentsPage = () => {
     () =>
       allPayments?.filter(
         (p) =>
-          p.status === PaymentStatus.PENDING &&
+          (p.status === PaymentStatus.PENDING ||
+            p.status === PaymentStatus.PARTIALLY_PAID) &&
           !isBefore(parseISO(p.dueDate), new Date())
       ) || [],
     [allPayments]
@@ -150,11 +154,11 @@ export const PaymentsPage = () => {
   );
 
   const totalPending = useMemo(
-    () => pendingPayments.reduce((sum, p) => sum + p.amount, 0),
+    () => pendingPayments.reduce((sum, p) => sum + (p.balance ?? p.amount), 0),
     [pendingPayments]
   );
   const totalOverdue = useMemo(
-    () => overduePayments.reduce((sum, p) => sum + p.amount, 0),
+    () => overduePayments.reduce((sum, p) => sum + (p.balance ?? p.amount), 0),
     [overduePayments]
   );
 
@@ -258,7 +262,8 @@ export const PaymentsPage = () => {
                 <Clock className="h-5 w-5 text-yellow-500" />
               </div>
               <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                EUR {totalPending.toFixed(2)}
+                {getCurrencySymbol(allPayments?.[0]?.currency ?? 'EUR')}{' '}
+                {totalPending.toFixed(2)}
               </p>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 {pendingPayments.length} payment
@@ -293,7 +298,8 @@ export const PaymentsPage = () => {
               {overduePayments.length > 0 ? (
                 <>
                   <p className="text-3xl font-bold text-red-600 dark:text-red-400">
-                    EUR {totalOverdue.toFixed(2)}
+                    {getCurrencySymbol(allPayments?.[0]?.currency ?? 'EUR')}{' '}
+                    {totalOverdue.toFixed(2)}
                   </p>
                   <p className="text-sm text-red-700 dark:text-red-300 mt-1 font-medium">
                     {overduePayments.length} payment
@@ -306,7 +312,8 @@ export const PaymentsPage = () => {
               ) : (
                 <>
                   <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    EUR 0.00
+                    {getCurrencySymbol(allPayments?.[0]?.currency ?? 'EUR')}{' '}
+                    0.00
                   </p>
                   <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                     All caught up!
@@ -343,7 +350,9 @@ export const PaymentsPage = () => {
                   <YAxis hide />
                   <Tooltip
                     formatter={(value: number | undefined) => [
-                      value !== undefined ? `EUR ${value.toFixed(2)}` : 'N/A',
+                      value !== undefined
+                        ? `${getCurrencySymbol(allPayments?.[0]?.currency ?? 'EUR')} ${value.toFixed(2)}`
+                        : 'N/A',
                       'Received',
                     ]}
                     contentStyle={{ fontSize: 12 }}
@@ -452,6 +461,8 @@ export const PaymentsPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
@@ -481,12 +492,34 @@ export const PaymentsPage = () => {
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                          {payment.currency} {payment.amount.toFixed(2)}
-                        </span>
+                        <div>
+                          <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                            {getCurrencySymbol(payment.currency)}{' '}
+                            {payment.amount.toFixed(2)}
+                          </span>
+                          {payment.receivedAmount > 0 &&
+                            payment.status !== PaymentStatus.PAID && (
+                              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                Balance: {getCurrencySymbol(payment.currency)}{' '}
+                                {(payment.balance ?? 0).toFixed(2)}
+                              </p>
+                            )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <PaymentStatusBadge status={payment.status} />
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/payments/${payment.id}`);
+                          }}
+                          className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
+                          title="View payment"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))}

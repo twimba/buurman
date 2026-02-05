@@ -40,7 +40,7 @@ const adminNavigation = [
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const { logout } = useAuth();
-  const { canEditTeamSettings } = useTeam();
+  const { teams, canEditTeamSettings } = useTeam();
 
   return (
     <>
@@ -139,8 +139,8 @@ export const Sidebar = () => {
 
           {/* Footer Actions */}
           <div className="border-t border-[#e2e6f0] dark:border-[#2a2e3f] p-2 space-y-1">
-            {/* Team Switcher */}
-            {isOpen && (
+            {/* Team Switcher - only show when user has multiple teams */}
+            {isOpen && teams.length > 1 && (
               <div className="px-1 py-2 mb-1">
                 <TeamSwitcher />
               </div>

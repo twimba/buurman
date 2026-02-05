@@ -55,7 +55,9 @@ export const RichTextEditor = ({
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`p-2 rounded hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] ${
-            editor.isActive('bold') ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]' : ''
+            editor.isActive('bold')
+              ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]'
+              : ''
           }`}
           title="Bold"
         >
@@ -65,7 +67,9 @@ export const RichTextEditor = ({
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={`p-2 rounded hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] ${
-            editor.isActive('italic') ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]' : ''
+            editor.isActive('italic')
+              ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]'
+              : ''
           }`}
           title="Italic"
         >
@@ -76,7 +80,9 @@ export const RichTextEditor = ({
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`p-2 rounded hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] ${
-            editor.isActive('bulletList') ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]' : ''
+            editor.isActive('bulletList')
+              ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]'
+              : ''
           }`}
           title="Bullet List"
         >
@@ -86,7 +92,9 @@ export const RichTextEditor = ({
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`p-2 rounded hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] ${
-            editor.isActive('orderedList') ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]' : ''
+            editor.isActive('orderedList')
+              ? 'bg-[#c9cfd9] dark:bg-[#3a3f54] dark:bg-[#3a3f54]'
+              : ''
           }`}
           title="Numbered List"
         >

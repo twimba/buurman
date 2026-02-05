@@ -29,6 +29,9 @@ public interface PaymentMapper {
     @Mapping(target = "property", ignore = true)
     @Mapping(target = "proofOfPayment", ignore = true)
     @Mapping(target = "receipt", ignore = true)
+    @Mapping(target = "receivedAmount", ignore = true)
+    @Mapping(target = "balance", ignore = true)
+    @Mapping(target = "receivals", ignore = true)
     PaymentResponse toResponse(Payment payment);
 
     PaymentSummary toSummary(Payment payment);

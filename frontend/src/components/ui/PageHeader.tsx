@@ -69,7 +69,9 @@ export const PageHeader = ({
                     </span>
                   )}
                   {subtitle && description && (
-                    <span className="text-[#c9cfd9] dark:text-[#3a3f54]">·</span>
+                    <span className="text-[#c9cfd9] dark:text-[#3a3f54]">
+                      ·
+                    </span>
                   )}
                   {description && (
                     <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">

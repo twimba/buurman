@@ -116,7 +116,9 @@ export const PaymentForm = ({
               setFormData({ ...formData, dueDate: e.target.value })
             }
             className={`flex-1 px-3 py-2 border rounded-md ${
-              errors.dueDate ? 'border-red-500' : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+              errors.dueDate
+                ? 'border-red-500'
+                : 'border-[#c9cfd9] dark:border-[#3a3f54]'
             }`}
             disabled={isLoading}
           />

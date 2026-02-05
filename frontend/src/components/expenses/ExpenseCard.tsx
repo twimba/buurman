@@ -58,7 +58,9 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
             <div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Amount</p>
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                Amount
+              </p>
               <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                 {expense.currency} {expense.amount.toFixed(2)}
               </p>

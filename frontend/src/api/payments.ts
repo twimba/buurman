@@ -1,7 +1,10 @@
 import client from './client';
 import {
   PaymentResponse,
+  PaymentReceivalResponse,
   CreatePaymentRequest,
+  CreatePaymentReceivalRequest,
+  UpdatePaymentReceivalRequest,
   UpdatePaymentRequest,
   MarkPaidRequest,
   BulkGeneratePaymentsRequest,
@@ -110,5 +113,43 @@ export const getPaymentAuditLog = async (
   paymentId: string
 ): Promise<AuditLogEntry[]> => {
   const response = await client.get(`/payments/${paymentId}/audit-log`);
+  return response.data;
+};
+
+// Receival operations
+export const registerReceival = async (
+  paymentId: string,
+  data: CreatePaymentReceivalRequest
+): Promise<PaymentResponse> => {
+  const response = await client.post(`/payments/${paymentId}/receivals`, data);
+  return response.data;
+};
+
+export const getPaymentReceivals = async (
+  paymentId: string
+): Promise<PaymentReceivalResponse[]> => {
+  const response = await client.get(`/payments/${paymentId}/receivals`);
+  return response.data;
+};
+
+export const updatePaymentReceival = async (
+  paymentId: string,
+  receivalId: string,
+  data: UpdatePaymentReceivalRequest
+): Promise<PaymentResponse> => {
+  const response = await client.put(
+    `/payments/${paymentId}/receivals/${receivalId}`,
+    data
+  );
+  return response.data;
+};
+
+export const deletePaymentReceival = async (
+  paymentId: string,
+  receivalId: string
+): Promise<PaymentResponse> => {
+  const response = await client.delete(
+    `/payments/${paymentId}/receivals/${receivalId}`
+  );
   return response.data;
 };

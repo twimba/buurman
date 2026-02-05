@@ -53,7 +53,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuth();
   const { data: preferences } = useUserPreferences(isAuthenticated);
   const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
-  const [themePreference, setThemePreference] = useState<ThemePreference>(getStoredTheme);
+  const [themePreference, setThemePreference] =
+    useState<ThemePreference>(getStoredTheme);
 
   // Sync from backend preferences when they load
   useEffect(() => {

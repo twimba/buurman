@@ -6,6 +6,7 @@ import {
   useUpdateExpense,
   useExpenseAuditLog,
   useExpenseDocuments,
+  useUploadExpenseDocument,
   useDeleteExpenseDocument,
 } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -13,6 +14,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
+import { DocumentList } from '@/components/properties/DocumentList';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
@@ -61,6 +63,7 @@ export const ExpenseDetailPage = () => {
   } = useExpenseDocuments(id);
   const deleteExpenseMutation = useDeleteExpense();
   const updateExpenseMutation = useUpdateExpense(id!);
+  const uploadDocumentMutation = useUploadExpenseDocument(id!);
   const deleteDocumentMutation = useDeleteExpenseDocument(id!);
 
   const handleDelete = async () => {
@@ -198,7 +201,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Amount</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Amount
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] text-lg">
                         {expense.currency} {expense.amount.toFixed(2)}
                       </p>
@@ -207,7 +212,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Expense Date</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Expense Date
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(expense.expenseDate)}
                       </p>
@@ -216,7 +223,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Package className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Category</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Category
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatExpenseCategory(expense.category)}
                       </p>
@@ -225,7 +234,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <Receipt className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Description</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Description
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {expense.description}
                       </p>
@@ -243,7 +254,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Property</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Property
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${expense.property.id}`)
@@ -277,14 +290,18 @@ export const ExpenseDetailPage = () => {
                 </h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">Created:</span>{' '}
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Created:
+                    </span>{' '}
                     <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(expense.createdAt)} at{' '}
                       {new Date(expense.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">Last Updated:</span>{' '}
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Last Updated:
+                    </span>{' '}
                     <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(expense.updatedAt)} at{' '}
                       {new Date(expense.updatedAt).toLocaleTimeString()}
@@ -296,61 +313,20 @@ export const ExpenseDetailPage = () => {
           ))}
 
         {activeTab === 'documents' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
-              Documents ({documents.length})
-            </h2>
-            {docsLoading ? (
-              <LoadingSpinner />
-            ) : docsError ? (
-              <ErrorMessage message="Failed to load documents" />
-            ) : documents.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No documents attached to this expense
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="border border-[#e2e6f0] rounded-lg p-4 hover:border-blue-300 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      <FileText className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
-                          {doc.title || doc.fileName}
-                        </p>
-                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] truncate">
-                          {doc.fileName}
-                        </p>
-                        <div className="flex gap-2 mt-2">
-                          <a
-                            href={doc.downloadUrl || undefined}
-                            download
-                            className="text-xs text-[#5c7cfa] hover:underline"
-                          >
-                            Download
-                          </a>
-                          <button
-                            onClick={() =>
-                              deleteDocumentMutation.mutate(doc.id)
-                            }
-                            className="text-xs text-red-600 hover:underline"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <DocumentList
+            documents={documents}
+            isLoading={docsLoading}
+            error={docsError}
+            onUpload={async (file, title, notes) => {
+              await uploadDocumentMutation.mutateAsync({ file, title, notes });
+            }}
+            onDelete={async (documentId) => {
+              await deleteDocumentMutation.mutateAsync(documentId);
+            }}
+            isUploading={uploadDocumentMutation.isPending}
+            isDeleting={deleteDocumentMutation.isPending}
+            readOnly={!canEditData}
+          />
         )}
 
         {activeTab === 'history' && (
@@ -380,7 +356,9 @@ export const ExpenseDetailPage = () => {
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]' : ''
+                          hasChanges
+                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            : ''
                         }`}
                         onClick={() =>
                           hasChanges &&
@@ -488,7 +466,9 @@ export const ExpenseDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  No history available
+                </p>
                 <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this expense will appear here
                 </p>

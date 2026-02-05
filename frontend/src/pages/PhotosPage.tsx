@@ -267,7 +267,9 @@ export const PhotosPage = () => {
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center p-4">
                         <AlertCircle className="h-8 w-8 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-2" />
-                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">No URL</p>
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                          No URL
+                        </p>
                       </div>
                     </div>
                   ) : imageErrors.has(photo.id) ? (

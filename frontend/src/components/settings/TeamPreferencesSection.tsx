@@ -7,7 +7,7 @@ import {
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
 import { CurrencySelector } from '../common/CurrencySelector';
-import { countries } from '../../utils/countries';
+import { CountrySelector } from '../common/CountrySelector';
 
 export const TeamPreferencesSection = () => {
   const { canEditTeamSettings } = useTeam();
@@ -146,21 +146,12 @@ export const TeamPreferencesSection = () => {
               <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 Default Country
               </label>
-              <select
+              <CountrySelector
                 value={preferences.defaultCountry}
-                onChange={(e) =>
-                  handlePreferenceChange('defaultCountry', e.target.value)
-                }
+                onChange={(v) => handlePreferenceChange('defaultCountry', v)}
                 disabled={!canEditTeamSettings}
-                className="w-full px-3 py-2 border border-[#c9cfd9] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:bg-[#1e2130] disabled:cursor-not-allowed"
-              >
-                <option value="">No default (select each time)</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.name}>
-                    {country.flag} {country.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="No default (select each time)"
+              />
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 This will be the pre-selected country for new properties and
                 tenant addresses

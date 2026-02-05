@@ -9,6 +9,7 @@ public class Payment {
 
     public enum PaymentStatus {
         PENDING,
+        PARTIALLY_PAID,
         PAID,
         OVERDUE,
         CANCELLED

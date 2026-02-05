@@ -8,7 +8,7 @@ import {
   AddressStatus,
 } from '@/types/tenant';
 import { AddressMap } from '../common/AddressMap';
-import { countries } from '@/utils/countries';
+import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface AddressFormProps {
@@ -233,19 +233,11 @@ export const AddressForm = ({
           <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
             Country <span className="text-red-500">*</span>
           </label>
-          <select
+          <CountrySelector
             value={formData.country}
-            onChange={(e) => handleChange('country', e.target.value)}
+            onChange={(v) => handleChange('country', v)}
             onBlur={handleAddressBlur}
-            className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-          >
-            <option value="">Select a country</option>
-            {countries.map((country) => (
-              <option key={country.code} value={country.name}>
-                {country.flag} {country.name}
-              </option>
-            ))}
-          </select>
+          />
           {errors.country && (
             <p className="text-red-600 text-sm mt-1">{errors.country}</p>
           )}

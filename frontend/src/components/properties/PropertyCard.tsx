@@ -11,7 +11,8 @@ const statusColors: Record<PropertyStatus, string> = {
   OCCUPIED: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   MAINTENANCE:
     'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  UNAVAILABLE: 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db] dark:bg-[#1e2130] dark:text-[#c4c8db]',
+  UNAVAILABLE:
+    'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db] dark:bg-[#1e2130] dark:text-[#c4c8db]',
 };
 
 const statusLabels: Record<PropertyStatus, string> = {

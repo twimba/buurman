@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useTenant,
@@ -6,6 +6,7 @@ import {
   useTenantAuditLog,
   useTenantDocuments,
   useTenantPhotos,
+  useTenantAddresses,
   useUploadTenantDocument,
   useUploadTenantPhoto,
   useSetTenantMainPhoto,
@@ -19,7 +20,7 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
 import { TenantAddressList } from '@/components/tenants/TenantAddressList';
-import { ContractCard } from '@/components/contracts/ContractCard';
+import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ContractStatus } from '@/types/contract';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
@@ -36,8 +37,13 @@ import {
   MapPin,
   Plus,
   History,
+  Search,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
+import { getCurrencySymbol } from '@/utils/currencies';
 
 export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,6 +56,19 @@ export const TenantDetailPage = () => {
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
+
+  const { formatDate } = useFormatDate();
+
+  // Contracts table state
+  const [contractsSearchTerm, setContractsSearchTerm] = useState('');
+  const [contractsSortField, setContractsSortField] = useState<
+    'startDate' | 'rentAmount' | 'status' | 'property' | 'contractType'
+  >('startDate');
+  const [contractsSortOrder, setContractsSortOrder] = useState<'asc' | 'desc'>(
+    'desc'
+  );
+  const [contractsCurrentPage, setContractsCurrentPage] = useState(1);
+  const contractsPerPage = 10;
 
   const { data: tenant, isLoading, error } = useTenant(id);
   const {
@@ -72,6 +91,7 @@ export const TenantDetailPage = () => {
     isLoading: contractsLoading,
     error: contractsError,
   } = useContracts(id ? { tenantId: id } : undefined);
+  const { data: addresses = [] } = useTenantAddresses(id);
 
   // Filter out photos from documents list
   const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
@@ -126,6 +146,70 @@ export const TenantDetailPage = () => {
             index === self.findIndex((p) => p.id === property.id)
         )
     : [];
+
+  // Contracts filtering, sorting, and pagination
+  const filteredAndSortedContracts = useMemo(() => {
+    if (!contracts) return [];
+    let filtered = [...contracts];
+    if (contractsSearchTerm) {
+      const search = contractsSearchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (contract) =>
+          contract.identifier.toLowerCase().includes(search) ||
+          contract.property.street.toLowerCase().includes(search) ||
+          contract.contractType.toLowerCase().includes(search)
+      );
+    }
+    filtered.sort((a, b) => {
+      let aVal: string | number, bVal: string | number;
+      switch (contractsSortField) {
+        case 'startDate':
+          aVal = new Date(a.startDate).getTime();
+          bVal = new Date(b.startDate).getTime();
+          break;
+        case 'rentAmount':
+          aVal = a.rentAmount;
+          bVal = b.rentAmount;
+          break;
+        case 'status':
+          aVal = a.status;
+          bVal = b.status;
+          break;
+        case 'property':
+          aVal = a.property.street;
+          bVal = b.property.street;
+          break;
+        case 'contractType':
+          aVal = a.contractType;
+          bVal = b.contractType;
+          break;
+        default:
+          return 0;
+      }
+      if (aVal < bVal) return contractsSortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return contractsSortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return filtered;
+  }, [contracts, contractsSearchTerm, contractsSortField, contractsSortOrder]);
+
+  const paginatedContracts = useMemo(() => {
+    const startIndex = (contractsCurrentPage - 1) * contractsPerPage;
+    return filteredAndSortedContracts.slice(startIndex, startIndex + contractsPerPage);
+  }, [filteredAndSortedContracts, contractsCurrentPage]);
+
+  const contractsTotalPages = Math.ceil(
+    filteredAndSortedContracts.length / contractsPerPage
+  );
+
+  const handleContractsSort = (field: typeof contractsSortField) => {
+    if (contractsSortField === field) {
+      setContractsSortOrder(contractsSortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setContractsSortField(field);
+      setContractsSortOrder('asc');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -225,7 +309,7 @@ export const TenantDetailPage = () => {
               }`}
             >
               <MapPin className="h-4 w-4" />
-              Addresses
+              Addresses {addresses.length > 0 && `(${addresses.length})`}
             </button>
             <button
               onClick={() => setActiveTab('contracts')}
@@ -420,7 +504,9 @@ export const TenantDetailPage = () => {
         {activeTab === 'contracts' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">Contracts</h2>
+              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                Contracts ({filteredAndSortedContracts.length})
+              </h2>
               <button
                 onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
                 disabled={!canEditData}
@@ -450,11 +536,218 @@ export const TenantDetailPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {contracts.map((contract) => (
-                  <ContractCard key={contract.id} contract={contract} />
-                ))}
-              </div>
+              <>
+                {/* Search Bar */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <input
+                      type="text"
+                      placeholder="Search by contract #, property, type..."
+                      value={contractsSearchTerm}
+                      onChange={(e) => {
+                        setContractsSearchTerm(e.target.value);
+                        setContractsCurrentPage(1);
+                      }}
+                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                      <tr>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('startDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Contract #
+                            {contractsSortField === 'startDate' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('property')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Property
+                            {contractsSortField === 'property' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('contractType')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Type
+                            {contractsSortField === 'contractType' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('startDate')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Start Date
+                            {contractsSortField === 'startDate' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          End Date
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('rentAmount')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Rent Amount
+                            {contractsSortField === 'rentAmount' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                        <th
+                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          onClick={() => handleContractsSort('status')}
+                        >
+                          <div className="flex items-center gap-1">
+                            Status
+                            {contractsSortField === 'status' &&
+                              (contractsSortOrder === 'asc' ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              ))}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                      {paginatedContracts.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={7}
+                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                          >
+                            No contracts found matching your search
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedContracts.map((contract) => (
+                          <tr
+                            key={contract.id}
+                            onClick={() =>
+                              navigate(`/contracts/${contract.id}`)
+                            }
+                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-primary-500 dark:text-primary-300">
+                                #{contract.identifier}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                                {contract.property.street}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                                {contract.contractType.replace('_', ' ')}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                                {formatDate(contract.startDate)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                                {contract.endDate
+                                  ? formatDate(contract.endDate)
+                                  : '-'}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                                {getCurrencySymbol(contract.currency)}{' '}
+                                {contract.rentAmount.toFixed(2)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <ContractStatusBadge status={contract.status} />
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {contractsTotalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Showing{' '}
+                      {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
+                      {Math.min(
+                        contractsCurrentPage * contractsPerPage,
+                        filteredAndSortedContracts.length
+                      )}{' '}
+                      of {filteredAndSortedContracts.length} contracts
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setContractsCurrentPage(contractsCurrentPage - 1)
+                        }
+                        disabled={contractsCurrentPage === 1}
+                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Page {contractsCurrentPage} of {contractsTotalPages}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setContractsCurrentPage(contractsCurrentPage + 1)
+                        }
+                        disabled={contractsCurrentPage === contractsTotalPages}
+                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -653,7 +946,9 @@ export const TenantDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  No history available
+                </p>
                 <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this tenant will appear here
                 </p>

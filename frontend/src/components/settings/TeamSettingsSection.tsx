@@ -63,9 +63,12 @@ export const TeamSettingsSection = () => {
   };
 
   const roleColors: Record<Role, string> = {
-    TEAM_ADMIN: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
-    TEAM_EDITOR: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
-    TEAM_VIEWER: 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
+    TEAM_ADMIN:
+      'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+    TEAM_EDITOR:
+      'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+    TEAM_VIEWER:
+      'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
   };
 
   const selectedMember = members?.find((m) => m.memberId === selectedMemberId);

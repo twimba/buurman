@@ -402,7 +402,9 @@ export const ContractDetailPage = () => {
                 <div className="flex items-start gap-3">
                   <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Property</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Property
+                    </p>
                     <button
                       onClick={() =>
                         navigate(`/properties/${contract.property.id}`)
@@ -419,7 +421,9 @@ export const ContractDetailPage = () => {
                 <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Tenant</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Tenant
+                    </p>
                     <button
                       onClick={() => navigate(`/tenants/${contract.tenant.id}`)}
                       className="font-medium text-[#5c7cfa] hover:underline text-left"
@@ -443,7 +447,9 @@ export const ContractDetailPage = () => {
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Start Date</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Start Date
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {formatDate(contract.startDate)}
                     </p>
@@ -453,7 +459,9 @@ export const ContractDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">End Date</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        End Date
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(contract.endDate)}
                       </p>
@@ -464,7 +472,9 @@ export const ContractDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Signed Date</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Signed Date
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(contract.signedDate)}
                       </p>
@@ -483,7 +493,9 @@ export const ContractDetailPage = () => {
                 <div className="flex items-center gap-3">
                   <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Rent Amount</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Rent Amount
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.currency} {contract.rentAmount.toFixed(2)} /{' '}
                       {contract.paymentFrequency.toLowerCase()}
@@ -494,7 +506,9 @@ export const ContractDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Deposit</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Deposit
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {contract.currency} {contract.depositAmount.toFixed(2)}
                       </p>
@@ -505,7 +519,9 @@ export const ContractDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Security Deposit</p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Security Deposit
+                      </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {contract.currency}{' '}
                         {contract.securityDeposit.toFixed(2)}
@@ -515,7 +531,9 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.paymentDueDay && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Payment Due Day</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Payment Due Day
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       Day {contract.paymentDueDay} of each period
                     </p>
@@ -531,14 +549,18 @@ export const ContractDetailPage = () => {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Auto-renewal</p>
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    Auto-renewal
+                  </p>
                   <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {contract.autoRenewal ? 'Yes' : 'No'}
                   </p>
                 </div>
                 {contract.renewalNoticeDays && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Renewal Notice</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Renewal Notice
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.renewalNoticeDays} days
                     </p>
@@ -546,7 +568,9 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.terminationNoticeDays && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Termination Notice</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Termination Notice
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.terminationNoticeDays} days
                     </p>
@@ -554,7 +578,9 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.lateFeePercentage && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">Late Fee</p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Late Fee
+                    </p>
                     <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.lateFeePercentage}%
                     </p>
@@ -842,7 +868,9 @@ export const ContractDetailPage = () => {
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]' : ''
+                          hasChanges
+                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            : ''
                         }`}
                         onClick={() =>
                           hasChanges &&
@@ -1007,7 +1035,9 @@ export const ContractDetailPage = () => {
             ) : (
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">No history available</p>
+                <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  No history available
+                </p>
                 <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
                   Changes to this contract will appear here
                 </p>

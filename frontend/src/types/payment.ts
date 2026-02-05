@@ -4,9 +4,19 @@ import { TenantSummary } from './tenant';
 
 export enum PaymentStatus {
   PENDING = 'PENDING',
+  PARTIALLY_PAID = 'PARTIALLY_PAID',
   PAID = 'PAID',
   OVERDUE = 'OVERDUE',
   CANCELLED = 'CANCELLED',
+}
+
+export interface PaymentReceivalResponse {
+  id: string;
+  identifier: string;
+  amount: number;
+  receivalDate: string;
+  notes?: string;
+  createdAt: string;
 }
 
 export interface PaymentResponse {
@@ -18,12 +28,15 @@ export interface PaymentResponse {
   property: PropertySummary;
   amount: number;
   currency: string;
+  receivedAmount: number;
+  balance: number;
   paymentDate?: string;
   dueDate: string;
   status: PaymentStatus;
   notes?: string;
   proofOfPayment?: DocumentResponse;
   receipt?: DocumentResponse;
+  receivals: PaymentReceivalResponse[];
   createdAt: string;
   updatedAt: string;
 }
@@ -56,6 +69,18 @@ export interface UpdatePaymentRequest {
 
 export interface MarkPaidRequest {
   paymentDate: string;
+  notes?: string;
+}
+
+export interface CreatePaymentReceivalRequest {
+  amount: number;
+  receivalDate: string;
+  notes?: string;
+}
+
+export interface UpdatePaymentReceivalRequest {
+  amount: number;
+  receivalDate: string;
   notes?: string;
 }
 

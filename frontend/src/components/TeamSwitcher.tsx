@@ -20,7 +20,9 @@ export const TeamSwitcher = () => {
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'TEAM_ADMIN':
-        return <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />;
+        return (
+          <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+        );
       case 'TEAM_EDITOR':
         return <Edit3 className="h-4 w-4 text-[#5c7cfa] dark:text-[#91a7ff]" />;
       case 'TEAM_VIEWER':

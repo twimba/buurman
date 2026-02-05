@@ -256,7 +256,9 @@ export const FinancialReportsPage = () => {
                 }}
                 className="px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               />
-              <span className="text-[#6b7194] dark:text-[#8b90a8] self-center">to</span>
+              <span className="text-[#6b7194] dark:text-[#8b90a8] self-center">
+                to
+              </span>
               <input
                 type="date"
                 value={customEndDate || dateRange.endDate}
@@ -375,13 +377,19 @@ export const FinancialReportsPage = () => {
           ) : incomeTrend ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={incomeTrend.dataPoints}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2e3f' : '#f0f0f0'} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
                 <XAxis
                   dataKey="period"
                   tick={{ fontSize: 12 }}
                   stroke={isDark ? '#5c6180' : '#9CA3AF'}
                 />
-                <YAxis tick={{ fontSize: 12 }} stroke={isDark ? '#5c6180' : '#9CA3AF'} />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                />
                 <Tooltip
                   formatter={(value: number | undefined) =>
                     value !== undefined ? formatCurrency(value) : 'N/A'
@@ -479,7 +487,9 @@ export const FinancialReportsPage = () => {
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: category.color }}
                         />
-                        <span className="text-[#3d4463] dark:text-[#c4c8db]">{category.name}</span>
+                        <span className="text-[#3d4463] dark:text-[#c4c8db]">
+                          {category.name}
+                        </span>
                       </div>
                       <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatCurrency(category.value)}
@@ -525,7 +535,10 @@ export const FinancialReportsPage = () => {
                 }))}
                 margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2e3f' : '#f0f0f0'} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
                 <XAxis
                   dataKey="street"
                   tick={(props: {
@@ -548,7 +561,12 @@ export const FinancialReportsPage = () => {
                           <tspan x={0} dy={0}>
                             {data.property.street}
                           </tspan>
-                          <tspan x={0} dy={14} fontSize={10} fill={isDark ? '#5c6180' : '#9CA3AF'}>
+                          <tspan
+                            x={0}
+                            dy={14}
+                            fontSize={10}
+                            fill={isDark ? '#5c6180' : '#9CA3AF'}
+                          >
                             {data.property.city}
                           </tspan>
                         </text>
@@ -559,7 +577,10 @@ export const FinancialReportsPage = () => {
                   interval={0}
                   stroke={isDark ? '#5c6180' : '#6B7280'}
                 />
-                <YAxis tick={{ fontSize: 12 }} stroke={isDark ? '#5c6180' : '#6B7280'} />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#6B7280'}
+                />
                 <Tooltip
                   formatter={(value: number | undefined) =>
                     value !== undefined ? formatCurrency(value) : 'N/A'
@@ -609,7 +630,10 @@ export const FinancialReportsPage = () => {
           ) : occupancyTrend ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={occupancyTrend.dataPoints}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2e3f' : '#f0f0f0'} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
                 <XAxis
                   dataKey="period"
                   tick={{ fontSize: 12 }}

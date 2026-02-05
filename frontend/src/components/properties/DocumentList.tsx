@@ -6,10 +6,12 @@ import {
   Image as ImageIcon,
   Download,
   Trash2,
+  Eye,
 } from 'lucide-react';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
 import { getDocumentDownloadUrl } from '@/api/properties';
+import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
 
 interface DocumentListProps {
   propertyId?: string;
@@ -43,6 +45,8 @@ export const DocumentList = ({
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [previewDocument, setPreviewDocument] =
+    useState<DocumentResponse | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -85,7 +89,9 @@ export const DocumentList = ({
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) {
-      return <ImageIcon className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />;
+      return (
+        <ImageIcon className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />
+      );
     }
     return <FileText className="h-8 w-8 text-[#6b7194] dark:text-[#8b90a8]" />;
   };
@@ -192,7 +198,8 @@ export const DocumentList = ({
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg p-4 hover:shadow-md dark:hover:shadow-black/20 transition-shadow"
+                className="bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg p-4 hover:shadow-md dark:hover:shadow-black/20 transition-shadow cursor-pointer"
+                onClick={() => setPreviewDocument(doc)}
               >
                 <div className="flex items-start gap-3">
                   {/* File Icon */}
@@ -223,7 +230,20 @@ export const DocumentList = ({
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleDownload(doc.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewDocument(doc);
+                      }}
+                      className="p-2 text-primary-500 dark:text-primary-300 hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded transition-colors"
+                      title="Preview"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(doc.id);
+                      }}
                       className="p-2 text-primary-500 dark:text-primary-300 hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded transition-colors"
                       title="Download"
                     >
@@ -231,7 +251,10 @@ export const DocumentList = ({
                     </button>
                     {!readOnly && (
                       <button
-                        onClick={() => onDelete(doc.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(doc.id);
+                        }}
                         disabled={isDeleting}
                         className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-[#1e2130] rounded transition-colors disabled:opacity-50"
                         title="Delete"
@@ -246,6 +269,14 @@ export const DocumentList = ({
           </div>
         )}
       </div>
+
+      {/* Document Preview Modal */}
+      {previewDocument && (
+        <DocumentPreviewModal
+          document={previewDocument}
+          onClose={() => setPreviewDocument(null)}
+        />
+      )}
     </div>
   );
 };

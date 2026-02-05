@@ -39,7 +39,9 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
         {/* Property and Tenant */}
         <div className="mb-3 space-y-2">
           <div>
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Property</p>
+            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+              Property
+            </p>
             <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
               {contract.property.street}, {contract.property.city}
             </p>
@@ -57,7 +59,9 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Start</p>
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                Start
+              </p>
               <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                 {formatDate(contract.startDate)}
               </p>

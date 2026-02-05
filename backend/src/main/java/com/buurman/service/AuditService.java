@@ -204,6 +204,19 @@ public class AuditService {
             return String.format("%s removed %s: %s", userName, docType, fileName);
         }
 
+        // Check for receival operations
+        if (changedFields != null && changedFields.containsKey("receivalRegistered")) {
+            return String.format("%s registered a receival: %s", userName, changedFields.get("receivalRegistered"));
+        }
+
+        if (changedFields != null && changedFields.containsKey("receivalUpdated")) {
+            return String.format("%s updated a receival: %s", userName, changedFields.get("receivalUpdated"));
+        }
+
+        if (changedFields != null && changedFields.containsKey("receivalDeleted")) {
+            return String.format("%s deleted a receival: %s", userName, changedFields.get("receivalDeleted"));
+        }
+
         // Default behavior for other operations
         String actionText = switch (action) {
             case "CREATE" -> "created";

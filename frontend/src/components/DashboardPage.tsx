@@ -391,7 +391,9 @@ export const DashboardPage = () => {
         ) : (
           <div className="text-center py-8">
             <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-2" />
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">All payments are up to date</p>
+            <p className="text-[#6b7194] dark:text-[#8b90a8]">
+              All payments are up to date
+            </p>
           </div>
         )}
       </div>
@@ -464,7 +466,9 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <div className="text-center py-8">
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">No recent activities</p>
+            <p className="text-[#6b7194] dark:text-[#8b90a8]">
+              No recent activities
+            </p>
             <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
               Activities will appear here as you use the system
             </p>

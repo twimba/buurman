@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as paymentsApi from '../api/payments';
 import {
   CreatePaymentRequest,
+  CreatePaymentReceivalRequest,
+  UpdatePaymentReceivalRequest,
   UpdatePaymentRequest,
   MarkPaidRequest,
   BulkGeneratePaymentsRequest,
@@ -214,5 +216,82 @@ export const usePaymentAuditLog = (paymentId: string | undefined) => {
     queryKey: ['paymentAuditLog', paymentId],
     queryFn: () => paymentsApi.getPaymentAuditLog(paymentId!),
     enabled: !!paymentId,
+  });
+};
+
+// Receival hooks
+export const useRegisterReceival = (paymentId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: CreatePaymentReceivalRequest) =>
+      paymentsApi.registerReceival(paymentId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      showToast('Receival registered successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const usePaymentReceivals = (paymentId: string | undefined) => {
+  return useQuery({
+    queryKey: ['paymentReceivals', paymentId],
+    queryFn: () => paymentsApi.getPaymentReceivals(paymentId!),
+    enabled: !!paymentId,
+  });
+};
+
+export const useUpdatePaymentReceival = (paymentId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      receivalId,
+      data,
+    }: {
+      receivalId: string;
+      data: UpdatePaymentReceivalRequest;
+    }) => paymentsApi.updatePaymentReceival(paymentId, receivalId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      showToast('Receival updated successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeletePaymentReceival = (paymentId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (receivalId: string) =>
+      paymentsApi.deletePaymentReceival(paymentId, receivalId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      showToast('Receival deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };

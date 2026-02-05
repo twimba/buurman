@@ -1,8 +1,9 @@
-import { PaymentResponse } from '@/types/payment';
+import { PaymentResponse, PaymentStatus } from '@/types/payment';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { Receipt, Calendar, DollarSign, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { getCurrencySymbol } from '@/utils/currencies';
 
 interface PaymentCardProps {
   payment: PaymentResponse;
@@ -50,7 +51,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           )}
           {payment.tenant && (
             <div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Tenant</p>
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                Tenant
+              </p>
               <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                 {payment.tenant.firstName} {payment.tenant.lastName}
               </p>
@@ -63,10 +66,20 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
             <div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Amount</p>
-              <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                {payment.currency} {payment.amount.toFixed(2)}
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                Amount
               </p>
+              <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                {getCurrencySymbol(payment.currency)}{' '}
+                {payment.amount.toFixed(2)}
+              </p>
+              {payment.receivedAmount > 0 &&
+                payment.status !== PaymentStatus.PAID && (
+                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                    Balance: {getCurrencySymbol(payment.currency)}{' '}
+                    {(payment.balance ?? 0).toFixed(2)}
+                  </p>
+                )}
             </div>
           </div>
           <div className="flex items-center gap-2">

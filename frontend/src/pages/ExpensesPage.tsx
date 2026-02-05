@@ -17,6 +17,7 @@ import {
   TrendingDown,
   DollarSign,
   PieChart,
+  Eye,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -462,6 +463,8 @@ export const ExpensesPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
@@ -498,6 +501,18 @@ export const ExpensesPage = () => {
                         <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                           {expense.currency} {expense.amount.toFixed(2)}
                         </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/expenses/${expense.id}`);
+                          }}
+                          className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
+                          title="View expense"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   ))}

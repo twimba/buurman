@@ -101,6 +101,7 @@ export const usePropertyPhotos = (propertyId: string | undefined) => {
 
 export const useUploadPropertyPhoto = (propertyId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({
       file,
@@ -118,11 +119,15 @@ export const useUploadPropertyPhoto = (propertyId: string) => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useSetMainPhoto = (propertyId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (photoId: string) =>
       propertiesApi.setMainPhoto(propertyId, photoId),
@@ -133,11 +138,15 @@ export const useSetMainPhoto = (propertyId: string) => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useUploadPropertyDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: ({
       file,
@@ -159,11 +168,15 @@ export const useUploadPropertyDocument = (propertyId: string) => {
         queryKey: ['documents'],
       });
     },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };
 
 export const useDeleteDocument = (propertyId: string) => {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   return useMutation({
     mutationFn: (documentId: string) =>
       propertiesApi.deleteDocument(documentId),
@@ -180,6 +193,9 @@ export const useDeleteDocument = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['documents'],
       });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
     },
   });
 };
