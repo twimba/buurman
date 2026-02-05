@@ -48,7 +48,6 @@ public class PaymentSchedulingService {
      * Runs every hour.
      */
     @Scheduled(cron = "0 0 * * * *")
-    @Transactional
     public void scheduledPaymentGeneration() {
         log.info("Starting scheduled payment generation");
         long startTime = System.currentTimeMillis();
