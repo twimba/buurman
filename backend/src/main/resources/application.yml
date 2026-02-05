@@ -3,9 +3,9 @@ spring:
     name: buurman-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/buurman
-    username: buurman
-    password: buurman
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/buurman}
+    username: ${DB_USERNAME:buurman}
+    password: ${DB_PASSWORD:buurman}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -48,27 +48,27 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/buurman
-          jwk-set-uri: http://localhost:8080/realms/buurman/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/buurman}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8080/realms/buurman/protocol/openid-connect/certs}
 
 # Keycloak Admin API Configuration
 keycloak:
   admin:
-    server-url: http://localhost:8080
+    server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}
     realm: master
-    client-id: admin-cli
-    username: admin
-    password: admin
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+    username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
   realm: buurman
 
 # AWS S3 Configuration
 aws:
   s3:
-    endpoint: http://localhost:4566
-    region: eu-west-1
-    bucket-name: buurman-documents
-    access-key: test
-    secret-key: test
+    endpoint: ${AWS_S3_ENDPOINT:http://localhost:4566}
+    region: ${AWS_S3_REGION:eu-west-1}
+    bucket-name: ${AWS_S3_BUCKET:buurman-documents}
+    access-key: ${AWS_S3_ACCESS_KEY:test}
+    secret-key: ${AWS_S3_SECRET_KEY:test}
 
 # Email Configuration
 spring.mail:
@@ -112,7 +112,7 @@ management:
 server:
   port: 8081
   error:
-    include-message: always
+    include-message: ${SERVER_ERROR_INCLUDE_MESSAGE:never}
 
 # SpringDoc OpenAPI Configuration
 springdoc:
