@@ -12,8 +12,8 @@ import { CountrySelector } from '../common/CountrySelector';
 export const TeamPreferencesSection = () => {
   const { canEditTeamSettings } = useTeam();
   const { data: team } = useCurrentTeam();
-  const { data: settingsData, isLoading } = useTeamSettings(team?.teamId);
-  const updateSettingsMutation = useUpdateTeamSettings(team?.teamId || '');
+  const { data: settingsData, isLoading } = useTeamSettings(team?.identifier);
+  const updateSettingsMutation = useUpdateTeamSettings(team?.identifier || '');
 
   const [hasChanges, setHasChanges] = useState(false);
   const [preferences, setPreferences] = useState({

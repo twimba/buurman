@@ -7,6 +7,7 @@ import com.buurman.domain.TeamSettings;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +149,7 @@ public class PaymentSchedulingService {
 
             try {
                 Payment payment = new Payment();
-                payment.setIdentifier(UlidGenerator.generate());
+                payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
                 payment.setTeamId(teamId);
                 payment.setContractId(contractId);
                 payment.setAmount(contract.getRentAmount());

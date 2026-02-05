@@ -4,9 +4,11 @@ import com.buurman.domain.Contract;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuditService;
@@ -26,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contracts")
@@ -56,147 +57,137 @@ public class ContractController {
         return contractService.createContract(request, principal);
     }
 
-    @Operation(summary = "List contracts", description = "Get all contracts with optional filters")
+    @Operation(summary = "List contracts", description = "Get all contracts with optional filters and pagination")
     @GetMapping
-    public List<ContractResponse> getContracts(
+    public PageResponse<ContractResponse> getContracts(
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) UUID propertyId,
-            @RequestParam(required = false) UUID tenantId,
+            @RequestParam(required = false) String propertyIdentifier,
+            @RequestParam(required = false) String tenantIdentifier,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        if (propertyId != null) {
-            return contractService.getContractsByProperty(propertyId, principal);
+        // When filtering by property or tenant identifier, use the existing non-paginated methods wrapped in PageResponse
+        if (propertyIdentifier != null) {
+            List<ContractResponse> results = contractService.getContractsByProperty(propertyIdentifier, principal);
+            return PageResponse.of(results, 0, results.size(), results.size());
         }
 
-        if (tenantId != null) {
-            return contractService.getContractsByTenant(tenantId, principal);
+        if (tenantIdentifier != null) {
+            List<ContractResponse> results = contractService.getContractsByTenant(tenantIdentifier, principal);
+            return PageResponse.of(results, 0, results.size(), results.size());
         }
 
-        if (status != null) {
-            try {
-                Contract.ContractStatus contractStatus = Contract.ContractStatus.valueOf(status.toUpperCase());
-                return contractService.getContractsByStatus(contractStatus, principal);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid status: " + status);
-            }
-        }
-
-        return contractService.getAllContracts(principal);
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+        return contractService.getContractsPaginated(principal, status, pageRequest);
     }
 
     @Operation(summary = "Get contract details", description = "Get details of a specific contract")
-    @GetMapping("/{id}")
+    @GetMapping("/{identifier}")
     public ContractResponse getContract(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return contractService.getContract(id, principal);
+        return contractService.getContract(identifier, principal);
     }
 
     @Operation(summary = "Update contract", description = "Update contract information (Admin/Editor)")
-    @PutMapping("/{id}")
+    @PutMapping("/{identifier}")
     public ContractResponse updateContract(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody UpdateContractRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return contractService.updateContract(id, request, principal);
+        return contractService.updateContract(identifier, request, principal);
     }
 
     @Operation(summary = "Delete contract", description = "Soft delete a contract (Admin only)")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{identifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteContract(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        contractService.deleteContract(id, principal);
+        contractService.deleteContract(identifier, principal);
     }
 
     @Operation(summary = "Change contract status", description = "Change the status of a contract (Admin/Editor)")
-    @PostMapping("/{id}/change-status")
+    @PostMapping("/{identifier}/change-status")
     public ContractResponse changeContractStatus(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody ChangeContractStatusRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return contractService.changeContractStatus(id, request, principal);
+        return contractService.changeContractStatus(identifier, request, principal);
     }
 
     @Operation(summary = "Reopen contract", description = "Reopen a terminated or expired contract back to draft status (Admin/Editor)")
-    @PostMapping("/{id}/reopen")
+    @PostMapping("/{identifier}/reopen")
     public ContractResponse reopenContract(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return contractService.reopenContract(id, principal);
+        return contractService.reopenContract(identifier, principal);
     }
 
     @Operation(summary = "Duplicate contract", description = "Create a new contract with the same data in draft status (Admin/Editor)")
-    @PostMapping("/{id}/duplicate")
+    @PostMapping("/{identifier}/duplicate")
     @ResponseStatus(HttpStatus.CREATED)
     public ContractResponse duplicateContract(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return contractService.duplicateContract(id, principal);
+        return contractService.duplicateContract(identifier, principal);
     }
 
     @Operation(summary = "Upload document", description = "Upload a document for a contract (Admin/Editor)")
-    @PostMapping("/{id}/documents")
+    @PostMapping("/{identifier}/documents")
     @ResponseStatus(HttpStatus.CREATED)
     public DocumentResponse uploadDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String notes,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.uploadDocument(file, "CONTRACT", id, title, notes, principal);
+        return contractService.uploadDocument(identifier, file, title, notes, principal);
     }
 
     @Operation(summary = "List documents", description = "Get all documents for a contract")
-    @GetMapping("/{id}/documents")
+    @GetMapping("/{identifier}/documents")
     public List<DocumentResponse> getDocuments(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.getDocuments("CONTRACT", id, principal);
+        return contractService.getDocuments(identifier, principal);
     }
 
     @Operation(summary = "Get download URL", description = "Get presigned download URL for a document")
-    @GetMapping("/documents/{documentId}/download")
+    @GetMapping("/documents/{documentIdentifier}/download")
     public Map<String, String> getDownloadUrl(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        URL url = documentService.getDownloadUrl(documentId, principal);
+        URL url = contractService.getDocumentDownloadUrl(documentIdentifier, principal);
         return Map.of("url", url.toString());
     }
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
-    @DeleteMapping("/documents/{documentId}")
+    @DeleteMapping("/documents/{documentIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDocument(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        documentService.deleteDocument(documentId, principal);
+        contractService.deleteDocument(documentIdentifier, principal);
     }
 
     @Operation(summary = "Get audit log", description = "Get audit history for a contract")
-    @GetMapping("/{id}/audit-log")
+    @GetMapping("/{identifier}/audit-log")
     public List<RecentActivityResponse> getContractAuditLog(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", id);
+        return contractService.getAuditLog(identifier, principal);
     }
 
     @Operation(summary = "Generate payments", description = "Manually generate N future payments for a contract (Admin/Editor)")
-    @PostMapping("/{id}/generate-payments")
+    @PostMapping("/{identifier}/generate-payments")
     public Map<String, Object> generatePayments(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody GeneratePaymentsRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        int generated = paymentSchedulingService.generatePaymentsManually(
-                id,
-                principal.getTeamId(),
-                principal.getUserId(),
-                request.count()
-        );
-        return Map.of(
-                "generated", generated,
-                "requested", request.count()
-        );
+        return contractService.generatePayments(identifier, request, principal);
     }
 }

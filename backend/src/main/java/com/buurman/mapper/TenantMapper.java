@@ -15,14 +15,9 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface TenantMapper {
 
     @Mapping(target = "currentProperty", ignore = true)
+    @Mapping(target = "mainPhotoUrl", ignore = true)
     TenantResponse toResponse(Tenant tenant);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "identifier", source = "identifier")
-    @Mapping(target = "firstName", source = "firstName")
-    @Mapping(target = "lastName", source = "lastName")
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "phone", source = "phone")
     TenantSummary toSummary(Tenant tenant);
 
     @Mapping(target = "id", ignore = true)

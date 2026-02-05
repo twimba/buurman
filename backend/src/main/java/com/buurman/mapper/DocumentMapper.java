@@ -9,5 +9,6 @@ import org.mapstruct.Mapping;
 public interface DocumentMapper {
 
     @Mapping(target = "downloadUrl", ignore = true)
+    @Mapping(target = "entityIdentifier", ignore = true)
     DocumentResponse toResponse(Document document);
 }

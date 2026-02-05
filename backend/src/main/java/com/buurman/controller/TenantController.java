@@ -3,17 +3,17 @@ package com.buurman.controller;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateTenantAddressRequest;
 import com.buurman.dto.request.UpdateTenantRequest;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyTenantHistoryResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantAddressResponse;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.security.UserPrincipal;
-import com.buurman.service.AuditService;
-import com.buurman.service.DocumentService;
-import com.buurman.service.TenantAddressService;
 import com.buurman.service.TenantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,10 +25,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tenants")
@@ -37,16 +35,9 @@ import java.util.UUID;
 public class TenantController {
 
     private final TenantService tenantService;
-    private final TenantAddressService addressService;
-    private final DocumentService documentService;
-    private final AuditService auditService;
 
-    public TenantController(TenantService tenantService, TenantAddressService addressService,
-                           DocumentService documentService, AuditService auditService) {
+    public TenantController(TenantService tenantService) {
         this.tenantService = tenantService;
-        this.addressService = addressService;
-        this.documentService = documentService;
-        this.auditService = auditService;
     }
 
     @Operation(summary = "Create tenant", description = "Create a new tenant (Admin/Editor)")
@@ -58,187 +49,188 @@ public class TenantController {
         return tenantService.createTenant(request, principal);
     }
 
-    @Operation(summary = "List tenants", description = "Get all tenants with optional search")
+    @Operation(summary = "List tenants", description = "Get all tenants with optional search and pagination")
     @GetMapping
-    public List<TenantResponse> getTenants(
+    public PageResponse<TenantResponse> getTenants(
             @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal UserPrincipal principal) {
-        if (search != null && !search.isBlank()) {
-            return tenantService.searchTenants(search, principal);
-        }
-        return tenantService.getAllTenants(principal);
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+        return tenantService.getTenantsPaginated(principal, search, pageRequest);
     }
 
     @Operation(summary = "Get tenant details", description = "Get details of a specific tenant")
-    @GetMapping("/{id}")
+    @GetMapping("/{identifier}")
     public TenantResponse getTenant(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return tenantService.getTenant(id, principal);
+        return tenantService.getTenant(identifier, principal);
     }
 
     @Operation(summary = "Update tenant", description = "Update tenant information (Admin/Editor)")
-    @PutMapping("/{id}")
+    @PutMapping("/{identifier}")
     public TenantResponse updateTenant(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody UpdateTenantRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return tenantService.updateTenant(id, request, principal);
+        return tenantService.updateTenant(identifier, request, principal);
     }
 
     @Operation(summary = "Delete tenant", description = "Soft delete a tenant (Admin only)")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{identifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTenant(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        tenantService.deleteTenant(id, principal);
+        tenantService.deleteTenant(identifier, principal);
     }
 
     @Operation(summary = "Link tenant to property", description = "Assign tenant to a property (Admin/Editor)")
-    @PostMapping("/{id}/link-property")
+    @PostMapping("/{identifier}/link-property")
     public TenantResponse linkTenantToProperty(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody LinkTenantToPropertyRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return tenantService.linkTenantToProperty(id, request, principal);
+        return tenantService.linkTenantToProperty(identifier, request, principal);
     }
 
     @Operation(summary = "Unlink tenant from property", description = "Remove tenant from current property (Admin/Editor)")
-    @PostMapping("/{id}/unlink-property")
+    @PostMapping("/{identifier}/unlink-property")
     public TenantResponse unlinkTenantFromProperty(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return tenantService.unlinkTenantFromProperty(id, principal);
+        return tenantService.unlinkTenantFromProperty(identifier, principal);
     }
 
     @Operation(summary = "Get tenant history", description = "Get property assignment history for a tenant")
-    @GetMapping("/{id}/history")
+    @GetMapping("/{identifier}/history")
     public List<PropertyTenantHistoryResponse> getTenantHistory(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return tenantService.getTenantHistory(id, principal);
+        return tenantService.getTenantHistory(identifier, principal);
     }
 
     @Operation(summary = "Get audit log", description = "Get audit history for a tenant")
-    @GetMapping("/{id}/audit-log")
+    @GetMapping("/{identifier}/audit-log")
     public List<RecentActivityResponse> getTenantAuditLog(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return auditService.getEntityAuditLog(principal.getTeamId(), "TENANT", id);
+        return tenantService.getAuditLog(identifier, principal);
     }
 
     @Operation(summary = "Upload document", description = "Upload a document for a tenant (Admin/Editor)")
-    @PostMapping("/{id}/documents")
+    @PostMapping("/{identifier}/documents")
     @ResponseStatus(HttpStatus.CREATED)
     public DocumentResponse uploadDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String notes,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.uploadDocument(file, "TENANT", id, title, notes, principal);
+        return tenantService.uploadDocument(identifier, file, title, notes, principal);
     }
 
     @Operation(summary = "List documents", description = "Get all documents for a tenant")
-    @GetMapping("/{id}/documents")
+    @GetMapping("/{identifier}/documents")
     public List<DocumentResponse> getDocuments(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.getDocuments("TENANT", id, principal);
+        return tenantService.getDocuments(identifier, principal);
     }
 
     @Operation(summary = "Get download URL", description = "Get presigned download URL for a document")
-    @GetMapping("/documents/{documentId}/download")
+    @GetMapping("/documents/{documentIdentifier}/download")
     public Map<String, String> getDownloadUrl(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        URL url = documentService.getDownloadUrl(documentId, principal);
-        return Map.of("url", url.toString());
+        return tenantService.getDownloadUrl(documentIdentifier, principal);
     }
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
-    @DeleteMapping("/documents/{documentId}")
+    @DeleteMapping("/documents/{documentIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDocument(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        documentService.deleteDocument(documentId, principal);
+        tenantService.deleteDocument(documentIdentifier, principal);
     }
 
     @Operation(summary = "List photos", description = "Get all photos for a tenant")
-    @GetMapping("/{id}/photos")
-    public List<DocumentResponse> getPhotos(
-            @PathVariable UUID id,
+    @GetMapping("/{identifier}/photos")
+    public List<PhotoResponse> getPhotos(
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.getPhotos("TENANT", id, principal);
+        return tenantService.getPhotos(identifier, principal);
     }
 
     @Operation(summary = "Upload photo", description = "Upload a photo for a tenant (Admin/Editor)")
-    @PostMapping("/{id}/photos")
+    @PostMapping("/{identifier}/photos")
     @ResponseStatus(HttpStatus.CREATED)
-    public DocumentResponse uploadPhoto(
-            @PathVariable UUID id,
+    public PhotoResponse uploadPhoto(
+            @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String notes,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.uploadDocument(file, "TENANT", id, title, notes, principal);
+        return tenantService.uploadPhoto(identifier, file, title, notes, principal);
     }
 
     @Operation(summary = "Set main photo", description = "Set a photo as the main photo for a tenant (Admin/Editor)")
-    @PutMapping("/{id}/photos/{photoId}/set-main")
-    public DocumentResponse setMainPhoto(
-            @PathVariable UUID id,
-            @PathVariable UUID photoId,
+    @PutMapping("/{identifier}/photos/{photoIdentifier}/set-main")
+    public PhotoResponse setMainPhoto(
+            @PathVariable String identifier,
+            @PathVariable String photoIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.setMainPhoto(photoId, "TENANT", id, principal);
+        return tenantService.setMainPhoto(identifier, photoIdentifier, principal);
     }
 
     @Operation(summary = "Create address", description = "Create a new address for a tenant (Admin/Editor)")
-    @PostMapping("/{tenantId}/addresses")
+    @PostMapping("/{tenantIdentifier}/addresses")
     @ResponseStatus(HttpStatus.CREATED)
     public TenantAddressResponse createAddress(
-            @PathVariable UUID tenantId,
+            @PathVariable String tenantIdentifier,
             @Valid @RequestBody CreateTenantAddressRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.createAddress(tenantId, request, principal);
+        return tenantService.createAddress(tenantIdentifier, request, principal);
     }
 
     @Operation(summary = "List addresses", description = "Get all addresses for a tenant")
-    @GetMapping("/{tenantId}/addresses")
+    @GetMapping("/{tenantIdentifier}/addresses")
     public List<TenantAddressResponse> getAddresses(
-            @PathVariable UUID tenantId,
+            @PathVariable String tenantIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.getAddresses(tenantId, principal);
+        return tenantService.getAddresses(tenantIdentifier, principal);
     }
 
-    @Operation(summary = "Get address", description = "Get a specific address by ID")
-    @GetMapping("/{tenantId}/addresses/{addressId}")
+    @Operation(summary = "Get address", description = "Get a specific address by identifier")
+    @GetMapping("/{tenantIdentifier}/addresses/{addressIdentifier}")
     public TenantAddressResponse getAddress(
-            @PathVariable UUID tenantId,
-            @PathVariable UUID addressId,
+            @PathVariable String tenantIdentifier,
+            @PathVariable String addressIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.getAddress(tenantId, addressId, principal);
+        return tenantService.getAddress(tenantIdentifier, addressIdentifier, principal);
     }
 
     @Operation(summary = "Update address", description = "Update an existing address (Admin/Editor)")
-    @PutMapping("/{tenantId}/addresses/{addressId}")
+    @PutMapping("/{tenantIdentifier}/addresses/{addressIdentifier}")
     public TenantAddressResponse updateAddress(
-            @PathVariable UUID tenantId,
-            @PathVariable UUID addressId,
+            @PathVariable String tenantIdentifier,
+            @PathVariable String addressIdentifier,
             @Valid @RequestBody UpdateTenantAddressRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.updateAddress(tenantId, addressId, request, principal);
+        return tenantService.updateAddress(tenantIdentifier, addressIdentifier, request, principal);
     }
 
     @Operation(summary = "Delete address", description = "Soft delete an address (Admin/Editor)")
-    @DeleteMapping("/{tenantId}/addresses/{addressId}")
+    @DeleteMapping("/{tenantIdentifier}/addresses/{addressIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAddress(
-            @PathVariable UUID tenantId,
-            @PathVariable UUID addressId,
+            @PathVariable String tenantIdentifier,
+            @PathVariable String addressIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        addressService.deleteAddress(tenantId, addressId, principal);
+        tenantService.deleteAddress(tenantIdentifier, addressIdentifier, principal);
     }
 }

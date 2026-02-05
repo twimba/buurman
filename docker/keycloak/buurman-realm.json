@@ -60,6 +60,12 @@
         "description": "Read-only access to all team data",
         "composite": false,
         "clientRole": false
+      },
+      {
+        "name": "API_ACCESS",
+        "description": "Access to Swagger API documentation and OpenAPI specs",
+        "composite": false,
+        "clientRole": false
       }
     ]
   },

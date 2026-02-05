@@ -2,8 +2,10 @@ spring:
   application:
     name: buurman-backend
 
+  profiles:
+    default: local
+
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/buurman}
     username: ${DB_USERNAME:buurman}
     password: ${DB_PASSWORD:buurman}
     driver-class-name: org.postgresql.Driver
@@ -43,36 +45,25 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-  # Security Configuration
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/buurman}
-          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8080/realms/buurman/protocol/openid-connect/certs}
-
 # Keycloak Admin API Configuration
 keycloak:
   admin:
-    server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}
     realm: master
     client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
-    username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    username: ${KEYCLOAK_ADMIN:admin}
     password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
   realm: buurman
 
 # AWS S3 Configuration
 aws:
   s3:
-    endpoint: ${AWS_S3_ENDPOINT:http://localhost:4566}
     region: ${AWS_S3_REGION:eu-west-1}
     bucket-name: ${AWS_S3_BUCKET:buurman-documents}
-    access-key: ${AWS_S3_ACCESS_KEY:test}
-    secret-key: ${AWS_S3_SECRET_KEY:test}
+    access-key: ${AWS_ACCESS_KEY_ID:test}
+    secret-key: ${AWS_SECRET_ACCESS_KEY:test}
 
 # Email Configuration
 spring.mail:
-  host: ${SMTP_HOST:localhost}
   port: ${SMTP_PORT:1025}
   username: ${SMTP_USERNAME:}
   password: ${SMTP_PASSWORD:}
@@ -83,6 +74,14 @@ spring.mail:
         starttls:
           enable: false
 
+# Demo Data Configuration
+buurman:
+  demo:
+    enabled: ${DEMO_DATA_ENABLED:true}
+    api-key: ${DEMO_DATA_API_KEY:demo-secret-key}
+    auto-regenerate: ${DEMO_DATA_AUTO_REGENERATE:true}
+    cron: "0 0 */12 * * *"
+
 # Application Configuration
 app:
   version: @project.version@
@@ -92,7 +91,8 @@ app:
   email:
     from: ${EMAIL_FROM:noreply@buurman.com}
     from-name: ${EMAIL_FROM_NAME:Buurman}
-    base-url: ${APP_BASE_URL:http://localhost:5173}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
 
 # Actuator Configuration
 management:
@@ -107,21 +107,37 @@ management:
   info:
     env:
       enabled: true
+  metrics:
+    tags:
+      application: buurman
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 30s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        buurman.s3.operation.seconds: true
+        buurman.export.generation.seconds: true
+        buurman.email.send.seconds: true
+      percentiles:
+        http.server.requests: 0.5,0.75,0.95,0.99
+        buurman.s3.operation.seconds: 0.5,0.95,0.99
+        buurman.export.generation.seconds: 0.5,0.95,0.99
 
 # Server Configuration
 server:
   port: 8081
-  error:
-    include-message: ${SERVER_ERROR_INCLUDE_MESSAGE:never}
 
 # SpringDoc OpenAPI Configuration
 springdoc:
   api-docs:
     enabled: true
-    path: /v3/api-docs
+    path: /api-docs/openapi
   swagger-ui:
     enabled: true
-    path: /swagger-ui.html
+    path: /api-docs
     try-it-out-enabled: true
     operations-sorter: method
     tags-sorter: alpha

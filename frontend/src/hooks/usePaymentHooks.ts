@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as paymentsApi from '../api/payments';
 import {
   CreatePaymentRequest,
@@ -9,13 +14,22 @@ import {
   BulkGeneratePaymentsRequest,
   GetPaymentsParams,
 } from '../types/payment';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const usePayments = (params?: GetPaymentsParams) => {
+export const usePayments = (params?: GetPaymentsParams & PageParams) => {
   return useQuery({
     queryKey: ['payments', params],
     queryFn: () => paymentsApi.getPayments(params),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const usePaymentStats = () => {
+  return useQuery({
+    queryKey: ['paymentStats'],
+    queryFn: () => paymentsApi.getPaymentStats(),
   });
 };
 
@@ -49,11 +63,12 @@ export const useCreatePayment = () => {
     mutationFn: (data: CreatePaymentRequest) => paymentsApi.createPayment(data),
     onSuccess: (newPayment) => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({
         queryKey: ['contracts'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['contract', newPayment.contract.id],
+        queryKey: ['contract', newPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -74,9 +89,11 @@ export const useUpdatePayment = (id: string) => {
       paymentsApi.updatePayment(id, data),
     onSuccess: (updatedPayment) => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['payment', id] });
+      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', id] });
       queryClient.invalidateQueries({
-        queryKey: ['contract', updatedPayment.contract.id],
+        queryKey: ['contract', updatedPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -96,6 +113,7 @@ export const useDeletePayment = () => {
     mutationFn: (id: string) => paymentsApi.deletePayment(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -116,11 +134,15 @@ export const useMarkPaymentAsPaid = () => {
       paymentsApi.markPaymentAsPaid(id, data),
     onSuccess: (updatedPayment) => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({
-        queryKey: ['payment', updatedPayment.id],
+        queryKey: ['payment', updatedPayment.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['contract', updatedPayment.contract.id],
+        queryKey: ['paymentAuditLog', updatedPayment.identifier],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contract', updatedPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -141,6 +163,7 @@ export const useBulkGeneratePayments = () => {
       paymentsApi.bulkGeneratePayments(data),
     onSuccess: (generatedPayments) => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -182,6 +205,9 @@ export const useUploadPaymentDocument = (paymentId: string) => {
         queryKey: ['paymentDocuments', paymentId],
       });
       queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['paymentAuditLog', paymentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       showToast('Document uploaded successfully', 'success');
     },
@@ -202,6 +228,9 @@ export const useDeletePaymentDocument = (paymentId: string) => {
         queryKey: ['paymentDocuments', paymentId],
       });
       queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['paymentAuditLog', paymentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       showToast('Document deleted successfully', 'success');
     },
@@ -228,8 +257,11 @@ export const useRegisterReceival = (paymentId: string) => {
       paymentsApi.registerReceival(paymentId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
-      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['paymentAuditLog', paymentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
@@ -262,8 +294,11 @@ export const useUpdatePaymentReceival = (paymentId: string) => {
     }) => paymentsApi.updatePaymentReceival(paymentId, receivalId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
-      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['paymentAuditLog', paymentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
@@ -283,8 +318,11 @@ export const useDeletePaymentReceival = (paymentId: string) => {
       paymentsApi.deletePaymentReceival(paymentId, receivalId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['payment', paymentId] });
-      queryClient.invalidateQueries({ queryKey: ['paymentAuditLog', paymentId] });
+      queryClient.invalidateQueries({
+        queryKey: ['paymentAuditLog', paymentId],
+      });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });

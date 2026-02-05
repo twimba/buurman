@@ -1,15 +1,27 @@
-import { X, Download, ExternalLink } from 'lucide-react';
-import { DocumentResponse } from '@/types/property';
+import { useEffect } from 'react';
+import { X, Download, ExternalLink, Pencil } from 'lucide-react';
+import { DocumentResponse, PhotoResponse } from '@/types/property';
+import { RichTextDisplay } from '../ui/RichTextDisplay';
 
 interface DocumentPreviewModalProps {
-  document: DocumentResponse;
+  document: DocumentResponse | PhotoResponse;
   onClose: () => void;
+  onEdit?: () => void;
 }
 
 export const DocumentPreviewModal = ({
   document,
   onClose,
+  onEdit,
 }: DocumentPreviewModalProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const isImage = document.mimeType.startsWith('image/');
   const isPDF = document.mimeType === 'application/pdf';
   const canPreview = isImage || isPDF;
@@ -38,6 +50,15 @@ export const DocumentPreviewModal = ({
               ) : null}
             </div>
             <div className="flex items-center gap-2 ml-4">
+              {onEdit && (
+                <button
+                  onClick={onEdit}
+                  className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
+                  title="Edit title & notes"
+                >
+                  <Pencil className="h-5 w-5" />
+                </button>
+              )}
               <a
                 href={document.downloadUrl || undefined}
                 download
@@ -113,9 +134,10 @@ export const DocumentPreviewModal = ({
           {/* Footer with document info */}
           {document.notes ? (
             <div className="bg-white dark:bg-[#14161f] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                <span className="font-medium">Notes:</span> {document.notes}
-              </p>
+              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="font-medium">Notes:</span>
+                <RichTextDisplay html={document.notes} className="mt-1 text-sm" />
+              </div>
             </div>
           ) : null}
         </div>

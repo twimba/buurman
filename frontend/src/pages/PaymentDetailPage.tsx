@@ -61,7 +61,10 @@ interface ReceivalsTableProps {
   symbol: string;
   formatDate: (d: string) => string;
   canEdit: boolean;
-  onEdit: (id: string, data: { amount: number; receivalDate: string; notes?: string }) => void;
+  onEdit: (
+    id: string,
+    data: { amount: number; receivalDate: string; notes?: string }
+  ) => void;
   onDelete: (id: string) => void;
   searchTerm: string;
   onSearchChange: (v: string) => void;
@@ -95,7 +98,7 @@ const ReceivalsTable = ({
   const [editNotes, setEditNotes] = useState('');
 
   const startEdit = (r: PaymentReceivalResponse) => {
-    setEditingId(r.id);
+    setEditingId(r.identifier);
     setEditAmount(r.amount.toString());
     setEditDate(r.receivalDate);
     setEditNotes(r.notes || '');
@@ -192,9 +195,9 @@ const ReceivalsTable = ({
           </thead>
           <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
             {paginated.map((receival) =>
-              editingId === receival.id ? (
+              editingId === receival.identifier ? (
                 <tr
-                  key={receival.id}
+                  key={receival.identifier}
                   className="bg-blue-50/50 dark:bg-blue-900/10"
                 >
                   <td className="px-4 py-2">
@@ -241,7 +244,7 @@ const ReceivalsTable = ({
                 </tr>
               ) : (
                 <tr
-                  key={receival.id}
+                  key={receival.identifier}
                   className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                 >
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -271,7 +274,7 @@ const ReceivalsTable = ({
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => onDelete(receival.id)}
+                          onClick={() => onDelete(receival.identifier)}
                           className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-[#1e2130] rounded transition-colors"
                           title="Delete receival"
                         >
@@ -349,9 +352,9 @@ export const PaymentDetailPage = () => {
 
   // Receival table state
   const [receivalSearch, setReceivalSearch] = useState('');
-  const [receivalSortField, setReceivalSortField] = useState<
-    'date' | 'amount'
-  >('date');
+  const [receivalSortField, setReceivalSortField] = useState<'date' | 'amount'>(
+    'date'
+  );
   const [receivalSortOrder, setReceivalSortOrder] = useState<'asc' | 'desc'>(
     'desc'
   );
@@ -491,7 +494,10 @@ export const PaymentDetailPage = () => {
                 <Button
                   variant="secondary"
                   leftIcon={<Edit />}
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    setActiveTab('details');
+                    setIsEditing(true);
+                  }}
                   disabled={!canEditData}
                 >
                   Edit
@@ -573,7 +579,7 @@ export const PaymentDetailPage = () => {
                 onSubmit={handleUpdate}
                 onCancel={() => setIsEditing(false)}
                 isLoading={updatePaymentMutation.isPending}
-                contractId={payment.contract.id}
+                contractIdentifier={payment.contract.identifier}
               />
             </div>
           ) : (
@@ -671,7 +677,7 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/contracts/${payment.contract.id}`)
+                          navigate(`/contracts/${payment.contract.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
@@ -687,7 +693,7 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/properties/${payment.property.id}`)
+                          navigate(`/properties/${payment.property.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
@@ -703,7 +709,7 @@ export const PaymentDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/tenants/${payment.tenant.id}`)
+                          navigate(`/tenants/${payment.tenant.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
@@ -840,9 +846,7 @@ export const PaymentDetailPage = () => {
                 sortOrder={receivalSortOrder}
                 onSort={(field) => {
                   if (receivalSortField === field) {
-                    setReceivalSortOrder((o) =>
-                      o === 'asc' ? 'desc' : 'asc'
-                    );
+                    setReceivalSortOrder((o) => (o === 'asc' ? 'desc' : 'asc'));
                   } else {
                     setReceivalSortField(field);
                     setReceivalSortOrder('desc');
@@ -894,7 +898,8 @@ export const PaymentDetailPage = () => {
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
-                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                  const isExpanded = expandedAuditItems.has(activityKey);
                   const hasChanges =
                     activity.action === 'UPDATE' &&
                     activity.changedFields &&
@@ -902,7 +907,7 @@ export const PaymentDetailPage = () => {
 
                   return (
                     <div
-                      key={activity.id}
+                      key={activityKey}
                       className="border border-[#e2e6f0] rounded-lg overflow-hidden"
                     >
                       <div
@@ -915,10 +920,10 @@ export const PaymentDetailPage = () => {
                           hasChanges &&
                           setExpandedAuditItems((prev) => {
                             const newSet = new Set(prev);
-                            if (newSet.has(activity.id)) {
-                              newSet.delete(activity.id);
+                            if (newSet.has(activityKey)) {
+                              newSet.delete(activityKey);
                             } else {
-                              newSet.add(activity.id);
+                              newSet.add(activityKey);
                             }
                             return newSet;
                           })
@@ -970,16 +975,23 @@ export const PaymentDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!)
-                              .map(([field]) => {
+                            {Object.entries(activity.changedFields!).map(
+                              ([field]) => {
                                 const oldVal = activity.oldValues?.[field];
                                 const newVal = activity.newValues?.[field];
                                 const isHtml = (v: unknown) =>
                                   typeof v === 'string' && v.includes('<');
 
-                                const renderReceival = (r: Record<string, unknown>) => {
-                                  const amt = r.amount != null ? Number(r.amount).toFixed(2) : '?';
-                                  const date = r.receivalDate ? formatDate(String(r.receivalDate)) : '';
+                                const renderReceival = (
+                                  r: Record<string, unknown>
+                                ) => {
+                                  const amt =
+                                    r.amount != null
+                                      ? Number(r.amount).toFixed(2)
+                                      : '?';
+                                  const date = r.receivalDate
+                                    ? formatDate(String(r.receivalDate))
+                                    : '';
                                   return `${amt} on ${date}`;
                                 };
 
@@ -990,7 +1002,9 @@ export const PaymentDetailPage = () => {
                                 ) => {
                                   if (v == null) {
                                     return (
-                                      <span className={`${color} ${extra || ''}`}>
+                                      <span
+                                        className={`${color} ${extra || ''}`}
+                                      >
                                         N/A
                                       </span>
                                     );
@@ -998,19 +1012,47 @@ export const PaymentDetailPage = () => {
                                   if (Array.isArray(v)) {
                                     if (v.length === 0) {
                                       return (
-                                        <span className={`${color} ${extra || ''}`}>
+                                        <span
+                                          className={`${color} ${extra || ''}`}
+                                        >
                                           None
                                         </span>
                                       );
                                     }
                                     return (
-                                      <ul className={`${color} ${extra || ''} list-disc list-inside`}>
+                                      <ul
+                                        className={`${color} ${extra || ''} list-disc list-inside`}
+                                      >
                                         {v.map((item, i) => (
                                           <li key={i}>
-                                            {typeof item === 'object' && item !== null && 'amount' in item
-                                              ? renderReceival(item as Record<string, unknown>)
-                                              : typeof item === 'object' && item !== null && ('name' in item || 'identifier' in item)
-                                                ? String((item as Record<string, unknown>).name ?? (item as Record<string, unknown>).identifier ?? JSON.stringify(item))
+                                            {typeof item === 'object' &&
+                                            item !== null &&
+                                            'amount' in item
+                                              ? renderReceival(
+                                                  item as Record<
+                                                    string,
+                                                    unknown
+                                                  >
+                                                )
+                                              : typeof item === 'object' &&
+                                                  item !== null &&
+                                                  ('name' in item ||
+                                                    'identifier' in item)
+                                                ? String(
+                                                    (
+                                                      item as Record<
+                                                        string,
+                                                        unknown
+                                                      >
+                                                    ).name ??
+                                                      (
+                                                        item as Record<
+                                                          string,
+                                                          unknown
+                                                        >
+                                                      ).identifier ??
+                                                      JSON.stringify(item)
+                                                  )
                                                 : String(item)}
                                           </li>
                                         ))}
@@ -1019,24 +1061,52 @@ export const PaymentDetailPage = () => {
                                   }
                                   if (typeof v === 'object' && v !== null) {
                                     const obj = v as Record<string, unknown>;
-                                    if ('amount' in obj && 'receivalDate' in obj) {
+                                    if (
+                                      'amount' in obj &&
+                                      'receivalDate' in obj
+                                    ) {
                                       return (
-                                        <span className={`${color} ${extra || ''}`}>
+                                        <span
+                                          className={`${color} ${extra || ''}`}
+                                        >
                                           {renderReceival(obj)}
                                         </span>
                                       );
                                     }
-                                    if ('name' in obj || 'street' in obj || 'identifier' in obj) {
+                                    if (
+                                      'name' in obj ||
+                                      'street' in obj ||
+                                      'identifier' in obj
+                                    ) {
                                       return (
-                                        <span className={`${color} ${extra || ''}`}>
-                                          {String(obj.name ?? obj.street ?? obj.identifier)}
+                                        <span
+                                          className={`${color} ${extra || ''}`}
+                                        >
+                                          {String(
+                                            obj.name ??
+                                              obj.street ??
+                                              obj.identifier
+                                          )}
                                         </span>
                                       );
                                     }
                                     return (
-                                      <span className={`${color} ${extra || ''}`}>
+                                      <span
+                                        className={`${color} ${extra || ''}`}
+                                      >
                                         {Object.entries(obj)
-                                          .filter(([k]) => !['id', 'teamId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'deletedAt'].includes(k))
+                                          .filter(
+                                            ([k]) =>
+                                              ![
+                                                'id',
+                                                'teamId',
+                                                'createdAt',
+                                                'updatedAt',
+                                                'createdBy',
+                                                'updatedBy',
+                                                'deletedAt',
+                                              ].includes(k)
+                                          )
                                           .map(([k, val]) => `${k}: ${val}`)
                                           .join(', ')}
                                       </span>
@@ -1098,7 +1168,8 @@ export const PaymentDetailPage = () => {
                                     </div>
                                   </div>
                                 );
-                              })}
+                              }
+                            )}
                           </div>
                         </div>
                       )}

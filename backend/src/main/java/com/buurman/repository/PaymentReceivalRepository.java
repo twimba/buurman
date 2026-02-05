@@ -65,6 +65,16 @@ public class PaymentReceivalRepository {
                 .map(this::toDomain);
     }
 
+    public Optional<PaymentReceival> findByIdentifierAndPaymentIdAndTeamId(String identifier, UUID paymentId, UUID teamId) {
+        return dsl.selectFrom(TABLE)
+                .where(IDENTIFIER.eq(identifier)
+                        .and(PAYMENT_ID.eq(paymentId))
+                        .and(TEAM_ID.eq(teamId))
+                        .and(DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(this::toDomain);
+    }
+
     public Optional<PaymentReceival> findByIdAndTeamId(UUID id, UUID teamId) {
         return dsl.selectFrom(TABLE)
                 .where(ID.eq(id)

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as tenantsApi from '../api/tenants';
 import {
   CreateTenantRequest,
@@ -7,13 +12,15 @@ import {
   CreateTenantAddressRequest,
   UpdateTenantAddressRequest,
 } from '../types/tenant';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const useTenants = (search?: string) => {
+export const useTenants = (params?: { search?: string } & PageParams) => {
   return useQuery({
-    queryKey: ['tenants', search],
-    queryFn: () => tenantsApi.getTenants(search),
+    queryKey: ['tenants', params],
+    queryFn: () => tenantsApi.getTenants(params),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -85,6 +92,7 @@ export const useLinkTenantToProperty = (tenantId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
     onError: (error) => {
@@ -101,6 +109,7 @@ export const useUnlinkTenantFromProperty = (tenantId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
     onError: (error) => {
@@ -190,9 +199,7 @@ export const useUploadTenantPhoto = (tenantId: string) => {
         queryKey: ['tenantAuditLog', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({
-        queryKey: ['documents'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -209,7 +216,9 @@ export const useSetTenantMainPhoto = (tenantId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -227,7 +236,6 @@ export const useDeleteTenantDocument = (tenantId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['tenantDocuments', tenantId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
       queryClient.invalidateQueries({
         queryKey: ['tenantAuditLog', tenantId],
@@ -261,6 +269,7 @@ export const useCreateTenantAddress = (tenantId: string) => {
         queryKey: ['tenantAddresses', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -279,6 +288,7 @@ export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
         queryKey: ['tenantAddresses', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -297,6 +307,7 @@ export const useDeleteTenantAddress = (tenantId: string) => {
         queryKey: ['tenantAddresses', tenantId],
       });
       queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

@@ -9,12 +9,12 @@ import { useCurrentTeam, useTeamSettings } from './useTeamHooks';
 export const useTeamDefaults = () => {
   const { activeTeam } = useTeam();
   const { data: team } = useCurrentTeam();
-  const { data: settings } = useTeamSettings(team?.teamId);
+  const { data: settings } = useTeamSettings(team?.identifier);
 
   return {
     defaultCurrency: settings?.regional?.defaultCurrency || undefined,
     defaultCountry: settings?.regional?.defaultCountry || undefined,
     isLoading: !settings,
-    activeTeamId: activeTeam?.id,
+    activeTeamId: activeTeam?.identifier,
   };
 };

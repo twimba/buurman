@@ -3,7 +3,7 @@ import { PropertySummary } from './property';
 export interface FinancialOverviewRequest {
   startDate: string;
   endDate: string;
-  propertyIds?: string[];
+  propertyIdentifiers?: string[];
   currency?: string;
 }
 

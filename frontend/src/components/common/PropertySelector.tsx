@@ -21,12 +21,13 @@ export const PropertySelector = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const { data: properties = [], isLoading } = useQuery({
+  const { data: propertiesData, isLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: () => getProperties(),
   });
+  const properties = propertiesData?.content ?? [];
 
-  const selectedProperty = properties.find((p) => p.id === value);
+  const selectedProperty = properties.find((p) => p.identifier === value);
   const displayValue = selectedProperty
     ? `${selectedProperty.street}, ${selectedProperty.city}`
     : '';
@@ -89,7 +90,7 @@ export const PropertySelector = ({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < filtered.length) {
-          handleSelect(filtered[highlightedIndex].id);
+          handleSelect(filtered[highlightedIndex].identifier);
         }
         break;
       case 'Escape':
@@ -150,16 +151,16 @@ export const PropertySelector = ({
           ) : (
             filtered.map((property, index) => (
               <button
-                key={property.id}
+                key={property.identifier}
                 type="button"
                 data-option
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(property.id)}
+                onClick={() => handleSelect(property.identifier)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
                   highlightedIndex === index
                     ? 'bg-blue-50 dark:bg-blue-900/30'
-                    : property.id === value
+                    : property.identifier === value
                       ? 'bg-blue-100 dark:bg-blue-900'
                       : ''
                 }`}

@@ -1,5 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useProperty, useUpdateProperty } from '@/hooks/usePropertyHooks';
+import {
+  useProperty,
+  useUpdateProperty,
+  useOutdoorAreas,
+  useCreateOutdoorArea,
+  useDeleteOutdoorArea,
+  useAmenities,
+  usePropertyAmenities,
+  useAddPropertyAmenity,
+  useRemovePropertyAmenity,
+} from '@/hooks/usePropertyHooks';
 import { PropertyForm } from '@/components/properties/PropertyForm';
 import { UpdatePropertyRequest } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -11,6 +21,15 @@ export const PropertyEditPage = () => {
   const navigate = useNavigate();
   const { data: property, isLoading, error } = useProperty(id);
   const updatePropertyMutation = useUpdateProperty(id!);
+
+  // Characteristics sub-resources
+  const { data: outdoorAreas = [] } = useOutdoorAreas(id);
+  const createOutdoorAreaMutation = useCreateOutdoorArea(id!);
+  const deleteOutdoorAreaMutation = useDeleteOutdoorArea(id!);
+  const { data: allAmenities = {} } = useAmenities();
+  const { data: propertyAmenities = [] } = usePropertyAmenities(id);
+  const addAmenityMutation = useAddPropertyAmenity(id!);
+  const removeAmenityMutation = useRemovePropertyAmenity(id!);
 
   const handleSubmit = async (data: UpdatePropertyRequest) => {
     await updatePropertyMutation.mutateAsync(data);
@@ -54,6 +73,21 @@ export const PropertyEditPage = () => {
             property={property}
             onSubmit={handleSubmit}
             isLoading={updatePropertyMutation.isPending}
+            outdoorAreas={outdoorAreas}
+            onCreateOutdoorArea={(area) =>
+              createOutdoorAreaMutation.mutate(area)
+            }
+            onDeleteOutdoorArea={(areaId) =>
+              deleteOutdoorAreaMutation.mutate(areaId)
+            }
+            allAmenities={allAmenities}
+            propertyAmenities={propertyAmenities}
+            onAddAmenity={(amenityIdentifier, notes) =>
+              addAmenityMutation.mutate({ amenityIdentifier, notes })
+            }
+            onRemoveAmenity={(amenityIdentifier) =>
+              removeAmenityMutation.mutate(amenityIdentifier)
+            }
           />
         </div>
       </div>

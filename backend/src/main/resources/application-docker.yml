@@ -1,0 +1,45 @@
+# =============================================================================
+# Docker Profile
+# =============================================================================
+# All services run inside Docker Compose containers.
+# Service hostnames use container names (postgres, keycloak, localstack, etc.).
+#
+# Start everything: docker compose up
+# =============================================================================
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/buurman
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Issuer URI must match the browser-visible URL (embedded in JWT tokens)
+          issuer-uri: http://localhost:8080/realms/buurman
+          # JWK set URI uses container hostname (backend-to-keycloak internal call)
+          jwk-set-uri: http://keycloak:8080/realms/buurman/protocol/openid-connect/certs
+
+keycloak:
+  admin:
+    server-url: http://keycloak:8080
+
+aws:
+  s3:
+    endpoint: http://localstack:4566
+    # Browser still accesses S3 via localhost (port-mapped)
+    public-endpoint: http://localhost:4566
+    use-presigned-urls: false
+
+spring.mail:
+  host: mailhog
+
+server:
+  error:
+    include-message: never
+
+app:
+  api:
+    base-url: http://backend:8081
+  email:
+    base-url: http://localhost:5173

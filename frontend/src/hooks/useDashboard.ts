@@ -1,10 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import {
   getDashboardStats,
   getRecentActivities,
   getAllAuditLogs,
   AuditLogFilters,
 } from '@/api/dashboard';
+import type { PageParams } from '@/types/common';
 
 export const useDashboardStats = () => {
   return useQuery({
@@ -22,10 +23,11 @@ export const useRecentActivities = (limit = 10) => {
   });
 };
 
-export const useAllAuditLogs = (filters?: AuditLogFilters) => {
+export const useAllAuditLogs = (filters?: AuditLogFilters & PageParams) => {
   return useQuery({
     queryKey: ['auditLogs', filters],
     queryFn: () => getAllAuditLogs(filters),
+    placeholderData: keepPreviousData,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 };

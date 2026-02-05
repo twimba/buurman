@@ -9,13 +9,13 @@ import {
   CreateTenantAddressRequest,
   UpdateTenantAddressRequest,
 } from '../types/tenant';
-import { DocumentResponse } from '../types/property';
+import { DocumentResponse, PhotoResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
+import { PageResponse, PageParams } from '@/types/common';
 
 export const getTenants = async (
-  search?: string
-): Promise<TenantResponse[]> => {
-  const params = search ? { search } : {};
+  params?: { search?: string } & PageParams
+): Promise<PageResponse<TenantResponse>> => {
   const response = await client.get('/tenants', { params });
   return response.data;
 };
@@ -78,7 +78,7 @@ export const getTenantDocuments = async (
 
 export const getTenantPhotos = async (
   tenantId: string
-): Promise<DocumentResponse[]> => {
+): Promise<PhotoResponse[]> => {
   const response = await client.get(`/tenants/${tenantId}/photos`);
   return response.data;
 };
@@ -111,7 +111,7 @@ export const uploadTenantPhoto = async (
   file: File,
   title?: string,
   notes?: string
-): Promise<DocumentResponse> => {
+): Promise<PhotoResponse> => {
   const formData = new FormData();
   formData.append('file', file);
   if (title) formData.append('title', title);
@@ -128,7 +128,7 @@ export const uploadTenantPhoto = async (
 export const setTenantMainPhoto = async (
   tenantId: string,
   photoId: string
-): Promise<DocumentResponse> => {
+): Promise<PhotoResponse> => {
   const response = await client.put(
     `/tenants/${tenantId}/photos/${photoId}/set-main`
   );

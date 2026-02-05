@@ -1,15 +1,23 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Property;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.PropertyRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.springframework.stereotype.Repository;
+
+import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +32,15 @@ public class PropertyRepository {
     public PropertyRepository(DSLContext dsl, PropertyRecordMapper mapper) {
         this.dsl = dsl;
         this.mapper = mapper;
+    }
+
+    public Optional<Property> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(PROPERTIES)
+                .where(PROPERTIES.IDENTIFIER.eq(identifier)
+                        .and(PROPERTIES.TEAM_ID.eq(teamId))
+                        .and(PROPERTIES.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
     }
 
     public Optional<Property> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -72,9 +89,56 @@ public class PropertyRepository {
                     .set(PROPERTIES.LONGITUDE, property.getLongitude())
                     .set(PROPERTIES.BEDROOMS, property.getBedrooms())
                     .set(PROPERTIES.BATHROOMS, property.getBathrooms())
-                    .set(PROPERTIES.SQUARE_METERS, property.getSquareMeters())
+                    .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
+                    .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
                     .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
                     .set(PROPERTIES.STATUS, property.getStatus().name())
+                    // Construction & Structure
+                    .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt())
+                    .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated())
+                    .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType())
+                    .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType())
+                    .set(PROPERTIES.ROOF_TYPE, property.getRoofType())
+                    .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction())
+                    .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType())
+                    .set(PROPERTIES.WINDOW_TYPE, property.getWindowType())
+                    .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors())
+                    .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes())
+                    // Energy & Climate
+                    .set(PROPERTIES.ENERGY_EFFICIENCY_RATING, property.getEnergyEfficiencyRating())
+                    .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, property.getEnergyCertificateExpiryDate())
+                    .set(PROPERTIES.HEATING_TYPE, property.getHeatingType())
+                    .set(PROPERTIES.COOLING_TYPE, property.getCoolingType())
+                    .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem())
+                    .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes())
+                    // Utilities & Connections
+                    .set(PROPERTIES.ELECTRICITY_CONNECTION_TYPE, property.getElectricityConnectionType())
+                    .set(PROPERTIES.ELECTRICITY_CAPACITY_AMPS, property.getElectricityCapacityAmps())
+                    .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType())
+                    .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection())
+                    .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType())
+                    .set(PROPERTIES.INTERNET_CONNECTION_TYPE, property.getInternetConnectionType())
+                    .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps())
+                    .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus())
+                    // Parking
+                    .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces())
+                    .set(PROPERTIES.PARKING_TYPE, property.getParkingType())
+                    // Safety & Security
+                    .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors())
+                    .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors())
+                    .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher())
+                    .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem())
+                    .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem())
+                    .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras())
+                    .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry())
+                    .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes())
+                    // Accessibility
+                    .set(PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE, property.getIsWheelchairAccessible())
+                    .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator())
+                    .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
+                    .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
+                    .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+                    // Audit
                     .set(PROPERTIES.CREATED_AT, now)
                     .set(PROPERTIES.UPDATED_AT, now)
                     .set(PROPERTIES.CREATED_BY, property.getCreatedBy())
@@ -95,9 +159,56 @@ public class PropertyRepository {
                     .set(PROPERTIES.LONGITUDE, property.getLongitude())
                     .set(PROPERTIES.BEDROOMS, property.getBedrooms())
                     .set(PROPERTIES.BATHROOMS, property.getBathrooms())
-                    .set(PROPERTIES.SQUARE_METERS, property.getSquareMeters())
+                    .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
+                    .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
                     .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
                     .set(PROPERTIES.STATUS, property.getStatus().name())
+                    // Construction & Structure
+                    .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt())
+                    .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated())
+                    .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType())
+                    .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType())
+                    .set(PROPERTIES.ROOF_TYPE, property.getRoofType())
+                    .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction())
+                    .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType())
+                    .set(PROPERTIES.WINDOW_TYPE, property.getWindowType())
+                    .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors())
+                    .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes())
+                    // Energy & Climate
+                    .set(PROPERTIES.ENERGY_EFFICIENCY_RATING, property.getEnergyEfficiencyRating())
+                    .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, property.getEnergyCertificateExpiryDate())
+                    .set(PROPERTIES.HEATING_TYPE, property.getHeatingType())
+                    .set(PROPERTIES.COOLING_TYPE, property.getCoolingType())
+                    .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem())
+                    .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes())
+                    // Utilities & Connections
+                    .set(PROPERTIES.ELECTRICITY_CONNECTION_TYPE, property.getElectricityConnectionType())
+                    .set(PROPERTIES.ELECTRICITY_CAPACITY_AMPS, property.getElectricityCapacityAmps())
+                    .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType())
+                    .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection())
+                    .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType())
+                    .set(PROPERTIES.INTERNET_CONNECTION_TYPE, property.getInternetConnectionType())
+                    .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps())
+                    .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus())
+                    // Parking
+                    .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces())
+                    .set(PROPERTIES.PARKING_TYPE, property.getParkingType())
+                    // Safety & Security
+                    .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors())
+                    .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors())
+                    .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher())
+                    .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem())
+                    .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem())
+                    .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras())
+                    .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry())
+                    .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes())
+                    // Accessibility
+                    .set(PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE, property.getIsWheelchairAccessible())
+                    .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator())
+                    .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
+                    .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
+                    .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+                    // Audit
                     .set(PROPERTIES.UPDATED_AT, now)
                     .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())
                     .where(PROPERTIES.ID.eq(property.getId())
@@ -108,6 +219,21 @@ public class PropertyRepository {
         }
 
         return property;
+    }
+
+    public PaginatedResult<Property> findAllByTeamIdPaginated(UUID teamId, String status, PageRequest pageRequest) {
+        Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
+        if (status != null && !status.isEmpty()) {
+            condition = condition.and(PROPERTIES.STATUS.eq(status));
+        }
+        Map<String, Field<?>> sortableFields = Map.of(
+            "createdAt", PROPERTIES.CREATED_AT,
+            "street", PROPERTIES.STREET,
+            "city", PROPERTIES.CITY,
+            "status", PROPERTIES.STATUS,
+            "propertyType", PROPERTIES.PROPERTY_TYPE
+        );
+        return PaginationHelper.paginate(dsl, PROPERTIES, condition, sortableFields, PROPERTIES.CREATED_AT, pageRequest, r -> mapper.toDomain((PropertiesRecord) r));
     }
 
     public List<Property> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

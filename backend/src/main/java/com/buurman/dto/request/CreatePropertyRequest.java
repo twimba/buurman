@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record CreatePropertyRequest(
         @NotBlank(message = "Street is required")
@@ -22,7 +23,6 @@ public record CreatePropertyRequest(
         String country,
 
         BigDecimal latitude,
-
         BigDecimal longitude,
 
         @Min(value = 0, message = "Bedrooms must be non-negative")
@@ -31,12 +31,65 @@ public record CreatePropertyRequest(
         @Min(value = 0, message = "Bathrooms must be non-negative")
         Integer bathrooms,
 
-        @Positive(message = "Square meters must be positive")
-        BigDecimal squareMeters,
+        @Positive(message = "Area value must be positive")
+        BigDecimal areaValue,
+
+        String areaUnit,
 
         @NotNull(message = "Property type is required")
         Property.PropertyType propertyType,
 
         @NotNull(message = "Status is required")
-        Property.PropertyStatus status
+        Property.PropertyStatus status,
+
+        // Construction & Structure
+        Integer yearBuilt,
+        Integer yearLastRenovated,
+        String constructionType,
+        String foundationType,
+        String roofType,
+        String wallConstruction,
+        String flooringType,
+        String windowType,
+        Integer numberOfFloors,
+        String structuralNotes,
+
+        // Energy & Climate
+        String energyEfficiencyRating,
+        LocalDate energyCertificateExpiryDate,
+        String heatingType,
+        String coolingType,
+        String hotWaterSystem,
+        String insulationNotes,
+
+        // Utilities & Connections
+        String electricityConnectionType,
+        Integer electricityCapacityAmps,
+        String waterConnectionType,
+        Boolean hasGasConnection,
+        String sewageType,
+        String internetConnectionType,
+        Integer internetMaxSpeedMbps,
+        String internetStatus,
+
+        // Parking
+        Integer parkingSpaces,
+        String parkingType,
+
+        // Safety & Security
+        Boolean hasSmokeDetectors,
+        Boolean hasCoDetectors,
+        Boolean hasFireExtinguisher,
+        Boolean hasSprinklerSystem,
+        Boolean hasAlarmSystem,
+        Boolean hasSecurityCameras,
+        Boolean hasSecureEntry,
+        String safetyNotes,
+
+        // Accessibility
+        Boolean isWheelchairAccessible,
+        Boolean hasElevator,
+        Boolean hasStepFreeEntrance,
+        Boolean hasAdaptedBathroom,
+        String accessibilityNotes
 ) {}

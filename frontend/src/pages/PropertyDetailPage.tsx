@@ -11,7 +11,10 @@ import {
   useUploadPropertyPhoto,
   useSetMainPhoto,
 } from '@/hooks/usePropertyHooks';
+import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
+import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { PropertyStatus } from '@/types/property';
@@ -41,6 +44,7 @@ import {
   ChevronDown,
   Download,
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -110,18 +114,21 @@ export const PropertyDetailPage = () => {
     error: photosError,
   } = usePropertyPhotos(id);
 
-  // Filter out photos from documents list
-  const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
+  const documents = allDocuments;
   const {
     data: auditLog = [],
     isLoading: auditLoading,
     error: auditError,
   } = usePropertyAuditLog(id);
   const {
-    data: contracts = [],
+    data: contractsData,
     isLoading: contractsLoading,
     error: contractsError,
-  } = useContracts(id ? { propertyId: id } : undefined);
+  } = useContracts(id ? { propertyIdentifier: id } : undefined);
+  const contracts = useMemo(
+    () => contractsData?.content ?? [],
+    [contractsData]
+  );
   const {
     data: expenses = [],
     isLoading: expensesLoading,
@@ -132,6 +139,7 @@ export const PropertyDetailPage = () => {
   const uploadPhotoMutation = useUploadPropertyPhoto(id!);
   const setMainPhotoMutation = useSetMainPhoto(id!);
   const deleteDocumentMutation = useDeleteDocument(id!);
+  const deletePhotoMutation = useDeletePhoto();
 
   // Contracts filtering, sorting, and pagination
   const filteredAndSortedContracts = useMemo(() => {
@@ -301,6 +309,10 @@ export const PropertyDetailPage = () => {
     await deleteDocumentMutation.mutateAsync(documentId);
   };
 
+  const handleDeletePhoto = async (photoId: string) => {
+    await deletePhotoMutation.mutateAsync(photoId);
+  };
+
   const handleUploadPhoto = async (
     file: File,
     title?: string,
@@ -328,6 +340,11 @@ export const PropertyDetailPage = () => {
     if (field === 'documentAdded') return 'Document Added';
     if (field === 'documentRemoved') return 'Document Removed';
     if (field === 'documentCount') return 'Document Count';
+    if (field === 'photoAdded') return 'Photo Added';
+    if (field === 'photoRemoved') return 'Photo Removed';
+    if (field === 'photoCount') return 'Photo Count';
+    if (field === 'photoEdited') return 'Photo Edited';
+    if (field === 'documentEdited') return 'Document Edited';
 
     // Convert camelCase to Title Case with spaces
     return field
@@ -341,6 +358,16 @@ export const PropertyDetailPage = () => {
     if (typeof value === 'boolean') return value ? 'Yes' : 'No';
     if (typeof value === 'object') return JSON.stringify(value);
     return String(value);
+  };
+
+  const formatEnumValue = (value: string | null): string => {
+    if (!value) return '';
+    return value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .replace(/\bAc\b/g, 'AC')
+      .replace(/\bCo\b/g, 'CO')
+      .replace(/\bDsl\b/g, 'DSL');
   };
 
   if (isLoading) {
@@ -370,9 +397,9 @@ export const PropertyDetailPage = () => {
           backTo="/properties"
           badge={
             <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status as PropertyStatus]}`}
             >
-              {statusLabels[property.status]}
+              {statusLabels[property.status as PropertyStatus]}
             </span>
           }
           actions={
@@ -407,6 +434,12 @@ export const PropertyDetailPage = () => {
               >
                 Brochure
               </Button>
+              {id && (
+                <CalendarFeedButton
+                  feedType={CalendarFeedType.PROPERTY_PAYMENTS}
+                  entityIdentifier={id}
+                />
+              )}
               <Button
                 variant="secondary"
                 leftIcon={<Edit />}
@@ -504,9 +537,9 @@ export const PropertyDetailPage = () => {
               {/* Status Badge */}
               <div>
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status]}`}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status as PropertyStatus]}`}
                 >
-                  {statusLabels[property.status]}
+                  {statusLabels[property.status as PropertyStatus]}
                 </span>
               </div>
 
@@ -536,14 +569,15 @@ export const PropertyDetailPage = () => {
                   </div>
                 )}
 
-                {property.squareMeters !== null && (
+                {property.areaValue !== null && (
                   <div>
                     <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
                       <Ruler className="h-5 w-5" />
-                      <span className="text-sm font-medium">Square Meters</span>
+                      <span className="text-sm font-medium">Area</span>
                     </div>
                     <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {property.squareMeters}m²
+                      {property.areaValue}
+                      {property.areaUnit === 'sqft' ? 'ft²' : 'm²'}
                     </p>
                   </div>
                 )}
@@ -615,6 +649,558 @@ export const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Construction & Structure */}
+            {(property.yearBuilt !== null ||
+              property.yearLastRenovated !== null ||
+              property.constructionType ||
+              property.foundationType ||
+              property.roofType ||
+              property.wallConstruction ||
+              property.flooringType ||
+              property.windowType ||
+              property.numberOfFloors !== null ||
+              property.structuralNotes) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Construction &amp; Structure
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {property.yearBuilt !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Year Built
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.yearBuilt}
+                      </div>
+                    </div>
+                  )}
+                  {property.yearLastRenovated !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Last Renovated
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.yearLastRenovated}
+                      </div>
+                    </div>
+                  )}
+                  {property.constructionType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Construction
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.constructionType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.foundationType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Foundation
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.foundationType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.roofType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Roof
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.roofType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.wallConstruction && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Wall Construction
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.wallConstruction)}
+                      </div>
+                    </div>
+                  )}
+                  {property.flooringType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Flooring
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.flooringType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.windowType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Windows
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.windowType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.numberOfFloors !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Floors
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.numberOfFloors}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {property.structuralNotes && (
+                  <div className="mt-4">
+                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      Structural Notes
+                    </div>
+                    <div
+                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(property.structuralNotes),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Energy & Climate */}
+            {(property.energyEfficiencyRating ||
+              property.energyCertificateExpiryDate ||
+              property.heatingType ||
+              property.coolingType ||
+              property.hotWaterSystem ||
+              property.insulationNotes) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Energy &amp; Climate
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {property.energyEfficiencyRating && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Energy Rating
+                      </div>
+                      <div className="mt-1">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold text-white ${
+                            (
+                              {
+                                'A++': 'bg-green-900',
+                                'A+': 'bg-green-700',
+                                A: 'bg-green-500',
+                                B: 'bg-lime-500',
+                                C: 'bg-yellow-500',
+                                D: 'bg-orange-500',
+                                E: 'bg-orange-600',
+                                F: 'bg-red-500',
+                                G: 'bg-red-800',
+                              } as Record<string, string>
+                            )[property.energyEfficiencyRating] || 'bg-gray-500'
+                          }`}
+                        >
+                          {property.energyEfficiencyRating}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {property.energyCertificateExpiryDate && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Certificate Expiry
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatDate(property.energyCertificateExpiryDate)}
+                      </div>
+                    </div>
+                  )}
+                  {property.heatingType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Heating
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.heatingType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.coolingType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Cooling
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.coolingType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.hotWaterSystem && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Hot Water
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.hotWaterSystem)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {property.insulationNotes && (
+                  <div className="mt-4">
+                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      Insulation Notes
+                    </div>
+                    <div
+                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(property.insulationNotes),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Utilities & Connections */}
+            {(property.electricityConnectionType ||
+              property.electricityCapacityAmps !== null ||
+              property.waterConnectionType ||
+              property.sewageType ||
+              property.internetConnectionType ||
+              property.internetMaxSpeedMbps !== null ||
+              property.internetStatus) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Utilities &amp; Connections
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {property.electricityConnectionType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Electricity
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.electricityConnectionType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.electricityCapacityAmps !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Capacity
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.electricityCapacityAmps} A
+                      </div>
+                    </div>
+                  )}
+                  {property.waterConnectionType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Water
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.waterConnectionType)}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      Gas Connection
+                    </div>
+                    <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      {property.hasGasConnection ? 'Yes' : 'No'}
+                    </div>
+                  </div>
+                  {property.sewageType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Sewage
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.sewageType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.internetConnectionType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Internet
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.internetConnectionType)}
+                      </div>
+                    </div>
+                  )}
+                  {property.internetMaxSpeedMbps !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Internet Speed
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.internetMaxSpeedMbps} Mbps
+                      </div>
+                    </div>
+                  )}
+                  {property.internetStatus && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Internet Status
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.internetStatus)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Parking */}
+            {(property.parkingSpaces !== null || property.parkingType) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Parking
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {property.parkingSpaces !== null && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Parking Spaces
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {property.parkingSpaces}
+                      </div>
+                    </div>
+                  )}
+                  {property.parkingType && (
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Parking Type
+                      </div>
+                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {formatEnumValue(property.parkingType)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Outdoor Areas */}
+            {property.outdoorAreas && property.outdoorAreas.length > 0 && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Outdoor Areas
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {property.outdoorAreas.map((area) => (
+                    <span
+                      key={area.identifier}
+                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
+                    >
+                      {formatEnumValue(area.type)}
+                      {area.areaValue !== null
+                        ? ` - ${area.areaValue} m\u00B2`
+                        : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Amenities */}
+            {property.amenities && property.amenities.length > 0 && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Amenities
+                </h3>
+                <div className="space-y-4">
+                  {Object.entries(
+                    property.amenities.reduce<
+                      Record<string, typeof property.amenities>
+                    >((groups, amenity) => {
+                      const cat = amenity.amenityCategory;
+                      if (!groups[cat]) groups[cat] = [];
+                      groups[cat]!.push(amenity);
+                      return groups;
+                    }, {})
+                  ).map(([category, items]) => (
+                    <div key={category}>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide mb-2">
+                        {formatEnumValue(category)}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {items!.map((amenity) => (
+                          <span
+                            key={amenity.amenityIdentifier}
+                            className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
+                          >
+                            {amenity.amenityName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Safety & Security */}
+            {(property.hasSmokeDetectors ||
+              property.hasCoDetectors ||
+              property.hasFireExtinguisher ||
+              property.hasSprinklerSystem ||
+              property.hasAlarmSystem ||
+              property.hasSecurityCameras ||
+              property.hasSecureEntry ||
+              property.safetyNotes) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Safety &amp; Security
+                </h3>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {property.hasSmokeDetectors && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Smoke Detectors
+                    </span>
+                  )}
+                  {property.hasCoDetectors && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      CO Detectors
+                    </span>
+                  )}
+                  {property.hasFireExtinguisher && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Fire Extinguisher
+                    </span>
+                  )}
+                  {property.hasSprinklerSystem && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Sprinkler System
+                    </span>
+                  )}
+                  {property.hasAlarmSystem && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Alarm System
+                    </span>
+                  )}
+                  {property.hasSecurityCameras && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Security Cameras
+                    </span>
+                  )}
+                  {property.hasSecureEntry && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Secure Entry
+                    </span>
+                  )}
+                </div>
+                {property.safetyNotes && (
+                  <div className="mt-4">
+                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      Safety Notes
+                    </div>
+                    <div
+                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(property.safetyNotes),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Accessibility */}
+            {(property.isWheelchairAccessible ||
+              property.hasElevator ||
+              property.hasStepFreeEntrance ||
+              property.hasAdaptedBathroom ||
+              property.accessibilityNotes) && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+                  Accessibility
+                </h3>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {property.isWheelchairAccessible && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Wheelchair Accessible
+                    </span>
+                  )}
+                  {property.hasElevator && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Elevator
+                    </span>
+                  )}
+                  {property.hasStepFreeEntrance && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Step-Free Entrance
+                    </span>
+                  )}
+                  {property.hasAdaptedBathroom && (
+                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
+                      Adapted Bathroom
+                    </span>
+                  )}
+                </div>
+                {property.accessibilityNotes && (
+                  <div className="mt-4">
+                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      Accessibility Notes
+                    </div>
+                    <div
+                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(property.accessibilityNotes),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Metadata */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
               <button
@@ -665,9 +1251,9 @@ export const PropertyDetailPage = () => {
               error={photosError}
               onUpload={handleUploadPhoto}
               onSetMain={handleSetMainPhoto}
-              onDelete={handleDeleteDocument}
+              onDelete={handleDeletePhoto}
               isUploading={uploadPhotoMutation.isPending}
-              isDeleting={deleteDocumentMutation.isPending}
+              isDeleting={deletePhotoMutation.isPending}
               readOnly={!canEditData}
             />
           </div>
@@ -848,9 +1434,9 @@ export const PropertyDetailPage = () => {
                       ) : (
                         paginatedContracts.map((contract) => (
                           <tr
-                            key={contract.id}
+                            key={contract.identifier}
                             onClick={() =>
-                              navigate(`/contracts/${contract.id}`)
+                              navigate(`/contracts/${contract.identifier}`)
                             }
                             className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors"
                           >
@@ -1073,9 +1659,11 @@ export const PropertyDetailPage = () => {
                       ) : (
                         paginatedExpenses.map((expense) => (
                           <tr
-                            key={expense.id}
+                            key={expense.identifier}
                             className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
-                            onClick={() => navigate(`/expenses/${expense.id}`)}
+                            onClick={() =>
+                              navigate(`/expenses/${expense.identifier}`)
+                            }
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
                               #{expense.identifier}
@@ -1158,7 +1746,8 @@ export const PropertyDetailPage = () => {
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
-                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                  const isExpanded = expandedAuditItems.has(activityKey);
                   const hasChanges =
                     activity.action === 'UPDATE' &&
                     activity.changedFields &&
@@ -1166,7 +1755,7 @@ export const PropertyDetailPage = () => {
 
                   return (
                     <div
-                      key={activity.id}
+                      key={activityKey}
                       className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden"
                     >
                       <div
@@ -1176,7 +1765,7 @@ export const PropertyDetailPage = () => {
                             : ''
                         }`}
                         onClick={() =>
-                          hasChanges && toggleAuditItem(activity.id)
+                          hasChanges && toggleAuditItem(activityKey)
                         }
                       >
                         <div
@@ -1234,13 +1823,22 @@ export const PropertyDetailPage = () => {
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields!).map(
                               ([field, value]) => {
-                                // Skip internal fields for document operations
-                                if (field === 'documentCount') return null;
+                                // Skip internal count fields
+                                if (field === 'documentCount' || field === 'photoCount') return null;
 
-                                // Special handling for document operations
+                                // Skip marker fields for edit operations (fileName is context only)
+                                if (field === 'photoEdited' || field === 'documentEdited') return null;
+                                if (
+                                  field === 'fileName' &&
+                                  (activity.changedFields?.photoEdited || activity.changedFields?.documentEdited)
+                                ) return null;
+
+                                // Special handling for document/photo upload/delete operations
                                 if (
                                   field === 'documentAdded' ||
-                                  field === 'documentRemoved'
+                                  field === 'documentRemoved' ||
+                                  field === 'photoAdded' ||
+                                  field === 'photoRemoved'
                                 ) {
                                   const category =
                                     activity.changedFields?.category;
@@ -1278,11 +1876,13 @@ export const PropertyDetailPage = () => {
                                   );
                                 }
 
-                                // Skip category and title for document operations (already shown above)
+                                // Skip category and title for upload/delete operations (already shown above)
                                 if (
                                   (field === 'category' || field === 'title') &&
                                   (activity.changedFields?.documentAdded ||
-                                    activity.changedFields?.documentRemoved)
+                                    activity.changedFields?.documentRemoved ||
+                                    activity.changedFields?.photoAdded ||
+                                    activity.changedFields?.photoRemoved)
                                 ) {
                                   return null;
                                 }

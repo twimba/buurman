@@ -7,6 +7,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Home, Filter } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/ui/Pagination';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -33,16 +35,28 @@ export const PropertyListPage = () => {
   const [typeFilter, setTypeFilter] = useState<PropertyType | undefined>(
     undefined
   );
-  const { data: allProperties, isLoading, error } = useProperties(statusFilter);
+  const {
+    pageParams,
+    page,
+    size,
+    handlePageChange,
+    handleSizeChange,
+    resetPage,
+  } = usePagination({ defaultSize: 12 });
+  const {
+    data: propertiesData,
+    isLoading,
+    error,
+  } = useProperties({ status: statusFilter, ...pageParams });
 
   // Client-side filtering by property type
   const properties = useMemo(() => {
-    if (!allProperties) return [];
-    if (!typeFilter) return allProperties;
-    return allProperties.filter(
+    if (!propertiesData?.content) return [];
+    if (!typeFilter) return propertiesData.content;
+    return propertiesData.content.filter(
       (property) => property.propertyType === typeFilter
     );
-  }, [allProperties, typeFilter]);
+  }, [propertiesData, typeFilter]);
 
   if (isLoading) {
     return (
@@ -105,7 +119,10 @@ export const PropertyListPage = () => {
                 {typeFilters.map((filter) => (
                   <button
                     key={filter.label}
-                    onClick={() => setTypeFilter(filter.value)}
+                    onClick={() => {
+                      setTypeFilter(filter.value);
+                      resetPage();
+                    }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       typeFilter === filter.value
                         ? 'bg-[#5c7cfa] text-white'
@@ -127,7 +144,10 @@ export const PropertyListPage = () => {
                 {statusFilters.map((filter) => (
                   <button
                     key={filter.label}
-                    onClick={() => setStatusFilter(filter.value)}
+                    onClick={() => {
+                      setStatusFilter(filter.value);
+                      resetPage();
+                    }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       statusFilter === filter.value
                         ? 'bg-[#5c7cfa] text-white'
@@ -144,17 +164,36 @@ export const PropertyListPage = () => {
 
         {/* Property Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {properties?.length || 0}{' '}
-          {properties?.length === 1 ? 'property' : 'properties'}
+          {typeFilter
+            ? properties?.length || 0
+            : propertiesData?.totalElements || 0}{' '}
+          {(typeFilter ? properties?.length : propertiesData?.totalElements) ===
+          1
+            ? 'property'
+            : 'properties'}
         </p>
 
         {/* Properties Grid */}
         {properties && properties.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {properties.map((property) => (
+                <PropertyCard key={property.identifier} property={property} />
+              ))}
+            </div>
+            {propertiesData && !typeFilter && (
+              <div className="mt-6">
+                <Pagination
+                  page={page}
+                  totalPages={propertiesData.totalPages}
+                  totalElements={propertiesData.totalElements}
+                  size={size}
+                  onPageChange={handlePageChange}
+                  onSizeChange={handleSizeChange}
+                />
+              </div>
+            )}
+          </>
         ) : (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-lg">

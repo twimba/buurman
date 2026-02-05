@@ -1,8 +1,11 @@
 package com.buurman.service;
 
 import com.buurman.domain.AuditLog;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSONB;
@@ -29,10 +32,13 @@ public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
+    private final MetricsService metricsService;
 
-    public AuditService(AuditLogRepository auditLogRepository, ObjectMapper objectMapper) {
+    public AuditService(AuditLogRepository auditLogRepository, ObjectMapper objectMapper,
+                        MetricsService metricsService) {
         this.auditLogRepository = auditLogRepository;
         this.objectMapper = objectMapper;
+        this.metricsService = metricsService;
     }
 
     public void logCreate(UUID teamId, String entityType, UUID entityId, UUID userId, Object entity) {
@@ -52,6 +58,8 @@ public class AuditService {
                     LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
             );
 
+            metricsService.incrementCounter("audit.log.total",
+                    "entity_type", entityType, "action", "CREATE");
             log.debug("Audit log created: {} {} for team {}", AuditLog.Action.CREATE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
@@ -77,6 +85,8 @@ public class AuditService {
                     LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
             );
 
+            metricsService.incrementCounter("audit.log.total",
+                    "entity_type", entityType, "action", "UPDATE");
             log.debug("Audit log created: {} {} for team {}", AuditLog.Action.UPDATE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
@@ -100,6 +110,8 @@ public class AuditService {
                     LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
             );
 
+            metricsService.incrementCounter("audit.log.total",
+                    "entity_type", entityType, "action", "DELETE");
             log.debug("Audit log created: {} {} for team {}", AuditLog.Action.DELETE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
@@ -133,18 +145,27 @@ public class AuditService {
     public List<RecentActivityResponse> getEntityAuditLog(UUID teamId, String entityType, UUID entityId) {
         return auditLogRepository.findByTeamIdAndEntityTypeAndEntityId(teamId, entityType, entityId)
                 .stream()
-                .map(record -> mapRecordToRecentActivity(record, entityType))
+                .map(record -> mapRecordToRecentActivity(record, entityType, teamId))
                 .toList();
+    }
+
+    public PageResponse<RecentActivityResponse> getAllAuditLogsPaginated(UUID teamId, String entityType, String action, String search, PageRequest pageRequest) {
+        PaginatedResult<Record> result = auditLogRepository.findAllByTeamIdPaginated(
+                teamId, entityType, action, search, pageRequest);
+        List<RecentActivityResponse> responses = result.items().stream()
+                .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
+                .toList();
+        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
     }
 
     public List<RecentActivityResponse> getAllAuditLogs(UUID teamId, String entityType, String action, String search) {
         return auditLogRepository.findAllByTeamId(teamId, entityType, action, search)
                 .stream()
-                .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE)))
+                .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
                 .toList();
     }
 
-    private RecentActivityResponse mapRecordToRecentActivity(Record record, String entityType) {
+    private RecentActivityResponse mapRecordToRecentActivity(Record record, String entityType, UUID teamId) {
         String action = record.get(AUDIT_LOG.ACTION);
         String firstName = record.get(USERS.FIRST_NAME);
         String lastName = record.get(USERS.LAST_NAME);
@@ -160,10 +181,14 @@ public class AuditService {
         // Build description based on action and changed fields
         String description = buildActivityDescription(action, entityType, userName, changedFields);
 
+        // Resolve entity identifier from entity UUID
+        UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
+        String entityIdentifier = auditLogRepository.findEntityIdentifier(entityType, entityId, teamId)
+                .orElse(entityId != null ? entityId.toString() : "unknown");
+
         return new RecentActivityResponse(
-                record.get(AUDIT_LOG.ID),
                 entityType,
-                record.get(AUDIT_LOG.ENTITY_ID),
+                entityIdentifier,
                 entityType, // entityName - can be enhanced later
                 action,
                 userName,
@@ -202,6 +227,27 @@ public class AuditService {
             String category = (String) changedFields.get("category");
             String docType = "PHOTO".equals(category) ? "photo" : "document";
             return String.format("%s removed %s: %s", userName, docType, fileName);
+        }
+
+        // Check for photo operations
+        if (changedFields != null && changedFields.containsKey("photoAdded")) {
+            String fileName = (String) changedFields.get("photoAdded");
+            return String.format("%s uploaded photo: %s", userName, fileName);
+        }
+
+        if (changedFields != null && changedFields.containsKey("photoRemoved")) {
+            String fileName = (String) changedFields.get("photoRemoved");
+            return String.format("%s removed photo: %s", userName, fileName);
+        }
+
+        if (changedFields != null && changedFields.containsKey("photoEdited")) {
+            String fileName = (String) changedFields.get("photoEdited");
+            return String.format("%s edited photo metadata: %s", userName, fileName);
+        }
+
+        if (changedFields != null && changedFields.containsKey("documentEdited")) {
+            String fileName = (String) changedFields.get("documentEdited");
+            return String.format("%s edited document metadata: %s", userName, fileName);
         }
 
         // Check for receival operations

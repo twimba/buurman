@@ -28,7 +28,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
   return (
     <div
       className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-      onClick={() => navigate(`/properties/${property.id}`)}
+      onClick={() => navigate(`/properties/${property.identifier}`)}
     >
       {/* Property Image */}
       <div className="relative bg-[#e8ecf4] dark:bg-[#1e2130] h-48 flex items-center justify-center overflow-hidden">
@@ -44,9 +44,9 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
         {/* Status Badge */}
         <div className="absolute top-3 right-3">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status]}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status as PropertyStatus]}`}
           >
-            {statusLabels[property.status]}
+            {statusLabels[property.status as PropertyStatus]}
           </span>
         </div>
       </div>
@@ -78,10 +78,13 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               <span className="text-sm">{property.bathrooms}</span>
             </div>
           )}
-          {property.squareMeters !== null && (
+          {property.areaValue !== null && (
             <div className="flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]">
               <Ruler className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
-              <span className="text-sm">{property.squareMeters}m²</span>
+              <span className="text-sm">
+                {property.areaValue}
+                {property.areaUnit === 'sqft' ? 'ft²' : 'm²'}
+              </span>
             </div>
           )}
         </div>

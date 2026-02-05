@@ -1,277 +1,206 @@
 # CLAUDE.md
 
 # Efficiency & Token Management Rules
-* **Response Style**: Be extremely laconic. No conversational filler ("Sure," "I've updated the file," etc.).
-* **Code Output**: Never output the full content of a file unless explicitly requested. Use "Partial File Diffs" or show only the modified functions and then only if super relevant otherwise omit the diff
-* **Explanations**: Provide technical explanations ONLY if the logic is non-obvious or if specifically asked "why."
-* **Context Control**: If the conversation exceeds 5-10 turns, proactively suggest a /compact or /clear to save tokens.
-* **Search Hygiene**: When using grep or find, use the most specific paths possible to avoid reading unnecessary file metadata.
+* **Response Style**: Be extremely laconic. No conversational filler.
+* **Code Output**: Never output full file content unless requested. Show only modified functions via partial diffs, and only if super relevant.
+* **Explanations**: Provide technical explanations ONLY if non-obvious or specifically asked "why."
+* **Context Control**: If conversation exceeds 5-10 turns, proactively suggest /compact or /clear.
+* **Search Hygiene**: Use the most specific paths possible to avoid reading unnecessary file metadata.
 
 ## Strict File Access Rules
-* **Ignore Policy**: You MUST strictly adhere to the patterns in `.claudeignore`. 
-* **Prohibition**: Never attempt to read, search, or index files matched by `.claudeignore`, even if I ask you to or if they are tracked by Git.
-* **Token Efficiency**: If a search or tool would return results from an ignored directory, filter them out before processing to save tokens.
+* **Ignore Policy**: Strictly adhere to `.claudeignore` patterns.
+* **Prohibition**: Never read, search, or index files matched by `.claudeignore`.
+* **Token Efficiency**: Filter out ignored directory results before processing.
 
 ## Project Overview
 
-Buurman is a property management dashboard application for small landlords to manage rental properties, tenants, contracts, and finances. The application uses:
+Buurman is a property management dashboard for small landlords (properties, tenants, contracts, finances).
 
-- **Backend**: Java 21, Spring Boot, Spring Security, JOOQ, Flyway, PostgreSQL
-- **Frontend**: React, TypeScript, Vite, React Query, Tailwind CSS, Bootstrap 5
-- **Authentication**: Keycloak with JWT tokens
-- **Storage**: AWS S3 (LocalStack for development)
+- **Backend**: Java 21, Spring Boot 4.0.2, Spring Security, JOOQ 3.20, Flyway, PostgreSQL
+- **Frontend**: React 19, TypeScript, Vite 7, TanStack React Query 5, Tailwind CSS 4
+- **Auth**: Keycloak 26 with JWT (OAuth2 Resource Server)
+- **Storage**: AWS SDK v2 / S3 (LocalStack for dev)
+- **Email**: Spring Mail + Thymeleaf templates (MailHog for dev)
+- **Jobs**: Quartz Scheduler
+- **Docs**: SpringDoc OpenAPI 3.0.1, iText7 (PDF), OpenCSV
+- **Monitoring**: Prometheus + Grafana
 - **Infrastructure**: Docker Compose for local development
 
 ## Development Commands
 
 ### Backend (Spring Boot/Maven)
-- Build the project: `mvn clean install`
-- Run the application: `mvn spring-boot:run`
-- Run tests: `mvn test`
-- Run specific test: `mvn test -Dtest=ClassName#methodName`
-- Package without tests: `mvn clean package -DskipTests`
+- Build: `mvn clean install`
+- Run: `mvn spring-boot:run` (port **8081**)
+- Tests: `mvn test` / `mvn test -Dtest=ClassName#methodName`
+- Package: `mvn clean package -DskipTests`
 
-### Frontend (React/Vite/Yarn)
-- Install dependencies: `yarn install`
-- Start dev server: `yarn dev` (runs on http://localhost:5173)
-- Build for production: `yarn build`
-- Run tests: `yarn test`
-- Run linting: `yarn lint`
-- Fix linting issues: `yarn lint --fix`
+### Frontend (React/Vite/Yarn 4)
+- Install: `yarn install`
+- Dev server: `yarn dev` (port 5173)
+- Build: `yarn build`
+- Tests: `yarn test`
+- Lint: `yarn lint` / `yarn lint --fix`
 
-### Docker & Local Development
-- Start all services: `docker-compose up -d`
-- Start specific service: `docker-compose up -d postgres` (or `keycloak`, `localstack`)
-- View logs: `docker-compose logs -f [service-name]`
-- Stop all services: `docker-compose down`
-- Reset everything: `docker-compose down -v` (removes volumes)
+### Docker Services
+
+| Service | Port | Purpose |
+|---------|------|---------|
+| postgres | 5432 | Database (PostgreSQL 18) |
+| keycloak | 8080 | Authentication |
+| localstack | 4566 | S3 storage (dev) |
+| mailhog | 1025/8025 | SMTP / Email UI (dev) |
+| backend | 8081 | Spring Boot API |
+| frontend | 5173 | React app |
+| prometheus | 9090 | Metrics collection |
+| grafana | 3000 | Dashboards |
+
+Commands: `docker-compose up -d`, `docker-compose down`, `docker-compose down -v` (reset)
+
+### Application Profiles
+- `local` (default): Services on localhost
+- `docker`: Services use container hostnames
+- Credentials externalized via `.env` file
 
 ### Database Migrations (Flyway)
-- Migrations are in: `src/main/resources/db/migration/`
-- Naming convention: `V<version>__<description>.sql` (e.g., `V001__create_base_schema.sql`)
-- **Migrations run automatically on application startup** - Flyway is configured to apply all pending migrations before the application starts
-- Check migration status via API: `GET /api/info` (includes database.currentVersion)
-- Check migration history in database: Query `flyway_schema_history` table
-- Migration logs appear on startup with clear status information
-- **Never modify existing migrations** - always create new migration files for schema changes
+- Location: `src/main/resources/db/migration/`
+- Convention: `V<version>__<description>.sql` (currently at V020)
+- Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
 
-### Multi-Tenancy Architecture
-- All data is isolated by `team_id` (UUID) at the database level
-- Every table includes a `team_id` foreign key to the `teams` table
-- `TeamContextHolder` (thread-local) stores the current user's team_id
-- All repository queries automatically filter by team_id to prevent cross-team data access
-- JWT tokens contain `team_id` claim extracted by `JwtAuthenticationFilter`
+### Multi-Tenancy
+- All data isolated by `team_id` (UUID) at database level
+- Every repository query manually filters by `team_id` in WHERE clauses
+- JWT tokens contain `team_id` claim extracted by `JwtAuthenticationConverter`
+- `TeamMembershipAspect` enforces team-level authorization
 
 ### Authentication Flow
 1. User authenticates via Keycloak (OAuth2/OIDC)
-2. Frontend receives JWT access token and refresh token
-3. JWT contains claims: `user_id`, `team_id`, `roles` (TEAM_ADMIN, TEAM_EDITOR, TEAM_VIEWER)
-4. Backend validates JWT signature using Keycloak public key
-5. `JwtAuthenticationFilter` extracts claims and populates `SecurityContext`
-6. All API requests include `Authorization: Bearer <token>` header
+2. Frontend receives JWT via Keycloak JS adapter
+3. JWT claims: `user_id`, `team_id`, `roles` (TEAM_ADMIN, TEAM_EDITOR, TEAM_VIEWER)
+4. Backend validates JWT as OAuth2 Resource Server
+5. `JwtAuthenticationConverter` extracts claims into `UserAuthentication`
 
 ### IDs Pattern
-- Internal IDs use UUID (primary keys)
-- External IDs/Identifiers use ULID (26 characters, sortable, user-facing)
-- Every entity has both `id` (UUID) and `indentifier` (ULID)
-- Use `UlidGenerator.java` utility for generating identifiers
+- Internal: UUID (primary keys, never exposed in APIs)
+- External: ULID via `identifier` column (26 chars, sortable, user-facing)
+- `UlidGenerator.java` for generation, `EntityPrefix` for type-prefixed IDs
 
 ### Audit Pattern
-- All entities have audit columns: `created_at`, `updated_at`, `created_by`, `updated_by`
-- JPA entity listeners automatically populate these fields
-- All modifications recorded in audit log
-- Soft deletes implemented via `deleted_at` column (never hard delete)
+- All entities: `created_at`, `updated_at`, `created_by`, `updated_by`
+- Set manually in repository INSERT/UPDATE queries (no JPA listeners)
+- Soft deletes via `deleted_at` column (never hard delete)
 
 ### Backend Package Structure
 ```
 com.buurman
-├── config/          Security, S3, JOOQ, Swagger configuration
-├── controller/      REST endpoints (thin layer, delegates to services)
-├── service/         Business logic (auth, property, tenant, contract, financial, document, audit)
-├── repository/      Data access layer (extends TeamAwareRepository)
-├── domain/          JPA entities (Team, Property, Tenant, Contract, Payment, Expense, Document)
-├── dto/             Request/response DTOs (request/, response/)
-├── mapper/          MapStruct mappers (entity <-> DTO)
-├── security/        JWT filter, UserPrincipal, TeamContextHolder
-├── exception/       Exception handlers and custom exceptions
-└── util/            Utilities (UlidGenerator, DateUtils)
+├── config/          Security, S3, JOOQ, Swagger, Quartz config
+├── controller/      REST endpoints (thin, delegates to services)
+├── service/         Business logic + @PreAuthorize authorization
+├── repository/      JOOQ DSLContext queries (no base class, manual team_id filtering)
+├── domain/          POJOs (not JPA entities)
+├── dto/
+│   ├── request/     Request DTOs (classes + records)
+│   └── response/    Response DTOs (Java records, expose identifier only)
+├── mapper/          MapStruct interfaces + manual @Component mappers
+├── security/        JwtAuthenticationConverter, UserAuthentication, TeamMembershipAspect
+├── exception/       GlobalExceptionHandler + custom exceptions
+├── job/             Quartz scheduled jobs
+├── db/              FlywayMigrationLogger
+└── util/            UlidGenerator, PaginationHelper, EntityPrefix, DateUtils
 ```
 
-### Frontend Folder Structure
+### Frontend Structure
 ```
 src/
-├── api/             Axios client and API methods (client.ts has interceptors)
-├── components/      React components organized by feature (auth, dashboard, properties, tenants, etc.)
-├── hooks/           Custom React hooks (useAuth, useProperties, useTenants, etc.)
-├── context/         React contexts (AuthContext, TeamContext)
+├── api/             Axios client + 16 API modules (properties.ts, tenants.ts, etc.)
+├── components/      Feature-organized React components
+├── pages/           31 page components
+├── hooks/           21 custom React Query hooks
+├── context/         AuthContext, TeamContext
 ├── types/           TypeScript type definitions
-├── utils/           Utility functions (formatting, validation)
-├── routes/          React Router configuration
-├── App.tsx          Main app component
+├── config/          Keycloak configuration
+├── utils/           Formatting, validation utilities
+├── App.tsx          Main component with routing
 └── main.tsx         Entry point
 ```
 
-### Key Backend Components
+### Key Patterns
 
-#### TeamAwareRepository Pattern
-All repositories extend a base that automatically filters by team_id:
-```java
-// All queries automatically append: WHERE team_id = ?
-// Prevents accidental cross-team data leaks
-```
+**Repository**: Manual JOOQ with DSLContext. No base class. Each repo manually adds `team_id` to all WHERE clauses. ~21 repositories.
 
-#### Security Configuration
-- JWT validation with Keycloak public key
-- Role-based access control: `@PreAuthorize("hasRole('TEAM_ADMIN')")`
-- CORS configured for frontend origin
-- Health endpoints exempted from authentication
+**Security**: `@PreAuthorize` on service methods for role-based access. `@EnableMethodSecurity(prePostEnabled = true)` in SecurityConfig. Role hierarchy: TEAM_ADMIN > TEAM_EDITOR > TEAM_VIEWER.
 
-#### Document Storage
-- Files stored in S3 (LocalStack for local dev)
-- Documents table stores metadata and S3 keys
-- Generic attachment system via `entity_type` + `entity_id`
-- Pre-signed URLs for downloads (time-limited)
+**DTOs**: Response DTOs are Java `record` types exposing only `identifier` (ULID), never internal UUIDs.
 
-### Key Frontend Patterns
+**Pagination**: `PageRequest` / `PageResponse` DTOs with `PaginationHelper` utility for JOOQ LIMIT/OFFSET.
 
-#### API Client (api/client.ts)
-- Axios instance with base URL and interceptors
-- Request interceptor: Attaches JWT token from localStorage
-- Response interceptor: Handles 401 (token refresh/redirect to login)
+**Mappers**: Mix of MapStruct interfaces (`componentModel = "spring"`) and manual `@Component` mapper classes. Map between JOOQ Records, domain POJOs, and DTOs.
 
-#### React Query Usage
-- All API calls use React Query hooks
-- Cache configuration: 5min stale time, 10min cache time
-- Query keys follow pattern: `['resource', id?, filters?]`
-- Mutations automatically invalidate related queries
+**Frontend API**: Axios instance with Keycloak token interceptor. React Query hooks per resource with automatic cache invalidation on mutations.
 
-#### Custom Hooks Pattern
-```typescript
-// Example: useProperties.ts
-export const useProperties = () => useQuery(['properties'], getProperties);
-export const useCreateProperty = () => {
-  const queryClient = useQueryClient();
-  return useMutation(createProperty, {
-    onSuccess: () => queryClient.invalidateQueries(['properties'])
-  });
-};
-```
+**Document Storage**: S3 with metadata in `documents` + `photos` tables. LocalStack uses direct URLs; production uses presigned URLs.
 
 ## Database Schema Conventions
 
-- **Primary keys**: `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-- **Identifiers**: `identifier VARCHAR(26) NOT NULL` (ULID format)
-- **Team isolation**: `team_id UUID NOT NULL REFERENCES teams(id)`
-- **Audit fields**: `created_at`, `updated_at`, `created_by`, `updated_by`
-- **Soft deletes**: `deleted_at TIMESTAMP` (NULL means active)
-- **Indexes**: Always index `team_id`, status columns, foreign keys, and date columns
-- **Constraints**: Use CHECK constraints for validation (e.g., positive amounts, date ranges)
-- **Unique constraints**: Combine `team_id` + `identifier` for uniqueness within team
+- `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
+- `identifier VARCHAR(26) NOT NULL` (ULID)
+- `team_id UUID NOT NULL REFERENCES teams(id)`
+- Audit: `created_at`, `updated_at`, `created_by`, `updated_by`
+- `deleted_at TIMESTAMP` for soft deletes (NULL = active)
+- Indexes on `team_id`, foreign keys, status columns, dates
+- `UNIQUE(team_id, identifier)` constraint
+- CHECK constraints for validation (positive amounts, date ranges)
 
-## Testing Strategy
+## Testing Status
 
-### Backend Testing
-- **Unit tests**: Service layer logic with Mockito (JUnit 5)
-- **Integration tests**: Spring Boot Test + Testcontainers (PostgreSQL)
-- **API tests**: REST Assured for end-to-end testing
-- Target: 80% code coverage
-- Always test multi-tenant isolation (cannot access other team's data)
+**Currently zero test coverage.** Test dependencies are configured (Spring Boot Test, Testcontainers, Vitest) but no test files exist yet.
 
-### Frontend Testing
-- **Unit tests**: Vitest + React Testing Library
-- **Integration tests**: User flows with MSW (Mock Service Worker) for API mocking
-- Target: 70% code coverage
-- Test accessibility (screen reader support, keyboard navigation)
+### Planned Strategy
+- Backend: JUnit 5 + Mockito (unit), Testcontainers (integration)
+- Frontend: Vitest + React Testing Library
+- Always test multi-tenant isolation
 
-## Common Development Tasks
-
-### Adding a New Entity
-1. Create Flyway migration in `src/main/resources/db/migration/`
-2. Create JPA entity in `domain/` with audit annotations
-3. Create repository extending `TeamAwareRepository`
-4. Create service with CRUD operations (automatic team_id filtering)
-5. Create DTOs (request/response) and MapStruct mapper
-6. Create REST controller with proper security annotations
-7. Write unit and integration tests
-8. Create frontend API client methods
-9. Create React components and custom hooks
-10. Add routes and navigation
-
-### Creating a New Database Migration
-1. Determine next version number (check existing migrations)
-2. Create file: `V<version>__<description>.sql`
-3. Include:
-   - `team_id UUID NOT NULL REFERENCES teams(id)`
-   - `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-   - `identifier VARCHAR(26) NOT NULL`
-   - Audit columns (created_at, updated_at, created_by, updated_by)
-   - `deleted_at TIMESTAMP` for soft deletes
-   - Indexes on `team_id`, foreign keys, frequently queried columns
-   - `UNIQUE(team_id, identifier)` constraint
-4. Test migration: Restart application and verify schema
-
-### Adding a New API Endpoint
-1. Add method to controller with annotations:
-   - `@GetMapping/@PostMapping/@PutMapping/@DeleteMapping`
-   - `@PreAuthorize` for role-based access control
-   - OpenAPI annotations for documentation
-2. Implement service method (business logic)
-3. Create/update DTOs and mappers
-4. Write unit test (MockMvc) and integration test
-5. Add frontend API client method in `src/api/`
-6. Create custom hook if needed
-7. Update components to use new endpoint
+## Adding a New Entity (Checklist)
+1. Flyway migration in `db/migration/` (next version after V020)
+2. Domain POJO in `domain/`
+3. JOOQ repository with manual `team_id` filtering in all queries
+4. Service with `@Transactional` and `@PreAuthorize`
+5. Request/Response DTOs (records preferred) + MapStruct mapper
+6. REST controller (thin, delegates to service)
+7. Frontend: API module, React Query hook, page components, routes
 
 ## Important Rules
 
 ### Security
 - NEVER bypass team_id filtering in queries
-- ALWAYS validate JWT tokens on backend
-- NEVER trust client-side data (validate on backend)
 - USE `@PreAuthorize` for role-based access control
-- NEVER expose internal UUIDs in URLs (use identifier)
+- NEVER expose internal UUIDs in APIs (use identifier)
+- NEVER trust client-side data (validate on backend)
 
 ### Data Integrity
-- ALWAYS use soft deletes (`deleted_at` column)
-- NEVER hard delete records (breaks audit trail)
-- ALWAYS record who made changes (created_by, updated_by)
-- USE database constraints for data validation
-- ALWAYS validate date ranges (start_date < end_date)
+- ALWAYS soft delete via `deleted_at` (never hard delete)
+- ALWAYS set `created_by`/`updated_by` in repository queries
+- USE database constraints for validation
 
 ### Code Quality
-- FOLLOW Google Java Style Guide (backend)
-- FOLLOW Airbnb JavaScript Style Guide (frontend)
-- USE meaningful variable names (no single-letter variables except loop counters)
-- WRITE self-documenting code (clear method/function names)
-- ADD comments only for complex business logic
-- USE conventional commits format (feat:, fix:, docs:, etc.)
+- Google Java Style Guide (backend), Airbnb JS Style Guide (frontend)
+- Conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
+- Self-documenting code, comments only for complex business logic
 
 ## Development Workflow
 
 ### Starting Local Development
-1. Ensure Docker is running
-2. Start services: `docker-compose up -d`
-3. Wait for PostgreSQL and Keycloak to be ready (~30 seconds)
-4. Start backend: `mvn spring-boot:run` (runs on port 8080)
-5. Start frontend: `yarn dev` (runs on port 5173)
-6. Access app at: http://localhost:5173
-7. Keycloak admin console: http://localhost:8080 (admin/admin)
-
-### Debugging
-- Backend: Use IDE debugger, attach to port 5005 if remote debugging enabled
-- Frontend: Use browser DevTools, React DevTools extension
-- Database: Connect to PostgreSQL on localhost:5432 (user: buurman, db: buurman)
-- View logs: `docker-compose logs -f <service>`
+1. `docker-compose up -d`
+2. Wait ~30s for PostgreSQL + Keycloak
+3. `mvn spring-boot:run` (backend on **8081**)
+4. `yarn dev` (frontend on 5173)
+5. App: http://localhost:5173 | Keycloak: http://localhost:8080 | Grafana: http://localhost:3000 | MailHog: http://localhost:8025
 
 ### Common Issues
-- **Port conflicts**: Check if ports 5173, 8080, 5432, 4566 are available
-- **Database connection failed**: Ensure PostgreSQL container is running
-- **JWT validation failed**: Check Keycloak is running and realm configured
-- **CORS errors**: Verify backend SecurityConfig has correct frontend origin
-- **Flyway migration failed**: Check migration syntax, rollback may require manual intervention
-- **S3/LocalStack image display issues**: 
-  - For LocalStack, S3StorageService uses direct URLs (localhost:4566/bucket/key) instead of presigned URLs
-  - CORS is configured for LocalStack S3 bucket to allow browser access
-  - Production uses presigned URLs for security
+- **Port conflicts**: Check 5173, 8080, 8081, 5432, 4566
+- **Database connection**: Ensure PostgreSQL container running
+- **JWT validation**: Check Keycloak running and realm configured
+- **CORS errors**: Verify SecurityConfig frontend origin
+- **Flyway failure**: Check syntax; rollback may need manual intervention
+- **S3/images**: LocalStack uses direct URLs, production uses presigned URLs

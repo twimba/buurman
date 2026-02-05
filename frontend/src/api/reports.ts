@@ -11,14 +11,14 @@ import {
 export const getFinancialOverview = async (
   startDate: string,
   endDate: string,
-  propertyIds?: string[],
+  propertyIdentifiers?: string[],
   currency?: string
 ): Promise<FinancialOverviewResponse> => {
   const response = await client.get('/reports/financial-overview', {
     params: {
       startDate,
       endDate,
-      propertyIds: propertyIds?.join(','),
+      propertyIdentifiers: propertyIdentifiers?.join(','),
       currency,
     },
   });

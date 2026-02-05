@@ -15,9 +15,7 @@ export enum ExpenseCategory {
 }
 
 export interface ExpenseResponse {
-  id: string;
   identifier: string;
-  teamId: string;
   property: PropertySummary;
   category: ExpenseCategory;
   amount: number;
@@ -31,7 +29,7 @@ export interface ExpenseResponse {
 }
 
 export interface CreateExpenseRequest {
-  propertyId: string;
+  propertyIdentifier: string;
   category: ExpenseCategory;
   amount: number;
   currency?: string;
@@ -64,7 +62,7 @@ export interface CategoryTotal {
 
 export interface GetExpensesParams {
   category?: ExpenseCategory;
-  propertyId?: string;
+  propertyIdentifier?: string;
 }
 
 export const formatExpenseCategory = (category: ExpenseCategory): string => {

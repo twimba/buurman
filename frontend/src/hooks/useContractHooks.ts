@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as contractsApi from '../api/contracts';
 import {
   CreateContractRequest,
@@ -6,13 +11,15 @@ import {
   ChangeContractStatusRequest,
 } from '../types/contract';
 import { GetContractsParams } from '../api/contracts';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const useContracts = (params?: GetContractsParams) => {
+export const useContracts = (params?: GetContractsParams & PageParams) => {
   return useQuery({
     queryKey: ['contracts', params],
     queryFn: () => contractsApi.getContracts(params),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -36,13 +43,13 @@ export const useCreateContract = () => {
         queryKey: ['properties'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', newContract.property.id],
+        queryKey: ['property', newContract.property.identifier],
       });
       queryClient.invalidateQueries({
         queryKey: ['tenants'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.tenant.id],
+        queryKey: ['tenant', newContract.tenant.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       showToast('Contract created successfully', 'success');
@@ -67,13 +74,13 @@ export const useUpdateContract = (id: string) => {
         queryKey: ['properties'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', updatedContract.property.id],
+        queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
         queryKey: ['tenants'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.id],
+        queryKey: ['tenant', updatedContract.tenant.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       // Contract changes may affect payment display
@@ -119,10 +126,10 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['properties'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', updatedContract.property.id],
+        queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.id],
+        queryKey: ['tenant', updatedContract.tenant.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
@@ -147,10 +154,10 @@ export const useReopenContract = (id: string) => {
         queryKey: ['properties'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', updatedContract.property.id],
+        queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.id],
+        queryKey: ['tenant', updatedContract.tenant.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       // Reopening cancels future payments
@@ -172,10 +179,10 @@ export const useDuplicateContract = () => {
     onSuccess: (newContract) => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
-        queryKey: ['property', newContract.property.id],
+        queryKey: ['property', newContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.tenant.id],
+        queryKey: ['tenant', newContract.tenant.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       showToast('Contract duplicated successfully', 'success');

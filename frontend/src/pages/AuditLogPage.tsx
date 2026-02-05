@@ -1,6 +1,8 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/ui/Pagination';
 import type { RecentActivity } from '@/api/dashboard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -9,8 +11,6 @@ import {
   Search,
   Filter,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
@@ -33,11 +33,6 @@ const actionFilters = [
   { value: 'DELETE', label: 'Deleted' },
   { value: 'RESTORE', label: 'Restored' },
 ];
-
-const ITEMS_PER_PAGE = 25;
-
-type SortField = 'timestamp' | 'entityType' | 'action' | 'userName';
-type SortOrder = 'asc' | 'desc';
 
 const getActionColor = (action: string) => {
   switch (action) {
@@ -82,86 +77,38 @@ export const AuditLogPage = () => {
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortField, setSortField] = useState<SortField>('timestamp');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const {
+    pageParams,
+    page,
+    size,
+    handlePageChange,
+    handleSizeChange,
+    handleSortChange,
+    resetPage,
+  } = usePagination({ defaultSort: 'timestamp' });
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-      setCurrentPage(1);
+      resetPage();
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, resetPage]);
 
   const {
-    data: activities,
+    data: activitiesData,
     isLoading,
     error,
   } = useAllAuditLogs({
     entityType: entityTypeFilter,
     action: actionFilter,
     search: debouncedSearch,
+    ...pageParams,
   });
-
-  const sortedActivities = useMemo(() => {
-    if (!activities) return [];
-
-    const sorted = [...activities];
-
-    sorted.sort((a, b) => {
-      let aVal: string | number;
-      let bVal: string | number;
-
-      switch (sortField) {
-        case 'timestamp':
-          aVal = new Date(a.timestamp).getTime();
-          bVal = new Date(b.timestamp).getTime();
-          break;
-        case 'entityType':
-          aVal = a.entityType;
-          bVal = b.entityType;
-          break;
-        case 'action':
-          aVal = a.action;
-          bVal = b.action;
-          break;
-        case 'userName':
-          aVal = a.userName;
-          bVal = b.userName;
-          break;
-        default:
-          return 0;
-      }
-
-      if (sortOrder === 'asc') {
-        return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
-      }
-    });
-
-    return sorted;
-  }, [activities, sortField, sortOrder]);
-
-  const paginatedActivities = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return sortedActivities.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [sortedActivities, currentPage]);
-
-  const totalPages = Math.ceil(sortedActivities.length / ITEMS_PER_PAGE);
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('desc');
-    }
-  };
 
   const toggleExpanded = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -177,15 +124,15 @@ export const AuditLogPage = () => {
     // Navigate to the entity detail page
     const entityType = activity.entityType.toLowerCase();
     if (entityType === 'property') {
-      navigate(`/properties/${activity.entityId}`);
+      navigate(`/properties/${activity.entityIdentifier}`);
     } else if (entityType === 'tenant') {
-      navigate(`/tenants/${activity.entityId}`);
+      navigate(`/tenants/${activity.entityIdentifier}`);
     } else if (entityType === 'contract') {
-      navigate(`/contracts/${activity.entityId}`);
+      navigate(`/contracts/${activity.entityIdentifier}`);
     } else if (entityType === 'payment') {
-      navigate(`/payments/${activity.entityId}`);
+      navigate(`/payments/${activity.entityIdentifier}`);
     } else if (entityType === 'expense') {
-      navigate(`/expenses/${activity.entityId}`);
+      navigate(`/expenses/${activity.entityIdentifier}`);
     }
   };
 
@@ -254,7 +201,7 @@ export const AuditLogPage = () => {
                     key={filter.label}
                     onClick={() => {
                       setEntityTypeFilter(filter.value);
-                      setCurrentPage(1);
+                      resetPage();
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       entityTypeFilter === filter.value
@@ -282,7 +229,7 @@ export const AuditLogPage = () => {
                     key={filter.label}
                     onClick={() => {
                       setActionFilter(filter.value);
-                      setCurrentPage(1);
+                      resetPage();
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       actionFilter === filter.value
@@ -300,12 +247,12 @@ export const AuditLogPage = () => {
 
         {/* Activity Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {sortedActivities.length}{' '}
-          {sortedActivities.length === 1 ? 'activity' : 'activities'}
+          {activitiesData?.totalElements ?? 0}{' '}
+          {activitiesData?.totalElements === 1 ? 'activity' : 'activities'}
         </p>
 
         {/* Activities Table */}
-        {sortedActivities.length > 0 ? (
+        {activitiesData?.content && activitiesData.content.length > 0 ? (
           <>
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden mb-4">
               <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
@@ -313,7 +260,7 @@ export const AuditLogPage = () => {
                   <tr>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('timestamp')}
+                      onClick={() => handleSortChange('timestamp')}
                     >
                       <div className="flex items-center gap-1">
                         Time
@@ -322,7 +269,7 @@ export const AuditLogPage = () => {
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('entityType')}
+                      onClick={() => handleSortChange('entityType')}
                     >
                       <div className="flex items-center gap-1">
                         Type
@@ -331,7 +278,7 @@ export const AuditLogPage = () => {
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('action')}
+                      onClick={() => handleSortChange('action')}
                     >
                       <div className="flex items-center gap-1">
                         Action
@@ -341,14 +288,8 @@ export const AuditLogPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                       Description
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('userName')}
-                    >
-                      <div className="flex items-center gap-1">
-                        User
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                      User
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                       Details
@@ -356,8 +297,9 @@ export const AuditLogPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
-                  {paginatedActivities.map((activity) => {
-                    const isExpanded = expandedItems.has(activity.id);
+                  {activitiesData.content.map((activity) => {
+                    const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                    const isExpanded = expandedItems.has(activityKey);
                     const hasChanges =
                       activity.action === 'UPDATE' &&
                       activity.changedFields &&
@@ -366,7 +308,7 @@ export const AuditLogPage = () => {
                     return (
                       <>
                         <tr
-                          key={activity.id}
+                          key={activityKey}
                           className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
                         >
                           <td
@@ -415,7 +357,7 @@ export const AuditLogPage = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  toggleExpanded(activity.id);
+                                  toggleExpanded(activityKey);
                                 }}
                                 className="text-primary-500 dark:text-primary-300 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1"
                               >
@@ -435,7 +377,7 @@ export const AuditLogPage = () => {
                           </td>
                         </tr>
                         {isExpanded && hasChanges && (
-                          <tr key={`${activity.id}-details`}>
+                          <tr key={`${activityKey}-details`}>
                             <td
                               colSpan={6}
                               className="px-6 py-4 bg-[#f8f9fc] dark:bg-[#0c0d14]"
@@ -491,7 +433,7 @@ export const AuditLogPage = () => {
                                               {oldValue !== null &&
                                               oldValue !== undefined
                                                 ? String(oldValue)
-                                                : '—'}
+                                                : '\u2014'}
                                             </div>
                                           </div>
                                           <div>
@@ -502,7 +444,7 @@ export const AuditLogPage = () => {
                                               {newValue !== null &&
                                               newValue !== undefined
                                                 ? String(newValue)
-                                                : '—'}
+                                                : '\u2014'}
                                             </div>
                                           </div>
                                         </div>
@@ -521,39 +463,15 @@ export const AuditLogPage = () => {
               </table>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-[#14161f] px-4 py-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <div className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                  {Math.min(
-                    currentPage * ITEMS_PER_PAGE,
-                    sortedActivities.length
-                  )}{' '}
-                  of {sortedActivities.length} activities
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </button>
-                  <span className="px-3 py-1 text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+            {activitiesData && (
+              <Pagination
+                page={page}
+                totalPages={activitiesData.totalPages}
+                totalElements={activitiesData.totalElements}
+                size={size}
+                onPageChange={handlePageChange}
+                onSizeChange={handleSizeChange}
+              />
             )}
           </>
         ) : (

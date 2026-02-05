@@ -10,7 +10,7 @@ interface PaymentFormProps {
   onSubmit: (data: CreatePaymentRequest) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
-  contractId: string;
+  contractIdentifier: string;
 }
 
 export const PaymentForm = ({
@@ -18,7 +18,7 @@ export const PaymentForm = ({
   onSubmit,
   onCancel,
   isLoading,
-  contractId,
+  contractIdentifier,
 }: PaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -26,7 +26,7 @@ export const PaymentForm = ({
   const [formData, setFormData] = useState<
     CreatePaymentRequest & { paymentDate?: string }
   >({
-    contractId: contractId,
+    contractIdentifier: contractIdentifier,
     amount: payment?.amount || 0,
     currency: payment?.currency || defaultCurrency || 'EUR',
     dueDate: payment?.dueDate || '',
@@ -38,7 +38,7 @@ export const PaymentForm = ({
   if (payment && payment !== lastSyncedPayment) {
     setLastSyncedPayment(payment);
     setFormData({
-      contractId: payment.contract.id,
+      contractIdentifier: payment.contract.identifier,
       amount: payment.amount,
       currency: payment.currency,
       dueDate: payment.dueDate,

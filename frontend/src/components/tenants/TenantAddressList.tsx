@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import {
   Plus,
   MapPin,
@@ -202,7 +202,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
     }
   };
 
-  const SortIcon = ({ field }: { field: typeof sortField }) =>
+  const renderSortIcon = (field: typeof sortField) =>
     sortField === field ? (
       sortOrder === 'asc' ? (
         <ChevronUp className="h-4 w-4" />
@@ -251,7 +251,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
       {editingAddressId && addresses && (
         <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg p-6 bg-white dark:bg-[#14161f]">
           <AddressForm
-            address={addresses.find((a) => a.id === editingAddressId)}
+            address={addresses.find((a) => a.identifier === editingAddressId)}
             onSubmit={(data) =>
               handleUpdateAddress(
                 editingAddressId,
@@ -293,7 +293,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   >
                     <div className="flex items-center gap-1">
                       Street
-                      <SortIcon field="street" />
+                      {renderSortIcon('street')}
                     </div>
                   </th>
                   <th
@@ -302,7 +302,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   >
                     <div className="flex items-center gap-1">
                       City
-                      <SortIcon field="city" />
+                      {renderSortIcon('city')}
                     </div>
                   </th>
                   <th
@@ -311,7 +311,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   >
                     <div className="flex items-center gap-1">
                       Country
-                      <SortIcon field="country" />
+                      {renderSortIcon('country')}
                     </div>
                   </th>
                   <th
@@ -320,7 +320,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   >
                     <div className="flex items-center gap-1">
                       Type
-                      <SortIcon field="addressType" />
+                      {renderSortIcon('addressType')}
                     </div>
                   </th>
                   <th
@@ -329,7 +329,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   >
                     <div className="flex items-center gap-1">
                       Status
-                      <SortIcon field="status" />
+                      {renderSortIcon('status')}
                     </div>
                   </th>
                   {canEditData && (
@@ -351,11 +351,8 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   </tr>
                 ) : (
                   paginated.map((address) => (
-                    <>
-                      <tr
-                        key={address.id}
-                        className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
-                      >
+                    <Fragment key={address.identifier}>
+                      <tr className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                             {address.street}
@@ -393,9 +390,9 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                                 <button
                                   onClick={() =>
                                     setExpandedMapId(
-                                      expandedMapId === address.id
+                                      expandedMapId === address.identifier
                                         ? null
-                                        : address.id
+                                        : address.identifier
                                     )
                                   }
                                   className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded"
@@ -405,14 +402,18 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                                 </button>
                               )}
                               <button
-                                onClick={() => setEditingAddressId(address.id)}
+                                onClick={() =>
+                                  setEditingAddressId(address.identifier)
+                                }
                                 className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded"
                                 title="Edit address"
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => handleDeleteAddress(address.id)}
+                                onClick={() =>
+                                  handleDeleteAddress(address.identifier)
+                                }
                                 className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-[#1e2130] rounded"
                                 title="Delete address"
                               >
@@ -423,10 +424,10 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                         )}
                       </tr>
                       {/* Expanded map row */}
-                      {expandedMapId === address.id &&
+                      {expandedMapId === address.identifier &&
                         address.latitude &&
                         address.longitude && (
-                          <tr key={`${address.id}-map`}>
+                          <tr key={`${address.identifier}-map`}>
                             <td colSpan={canEditData ? 6 : 5} className="p-4">
                               <AddressMap
                                 street={address.street}
@@ -440,7 +441,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                             </td>
                           </tr>
                         )}
-                    </>
+                    </Fragment>
                   ))
                 )}
               </tbody>

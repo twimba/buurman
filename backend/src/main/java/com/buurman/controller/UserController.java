@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -53,21 +52,21 @@ public class UserController {
     @PostMapping("/switch-team")
     public UserTeamResponse switchTeam(@AuthenticationPrincipal UserPrincipal principal,
                                        @Valid @RequestBody SwitchTeamRequest request) {
-        return userTeamService.switchTeam(request.teamId(), principal);
+        return userTeamService.switchTeam(request.teamIdentifier(), principal);
     }
 
     @Operation(summary = "Set default team", description = "Set the user's default team for login")
     @PutMapping("/default-team")
     public UserTeamResponse setDefaultTeam(@AuthenticationPrincipal UserPrincipal principal,
                                            @Valid @RequestBody SetDefaultTeamRequest request) {
-        return userTeamService.setDefaultTeam(request.teamId(), principal);
+        return userTeamService.setDefaultTeam(request.teamIdentifier(), principal);
     }
 
     @Operation(summary = "Leave team", description = "Leave a team (cannot leave owned teams)")
-    @PostMapping("/teams/{teamId}/leave")
+    @PostMapping("/teams/{teamIdentifier}/leave")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void leaveTeam(@AuthenticationPrincipal UserPrincipal principal,
-                          @PathVariable UUID teamId) {
-        userTeamService.leaveTeam(teamId, principal);
+                          @PathVariable String teamIdentifier) {
+        userTeamService.leaveTeam(teamIdentifier, principal);
     }
 }

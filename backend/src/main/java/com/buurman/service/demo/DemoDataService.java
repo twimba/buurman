@@ -1,0 +1,322 @@
+package com.buurman.service.demo;
+
+import com.buurman.config.DemoDataProperties;
+import com.buurman.dto.response.DemoDataResponse;
+import org.jooq.DSLContext;
+import org.jooq.JSONB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static com.buurman.jooq.generated.Tables.*;
+
+@Service
+public class DemoDataService implements ApplicationRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DemoDataService.class);
+
+    private final DSLContext dsl;
+    private final DemoDataProperties properties;
+    private final DemoKeycloakSetup keycloakSetup;
+    private final DemoTeamGenerator teamGenerator;
+    private final DemoUserGenerator userGenerator;
+    private final DemoTeamMemberGenerator teamMemberGenerator;
+    private final DemoPropertyGenerator propertyGenerator;
+    private final DemoTenantGenerator tenantGenerator;
+    private final DemoContractGenerator contractGenerator;
+    private final DemoPaymentGenerator paymentGenerator;
+    private final DemoExpenseGenerator expenseGenerator;
+    private final DemoPhotoGenerator photoGenerator;
+    private final DemoAuditLogGenerator auditLogGenerator;
+
+    private volatile Instant lastGeneratedAt;
+
+    public DemoDataService(DSLContext dsl, DemoDataProperties properties,
+                          DemoKeycloakSetup keycloakSetup, DemoTeamGenerator teamGenerator,
+                          DemoUserGenerator userGenerator, DemoTeamMemberGenerator teamMemberGenerator,
+                          DemoPropertyGenerator propertyGenerator, DemoTenantGenerator tenantGenerator,
+                          DemoContractGenerator contractGenerator, DemoPaymentGenerator paymentGenerator,
+                          DemoExpenseGenerator expenseGenerator, DemoPhotoGenerator photoGenerator,
+                          DemoAuditLogGenerator auditLogGenerator) {
+        this.dsl = dsl;
+        this.properties = properties;
+        this.keycloakSetup = keycloakSetup;
+        this.teamGenerator = teamGenerator;
+        this.userGenerator = userGenerator;
+        this.teamMemberGenerator = teamMemberGenerator;
+        this.propertyGenerator = propertyGenerator;
+        this.tenantGenerator = tenantGenerator;
+        this.contractGenerator = contractGenerator;
+        this.paymentGenerator = paymentGenerator;
+        this.expenseGenerator = expenseGenerator;
+        this.photoGenerator = photoGenerator;
+        this.auditLogGenerator = auditLogGenerator;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) {
+        if (!properties.isEnabled()) {
+            log.info("Demo data loading is disabled");
+            return;
+        }
+
+        int userCount = dsl.fetchCount(USERS);
+        if (userCount == 0) {
+            log.info("Empty database detected, auto-loading demo data...");
+            generate();
+        } else {
+            log.info("Database already has {} users, skipping auto-load", userCount);
+        }
+    }
+
+    public DemoDataResponse generate() {
+        long startTime = System.currentTimeMillis();
+        log.info("Starting demo data generation...");
+
+        DemoDataContext ctx = new DemoDataContext();
+
+        // 1. Cleanup existing demo data
+        cleanup();
+
+        // 2. Create Keycloak users (external, non-transactional)
+        keycloakSetup.createUsers(ctx);
+
+        // 3. Generate database records (transactional)
+        generateDatabaseRecords(ctx);
+
+        // 4. Upload property photos (non-transactional, S3 + DB)
+        try {
+            photoGenerator.generate(ctx);
+        } catch (Exception e) {
+            log.warn("Photo generation failed (non-fatal): {}", e.getMessage());
+        }
+
+        long durationMs = System.currentTimeMillis() - startTime;
+        lastGeneratedAt = Instant.now();
+
+        log.info("Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {} contracts, {} payments, {} expenses",
+                durationMs, ctx.getTeamsCreated(), ctx.getUsersCreated(), ctx.getPropertiesCreated(),
+                ctx.getTenantsCreated(), ctx.getContractsCreated(), ctx.getPaymentsCreated(), ctx.getExpensesCreated());
+
+        return new DemoDataResponse(
+                ctx.getTeamsCreated(),
+                ctx.getUsersCreated(),
+                ctx.getPropertiesCreated(),
+                ctx.getTenantsCreated(),
+                ctx.getContractsCreated(),
+                ctx.getPaymentsCreated(),
+                ctx.getExpensesCreated(),
+                durationMs
+        );
+    }
+
+    @Transactional
+    public void generateDatabaseRecords(DemoDataContext ctx) {
+        teamGenerator.generate(ctx);
+        userGenerator.generate(ctx);
+        teamMemberGenerator.generate(ctx);
+        propertyGenerator.generate(ctx);
+        tenantGenerator.generate(ctx);
+        contractGenerator.generate(ctx);
+        paymentGenerator.generate(ctx);
+        expenseGenerator.generate(ctx);
+        auditLogGenerator.generate(ctx);
+    }
+
+    public void cleanup() {
+        log.info("Cleaning up existing demo data...");
+
+        // Find demo team IDs
+        List<UUID> demoTeamIds = dsl.select(TEAMS.ID)
+                .from(TEAMS)
+                .where(TEAMS.SETTINGS.cast(String.class).contains("\"demoData\""))
+                .fetch(TEAMS.ID);
+
+        if (demoTeamIds.isEmpty()) {
+            log.info("No existing demo data found");
+            // Still try to clean up Keycloak users
+            DemoDataContext cleanupCtx = new DemoDataContext();
+            keycloakSetup.deleteUsers(cleanupCtx);
+            return;
+        }
+
+        log.info("Found {} demo teams to clean up", demoTeamIds.size());
+
+        cleanupDatabaseRecords(demoTeamIds);
+
+        // Clean up Keycloak users
+        DemoDataContext cleanupCtx = new DemoDataContext();
+        keycloakSetup.deleteUsers(cleanupCtx);
+
+        log.info("Demo data cleanup completed");
+    }
+
+    @Transactional
+    public void cleanupDatabaseRecords(List<UUID> demoTeamIds) {
+        // Delete in reverse FK dependency order
+
+        // 1. Payment receivals (FK -> payments)
+        int deleted = dsl.deleteFrom(PAYMENT_RECEIVALS)
+                .where(PAYMENT_RECEIVALS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} payment receivals", deleted);
+
+        // 2. Calendar feeds (FK -> various)
+        deleted = dsl.deleteFrom(CALENDAR_FEEDS)
+                .where(CALENDAR_FEEDS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} calendar feeds", deleted);
+
+        // 3. Audit log
+        deleted = dsl.deleteFrom(AUDIT_LOG)
+                .where(AUDIT_LOG.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} audit log entries", deleted);
+
+        // 4. Generated reports
+        deleted = dsl.deleteFrom(GENERATED_REPORTS)
+                .where(GENERATED_REPORTS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} generated reports", deleted);
+
+        // 5. Documents
+        deleted = dsl.deleteFrom(DOCUMENTS)
+                .where(DOCUMENTS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} documents", deleted);
+
+        // 5b. Photos
+        deleted = dsl.deleteFrom(PHOTOS)
+                .where(PHOTOS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} photos", deleted);
+
+        // 6. Payments (FK -> contracts)
+        deleted = dsl.deleteFrom(PAYMENTS)
+                .where(PAYMENTS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} payments", deleted);
+
+        // 7. Expenses (FK -> properties)
+        deleted = dsl.deleteFrom(EXPENSES)
+                .where(EXPENSES.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} expenses", deleted);
+
+        // 8. Contracts (FK -> properties, tenants)
+        deleted = dsl.deleteFrom(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} contracts", deleted);
+
+        // 9. Property tenant history
+        deleted = dsl.deleteFrom(PROPERTY_TENANT_HISTORY)
+                .where(PROPERTY_TENANT_HISTORY.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} property tenant history entries", deleted);
+
+        // 10. Tenant addresses (FK -> tenants)
+        deleted = dsl.deleteFrom(TENANT_ADDRESSES)
+                .where(TENANT_ADDRESSES.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} tenant addresses", deleted);
+
+        // 11. Tenants
+        deleted = dsl.deleteFrom(TENANTS)
+                .where(TENANTS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} tenants", deleted);
+
+        // 12. Property amenities
+        deleted = dsl.deleteFrom(PROPERTY_AMENITIES)
+                .where(PROPERTY_AMENITIES.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} property amenities", deleted);
+
+        // 13. Property outdoor areas
+        deleted = dsl.deleteFrom(PROPERTY_OUTDOOR_AREAS)
+                .where(PROPERTY_OUTDOOR_AREAS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} property outdoor areas", deleted);
+
+        // 14. Properties
+        deleted = dsl.deleteFrom(PROPERTIES)
+                .where(PROPERTIES.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} properties", deleted);
+
+        // 15. User notification preferences
+        deleted = dsl.deleteFrom(USER_TEAM_NOTIFICATION_PREFERENCES)
+                .where(USER_TEAM_NOTIFICATION_PREFERENCES.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} user notification preferences", deleted);
+
+        // 16. Team invitations
+        deleted = dsl.deleteFrom(TEAM_INVITATIONS)
+                .where(TEAM_INVITATIONS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} team invitations", deleted);
+
+        // 17. Team members
+        deleted = dsl.deleteFrom(TEAM_MEMBERS)
+                .where(TEAM_MEMBERS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} team members", deleted);
+
+        // 18. Nullify user references to demo teams, then delete demo users
+        List<String> demoEmails = DemoUsers.ALL_EMAILS;
+        dsl.update(USERS)
+                .set(USERS.DEFAULT_TEAM_ID, (UUID) null)
+                .set(USERS.ACTIVE_TEAM_ID, (UUID) null)
+                .where(USERS.EMAIL.in(demoEmails))
+                .execute();
+
+        // Delete user preferences for demo users
+        List<UUID> demoUserIds = dsl.select(USERS.ID)
+                .from(USERS)
+                .where(USERS.EMAIL.in(demoEmails))
+                .fetch(USERS.ID);
+
+        if (!demoUserIds.isEmpty()) {
+            dsl.deleteFrom(USER_PREFERENCES)
+                    .where(USER_PREFERENCES.USER_ID.in(demoUserIds))
+                    .execute();
+        }
+
+        deleted = dsl.deleteFrom(USERS)
+                .where(USERS.EMAIL.in(demoEmails))
+                .execute();
+        log.debug("Deleted {} users", deleted);
+
+        // 19. Teams
+        deleted = dsl.deleteFrom(TEAMS)
+                .where(TEAMS.ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} teams", deleted);
+    }
+
+    @Scheduled(cron = "${buurman.demo.cron:0 0 */12 * * *}")
+    public void scheduledRegenerate() {
+        if (!properties.isEnabled() || !properties.isAutoRegenerate()) {
+            return;
+        }
+        log.info("Starting scheduled demo data regeneration");
+        generate();
+    }
+
+    public Instant getLastGeneratedAt() {
+        return lastGeneratedAt;
+    }
+
+    public boolean isEnabled() {
+        return properties.isEnabled();
+    }
+}

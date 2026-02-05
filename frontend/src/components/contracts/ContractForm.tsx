@@ -33,8 +33,9 @@ export const ContractForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateContractRequest>({
-    propertyId: prefilledPropertyId || contract?.property.id || '',
-    tenantId: prefilledTenantId || contract?.tenant.id || '',
+    propertyIdentifier:
+      prefilledPropertyId || contract?.property.identifier || '',
+    tenantIdentifier: prefilledTenantId || contract?.tenant.identifier || '',
     contractType: contract?.contractType || ContractType.FIXED_TERM,
     startDate: contract?.startDate || '',
     endDate: contract?.endDate || '',
@@ -53,16 +54,18 @@ export const ContractForm = ({
     notes: contract?.notes || '',
   });
 
-  const [contractId, setContractId] = useState(contract?.id);
+  const [contractIdentifier, setContractIdentifier] = useState(
+    contract?.identifier
+  );
 
   useEffect(() => {
-    // Only update if contract ID changed (editing a different contract)
+    // Only update if contract identifier changed (editing a different contract)
     /* eslint-disable react-hooks/set-state-in-effect */
-    if (contract && contract.id !== contractId) {
-      setContractId(contract.id);
+    if (contract && contract.identifier !== contractIdentifier) {
+      setContractIdentifier(contract.identifier);
       setFormData({
-        propertyId: contract.property.id,
-        tenantId: contract.tenant.id,
+        propertyIdentifier: contract.property.identifier,
+        tenantIdentifier: contract.tenant.identifier,
         contractType: contract.contractType,
         startDate: contract.startDate,
         endDate: contract.endDate || '',
@@ -82,13 +85,15 @@ export const ContractForm = ({
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [contract, contractId]);
+  }, [contract, contractIdentifier]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.propertyId) newErrors.propertyId = 'Property is required';
-    if (!formData.tenantId) newErrors.tenantId = 'Tenant is required';
+    if (!formData.propertyIdentifier)
+      newErrors.propertyIdentifier = 'Property is required';
+    if (!formData.tenantIdentifier)
+      newErrors.tenantIdentifier = 'Tenant is required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (formData.rentAmount <= 0)
       newErrors.rentAmount = 'Rent amount must be greater than 0';
@@ -128,7 +133,7 @@ export const ContractForm = ({
       await onSubmit(formData);
       // Navigate to contract detail page if editing, otherwise to list
       if (contract) {
-        navigate(`/contracts/${contract.id}`);
+        navigate(`/contracts/${contract.identifier}`);
       } else {
         navigate('/contracts');
       }
@@ -160,12 +165,14 @@ export const ContractForm = ({
               Property <span className="text-red-500">*</span>
             </label>
             <PropertySelector
-              value={formData.propertyId}
-              onChange={(value) => handleChange('propertyId', value)}
+              value={formData.propertyIdentifier}
+              onChange={(value) => handleChange('propertyIdentifier', value)}
               disabled={isLoading}
             />
-            {errors.propertyId && (
-              <p className="text-red-600 text-sm mt-1">{errors.propertyId}</p>
+            {errors.propertyIdentifier && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.propertyIdentifier}
+              </p>
             )}
           </div>
 
@@ -174,12 +181,14 @@ export const ContractForm = ({
               Tenant <span className="text-red-500">*</span>
             </label>
             <TenantSelector
-              value={formData.tenantId}
-              onChange={(value) => handleChange('tenantId', value)}
+              value={formData.tenantIdentifier}
+              onChange={(value) => handleChange('tenantIdentifier', value)}
               disabled={isLoading}
             />
-            {errors.tenantId && (
-              <p className="text-red-600 text-sm mt-1">{errors.tenantId}</p>
+            {errors.tenantIdentifier && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.tenantIdentifier}
+              </p>
             )}
           </div>
         </div>

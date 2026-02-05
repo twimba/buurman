@@ -1,40 +1,50 @@
 package com.buurman.service;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
 import com.buurman.dto.response.ContractSummary;
+import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentReceivalResponse;
 import com.buurman.dto.response.PaymentResponse;
+import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.PropertySummary;
+import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantSummary;
-import com.buurman.dto.response.DocumentResponse;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+import org.jooq.Record2;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
-import com.buurman.repository.DocumentRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -64,7 +74,9 @@ public class PaymentService {
     private final PropertyMapper propertyMapper;
     private final TenantMapper tenantMapper;
     private final AuditService auditService;
+    private final DocumentService documentService;
     private final com.buurman.mapper.DocumentMapper documentMapper;
+    private final MetricsService metricsService;
 
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -79,7 +91,9 @@ public class PaymentService {
             PropertyMapper propertyMapper,
             TenantMapper tenantMapper,
             AuditService auditService,
-            com.buurman.mapper.DocumentMapper documentMapper) {
+            DocumentService documentService,
+            com.buurman.mapper.DocumentMapper documentMapper,
+            MetricsService metricsService) {
         this.paymentRepository = paymentRepository;
         this.receivalRepository = receivalRepository;
         this.contractRepository = contractRepository;
@@ -92,18 +106,24 @@ public class PaymentService {
         this.propertyMapper = propertyMapper;
         this.tenantMapper = tenantMapper;
         this.auditService = auditService;
+        this.documentService = documentService;
         this.documentMapper = documentMapper;
+        this.metricsService = metricsService;
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse createPayment(CreatePaymentRequest request, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(request.contractId(), principal.getTeamId())
+        UUID teamId = principal.getTeamId();
+
+        // Resolve contract by identifier
+        Contract contract = contractRepository.findByIdentifierAndTeamId(request.contractIdentifier(), teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         Payment payment = paymentMapper.toEntity(request);
-        payment.setIdentifier(UlidGenerator.generate());
-        payment.setTeamId(principal.getTeamId());
+        payment.setContractId(contract.getId());
+        payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
+        payment.setTeamId(teamId);
         payment.setStatus(Payment.PaymentStatus.PENDING);
         payment.setCreatedBy(principal.getUserId());
         payment.setUpdatedBy(principal.getUserId());
@@ -116,17 +136,21 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
 
+        metricsService.incrementCounter("payment.created.total");
+        metricsService.recordHistogram("payment.amount", savedPayment.getAmount().doubleValue(),
+                "currency", savedPayment.getCurrency(), "status", savedPayment.getStatus().name());
+
         log.info("Created payment {} for contract {} by user {}",
                 savedPayment.getIdentifier(), contract.getIdentifier(), principal.getUserId());
 
-        auditService.logCreate(principal.getTeamId(), "PAYMENT", savedPayment.getId(), principal.getUserId(), savedPayment);
+        auditService.logCreate(teamId, "PAYMENT", savedPayment.getId(), principal.getUserId(), savedPayment);
 
-        return enrichPaymentResponse(savedPayment, principal.getTeamId());
+        return enrichPaymentResponse(savedPayment, teamId);
     }
 
     @Transactional(readOnly = true)
-    public PaymentResponse getPayment(UUID id, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
+    public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
         return enrichPaymentResponse(payment, principal.getTeamId());
@@ -143,16 +167,54 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentResponse> getPaymentsByContract(UUID contractId, UserPrincipal principal) {
-        contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public PageResponse<PaymentResponse> getPaymentsPaginated(UserPrincipal principal, String status, UUID contractId, PageRequest pageRequest) {
+        PaginatedResult<Payment> result = paymentRepository.findAllByTeamIdPaginated(
+                principal.getTeamId(), status, contractId, pageRequest);
+
+        LocalDate today = LocalDate.now();
+        result.items().forEach(payment -> updatePaymentStatus(payment, today));
+
+        List<PaymentResponse> responses = enrichPaymentResponses(result.items(), principal.getTeamId());
+        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+    }
+
+    public PaymentStatsResponse getPaymentStats(UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Record2<Integer, BigDecimal> pending = paymentRepository.getPendingStats(teamId);
+        Record2<Integer, BigDecimal> overdue = paymentRepository.getOverdueStats(teamId);
+        String currency = paymentRepository.findCurrencyByTeamId(teamId);
+
+        List<PaymentStatsResponse.MonthlyTrend> monthlyTrend = paymentRepository.getMonthlyPaidTrend(teamId, 12)
+                .stream()
+                .map(r -> new PaymentStatsResponse.MonthlyTrend(
+                        r.value1(),
+                        r.value2() != null ? r.value2() : BigDecimal.ZERO))
+                .toList();
+
+        return new PaymentStatsResponse(
+                pending.value1(),
+                pending.value2() != null ? pending.value2() : BigDecimal.ZERO,
+                overdue.value1(),
+                overdue.value2() != null ? overdue.value2() : BigDecimal.ZERO,
+                currency,
+                monthlyTrend
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> getPaymentsByContract(String contractIdentifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
-        List<Payment> payments = paymentRepository.findByContractId(contractId, principal.getTeamId());
+        List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
         LocalDate today = LocalDate.now();
         payments.forEach(payment -> updatePaymentStatus(payment, today));
 
-        return enrichPaymentResponses(payments, principal.getTeamId());
+        return enrichPaymentResponses(payments, teamId);
     }
 
     @Transactional(readOnly = true)
@@ -164,22 +226,24 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public PaymentResponse updatePayment(UUID id, UpdatePaymentRequest request, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
+    public PaymentResponse updatePayment(String identifier, UpdatePaymentRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
         paymentMapper.updateEntity(payment, request);
         payment.setUpdatedBy(principal.getUserId());
         payment.setUpdatedAt(Instant.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
-        PaymentResponse newState = enrichPaymentResponse(updatedPayment, principal.getTeamId());
+        PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
 
         log.info("Updated payment {} by user {}", updatedPayment.getIdentifier(), principal.getUserId());
 
-        auditService.logUpdate(principal.getTeamId(), "PAYMENT", updatedPayment.getId(), principal.getUserId(),
+        auditService.logUpdate(teamId, "PAYMENT", updatedPayment.getId(), principal.getUserId(),
                 oldState, newState, auditService.getChangedFields(oldState, newState));
 
         return newState;
@@ -187,8 +251,10 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public PaymentResponse markPaymentAsPaid(UUID id, MarkPaidRequest request, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
+    public PaymentResponse markPaymentAsPaid(String identifier, MarkPaidRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
         if (payment.getStatus() == Payment.PaymentStatus.PAID) {
@@ -200,13 +266,13 @@ public class PaymentService {
         }
 
         // Register a receival for the remaining balance
-        BigDecimal receivedAmount = receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), principal.getTeamId());
+        BigDecimal receivedAmount = receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId);
         BigDecimal remainingBalance = payment.getAmount().subtract(receivedAmount);
 
         if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
             PaymentReceival receival = new PaymentReceival();
-            receival.setIdentifier(UlidGenerator.generate());
-            receival.setTeamId(principal.getTeamId());
+            receival.setIdentifier(UlidGenerator.generate(EntityPrefix.PRE));
+            receival.setTeamId(teamId);
             receival.setPaymentId(payment.getId());
             receival.setAmount(remainingBalance);
             receival.setReceivalDate(request.paymentDate());
@@ -218,9 +284,10 @@ public class PaymentService {
             receivalRepository.save(receival);
         }
 
-        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
         payment.setPaymentDate(request.paymentDate());
+        Payment.PaymentStatus oldStatus = payment.getStatus();
         payment.setStatus(Payment.PaymentStatus.PAID);
         if (request.notes() != null && !request.notes().isEmpty()) {
             payment.setNotes(request.notes());
@@ -229,12 +296,16 @@ public class PaymentService {
         payment.setUpdatedAt(Instant.now());
 
         Payment updatedPayment = paymentRepository.save(payment);
-        PaymentResponse newState = enrichPaymentResponse(updatedPayment, principal.getTeamId());
+        PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
+
+        metricsService.incrementCounter("payment.marked.paid.total");
+        metricsService.incrementCounter("payment.status.changed.total",
+                "from_status", oldStatus.name(), "to_status", "PAID");
 
         log.info("Marked payment {} as PAID on {} by user {}",
                 updatedPayment.getIdentifier(), request.paymentDate(), principal.getUserId());
 
-        auditService.logUpdate(principal.getTeamId(), "PAYMENT", updatedPayment.getId(), principal.getUserId(),
+        auditService.logUpdate(teamId, "PAYMENT", updatedPayment.getId(), principal.getUserId(),
                 oldState, newState, auditService.getChangedFields(oldState, newState));
 
         return newState;
@@ -244,9 +315,13 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public PaymentResponse registerReceival(UUID paymentId, CreatePaymentReceivalRequest request, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(paymentId, principal.getTeamId())
+    public PaymentResponse registerReceival(String paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+
+        UUID paymentId = payment.getId();
 
         if (payment.getStatus() == Payment.PaymentStatus.PAID) {
             throw new IllegalArgumentException("Payment is already fully paid");
@@ -257,7 +332,7 @@ public class PaymentService {
         }
 
         // Validate amount does not exceed balance
-        BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, principal.getTeamId());
+        BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId);
         BigDecimal currentBalance = payment.getAmount().subtract(currentReceived);
 
         if (request.amount().compareTo(currentBalance) > 0) {
@@ -266,8 +341,8 @@ public class PaymentService {
         }
 
         PaymentReceival receival = new PaymentReceival();
-        receival.setIdentifier(UlidGenerator.generate());
-        receival.setTeamId(principal.getTeamId());
+        receival.setIdentifier(UlidGenerator.generate(EntityPrefix.PRE));
+        receival.setTeamId(teamId);
         receival.setPaymentId(paymentId);
         receival.setAmount(request.amount());
         receival.setReceivalDate(request.receivalDate());
@@ -279,28 +354,32 @@ public class PaymentService {
 
         receivalRepository.save(receival);
 
+        metricsService.incrementCounter("payment.receival.total", "action", "registered");
+
         // Recalculate payment status
-        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
         recalculatePaymentStatus(payment, principal);
-        PaymentResponse newState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse newState = enrichPaymentResponse(payment, teamId);
 
         log.info("Registered receival of {} for payment {} by user {}",
                 request.amount(), payment.getIdentifier(), principal.getUserId());
 
         Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
         changedFields.put("receivalRegistered", request.amount() + " on " + request.receivalDate());
-        auditService.logUpdate(principal.getTeamId(), "PAYMENT", payment.getId(), principal.getUserId(),
+        auditService.logUpdate(teamId, "PAYMENT", paymentId, principal.getUserId(),
                 oldState, newState, changedFields);
 
         return newState;
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentReceivalResponse> getReceivalsForPayment(UUID paymentId, UserPrincipal principal) {
-        paymentRepository.findByIdAndTeamId(paymentId, principal.getTeamId())
+    public List<PaymentReceivalResponse> getReceivalsForPayment(String paymentIdentifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        return receivalRepository.findByPaymentIdAndTeamId(paymentId, principal.getTeamId())
+        return receivalRepository.findByPaymentIdAndTeamId(payment.getId(), teamId)
                 .stream()
                 .map(receivalMapper::toResponse)
                 .toList();
@@ -308,15 +387,21 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public PaymentResponse updateReceival(UUID paymentId, UUID receivalId, UpdatePaymentReceivalRequest request, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(paymentId, principal.getTeamId())
+    public PaymentResponse updateReceival(String paymentIdentifier, String receivalIdentifier,
+                                          UpdatePaymentReceivalRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        PaymentReceival receival = receivalRepository.findByIdAndTeamId(receivalId, principal.getTeamId())
+        UUID paymentId = payment.getId();
+
+        PaymentReceival receival = receivalRepository.findByIdentifierAndPaymentIdAndTeamId(
+                        receivalIdentifier, paymentId, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Receival not found or access denied"));
 
         // Validate new amount: total received minus old amount plus new amount must not exceed payment amount
-        BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, principal.getTeamId());
+        BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId);
         BigDecimal receivedWithoutThis = currentReceived.subtract(receival.getAmount());
         BigDecimal newBalance = payment.getAmount().subtract(receivedWithoutThis).subtract(request.amount());
 
@@ -325,22 +410,24 @@ public class PaymentService {
                     ") would exceed the payment amount");
         }
 
-        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
         BigDecimal oldAmount = receival.getAmount();
-        receivalRepository.update(receivalId, principal.getTeamId(),
+        receivalRepository.update(receival.getId(), teamId,
                 request.amount(), request.receivalDate(), request.notes(), principal.getUserId());
 
         // Recalculate payment status
         recalculatePaymentStatus(payment, principal);
-        PaymentResponse newState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse newState = enrichPaymentResponse(payment, teamId);
+
+        metricsService.incrementCounter("payment.receival.total", "action", "updated");
 
         log.info("Updated receival {} for payment {} by user {}",
-                receivalId, payment.getIdentifier(), principal.getUserId());
+                receivalIdentifier, payment.getIdentifier(), principal.getUserId());
 
         Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
         changedFields.put("receivalUpdated", oldAmount + " -> " + request.amount() + " on " + request.receivalDate());
-        auditService.logUpdate(principal.getTeamId(), "PAYMENT", payment.getId(), principal.getUserId(),
+        auditService.logUpdate(teamId, "PAYMENT", paymentId, principal.getUserId(),
                 oldState, newState, changedFields);
 
         return newState;
@@ -348,27 +435,34 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public PaymentResponse deleteReceival(UUID paymentId, UUID receivalId, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(paymentId, principal.getTeamId())
+    public PaymentResponse deleteReceival(String paymentIdentifier, String receivalIdentifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        PaymentReceival receival = receivalRepository.findByIdAndTeamId(receivalId, principal.getTeamId())
+        UUID paymentId = payment.getId();
+
+        PaymentReceival receival = receivalRepository.findByIdentifierAndPaymentIdAndTeamId(
+                        receivalIdentifier, paymentId, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Receival not found or access denied"));
 
-        PaymentResponse oldState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
-        receivalRepository.softDeleteByIdAndTeamId(receivalId, principal.getTeamId());
+        receivalRepository.softDeleteByIdAndTeamId(receival.getId(), teamId);
+
+        metricsService.incrementCounter("payment.receival.total", "action", "deleted");
 
         // Recalculate payment status
         recalculatePaymentStatus(payment, principal);
-        PaymentResponse newState = enrichPaymentResponse(payment, principal.getTeamId());
+        PaymentResponse newState = enrichPaymentResponse(payment, teamId);
 
         log.info("Deleted receival {} for payment {} by user {}",
-                receivalId, payment.getIdentifier(), principal.getUserId());
+                receivalIdentifier, payment.getIdentifier(), principal.getUserId());
 
         Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
         changedFields.put("receivalDeleted", receival.getAmount() + " from " + receival.getReceivalDate());
-        auditService.logUpdate(principal.getTeamId(), "PAYMENT", payment.getId(), principal.getUserId(),
+        auditService.logUpdate(teamId, "PAYMENT", paymentId, principal.getUserId(),
                 oldState, newState, changedFields);
 
         return newState;
@@ -413,30 +507,33 @@ public class PaymentService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public void deletePayment(UUID id, UserPrincipal principal) {
-        Payment payment = paymentRepository.findByIdAndTeamId(id, principal.getTeamId())
+    public void deletePayment(String identifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
         if (payment.getStatus() == Payment.PaymentStatus.PAID) {
             throw new IllegalArgumentException("Cannot delete a paid payment. Please cancel it instead.");
         }
 
-        paymentRepository.softDeleteByIdAndTeamId(id, principal.getTeamId());
+        paymentRepository.softDeleteByIdAndTeamId(payment.getId(), teamId);
 
         log.info("Deleted payment {} by user {}", payment.getIdentifier(), principal.getUserId());
 
-        auditService.logDelete(principal.getTeamId(), "PAYMENT", id, principal.getUserId(), payment);
+        auditService.logDelete(teamId, "PAYMENT", payment.getId(), principal.getUserId(), payment);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public List<PaymentResponse> bulkGeneratePayments(BulkGeneratePaymentsRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
         YearMonth month = YearMonth.parse(request.forMonth());
 
-        List<Contract> activeContracts = contractRepository.findByStatus(Contract.ContractStatus.ACTIVE, principal.getTeamId());
+        List<Contract> activeContracts = contractRepository.findByStatus(Contract.ContractStatus.ACTIVE, teamId);
 
         if (activeContracts.isEmpty()) {
-            log.warn("No active contracts found for team {} to generate payments", principal.getTeamId());
+            log.warn("No active contracts found for team {} to generate payments", teamId);
             return List.of();
         }
 
@@ -445,7 +542,7 @@ public class PaymentService {
         for (Contract contract : activeContracts) {
             LocalDate dueDate = calculateDueDate(month, contract);
 
-            List<Payment> existingPayments = paymentRepository.findByContractId(contract.getId(), principal.getTeamId());
+            List<Payment> existingPayments = paymentRepository.findByContractId(contract.getId(), teamId);
             boolean paymentExists = existingPayments.stream()
                     .anyMatch(p -> p.getDueDate().equals(dueDate));
 
@@ -456,8 +553,8 @@ public class PaymentService {
             }
 
             Payment payment = new Payment();
-            payment.setIdentifier(UlidGenerator.generate());
-            payment.setTeamId(principal.getTeamId());
+            payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
+            payment.setTeamId(teamId);
             payment.setContractId(contract.getId());
             payment.setAmount(contract.getRentAmount());
             payment.setCurrency(contract.getCurrency());
@@ -477,15 +574,51 @@ public class PaymentService {
         }
 
         if (!generatedPayments.isEmpty()) {
-            auditService.logCreate(principal.getTeamId(), "BULK_PAYMENT_GENERATION",
+            metricsService.incrementCounter("payment.bulk.generated.total");
+            metricsService.recordHistogram("payment.bulk.generated.count", generatedPayments.size());
+
+            auditService.logCreate(teamId, "BULK_PAYMENT_GENERATION",
                     generatedPayments.get(0).getId(), principal.getUserId(),
                     "Generated " + generatedPayments.size() + " payments for " + month);
         }
 
-        return enrichPaymentResponses(generatedPayments, principal.getTeamId());
+        return enrichPaymentResponses(generatedPayments, teamId);
     }
 
-    // Helper methods
+    // --- Document delegation methods (resolve identifier to UUID) ---
+
+    public DocumentResponse uploadDocument(String paymentIdentifier, MultipartFile file,
+                                           String title, String notes, UserPrincipal principal) {
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+        return documentService.uploadDocument(file, "PAYMENT", payment.getId(), title, notes, principal);
+    }
+
+    public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+        return documentService.getDocuments("PAYMENT", payment.getId(), principal);
+    }
+
+    public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+        Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        return documentService.getDownloadUrl(document.getIdentifier(), principal);
+    }
+
+    public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+        Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        documentService.deleteDocument(document.getIdentifier(), principal);
+    }
+
+    public List<RecentActivityResponse> getAuditLog(String paymentIdentifier, UserPrincipal principal) {
+        Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+        return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", payment.getId());
+    }
+
+    // --- Helper methods ---
 
     private LocalDate calculateDueDate(YearMonth month, Contract contract) {
         Integer paymentDueDay = contract.getPaymentDueDay();
@@ -578,7 +711,7 @@ public class PaymentService {
                     .orElse(null);
 
             responses.add(new PaymentResponse(
-                    base.id(), base.identifier(), base.teamId(),
+                    base.identifier(),
                     contractSummary, tenantSummary, propertySummary,
                     base.amount(), base.currency(),
                     receivedAmount, balance,
@@ -632,9 +765,7 @@ public class PaymentService {
                     .orElse(null);
 
             return new PaymentResponse(
-                    response.id(),
                     response.identifier(),
-                    response.teamId(),
                     contractSummary,
                     tenantSummary,
                     propertySummary,
@@ -655,9 +786,7 @@ public class PaymentService {
         }
 
         return new PaymentResponse(
-                response.id(),
                 response.identifier(),
-                response.teamId(),
                 response.contract(),
                 response.tenant(),
                 response.property(),

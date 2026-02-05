@@ -23,9 +23,7 @@ export enum ContractStatus {
 }
 
 export interface ContractResponse {
-  id: string;
   identifier: string;
-  teamId: string;
   property: PropertySummary;
   tenant: TenantSummary;
   contractType: ContractType;
@@ -50,7 +48,6 @@ export interface ContractResponse {
 }
 
 export interface ContractSummary {
-  id: string;
   identifier: string;
   property: PropertySummary;
   tenant: TenantSummary;
@@ -61,8 +58,8 @@ export interface ContractSummary {
 }
 
 export interface CreateContractRequest {
-  propertyId: string;
-  tenantId: string;
+  propertyIdentifier: string;
+  tenantIdentifier: string;
   contractType: ContractType;
   startDate: string;
   endDate?: string;
@@ -82,8 +79,8 @@ export interface CreateContractRequest {
 }
 
 export interface UpdateContractRequest {
-  propertyId: string;
-  tenantId: string;
+  propertyIdentifier: string;
+  tenantIdentifier: string;
   contractType: ContractType;
   startDate: string;
   endDate?: string;

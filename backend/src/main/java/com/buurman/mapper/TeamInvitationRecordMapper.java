@@ -21,6 +21,7 @@ public interface TeamInvitationRecordMapper {
     @Mapping(target = "expiresAt", expression = "java(toLocalDateTime(invitation.getExpiresAt()))")
     @Mapping(target = "invitedAt", expression = "java(toLocalDateTime(invitation.getInvitedAt()))")
     @Mapping(target = "acceptedAt", expression = "java(toLocalDateTime(invitation.getAcceptedAt()))")
+    @Mapping(target = "deletedAt", ignore = true)
     TeamInvitationsRecord toRecord(TeamInvitation invitation);
 
     List<TeamInvitation> toDomainList(List<TeamInvitationsRecord> records);

@@ -2,12 +2,10 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 
 public record RecentActivityResponse(
-        UUID id,
         String entityType,
-        UUID entityId,
+        String entityIdentifier,
         String entityName,
         String action,
         String userName,
@@ -18,15 +16,14 @@ public record RecentActivityResponse(
         Map<String, Object> newValues
 ) {
     public RecentActivityResponse(
-            UUID id,
             String entityType,
-            UUID entityId,
+            String entityIdentifier,
             String entityName,
             String action,
             String userName,
             Instant timestamp,
             String description
     ) {
-        this(id, entityType,entityId,entityName,action,userName,timestamp,description, Map.of(),Map.of(),Map.of());
+        this(entityType, entityIdentifier, entityName, action, userName, timestamp, description, Map.of(), Map.of(), Map.of());
     }
 }

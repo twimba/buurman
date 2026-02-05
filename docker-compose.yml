@@ -2,16 +2,17 @@ services:
   postgres:
     image: postgres:18.1-alpine3.23
     container_name: buurman-postgres
+    env_file: .env
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-admin}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U buurman"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-buurman}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,16 +22,15 @@ services:
   keycloak:
     image: keycloak/keycloak:26.5.2
     container_name: buurman-keycloak
+    env_file: .env
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak
+      KC_DB_USERNAME: ${DB_KEYCLOAK_USERNAME:-keycloak}
+      KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak}
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
-    command: start-dev --import-realm
+    command: start-dev --import-realm --metrics-enabled=true --health-enabled=true
     ports:
       - "8080:8080"
     volumes:
@@ -48,8 +48,7 @@ services:
     environment:
       DEBUG: ${DEBUG:-0}
       DATA_DIR: /var/lib/localstack
-      EXTRA_CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://localhost:3000"
-      EXTRA_CORS_ALLOWED_HEADERS: "*"
+      DISABLE_CORS_CHECKS: 1
     ports:
       - "4566:4566"
     volumes:
@@ -73,14 +72,9 @@ services:
       dockerfile: Dockerfile
     container_name: buurman-backend
     user: "0:991"  # Run as root with docker group to access socket
+    env_file: .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/buurman
-      SPRING_DATASOURCE_USERNAME: buurman
-      SPRING_DATASOURCE_PASSWORD: buurman
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/buurman
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/buurman/protocol/openid-connect/certs
-      KEYCLOAK_ADMIN_SERVER_URL: http://keycloak:8080
-      AWS_S3_ENDPOINT: http://localstack:4566
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8081"
     volumes:
@@ -106,10 +100,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: /api
-        VITE_KEYCLOAK_URL: http://localhost:8080
-        VITE_KEYCLOAK_REALM: buurman
-        VITE_KEYCLOAK_CLIENT_ID: buurman-web
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-http://localhost:8080}
+        VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-buurman-web}
     container_name: buurman-frontend
     ports:
       - "5173:80"
@@ -125,9 +119,78 @@ services:
     networks:
       - buurman-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: buurman-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - buurman-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: buurman-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USERNAME:-buurman}:${DB_PASSWORD:-buurman}@postgres:5432/buurman?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9187/metrics"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - buurman-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: buurman-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - buurman-network
+
 volumes:
   postgres_data:
   localstack-data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   buurman-network:

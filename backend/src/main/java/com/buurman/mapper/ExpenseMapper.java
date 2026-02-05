@@ -16,6 +16,7 @@ public interface ExpenseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)
+    @Mapping(target = "propertyId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)

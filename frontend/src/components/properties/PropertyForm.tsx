@@ -6,8 +6,12 @@ import {
   CreatePropertyRequest,
   PropertyType,
   PropertyStatus,
+  OutdoorAreaResponse,
+  AmenityResponse,
+  PropertyAmenityResponse,
 } from '@/types/property';
 import { PropertyMap } from './PropertyMap';
+import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
@@ -15,12 +19,31 @@ interface PropertyFormProps {
   property?: PropertyResponse;
   onSubmit: (data: CreatePropertyRequest) => Promise<void>;
   isLoading: boolean;
+  // Characteristics sub-resources (edit mode only)
+  outdoorAreas?: OutdoorAreaResponse[];
+  onCreateOutdoorArea?: (area: {
+    type: string;
+    areaValue: number | null;
+    areaUnit?: string;
+  }) => void;
+  onDeleteOutdoorArea?: (id: string) => void;
+  allAmenities?: Record<string, AmenityResponse[]>;
+  propertyAmenities?: PropertyAmenityResponse[];
+  onAddAmenity?: (amenityIdentifier: string, notes?: string | null) => void;
+  onRemoveAmenity?: (amenityIdentifier: string) => void;
 }
 
 export const PropertyForm = ({
   property,
   onSubmit,
   isLoading,
+  outdoorAreas,
+  onCreateOutdoorArea,
+  onDeleteOutdoorArea,
+  allAmenities,
+  propertyAmenities,
+  onAddAmenity,
+  onRemoveAmenity,
 }: PropertyFormProps) => {
   const navigate = useNavigate();
   const { defaultCountry } = useTeamDefaults();
@@ -35,9 +58,51 @@ export const PropertyForm = ({
     longitude: property?.longitude || null,
     bedrooms: property?.bedrooms || null,
     bathrooms: property?.bathrooms || null,
-    squareMeters: property?.squareMeters || null,
-    propertyType: property?.propertyType || PropertyType.APARTMENT,
-    status: property?.status || PropertyStatus.VACANT,
+    areaValue: property?.areaValue || null,
+    areaUnit: property?.areaUnit || 'sqm',
+    propertyType:
+      (property?.propertyType as PropertyType) || PropertyType.APARTMENT,
+    status: (property?.status as PropertyStatus) || PropertyStatus.VACANT,
+    // Characteristics
+    yearBuilt: property?.yearBuilt ?? null,
+    yearLastRenovated: property?.yearLastRenovated ?? null,
+    constructionType: property?.constructionType ?? null,
+    foundationType: property?.foundationType ?? null,
+    roofType: property?.roofType ?? null,
+    wallConstruction: property?.wallConstruction ?? null,
+    flooringType: property?.flooringType ?? null,
+    windowType: property?.windowType ?? null,
+    numberOfFloors: property?.numberOfFloors ?? null,
+    structuralNotes: property?.structuralNotes ?? null,
+    energyEfficiencyRating: property?.energyEfficiencyRating ?? null,
+    energyCertificateExpiryDate: property?.energyCertificateExpiryDate ?? null,
+    heatingType: property?.heatingType ?? null,
+    coolingType: property?.coolingType ?? null,
+    hotWaterSystem: property?.hotWaterSystem ?? null,
+    insulationNotes: property?.insulationNotes ?? null,
+    electricityConnectionType: property?.electricityConnectionType ?? null,
+    electricityCapacityAmps: property?.electricityCapacityAmps ?? null,
+    waterConnectionType: property?.waterConnectionType ?? null,
+    hasGasConnection: property?.hasGasConnection ?? false,
+    sewageType: property?.sewageType ?? null,
+    internetConnectionType: property?.internetConnectionType ?? null,
+    internetMaxSpeedMbps: property?.internetMaxSpeedMbps ?? null,
+    internetStatus: property?.internetStatus ?? null,
+    parkingSpaces: property?.parkingSpaces ?? null,
+    parkingType: property?.parkingType ?? null,
+    hasSmokeDetectors: property?.hasSmokeDetectors ?? false,
+    hasCoDetectors: property?.hasCoDetectors ?? false,
+    hasFireExtinguisher: property?.hasFireExtinguisher ?? false,
+    hasSprinklerSystem: property?.hasSprinklerSystem ?? false,
+    hasAlarmSystem: property?.hasAlarmSystem ?? false,
+    hasSecurityCameras: property?.hasSecurityCameras ?? false,
+    hasSecureEntry: property?.hasSecureEntry ?? false,
+    safetyNotes: property?.safetyNotes ?? null,
+    isWheelchairAccessible: property?.isWheelchairAccessible ?? false,
+    hasElevator: property?.hasElevator ?? false,
+    hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
+    hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
+    accessibilityNotes: property?.accessibilityNotes ?? null,
   });
 
   // Separate state for committed address values (used for map display)
@@ -50,13 +115,15 @@ export const PropertyForm = ({
 
   // Track if address has changed to determine if we need new coordinates
   const [shouldRegeocode, setShouldRegeocode] = useState(false);
-  const [propertyId, setPropertyId] = useState(property?.id);
+  const [propertyIdentifier, setPropertyIdentifier] = useState(
+    property?.identifier
+  );
 
   useEffect(() => {
-    // Only update if property ID changed (editing a different property)
+    // Only update if property identifier changed (editing a different property)
     /* eslint-disable react-hooks/set-state-in-effect */
-    if (property && property.id !== propertyId) {
-      setPropertyId(property.id);
+    if (property && property.identifier !== propertyIdentifier) {
+      setPropertyIdentifier(property.identifier);
       setFormData({
         street: property.street,
         city: property.city,
@@ -66,9 +133,50 @@ export const PropertyForm = ({
         longitude: property.longitude,
         bedrooms: property.bedrooms,
         bathrooms: property.bathrooms,
-        squareMeters: property.squareMeters,
-        propertyType: property.propertyType,
-        status: property.status,
+        areaValue: property.areaValue,
+        areaUnit: property.areaUnit || 'sqm',
+        propertyType: property.propertyType as PropertyType,
+        status: property.status as PropertyStatus,
+        yearBuilt: property.yearBuilt ?? null,
+        yearLastRenovated: property.yearLastRenovated ?? null,
+        constructionType: property.constructionType ?? null,
+        foundationType: property.foundationType ?? null,
+        roofType: property.roofType ?? null,
+        wallConstruction: property.wallConstruction ?? null,
+        flooringType: property.flooringType ?? null,
+        windowType: property.windowType ?? null,
+        numberOfFloors: property.numberOfFloors ?? null,
+        structuralNotes: property.structuralNotes ?? null,
+        energyEfficiencyRating: property.energyEfficiencyRating ?? null,
+        energyCertificateExpiryDate:
+          property.energyCertificateExpiryDate ?? null,
+        heatingType: property.heatingType ?? null,
+        coolingType: property.coolingType ?? null,
+        hotWaterSystem: property.hotWaterSystem ?? null,
+        insulationNotes: property.insulationNotes ?? null,
+        electricityConnectionType: property.electricityConnectionType ?? null,
+        electricityCapacityAmps: property.electricityCapacityAmps ?? null,
+        waterConnectionType: property.waterConnectionType ?? null,
+        hasGasConnection: property.hasGasConnection ?? false,
+        sewageType: property.sewageType ?? null,
+        internetConnectionType: property.internetConnectionType ?? null,
+        internetMaxSpeedMbps: property.internetMaxSpeedMbps ?? null,
+        internetStatus: property.internetStatus ?? null,
+        parkingSpaces: property.parkingSpaces ?? null,
+        parkingType: property.parkingType ?? null,
+        hasSmokeDetectors: property.hasSmokeDetectors ?? false,
+        hasCoDetectors: property.hasCoDetectors ?? false,
+        hasFireExtinguisher: property.hasFireExtinguisher ?? false,
+        hasSprinklerSystem: property.hasSprinklerSystem ?? false,
+        hasAlarmSystem: property.hasAlarmSystem ?? false,
+        hasSecurityCameras: property.hasSecurityCameras ?? false,
+        hasSecureEntry: property.hasSecureEntry ?? false,
+        safetyNotes: property.safetyNotes ?? null,
+        isWheelchairAccessible: property.isWheelchairAccessible ?? false,
+        hasElevator: property.hasElevator ?? false,
+        hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
+        hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
+        accessibilityNotes: property.accessibilityNotes ?? null,
       });
       setCommittedAddress({
         street: property.street,
@@ -78,7 +186,7 @@ export const PropertyForm = ({
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [property, propertyId]);
+  }, [property, propertyIdentifier]);
 
   // Debounce address changes for map updates (2 seconds)
   useEffect(() => {
@@ -129,8 +237,12 @@ export const PropertyForm = ({
     if (formData.bathrooms !== null && formData.bathrooms < 0) {
       newErrors.bathrooms = 'Bathrooms must be non-negative';
     }
-    if (formData.squareMeters !== null && formData.squareMeters <= 0) {
-      newErrors.squareMeters = 'Square meters must be greater than 0';
+    if (
+      formData.areaValue !== null &&
+      formData.areaValue !== undefined &&
+      formData.areaValue <= 0
+    ) {
+      newErrors.areaValue = 'Area must be greater than 0';
     }
 
     setErrors(newErrors);
@@ -145,7 +257,7 @@ export const PropertyForm = ({
       await onSubmit(formData);
       // Navigate to property detail page if editing, otherwise to list
       if (property) {
-        navigate(`/properties/${property.id}`);
+        navigate(`/properties/${property.identifier}`);
       } else {
         navigate('/properties');
       }
@@ -156,10 +268,10 @@ export const PropertyForm = ({
 
   const handleChange = (
     field: keyof CreatePropertyRequest,
-    value: string | number | null
+    value: string | number | boolean | null | unknown
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
+    if (errors[field as string]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
@@ -346,24 +458,34 @@ export const PropertyForm = ({
 
           <div>
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Square Meters
+              Area
             </label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={formData.squareMeters ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'squareMeters',
-                  e.target.value ? parseFloat(e.target.value) : null
-                )
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="75.5"
-            />
-            {errors.squareMeters && (
-              <p className="text-red-600 text-sm mt-1">{errors.squareMeters}</p>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.areaValue ?? ''}
+                onChange={(e) =>
+                  handleChange(
+                    'areaValue',
+                    e.target.value ? parseFloat(e.target.value) : null
+                  )
+                }
+                className="flex-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                placeholder="75.5"
+              />
+              <select
+                value={formData.areaUnit ?? 'sqm'}
+                onChange={(e) => handleChange('areaUnit', e.target.value)}
+                className="w-20 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-2 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              >
+                <option value="sqm">m²</option>
+                <option value="sqft">ft²</option>
+              </select>
+            </div>
+            {errors.areaValue && (
+              <p className="text-red-600 text-sm mt-1">{errors.areaValue}</p>
             )}
           </div>
 
@@ -404,6 +526,20 @@ export const PropertyForm = ({
           </div>
         </div>
       </div>
+
+      {/* Property Characteristics */}
+      <PropertyCharacteristicsForm
+        formData={formData}
+        property={property}
+        onChange={handleChange}
+        outdoorAreas={outdoorAreas}
+        onCreateOutdoorArea={onCreateOutdoorArea}
+        onDeleteOutdoorArea={onDeleteOutdoorArea}
+        allAmenities={allAmenities}
+        propertyAmenities={propertyAmenities}
+        onAddAmenity={onAddAmenity}
+        onRemoveAmenity={onRemoveAmenity}
+      />
 
       {/* Actions */}
       <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">

@@ -21,6 +21,7 @@ public interface TeamMemberRecordMapper {
     @Mapping(target = "invitedAt", expression = "java(toLocalDateTime(teamMember.getInvitedAt()))")
     @Mapping(target = "joinedAt", expression = "java(toLocalDateTime(teamMember.getJoinedAt()))")
     @Mapping(target = "isOwner", source = "owner")
+    @Mapping(target = "deletedAt", ignore = true)
     TeamMembersRecord toRecord(TeamMember teamMember);
 
     List<TeamMember> toDomainList(List<TeamMembersRecord> records);

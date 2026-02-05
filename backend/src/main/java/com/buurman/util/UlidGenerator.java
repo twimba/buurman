@@ -13,4 +13,8 @@ public class UlidGenerator {
     public static String generate() {
         return ulid.nextULID();
     }
+
+    public static String generate(EntityPrefix prefix) {
+        return prefix.getCode() + ulid.nextULID();
+    }
 }

@@ -63,7 +63,7 @@ export const PaymentCreatePage = () => {
               onSubmit={handleSubmit}
               onCancel={handleCancel}
               isLoading={createPaymentMutation.isPending}
-              contractId={selectedContractId}
+              contractIdentifier={selectedContractId}
             />
           )}
         </div>

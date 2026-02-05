@@ -27,13 +27,13 @@ export const TenantForm = ({
     idNumber: tenant?.idNumber || '',
     additionalInfo: tenant?.additionalInfo || '',
   });
-  const [tenantId, setTenantId] = useState(tenant?.id);
+  const [tenantIdentifier, setTenantIdentifier] = useState(tenant?.identifier);
 
   useEffect(() => {
-    // Only update if tenant ID changed (editing a different tenant)
+    // Only update if tenant identifier changed (editing a different tenant)
     /* eslint-disable react-hooks/set-state-in-effect */
-    if (tenant && tenant.id !== tenantId) {
-      setTenantId(tenant.id);
+    if (tenant && tenant.identifier !== tenantIdentifier) {
+      setTenantIdentifier(tenant.identifier);
       setFormData({
         firstName: tenant.firstName,
         lastName: tenant.lastName || '',
@@ -45,7 +45,7 @@ export const TenantForm = ({
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [tenant, tenantId]);
+  }, [tenant, tenantIdentifier]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};

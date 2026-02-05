@@ -6,6 +6,7 @@ import {
   Bell,
   CreditCard,
   Receipt,
+  Calendar,
   Settings as SettingsIcon,
   Construction,
   Sparkles,
@@ -20,18 +21,21 @@ import { TeamPreferencesSection } from '@/components/settings/TeamPreferencesSec
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
 import { SubscriptionSection } from '@/components/settings/SubscriptionSection';
 import { PaymentHistorySection } from '@/components/settings/PaymentHistorySection';
+import { CalendarFeedsSection } from '@/components/settings/CalendarFeedsSection';
 
 type SettingsTab =
   | 'profile'
   | 'team'
   | 'teamPreferences'
   | 'preferences'
+  | 'calendarFeeds'
   | 'subscription'
   | 'payments';
 
 const personalTabs = [
   { id: 'profile' as const, label: 'Profile & Security', icon: User },
   { id: 'preferences' as const, label: 'My Preferences', icon: Bell },
+  { id: 'calendarFeeds' as const, label: 'Calendar Feeds', icon: Calendar },
 ];
 
 const teamTabs = [
@@ -260,6 +264,7 @@ export const SettingsPage = () => {
               <PermissionDenied section="Team Preferences" />
             ))}
           {activeTab === 'preferences' && <UserPreferencesSection />}
+          {activeTab === 'calendarFeeds' && <CalendarFeedsSection />}
           {activeTab === 'subscription' &&
             (hasRequiredPermissions ? (
               <SubscriptionSection />

@@ -43,8 +43,10 @@ export const TransactionHistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  const { data: payments, isLoading: paymentsLoading } = usePayments({});
-  const { data: expenses, isLoading: expensesLoading } = useExpenses({});
+  const { data: paymentsData, isLoading: paymentsLoading } = usePayments({});
+  const { data: expensesData, isLoading: expensesLoading } = useExpenses({});
+  const payments = paymentsData?.content;
+  const expenses = expensesData?.content;
 
   const isLoading = paymentsLoading || expensesLoading;
 
@@ -58,7 +60,7 @@ export const TransactionHistoryPage = () => {
         .filter((p) => p.status === PaymentStatus.PAID && p.paymentDate)
         .forEach((payment) => {
           transactions.push({
-            id: payment.id,
+            id: payment.identifier,
             date: payment.paymentDate!,
             type: 'INCOME',
             description: `Rent payment - ${payment.property?.street || 'Property'}`,
@@ -75,7 +77,7 @@ export const TransactionHistoryPage = () => {
     if (expenses) {
       expenses.forEach((expense) => {
         transactions.push({
-          id: expense.id,
+          id: expense.identifier,
           date: expense.expenseDate,
           type: 'EXPENSE',
           description: expense.description || `${expense.category} expense`,

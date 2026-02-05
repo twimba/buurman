@@ -12,7 +12,10 @@ import {
   useSetTenantMainPhoto,
   useDeleteTenantDocument,
 } from '@/hooks/useTenantHooks';
+import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
+import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
@@ -40,7 +43,9 @@ import {
   Search,
   ChevronUp,
   ChevronDown,
+  Download,
 } from 'lucide-react';
+import client from '@/api/client';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
@@ -88,20 +93,24 @@ export const TenantDetailPage = () => {
     error: photosError,
   } = useTenantPhotos(id);
   const {
-    data: contracts = [],
+    data: contractsData,
     isLoading: contractsLoading,
     error: contractsError,
-  } = useContracts(id ? { tenantId: id } : undefined);
+  } = useContracts(id ? { tenantIdentifier: id } : undefined);
+  const contracts = useMemo(
+    () => contractsData?.content ?? [],
+    [contractsData]
+  );
   const { data: addresses = [] } = useTenantAddresses(id);
 
-  // Filter out photos from documents list
-  const documents = allDocuments.filter((doc) => doc.category !== 'PHOTO');
+  const documents = allDocuments;
 
   const deleteTenantMutation = useDeleteTenant();
   const uploadDocumentMutation = useUploadTenantDocument(id!);
   const uploadPhotoMutation = useUploadTenantPhoto(id!);
   const setMainPhotoMutation = useSetTenantMainPhoto(id!);
   const deleteDocumentMutation = useDeleteTenantDocument(id!);
+  const deletePhotoMutation = useDeletePhoto();
 
   const handleDelete = async () => {
     if (!id) return;
@@ -125,6 +134,10 @@ export const TenantDetailPage = () => {
     await deleteDocumentMutation.mutateAsync(documentId);
   };
 
+  const handleDeletePhoto = async (photoId: string) => {
+    await deletePhotoMutation.mutateAsync(photoId);
+  };
+
   const handleUploadPhoto = async (
     file: File,
     title?: string,
@@ -144,7 +157,8 @@ export const TenantDetailPage = () => {
         .map((contract) => contract.property)
         .filter(
           (property, index, self) =>
-            index === self.findIndex((p) => p.id === property.id)
+            index ===
+            self.findIndex((p) => p.identifier === property.identifier)
         )
     : [];
 
@@ -196,7 +210,10 @@ export const TenantDetailPage = () => {
 
   const paginatedContracts = useMemo(() => {
     const startIndex = (contractsCurrentPage - 1) * contractsPerPage;
-    return filteredAndSortedContracts.slice(startIndex, startIndex + contractsPerPage);
+    return filteredAndSortedContracts.slice(
+      startIndex,
+      startIndex + contractsPerPage
+    );
   }, [filteredAndSortedContracts, contractsCurrentPage]);
 
   const contractsTotalPages = Math.ceil(
@@ -246,6 +263,39 @@ export const TenantDetailPage = () => {
           }
           actions={
             <>
+              <Button
+                variant="primary"
+                leftIcon={<Download />}
+                onClick={async () => {
+                  try {
+                    const response = await client.get(
+                      `/reports/export/tenant/${id}/report`,
+                      { responseType: 'blob' }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'tenant-report.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download report:', error);
+                  }
+                }}
+              >
+                Report
+              </Button>
+              {id && (
+                <CalendarFeedButton
+                  feedType={CalendarFeedType.TENANT_PAYMENTS}
+                  entityIdentifier={id}
+                />
+              )}
               <Button
                 variant="secondary"
                 leftIcon={<Edit />}
@@ -434,7 +484,7 @@ export const TenantDetailPage = () => {
                 <div className="space-y-3">
                   {activeContractProperties.map((property) => (
                     <div
-                      key={property.id}
+                      key={property.identifier}
                       className="flex items-center justify-between bg-green-50 dark:bg-green-900/30 p-4 rounded border border-green-200 dark:border-green-900/50"
                     >
                       <div className="flex items-center gap-3">
@@ -442,7 +492,7 @@ export const TenantDetailPage = () => {
                         <div>
                           <button
                             onClick={() =>
-                              navigate(`/properties/${property.id}`)
+                              navigate(`/properties/${property.identifier}`)
                             }
                             className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] hover:text-[#5c7cfa] text-left"
                           >
@@ -513,9 +563,9 @@ export const TenantDetailPage = () => {
               error={photosError}
               onUpload={handleUploadPhoto}
               onSetMain={handleSetMainPhoto}
-              onDelete={handleDeleteDocument}
+              onDelete={handleDeletePhoto}
               isUploading={uploadPhotoMutation.isPending}
-              isDeleting={deleteDocumentMutation.isPending}
+              isDeleting={deletePhotoMutation.isPending}
               readOnly={!canEditData}
             />
           </div>
@@ -701,9 +751,9 @@ export const TenantDetailPage = () => {
                       ) : (
                         paginatedContracts.map((contract) => (
                           <tr
-                            key={contract.id}
+                            key={contract.identifier}
                             onClick={() =>
-                              navigate(`/contracts/${contract.id}`)
+                              navigate(`/contracts/${contract.identifier}`)
                             }
                             className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors"
                           >
@@ -806,7 +856,8 @@ export const TenantDetailPage = () => {
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
-                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                  const isExpanded = expandedAuditItems.has(activityKey);
                   const hasChanges =
                     activity.action === 'UPDATE' &&
                     activity.changedFields &&
@@ -814,7 +865,7 @@ export const TenantDetailPage = () => {
 
                   return (
                     <div
-                      key={activity.id}
+                      key={activityKey}
                       className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden"
                     >
                       <div
@@ -827,10 +878,10 @@ export const TenantDetailPage = () => {
                           hasChanges &&
                           setExpandedAuditItems((prev) => {
                             const newSet = new Set(prev);
-                            if (newSet.has(activity.id)) {
-                              newSet.delete(activity.id);
+                            if (newSet.has(activityKey)) {
+                              newSet.delete(activityKey);
                             } else {
-                              newSet.add(activity.id);
+                              newSet.add(activityKey);
                             }
                             return newSet;
                           })
@@ -885,13 +936,22 @@ export const TenantDetailPage = () => {
                             {Object.entries(activity.changedFields!)
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
-                                // Skip internal fields for document operations
-                                if (field === 'documentCount') return null;
+                                // Skip internal count fields
+                                if (field === 'documentCount' || field === 'photoCount') return null;
 
-                                // Special handling for document operations
+                                // Skip marker fields for edit operations (fileName is context only)
+                                if (field === 'photoEdited' || field === 'documentEdited') return null;
+                                if (
+                                  field === 'fileName' &&
+                                  (activity.changedFields?.photoEdited || activity.changedFields?.documentEdited)
+                                ) return null;
+
+                                // Special handling for document/photo upload/delete operations
                                 if (
                                   field === 'documentAdded' ||
-                                  field === 'documentRemoved'
+                                  field === 'documentRemoved' ||
+                                  field === 'photoAdded' ||
+                                  field === 'photoRemoved'
                                 ) {
                                   const category =
                                     activity.changedFields?.category;
@@ -929,11 +989,13 @@ export const TenantDetailPage = () => {
                                   );
                                 }
 
-                                // Skip category and title for document operations (already shown above)
+                                // Skip category and title for upload/delete operations (already shown above)
                                 if (
                                   (field === 'category' || field === 'title') &&
                                   (activity.changedFields?.documentAdded ||
-                                    activity.changedFields?.documentRemoved)
+                                    activity.changedFields?.documentRemoved ||
+                                    activity.changedFields?.photoAdded ||
+                                    activity.changedFields?.photoRemoved)
                                 ) {
                                   return null;
                                 }

@@ -1,5 +1,6 @@
 package com.buurman.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,10 +26,16 @@ public class SecurityConfig {
 
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final MdcFilter mdcFilter;
+    private final DemoApiKeyFilter demoApiKeyFilter;
+    private final List<String> allowedOrigins;
 
-    public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter, MdcFilter mdcFilter) {
+    public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter, MdcFilter mdcFilter,
+                         DemoApiKeyFilter demoApiKeyFilter,
+                         @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.mdcFilter = mdcFilter;
+        this.demoApiKeyFilter = demoApiKeyFilter;
+        this.allowedOrigins = allowedOrigins;
     }
 
     @Bean
@@ -39,18 +47,21 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
-                .requestMatchers("/api/health", "/api/info").permitAll()
+                .requestMatchers("/api/health", "/api/info", "/api/reference/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api-docs/**", "/swagger-ui/**", "/v3/api-docs/**").hasRole("API_ACCESS")
                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/invitations/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/calendar/ical/*").permitAll()
+                .requestMatchers("/api/admin/demo-data/**").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
             )
-            .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class);
+            .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class)
+            .addFilterBefore(demoApiKeyFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
     }
@@ -58,9 +69,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-Demo-Api-Key"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

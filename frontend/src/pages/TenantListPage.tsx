@@ -6,20 +6,35 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Users, User, Search } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/ui/Pagination';
 
 export const TenantListPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const {
+    pageParams,
+    page,
+    size,
+    handlePageChange,
+    handleSizeChange,
+    resetPage,
+  } = usePagination({ defaultSize: 12 });
 
-  const { data: tenants, isLoading, error } = useTenants(debouncedSearch);
+  const {
+    data: tenantsData,
+    isLoading,
+    error,
+  } = useTenants({ search: debouncedSearch || undefined, ...pageParams });
 
   // Debounce search
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     setTimeout(() => {
       setDebouncedSearch(value);
+      resetPage();
     }, 500);
   };
 
@@ -81,16 +96,31 @@ export const TenantListPage = () => {
 
         {/* Tenant Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {tenants?.length || 0} {tenants?.length === 1 ? 'tenant' : 'tenants'}
+          {tenantsData?.totalElements || 0}{' '}
+          {tenantsData?.totalElements === 1 ? 'tenant' : 'tenants'}
         </p>
 
         {/* Tenants Grid */}
-        {tenants && tenants.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {tenants.map((tenant) => (
-              <TenantCard key={tenant.id} tenant={tenant} />
-            ))}
-          </div>
+        {tenantsData?.content && tenantsData.content.length > 0 ? (
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {tenantsData.content.map((tenant) => (
+                <TenantCard key={tenant.identifier} tenant={tenant} />
+              ))}
+            </div>
+            {tenantsData && (
+              <div className="mt-6">
+                <Pagination
+                  page={page}
+                  totalPages={tenantsData.totalPages}
+                  totalElements={tenantsData.totalElements}
+                  size={size}
+                  onPageChange={handlePageChange}
+                  onSizeChange={handleSizeChange}
+                />
+              </div>
+            )}
+          </>
         ) : (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-lg">

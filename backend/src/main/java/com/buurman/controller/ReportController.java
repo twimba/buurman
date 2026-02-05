@@ -149,12 +149,12 @@ public class ReportController {
             summary = "Export property brochure to PDF",
             description = "Download detailed property brochure as PDF"
     )
-    @GetMapping("/export/property/{propertyId}/brochure")
+    @GetMapping("/export/property/{propertyIdentifier}/brochure")
     public ResponseEntity<byte[]> exportPropertyBrochure(
-            @PathVariable UUID propertyId,
+            @PathVariable String propertyIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        byte[] pdf = exportService.generatePropertyBrochurePDF(propertyId, principal.getTeamId());
+        byte[] pdf = exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.getTeamId());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-brochure.pdf")
@@ -163,15 +163,32 @@ public class ReportController {
     }
 
     @Operation(
+            summary = "Export tenant report to PDF",
+            description = "Download detailed tenant report as PDF"
+    )
+    @GetMapping("/export/tenant/{tenantIdentifier}/report")
+    public ResponseEntity<byte[]> exportTenantReport(
+            @PathVariable String tenantIdentifier,
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.getTeamId());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tenant-report.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @Operation(
             summary = "Export contract report to PDF",
             description = "Download detailed contract report as PDF"
     )
-    @GetMapping("/export/contract/{contractId}/report")
+    @GetMapping("/export/contract/{contractIdentifier}/report")
     public ResponseEntity<byte[]> exportContractReport(
-            @PathVariable UUID contractId,
+            @PathVariable String contractIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        byte[] pdf = exportService.generateContractReportPDF(contractId, principal.getTeamId());
+        byte[] pdf = exportService.generateContractReportPDF(contractIdentifier, principal.getTeamId());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contract-report.pdf")

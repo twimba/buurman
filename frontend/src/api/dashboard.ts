@@ -14,9 +14,8 @@ export interface DashboardStats {
 }
 
 export interface RecentActivity {
-  id: string;
   entityType: string;
-  entityId: string;
+  entityIdentifier: string;
   entityName: string;
   action: string;
   userName: string;
@@ -41,6 +40,8 @@ export const getRecentActivities = async (
   return response.data;
 };
 
+import { PageResponse, PageParams } from '@/types/common';
+
 export interface AuditLogFilters {
   entityType?: string;
   action?: string;
@@ -48,8 +49,8 @@ export interface AuditLogFilters {
 }
 
 export const getAllAuditLogs = async (
-  filters?: AuditLogFilters
-): Promise<RecentActivity[]> => {
+  filters?: AuditLogFilters & PageParams
+): Promise<PageResponse<RecentActivity>> => {
   const response = await client.get('/audit-logs', {
     params: filters,
   });

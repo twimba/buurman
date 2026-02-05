@@ -113,6 +113,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Data Faker -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>2.4.2</version>
+        </dependency>
+
         <!-- Utilities -->
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -285,7 +292,7 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <phase>none</phase><!-- Disabled - use jooq-codegen:generate@generate-jooq-direct instead -->
+                        <phase>generate-sources</phase>
                         <configuration>
                             <database>
                                 <type>POSTGRES</type>

@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { DocumentResponse } from '@/types/property';
-import { Upload, Star, StarOff, Trash2, X } from 'lucide-react';
+import { PhotoResponse } from '@/types/property';
+import { Upload, X } from 'lucide-react';
 import { LoadingSpinner } from '../LoadingSpinner';
-import { ErrorMessage } from '../ErrorMessage';
-
-// Simple gray placeholder SVG
-const PLACEHOLDER_IMAGE =
-  'data:image/svg+xml,%3Csvg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="200" height="200" fill="%23F3F4F6"/%3E%3Cpath d="M97 90C101.418 90 105 86.4183 105 82C105 77.5817 101.418 74 97 74C92.5817 74 89 77.5817 89 82C89 86.4183 92.5817 90 97 90Z" fill="%239CA3AF"/%3E%3Cpath d="M110 105H84C79.5817 105 76 108.582 76 113V122C76 126.418 79.5817 130 84 130H110C114.418 130 118 126.418 118 122V113C118 108.582 114.418 105 110 105Z" fill="%239CA3AF"/%3E%3C/svg%3E';
+import { RichTextEditor } from '../common/RichTextEditor';
+import { PhotoGrid } from '../photos/PhotoGrid';
+import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { EditMetadataModal } from '../ui/EditMetadataModal';
+import { usePhotoSelection } from '@/hooks/usePhotoSelection';
+import { useBulkDownloadPhotos, useUpdatePhoto } from '@/hooks/usePhotoHooks';
 
 interface PhotoGalleryProps {
   propertyId: string;
-  photos: DocumentResponse[];
+  photos: PhotoResponse[];
   isLoading: boolean;
   error: unknown;
   onUpload: (file: File, title?: string, notes?: string) => Promise<void>;
@@ -37,6 +39,36 @@ export const PhotoGallery = ({
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadNotes, setUploadNotes] = useState('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<PhotoResponse | null>(null);
+  const [pendingBulkDelete, setPendingBulkDelete] = useState<string[] | null>(
+    null
+  );
+  const [editingPhoto, setEditingPhoto] = useState<PhotoResponse | null>(null);
+
+  const { selectedPhotos, handleSelectPhoto, handleSelectAll, clearSelection } =
+    usePhotoSelection(photos);
+  const bulkDownloadMutation = useBulkDownloadPhotos();
+  const updatePhotoMutation = useUpdatePhoto();
+
+  const handleBulkDownload = (ids: string[]) => {
+    bulkDownloadMutation.mutate(ids);
+  };
+
+  const handleDeleteSingle = (id: string) => {
+    setPendingBulkDelete([id]);
+  };
+
+  const handleBulkDelete = (ids: string[]) => {
+    setPendingBulkDelete(ids);
+  };
+
+  const confirmDelete = () => {
+    if (pendingBulkDelete) {
+      pendingBulkDelete.forEach((id) => onDelete(id));
+      clearSelection();
+      setPendingBulkDelete(null);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,7 +77,6 @@ export const PhotoGallery = ({
       setUploadTitle('');
       setUploadNotes('');
 
-      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
@@ -58,11 +89,13 @@ export const PhotoGallery = ({
 
   const handleUpload = async () => {
     if (!selectedFile) return;
+    const cleanNotes = uploadNotes.trim();
+    const notesValue = !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;
 
     await onUpload(
       selectedFile,
       uploadTitle || undefined,
-      uploadNotes || undefined
+      notesValue
     );
     setShowUploadModal(false);
     setSelectedFile(null);
@@ -79,21 +112,9 @@ export const PhotoGallery = ({
     setUploadNotes('');
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <ErrorMessage message="Failed to load photos" />;
-  }
-
   return (
     <div className="space-y-4">
-      {/* Upload Button */}
+      {/* Header */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
           Photos
@@ -114,81 +135,86 @@ export const PhotoGallery = ({
       </div>
 
       {/* Photo Grid */}
-      {photos.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
-            <div
-              key={photo.id}
-              className="relative group rounded-lg overflow-hidden border-2 transition-all"
-              style={{
-                borderColor: photo.isMainPhoto ? '#3b82f6' : '#e5e7eb',
-              }}
-            >
-              {/* Photo */}
-              <div className="aspect-square bg-[#f1f3f9] dark:bg-[#1e2130]">
-                <img
-                  src={photo.downloadUrl || PLACEHOLDER_IMAGE}
-                  alt={photo.title || photo.fileName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    if (target.src !== PLACEHOLDER_IMAGE) {
-                      target.src = PLACEHOLDER_IMAGE;
-                    }
-                  }}
-                />
-              </div>
+      <PhotoGrid
+        photos={photos}
+        isLoading={isLoading}
+        error={error}
+        emptyMessage="No photos yet"
+        selectedPhotos={selectedPhotos}
+        onSelectPhoto={handleSelectPhoto}
+        onSelectAll={handleSelectAll}
+        onSetMain={readOnly ? undefined : onSetMain}
+        onDelete={readOnly ? undefined : handleDeleteSingle}
+        onEdit={readOnly ? undefined : setEditingPhoto}
+        onBulkDownload={handleBulkDownload}
+        onBulkDelete={readOnly ? undefined : handleBulkDelete}
+        isBulkDownloading={bulkDownloadMutation.isPending}
+        onPreview={setPreviewPhoto}
+        showMainBadge
+        readOnly={readOnly}
+        disableActions={isUploading || isDeleting}
+      />
 
-              {/* Main Photo Badge */}
-              {photo.isMainPhoto && (
-                <div className="absolute top-2 left-2 bg-[#5c7cfa] text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1">
-                  <Star className="h-3 w-3 fill-white" />
-                  Main
-                </div>
-              )}
-
-              {/* Actions Overlay */}
-              {!readOnly && (
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                  {!photo.isMainPhoto && (
-                    <button
-                      onClick={() => onSetMain(photo.id)}
-                      className="bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] p-2 rounded-full hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
-                      title="Set as main photo"
-                      disabled={isUploading || isDeleting}
-                    >
-                      <StarOff className="h-4 w-4" />
-                    </button>
-                  )}
-                  <button
-                    onClick={() => onDelete(photo.id)}
-                    className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors"
-                    title="Delete photo"
-                    disabled={isUploading || isDeleting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Title */}
-              {photo.title && (
-                <div className="p-2 bg-white dark:bg-[#14161f] text-sm text-[#3d4463] dark:text-[#c4c8db] truncate">
-                  {photo.title}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg">
-          <Upload className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] dark:text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">No photos yet</p>
-          <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
-            Upload photos to showcase this property
-          </p>
-        </div>
+      {/* Preview Modal */}
+      {previewPhoto && (
+        <DocumentPreviewModal
+          document={previewPhoto}
+          onClose={() => setPreviewPhoto(null)}
+          onEdit={readOnly ? undefined : () => {
+            const photo = previewPhoto;
+            setPreviewPhoto(null);
+            setEditingPhoto(photo);
+          }}
+        />
       )}
+
+      {/* Edit Modal */}
+      {editingPhoto && (
+        <EditMetadataModal
+          title="Edit Photo"
+          currentTitle={editingPhoto.title}
+          currentNotes={editingPhoto.notes}
+          onSave={(title, notes) => {
+            updatePhotoMutation.mutate(
+              { id: editingPhoto.identifier, data: { title, notes } },
+              { onSuccess: () => setEditingPhoto(null) }
+            );
+          }}
+          onCancel={() => setEditingPhoto(null)}
+          isLoading={updatePhotoMutation.isPending}
+        />
+      )}
+
+      {/* Delete Confirmation */}
+      {pendingBulkDelete &&
+        (() => {
+          const includesMain = pendingBulkDelete.some(
+            (id) => photos.find((p) => p.identifier === id)?.isMainPhoto
+          );
+          const isSingle = pendingBulkDelete.length === 1;
+          return (
+            <ConfirmDialog
+              title={isSingle ? 'Delete photo' : 'Delete photos'}
+              message={
+                includesMain
+                  ? isSingle
+                    ? 'This is the main photo. Deleting it means this property will no longer have a main photo. This action cannot be undone.'
+                    : `You are about to delete ${pendingBulkDelete.length} photos, including the main photo. This property will no longer have a main photo. This action cannot be undone.`
+                  : isSingle
+                    ? 'Are you sure you want to delete this photo? This action cannot be undone.'
+                    : `You are about to delete ${pendingBulkDelete.length} photos. This action cannot be undone.`
+              }
+              confirmLabel={
+                isSingle
+                  ? 'Delete'
+                  : `Delete ${pendingBulkDelete.length} photos`
+              }
+              variant="danger"
+              onConfirm={confirmDelete}
+              onCancel={() => setPendingBulkDelete(null)}
+            />
+          );
+        })()}
 
       {/* Upload Modal */}
       {showUploadModal && (
@@ -207,7 +233,6 @@ export const PhotoGallery = ({
               </button>
             </div>
 
-            {/* Preview */}
             {previewUrl && (
               <div className="mb-4">
                 <img
@@ -218,7 +243,6 @@ export const PhotoGallery = ({
               </div>
             )}
 
-            {/* Form Fields */}
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
@@ -238,18 +262,15 @@ export const PhotoGallery = ({
                 <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                   Notes (optional)
                 </label>
-                <textarea
+                <RichTextEditor
                   value={uploadNotes}
-                  onChange={(e) => setUploadNotes(e.target.value)}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded px-3 py-2"
+                  onChange={setUploadNotes}
                   placeholder="Additional notes about this photo"
-                  rows={3}
-                  disabled={isUploading}
+                  readOnly={isUploading}
                 />
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-2 justify-end mt-6">
               <button
                 onClick={handleCancelUpload}

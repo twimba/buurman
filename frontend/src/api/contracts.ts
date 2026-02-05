@@ -7,16 +7,17 @@ import {
 } from '../types/contract';
 import { DocumentResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
+import { PageResponse, PageParams } from '@/types/common';
 
 export interface GetContractsParams {
   status?: string;
-  propertyId?: string;
-  tenantId?: string;
+  propertyIdentifier?: string;
+  tenantIdentifier?: string;
 }
 
 export const getContracts = async (
-  params?: GetContractsParams
-): Promise<ContractResponse[]> => {
+  params?: GetContractsParams & PageParams
+): Promise<PageResponse<ContractResponse>> => {
   const response = await client.get('/contracts', { params });
   return response.data;
 };

@@ -8,14 +8,13 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record CreateContractRequest(
-        @NotNull(message = "Property ID is required")
-        UUID propertyId,
+        @NotNull(message = "Property identifier is required")
+        String propertyIdentifier,
 
-        @NotNull(message = "Tenant ID is required")
-        UUID tenantId,
+        @NotNull(message = "Tenant identifier is required")
+        String tenantIdentifier,
 
         @NotNull(message = "Contract type is required")
         Contract.ContractType contractType,

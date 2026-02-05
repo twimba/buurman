@@ -19,6 +19,7 @@ public class TenantAddress {
     }
 
     private UUID id;
+    private String identifier;
     private UUID tenantId;
     private UUID teamId;
     private String street;
@@ -67,6 +68,14 @@ public class TenantAddress {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public UUID getTenantId() {

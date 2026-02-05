@@ -73,7 +73,7 @@ export const TeamSwitcher = () => {
             {activeTeam?.isOwner && (
               <Crown className="h-3 w-3 text-accent-500 flex-shrink-0" />
             )}
-            {activeTeam?.id === defaultTeamId && (
+            {activeTeam?.identifier === defaultTeamId && (
               <Star className="h-3 w-3 text-[#5c7cfa] flex-shrink-0" />
             )}
           </div>
@@ -110,13 +110,13 @@ export const TeamSwitcher = () => {
 
             <div className="max-h-[400px] overflow-y-auto">
               {teams.map((team) => {
-                const isActive = team.id === activeTeam?.id;
-                const isDefault = team.id === defaultTeamId;
+                const isActive = team.identifier === activeTeam?.identifier;
+                const isDefault = team.identifier === defaultTeamId;
 
                 return (
                   <div
-                    key={team.id}
-                    onClick={() => handleTeamSwitch(team.id)}
+                    key={team.identifier}
+                    onClick={() => handleTeamSwitch(team.identifier)}
                     className={`p-3 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors border-b border-[#edf0f7] dark:border-[#2a2e3f] last:border-b-0 ${
                       isActive ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10' : ''
                     }`}
@@ -152,7 +152,9 @@ export const TeamSwitcher = () => {
 
                         {!isDefault && (
                           <button
-                            onClick={(e) => handleSetDefault(e, team.id)}
+                            onClick={(e) =>
+                              handleSetDefault(e, team.identifier)
+                            }
                             className="mt-2 text-xs text-[#5c7cfa] dark:text-[#91a7ff] hover:text-[#4263eb] dark:hover:text-[#bac8ff] font-medium"
                           >
                             Set as default

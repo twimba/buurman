@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister } from '../hooks/useAuthHooks';
-import { UserPlus, Home, Users, FileText, TrendingUp } from 'lucide-react';
+import {
+  UserPlus,
+  Home,
+  Users,
+  FileText,
+  TrendingUp,
+  CheckCircle,
+} from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +23,7 @@ const RegisterPage: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -50,8 +58,8 @@ const RegisterPage: React.FC = () => {
         lastName: formData.lastName,
         password: formData.password,
       });
-      alert('Registration successful! Please login.');
-      navigate('/login');
+      setRegistrationSuccess(true);
+      setTimeout(() => navigate('/login'), 3000);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       setErrors({
@@ -159,145 +167,187 @@ const RegisterPage: React.FC = () => {
           </div>
 
           <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
-                Create your account
-              </h2>
-              <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                Start managing your properties today
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                    placeholder="John"
-                  />
-                  {errors.firstName && (
-                    <p className="text-red-600 text-xs mt-1">
-                      {errors.firstName}
-                    </p>
-                  )}
+            {registrationSuccess ? (
+              <div className="flex flex-col items-center text-center py-8">
+                <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-4 mb-5">
+                  <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                    placeholder="Doe"
-                  />
-                  {errors.lastName && (
-                    <p className="text-red-600 text-xs mt-1">
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                  placeholder="john.doe@example.com"
-                />
-                {errors.email && (
-                  <p className="text-red-600 text-xs mt-1">{errors.email}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                  placeholder="At least 8 characters"
-                />
-                {errors.password && (
-                  <p className="text-red-600 text-xs mt-1">{errors.password}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                  placeholder="Re-enter your password"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-600 text-xs mt-1">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              {errors.submit && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-600 text-sm">{errors.submit}</p>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={registerMutation.isPending}
-                className="w-full bg-[#5c7cfa] text-white py-3.5 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              >
-                <UserPlus className="h-5 w-5" />
-                {registerMutation.isPending
-                  ? 'Creating account...'
-                  : 'Create account'}
-              </button>
-            </form>
-
-            <div className="mt-8 text-center">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Already have an account?{' '}
+                <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                  Account created!
+                </h2>
+                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+                  Your account has been created successfully. Redirecting you to
+                  the login page...
+                </p>
                 <a
                   href="/login"
-                  className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
+                  className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline text-sm"
                 >
-                  Sign in here
+                  Go to login now
                 </a>
-              </p>
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                    Create your account
+                  </h2>
+                  <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Start managing your properties today
+                  </p>
+                </div>
 
-            {/* Divider */}
-            <div className="mt-8 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
-                By creating an account, you agree to our Terms of Service
-              </p>
-            </div>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                        placeholder="John"
+                      />
+                      {errors.firstName && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.firstName}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                        placeholder="Doe"
+                      />
+                      {errors.lastName && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                      placeholder="john.doe@example.com"
+                    />
+                    {errors.email && (
+                      <p className="text-red-600 text-xs mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                      placeholder="At least 8 characters"
+                    />
+                    {errors.password && (
+                      <p className="text-red-600 text-xs mt-1">
+                        {errors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                      placeholder="Re-enter your password"
+                    />
+                    {errors.confirmPassword && (
+                      <p className="text-red-600 text-xs mt-1">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+
+                  {errors.submit && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-red-600 text-sm">
+                        {errors.submit}
+                        {errors.submit
+                          .toLowerCase()
+                          .includes('email already registered') && (
+                          <>
+                            {' '}
+                            <a
+                              href="/login"
+                              className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
+                            >
+                              Go to login
+                            </a>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={registerMutation.isPending}
+                    className="w-full bg-[#5c7cfa] text-white py-3.5 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    <UserPlus className="h-5 w-5" />
+                    {registerMutation.isPending
+                      ? 'Creating account...'
+                      : 'Create account'}
+                  </button>
+                </form>
+
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    Already have an account?{' '}
+                    <a
+                      href="/login"
+                      className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
+                    >
+                      Sign in here
+                    </a>
+                  </p>
+                </div>
+
+                {/* Divider */}
+                <div className="mt-8 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
+                    By creating an account, you agree to our Terms of Service
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Additional Info */}

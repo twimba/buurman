@@ -87,13 +87,16 @@ public class DashboardService {
                     String entityName = auditLogRepository.findEntityName(entityType, entityId, teamId)
                             .orElse("Unknown");
 
+                    // Resolve entity identifier
+                    String entityIdentifier = auditLogRepository.findEntityIdentifier(entityType, entityId, teamId)
+                            .orElse(entityId != null ? entityId.toString() : "unknown");
+
                     // Build description
                     String description = buildActivityDescription(action, entityType, entityName, userName);
 
                     return new RecentActivityResponse(
-                            record.get(AUDIT_LOG.ID),
                             entityType,
-                            entityId,
+                            entityIdentifier,
                             entityName,
                             action,
                             userName,

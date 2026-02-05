@@ -5,12 +5,9 @@ import com.buurman.domain.Contract;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record ContractResponse(
-        UUID id,
         String identifier,
-        UUID teamId,
         PropertySummary property,
         TenantSummary tenant,
         Contract.ContractType contractType,

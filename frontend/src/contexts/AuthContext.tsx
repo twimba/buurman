@@ -40,13 +40,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const initKeycloak = async () => {
       try {
-        console.log('Initializing Keycloak...');
         // Only check SSO on protected pages, not on /login or /register
         const initOptions = shouldCheckSso()
           ? { ...keycloakInitOptions, onLoad: 'check-sso' as const }
           : keycloakInitOptions;
         const authenticated = await keycloak.init(initOptions);
-        console.log('Keycloak initialized. Authenticated:', authenticated);
 
         setIsAuthenticated(authenticated);
         setToken(keycloak.token);

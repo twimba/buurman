@@ -11,7 +11,6 @@ export enum PaymentStatus {
 }
 
 export interface PaymentReceivalResponse {
-  id: string;
   identifier: string;
   amount: number;
   receivalDate: string;
@@ -20,9 +19,7 @@ export interface PaymentReceivalResponse {
 }
 
 export interface PaymentResponse {
-  id: string;
   identifier: string;
-  teamId: string;
   contract: ContractSummary;
   tenant: TenantSummary;
   property: PropertySummary;
@@ -42,7 +39,6 @@ export interface PaymentResponse {
 }
 
 export interface PaymentSummary {
-  id: string;
   identifier: string;
   amount: number;
   currency: string;
@@ -52,7 +48,7 @@ export interface PaymentSummary {
 }
 
 export interface CreatePaymentRequest {
-  contractId: string;
+  contractIdentifier: string;
   amount: number;
   currency?: string;
   dueDate: string;
@@ -90,5 +86,5 @@ export interface BulkGeneratePaymentsRequest {
 
 export interface GetPaymentsParams {
   status?: PaymentStatus | 'OVERDUE';
-  contractId?: string;
+  contractIdentifier?: string;
 }

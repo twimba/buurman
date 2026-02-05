@@ -18,6 +18,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,6 +30,7 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final MetricsService metricsService;
 
     @Value("${app.email.from}")
     private String fromEmail;
@@ -38,9 +41,10 @@ public class EmailService {
     @Value("${app.email.base-url}")
     private String baseUrl;
 
-    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
+    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine, MetricsService metricsService) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
+        this.metricsService = metricsService;
     }
 
     @Async("emailTaskExecutor")
@@ -114,6 +118,8 @@ public class EmailService {
     }
 
     private void sendEmail(String to, String subject, String templateName, Context context) {
+        Instant start = Instant.now();
+        String template = templateName.replace("email/", "");
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -126,8 +132,20 @@ public class EmailService {
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
+
+            metricsService.incrementCounter("email.sent.total",
+                    "template", template, "result", "success");
+            metricsService.recordTimer("email.send.seconds",
+                    Duration.between(start, Instant.now()),
+                    "template", template);
+
             log.info("Email sent successfully to {} with subject: {}", to, subject);
         } catch (MessagingException | java.io.UnsupportedEncodingException e) {
+            metricsService.incrementCounter("email.sent.total",
+                    "template", template, "result", "failure");
+            metricsService.recordTimer("email.send.seconds",
+                    Duration.between(start, Instant.now()),
+                    "template", template);
             log.error("Failed to send email to {} with subject: {}", to, subject, e);
         }
     }

@@ -7,6 +7,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, FileText, Filter } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/ui/Pagination';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -23,12 +25,23 @@ export const ContractsPage = () => {
   const [statusFilter, setStatusFilter] = useState<ContractStatus | undefined>(
     undefined
   );
+  const {
+    pageParams,
+    page,
+    size,
+    handlePageChange,
+    handleSizeChange,
+    resetPage,
+  } = usePagination({ defaultSize: 12 });
 
   const {
-    data: contracts,
+    data: contractsData,
     isLoading,
     error,
-  } = useContracts(statusFilter ? { status: statusFilter } : undefined);
+  } = useContracts(
+    statusFilter ? { status: statusFilter, ...pageParams } : { ...pageParams }
+  );
+  const contracts = contractsData?.content;
 
   if (isLoading) {
     return (
@@ -89,7 +102,10 @@ export const ContractsPage = () => {
               {statusFilters.map((filter) => (
                 <button
                   key={filter.label}
-                  onClick={() => setStatusFilter(filter.value)}
+                  onClick={() => {
+                    setStatusFilter(filter.value);
+                    resetPage();
+                  }}
                   className={`px-4 py-2 rounded transition-colors text-sm ${
                     statusFilter === filter.value
                       ? 'bg-[#5c7cfa] text-white'
@@ -105,17 +121,31 @@ export const ContractsPage = () => {
 
         {/* Contract Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {contracts?.length || 0}{' '}
-          {contracts?.length === 1 ? 'contract' : 'contracts'}
+          {contractsData?.totalElements || 0}{' '}
+          {contractsData?.totalElements === 1 ? 'contract' : 'contracts'}
         </p>
 
         {/* Contracts Grid */}
         {contracts && contracts.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {contracts.map((contract) => (
-              <ContractCard key={contract.id} contract={contract} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {contracts.map((contract) => (
+                <ContractCard key={contract.identifier} contract={contract} />
+              ))}
+            </div>
+            {contractsData && (
+              <div className="mt-6">
+                <Pagination
+                  page={page}
+                  totalPages={contractsData.totalPages}
+                  totalElements={contractsData.totalElements}
+                  size={size}
+                  onPageChange={handlePageChange}
+                  onSizeChange={handleSizeChange}
+                />
+              </div>
+            )}
+          </>
         ) : (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-lg">

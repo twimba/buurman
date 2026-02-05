@@ -1,15 +1,24 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Tenant;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.TenantRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
+
+import com.buurman.jooq.generated.tables.records.TenantsRecord;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +33,15 @@ public class TenantRepository {
     public TenantRepository(DSLContext dsl, TenantRecordMapper mapper) {
         this.dsl = dsl;
         this.mapper = mapper;
+    }
+
+    public Optional<Tenant> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(TENANTS)
+                .where(TENANTS.IDENTIFIER.eq(identifier)
+                        .and(TENANTS.TEAM_ID.eq(teamId))
+                        .and(TENANTS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
     }
 
     public Optional<Tenant> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -49,9 +67,9 @@ public class TenantRepository {
         return dsl.selectFrom(TENANTS)
                 .where(TENANTS.TEAM_ID.eq(teamId)
                         .and(TENANTS.DELETED_AT.isNull())
-                        .and(TENANTS.FIRST_NAME.lower().like(searchPattern)
-                                .or(TENANTS.LAST_NAME.lower().like(searchPattern))
-                                .or(TENANTS.EMAIL.lower().like(searchPattern))
+                        .and(lower(TENANTS.FIRST_NAME).like(searchPattern)
+                                .or(lower(TENANTS.LAST_NAME).like(searchPattern))
+                                .or(lower(TENANTS.EMAIL).like(searchPattern))
                                 .or(TENANTS.PHONE.like(searchPattern))))
                 .orderBy(TENANTS.CREATED_AT.desc())
                 .fetch()
@@ -124,6 +142,26 @@ public class TenantRepository {
         }
 
         return tenant;
+    }
+
+    public PaginatedResult<Tenant> findAllByTeamIdPaginated(UUID teamId, String search, PageRequest pageRequest) {
+        Condition condition = TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull());
+        if (search != null && !search.isBlank()) {
+            String pattern = "%" + search.toLowerCase() + "%";
+            condition = condition.and(
+                lower(TENANTS.FIRST_NAME).like(pattern)
+                    .or(lower(TENANTS.LAST_NAME).like(pattern))
+                    .or(lower(TENANTS.EMAIL).like(pattern))
+                    .or(TENANTS.PHONE.like(pattern))
+            );
+        }
+        Map<String, Field<?>> sortableFields = Map.of(
+            "createdAt", TENANTS.CREATED_AT,
+            "firstName", TENANTS.FIRST_NAME,
+            "lastName", TENANTS.LAST_NAME,
+            "email", TENANTS.EMAIL
+        );
+        return PaginationHelper.paginate(dsl, TENANTS, condition, sortableFields, TENANTS.CREATED_AT, pageRequest, r -> mapper.toDomain((TenantsRecord) r));
     }
 
     public List<Tenant> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

@@ -6,6 +6,7 @@ import java.util.UUID;
 public class User {
 
     private UUID id;
+    private String identifier;
     private String keycloakId;
     private String email;
     private String firstName;
@@ -34,6 +35,14 @@ public class User {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getKeycloakId() {

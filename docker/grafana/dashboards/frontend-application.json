@@ -1,0 +1,251 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "API Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "reqps" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Total API Request Rate",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval]))", "legendFormat": "", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 1 }] }, "unit": "s" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "API P95 Latency",
+      "type": "stat",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval])))", "legendFormat": "", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.01 }, { "color": "red", "value": 0.05 }] }, "unit": "percentunit" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Client Error Rate (4xx)",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\", status=~\"4..\"}[$__rate_interval])) / sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval]))", "legendFormat": "", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Server Error Rate (5xx)",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\", status=~\"5..\"}[$__rate_interval])) / sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval]))", "legendFormat": "", "refId": "A" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "API Call Rate by Resource",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "reqps" },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 6 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "API Call Rate by Resource Group",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/properties.*\"}[$__rate_interval]))", "legendFormat": "Properties", "refId": "A" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/tenants.*\"}[$__rate_interval]))", "legendFormat": "Tenants", "refId": "B" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/contracts.*\"}[$__rate_interval]))", "legendFormat": "Contracts", "refId": "C" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/payments.*\"}[$__rate_interval]))", "legendFormat": "Payments", "refId": "D" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/expenses.*\"}[$__rate_interval]))", "legendFormat": "Expenses", "refId": "E" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/documents.*\"}[$__rate_interval]))", "legendFormat": "Documents", "refId": "F" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/reports.*\"}[$__rate_interval]))", "legendFormat": "Reports", "refId": "G" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/dashboard.*\"}[$__rate_interval]))", "legendFormat": "Dashboard", "refId": "H" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/teams.*\"}[$__rate_interval]))", "legendFormat": "Teams", "refId": "I" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/auth.*\"}[$__rate_interval]))", "legendFormat": "Auth", "refId": "J" },
+        { "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/calendar-feeds.*\"}[$__rate_interval]))", "legendFormat": "Calendar Feeds", "refId": "K" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
+      "id": 102,
+      "title": "Latency by Resource",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
+        "overrides": []
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 17 },
+      "id": 20,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } },
+      "title": "API Latency P95 by Resource Group",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/properties.*\"}[$__rate_interval])))", "legendFormat": "Properties", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/tenants.*\"}[$__rate_interval])))", "legendFormat": "Tenants", "refId": "B" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/contracts.*\"}[$__rate_interval])))", "legendFormat": "Contracts", "refId": "C" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/payments.*\"}[$__rate_interval])))", "legendFormat": "Payments", "refId": "D" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/expenses.*\"}[$__rate_interval])))", "legendFormat": "Expenses", "refId": "E" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/reports.*\"}[$__rate_interval])))", "legendFormat": "Reports", "refId": "F" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "id": 103,
+      "title": "Error Breakdown",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "reqps" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 30,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Client Errors (4xx) by Endpoint",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\", status=~\"4..\"}[$__rate_interval]))", "legendFormat": "{{uri}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "reqps" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 31,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Server Errors (5xx) by Endpoint",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\", status=~\"5..\"}[$__rate_interval]))", "legendFormat": "{{uri}}", "refId": "A" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "id": 104,
+      "title": "Top Endpoints",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 1 }] } },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "id": 40,
+      "options": { "showHeader": true, "sortBy": [{ "displayName": "P95 Latency", "desc": true }] },
+      "title": "Top 10 Slowest Endpoints (P95)",
+      "type": "table",
+      "targets": [
+        { "expr": "topk(10, histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval]))))", "legendFormat": "", "refId": "A", "format": "table", "instant": true }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "le": true, "job": true, "instance": true }, "renameByName": { "uri": "Endpoint", "Value": "P95 Latency" } } }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "id": 41,
+      "options": { "showHeader": true, "sortBy": [{ "displayName": "Request Rate", "desc": true }] },
+      "title": "Top 10 Most Called Endpoints",
+      "type": "table",
+      "targets": [
+        { "expr": "topk(10, sum by (uri) (rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/api/.*\"}[$__rate_interval])))", "legendFormat": "", "refId": "A", "format": "table", "instant": true }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true, "instance": true }, "renameByName": { "uri": "Endpoint", "Value": "Request Rate" } } }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["buurman", "frontend", "api"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "backend", "value": "backend" },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Job",
+        "multi": false,
+        "name": "job",
+        "options": [ { "selected": true, "text": "backend", "value": "backend" } ],
+        "query": "backend",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Buurman - Frontend Application",
+  "uid": "buurman-frontend-app",
+  "version": 1
+}

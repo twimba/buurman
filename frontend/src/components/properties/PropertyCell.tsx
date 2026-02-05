@@ -3,7 +3,6 @@ import { PropertyStatus, PropertyType } from '@/types/property';
 import { Home, Building2, MapPin } from 'lucide-react';
 
 interface PropertyCellProps {
-  propertyId: string;
   propertyIdentifier: string;
   propertyStatus: PropertyStatus;
   propertyType: PropertyType;
@@ -28,7 +27,6 @@ const statusLabels: Record<PropertyStatus, string> = {
 };
 
 export const PropertyCell = ({
-  propertyId,
   propertyIdentifier,
   propertyStatus,
   propertyType,
@@ -44,7 +42,7 @@ export const PropertyCell = ({
     if (onClick) {
       onClick(e);
     } else {
-      navigate(`/properties/${propertyId}`);
+      navigate(`/properties/${propertyIdentifier}`);
     }
   };
 

@@ -5,13 +5,18 @@ import {
   UpdatePropertyRequest,
   PropertyStatus,
   DocumentResponse,
+  PhotoResponse,
+  OutdoorAreaResponse,
+  OutdoorAreaRequest,
+  AmenityResponse,
+  PropertyAmenityResponse,
 } from '../types/property';
 import { RecentActivity } from './dashboard';
+import { PageResponse, PageParams } from '@/types/common';
 
 export const getProperties = async (
-  status?: PropertyStatus
-): Promise<PropertyResponse[]> => {
-  const params = status ? { status } : {};
+  params?: { status?: PropertyStatus } & PageParams
+): Promise<PageResponse<PropertyResponse>> => {
   const response = await client.get('/properties', { params });
   return response.data;
 };
@@ -92,7 +97,7 @@ export const getPropertyAuditLog = async (
 
 export const getPropertyPhotos = async (
   propertyId: string
-): Promise<DocumentResponse[]> => {
+): Promise<PhotoResponse[]> => {
   const response = await client.get(`/properties/${propertyId}/photos`);
   return response.data;
 };
@@ -102,7 +107,7 @@ export const uploadPropertyPhoto = async (
   file: File,
   title?: string,
   notes?: string
-): Promise<DocumentResponse> => {
+): Promise<PhotoResponse> => {
   const formData = new FormData();
   formData.append('file', file);
   if (title) formData.append('title', title);
@@ -123,9 +128,85 @@ export const uploadPropertyPhoto = async (
 export const setMainPhoto = async (
   propertyId: string,
   photoId: string
-): Promise<DocumentResponse> => {
+): Promise<PhotoResponse> => {
   const response = await client.put(
     `/properties/${propertyId}/photos/${photoId}/set-main`
   );
   return response.data;
+};
+
+// --- Outdoor Areas ---
+
+export const getOutdoorAreas = async (
+  propertyId: string
+): Promise<OutdoorAreaResponse[]> => {
+  const response = await client.get(`/properties/${propertyId}/outdoor-areas`);
+  return response.data;
+};
+
+export const createOutdoorArea = async (
+  propertyId: string,
+  data: OutdoorAreaRequest
+): Promise<OutdoorAreaResponse> => {
+  const response = await client.post(
+    `/properties/${propertyId}/outdoor-areas`,
+    data
+  );
+  return response.data;
+};
+
+export const updateOutdoorArea = async (
+  propertyId: string,
+  areaId: string,
+  data: OutdoorAreaRequest
+): Promise<OutdoorAreaResponse> => {
+  const response = await client.put(
+    `/properties/${propertyId}/outdoor-areas/${areaId}`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteOutdoorArea = async (
+  propertyId: string,
+  areaId: string
+): Promise<void> => {
+  await client.delete(`/properties/${propertyId}/outdoor-areas/${areaId}`);
+};
+
+// --- Amenities ---
+
+export const getAmenities = async (): Promise<
+  Record<string, AmenityResponse[]>
+> => {
+  const response = await client.get('/amenities');
+  return response.data;
+};
+
+export const getPropertyAmenities = async (
+  propertyId: string
+): Promise<PropertyAmenityResponse[]> => {
+  const response = await client.get(`/properties/${propertyId}/amenities`);
+  return response.data;
+};
+
+export const addPropertyAmenity = async (
+  propertyId: string,
+  amenityIdentifier: string,
+  notes?: string | null
+): Promise<PropertyAmenityResponse> => {
+  const response = await client.post(`/properties/${propertyId}/amenities`, {
+    amenityIdentifier,
+    notes,
+  });
+  return response.data;
+};
+
+export const removePropertyAmenity = async (
+  propertyId: string,
+  amenityIdentifier: string
+): Promise<void> => {
+  await client.delete(
+    `/properties/${propertyId}/amenities/${amenityIdentifier}`
+  );
 };

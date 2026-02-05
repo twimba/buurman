@@ -1,17 +1,27 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as propertiesApi from '../api/properties';
 import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
   PropertyStatus,
+  OutdoorAreaRequest,
 } from '../types/property';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const useProperties = (status?: PropertyStatus) => {
+export const useProperties = (
+  params?: { status?: PropertyStatus } & PageParams
+) => {
   return useQuery({
-    queryKey: ['properties', status],
-    queryFn: () => propertiesApi.getProperties(status),
+    queryKey: ['properties', params],
+    queryFn: () => propertiesApi.getProperties(params),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -118,6 +128,10 @@ export const useUploadPropertyPhoto = (propertyId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -137,6 +151,10 @@ export const useSetMainPhoto = (propertyId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -185,13 +203,154 @@ export const useDeleteDocument = (propertyId: string) => {
         queryKey: ['propertyDocuments', propertyId],
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyPhotos', propertyId],
-      });
-      queryClient.invalidateQueries({
         queryKey: ['propertyAuditLog', propertyId],
       });
       queryClient.invalidateQueries({
         queryKey: ['documents'],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Outdoor Areas ---
+
+export const useOutdoorAreas = (propertyId: string | undefined) => {
+  return useQuery({
+    queryKey: ['outdoor-areas', propertyId],
+    queryFn: () => propertiesApi.getOutdoorAreas(propertyId!),
+    enabled: !!propertyId,
+  });
+};
+
+export const useCreateOutdoorArea = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: OutdoorAreaRequest) =>
+      propertiesApi.createOutdoorArea(propertyId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['outdoor-areas', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useUpdateOutdoorArea = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      areaId,
+      data,
+    }: {
+      areaId: string;
+      data: OutdoorAreaRequest;
+    }) => propertiesApi.updateOutdoorArea(propertyId, areaId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['outdoor-areas', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteOutdoorArea = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (areaId: string) =>
+      propertiesApi.deleteOutdoorArea(propertyId, areaId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['outdoor-areas', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Amenities ---
+
+export const useAmenities = () => {
+  return useQuery({
+    queryKey: ['amenities'],
+    queryFn: propertiesApi.getAmenities,
+    staleTime: Infinity,
+  });
+};
+
+export const usePropertyAmenities = (propertyId: string | undefined) => {
+  return useQuery({
+    queryKey: ['property-amenities', propertyId],
+    queryFn: () => propertiesApi.getPropertyAmenities(propertyId!),
+    enabled: !!propertyId,
+  });
+};
+
+export const useAddPropertyAmenity = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      amenityIdentifier,
+      notes,
+    }: {
+      amenityIdentifier: string;
+      notes?: string | null;
+    }) =>
+      propertiesApi.addPropertyAmenity(propertyId, amenityIdentifier, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['property-amenities', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useRemovePropertyAmenity = (propertyId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (amenityIdentifier: string) =>
+      propertiesApi.removePropertyAmenity(propertyId, amenityIdentifier),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['property-amenities', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyAuditLog', propertyId],
       });
     },
     onError: (error) => {

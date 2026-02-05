@@ -16,7 +16,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
   return (
     <div
       className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-      onClick={() => navigate(`/payments/${payment.id}`)}
+      onClick={() => navigate(`/payments/${payment.identifier}`)}
     >
       <div className="p-4">
         {/* Header */}

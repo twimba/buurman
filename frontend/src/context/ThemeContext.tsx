@@ -56,8 +56,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [themePreference, setThemePreference] =
     useState<ThemePreference>(getStoredTheme);
 
-  // Sync from backend preferences when they load
-  useEffect(() => {
+  // Sync from backend preferences when they load (adjust state during render)
+  const [prevBackendTheme, setPrevBackendTheme] = useState<string | undefined>(
+    undefined
+  );
+  if (preferences?.theme !== prevBackendTheme) {
+    setPrevBackendTheme(preferences?.theme);
     if (preferences?.theme) {
       const backendTheme = preferences.theme as ThemePreference;
       setThemePreference(backendTheme);
@@ -67,7 +71,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         // ignore
       }
     }
-  }, [preferences?.theme]);
+  }
 
   // Listen for system theme changes
   useEffect(() => {

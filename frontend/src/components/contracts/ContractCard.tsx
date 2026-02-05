@@ -15,7 +15,7 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
   return (
     <div
       className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md dark:hover:shadow-black/20 transition-shadow cursor-pointer overflow-hidden"
-      onClick={() => navigate(`/contracts/${contract.id}`)}
+      onClick={() => navigate(`/contracts/${contract.identifier}`)}
     >
       <div className="p-4">
         {/* Header */}

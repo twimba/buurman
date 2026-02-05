@@ -1,6 +1,8 @@
 package com.buurman.repository;
 
 import com.buurman.domain.TenantAddress;
+import com.buurman.util.EntityPrefix;
+import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +31,7 @@ public class TenantAddressRepository {
         if (address.getId() == null) {
             // Insert
             UUID id = UUID.randomUUID();
+            String identifier = UlidGenerator.generate(EntityPrefix.TAD);
             LocalDateTime createdAt = address.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(address.getCreatedAt(), ZoneOffset.UTC)
                 : now;
@@ -38,6 +41,7 @@ public class TenantAddressRepository {
 
             dsl.insertInto(TENANT_ADDRESSES)
                     .set(TENANT_ADDRESSES.ID, id)
+                    .set(TENANT_ADDRESSES.IDENTIFIER, identifier)
                     .set(TENANT_ADDRESSES.TENANT_ID, address.getTenantId())
                     .set(TENANT_ADDRESSES.TEAM_ID, address.getTeamId())
                     .set(TENANT_ADDRESSES.STREET, address.getStreet())
@@ -54,6 +58,7 @@ public class TenantAddressRepository {
                     .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
                     .execute();
             address.setId(id);
+            address.setIdentifier(identifier);
         } else {
             // Update
             LocalDateTime updatedAt = address.getUpdatedAt() != null
@@ -84,6 +89,14 @@ public class TenantAddressRepository {
                         .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
                         .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
                 .fetchInto(TenantAddress.class);
+    }
+
+    public Optional<TenantAddress> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(TENANT_ADDRESSES)
+                .where(TENANT_ADDRESSES.IDENTIFIER.eq(identifier)
+                        .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
+                        .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
+                .fetchOptionalInto(TenantAddress.class);
     }
 
     public Optional<TenantAddress> findByIdAndTeamId(UUID id, UUID teamId) {

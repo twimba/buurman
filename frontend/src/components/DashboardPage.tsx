@@ -6,7 +6,6 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
 import { PropertyStatusChart } from './PropertyStatusChart';
 import {
-  LayoutDashboard,
   Home,
   Users,
   DollarSign,
@@ -31,7 +30,8 @@ export const DashboardPage = () => {
   } = useDashboardStats();
   const { data: activities, isLoading: activitiesLoading } =
     useRecentActivities(10);
-  const { data: allPayments, isLoading: paymentsLoading } = usePayments();
+  const { data: allPaymentsData, isLoading: paymentsLoading } = usePayments();
+  const allPayments = allPaymentsData?.content;
   const markPaidMutation = useMarkPaymentAsPaid();
   const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
 
@@ -79,13 +79,6 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3">
-        <LayoutDashboard className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-        <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Dashboard
-        </h1>
-      </div>
-
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
@@ -309,7 +302,7 @@ export const DashboardPage = () => {
               const isOverdue = payment.status === 'OVERDUE';
               return (
                 <div
-                  key={payment.id}
+                  key={payment.identifier}
                   className="flex items-center justify-between py-3 gap-4"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -363,12 +356,12 @@ export const DashboardPage = () => {
                     </span>
                     {canEditData && (
                       <button
-                        onClick={() => handleMarkPaid(payment.id)}
-                        disabled={markingPaidId === payment.id}
+                        onClick={() => handleMarkPaid(payment.identifier)}
+                        disabled={markingPaidId === payment.identifier}
                         className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200 dark:border-green-800 transition-colors disabled:opacity-50"
                       >
                         <CheckCircle className="h-3.5 w-3.5" />
-                        {markingPaidId === payment.id
+                        {markingPaidId === payment.identifier
                           ? 'Saving...'
                           : 'Mark Paid'}
                       </button>
@@ -423,7 +416,7 @@ export const DashboardPage = () => {
           <div className="space-y-4">
             {activities.map((activity) => (
               <div
-                key={activity.id}
+                key={`${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`}
                 className="flex items-start gap-4 p-4 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-lg transition-colors"
               >
                 <div

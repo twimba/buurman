@@ -1,7 +1,10 @@
 package com.buurman.controller;
 
 import com.buurman.dto.request.BulkDownloadRequest;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.UpdateDocumentRequest;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;
 import jakarta.validation.Valid;
@@ -17,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/documents")
@@ -31,56 +33,70 @@ public class DocumentController {
     }
 
     @GetMapping
-    @Operation(summary = "Search and list all documents", description = "Search across all documents with optional filters")
-    public ResponseEntity<List<DocumentResponse>> getAllDocuments(
+    @Operation(summary = "Search and list all documents", description = "Search across all documents with optional filters and pagination")
+    public ResponseEntity<PageResponse<DocumentResponse>> getAllDocuments(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String entityType,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        List<DocumentResponse> documents = documentService.searchDocuments(search, entityType, principal);
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+        PageResponse<DocumentResponse> documents = documentService.searchDocumentsPaginated(search, entityType, principal, pageRequest);
         return ResponseEntity.ok(documents);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{identifier}")
     @Operation(summary = "Get document metadata", description = "Get detailed metadata for a specific document")
     public ResponseEntity<DocumentResponse> getDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        DocumentResponse document = documentService.getDocument(id, principal);
+        DocumentResponse document = documentService.getDocument(identifier, principal);
         return ResponseEntity.ok(document);
     }
 
-    @GetMapping("/{id}/download")
+    @GetMapping("/{identifier}/download")
     @Operation(summary = "Get download URL", description = "Get presigned URL for downloading a document")
     public ResponseEntity<String> getDownloadUrl(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        URL downloadUrl = documentService.getDownloadUrl(id, principal);
+        URL downloadUrl = documentService.getDownloadUrl(identifier, principal);
         return ResponseEntity.ok(downloadUrl.toString());
     }
 
-    @GetMapping("/{id}/preview")
+    @GetMapping("/{identifier}/preview")
     @Operation(summary = "Get preview URL", description = "Get presigned URL for previewing a document (PDFs and images)")
     public ResponseEntity<String> getPreviewUrl(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         // For now, preview URL is same as download URL
         // In the future, we could generate thumbnails or lower-res previews
-        URL previewUrl = documentService.getDownloadUrl(id, principal);
+        URL previewUrl = documentService.getDownloadUrl(identifier, principal);
         return ResponseEntity.ok(previewUrl.toString());
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{identifier}")
+    public ResponseEntity<DocumentResponse> updateDocument(
+            @PathVariable String identifier,
+            @RequestBody UpdateDocumentRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        DocumentResponse response = documentService.updateDocument(identifier, request, principal);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{identifier}")
     @Operation(summary = "Delete document", description = "Soft delete a document")
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ResponseEntity<Void> deleteDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        documentService.deleteDocument(id, principal);
+        documentService.deleteDocument(identifier, principal);
         return ResponseEntity.noContent().build();
     }
 
@@ -90,7 +106,7 @@ public class DocumentController {
             @Valid @RequestBody BulkDownloadRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        byte[] zipData = documentService.bulkDownload(request.documentIds(), principal);
+        byte[] zipData = documentService.bulkDownload(request.documentIdentifiers(), principal);
 
         ByteArrayResource resource = new ByteArrayResource(zipData);
 

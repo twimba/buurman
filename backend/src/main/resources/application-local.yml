@@ -1,0 +1,44 @@
+# =============================================================================
+# Local Development Profile
+# =============================================================================
+# All services (PostgreSQL, Keycloak, LocalStack, MailHog) run on localhost
+# via Docker Compose. Backend and frontend run on the host machine.
+#
+# Start infra:  docker compose up postgres keycloak localstack mailhog
+# Start backend: mvn spring-boot:run
+# Start frontend: yarn dev
+# =============================================================================
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/buurman
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/buurman
+          jwk-set-uri: http://localhost:8080/realms/buurman/protocol/openid-connect/certs
+
+keycloak:
+  admin:
+    server-url: http://localhost:8080
+
+aws:
+  s3:
+    endpoint: http://localhost:4566
+    public-endpoint: http://localhost:4566
+    use-presigned-urls: false
+
+spring.mail:
+  host: localhost
+
+server:
+  error:
+    include-message: always
+
+app:
+  api:
+    base-url: http://localhost:8081
+  email:
+    base-url: http://localhost:5173

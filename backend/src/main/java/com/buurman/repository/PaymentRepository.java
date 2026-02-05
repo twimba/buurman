@@ -1,15 +1,25 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Payment;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.PaymentRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Record2;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.jooq.generated.tables.records.PaymentsRecord;
+
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +34,15 @@ public class PaymentRepository {
     public PaymentRepository(DSLContext dsl, PaymentRecordMapper mapper) {
         this.dsl = dsl;
         this.mapper = mapper;
+    }
+
+    public Optional<Payment> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(PAYMENTS)
+                .where(PAYMENTS.IDENTIFIER.eq(identifier)
+                        .and(PAYMENTS.TEAM_ID.eq(teamId))
+                        .and(PAYMENTS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
     }
 
     public Optional<Payment> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -175,6 +194,81 @@ public class PaymentRepository {
                         .and(PAYMENTS.DELETED_AT.isNull()))
                 .fetch()
                 .map(mapper::toDomain);
+    }
+
+    public PaginatedResult<Payment> findAllByTeamIdPaginated(UUID teamId, String status, UUID contractId, PageRequest pageRequest) {
+        Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
+        if (status != null && !status.isEmpty()) {
+            if ("OVERDUE".equalsIgnoreCase(status)) {
+                condition = condition.and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                        .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()));
+            } else {
+                condition = condition.and(PAYMENTS.STATUS.eq(status));
+            }
+        }
+        if (contractId != null) {
+            condition = condition.and(PAYMENTS.CONTRACT_ID.eq(contractId));
+        }
+        Map<String, Field<?>> sortableFields = Map.of(
+            "dueDate", PAYMENTS.DUE_DATE,
+            "amount", PAYMENTS.AMOUNT,
+            "status", PAYMENTS.STATUS,
+            "createdAt", PAYMENTS.CREATED_AT
+        );
+        return PaginationHelper.paginate(dsl, PAYMENTS, condition, sortableFields, PAYMENTS.DUE_DATE, pageRequest, r -> mapper.toDomain((PaymentsRecord) r));
+    }
+
+    public Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
+        return dsl.select(
+                org.jooq.impl.DSL.count().as("count"),
+                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+        )
+        .from(PAYMENTS)
+        .where(PAYMENTS.TEAM_ID.eq(teamId)
+                .and(PAYMENTS.STATUS.in(Payment.PaymentStatus.PENDING.name(), Payment.PaymentStatus.PARTIALLY_PAID.name()))
+                .and(PAYMENTS.DUE_DATE.ge(LocalDate.now()))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .fetchOne();
+    }
+
+    public Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
+        return dsl.select(
+                org.jooq.impl.DSL.count().as("count"),
+                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+        )
+        .from(PAYMENTS)
+        .where(PAYMENTS.TEAM_ID.eq(teamId)
+                .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .fetchOne();
+    }
+
+    public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
+        LocalDate startDate = LocalDate.now().minusMonths(months).withDayOfMonth(1);
+        return dsl.select(
+                org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
+                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+        )
+        .from(PAYMENTS)
+        .where(PAYMENTS.TEAM_ID.eq(teamId)
+                .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PAID.name()))
+                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .groupBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
+        .orderBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
+        .fetch();
+    }
+
+    public String findCurrencyByTeamId(UUID teamId) {
+        return dsl.select(PAYMENTS.CURRENCY)
+                .from(PAYMENTS)
+                .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
+                .limit(1)
+                .fetchOptional()
+                .map(r -> r.get(PAYMENTS.CURRENCY))
+                .orElse("EUR");
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

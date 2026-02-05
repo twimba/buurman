@@ -54,13 +54,15 @@ public class TeamService {
         return teamMapper.toResponse(team, memberCount);
     }
 
-    public List<TeamMemberResponse> getTeamMembers(UUID teamId, UserPrincipal principal) {
+    public List<TeamMemberResponse> getTeamMembers(String teamIdentifier, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user belongs to this team
-        if (!teamId.equals(principal.getTeamId())) {
+        if (!team.getId().equals(principal.getTeamId())) {
             throw new RuntimeException("Access denied");
         }
 
-        List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
+        List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
 
         // Batch-fetch all users to avoid N+1 queries
         List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
@@ -74,15 +76,14 @@ public class TeamService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public InvitationResponse createInvitation(UUID teamId, CreateInvitationRequest request,
+    public InvitationResponse createInvitation(String teamIdentifier, CreateInvitationRequest request,
                                                UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is admin of this team
-        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+        if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
             throw new RuntimeException("Access denied");
         }
-
-        Team team = teamRepository.findById(teamId)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
 
         // Create invitation
         TeamInvitation invitation = new TeamInvitation();
@@ -100,7 +101,7 @@ public class TeamService {
         String inviterName = principal.getName();
         emailService.sendTeamInvitation(invitation, inviterName, team.getName());
 
-        return teamMapper.toInvitationResponse(invitation, team.getName(), inviterName);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName);
     }
 
     public InvitationResponse getInvitation(String token) {
@@ -119,7 +120,7 @@ public class TeamService {
             }
         }
 
-        return teamMapper.toInvitationResponse(invitation, team.getName(), inviterName);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName);
     }
 
     @Transactional
@@ -181,13 +182,19 @@ public class TeamService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public void removeMember(UUID teamId, UUID memberId, UserPrincipal principal) {
+    public void removeMember(String teamIdentifier, String userIdentifier, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is admin of this team
-        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+        if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
             throw new RuntimeException("Access denied");
         }
 
-        TeamMember member = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
+        // Resolve user by identifier
+        User targetUser = userRepository.findByIdentifier(userIdentifier)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        TeamMember member = teamMemberRepository.findByUserIdAndTeamId(targetUser.getId(), team.getId())
             .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // Cannot remove self
@@ -200,15 +207,21 @@ public class TeamService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public TeamMemberResponse updateMemberRole(UUID teamId, UUID memberId,
+    public TeamMemberResponse updateMemberRole(String teamIdentifier, String userIdentifier,
                                                UpdateMemberRoleRequest request,
                                                UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is admin of this team
-        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+        if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
             throw new RuntimeException("Access denied");
         }
 
-        TeamMember member = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
+        // Resolve user by identifier
+        User targetUser = userRepository.findByIdentifier(userIdentifier)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        TeamMember member = teamMemberRepository.findByUserIdAndTeamId(targetUser.getId(), team.getId())
             .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // Cannot change own role
@@ -219,21 +232,18 @@ public class TeamService {
         member.setRole(request.role());
         member = teamMemberRepository.save(member);
 
-        User user = userRepository.findById(member.getUserId()).orElseThrow();
-
-        return teamMapper.toMemberResponse(member, user, principal.getUserId());
+        return teamMapper.toMemberResponse(member, targetUser, principal.getUserId());
     }
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public TeamResponse updateTeam(UUID teamId, UpdateTeamRequest request, UserPrincipal principal) {
+    public TeamResponse updateTeam(String teamIdentifier, UpdateTeamRequest request, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is admin of this team
-        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+        if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
             throw new RuntimeException("Access denied");
         }
-
-        Team team = teamRepository.findById(teamId)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
 
         team.setName(request.name());
         team.setUpdatedBy(principal.getUserId());
@@ -245,15 +255,14 @@ public class TeamService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public TeamResponse updateTeamSettings(UUID teamId, UpdateTeamSettingsRequest request,
+    public TeamResponse updateTeamSettings(String teamIdentifier, UpdateTeamSettingsRequest request,
                                           UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is admin of this team
-        if (!teamId.equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+        if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
             throw new RuntimeException("Access denied");
         }
-
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
 
         // Update settings
         TeamSettings settings = team.getSettings();
@@ -301,14 +310,13 @@ public class TeamService {
         return teamMapper.toResponse(team, memberCount);
     }
 
-    public TeamSettings getTeamSettings(UUID teamId, UserPrincipal principal) {
+    public TeamSettings getTeamSettings(String teamIdentifier, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user belongs to this team
-        if (!teamId.equals(principal.getTeamId())) {
+        if (!team.getId().equals(principal.getTeamId())) {
             throw new RuntimeException("Access denied");
         }
-
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
 
         TeamSettings settings = team.getSettings();
         if (settings == null) {
@@ -319,23 +327,29 @@ public class TeamService {
     }
 
     @Transactional
-    public TeamMemberResponse transferOwnership(UUID teamId, UUID newOwnerId, UserPrincipal principal) {
+    public TeamMemberResponse transferOwnership(String teamIdentifier, String newOwnerIdentifier, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
         // Verify user is owner of this team
-        if (!teamId.equals(principal.getTeamId()) || !principal.isOwner()) {
+        if (!team.getId().equals(principal.getTeamId()) || !principal.isOwner()) {
             throw new RuntimeException("Only team owner can transfer ownership");
         }
 
+        // Resolve new owner by identifier
+        User newOwnerUser = userRepository.findByIdentifier(newOwnerIdentifier)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
         // Cannot transfer to self
-        if (newOwnerId.equals(principal.getUserId())) {
+        if (newOwnerUser.getId().equals(principal.getUserId())) {
             throw new RuntimeException("Cannot transfer ownership to yourself");
         }
 
         // Find new owner's membership
-        TeamMember newOwnerMember = teamMemberRepository.findByUserIdAndTeamId(newOwnerId, teamId)
+        TeamMember newOwnerMember = teamMemberRepository.findByUserIdAndTeamId(newOwnerUser.getId(), team.getId())
             .orElseThrow(() -> new RuntimeException("User is not a member of this team"));
 
         // Find current owner's membership
-        TeamMember currentOwnerMember = teamMemberRepository.findByUserIdAndTeamId(principal.getUserId(), teamId)
+        TeamMember currentOwnerMember = teamMemberRepository.findByUserIdAndTeamId(principal.getUserId(), team.getId())
             .orElseThrow(() -> new RuntimeException("Current owner membership not found"));
 
         // Transfer ownership
@@ -347,13 +361,15 @@ public class TeamService {
         newOwnerMember = teamMemberRepository.save(newOwnerMember);
 
         // Update team's created_by to new owner
-        Team team = teamRepository.findById(teamId)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
-        team.setCreatedBy(newOwnerId);
+        team.setCreatedBy(newOwnerUser.getId());
         team.setUpdatedBy(principal.getUserId());
         teamRepository.save(team);
 
-        User newOwnerUser = userRepository.findById(newOwnerId).orElseThrow();
         return teamMapper.toMemberResponse(newOwnerMember, newOwnerUser, principal.getUserId());
+    }
+
+    private Team resolveTeam(String teamIdentifier) {
+        return teamRepository.findByIdentifier(teamIdentifier)
+            .orElseThrow(() -> new RuntimeException("Team not found"));
     }
 }

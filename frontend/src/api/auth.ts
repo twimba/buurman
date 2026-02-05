@@ -8,11 +8,11 @@ export interface RegisterRequest {
 }
 
 export interface UserResponse {
-  userId: string;
+  identifier: string;
   email: string;
   firstName: string;
   lastName: string;
-  teamId: string;
+  teamIdentifier: string;
   teamName: string;
   role: string;
   createdAt: string;

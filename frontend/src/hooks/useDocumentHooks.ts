@@ -1,13 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as documentsApi from '../api/documents';
 import { SearchDocumentsParams } from '../api/documents';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const useDocuments = (params?: SearchDocumentsParams) => {
+export const useDocuments = (params?: SearchDocumentsParams & PageParams) => {
   return useQuery({
     queryKey: ['documents', params],
     queryFn: () => documentsApi.searchDocuments(params),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -50,6 +57,31 @@ export const useBulkDownload = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       showToast('Documents downloaded successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useUpdateDocument = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { title: string | null; notes: string | null };
+    }) => documentsApi.updateDocument(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDocuments'] });
+      queryClient.invalidateQueries({ queryKey: ['tenantDocuments'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyAuditLog'] });
+      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog'] });
+      showToast('Document updated successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

@@ -1,10 +1,16 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Contract;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.ContractRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import org.jooq.Record;
 
 import java.time.Instant;
@@ -13,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +34,15 @@ public class ContractRepository {
     public ContractRepository(DSLContext dsl, ContractRecordMapper mapper) {
         this.dsl = dsl;
         this.mapper = mapper;
+    }
+
+    public Optional<Contract> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.IDENTIFIER.eq(identifier)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
     }
 
     public Optional<Contract> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -180,6 +196,27 @@ public class ContractRepository {
         }
 
         return contract;
+    }
+
+    public PaginatedResult<Contract> findAllByTeamIdPaginated(UUID teamId, String status, UUID propertyId, UUID tenantId, PageRequest pageRequest) {
+        Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
+        if (status != null && !status.isEmpty()) {
+            condition = condition.and(CONTRACTS.STATUS.eq(status));
+        }
+        if (propertyId != null) {
+            condition = condition.and(CONTRACTS.PROPERTY_ID.eq(propertyId));
+        }
+        if (tenantId != null) {
+            condition = condition.and(CONTRACTS.TENANT_ID.eq(tenantId));
+        }
+        Map<String, Field<?>> sortableFields = Map.of(
+            "createdAt", CONTRACTS.CREATED_AT,
+            "startDate", CONTRACTS.START_DATE,
+            "endDate", CONTRACTS.END_DATE,
+            "rentAmount", CONTRACTS.RENT_AMOUNT,
+            "status", CONTRACTS.STATUS
+        );
+        return PaginationHelper.paginate(dsl, CONTRACTS, condition, sortableFields, CONTRACTS.CREATED_AT, pageRequest, r -> mapper.toDomain((ContractsRecord) r));
     }
 
     public List<Contract> findActiveByTeamId(UUID teamId) {

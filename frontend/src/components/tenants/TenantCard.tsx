@@ -13,7 +13,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
   return (
     <div
       className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
-      onClick={() => navigate(`/tenants/${tenant.id}`)}
+      onClick={() => navigate(`/tenants/${tenant.identifier}`)}
     >
       {/* Tenant Name with Avatar */}
       <div className="flex items-center gap-3 mb-4">

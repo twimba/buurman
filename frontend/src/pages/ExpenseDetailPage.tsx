@@ -123,7 +123,10 @@ export const ExpenseDetailPage = () => {
                 <Button
                   variant="secondary"
                   leftIcon={<Edit />}
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    setActiveTab('details');
+                    setIsEditing(true);
+                  }}
                   disabled={!canEditData}
                 >
                   Edit
@@ -262,7 +265,7 @@ export const ExpenseDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/properties/${expense.property.id}`)
+                          navigate(`/properties/${expense.property.identifier}`)
                         }
                         className="font-medium text-[#5c7cfa] hover:underline text-left"
                       >
@@ -358,7 +361,8 @@ export const ExpenseDetailPage = () => {
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
-                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                  const isExpanded = expandedAuditItems.has(activityKey);
                   const hasChanges =
                     activity.action === 'UPDATE' &&
                     activity.changedFields &&
@@ -366,7 +370,7 @@ export const ExpenseDetailPage = () => {
 
                   return (
                     <div
-                      key={activity.id}
+                      key={activityKey}
                       className="border border-[#e2e6f0] rounded-lg overflow-hidden"
                     >
                       <div
@@ -379,10 +383,10 @@ export const ExpenseDetailPage = () => {
                           hasChanges &&
                           setExpandedAuditItems((prev) => {
                             const newSet = new Set(prev);
-                            if (newSet.has(activity.id)) {
-                              newSet.delete(activity.id);
+                            if (newSet.has(activityKey)) {
+                              newSet.delete(activityKey);
                             } else {
-                              newSet.add(activity.id);
+                              newSet.add(activityKey);
                             }
                             return newSet;
                           })

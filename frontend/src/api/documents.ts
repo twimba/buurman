@@ -1,5 +1,6 @@
 import client from './client';
 import { DocumentResponse } from '@/types/property';
+import { PageResponse, PageParams } from '@/types/common';
 
 export interface SearchDocumentsParams {
   search?: string;
@@ -7,13 +8,9 @@ export interface SearchDocumentsParams {
 }
 
 export const searchDocuments = async (
-  params?: SearchDocumentsParams
-): Promise<DocumentResponse[]> => {
-  const queryParams = new URLSearchParams();
-  if (params?.search) queryParams.append('search', params.search);
-  if (params?.entityType) queryParams.append('entityType', params.entityType);
-
-  const response = await client.get(`/documents?${queryParams.toString()}`);
+  params?: SearchDocumentsParams & PageParams
+): Promise<PageResponse<DocumentResponse>> => {
+  const response = await client.get('/documents', { params });
   return response.data;
 };
 
@@ -37,10 +34,22 @@ export const deleteDocument = async (id: string): Promise<void> => {
 };
 
 export const bulkDownloadDocuments = async (
-  documentIds: string[]
+  documentIdentifiers: string[]
 ): Promise<Blob> => {
-  const response = await client.post('/documents/bulk-download', documentIds, {
-    responseType: 'blob',
-  });
+  const response = await client.post(
+    '/documents/bulk-download',
+    { documentIdentifiers },
+    {
+      responseType: 'blob',
+    }
+  );
+  return response.data;
+};
+
+export const updateDocument = async (
+  id: string,
+  data: { title: string | null; notes: string | null }
+): Promise<DocumentResponse> => {
+  const response = await client.put(`/documents/${id}`, data);
   return response.data;
 };

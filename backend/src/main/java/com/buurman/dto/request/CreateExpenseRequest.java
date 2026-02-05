@@ -7,11 +7,10 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.UUID;
 
 public record CreateExpenseRequest(
-        @NotNull(message = "Property ID is required")
-        UUID propertyId,
+        @NotNull(message = "Property identifier is required")
+        String propertyIdentifier,
 
         @NotNull(message = "Category is required")
         Expense.ExpenseCategory category,

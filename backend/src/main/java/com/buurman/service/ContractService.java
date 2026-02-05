@@ -1,28 +1,39 @@
 package com.buurman.service;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
+import com.buurman.dto.request.GeneratePaymentsRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractResponse;
+import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
+import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantSummary;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -37,44 +48,55 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
+    private final DocumentRepository documentRepository;
     private final ContractMapper contractMapper;
     private final PropertyMapper propertyMapper;
     private final TenantMapper tenantMapper;
     private final AuditService auditService;
+    private final DocumentService documentService;
     private final PaymentSchedulingService paymentSchedulingService;
+    private final MetricsService metricsService;
 
     public ContractService(
             ContractRepository contractRepository,
             PropertyRepository propertyRepository,
             TenantRepository tenantRepository,
+            DocumentRepository documentRepository,
             ContractMapper contractMapper,
             PropertyMapper propertyMapper,
             TenantMapper tenantMapper,
             AuditService auditService,
-            PaymentSchedulingService paymentSchedulingService) {
+            DocumentService documentService,
+            PaymentSchedulingService paymentSchedulingService,
+            MetricsService metricsService) {
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
+        this.documentRepository = documentRepository;
         this.contractMapper = contractMapper;
         this.propertyMapper = propertyMapper;
         this.tenantMapper = tenantMapper;
         this.auditService = auditService;
+        this.documentService = documentService;
         this.paymentSchedulingService = paymentSchedulingService;
+        this.metricsService = metricsService;
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ContractResponse createContract(CreateContractRequest request, UserPrincipal principal) {
-        // Validate property exists and belongs to team
-        Property property = propertyRepository.findByIdAndTeamId(request.propertyId(), principal.getTeamId())
+        UUID teamId = principal.getTeamId();
+
+        // Resolve property by identifier
+        Property property = propertyRepository.findByIdentifierAndTeamId(request.propertyIdentifier(), teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
 
-        // Validate tenant exists and belongs to team
-        Tenant tenant = tenantRepository.findByIdAndTeamId(request.tenantId(), principal.getTeamId())
+        // Resolve tenant by identifier
+        Tenant tenant = tenantRepository.findByIdentifierAndTeamId(request.tenantIdentifier(), teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
 
         // Check no active contract exists for property
-        contractRepository.findActiveContractByPropertyId(request.propertyId(), principal.getTeamId())
+        contractRepository.findActiveContractByPropertyId(property.getId(), teamId)
                 .ifPresent(existing -> {
                     throw new IllegalArgumentException(
                             "Property already has an active contract. Please terminate the existing contract first.");
@@ -91,8 +113,10 @@ public class ContractService {
         }
 
         Contract contract = contractMapper.toEntity(request);
-        contract.setIdentifier(UlidGenerator.generate());
-        contract.setTeamId(principal.getTeamId());
+        contract.setPropertyId(property.getId());
+        contract.setTenantId(tenant.getId());
+        contract.setIdentifier(UlidGenerator.generate(EntityPrefix.CON));
+        contract.setTeamId(teamId);
         contract.setStatus(Contract.ContractStatus.DRAFT);
         contract.setCreatedBy(principal.getUserId());
         contract.setUpdatedBy(principal.getUserId());
@@ -108,12 +132,17 @@ public class ContractService {
         }
 
         Contract savedContract = contractRepository.save(contract);
+
+        metricsService.incrementCounter("contract.created.total");
+        metricsService.recordHistogram("contract.rent.amount", savedContract.getRentAmount().doubleValue(),
+                "currency", savedContract.getCurrency());
+
         log.info("Contract created: {} for property {} and tenant {} in team {}",
-                savedContract.getId(), property.getId(), tenant.getId(), principal.getTeamId());
+                savedContract.getId(), property.getId(), tenant.getId(), teamId);
 
         // Log to audit trail
         auditService.logCreate(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
                 savedContract.getId(),
                 principal.getUserId(),
@@ -130,25 +159,36 @@ public class ContractService {
                 .toList();
     }
 
-    public List<ContractResponse> getContractsByProperty(UUID propertyId, UserPrincipal principal) {
-        // Verify property exists and belongs to team
-        propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId())
+    public PageResponse<ContractResponse> getContractsPaginated(UserPrincipal principal, String status, PageRequest pageRequest) {
+        PaginatedResult<Contract> result = contractRepository.findAllByTeamIdPaginated(
+                principal.getTeamId(), status, null, null, pageRequest);
+        List<ContractResponse> responses = result.items().stream()
+                .map(contract -> toResponse(contract, principal.getTeamId()))
+                .toList();
+        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+    }
+
+    public List<ContractResponse> getContractsByProperty(String propertyIdentifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Property property = propertyRepository.findByIdentifierAndTeamId(propertyIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
 
-        List<Contract> contracts = contractRepository.findByPropertyId(propertyId, principal.getTeamId());
+        List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
         return contracts.stream()
-                .map(contract -> toResponse(contract, principal.getTeamId()))
+                .map(contract -> toResponse(contract, teamId))
                 .toList();
     }
 
-    public List<ContractResponse> getContractsByTenant(UUID tenantId, UserPrincipal principal) {
-        // Verify tenant exists and belongs to team
-        tenantRepository.findByIdAndTeamId(tenantId, principal.getTeamId())
+    public List<ContractResponse> getContractsByTenant(String tenantIdentifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Tenant tenant = tenantRepository.findByIdentifierAndTeamId(tenantIdentifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
 
-        List<Contract> contracts = contractRepository.findByTenantId(tenantId, principal.getTeamId());
+        List<Contract> contracts = contractRepository.findByTenantId(tenant.getId(), teamId);
         return contracts.stream()
-                .map(contract -> toResponse(contract, principal.getTeamId()))
+                .map(contract -> toResponse(contract, teamId))
                 .toList();
     }
 
@@ -159,16 +199,18 @@ public class ContractService {
                 .toList();
     }
 
-    public ContractResponse getContract(UUID contractId, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public ContractResponse getContract(String identifier, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
         return toResponse(contract, principal.getTeamId());
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractResponse updateContract(UUID contractId, UpdateContractRequest request, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public ContractResponse updateContract(String identifier, UpdateContractRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Prevent updates to ACTIVE contracts (except via status change)
@@ -176,12 +218,12 @@ public class ContractService {
             throw new IllegalArgumentException("Cannot update ACTIVE contracts. Please change status first.");
         }
 
-        // Validate property exists
-        Property property = propertyRepository.findByIdAndTeamId(request.propertyId(), principal.getTeamId())
+        // Resolve property by identifier
+        Property property = propertyRepository.findByIdentifierAndTeamId(request.propertyIdentifier(), teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
 
-        // Validate tenant exists
-        Tenant tenant = tenantRepository.findByIdAndTeamId(request.tenantId(), principal.getTeamId())
+        // Resolve tenant by identifier
+        Tenant tenant = tenantRepository.findByIdentifierAndTeamId(request.tenantIdentifier(), teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
 
         // Validate dates
@@ -204,11 +246,13 @@ public class ContractService {
 
         // Update fields
         contractMapper.updateEntity(contract, request);
+        contract.setPropertyId(property.getId());
+        contract.setTenantId(tenant.getId());
         contract.setUpdatedBy(principal.getUserId());
         contract.setUpdatedAt(Instant.now());
 
         Contract updatedContract = contractRepository.save(contract);
-        log.info("Contract updated: {} in team {}", contractId, principal.getTeamId());
+        log.info("Contract updated: {} in team {}", identifier, teamId);
 
         // Determine changed fields for audit
         Map<String, Object> changedFields = new HashMap<>();
@@ -269,7 +313,7 @@ public class ContractService {
 
         // Log to audit trail
         auditService.logUpdate(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
                 updatedContract.getId(),
                 principal.getUserId(),
@@ -283,8 +327,10 @@ public class ContractService {
 
     @Transactional
     @PreAuthorize("hasRole('TEAM_ADMIN')")
-    public void deleteContract(UUID contractId, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public void deleteContract(String identifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Prevent deletion of ACTIVE contracts
@@ -292,14 +338,14 @@ public class ContractService {
             throw new IllegalArgumentException("Cannot delete ACTIVE contracts. Please terminate the contract first.");
         }
 
-        contractRepository.softDeleteByIdAndTeamId(contractId, principal.getTeamId());
-        log.info("Contract soft deleted: {} in team {}", contractId, principal.getTeamId());
+        contractRepository.softDeleteByIdAndTeamId(contract.getId(), teamId);
+        log.info("Contract soft deleted: {} in team {}", identifier, teamId);
 
         // Log to audit trail
         auditService.logDelete(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
-                contractId,
+                contract.getId(),
                 principal.getUserId(),
                 contract
         );
@@ -307,10 +353,13 @@ public class ContractService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractResponse changeContractStatus(UUID contractId, ChangeContractStatusRequest request, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public ContractResponse changeContractStatus(String identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
+        UUID contractId = contract.getId();
         Contract.ContractStatus oldStatus = contract.getStatus();
         Contract.ContractStatus newStatus = request.status();
 
@@ -319,7 +368,7 @@ public class ContractService {
 
         // If changing to ACTIVE, ensure no other active contract on property
         if (newStatus == Contract.ContractStatus.ACTIVE) {
-            contractRepository.findActiveContractByPropertyId(contract.getPropertyId(), principal.getTeamId())
+            contractRepository.findActiveContractByPropertyId(contract.getPropertyId(), teamId)
                     .ifPresent(existing -> {
                         if (!existing.getId().equals(contractId)) {
                             throw new IllegalArgumentException(
@@ -346,14 +395,18 @@ public class ContractService {
         contract.setUpdatedAt(Instant.now());
 
         Contract updatedContract = contractRepository.save(contract);
+
+        metricsService.incrementCounter("contract.status.changed.total",
+                "from_status", oldStatus.name(), "to_status", newStatus.name());
+
         log.info("Contract status changed: {} from {} to {} in team {}",
-                contractId, oldStatus, newStatus, principal.getTeamId());
+                identifier, oldStatus, newStatus, teamId);
 
         // Trigger payment scheduling on status change
         paymentSchedulingService.handleContractStatusChange(
                 contractId,
                 newStatus,
-                principal.getTeamId(),
+                teamId,
                 principal.getUserId()
         );
 
@@ -368,7 +421,7 @@ public class ContractService {
         }
 
         auditService.logUpdate(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
                 updatedContract.getId(),
                 principal.getUserId(),
@@ -377,13 +430,15 @@ public class ContractService {
                 changedFields
         );
 
-        return toResponse(updatedContract, principal.getTeamId());
+        return toResponse(updatedContract, teamId);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractResponse reopenContract(UUID contractId, UserPrincipal principal) {
-        Contract contract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public ContractResponse reopenContract(String identifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Only TERMINATED or EXPIRED contracts can be reopened
@@ -414,7 +469,10 @@ public class ContractService {
         contract.setUpdatedAt(Instant.now());
 
         Contract updatedContract = contractRepository.save(contract);
-        log.info("Contract reopened: {} from {} to DRAFT in team {}", contractId, oldStatus, principal.getTeamId());
+
+        metricsService.incrementCounter("contract.reopened.total");
+
+        log.info("Contract reopened: {} from {} to DRAFT in team {}", identifier, oldStatus, teamId);
 
         // Log to audit trail
         Map<String, Object> changedFields = new HashMap<>();
@@ -422,7 +480,7 @@ public class ContractService {
         changedFields.put("statusChangeReason", "Contract reopened for editing");
 
         auditService.logUpdate(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
                 updatedContract.getId(),
                 principal.getUserId(),
@@ -431,20 +489,22 @@ public class ContractService {
                 changedFields
         );
 
-        return toResponse(updatedContract, principal.getTeamId());
+        return toResponse(updatedContract, teamId);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractResponse duplicateContract(UUID contractId, UserPrincipal principal) {
-        Contract sourceContract = contractRepository.findByIdAndTeamId(contractId, principal.getTeamId())
+    public ContractResponse duplicateContract(String identifier, UserPrincipal principal) {
+        UUID teamId = principal.getTeamId();
+
+        Contract sourceContract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Create new contract with same data
         Contract newContract = new Contract(
                 null, // New ID will be generated
-                UlidGenerator.generate(), // New identifier
-                principal.getTeamId(),
+                UlidGenerator.generate(EntityPrefix.CON), // New identifier
+                teamId,
                 sourceContract.getPropertyId(),
                 sourceContract.getTenantId(),
                 sourceContract.getContractType(),
@@ -472,31 +532,80 @@ public class ContractService {
         );
 
         Contract savedContract = contractRepository.save(newContract);
+
+        metricsService.incrementCounter("contract.duplicated.total");
+
         log.info("Contract duplicated: source {} -> new {} in team {}",
-                sourceContract.getId(), savedContract.getId(), principal.getTeamId());
+                sourceContract.getId(), savedContract.getId(), teamId);
 
         // Log to audit trail
-        Map<String, Object> changedFields = new HashMap<>();
-        changedFields.put("duplicatedFrom", sourceContract.getIdentifier());
-
         auditService.logCreate(
-                principal.getTeamId(),
+                teamId,
                 "CONTRACT",
                 savedContract.getId(),
                 principal.getUserId(),
                 savedContract
         );
 
-        return toResponse(savedContract, principal.getTeamId());
+        return toResponse(savedContract, teamId);
     }
 
+    // --- Document delegation methods (resolve identifier to UUID) ---
+
+    public DocumentResponse uploadDocument(String contractIdentifier, MultipartFile file,
+                                           String title, String notes, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        return documentService.uploadDocument(file, "CONTRACT", contract.getId(), title, notes, principal);
+    }
+
+    public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        return documentService.getDocuments("CONTRACT", contract.getId(), principal);
+    }
+
+    public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+        Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        return documentService.getDownloadUrl(document.getIdentifier(), principal);
+    }
+
+    public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+        Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        documentService.deleteDocument(document.getIdentifier(), principal);
+    }
+
+    public List<RecentActivityResponse> getAuditLog(String contractIdentifier, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", contract.getId());
+    }
+
+    public Map<String, Object> generatePayments(String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        int generated = paymentSchedulingService.generatePaymentsManually(
+                contract.getId(),
+                principal.getTeamId(),
+                principal.getUserId(),
+                request.count()
+        );
+        return Map.of(
+                "generated", generated,
+                "requested", request.count()
+        );
+    }
+
+    // --- Private helpers ---
+
     private void validateStatusTransition(Contract.ContractStatus from, Contract.ContractStatus to) {
-        // Define valid transitions
         boolean isValid = switch (from) {
             case DRAFT -> to == Contract.ContractStatus.PENDING_SIGNATURE || to == Contract.ContractStatus.ACTIVE;
             case PENDING_SIGNATURE -> to == Contract.ContractStatus.DRAFT || to == Contract.ContractStatus.ACTIVE;
             case ACTIVE -> to == Contract.ContractStatus.TERMINATED || to == Contract.ContractStatus.EXPIRED;
-            case EXPIRED, TERMINATED -> false; // Cannot transition from terminal states
+            case EXPIRED, TERMINATED -> false;
         };
 
         if (!isValid) {
@@ -519,9 +628,7 @@ public class ContractService {
         TenantSummary tenantSummary = tenantMapper.toSummary(tenant);
 
         return new ContractResponse(
-                response.id(),
                 response.identifier(),
-                response.teamId(),
                 propertySummary,
                 tenantSummary,
                 response.contractType(),
@@ -558,14 +665,11 @@ public class ContractService {
 
         Property.PropertyStatus newPropertyStatus = null;
 
-        // When contract becomes ACTIVE, set property to OCCUPIED
         if (newStatus == Contract.ContractStatus.ACTIVE && oldStatus != Contract.ContractStatus.ACTIVE) {
             newPropertyStatus = Property.PropertyStatus.OCCUPIED;
         }
-        // When contract is no longer active, check if property should be VACANT
         else if (oldStatus == Contract.ContractStatus.ACTIVE &&
                  (newStatus == Contract.ContractStatus.EXPIRED || newStatus == Contract.ContractStatus.TERMINATED)) {
-            // Check if there are any other active contracts for this property
             boolean hasOtherActiveContracts = contractRepository.findActiveContractByPropertyId(propertyId, principal.getTeamId())
                     .isPresent();
 
@@ -574,7 +678,6 @@ public class ContractService {
             }
         }
 
-        // Update property status if needed
         if (newPropertyStatus != null && property.getStatus() != newPropertyStatus) {
             property.setStatus(newPropertyStatus);
             property.setUpdatedBy(principal.getUserId());

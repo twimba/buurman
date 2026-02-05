@@ -19,6 +19,7 @@ public interface UserRecordMapper {
 
     @Mapping(target = "createdAt", expression = "java(toLocalDateTime(user.getCreatedAt()))")
     @Mapping(target = "updatedAt", expression = "java(toLocalDateTime(user.getUpdatedAt()))")
+    @Mapping(target = "deletedAt", ignore = true)
     UsersRecord toRecord(User user);
 
     List<User> toDomainList(List<UsersRecord> records);

@@ -2,6 +2,8 @@ package com.buurman.repository;
 
 import com.buurman.domain.User;
 import com.buurman.mapper.UserRecordMapper;
+import com.buurman.util.EntityPrefix;
+import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +28,13 @@ public class UserRepository {
         this.mapper = mapper;
     }
 
+    public Optional<User> findByIdentifier(String identifier) {
+        return dsl.selectFrom(USERS)
+                .where(USERS.IDENTIFIER.eq(identifier))
+                .fetchOptional()
+                .map(mapper::toDomain);
+    }
+
     public Optional<User> findById(UUID id) {
         return dsl.selectFrom(USERS)
                 .where(USERS.ID.eq(id))
@@ -39,8 +48,10 @@ public class UserRepository {
         if (user.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
+            String identifier = UlidGenerator.generate(EntityPrefix.USR);
             dsl.insertInto(USERS)
                     .set(USERS.ID, newId)
+                    .set(USERS.IDENTIFIER, identifier)
                     .set(USERS.KEYCLOAK_ID, user.getKeycloakId())
                     .set(USERS.EMAIL, user.getEmail())
                     .set(USERS.FIRST_NAME, user.getFirstName())
@@ -52,6 +63,7 @@ public class UserRepository {
                     .execute();
 
             user.setId(newId);
+            user.setIdentifier(identifier);
             user.setCreatedAt(now.toInstant(ZoneOffset.UTC));
             user.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
         } else {

@@ -10,6 +10,7 @@ import com.buurman.mapper.UserMapper;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,23 +31,26 @@ public class AuthService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserMapper userMapper;
     private final EmailService emailService;
+    private final MetricsService metricsService;
 
     public AuthService(KeycloakService keycloakService, UserRepository userRepository,
                       TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
-                      UserMapper userMapper, EmailService emailService) {
+                      UserMapper userMapper, EmailService emailService,
+                      MetricsService metricsService) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userMapper = userMapper;
         this.emailService = emailService;
+        this.metricsService = metricsService;
     }
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
         // Validate email not already registered
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already registered");
+            throw new IllegalArgumentException("Email already registered");
         }
 
         // Create user in Keycloak first (external system)
@@ -71,7 +75,7 @@ public class AuthService {
 
             // Create team
             Team team = new Team();
-            team.setIdentifier(UlidGenerator.generate());
+            team.setIdentifier(UlidGenerator.generate(EntityPrefix.TEA));
             team.setName(teamName);
             team.setCreatedAt(Instant.now());
             team.setUpdatedAt(Instant.now());
@@ -96,7 +100,10 @@ public class AuthService {
             // Send welcome email
             emailService.sendWelcomeEmail(user);
 
-            return userMapper.toResponse(user, team.getId(), "TEAM_ADMIN");
+            metricsService.incrementCounter("team.registered.total");
+            metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
+
+            return userMapper.toResponse(user, team.getIdentifier(), "TEAM_ADMIN");
         } catch (Exception e) {
             // Compensate: remove orphaned Keycloak user if DB operations fail
             log.error("Registration failed after Keycloak user creation, compensating", e);
@@ -115,8 +122,9 @@ public class AuthService {
 
         // Get active membership based on user's activeTeamId
         TeamMember member = getActiveMembership(user);
+        String teamIdentifier = resolveTeamIdentifier(member);
 
-        return userMapper.toResponse(user, member != null ? member.getTeamId() : null,
+        return userMapper.toResponse(user, teamIdentifier,
                                      member != null ? member.getRole() : null);
     }
 
@@ -130,9 +138,19 @@ public class AuthService {
         user = userRepository.save(user);
 
         TeamMember member = getActiveMembership(user);
+        String teamIdentifier = resolveTeamIdentifier(member);
 
-        return userMapper.toResponse(user, member != null ? member.getTeamId() : null,
+        return userMapper.toResponse(user, teamIdentifier,
                                      member != null ? member.getRole() : null);
+    }
+
+    private String resolveTeamIdentifier(TeamMember member) {
+        if (member == null) {
+            return null;
+        }
+        return teamRepository.findById(member.getTeamId())
+            .map(Team::getIdentifier)
+            .orElse(null);
     }
 
     private TeamMember getActiveMembership(User user) {

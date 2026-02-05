@@ -14,9 +14,12 @@ ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
 ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
 ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 
+# Enable Corepack for Yarn 4 (required by packageManager field)
+RUN corepack enable
+
 # Copy package files and install dependencies (cached layer)
 COPY package.json yarn.lock ./
-RUN yarn install
+RUN yarn config set nodeLinker node-modules && yarn install
 
 # Copy source and build
 COPY . .

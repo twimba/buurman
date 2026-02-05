@@ -1,17 +1,31 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import * as expensesApi from '../api/expenses';
 import {
   CreateExpenseRequest,
   UpdateExpenseRequest,
   GetExpensesParams,
 } from '../types/expense';
+import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
-export const useExpenses = (params?: GetExpensesParams) => {
+export const useExpenses = (params?: GetExpensesParams & PageParams) => {
   return useQuery({
     queryKey: ['expenses', params],
     queryFn: () => expensesApi.getExpenses(params),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useExpenseStats = () => {
+  return useQuery({
+    queryKey: ['expenseStats'],
+    queryFn: () => expensesApi.getExpenseStats(),
   });
 };
 
@@ -46,11 +60,12 @@ export const useCreateExpense = () => {
     mutationFn: (data: CreateExpenseRequest) => expensesApi.createExpense(data),
     onSuccess: (newExpense) => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
       queryClient.invalidateQueries({
         queryKey: ['properties'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', newExpense.property.id],
+        queryKey: ['property', newExpense.property.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -73,9 +88,11 @@ export const useUpdateExpense = (id: string) => {
       expensesApi.updateExpense(id, data),
     onSuccess: (updatedExpense) => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
       queryClient.invalidateQueries({ queryKey: ['expense', id] });
+      queryClient.invalidateQueries({ queryKey: ['expenseAuditLog', id] });
       queryClient.invalidateQueries({
-        queryKey: ['property', updatedExpense.property.id],
+        queryKey: ['property', updatedExpense.property.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -97,6 +114,7 @@ export const useDeleteExpense = () => {
     mutationFn: (id: string) => expensesApi.deleteExpense(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
@@ -137,6 +155,9 @@ export const useUploadExpenseDocument = (expenseId: string) => {
         queryKey: ['expenseDocuments', expenseId],
       });
       queryClient.invalidateQueries({ queryKey: ['expense', expenseId] });
+      queryClient.invalidateQueries({
+        queryKey: ['expenseAuditLog', expenseId],
+      });
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       showToast('Document uploaded successfully', 'success');
     },
@@ -157,6 +178,9 @@ export const useDeleteExpenseDocument = (expenseId: string) => {
         queryKey: ['expenseDocuments', expenseId],
       });
       queryClient.invalidateQueries({ queryKey: ['expense', expenseId] });
+      queryClient.invalidateQueries({
+        queryKey: ['expenseAuditLog', expenseId],
+      });
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       showToast('Document deleted successfully', 'success');
     },

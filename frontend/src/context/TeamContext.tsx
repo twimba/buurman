@@ -9,9 +9,8 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 
 interface Team {
-  id: string;
-  name: string;
   identifier: string;
+  name: string;
   role: 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
   isOwner: boolean;
   isDefault: boolean;
@@ -35,9 +34,8 @@ interface TeamContextType {
 const TeamContext = createContext<TeamContextType | undefined>(undefined);
 
 const mapApiTeamToTeam = (apiTeam: UserTeamResponse): Team => ({
-  id: apiTeam.teamId,
-  name: apiTeam.teamName,
   identifier: apiTeam.identifier,
+  name: apiTeam.teamName,
   role: apiTeam.role,
   isOwner: apiTeam.isOwner,
   isDefault: apiTeam.isDefault,
@@ -62,7 +60,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
 
   const teams: Team[] = teamsData?.map(mapApiTeamToTeam) ?? [];
   const activeTeam = teams.find((t) => t.isActive) ?? teams[0] ?? null;
-  const defaultTeamId = teams.find((t) => t.isDefault)?.id ?? null;
+  const defaultTeamId = teams.find((t) => t.isDefault)?.identifier ?? null;
 
   const switchTeamMutation = useMutation({
     mutationFn: switchTeamApi,

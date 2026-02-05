@@ -30,7 +30,7 @@ export const TeamSettingsSection = () => {
   const { canManageMembers } = useTeam();
   const { data: team, isLoading: teamLoading } = useCurrentTeam();
   const { data: members, isLoading: membersLoading } = useTeamMembers(
-    team?.teamId
+    team?.identifier
   );
 
   const [isEditingTeamName, setIsEditingTeamName] = useState(false);
@@ -44,11 +44,13 @@ export const TeamSettingsSection = () => {
   const [inviteRole, setInviteRole] = useState<Role>('TEAM_VIEWER');
   const [newRole, setNewRole] = useState<Role>('TEAM_VIEWER');
 
-  const updateTeamMutation = useUpdateTeam(team?.teamId || '');
-  const createInvitationMutation = useCreateInvitation(team?.teamId || '');
-  const removeMemberMutation = useRemoveMember(team?.teamId || '');
-  const updateRoleMutation = useUpdateMemberRole(team?.teamId || '');
-  const transferOwnershipMutation = useTransferOwnership(team?.teamId || '');
+  const updateTeamMutation = useUpdateTeam(team?.identifier || '');
+  const createInvitationMutation = useCreateInvitation(team?.identifier || '');
+  const removeMemberMutation = useRemoveMember(team?.identifier || '');
+  const updateRoleMutation = useUpdateMemberRole(team?.identifier || '');
+  const transferOwnershipMutation = useTransferOwnership(
+    team?.identifier || ''
+  );
 
   const roleLabels: Record<Role, string> = {
     TEAM_ADMIN: 'Admin',
@@ -71,7 +73,9 @@ export const TeamSettingsSection = () => {
       'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
   };
 
-  const selectedMember = members?.find((m) => m.memberId === selectedMemberId);
+  const selectedMember = members?.find(
+    (m) => m.userIdentifier === selectedMemberId
+  );
 
   const handleStartEditTeamName = () => {
     setTeamName(team?.teamName || '');
@@ -241,7 +245,7 @@ export const TeamSettingsSection = () => {
         <div className="divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
           {members?.map((member) => (
             <div
-              key={member.memberId}
+              key={member.userIdentifier}
               className="p-6 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
             >
               <div className="flex items-center justify-between">
@@ -290,7 +294,7 @@ export const TeamSettingsSection = () => {
                     <div className="flex gap-1">
                       <button
                         onClick={() => {
-                          setSelectedMemberId(member.memberId);
+                          setSelectedMemberId(member.userIdentifier);
                           setNewRole(member.role as Role);
                           setShowRoleModal(true);
                         }}
@@ -302,7 +306,7 @@ export const TeamSettingsSection = () => {
                       {!member.isOwner && (
                         <button
                           onClick={() => {
-                            setSelectedMemberId(member.memberId);
+                            setSelectedMemberId(member.userIdentifier);
                             setShowTransferModal(true);
                           }}
                           className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
@@ -313,7 +317,7 @@ export const TeamSettingsSection = () => {
                       )}
                       <button
                         onClick={() => {
-                          setSelectedMemberId(member.memberId);
+                          setSelectedMemberId(member.userIdentifier);
                           setShowRemoveModal(true);
                         }}
                         className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"

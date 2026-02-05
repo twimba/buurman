@@ -30,12 +30,13 @@ export const TenantSelector = ({
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data: tenants = [], isLoading } = useQuery({
+  const { data: tenantsData, isLoading } = useQuery({
     queryKey: ['tenants', debouncedSearch],
-    queryFn: () => getTenants(debouncedSearch || undefined),
+    queryFn: () => getTenants({ search: debouncedSearch || undefined }),
   });
+  const tenants = tenantsData?.content ?? [];
 
-  const selectedTenant = tenants.find((t) => t.id === value);
+  const selectedTenant = tenants.find((t) => t.identifier === value);
   const displayValue = selectedTenant
     ? `${selectedTenant.firstName} ${selectedTenant.lastName}`
     : '';
@@ -90,7 +91,7 @@ export const TenantSelector = ({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < tenants.length) {
-          handleSelect(tenants[highlightedIndex].id);
+          handleSelect(tenants[highlightedIndex].identifier);
         }
         break;
       case 'Escape':
@@ -151,16 +152,16 @@ export const TenantSelector = ({
           ) : (
             tenants.map((tenant, index) => (
               <button
-                key={tenant.id}
+                key={tenant.identifier}
                 type="button"
                 data-option
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(tenant.id)}
+                onClick={() => handleSelect(tenant.identifier)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
                   highlightedIndex === index
                     ? 'bg-blue-50 dark:bg-blue-900/30'
-                    : tenant.id === value
+                    : tenant.identifier === value
                       ? 'bg-blue-100 dark:bg-blue-900'
                       : ''
                 }`}

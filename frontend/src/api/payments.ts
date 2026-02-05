@@ -11,11 +11,17 @@ import {
   GetPaymentsParams,
 } from '../types/payment';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
+import { PageResponse, PageParams, PaymentStatsResponse } from '@/types/common';
 
 export const getPayments = async (
-  params?: GetPaymentsParams
-): Promise<PaymentResponse[]> => {
+  params?: GetPaymentsParams & PageParams
+): Promise<PageResponse<PaymentResponse>> => {
   const response = await client.get('/payments', { params });
+  return response.data;
+};
+
+export const getPaymentStats = async (): Promise<PaymentStatsResponse> => {
+  const response = await client.get('/payments/stats');
   return response.data;
 };
 
@@ -64,12 +70,12 @@ export const getOverduePayments = async (): Promise<PaymentResponse[]> => {
 };
 
 export const getPaymentsByContract = async (
-  contractId: string
+  contractIdentifier: string
 ): Promise<PaymentResponse[]> => {
   const response = await client.get('/payments', {
-    params: { contractId },
+    params: { contractIdentifier, size: 1000 },
   });
-  return response.data;
+  return response.data.content;
 };
 
 export const uploadPaymentDocument = async (

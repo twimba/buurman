@@ -13,6 +13,8 @@ import {
   useGenerateContractPayments,
 } from '@/hooks/useContractHooks';
 import { usePaymentsByContract } from '@/hooks/usePaymentHooks';
+import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
@@ -218,7 +220,7 @@ export const ContractDetailPage = () => {
     if (!id) return;
     try {
       const newContract = await duplicateContractMutation.mutateAsync(id);
-      navigate(`/contracts/${newContract.id}`);
+      navigate(`/contracts/${newContract.identifier}`);
     } catch (err) {
       console.error('Failed to duplicate contract:', err);
     }
@@ -408,7 +410,7 @@ export const ContractDetailPage = () => {
                     </p>
                     <button
                       onClick={() =>
-                        navigate(`/properties/${contract.property.id}`)
+                        navigate(`/properties/${contract.property.identifier}`)
                       }
                       className="font-medium text-[#5c7cfa] hover:underline text-left"
                     >
@@ -426,7 +428,9 @@ export const ContractDetailPage = () => {
                       Tenant
                     </p>
                     <button
-                      onClick={() => navigate(`/tenants/${contract.tenant.id}`)}
+                      onClick={() =>
+                        navigate(`/tenants/${contract.tenant.identifier}`)
+                      }
                       className="font-medium text-[#5c7cfa] hover:underline text-left"
                     >
                       {contract.tenant.firstName} {contract.tenant.lastName}
@@ -441,9 +445,17 @@ export const ContractDetailPage = () => {
 
             {/* Contract Dates */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
-                Important Dates
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Important Dates
+                </h2>
+                {contract && (
+                  <CalendarFeedButton
+                    feedType={CalendarFeedType.CONTRACT}
+                    entityIdentifier={contract.identifier}
+                  />
+                )}
+              </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
@@ -796,9 +808,11 @@ export const ContractDetailPage = () => {
                       ) : (
                         paginatedPayments.map((payment) => (
                           <tr
-                            key={payment.id}
+                            key={payment.identifier}
                             className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
-                            onClick={() => navigate(`/payments/${payment.id}`)}
+                            onClick={() =>
+                              navigate(`/payments/${payment.identifier}`)
+                            }
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#5c7cfa] dark:text-[#91a7ff]">
                               #{payment.identifier}
@@ -895,7 +909,8 @@ export const ContractDetailPage = () => {
             ) : auditLog.length > 0 ? (
               <div className="space-y-4">
                 {auditLog.map((activity) => {
-                  const isExpanded = expandedAuditItems.has(activity.id);
+                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
+                  const isExpanded = expandedAuditItems.has(activityKey);
                   const hasChanges =
                     activity.action === 'UPDATE' &&
                     activity.changedFields &&
@@ -903,7 +918,7 @@ export const ContractDetailPage = () => {
 
                   return (
                     <div
-                      key={activity.id}
+                      key={activityKey}
                       className="border border-[#e2e6f0] rounded-lg overflow-hidden"
                     >
                       <div
@@ -916,10 +931,10 @@ export const ContractDetailPage = () => {
                           hasChanges &&
                           setExpandedAuditItems((prev) => {
                             const newSet = new Set(prev);
-                            if (newSet.has(activity.id)) {
-                              newSet.delete(activity.id);
+                            if (newSet.has(activityKey)) {
+                              newSet.delete(activityKey);
                             } else {
-                              newSet.add(activity.id);
+                              newSet.add(activityKey);
                             }
                             return newSet;
                           })

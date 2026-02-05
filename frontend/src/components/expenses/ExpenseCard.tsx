@@ -15,7 +15,7 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
   return (
     <div
       className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-      onClick={() => navigate(`/expenses/${expense.id}`)}
+      onClick={() => navigate(`/expenses/${expense.identifier}`)}
     >
       <div className="p-4">
         {/* Header */}

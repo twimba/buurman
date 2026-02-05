@@ -3,7 +3,6 @@ import { ContractStatus } from '@/types/contract';
 import { Home, User } from 'lucide-react';
 
 interface ContractCellProps {
-  contractId: string;
   contractIdentifier: string;
   contractStatus: ContractStatus;
   propertyStreet: string;
@@ -30,7 +29,6 @@ const statusLabels: Record<ContractStatus, string> = {
 };
 
 export const ContractCell = ({
-  contractId,
   contractIdentifier,
   contractStatus,
   propertyStreet,
@@ -46,7 +44,7 @@ export const ContractCell = ({
     if (onClick) {
       onClick(e);
     } else {
-      navigate(`/contracts/${contractId}`);
+      navigate(`/contracts/${contractIdentifier}`);
     }
   };
 

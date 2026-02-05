@@ -10,9 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
@@ -46,6 +44,9 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         UserPrincipal principal;
         List<SimpleGrantedAuthority> authorities;
 
+        // Extract realm roles from JWT (realm_access.roles)
+        List<SimpleGrantedAuthority> realmAuthorities = extractRealmRoles(jwt);
+
         if (membership != null) {
             principal = new UserPrincipal(
                 user.getId(),
@@ -56,7 +57,10 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 membership.getRole(),
                 membership.isOwner()
             );
-            authorities = List.of(new SimpleGrantedAuthority("ROLE_" + membership.getRole()));
+            List<SimpleGrantedAuthority> allAuthorities = new ArrayList<>();
+            allAuthorities.add(new SimpleGrantedAuthority("ROLE_" + membership.getRole()));
+            allAuthorities.addAll(realmAuthorities);
+            authorities = Collections.unmodifiableList(allAuthorities);
         } else {
             // User without team membership (e.g., accepting invitation)
             principal = new UserPrincipal(
@@ -68,7 +72,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 null,
                 false
             );
-            authorities = Collections.emptyList();
+            authorities = realmAuthorities.isEmpty() ? Collections.emptyList() : realmAuthorities;
         }
 
         return new UserAuthentication(principal, authorities);
@@ -105,6 +109,26 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
         // Priority 3: First membership (oldest by invited_at)
         return memberships.get(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<SimpleGrantedAuthority> extractRealmRoles(Jwt jwt) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        if (realmAccess == null) {
+            return Collections.emptyList();
+        }
+        Object rolesObj = realmAccess.get("roles");
+        if (!(rolesObj instanceof Collection<?> roles)) {
+            return Collections.emptyList();
+        }
+        // Only include non-team roles (team roles are handled via membership)
+        Set<String> teamRoles = Set.of("TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER");
+        return roles.stream()
+                .map(Object::toString)
+                .filter(role -> !teamRoles.contains(role))
+                .filter(role -> !role.startsWith("default-roles-"))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .toList();
     }
 
     private User createUserFromJwt(String keycloakId, String email, String name) {

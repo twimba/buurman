@@ -30,7 +30,8 @@ export const ExpenseForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateExpenseRequest>({
-    propertyId: prefilledPropertyId || expense?.property.id || '',
+    propertyIdentifier:
+      prefilledPropertyId || expense?.property.identifier || '',
     category: expense?.category || ExpenseCategory.MAINTENANCE,
     amount: expense?.amount || 0,
     currency: expense?.currency || defaultCurrency || 'EUR',
@@ -43,7 +44,7 @@ export const ExpenseForm = ({
   if (expense && expense !== lastSyncedExpense) {
     setLastSyncedExpense(expense);
     setFormData({
-      propertyId: expense.property.id,
+      propertyIdentifier: expense.property.identifier,
       category: expense.category,
       amount: expense.amount,
       currency: expense.currency,
@@ -56,7 +57,8 @@ export const ExpenseForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.propertyId) newErrors.propertyId = 'Property is required';
+    if (!formData.propertyIdentifier)
+      newErrors.propertyIdentifier = 'Property is required';
     if (formData.amount <= 0)
       newErrors.amount = 'Amount must be greater than 0';
     if (!formData.expenseDate)
@@ -83,14 +85,19 @@ export const ExpenseForm = ({
           Property <span className="text-red-500">*</span>
         </label>
         <PropertySelector
-          value={formData.propertyId || ''}
+          value={formData.propertyIdentifier || ''}
           onChange={(selected) =>
-            setFormData({ ...formData, propertyId: (selected as string) || '' })
+            setFormData({
+              ...formData,
+              propertyIdentifier: (selected as string) || '',
+            })
           }
           disabled={isLoading}
         />
-        {errors.propertyId && (
-          <p className="mt-1 text-sm text-red-500">{errors.propertyId}</p>
+        {errors.propertyIdentifier && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.propertyIdentifier}
+          </p>
         )}
       </div>
 

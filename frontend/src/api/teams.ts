@@ -1,7 +1,6 @@
 import client from './client';
 
 export interface TeamResponse {
-  teamId: string;
   identifier: string;
   teamName: string;
   memberCount: number;
@@ -9,8 +8,7 @@ export interface TeamResponse {
 }
 
 export interface TeamMemberResponse {
-  memberId: string;
-  userId: string;
+  userIdentifier: string;
   email: string;
   name: string;
   role: string;
@@ -20,7 +18,7 @@ export interface TeamMemberResponse {
 }
 
 export interface TransferOwnershipRequest {
-  newOwnerId: string;
+  newOwnerIdentifier: string;
 }
 
 export interface UpdateTeamRequest {
@@ -61,10 +59,9 @@ export interface CreateInvitationRequest {
 }
 
 export interface InvitationResponse {
-  invitationId: string;
   token: string;
   email: string;
-  teamId: string;
+  teamIdentifier: string;
   teamName: string;
   role: string;
   inviterName: string;
@@ -130,10 +127,10 @@ export const acceptInvitation = async (token: string): Promise<void> => {
 
 export const transferOwnership = async (
   teamId: string,
-  newOwnerId: string
+  newOwnerIdentifier: string
 ): Promise<TeamMemberResponse> => {
   const response = await client.post(`/teams/${teamId}/transfer-ownership`, {
-    newOwnerId,
+    newOwnerIdentifier,
   });
   return response.data;
 };

@@ -6,6 +6,7 @@ import java.util.UUID;
 public class Document {
 
     private UUID id;
+    private String identifier;
     private UUID teamId;
     private String entityType;
     private UUID entityId;
@@ -15,8 +16,6 @@ public class Document {
     private String mimeType;
     private String title;
     private String notes;
-    private String category;
-    private Boolean isMainPhoto;
     private UUID uploadedBy;
     private Instant uploadedAt;
     private Instant deletedAt;
@@ -48,6 +47,14 @@ public class Document {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public UUID getTeamId() {
@@ -146,32 +153,11 @@ public class Document {
         this.deletedAt = deletedAt;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Boolean getIsMainPhoto() {
-        return isMainPhoto;
-    }
-
-    public void setIsMainPhoto(Boolean isMainPhoto) {
-        this.isMainPhoto = isMainPhoto;
-    }
-
     public enum EntityType {
         PROPERTY,
         TENANT,
         CONTRACT,
         PAYMENT,
         EXPENSE
-    }
-
-    public enum Category {
-        DOCUMENT,
-        PHOTO
     }
 }

@@ -4,15 +4,16 @@ import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
 import com.buurman.dto.request.MarkPaidRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentReceivalResponse;
 import com.buurman.dto.response.PaymentResponse;
+import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
-import com.buurman.service.AuditService;
-import com.buurman.service.DocumentService;
 import com.buurman.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -36,13 +36,9 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final DocumentService documentService;
-    private final AuditService auditService;
 
-    public PaymentController(PaymentService paymentService, DocumentService documentService, AuditService auditService) {
+    public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
-        this.documentService = documentService;
-        this.auditService = auditService;
     }
 
     @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
@@ -63,24 +59,25 @@ public class PaymentController {
         return paymentService.bulkGeneratePayments(request, principal);
     }
 
-    @Operation(summary = "List payments", description = "Get all payments with optional filters")
+    @Operation(summary = "List payments", description = "Get all payments with optional filters and pagination")
     @GetMapping
-    public List<PaymentResponse> getPayments(
+    public PageResponse<PaymentResponse> getPayments(
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) UUID contractId,
+            @RequestParam(required = false) String contractIdentifier,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        if (contractId != null) {
-            return paymentService.getPaymentsByContract(contractId, principal);
+        // When filtering by contractIdentifier, use existing per-contract list wrapped in PageResponse
+        if (contractIdentifier != null) {
+            List<PaymentResponse> results = paymentService.getPaymentsByContract(contractIdentifier, principal);
+            return PageResponse.of(results, 0, results.size(), results.size());
         }
 
-        if (status != null) {
-            if ("OVERDUE".equalsIgnoreCase(status)) {
-                return paymentService.getOverduePayments(principal);
-            }
-        }
-
-        return paymentService.getAllPayments(principal);
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+        return paymentService.getPaymentsPaginated(principal, status, null, pageRequest);
     }
 
     @Operation(summary = "Get overdue payments", description = "Get all overdue payments for the team")
@@ -90,125 +87,131 @@ public class PaymentController {
         return paymentService.getOverduePayments(principal);
     }
 
+    @Operation(summary = "Get payment stats", description = "Get payment statistics for the team")
+    @GetMapping("/stats")
+    public PaymentStatsResponse getPaymentStats(@AuthenticationPrincipal UserPrincipal principal) {
+        return paymentService.getPaymentStats(principal);
+    }
+
     @Operation(summary = "Get payment details", description = "Get details of a specific payment")
-    @GetMapping("/{id}")
+    @GetMapping("/{identifier}")
     public PaymentResponse getPayment(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.getPayment(id, principal);
+        return paymentService.getPayment(identifier, principal);
     }
 
     @Operation(summary = "Update payment", description = "Update payment information (Admin/Editor)")
-    @PutMapping("/{id}")
+    @PutMapping("/{identifier}")
     public PaymentResponse updatePayment(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody UpdatePaymentRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.updatePayment(id, request, principal);
+        return paymentService.updatePayment(identifier, request, principal);
     }
 
     @Operation(summary = "Mark payment as paid", description = "Mark a payment as paid with payment date (Admin/Editor)")
-    @PutMapping("/{id}/mark-paid")
+    @PutMapping("/{identifier}/mark-paid")
     public PaymentResponse markPaymentAsPaid(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody MarkPaidRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.markPaymentAsPaid(id, request, principal);
+        return paymentService.markPaymentAsPaid(identifier, request, principal);
     }
 
     // --- Receival endpoints ---
 
     @Operation(summary = "Register receival", description = "Register a partial or full payment receival (Admin/Editor)")
-    @PostMapping("/{id}/receivals")
+    @PostMapping("/{identifier}/receivals")
     @ResponseStatus(HttpStatus.CREATED)
     public PaymentResponse registerReceival(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody CreatePaymentReceivalRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.registerReceival(id, request, principal);
+        return paymentService.registerReceival(identifier, request, principal);
     }
 
     @Operation(summary = "List receivals", description = "Get all receivals for a payment")
-    @GetMapping("/{id}/receivals")
+    @GetMapping("/{identifier}/receivals")
     public List<PaymentReceivalResponse> getReceivals(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.getReceivalsForPayment(id, principal);
+        return paymentService.getReceivalsForPayment(identifier, principal);
     }
 
     @Operation(summary = "Update receival", description = "Update a receival's amount, date, or notes (Admin/Editor)")
-    @PutMapping("/{id}/receivals/{receivalId}")
+    @PutMapping("/{identifier}/receivals/{receivalIdentifier}")
     public PaymentResponse updateReceival(
-            @PathVariable UUID id,
-            @PathVariable UUID receivalId,
+            @PathVariable String identifier,
+            @PathVariable String receivalIdentifier,
             @Valid @RequestBody UpdatePaymentReceivalRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.updateReceival(id, receivalId, request, principal);
+        return paymentService.updateReceival(identifier, receivalIdentifier, request, principal);
     }
 
     @Operation(summary = "Delete receival", description = "Soft delete a receival (Admin/Editor)")
-    @DeleteMapping("/{id}/receivals/{receivalId}")
+    @DeleteMapping("/{identifier}/receivals/{receivalIdentifier}")
     public PaymentResponse deleteReceival(
-            @PathVariable UUID id,
-            @PathVariable UUID receivalId,
+            @PathVariable String identifier,
+            @PathVariable String receivalIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return paymentService.deleteReceival(id, receivalId, principal);
+        return paymentService.deleteReceival(identifier, receivalIdentifier, principal);
     }
 
     // --- End receival endpoints ---
 
     @Operation(summary = "Delete payment", description = "Soft delete a payment (Admin only, cannot delete paid payments)")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{identifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePayment(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        paymentService.deletePayment(id, principal);
+        paymentService.deletePayment(identifier, principal);
     }
 
     @Operation(summary = "Upload document", description = "Upload a document for a payment (Admin/Editor)")
-    @PostMapping("/{id}/documents")
+    @PostMapping("/{identifier}/documents")
     @ResponseStatus(HttpStatus.CREATED)
     public DocumentResponse uploadDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String notes,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.uploadDocument(file, "PAYMENT", id, title, notes, principal);
+        return paymentService.uploadDocument(identifier, file, title, notes, principal);
     }
 
     @Operation(summary = "List documents", description = "Get all documents for a payment")
-    @GetMapping("/{id}/documents")
+    @GetMapping("/{identifier}/documents")
     public List<DocumentResponse> getDocuments(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.getDocuments("PAYMENT", id, principal);
+        return paymentService.getDocuments(identifier, principal);
     }
 
     @Operation(summary = "Get download URL", description = "Get presigned download URL for a document")
-    @GetMapping("/documents/{documentId}/download")
+    @GetMapping("/documents/{documentIdentifier}/download")
     public Map<String, String> getDownloadUrl(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        URL url = documentService.getDownloadUrl(documentId, principal);
+        URL url = paymentService.getDocumentDownloadUrl(documentIdentifier, principal);
         return Map.of("url", url.toString());
     }
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
-    @DeleteMapping("/documents/{documentId}")
+    @DeleteMapping("/documents/{documentIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDocument(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        documentService.deleteDocument(documentId, principal);
+        paymentService.deleteDocument(documentIdentifier, principal);
     }
 
     @Operation(summary = "Get audit log", description = "Get audit history for a payment")
-    @GetMapping("/{id}/audit-log")
+    @GetMapping("/{identifier}/audit-log")
     public List<RecentActivityResponse> getPaymentAuditLog(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", id);
+        return paymentService.getAuditLog(identifier, principal);
     }
 }

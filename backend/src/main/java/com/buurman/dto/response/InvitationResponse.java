@@ -1,13 +1,11 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record InvitationResponse(
-    UUID invitationId,
     String token,
     String email,
-    UUID teamId,
+    String teamIdentifier,
     String teamName,
     String role,
     String inviterName,

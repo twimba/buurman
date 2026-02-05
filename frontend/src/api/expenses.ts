@@ -7,11 +7,17 @@ import {
   GetExpensesParams,
 } from '../types/expense';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
+import { PageResponse, PageParams, ExpenseStatsResponse } from '@/types/common';
 
 export const getExpenses = async (
-  params?: GetExpensesParams
-): Promise<ExpenseResponse[]> => {
+  params?: GetExpensesParams & PageParams
+): Promise<PageResponse<ExpenseResponse>> => {
   const response = await client.get('/expenses', { params });
+  return response.data;
+};
+
+export const getExpenseStats = async (): Promise<ExpenseStatsResponse> => {
+  const response = await client.get('/expenses/stats');
   return response.data;
 };
 
@@ -40,12 +46,12 @@ export const deleteExpense = async (id: string): Promise<void> => {
 };
 
 export const getExpensesByProperty = async (
-  propertyId: string
+  propertyIdentifier: string
 ): Promise<ExpenseResponse[]> => {
   const response = await client.get('/expenses', {
-    params: { propertyId },
+    params: { propertyIdentifier, size: 1000 },
   });
-  return response.data;
+  return response.data.content;
 };
 
 export const getExpenseSummary = async (

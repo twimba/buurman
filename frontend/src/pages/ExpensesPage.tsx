@@ -1,7 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
-import { useExpenses } from '@/hooks/useExpenseHooks';
+import { useExpenses, useExpenseStats } from '@/hooks/useExpenseHooks';
+import { usePagination } from '@/hooks/usePagination';
+import { Pagination } from '@/components/ui/Pagination';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { PropertyCell } from '@/components/properties/PropertyCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -10,10 +12,7 @@ import {
   Plus,
   Receipt,
   Filter,
-  Search,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
   TrendingDown,
   DollarSign,
   PieChart,
@@ -21,13 +20,6 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import {
-  format,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  parseISO,
-} from 'date-fns';
 import {
   AreaChart,
   Area,
@@ -53,16 +45,6 @@ const categoryFilters = [
   { value: ExpenseCategory.OTHER, label: 'Other' },
 ];
 
-const ITEMS_PER_PAGE = 10;
-
-type SortField =
-  | 'expenseDate'
-  | 'amount'
-  | 'category'
-  | 'property'
-  | 'description';
-type SortOrder = 'asc' | 'desc';
-
 export const ExpensesPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
@@ -70,145 +52,26 @@ export const ExpensesPage = () => {
   const [categoryFilter, setCategoryFilter] = useState<
     ExpenseCategory | undefined
   >(undefined);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<SortField>('expenseDate');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
 
   const {
-    data: expenses,
+    pageParams,
+    page,
+    size,
+    handlePageChange,
+    handleSizeChange,
+    handleSortChange,
+    resetPage,
+  } = usePagination({ defaultSort: 'expenseDate' });
+
+  const {
+    data: expensesData,
     isLoading,
     error,
-  } = useExpenses(categoryFilter ? { category: categoryFilter } : undefined);
+  } = useExpenses({ category: categoryFilter, ...pageParams });
 
-  const filteredAndSortedExpenses = useMemo(() => {
-    if (!expenses) return [];
+  const { data: expenseStats } = useExpenseStats();
 
-    let filtered = expenses;
-
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (e) =>
-          e.identifier.toLowerCase().includes(search) ||
-          e.description.toLowerCase().includes(search) ||
-          e.property.street.toLowerCase().includes(search) ||
-          formatExpenseCategory(e.category).toLowerCase().includes(search)
-      );
-    }
-
-    filtered.sort((a, b) => {
-      let aVal: string | number;
-      let bVal: string | number;
-
-      switch (sortField) {
-        case 'expenseDate':
-          aVal = new Date(a.expenseDate).getTime();
-          bVal = new Date(b.expenseDate).getTime();
-          break;
-        case 'amount':
-          aVal = a.amount;
-          bVal = b.amount;
-          break;
-        case 'category':
-          aVal = a.category;
-          bVal = b.category;
-          break;
-        case 'property':
-          aVal = a.property.street;
-          bVal = b.property.street;
-          break;
-        case 'description':
-          aVal = a.description;
-          bVal = b.description;
-          break;
-        default:
-          return 0;
-      }
-
-      if (sortOrder === 'asc') {
-        return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [expenses, searchTerm, sortField, sortOrder]);
-
-  // Calculate metrics (before conditional returns)
-  const totalAmount = useMemo(
-    () => expenses?.reduce((sum, expense) => sum + expense.amount, 0) || 0,
-    [expenses]
-  );
-
-  // Top 3 categories by expense amount
-  const topCategories = useMemo(() => {
-    if (!expenses) return [];
-
-    const categoryTotals = expenses.reduce(
-      (acc, expense) => {
-        const category = expense.category;
-        acc[category] = (acc[category] || 0) + expense.amount;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    return Object.entries(categoryTotals)
-      .map(([category, total]) => ({
-        category,
-        total,
-        label: formatExpenseCategory(category as ExpenseCategory),
-      }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 3);
-  }, [expenses]);
-
-  // Calculate last 6 months data
-  const chartData = useMemo(() => {
-    if (!expenses) return [];
-
-    const monthsData = [];
-    const now = new Date();
-
-    for (let i = 5; i >= 0; i--) {
-      const monthDate = subMonths(now, i);
-      const monthStart = startOfMonth(monthDate);
-      const monthEnd = endOfMonth(monthDate);
-
-      const monthExpenses = expenses.filter((e) => {
-        const expenseDate = parseISO(e.expenseDate);
-        return expenseDate >= monthStart && expenseDate <= monthEnd;
-      });
-
-      const total = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
-
-      monthsData.push({
-        month: format(monthDate, 'MMM'),
-        total: Number(total.toFixed(2)),
-      });
-    }
-
-    return monthsData;
-  }, [expenses]);
-
-  const totalPages = Math.ceil(
-    filteredAndSortedExpenses.length / ITEMS_PER_PAGE
-  );
-  const paginatedExpenses = filteredAndSortedExpenses.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
+  const currencySymbol = expenseStats?.currency ?? 'EUR';
 
   if (isLoading) {
     return (
@@ -253,7 +116,7 @@ export const ExpensesPage = () => {
         </div>
 
         {/* Metrics Dashboard */}
-        {expenses && expenses.length > 0 && (
+        {expenseStats && (
           <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Total Expenses */}
             <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
@@ -264,12 +127,11 @@ export const ExpensesPage = () => {
                 <DollarSign className="h-5 w-5 text-red-500" />
               </div>
               <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                EUR {totalAmount.toFixed(2)}
+                {currencySymbol} {expenseStats.totalAmount.toFixed(2)}
               </p>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
                 {categoryFilter &&
-                  ` in ${formatExpenseCategory(categoryFilter)}`}
+                  `in ${formatExpenseCategory(categoryFilter)}`}
               </p>
             </div>
 
@@ -282,7 +144,7 @@ export const ExpensesPage = () => {
                 <PieChart className="h-5 w-5 text-purple-500" />
               </div>
               <div className="space-y-2">
-                {topCategories.map((cat, index) => (
+                {expenseStats.topCategories.slice(0, 3).map((cat, index) => (
                   <div
                     key={cat.category}
                     className="flex items-center justify-between"
@@ -298,15 +160,15 @@ export const ExpensesPage = () => {
                         }`}
                       />
                       <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] truncate">
-                        {cat.label}
+                        {formatExpenseCategory(cat.category as ExpenseCategory)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      EUR {cat.total.toFixed(0)}
+                      {currencySymbol} {cat.total.toFixed(0)}
                     </span>
                   </div>
                 ))}
-                {topCategories.length === 0 && (
+                {expenseStats.topCategories.length === 0 && (
                   <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                     No data available
                   </p>
@@ -323,7 +185,7 @@ export const ExpensesPage = () => {
                 <TrendingDown className="h-5 w-5 text-red-500" />
               </div>
               <ResponsiveContainer width="100%" height={80}>
-                <AreaChart data={chartData}>
+                <AreaChart data={expenseStats.monthlyTrend}>
                   <defs>
                     <linearGradient
                       id="colorExpenses"
@@ -345,7 +207,9 @@ export const ExpensesPage = () => {
                   <YAxis hide />
                   <Tooltip
                     formatter={(value: number | undefined) => [
-                      value !== undefined ? `EUR ${value.toFixed(2)}` : 'N/A',
+                      value !== undefined
+                        ? `${currencySymbol} ${value.toFixed(2)}`
+                        : 'N/A',
                       'Expenses',
                     ]}
                     contentStyle={{ fontSize: 12 }}
@@ -364,24 +228,8 @@ export const ExpensesPage = () => {
           </div>
         )}
 
-        {/* Search and Filter Bar */}
+        {/* Filter Bar */}
         <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
-              <input
-                type="text"
-                placeholder="Search by identifier, description, property, or category..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6]"
-              />
-            </div>
-          </div>
-
           <div className="flex items-center gap-2 mb-2">
             <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
             <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -394,7 +242,7 @@ export const ExpensesPage = () => {
                 key={filter.label}
                 onClick={() => {
                   setCategoryFilter(filter.value);
-                  setCurrentPage(1);
+                  resetPage();
                 }}
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   categoryFilter === filter.value
@@ -409,7 +257,7 @@ export const ExpensesPage = () => {
         </div>
 
         {/* Expenses Table */}
-        {filteredAndSortedExpenses.length > 0 ? (
+        {expensesData?.content && expensesData.content.length > 0 ? (
           <>
             <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm overflow-hidden mb-4">
               <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
@@ -417,7 +265,7 @@ export const ExpensesPage = () => {
                   <tr>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('expenseDate')}
+                      onClick={() => handleSortChange('expenseDate')}
                     >
                       <div className="flex items-center gap-1">
                         Date
@@ -427,52 +275,41 @@ export const ExpensesPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
                       Expense #
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('description')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Description
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                      Description
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('category')}
+                      onClick={() => handleSortChange('category')}
                     >
                       <div className="flex items-center gap-1">
                         Category
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] min-w-[220px]"
-                      onClick={() => handleSort('property')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Property
-                        <ArrowUpDown className="h-4 w-4" />
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider min-w-[220px]">
+                      Property
                     </th>
                     <th
                       className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                      onClick={() => handleSort('amount')}
+                      onClick={() => handleSortChange('amount')}
                     >
                       <div className="flex items-center justify-end gap-1">
                         Amount
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
-                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider"></th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-                  {paginatedExpenses.map((expense) => (
+                  {expensesData.content.map((expense) => (
                     <tr
-                      key={expense.id}
+                      key={expense.identifier}
                       className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
-                      onClick={() => navigate(`/expenses/${expense.id}`)}
+                      onClick={() =>
+                        navigate(`/expenses/${expense.identifier}`)
+                      }
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                         {formatDate(expense.expenseDate)}
@@ -488,7 +325,6 @@ export const ExpensesPage = () => {
                       </td>
                       <td className="px-6 py-3">
                         <PropertyCell
-                          propertyId={expense.property.id}
                           propertyIdentifier={expense.property.identifier}
                           propertyStatus={expense.property.status}
                           propertyType={expense.property.propertyType}
@@ -506,7 +342,7 @@ export const ExpensesPage = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/expenses/${expense.id}`);
+                            navigate(`/expenses/${expense.identifier}`);
                           }}
                           className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
                           title="View expense"
@@ -520,36 +356,15 @@ export const ExpensesPage = () => {
               </table>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between bg-white dark:bg-[#14161f] px-4 py-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <div className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                  Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                  {Math.min(
-                    currentPage * ITEMS_PER_PAGE,
-                    filteredAndSortedExpenses.length
-                  )}{' '}
-                  of {filteredAndSortedExpenses.length} expenses
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 border border-[#c9cfd9] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 border border-[#c9cfd9] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+            {expensesData && (
+              <Pagination
+                page={page}
+                totalPages={expensesData.totalPages}
+                totalElements={expensesData.totalElements}
+                size={size}
+                onPageChange={handlePageChange}
+                onSizeChange={handleSizeChange}
+              />
             )}
           </>
         ) : (
@@ -559,11 +374,11 @@ export const ExpensesPage = () => {
               No expenses found
             </h3>
             <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
-              {categoryFilter || searchTerm
-                ? 'Try adjusting your filters or search'
+              {categoryFilter
+                ? 'Try adjusting your filters'
                 : 'Get started by recording your first expense'}
             </p>
-            {!categoryFilter && !searchTerm && (
+            {!categoryFilter && (
               <button
                 onClick={() => navigate('/expenses/new')}
                 disabled={!canEditData}

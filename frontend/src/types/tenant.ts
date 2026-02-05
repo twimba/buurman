@@ -1,9 +1,7 @@
 import { PropertySummary } from './property';
 
 export interface TenantResponse {
-  id: string;
   identifier: string;
-  teamId: string;
   firstName: string;
   lastName?: string;
   email: string;
@@ -18,7 +16,6 @@ export interface TenantResponse {
 }
 
 export interface TenantSummary {
-  id: string;
   identifier: string;
   firstName: string;
   lastName?: string;
@@ -47,7 +44,7 @@ export interface UpdateTenantRequest {
 }
 
 export interface LinkTenantToPropertyRequest {
-  propertyId: string;
+  propertyIdentifier: string;
   movedInAt?: string;
 }
 
@@ -57,7 +54,6 @@ export enum PropertyTenantActionType {
 }
 
 export interface PropertyTenantHistoryResponse {
-  id: string;
   property: PropertySummary;
   movedInAt?: string;
   movedOutAt?: string;
@@ -80,9 +76,7 @@ export enum AddressStatus {
 }
 
 export interface TenantAddressResponse {
-  id: string;
-  tenantId: string;
-  teamId: string;
+  identifier: string;
   street: string;
   city: string;
   postalCode?: string;

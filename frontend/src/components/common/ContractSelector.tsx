@@ -21,12 +21,13 @@ export const ContractSelector = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const { data: contracts = [], isLoading } = useQuery({
+  const { data: contractsData, isLoading } = useQuery({
     queryKey: ['contracts'],
     queryFn: () => getContracts(),
   });
+  const contracts = contractsData?.content ?? [];
 
-  const selectedContract = contracts.find((c) => c.id === value);
+  const selectedContract = contracts.find((c) => c.identifier === value);
   const displayValue = selectedContract
     ? `Contract #${selectedContract.identifier} - ${selectedContract.property.street}`
     : '';
@@ -89,7 +90,7 @@ export const ContractSelector = ({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < filtered.length) {
-          handleSelect(filtered[highlightedIndex].id);
+          handleSelect(filtered[highlightedIndex].identifier);
         }
         break;
       case 'Escape':
@@ -150,16 +151,16 @@ export const ContractSelector = ({
           ) : (
             filtered.map((contract, index) => (
               <button
-                key={contract.id}
+                key={contract.identifier}
                 type="button"
                 data-option
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(contract.id)}
+                onClick={() => handleSelect(contract.identifier)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
                   highlightedIndex === index
                     ? 'bg-blue-50 dark:bg-blue-900/30'
-                    : contract.id === value
+                    : contract.identifier === value
                       ? 'bg-blue-100 dark:bg-blue-900'
                       : ''
                 }`}

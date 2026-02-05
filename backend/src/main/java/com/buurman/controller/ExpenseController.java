@@ -2,9 +2,12 @@ package com.buurman.controller;
 
 import com.buurman.domain.Expense;
 import com.buurman.dto.request.CreateExpenseRequest;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.ExpenseResponse;
+import com.buurman.dto.response.ExpenseStatsResponse;
+import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuditService;
@@ -22,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -49,98 +51,102 @@ public class ExpenseController {
         return expenseService.createExpense(request, principal);
     }
 
-    @Operation(summary = "List expenses", description = "Get all expenses with optional filters")
+    @Operation(summary = "List expenses", description = "Get all expenses with optional filters and pagination")
     @GetMapping
-    public List<ExpenseResponse> getExpenses(
+    public PageResponse<ExpenseResponse> getExpenses(
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) UUID propertyId,
+            @RequestParam(required = false) String propertyIdentifier,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        if (propertyId != null) {
-            return expenseService.getExpensesByProperty(propertyId, principal);
+        // When filtering by propertyIdentifier, use existing non-paginated method wrapped in PageResponse
+        if (propertyIdentifier != null) {
+            List<ExpenseResponse> results = expenseService.getExpensesByProperty(propertyIdentifier, principal);
+            return PageResponse.of(results, 0, results.size(), results.size());
         }
 
-        if (category != null) {
-            try {
-                Expense.ExpenseCategory expenseCategory = Expense.ExpenseCategory.valueOf(category.toUpperCase());
-                return expenseService.getExpensesByCategory(expenseCategory, principal);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid category: " + category);
-            }
-        }
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+        return expenseService.getExpensesPaginated(principal, category, null, pageRequest);
+    }
 
-        return expenseService.getAllExpenses(principal);
+    @Operation(summary = "Get expense stats", description = "Get expense statistics for the team")
+    @GetMapping("/stats")
+    public ExpenseStatsResponse getExpenseStats(@AuthenticationPrincipal UserPrincipal principal) {
+        return expenseService.getExpenseStats(principal);
     }
 
     @Operation(summary = "Get expense details", description = "Get details of a specific expense")
-    @GetMapping("/{id}")
+    @GetMapping("/{identifier}")
     public ExpenseResponse getExpense(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return expenseService.getExpense(id, principal);
+        return expenseService.getExpense(identifier, principal);
     }
 
     @Operation(summary = "Update expense", description = "Update expense information (Admin/Editor)")
-    @PutMapping("/{id}")
+    @PutMapping("/{identifier}")
     public ExpenseResponse updateExpense(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @Valid @RequestBody UpdateExpenseRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return expenseService.updateExpense(id, request, principal);
+        return expenseService.updateExpense(identifier, request, principal);
     }
 
     @Operation(summary = "Delete expense", description = "Soft delete an expense (Admin only)")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{identifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExpense(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        expenseService.deleteExpense(id, principal);
+        expenseService.deleteExpense(identifier, principal);
     }
 
     @Operation(summary = "Upload document", description = "Upload a document for an expense (Admin/Editor)")
-    @PostMapping("/{id}/documents")
+    @PostMapping("/{identifier}/documents")
     @ResponseStatus(HttpStatus.CREATED)
     public DocumentResponse uploadDocument(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String notes,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.uploadDocument(file, "EXPENSE", id, title, notes, principal);
+        return expenseService.uploadExpenseDocument(identifier, file, title, notes, principal);
     }
 
     @Operation(summary = "List documents", description = "Get all documents for an expense")
-    @GetMapping("/{id}/documents")
+    @GetMapping("/{identifier}/documents")
     public List<DocumentResponse> getDocuments(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return documentService.getDocuments("EXPENSE", id, principal);
+        return expenseService.getExpenseDocuments(identifier, principal);
     }
 
     @Operation(summary = "Get download URL", description = "Get presigned download URL for a document")
-    @GetMapping("/documents/{documentId}/download")
+    @GetMapping("/documents/{documentIdentifier}/download")
     public Map<String, String> getDownloadUrl(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        URL url = documentService.getDownloadUrl(documentId, principal);
+        URL url = documentService.getDownloadUrl(documentIdentifier, principal);
         return Map.of("url", url.toString());
     }
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
-    @DeleteMapping("/documents/{documentId}")
+    @DeleteMapping("/documents/{documentIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDocument(
-            @PathVariable UUID documentId,
+            @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        documentService.deleteDocument(documentId, principal);
+        documentService.deleteDocument(documentIdentifier, principal);
     }
 
     @Operation(summary = "Get audit log", description = "Get audit history for an expense")
-    @GetMapping("/{id}/audit-log")
+    @GetMapping("/{identifier}/audit-log")
     public List<RecentActivityResponse> getExpenseAuditLog(
-            @PathVariable UUID id,
+            @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return auditService.getEntityAuditLog(principal.getTeamId(), "EXPENSE", id);
+        return expenseService.getExpenseAuditLog(identifier, principal);
     }
 }

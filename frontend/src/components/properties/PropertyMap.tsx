@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { MapPin } from 'lucide-react';
 
 interface PropertyMapProps {
@@ -142,7 +142,7 @@ export const PropertyMap = ({
           gestureHandling="cooperative"
           disableDefaultUI={false}
         >
-          <Marker position={coordinates} title={`${street}, ${city}`} />
+          <AdvancedMarker position={coordinates} title={`${street}, ${city}`} />
         </Map>
       </APIProvider>
     </div>
