@@ -25,6 +25,8 @@
         <flyway.version>11.20.3</flyway.version>
         <testcontainers.version>1.20.4</testcontainers.version>
         <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
+        <keycloak.version>26.0.8</keycloak.version>
+        <aws-sdk.version>2.30.0</aws-sdk.version>
     </properties>
 
     <dependencies>
@@ -68,7 +70,7 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>23.0.5</version>
+            <version>${keycloak.version}</version>
         </dependency>
 
         <!-- Database -->
@@ -127,12 +129,12 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.20.0</version>
+            <version>${aws-sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>url-connection-client</artifactId>
-            <version>2.20.0</version>
+            <version>${aws-sdk.version}</version>
         </dependency>
 
         <!-- Monitoring -->

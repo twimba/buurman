@@ -26,5 +26,5 @@
 - [x] 6.2 N+1 in TeamService.getTeamMembers ✅
 - [x] 6.3 N+1 in ReportService ✅
 - [ ] 7.1 No pagination on any endpoint (Large — deferred)
-- [ ] 12.2 Outdated Keycloak/AWS SDK dependencies (Medium — TODO)
+- [x] 12.2 Outdated Keycloak/AWS SDK dependencies ✅
 - [ ] 14.1 Zero test coverage (Large — deferred)

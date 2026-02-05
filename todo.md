@@ -58,3 +58,11 @@ A few more feaatures and improvimentes:
  * type of construction (ie: wood frame, brick, etc)
 
  -> make the UI to manage these as simple as possible; The user should not be overwhelmed by the amount of data points; make it so that they can easily add or remove data points as they want; use good UI/UX practices to make it easy to use and understand; use tooltips or help icons to explain what each data point means and how to fill it out; make it so that they can easily skip any data points they don't want to fill out
+
+- Implement the "- [ ] 7.1 No pagination on any endpoint (Large — deferred)" now. Do follow the best practices and guidelines for pagination in REST APIs; make it so that it is easy to use and understand for the users of the API; make it so that it can be easily used in the frontend application; make it so that it can be easily tested; make it so that it plays nicely with other features like sorting and filtering; 
+AND IMPORTANTLY - UPDATE THE UI TO MAKE USE OF THE PAGINATION; make it so that it is easy to navigate through pages of data; make it so that it shows the total number of items and pages; make it so that it allows the user to select how many items to show per page; make it so that it shows the current page and allows the user to easily go to the next, previous, first, and last page; make it so that it works well on mobile devices too
+
+
+  - 5.1 Response DTOs expose UUIDs — large refactor, deferred to Phase 4
+  - 7.1 No pagination — large, deferred
+  - 14.1 Zero test coverage — large, deferred
