@@ -1,8 +1,5 @@
 
 A few more feaatures and improvimentes:
-- Generate payments
- * Periodically generate payments for active contracts based on the periodicity/value of each cntract
- * This will be deployed in multiple hosts at the same time; so prosably use Quartz with a DB backend
 
 - Calendar integration
  * Make availabe a calendar link with each contract paymetns and another for all the contracts paymetns
