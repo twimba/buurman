@@ -106,20 +106,27 @@ public class TenantAddressService {
                 .toList();
     }
 
-    public TenantAddressResponse getAddress(UUID addressId, UserPrincipal principal) {
+    public TenantAddressResponse getAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
         TenantAddress address = addressRepository.findByIdAndTeamId(addressId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+        if (!address.getTenantId().equals(tenantId)) {
+            throw new IllegalArgumentException("Address does not belong to the specified tenant");
+        }
         return addressMapper.toResponse(address);
     }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantAddressResponse updateAddress(
+            UUID tenantId,
             UUID addressId,
             UpdateTenantAddressRequest request,
             UserPrincipal principal) {
         TenantAddress address = addressRepository.findByIdAndTeamId(addressId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+        if (!address.getTenantId().equals(tenantId)) {
+            throw new IllegalArgumentException("Address does not belong to the specified tenant");
+        }
 
         // Store old values for audit
         TenantAddress oldAddress = new TenantAddress(
@@ -213,9 +220,12 @@ public class TenantAddressService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public void deleteAddress(UUID addressId, UserPrincipal principal) {
+    public void deleteAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
         TenantAddress address = addressRepository.findByIdAndTeamId(addressId, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+        if (!address.getTenantId().equals(tenantId)) {
+            throw new IllegalArgumentException("Address does not belong to the specified tenant");
+        }
 
         addressRepository.softDeleteByIdAndTeamId(addressId, principal.getTeamId());
         log.info("Address soft deleted: {} for tenant {} in team {}",

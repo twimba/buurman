@@ -219,7 +219,7 @@ public class TenantController {
             @PathVariable UUID tenantId,
             @PathVariable UUID addressId,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.getAddress(addressId, principal);
+        return addressService.getAddress(tenantId, addressId, principal);
     }
 
     @Operation(summary = "Update address", description = "Update an existing address (Admin/Editor)")
@@ -229,7 +229,7 @@ public class TenantController {
             @PathVariable UUID addressId,
             @Valid @RequestBody UpdateTenantAddressRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
-        return addressService.updateAddress(addressId, request, principal);
+        return addressService.updateAddress(tenantId, addressId, request, principal);
     }
 
     @Operation(summary = "Delete address", description = "Soft delete an address (Admin/Editor)")
@@ -239,6 +239,6 @@ public class TenantController {
             @PathVariable UUID tenantId,
             @PathVariable UUID addressId,
             @AuthenticationPrincipal UserPrincipal principal) {
-        addressService.deleteAddress(addressId, principal);
+        addressService.deleteAddress(tenantId, addressId, principal);
     }
 }
