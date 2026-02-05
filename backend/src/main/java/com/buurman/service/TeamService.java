@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -60,9 +61,14 @@ public class TeamService {
         }
 
         List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
+
+        // Batch-fetch all users to avoid N+1 queries
+        List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
+        Map<UUID, User> usersById = userRepository.findByIds(userIds).stream()
+                .collect(java.util.stream.Collectors.toMap(User::getId, u -> u));
+
         return members.stream()
-                // TODO: very inefficient, causes N+1 query problem
-            .map(member -> teamMapper.toMemberResponse(member, userRepository.findById(member.getUserId()).orElseThrow(), principal.getUserId()))
+            .map(member -> teamMapper.toMemberResponse(member, usersById.get(member.getUserId()), principal.getUserId()))
             .toList();
     }
 

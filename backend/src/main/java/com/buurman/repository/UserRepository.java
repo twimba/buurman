@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,6 +79,16 @@ public class UserRepository {
                 .set(USERS.DELETED_AT, now)
                 .where(USERS.ID.eq(id))
                 .execute();
+    }
+
+    public List<User> findByIds(Collection<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return dsl.selectFrom(USERS)
+                .where(USERS.ID.in(ids))
+                .fetch()
+                .map(mapper::toDomain);
     }
 
     public Optional<User> findByKeycloakId(String keycloakId) {

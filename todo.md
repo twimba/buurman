@@ -34,3 +34,5 @@ A few more feaatures and improvimentes:
     * Make it so that it can be easly extracted to be used in other applications)
     * Make so that it can be easily used in the public website too
     * Make it look professional, friendly, modern, clean, easy to use, intuitive, simple, elegant, convey trust, convey empathy, convey security, convey reliability
+
+- In the property replace the square meters with "area" and make it a value and a unit (ie: 100 sqm, 100 m2, etc)
