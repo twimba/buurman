@@ -181,7 +181,7 @@ public class TeamService {
             throw new RuntimeException("Access denied");
         }
 
-        TeamMember member = teamMemberRepository.findById(memberId)
+        TeamMember member = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
             .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // Cannot remove self
@@ -202,7 +202,7 @@ public class TeamService {
             throw new RuntimeException("Access denied");
         }
 
-        TeamMember member = teamMemberRepository.findById(memberId)
+        TeamMember member = teamMemberRepository.findByIdAndTeamId(memberId, teamId)
             .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // Cannot change own role

@@ -25,9 +25,10 @@ public class TeamMemberRepository {
         this.mapper = mapper;
     }
 
-    public Optional<TeamMember> findById(UUID id) {
+    public Optional<TeamMember> findByIdAndTeamId(UUID id, UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.ID.eq(id))
+                .where(TEAM_MEMBERS.ID.eq(id)
+                        .and(TEAM_MEMBERS.TEAM_ID.eq(teamId)))
                 .fetchOptional()
                 .map(mapper::toDomain);
     }

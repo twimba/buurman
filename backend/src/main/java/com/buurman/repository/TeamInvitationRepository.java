@@ -25,13 +25,6 @@ public class TeamInvitationRepository {
         this.mapper = mapper;
     }
 
-    public Optional<TeamInvitation> findById(UUID id) {
-        return dsl.selectFrom(TEAM_INVITATIONS)
-                .where(TEAM_INVITATIONS.ID.eq(id))
-                .fetchOptional()
-                .map(mapper::toDomain);
-    }
-
     public TeamInvitation save(TeamInvitation invitation) {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
 
