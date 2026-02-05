@@ -23,4 +23,14 @@ A few more feaatures and improvimentes:
 
 
 
+- Simplify JOOQ migrations; Make it so that each migration is a single file that is easy to read and understand for one single concept. It is OK to change existing migrations we are starting from scratch.
 
+- Create new proper theme for the application that is more modern and clean
+    * Use a modern color palette - I like the current one but maybe a bit more towards the purple, a bit more vibrant
+    * Use modern fonts
+    * Make it responsive for mobile devices
+    * Make it accessible (WCAG 2.1 AA)
+    * Use the technoliges aready in user (TailwindCSS, etc
+    * Make it so that it can be easly extracted to be used in other applications)
+    * Make so that it can be easily used in the public website too
+    * Make it look professional, friendly, modern, clean, easy to use, intuitive, simple, elegant, convey trust, convey empathy, convey security, convey reliability
