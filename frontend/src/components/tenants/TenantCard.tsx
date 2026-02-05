@@ -49,15 +49,16 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
       {/* Current Property */}
       {tenant.currentProperty ? (
-        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-200 px-3 py-2 rounded">
+        <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-2 rounded">
           <Home className="h-4 w-4" />
           <span className="text-sm font-medium">
             {tenant.currentProperty.street}, {tenant.currentProperty.city}
           </span>
         </div>
       ) : (
-        <div className="text-sm text-[#9ca0b8] dark:text-[#5c6180] italic">
-          No property assigned
+        <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] px-3 py-2">
+          <Home className="h-4 w-4" />
+          <span className="text-sm">No property assigned</span>
         </div>
       )}
     </div>

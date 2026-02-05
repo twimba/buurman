@@ -74,6 +74,7 @@ export const PropertyDetailPage = () => {
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
+  const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   // Contracts table state
   const [contractsSearchTerm, setContractsSearchTerm] = useState('');
@@ -498,145 +499,159 @@ export const PropertyDetailPage = () => {
 
         {/* Tab Content */}
         {activeTab === 'info' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
-            {/* Status Badge */}
-            <div>
-              <span
-                className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status]}`}
-              >
-                {statusLabels[property.status]}
-              </span>
-            </div>
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
+              {/* Status Badge */}
+              <div>
+                <span
+                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status]}`}
+                >
+                  {statusLabels[property.status]}
+                </span>
+              </div>
 
-            {/* Specifications Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {property.bedrooms !== null && (
+              {/* Specifications Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {property.bedrooms !== null && (
+                  <div>
+                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                      <Bed className="h-5 w-5" />
+                      <span className="text-sm font-medium">Bedrooms</span>
+                    </div>
+                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {property.bedrooms}
+                    </p>
+                  </div>
+                )}
+
+                {property.bathrooms !== null && (
+                  <div>
+                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                      <Bath className="h-5 w-5" />
+                      <span className="text-sm font-medium">Bathrooms</span>
+                    </div>
+                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {property.bathrooms}
+                    </p>
+                  </div>
+                )}
+
+                {property.squareMeters !== null && (
+                  <div>
+                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                      <Ruler className="h-5 w-5" />
+                      <span className="text-sm font-medium">Square Meters</span>
+                    </div>
+                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {property.squareMeters}m²
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                    <Bed className="h-5 w-5" />
-                    <span className="text-sm font-medium">Bedrooms</span>
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-sm font-medium">Type</span>
                   </div>
-                  <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.bedrooms}
+                  <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {property.propertyType.replace('_', ' ')}
                   </p>
                 </div>
-              )}
 
-              {property.bathrooms !== null && (
                 <div>
                   <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                    <Bath className="h-5 w-5" />
-                    <span className="text-sm font-medium">Bathrooms</span>
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-sm font-medium">Street</span>
                   </div>
-                  <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.bathrooms}
+                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {property.street}
                   </p>
                 </div>
-              )}
 
-              {property.squareMeters !== null && (
                 <div>
                   <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                    <Ruler className="h-5 w-5" />
-                    <span className="text-sm font-medium">Square Meters</span>
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-sm font-medium">City</span>
                   </div>
-                  <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.squareMeters}m²
+                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {property.city}
                   </p>
                 </div>
-              )}
 
-              <div>
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  <MapPin className="h-5 w-5" />
-                  <span className="text-sm font-medium">Type</span>
+                <div>
+                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-sm font-medium">Postal Code</span>
+                  </div>
+                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {property.postalCode}
+                  </p>
                 </div>
-                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {property.propertyType.replace('_', ' ')}
-                </p>
+
+                <div>
+                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-sm font-medium">Country</span>
+                  </div>
+                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {property.country}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  <MapPin className="h-5 w-5" />
-                  <span className="text-sm font-medium">Street</span>
-                </div>
-                <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {property.street}
-                </p>
+              {/* Map */}
+              <div className="pt-6 border-t">
+                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+                  Location
+                </h3>
+                <PropertyMap
+                  street={property.street}
+                  city={property.city}
+                  postalCode={property.postalCode}
+                  country={property.country}
+                  latitude={property.latitude}
+                  longitude={property.longitude}
+                />
               </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  <MapPin className="h-5 w-5" />
-                  <span className="text-sm font-medium">City</span>
-                </div>
-                <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {property.city}
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  <MapPin className="h-5 w-5" />
-                  <span className="text-sm font-medium">Postal Code</span>
-                </div>
-                <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {property.postalCode}
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  <MapPin className="h-5 w-5" />
-                  <span className="text-sm font-medium">Country</span>
-                </div>
-                <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {property.country}
-                </p>
-              </div>
-            </div>
-
-            {/* Map */}
-            <div className="pt-6 border-t">
-              <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
-                Location
-              </h3>
-              <PropertyMap
-                street={property.street}
-                city={property.city}
-                postalCode={property.postalCode}
-                country={property.country}
-                latitude={property.latitude}
-                longitude={property.longitude}
-              />
             </div>
 
             {/* Metadata */}
-            <div className="pt-6 border-t">
-              <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
-                Metadata
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                    Created:
-                  </span>{' '}
-                  <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {formatDate(property.createdAt)} at{' '}
-                    {new Date(property.createdAt).toLocaleTimeString()}
-                  </span>
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <button
+                onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Metadata
+                </h2>
+                {isMetadataExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                )}
+              </button>
+              {isMetadataExpanded && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+                  <div>
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Created:
+                    </span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatDate(property.createdAt)} at{' '}
+                      {new Date(property.createdAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Last Updated:
+                    </span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatDate(property.updatedAt)} at{' '}
+                      {new Date(property.updatedAt).toLocaleTimeString()}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                    Last Updated:
-                  </span>{' '}
-                  <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {formatDate(property.updatedAt)} at{' '}
-                    {new Date(property.updatedAt).toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         )}

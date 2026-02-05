@@ -56,6 +56,7 @@ export const TenantDetailPage = () => {
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
+  const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   const { formatDate } = useFormatDate();
 
@@ -459,6 +460,45 @@ export const TenantDetailPage = () => {
                 <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] italic">
                   No active contracts for this tenant
                 </p>
+              )}
+            </div>
+
+            {/* Metadata */}
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+              <button
+                onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Metadata
+                </h2>
+                {isMetadataExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                )}
+              </button>
+              {isMetadataExpanded && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
+                  <div>
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Created:
+                    </span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatDate(tenant.createdAt)} at{' '}
+                      {new Date(tenant.createdAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      Last Updated:
+                    </span>{' '}
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatDate(tenant.updatedAt)} at{' '}
+                      {new Date(tenant.updatedAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
               )}
             </div>
           </div>

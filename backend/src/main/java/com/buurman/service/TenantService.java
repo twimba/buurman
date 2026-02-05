@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyTenantHistory;
@@ -13,6 +14,7 @@ import com.buurman.dto.response.PropertyTenantHistoryResponse;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyTenantHistoryRepository;
@@ -45,6 +47,7 @@ public class TenantService {
     private final UserRepository userRepository;
     private final DocumentRepository documentRepository;
     private final S3StorageService s3StorageService;
+    private final ContractRepository contractRepository;
 
     public TenantService(
             TenantRepository tenantRepository,
@@ -55,7 +58,8 @@ public class TenantService {
             AuditService auditService,
             UserRepository userRepository,
             DocumentRepository documentRepository,
-            S3StorageService s3StorageService) {
+            S3StorageService s3StorageService,
+            ContractRepository contractRepository) {
         this.tenantRepository = tenantRepository;
         this.propertyRepository = propertyRepository;
         this.historyRepository = historyRepository;
@@ -65,6 +69,7 @@ public class TenantService {
         this.userRepository = userRepository;
         this.documentRepository = documentRepository;
         this.s3StorageService = s3StorageService;
+        this.contractRepository = contractRepository;
     }
 
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -315,6 +320,28 @@ public class TenantService {
                         property.getPropertyType(),
                         property.getStatus()
                 );
+            }
+        } else {
+            // If no explicit link, check for active contracts
+            List<Contract> contracts = contractRepository.findByTenantId(tenant.getId(), teamId);
+            Optional<Contract> activeContract = contracts.stream()
+                    .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+                    .findFirst();
+
+            if (activeContract.isPresent()) {
+                Property property = propertyRepository.findByIdAndTeamId(activeContract.get().getPropertyId(), teamId)
+                        .orElse(null);
+                if (property != null) {
+                    propertySummary = new PropertySummary(
+                            property.getId(),
+                            property.getIdentifier(),
+                            property.getStreet(),
+                            property.getCity(),
+                            property.getPostalCode(),
+                            property.getPropertyType(),
+                            property.getStatus()
+                    );
+                }
             }
         }
 
