@@ -42,7 +42,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -136,9 +139,7 @@ public class PaymentService {
         LocalDate today = LocalDate.now();
         payments.forEach(payment -> updatePaymentStatus(payment, today));
 
-        return payments.stream()
-                .map(payment -> enrichPaymentResponse(payment, principal.getTeamId()))
-                .toList();
+        return enrichPaymentResponses(payments, principal.getTeamId());
     }
 
     @Transactional(readOnly = true)
@@ -151,18 +152,14 @@ public class PaymentService {
         LocalDate today = LocalDate.now();
         payments.forEach(payment -> updatePaymentStatus(payment, today));
 
-        return payments.stream()
-                .map(payment -> enrichPaymentResponse(payment, principal.getTeamId()))
-                .toList();
+        return enrichPaymentResponses(payments, principal.getTeamId());
     }
 
     @Transactional(readOnly = true)
     public List<PaymentResponse> getOverduePayments(UserPrincipal principal) {
         List<Payment> payments = paymentRepository.findOverduePayments(principal.getTeamId());
 
-        return payments.stream()
-                .map(payment -> enrichPaymentResponse(payment, principal.getTeamId()))
-                .toList();
+        return enrichPaymentResponses(payments, principal.getTeamId());
     }
 
     @Transactional
@@ -485,9 +482,7 @@ public class PaymentService {
                     "Generated " + generatedPayments.size() + " payments for " + month);
         }
 
-        return generatedPayments.stream()
-                .map(payment -> enrichPaymentResponse(payment, principal.getTeamId()))
-                .toList();
+        return enrichPaymentResponses(generatedPayments, principal.getTeamId());
     }
 
     // Helper methods
@@ -509,6 +504,90 @@ public class PaymentService {
                 payment.getDueDate().isBefore(today)) {
             payment.setStatus(Payment.PaymentStatus.OVERDUE);
         }
+    }
+
+    private List<PaymentResponse> enrichPaymentResponses(List<Payment> payments, UUID teamId) {
+        if (payments.isEmpty()) {
+            return List.of();
+        }
+
+        List<UUID> paymentIds = payments.stream().map(Payment::getId).toList();
+
+        // Batch-fetch receivals
+        List<PaymentReceival> allReceivals = receivalRepository.findByPaymentIdsAndTeamId(paymentIds, teamId);
+        Map<UUID, List<PaymentReceival>> receivalsByPaymentId = allReceivals.stream()
+                .collect(Collectors.groupingBy(PaymentReceival::getPaymentId));
+
+        // Batch-fetch contracts
+        Set<UUID> contractIds = payments.stream().map(Payment::getContractId).collect(Collectors.toSet());
+        Map<UUID, Contract> contractsById = contractRepository.findByIdsAndTeamId(contractIds, teamId).stream()
+                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+
+        // Batch-fetch properties and tenants from contracts
+        Set<UUID> propertyIds = contractsById.values().stream()
+                .map(Contract::getPropertyId).filter(java.util.Objects::nonNull).collect(Collectors.toSet());
+        Set<UUID> tenantIds = contractsById.values().stream()
+                .map(Contract::getTenantId).filter(java.util.Objects::nonNull).collect(Collectors.toSet());
+
+        Map<UUID, com.buurman.domain.Property> propertiesById = propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
+                .collect(Collectors.toMap(com.buurman.domain.Property::getId, Function.identity()));
+        Map<UUID, com.buurman.domain.Tenant> tenantsById = tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
+                .collect(Collectors.toMap(com.buurman.domain.Tenant::getId, Function.identity()));
+
+        // Batch-fetch documents for all payments
+        List<com.buurman.domain.Document> allDocs = documentRepository.findByEntityTypeAndEntityIdsAndTeamId("PAYMENT", paymentIds, teamId);
+        Map<UUID, List<com.buurman.domain.Document>> docsByPaymentId = allDocs.stream()
+                .collect(Collectors.groupingBy(com.buurman.domain.Document::getEntityId));
+
+        // Build responses
+        List<PaymentResponse> responses = new ArrayList<>(payments.size());
+        for (Payment payment : payments) {
+            PaymentResponse base = paymentMapper.toResponse(payment);
+
+            List<PaymentReceival> receivals = receivalsByPaymentId.getOrDefault(payment.getId(), List.of());
+            BigDecimal receivedAmount = receivals.stream()
+                    .map(PaymentReceival::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal balance = payment.getAmount().subtract(receivedAmount);
+            List<PaymentReceivalResponse> receivalResponses = receivals.stream()
+                    .map(receivalMapper::toResponse)
+                    .toList();
+
+            Contract contract = contractsById.get(payment.getContractId());
+            ContractSummary contractSummary = contract != null ? contractMapper.toSummary(contract) : null;
+            PropertySummary propertySummary = null;
+            TenantSummary tenantSummary = null;
+
+            if (contract != null) {
+                com.buurman.domain.Property property = contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
+                com.buurman.domain.Tenant tenant = contract.getTenantId() != null ? tenantsById.get(contract.getTenantId()) : null;
+                if (property != null) propertySummary = propertyMapper.toSummary(property);
+                if (tenant != null) tenantSummary = tenantMapper.toSummary(tenant);
+            }
+
+            List<com.buurman.domain.Document> paymentDocs = docsByPaymentId.getOrDefault(payment.getId(), List.of());
+            DocumentResponse proofOfPayment = paymentDocs.stream()
+                    .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
+                    .findFirst()
+                    .map(documentMapper::toResponse)
+                    .orElse(null);
+            DocumentResponse receipt = paymentDocs.stream()
+                    .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
+                    .findFirst()
+                    .map(documentMapper::toResponse)
+                    .orElse(null);
+
+            responses.add(new PaymentResponse(
+                    base.id(), base.identifier(), base.teamId(),
+                    contractSummary, tenantSummary, propertySummary,
+                    base.amount(), base.currency(),
+                    receivedAmount, balance,
+                    base.paymentDate(), base.dueDate(), base.status(), base.notes(),
+                    proofOfPayment, receipt, receivalResponses,
+                    base.createdAt(), base.updatedAt()
+            ));
+        }
+        return responses;
     }
 
     private PaymentResponse enrichPaymentResponse(Payment payment, UUID teamId) {

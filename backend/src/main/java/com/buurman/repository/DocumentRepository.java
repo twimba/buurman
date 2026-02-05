@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,6 +138,20 @@ public class DocumentRepository {
         }
 
         return query.orderBy(DOCUMENTS.UPLOADED_AT.desc())
+                .fetch()
+                .map(mapper::toDomain);
+    }
+
+    public List<Document> findByEntityTypeAndEntityIdsAndTeamId(String entityType, Collection<UUID> entityIds, UUID teamId) {
+        if (entityIds == null || entityIds.isEmpty()) {
+            return List.of();
+        }
+        return dsl.selectFrom(DOCUMENTS)
+                .where(DOCUMENTS.ENTITY_TYPE.eq(entityType)
+                        .and(DOCUMENTS.ENTITY_ID.in(entityIds))
+                        .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                        .and(DOCUMENTS.DELETED_AT.isNull()))
+                .orderBy(DOCUMENTS.UPLOADED_AT.desc())
                 .fetch()
                 .map(mapper::toDomain);
     }

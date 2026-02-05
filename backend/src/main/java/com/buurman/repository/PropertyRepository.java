@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -107,6 +108,18 @@ public class PropertyRepository {
         }
 
         return property;
+    }
+
+    public List<Property> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return dsl.selectFrom(PROPERTIES)
+                .where(PROPERTIES.ID.in(ids)
+                        .and(PROPERTIES.TEAM_ID.eq(teamId))
+                        .and(PROPERTIES.DELETED_AT.isNull()))
+                .fetch()
+                .map(mapper::toDomain);
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

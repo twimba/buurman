@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +35,18 @@ public class ContractRepository {
                         .and(CONTRACTS.TEAM_ID.eq(teamId))
                         .and(CONTRACTS.DELETED_AT.isNull()))
                 .fetchOptional()
+                .map(mapper::toDomain);
+    }
+
+    public List<Contract> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return dsl.selectFrom(CONTRACTS)
+                .where(CONTRACTS.ID.in(ids)
+                        .and(CONTRACTS.TEAM_ID.eq(teamId))
+                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .fetch()
                 .map(mapper::toDomain);
     }
 
