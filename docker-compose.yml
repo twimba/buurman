@@ -70,6 +70,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: dev
     container_name: buurman-backend
     user: "0:991"  # Run as root with docker group to access socket
     env_file: .env
