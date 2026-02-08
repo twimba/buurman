@@ -29,8 +29,8 @@ public interface TeamMapper {
     @Mapping(target = "teamIdentifier", source = "teamIdentifier")
     @Mapping(target = "teamName", source = "teamName")
     @Mapping(target = "inviterName", source = "inviterName")
-    @Mapping(target = "invitationUrl", expression = "java(\"http://localhost:5173/invitation/\" + invitation.getToken())")
+    @Mapping(target = "invitationUrl", expression = "java(invitationBaseUrl + invitation.getToken())")
     @Mapping(target = "isExpired", expression = "java(invitation.getExpiresAt().isBefore(java.time.Instant.now()))")
     @Mapping(target = "isAccepted", expression = "java(invitation.getAcceptedAt() != null)")
-    InvitationResponse toInvitationResponse(TeamInvitation invitation, String teamIdentifier, String teamName, String inviterName);
+    InvitationResponse toInvitationResponse(TeamInvitation invitation, String teamIdentifier, String teamName, String inviterName, String invitationBaseUrl);
 }

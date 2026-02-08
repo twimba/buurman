@@ -22,9 +22,9 @@ A professional single-page marketing website for Buurman property management pla
 
 ## Links
 
-- Register: https://thebuurman.com/register
-- Login: https://thebuurman.com/login
-- Contact: hello@thebuurman.com
+- Register: https://buurman.io/register
+- Login: https://buurman.io/login
+- Contact: hello@buurman.io
 
 ## Deployment
 
@@ -44,7 +44,7 @@ scp index.html user@server:/var/www/html/
 
 1. Replace screenshot placeholders with actual app screenshots
 2. Add the actual logo file (optional - currently using a placeholder)
-3. Update domain links if different from thebuurman.com
+3. Update domain links if different from buurman.io
 4. Add Google Analytics or tracking code if needed
 5. Add favicon and social media preview images
 

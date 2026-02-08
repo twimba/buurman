@@ -52,17 +52,17 @@
  
  ## Application domain
  Have the applications be on their own subdomain:
-  * landlord portal: app.buurman.com
-  * tenant portal: tenant.buurman.com
-  * backoffice: backoffice.buurman.com
-  * public website: www.buurman.com
+  * landlord portal: app.buurman.io
+  * tenant portal: tenant.buurman.io
+  * backoffice: backoffice.buurman.io
+  * public website: www.buurman.io
 
- For the local development environment, we can the `local.buurman.com` domain, ie:
-  * landlord portal: app.local.buurman.com
-  * tenant portal: tenant.local.buurman.com
-  * backoffice: backoffice.local.buurman.com
-  * public website: www.local.buurman.com
-You can assume that all .local.buurman.com subdomains point to localhost
+ For the local development environment, we can the `local.buurman.io` domain, ie:
+  * landlord portal: app.local.buurman.io
+  * tenant portal: tenant.local.buurman.io
+  * backoffice: backoffice.local.buurman.io
+  * public website: www.local.buurman.io
+You can assume that all .local.buurman.io subdomains point to localhost
 
  ## Feature flags
   Implement a feature flag system to be able to enable/disable features in the application without having to deploy new code. This will allow us to test new features with a subset of users, and to quickly disable features if we find any issues with them.

@@ -89,7 +89,7 @@ app:
     max-file-size: 52428800
     allowed-mime-types: application/pdf,image/jpeg,image/png,image/gif
   email:
-    from: ${EMAIL_FROM:noreply@buurman.com}
+    from: ${EMAIL_FROM:noreply@buurman.io}
     from-name: ${EMAIL_FROM_NAME:Buurman}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}

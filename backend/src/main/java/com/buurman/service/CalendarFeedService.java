@@ -40,7 +40,7 @@ public class CalendarFeedService {
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
 
-    @Value("${app.api.base-url:http://localhost:8080}")
+    @Value("${app.api.base-url}")
     private String apiBaseUrl;
 
     public CalendarFeedService(CalendarFeedRepository calendarFeedRepository,

@@ -18,6 +18,6 @@ public class SwaggerConfig {
                         .version("0.1.0")
                         .contact(new Contact()
                                 .name("Buurman Team")
-                                .email("info@buurman.com")));
+                                .email("info@buurman.io")));
     }
 }

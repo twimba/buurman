@@ -15,6 +15,7 @@ import com.buurman.dto.response.TeamResponse;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,9 @@ public class TeamService {
     private final UserRepository userRepository;
     private final TeamMapper teamMapper;
     private final EmailService emailService;
+
+    @Value("${app.email.base-url}/invitation/")
+    private String invitationBaseUrl;
 
     public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       TeamInvitationRepository invitationRepository, UserRepository userRepository,
@@ -101,7 +105,7 @@ public class TeamService {
         String inviterName = principal.getName();
         emailService.sendTeamInvitation(invitation, inviterName, team.getName());
 
-        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
     }
 
     public InvitationResponse getInvitation(String token) {
@@ -120,7 +124,7 @@ public class TeamService {
             }
         }
 
-        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
     }
 
     @Transactional
