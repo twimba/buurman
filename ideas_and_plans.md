@@ -2,6 +2,20 @@
   TO Verify
 ------------------------
 
+## Traefic for reverse proxy and load balancing
+ Introduce traefic in docker compose to handle routing and load balancing between the different applications.
+ In the local environment:
+  app.local.buurman.io - should be the hostname for the app (frontend)
+  keycloak.local.buurman.io - should be hostname for keycloak
+  api.local.buurman.io - should be the hostname for the backend
+  mailhog.local.buurman.io - should be the hostname for the mailhog service
+  localstack.local.buurman.io - should be the hostname for the localstack service
+  postgresql.local.buurman.io - should be the hostname for the localstack service
+
+ Assume that all hostnames above resolve to `127.0.0.1` as it is conifgured in the DNS server.
+
+ Running the local environment should work nicely but also running everything from docker should also work the same with the same hostnames from the host machine.
+
 ------------------------
   QUEUE
 ------------------------
@@ -37,8 +51,6 @@
    * View payment instructions
  
 # Infrastructure
- ## Traefic for reverse proxy and load balancing
- Introduce traefic in docker compose to handle routing and load balancing between the different applications (ie: landlord portal, tenant portal, backoffice, etc) and to handle SSL termination, etc
  
  ## Application domain
  Have the applications be on their own subdomain:
@@ -67,12 +79,8 @@ You can assume that all .local.buurman.io subdomains point to localhost
 ## 
 
 # User management
-  ## Verify email and phone number
-   Verify phone number when user signs up using SMS verification code using Twilio.
-  
-  ## email verificaiton
-   Verify email when user signs up using email verification code
-   While the user has not verified their email address they should not be able to access the application, and they should see a message asking them to verify their email address, and a button to resend the verification email.
+  ## Verify phone number
+   Verify phone number when user signs up to using SMS verification code using Twilio.
    
 # UI/UX
  ## Review Template

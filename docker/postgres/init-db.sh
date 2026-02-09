@@ -9,4 +9,5 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
     CREATE USER ${DB_USERNAME:-buurman} WITH PASSWORD '${DB_PASSWORD:-buurman}';
     CREATE DATABASE buurman WITH OWNER ${DB_USERNAME:-buurman};
     GRANT ALL PRIVILEGES ON DATABASE buurman TO ${DB_USERNAME:-buurman};
+    GRANT pg_monitor TO ${DB_USERNAME:-buurman};
 EOSQL
