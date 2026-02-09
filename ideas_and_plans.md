@@ -2,19 +2,16 @@
   TO Verify
 ------------------------
 
-## Traefic for reverse proxy and load balancing
- Introduce traefic in docker compose to handle routing and load balancing between the different applications.
- In the local environment:
-  app.local.buurman.io - should be the hostname for the app (frontend)
-  keycloak.local.buurman.io - should be hostname for keycloak
-  api.local.buurman.io - should be the hostname for the backend
-  mailhog.local.buurman.io - should be the hostname for the mailhog service
-  localstack.local.buurman.io - should be the hostname for the localstack service
-  postgresql.local.buurman.io - should be the hostname for the localstack service
+[INFO] No modified files        : This code generation run has not produced any file modifications.
+This means, the schema has not changed, and no other parameters (jOOQ version, driver version, database version,
+and any configuration elements) have changed either.
 
- Assume that all hostnames above resolve to `127.0.0.1` as it is conifgured in the DNS server.
+In automated builds, it is recommended to prevent unnecessary code generation runs. This run took: 890.437ms
+Possible means to prevent this:
+- Use manual code generation and check in generated sources: https://www.jooq.org/doc/latest/manual/code-generation/codegen-version-control/
+- Use schema version providers: https://www.jooq.org/doc/latest/manual/code-generation/codegen-advanced/codegen-config-database/codegen-database-version-providers/
+- Use gradle tasks and inputs: https://docs.gradle.org/current/userguide/incremental_build.html
 
- Running the local environment should work nicely but also running everything from docker should also work the same with the same hostnames from the host machine.
 
 ------------------------
   QUEUE
@@ -54,17 +51,10 @@
  
  ## Application domain
  Have the applications be on their own subdomain:
-  * landlord portal: app.buurman.io
+  * Main application (landlord) portal: app.buurman.io
   * tenant portal: tenant.buurman.io
   * backoffice: backoffice.buurman.io
   * public website: www.buurman.io
-
- For the local development environment, we can the `local.buurman.io` domain, ie:
-  * landlord portal: app.local.buurman.io
-  * tenant portal: tenant.local.buurman.io
-  * backoffice: backoffice.local.buurman.io
-  * public website: www.local.buurman.io
-You can assume that all .local.buurman.io subdomains point to localhost
 
  ## Feature flags
   Implement a feature flag system to be able to enable/disable features in the application without having to deploy new code. This will allow us to test new features with a subset of users, and to quickly disable features if we find any issues with them.
@@ -159,5 +149,5 @@ You can assume that all .local.buurman.io subdomains point to localhost
  ## Execute a full infrastructure security review
   Produce a report with findings, recomendations and action plan to address any issues found in the review
  
- ## Tests
-  LOL 
+# Tests
+ LOL 😂

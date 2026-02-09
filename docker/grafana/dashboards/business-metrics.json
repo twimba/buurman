@@ -34,10 +34,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
       "id": 1,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Properties Created (Total)",
+      "title": "Properties",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_property_created_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_properties_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -49,10 +49,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
       "id": 2,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Contracts Created (Total)",
+      "title": "Contracts",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_contract_created_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -64,10 +64,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Payments Created (Total)",
+      "title": "Payments",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_payment_created_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_payments_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -79,10 +79,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Payments Marked Paid (Total)",
+      "title": "Expenses",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_payment_marked_paid_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_expenses_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -94,10 +94,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
       "id": 5,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Tenants Created (Total)",
+      "title": "Tenants",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_tenant_created_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -109,10 +109,10 @@
       "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
       "id": 6,
       "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Teams Registered (Total)",
+      "title": "Teams",
       "type": "stat",
       "targets": [
-        { "expr": "sum(buurman_team_registered_total{job=\"$job\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_teams_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -131,10 +131,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "id": 10,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "New Properties Over Time",
+      "title": "Properties Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(buurman_property_created_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Created", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_properties_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Properties", "refId": "A" }
       ]
     },
     {
@@ -146,10 +146,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
       "id": 11,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Properties Created (Cumulative)",
+      "title": "Tenants Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum(buurman_property_created_total{job=\"$job\"})", "legendFormat": "Total Properties", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Tenants", "refId": "A" }
       ]
     },
     {
@@ -172,10 +172,29 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
       "id": 20,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Payment Status Transitions",
+      "title": "Payments by Status",
+      "type": "piechart",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_payments_by_status{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "{{status}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byRegexp", "options": ".*PAID.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*OVERDUE.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byRegexp", "options": ".*PENDING.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 21,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "title": "Payments by Status Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (to_status) (rate(buurman_payment_status_changed_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "-> {{to_status}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_payments_by_status{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "{{status}}", "refId": "A" }
       ]
     },
     {
@@ -184,29 +203,13 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
-      "id": 21,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Payments Created Over Time",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "rate(buurman_payment_created_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Created", "refId": "A" },
-        { "expr": "rate(buurman_payment_marked_paid_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Marked Paid", "refId": "B" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
-        "overrides": []
-      },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
       "id": 22,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Receival Activity",
+      "title": "Payments Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (action) (rate(buurman_payment_receival_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "{{action}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_payments_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Total Payments", "refId": "A" }
       ]
     },
     {
@@ -218,10 +221,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
       "id": 23,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Bulk Payment Generation",
+      "title": "Expenses Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(buurman_payment_bulk_generated_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Bulk Generations", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_expenses_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Total Expenses", "refId": "A" }
       ]
     },
     {
@@ -240,27 +243,25 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
       "id": 30,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Contract Lifecycle (Status Transitions)",
-      "type": "timeseries",
+      "title": "Contracts by Status",
+      "type": "piechart",
       "targets": [
-        { "expr": "sum by (to_status) (rate(buurman_contract_status_changed_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "-> {{to_status}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_by_status{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "{{status}}", "refId": "A" }
       ]
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
         "overrides": []
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
       "id": 31,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "New Contracts / Duplicated / Reopened",
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "title": "Contracts by Status Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(buurman_contract_created_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Created", "refId": "A" },
-        { "expr": "rate(buurman_contract_duplicated_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Duplicated", "refId": "B" },
-        { "expr": "rate(buurman_contract_reopened_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Reopened", "refId": "C" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_by_status{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "{{status}}", "refId": "A" }
       ]
     },
     {
@@ -279,12 +280,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 41 },
       "id": 40,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Tenant Activity",
+      "title": "Tenants Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(buurman_tenant_created_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Created", "refId": "A" },
-        { "expr": "rate(buurman_tenant_linked_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Linked", "refId": "B" },
-        { "expr": "rate(buurman_tenant_unlinked_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Unlinked", "refId": "C" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Tenants", "refId": "A" }
       ]
     },
     {
@@ -296,12 +295,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 41 },
       "id": 41,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Document Operations Over Time",
+      "title": "Contracts Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum(rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Uploads", "refId": "A" },
-        { "expr": "sum(rate(buurman_document_download_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Downloads", "refId": "B" },
-        { "expr": "sum(rate(buurman_document_delete_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Deletes", "refId": "C" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Contracts", "refId": "A" }
       ]
     },
     {
@@ -320,10 +317,10 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 50 },
       "id": 50,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Team Growth",
+      "title": "Teams Count Over Time",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(buurman_team_registered_total{job=\"$job\"}[$__rate_interval])", "legendFormat": "Teams Registered", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_teams_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Teams", "refId": "A" }
       ]
     },
     {
@@ -338,7 +335,7 @@
       "title": "Audit Activity by Entity Type",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (entity_type) (rate(buurman_audit_log_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "{{entity_type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_audit_log_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
       ]
     },
     {
@@ -357,7 +354,7 @@
       "title": "Audit Actions Distribution",
       "type": "piechart",
       "targets": [
-        { "expr": "sum by (action) (increase(buurman_audit_log_total{job=\"$job\"}[$__range]))", "legendFormat": "{{action}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (action) (increase(buurman_audit_log_total{job=\"$job\"}[$__range]))", "instant": false, "range": true, "legendFormat": "{{action}}", "refId": "A" }
       ]
     }
   ],
@@ -374,6 +371,7 @@
         "name": "job",
         "options": [ { "selected": true, "text": "backend", "value": "backend" } ],
         "query": "backend",
+        "skipUrlSync": false,
         "type": "custom"
       }
     ]

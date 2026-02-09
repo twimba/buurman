@@ -37,7 +37,7 @@
       "title": "Database Size",
       "type": "stat",
       "targets": [
-        { "expr": "pg_database_size_bytes{datname=\"buurman\"}", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "pg_database_size_bytes{datname=\"buurman\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -52,7 +52,7 @@
       "title": "Pool Utilization",
       "type": "stat",
       "targets": [
-        { "expr": "hikaricp_connections_active{pool=\"HikariPool-1\"} / hikaricp_connections_max{pool=\"HikariPool-1\"}", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "hikaricp_connections_active{pool=\"HikariPool-1\"} / hikaricp_connections_max{pool=\"HikariPool-1\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -67,7 +67,7 @@
       "title": "Cache Hit Ratio",
       "type": "stat",
       "targets": [
-        { "expr": "pg_stat_database_blks_hit{datname=\"buurman\"} / (pg_stat_database_blks_hit{datname=\"buurman\"} + pg_stat_database_blks_read{datname=\"buurman\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "pg_stat_database_blks_hit{datname=\"buurman\"} / (pg_stat_database_blks_hit{datname=\"buurman\"} + pg_stat_database_blks_read{datname=\"buurman\"})", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -82,7 +82,7 @@
       "title": "Transaction Rate",
       "type": "stat",
       "targets": [
-        { "expr": "rate(pg_stat_database_xact_commit{datname=\"buurman\"}[$__rate_interval]) + rate(pg_stat_database_xact_rollback{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_xact_commit{datname=\"buurman\"}[$__rate_interval]) + rate(pg_stat_database_xact_rollback{datname=\"buurman\"}[$__rate_interval])", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -97,7 +97,7 @@
       "title": "Active Backends",
       "type": "stat",
       "targets": [
-        { "expr": "pg_stat_database_numbackends{datname=\"buurman\"}", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "pg_stat_database_numbackends{datname=\"buurman\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -112,7 +112,7 @@
       "title": "Active Locks",
       "type": "stat",
       "targets": [
-        { "expr": "sum(pg_locks_count{datname=\"buurman\"})", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(pg_locks_count{datname=\"buurman\"})", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -136,10 +136,10 @@
       "title": "Connection Pool Status",
       "type": "timeseries",
       "targets": [
-        { "expr": "hikaricp_connections_active{pool=\"HikariPool-1\"}", "legendFormat": "Active", "refId": "A" },
-        { "expr": "hikaricp_connections_idle{pool=\"HikariPool-1\"}", "legendFormat": "Idle", "refId": "B" },
-        { "expr": "hikaricp_connections_pending{pool=\"HikariPool-1\"}", "legendFormat": "Pending", "refId": "C" },
-        { "expr": "hikaricp_connections_max{pool=\"HikariPool-1\"}", "legendFormat": "Max", "refId": "D" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "hikaricp_connections_active{pool=\"HikariPool-1\"}", "instant": false, "range": true, "legendFormat": "Active", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "hikaricp_connections_idle{pool=\"HikariPool-1\"}", "instant": false, "range": true, "legendFormat": "Idle", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "hikaricp_connections_pending{pool=\"HikariPool-1\"}", "instant": false, "range": true, "legendFormat": "Pending", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "hikaricp_connections_max{pool=\"HikariPool-1\"}", "instant": false, "range": true, "legendFormat": "Max", "refId": "D" }
       ]
     },
     {
@@ -154,8 +154,8 @@
       "title": "Connection Latency",
       "type": "timeseries",
       "targets": [
-        { "expr": "histogram_quantile(0.95, rate(hikaricp_connections_acquire_seconds_bucket{pool=\"HikariPool-1\"}[$__rate_interval]))", "legendFormat": "Acquire P95", "refId": "A" },
-        { "expr": "histogram_quantile(0.95, rate(hikaricp_connections_usage_seconds_bucket{pool=\"HikariPool-1\"}[$__rate_interval]))", "legendFormat": "Usage P95", "refId": "B" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, rate(hikaricp_connections_acquire_seconds_bucket{pool=\"HikariPool-1\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Acquire P95", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, rate(hikaricp_connections_usage_seconds_bucket{pool=\"HikariPool-1\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Usage P95", "refId": "B" }
       ]
     },
     {
@@ -170,7 +170,7 @@
       "title": "Connection Timeouts",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(hikaricp_connections_timeout_total{pool=\"HikariPool-1\"}[$__rate_interval])", "legendFormat": "Timeouts", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(hikaricp_connections_timeout_total{pool=\"HikariPool-1\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Timeouts", "refId": "A" }
       ]
     },
     {
@@ -195,8 +195,8 @@
       "title": "Transaction Rate (Commit vs Rollback)",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(pg_stat_database_xact_commit{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Commit", "refId": "A" },
-        { "expr": "rate(pg_stat_database_xact_rollback{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Rollback", "refId": "B" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_xact_commit{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Commit", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_xact_rollback{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Rollback", "refId": "B" }
       ]
     },
     {
@@ -211,10 +211,10 @@
       "title": "Row Operations Rate",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(pg_stat_database_tup_fetched{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Fetched", "refId": "A" },
-        { "expr": "rate(pg_stat_database_tup_inserted{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Inserted", "refId": "B" },
-        { "expr": "rate(pg_stat_database_tup_updated{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Updated", "refId": "C" },
-        { "expr": "rate(pg_stat_database_tup_deleted{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Deleted", "refId": "D" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_tup_fetched{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Fetched", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_tup_inserted{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Inserted", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_tup_updated{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Updated", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_tup_deleted{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Deleted", "refId": "D" }
       ]
     },
     {
@@ -236,7 +236,7 @@
       "title": "Buffer Cache Hit Ratio",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval]) / (rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval]) + rate(pg_stat_database_blks_read{datname=\"buurman\"}[$__rate_interval]))", "legendFormat": "Hit Ratio", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval]) / (rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval]) + rate(pg_stat_database_blks_read{datname=\"buurman\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Hit Ratio", "refId": "A" }
       ]
     },
     {
@@ -251,8 +251,8 @@
       "title": "Block I/O",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Cache Hits", "refId": "A" },
-        { "expr": "rate(pg_stat_database_blks_read{datname=\"buurman\"}[$__rate_interval])", "legendFormat": "Disk Reads", "refId": "B" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_blks_hit{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Cache Hits", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(pg_stat_database_blks_read{datname=\"buurman\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Disk Reads", "refId": "B" }
       ]
     },
     {
@@ -274,7 +274,7 @@
       "title": "Tables with Most Dead Tuples (Vacuum Needed)",
       "type": "table",
       "targets": [
-        { "expr": "topk(15, pg_stat_user_tables_n_dead_tup{schemaname=\"public\"})", "legendFormat": "", "refId": "A", "format": "table", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "topk(15, pg_stat_user_tables_n_dead_tup{schemaname=\"public\"})", "legendFormat": "", "refId": "A", "format": "table", "instant": true, "range": false }
       ],
       "transformations": [
         { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true, "instance": true, "schemaname": true }, "renameByName": { "relname": "Table", "Value": "Dead Tuples" } } }
@@ -292,7 +292,7 @@
       "title": "Sequential vs Index Scans (Top Tables)",
       "type": "table",
       "targets": [
-        { "expr": "topk(15, rate(pg_stat_user_tables_seq_scan{schemaname=\"public\"}[$__rate_interval]))", "legendFormat": "", "refId": "A", "format": "table", "instant": true }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "topk(15, rate(pg_stat_user_tables_seq_scan{schemaname=\"public\"}[$__rate_interval]))", "legendFormat": "", "refId": "A", "format": "table", "instant": true, "range": false }
       ],
       "transformations": [
         { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "job": true, "instance": true, "schemaname": true }, "renameByName": { "relname": "Table", "Value": "Seq Scans" } } }
@@ -317,7 +317,7 @@
       "title": "Locks by Mode",
       "type": "timeseries",
       "targets": [
-        { "expr": "pg_locks_count{datname=\"buurman\"}", "legendFormat": "{{mode}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "pg_locks_count{datname=\"buurman\"}", "instant": false, "range": true, "legendFormat": "{{mode}}", "refId": "A" }
       ]
     }
   ],

@@ -40,7 +40,7 @@ public class MetricsDemoDataGenerator {
     @Scheduled(fixedRate = 5000)
     public void generatePaymentMetrics() {
         if (random.nextDouble() < 0.3) {
-            metricsService.incrementCounter("payment.created.total");
+            metricsService.incrementCounter("payment.total");
             String currency = CURRENCIES[random.nextInt(CURRENCIES.length)];
             double amount = 500 + random.nextDouble() * 2500;
             metricsService.recordHistogram("payment.amount", amount,
@@ -69,7 +69,7 @@ public class MetricsDemoDataGenerator {
     @Scheduled(fixedRate = 8000)
     public void generateContractMetrics() {
         if (random.nextDouble() < 0.15) {
-            metricsService.incrementCounter("contract.created.total");
+            metricsService.incrementCounter("contract.total");
             double rent = 800 + random.nextDouble() * 3000;
             metricsService.recordHistogram("contract.rent.amount", rent, "currency", "EUR");
         }
@@ -89,11 +89,11 @@ public class MetricsDemoDataGenerator {
     @Scheduled(fixedRate = 10000)
     public void generatePropertyAndTenantMetrics() {
         if (random.nextDouble() < 0.1) {
-            metricsService.incrementCounter("property.created.total");
+            metricsService.incrementCounter("property.total");
         }
 
         if (random.nextDouble() < 0.12) {
-            metricsService.incrementCounter("tenant.created.total");
+            metricsService.incrementCounter("tenant.total");
         }
 
         if (random.nextDouble() < 0.08) {

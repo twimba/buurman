@@ -37,7 +37,7 @@
       "title": "S3 Operations/s",
       "type": "stat",
       "targets": [
-        { "expr": "sum(rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -52,7 +52,7 @@
       "title": "S3 P95 Latency",
       "type": "stat",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum by (le) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -67,7 +67,7 @@
       "title": "S3 Error Rate",
       "type": "stat",
       "targets": [
-        { "expr": "sum(rate(buurman_s3_operation_total{job=\"$job\", result=\"failure\"}[$__rate_interval])) / sum(rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_s3_operation_total{job=\"$job\", result=\"failure\"}[$__rate_interval])) / sum(rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -82,7 +82,7 @@
       "title": "Avg Upload Size",
       "type": "stat",
       "targets": [
-        { "expr": "buurman_document_upload_bytes_sum{job=\"$job\"} / buurman_document_upload_bytes_count{job=\"$job\"}", "legendFormat": "", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_document_upload_bytes_sum{job=\"$job\"} / buurman_document_upload_bytes_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -97,7 +97,7 @@
       "title": "S3 Operations by Type",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (operation) (rate(buurman_s3_operation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "legendFormat": "{{operation}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (operation) (rate(buurman_s3_operation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{operation}}", "refId": "A" }
       ]
     },
     {
@@ -112,7 +112,7 @@
       "title": "S3 Latency by Operation (P95)",
       "type": "timeseries",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "legendFormat": "{{operation}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, operation) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{operation}}", "refId": "A" }
       ]
     },
     {
@@ -127,7 +127,7 @@
       "title": "Document Upload Size by Entity Type",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (entity_type) (rate(buurman_document_upload_bytes_sum{job=\"$job\"}[$__rate_interval]))", "legendFormat": "{{entity_type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_document_upload_bytes_sum{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
       ]
     },
     {
@@ -149,7 +149,7 @@
       "title": "Emails Sent by Template",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
       ]
     },
     {
@@ -164,7 +164,7 @@
       "title": "Email Delivery Failures",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
       ]
     },
     {
@@ -179,7 +179,7 @@
       "title": "Email Send Latency (P95)",
       "type": "timeseries",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum by (le, template) (rate(buurman_email_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, template) (rate(buurman_email_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
       ]
     },
     {
@@ -201,7 +201,7 @@
       "title": "Document Uploads by Entity Type",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (entity_type) (rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "{{entity_type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
       ]
     },
     {
@@ -216,10 +216,10 @@
       "title": "Document Operations",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum(rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Uploads", "refId": "A" },
-        { "expr": "sum(rate(buurman_document_download_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Downloads", "refId": "B" },
-        { "expr": "sum(rate(buurman_document_delete_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Deletes", "refId": "C" },
-        { "expr": "sum(rate(buurman_document_bulk_download_total{job=\"$job\"}[$__rate_interval]))", "legendFormat": "Bulk Downloads", "refId": "D" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Uploads", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_download_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Downloads", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_delete_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Deletes", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_bulk_download_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Bulk Downloads", "refId": "D" }
       ]
     },
     {
@@ -241,7 +241,7 @@
       "title": "Export Generation by Type",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "legendFormat": "{{type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
       ]
     },
     {
@@ -256,7 +256,7 @@
       "title": "Export Generation Duration (P95)",
       "type": "timeseries",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum by (le, type) (rate(buurman_export_generation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "legendFormat": "{{type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, type) (rate(buurman_export_generation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
       ]
     },
     {
@@ -271,7 +271,7 @@
       "title": "Most Popular Export Type",
       "type": "piechart",
       "targets": [
-        { "expr": "sum by (type) (increase(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__range]))", "legendFormat": "{{type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (increase(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__range]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
       ]
     },
     {
@@ -286,7 +286,7 @@
       "title": "Export Generation Failures",
       "type": "timeseries",
       "targets": [
-        { "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "legendFormat": "{{type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
       ]
     }
   ],
@@ -303,6 +303,7 @@
         "name": "job",
         "options": [ { "selected": true, "text": "backend", "value": "backend" } ],
         "query": "backend",
+        "skipUrlSync": false,
         "type": "custom"
       }
     ]

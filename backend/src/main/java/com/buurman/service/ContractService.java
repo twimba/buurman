@@ -133,7 +133,7 @@ public class ContractService {
 
         Contract savedContract = contractRepository.save(contract);
 
-        metricsService.incrementCounter("contract.created.total");
+        metricsService.incrementCounter("contract.total");
         metricsService.recordHistogram("contract.rent.amount", savedContract.getRentAmount().doubleValue(),
                 "currency", savedContract.getCurrency());
 

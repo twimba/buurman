@@ -136,7 +136,7 @@ public class PaymentService {
 
         Payment savedPayment = paymentRepository.save(payment);
 
-        metricsService.incrementCounter("payment.created.total");
+        metricsService.incrementCounter("payment.total");
         metricsService.recordHistogram("payment.amount", savedPayment.getAmount().doubleValue(),
                 "currency", savedPayment.getCurrency(), "status", savedPayment.getStatus().name());
 

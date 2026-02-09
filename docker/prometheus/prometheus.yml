@@ -12,6 +12,11 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ["backend:8081"]
+        labels:
+          environment: "docker"
+      - targets: ["host.docker.internal:8081"]
+        labels:
+          environment: "local"
 
   - job_name: "postgres-exporter"
     static_configs:

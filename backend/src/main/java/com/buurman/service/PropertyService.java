@@ -84,7 +84,7 @@ public class PropertyService {
 
         Property savedProperty = propertyRepository.save(property);
 
-        metricsService.incrementCounter("property.created.total");
+        metricsService.incrementCounter("property.total");
 
         log.info("Property created: {} for team {}", savedProperty.getIdentifier(), principal.getTeamId());
 

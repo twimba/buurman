@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.6.7
     container_name: buurman-traefik
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -75,7 +75,7 @@ services:
       - buurman-network
 
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:4.13.1
     container_name: buurman-localstack
     environment:
       DEBUG: ${DEBUG:-0}
@@ -96,7 +96,7 @@ services:
       - buurman-network
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.29.0
     container_name: buurman-mailpit
     ports:
       - "1025:1025"  # SMTP — direct port mapping (no Traefik)
@@ -179,8 +179,10 @@ services:
       - buurman-network
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.9.1
     container_name: buurman-prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -205,7 +207,7 @@ services:
       - buurman-network
 
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:latest
+    image: prometheuscommunity/postgres-exporter:v0.19.0
     container_name: buurman-postgres-exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${DB_USERNAME:-buurman}:${DB_PASSWORD:-buurman}@postgres:5432/buurman?sslmode=disable"
@@ -222,7 +224,7 @@ services:
       - buurman-network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.3.2
     container_name: buurman-grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin

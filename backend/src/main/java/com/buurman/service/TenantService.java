@@ -112,7 +112,7 @@ public class TenantService {
 
         Tenant savedTenant = tenantRepository.save(tenant);
 
-        metricsService.incrementCounter("tenant.created.total");
+        metricsService.incrementCounter("tenant.total");
 
         log.info("Tenant created: {} for team {}", savedTenant.getIdentifier(), principal.getTeamId());
 
