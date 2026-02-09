@@ -16,6 +16,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,7 @@ public class CalendarFeedService {
         this.tenantRepository = tenantRepository;
     }
 
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public List<CalendarFeedResponse> getUserFeeds(UserPrincipal principal) {
         List<CalendarFeed> feeds = calendarFeedRepository.findByUserIdAndTeamId(
                 principal.getUserId(), principal.getTeamId());
@@ -62,6 +64,7 @@ public class CalendarFeedService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public CalendarFeedResponse createFeed(CreateCalendarFeedRequest request, UserPrincipal principal) {
         UUID contractId = null;
         UUID propertyId = null;
@@ -124,6 +127,7 @@ public class CalendarFeedService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public CalendarFeedResponse rotateFeedToken(String identifier, UserPrincipal principal) {
         CalendarFeed feed = calendarFeedRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Calendar feed not found"));
@@ -139,6 +143,7 @@ public class CalendarFeedService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
     public void deleteFeed(String identifier, UserPrincipal principal) {
         CalendarFeed feed = calendarFeedRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Calendar feed not found"));

@@ -2,6 +2,7 @@ package com.buurman.util;
 
 public enum EntityPrefix {
     AMN("AMN", "Amenities"),
+    CPI("CPI", "Contract Payment Instructions"),
     CAL("CAL", "Calendar Feeds"),
     CON("CON", "Contracts"),
     DOC("DOC", "Documents"),
@@ -9,6 +10,7 @@ public enum EntityPrefix {
     GRP("GRP", "Generated Reports"),
     PRE("PRE", "Payment Receivals"),
     PAY("PAY", "Payments"),
+    PIN("PIN", "Payment Instructions"),
     PHO("PHO", "Photos"),
     PRO("PRO", "Properties"),
     POA("POA", "Property Outdoor Areas"),

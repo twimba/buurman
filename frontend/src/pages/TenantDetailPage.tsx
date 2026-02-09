@@ -937,14 +937,24 @@ export const TenantDetailPage = () => {
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal count fields
-                                if (field === 'documentCount' || field === 'photoCount') return null;
+                                if (
+                                  field === 'documentCount' ||
+                                  field === 'photoCount'
+                                )
+                                  return null;
 
                                 // Skip marker fields for edit operations (fileName is context only)
-                                if (field === 'photoEdited' || field === 'documentEdited') return null;
+                                if (
+                                  field === 'photoEdited' ||
+                                  field === 'documentEdited'
+                                )
+                                  return null;
                                 if (
                                   field === 'fileName' &&
-                                  (activity.changedFields?.photoEdited || activity.changedFields?.documentEdited)
-                                ) return null;
+                                  (activity.changedFields?.photoEdited ||
+                                    activity.changedFields?.documentEdited)
+                                )
+                                  return null;
 
                                 // Special handling for document/photo upload/delete operations
                                 if (

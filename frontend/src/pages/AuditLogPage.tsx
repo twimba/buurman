@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { useTeam } from '@/context/TeamContext';
 
 const entityTypeFilters = [
   { value: undefined, label: 'All Types' },
@@ -69,6 +70,13 @@ const getEntityTypeColor = (entityType: string) => {
 export const AuditLogPage = () => {
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
+  const { canEditTeamSettings, isLoading: isTeamLoading } = useTeam();
+
+  useEffect(() => {
+    if (!isTeamLoading && !canEditTeamSettings) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isTeamLoading, canEditTeamSettings, navigate]);
   const [entityTypeFilter, setEntityTypeFilter] = useState<string | undefined>(
     undefined
   );

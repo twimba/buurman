@@ -1,0 +1,204 @@
+package com.buurman.repository;
+
+import com.buurman.domain.PaymentInstruction;
+import com.buurman.util.EntityPrefix;
+import com.buurman.util.UlidGenerator;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
+import org.springframework.stereotype.Repository;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class PaymentInstructionRepository {
+
+    private static final Table<?> TABLE = DSL.table("payment_instructions");
+    private static final Field<UUID> ID = DSL.field("id", UUID.class);
+    private static final Field<String> IDENTIFIER = DSL.field("identifier", String.class);
+    private static final Field<UUID> TEAM_ID = DSL.field("team_id", UUID.class);
+    private static final Field<String> NAME = DSL.field("name", String.class);
+    private static final Field<String> DESCRIPTION = DSL.field("description", String.class);
+    private static final Field<String> PAYMENT_METHOD = DSL.field("payment_method", String.class);
+    private static final Field<String> BANK_NAME = DSL.field("bank_name", String.class);
+    private static final Field<String> ACCOUNT_HOLDER_NAME = DSL.field("account_holder_name", String.class);
+    private static final Field<String> IBAN = DSL.field("iban", String.class);
+    private static final Field<String> BIC_SWIFT = DSL.field("bic_swift", String.class);
+    private static final Field<String> ACCOUNT_NUMBER = DSL.field("account_number", String.class);
+    private static final Field<String> ROUTING_NUMBER = DSL.field("routing_number", String.class);
+    private static final Field<String> PAYMENT_REFERENCE = DSL.field("payment_reference", String.class);
+    private static final Field<String> ADDITIONAL_DETAILS = DSL.field("additional_details", String.class);
+    private static final Field<Boolean> IS_DEFAULT = DSL.field("is_default", Boolean.class);
+    private static final Field<LocalDateTime> CREATED_AT = DSL.field("created_at", LocalDateTime.class);
+    private static final Field<LocalDateTime> UPDATED_AT = DSL.field("updated_at", LocalDateTime.class);
+    private static final Field<UUID> CREATED_BY = DSL.field("created_by", UUID.class);
+    private static final Field<UUID> UPDATED_BY = DSL.field("updated_by", UUID.class);
+    private static final Field<LocalDateTime> DELETED_AT = DSL.field("deleted_at", LocalDateTime.class);
+
+    private final DSLContext dsl;
+
+    public PaymentInstructionRepository(DSLContext dsl) {
+        this.dsl = dsl;
+    }
+
+    public PaymentInstruction save(PaymentInstruction pi) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+
+        if (pi.getId() == null) {
+            UUID id = UUID.randomUUID();
+            String identifier = UlidGenerator.generate(EntityPrefix.PIN);
+            LocalDateTime createdAt = pi.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(pi.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = pi.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
+            dsl.insertInto(TABLE)
+                    .set(ID, id)
+                    .set(IDENTIFIER, identifier)
+                    .set(TEAM_ID, pi.getTeamId())
+                    .set(NAME, pi.getName())
+                    .set(DESCRIPTION, pi.getDescription())
+                    .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
+                    .set(BANK_NAME, pi.getBankName())
+                    .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
+                    .set(IBAN, pi.getIban())
+                    .set(BIC_SWIFT, pi.getBicSwift())
+                    .set(ACCOUNT_NUMBER, pi.getAccountNumber())
+                    .set(ROUTING_NUMBER, pi.getRoutingNumber())
+                    .set(PAYMENT_REFERENCE, pi.getPaymentReference())
+                    .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+                    .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
+                    .set(CREATED_AT, createdAt)
+                    .set(UPDATED_AT, updatedAt)
+                    .set(CREATED_BY, pi.getCreatedBy())
+                    .set(UPDATED_BY, pi.getUpdatedBy())
+                    .execute();
+
+            pi.setId(id);
+            pi.setIdentifier(identifier);
+            pi.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            pi.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+        } else {
+            LocalDateTime updatedAt = pi.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
+            dsl.update(TABLE)
+                    .set(NAME, pi.getName())
+                    .set(DESCRIPTION, pi.getDescription())
+                    .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
+                    .set(BANK_NAME, pi.getBankName())
+                    .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
+                    .set(IBAN, pi.getIban())
+                    .set(BIC_SWIFT, pi.getBicSwift())
+                    .set(ACCOUNT_NUMBER, pi.getAccountNumber())
+                    .set(ROUTING_NUMBER, pi.getRoutingNumber())
+                    .set(PAYMENT_REFERENCE, pi.getPaymentReference())
+                    .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+                    .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
+                    .set(UPDATED_AT, updatedAt)
+                    .set(UPDATED_BY, pi.getUpdatedBy())
+                    .where(ID.eq(pi.getId())
+                            .and(TEAM_ID.eq(pi.getTeamId()))
+                            .and(DELETED_AT.isNull()))
+                    .execute();
+        }
+        return pi;
+    }
+
+    public List<PaymentInstruction> findAllByTeamId(UUID teamId) {
+        return dsl.selectFrom(TABLE)
+                .where(TEAM_ID.eq(teamId)
+                        .and(DELETED_AT.isNull()))
+                .orderBy(CREATED_AT.asc())
+                .fetch()
+                .map(this::toDomain);
+    }
+
+    public Optional<PaymentInstruction> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+        return dsl.selectFrom(TABLE)
+                .where(IDENTIFIER.eq(identifier)
+                        .and(TEAM_ID.eq(teamId))
+                        .and(DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(this::toDomain);
+    }
+
+    public Optional<PaymentInstruction> findByIdAndTeamId(UUID id, UUID teamId) {
+        return dsl.selectFrom(TABLE)
+                .where(ID.eq(id)
+                        .and(TEAM_ID.eq(teamId))
+                        .and(DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(this::toDomain);
+    }
+
+    public Optional<PaymentInstruction> findDefaultByTeamId(UUID teamId) {
+        return dsl.selectFrom(TABLE)
+                .where(TEAM_ID.eq(teamId)
+                        .and(IS_DEFAULT.eq(true))
+                        .and(DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(this::toDomain);
+    }
+
+    public void clearDefaultByTeamId(UUID teamId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(TABLE)
+                .set(IS_DEFAULT, false)
+                .set(UPDATED_AT, now)
+                .where(TEAM_ID.eq(teamId)
+                        .and(IS_DEFAULT.eq(true))
+                        .and(DELETED_AT.isNull()))
+                .execute();
+    }
+
+    public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(TABLE)
+                .set(DELETED_AT, now)
+                .where(ID.eq(id)
+                        .and(TEAM_ID.eq(teamId)))
+                .execute();
+    }
+
+    private PaymentInstruction toDomain(Record record) {
+        PaymentInstruction pi = new PaymentInstruction();
+        pi.setId(record.get(ID));
+        pi.setIdentifier(record.get(IDENTIFIER));
+        pi.setTeamId(record.get(TEAM_ID));
+        pi.setName(record.get(NAME));
+        pi.setDescription(record.get(DESCRIPTION));
+        pi.setPaymentMethod(PaymentInstruction.PaymentMethod.valueOf(record.get(PAYMENT_METHOD)));
+        pi.setBankName(record.get(BANK_NAME));
+        pi.setAccountHolderName(record.get(ACCOUNT_HOLDER_NAME));
+        pi.setIban(record.get(IBAN));
+        pi.setBicSwift(record.get(BIC_SWIFT));
+        pi.setAccountNumber(record.get(ACCOUNT_NUMBER));
+        pi.setRoutingNumber(record.get(ROUTING_NUMBER));
+        pi.setPaymentReference(record.get(PAYMENT_REFERENCE));
+        pi.setAdditionalDetails(record.get(ADDITIONAL_DETAILS));
+        pi.setIsDefault(record.get(IS_DEFAULT));
+        pi.setCreatedAt(toInstant(record.get("created_at")));
+        pi.setUpdatedAt(toInstant(record.get("updated_at")));
+        pi.setCreatedBy(record.get(CREATED_BY));
+        pi.setUpdatedBy(record.get(UPDATED_BY));
+        pi.setDeletedAt(toInstant(record.get("deleted_at")));
+        return pi;
+    }
+
+    private static Instant toInstant(Object val) {
+        if (val instanceof LocalDateTime ldt) return ldt.toInstant(ZoneOffset.UTC);
+        if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
+        return null;
+    }
+}

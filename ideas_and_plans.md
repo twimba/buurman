@@ -2,6 +2,7 @@
   TO Verify
 ------------------------
 
+
 ------------------------
   QUEUE
 ------------------------
@@ -26,16 +27,6 @@
  ## Tenant-Landlord Communication
  Messaging center where tenants and landlods can communicate - like a persistent chat, but ominichannel - email, web, sms, etc
  
-# Contracts
- ## Configuarable Tenant's payment instructions
- Allow the user to configure payment instructions:
-  * There should be a a section for how the landlord handles payments
-  * there should be a possibity to define payment methods/instructions
-  * each contract should be able to link to a specific payment method/instruction
-  * Payment instructions for each contract can change with time - so they should have effective dates
-  * the user can see, edit, delete the payment instructions, and see the history of changes to the payment instructions
- 
-
 # Tenant Portal
   ## New application for tenants
   A new application - Tenant portal where tenants can:

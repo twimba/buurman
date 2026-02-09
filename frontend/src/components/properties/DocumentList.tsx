@@ -126,12 +126,9 @@ export const DocumentList = ({
   const handleUpload = async () => {
     if (!selectedFile) return;
     const cleanNotes = uploadNotes.trim();
-    const notesValue = !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;
-    await onUpload(
-      selectedFile,
-      uploadTitle || undefined,
-      notesValue
-    );
+    const notesValue =
+      !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;
+    await onUpload(selectedFile, uploadTitle || undefined, notesValue);
     setShowUploadModal(false);
     setSelectedFile(null);
     setUploadTitle('');
@@ -373,11 +370,15 @@ export const DocumentList = ({
         <DocumentPreviewModal
           document={previewDocument}
           onClose={() => setPreviewDocument(null)}
-          onEdit={readOnly ? undefined : () => {
-            const doc = previewDocument;
-            setPreviewDocument(null);
-            setEditingDocument(doc);
-          }}
+          onEdit={
+            readOnly
+              ? undefined
+              : () => {
+                  const doc = previewDocument;
+                  setPreviewDocument(null);
+                  setEditingDocument(doc);
+                }
+          }
         />
       )}
 

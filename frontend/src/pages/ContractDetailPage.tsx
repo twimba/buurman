@@ -13,6 +13,7 @@ import {
   useGenerateContractPayments,
 } from '@/hooks/useContractHooks';
 import { usePaymentsByContract } from '@/hooks/usePaymentHooks';
+import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
 import { CalendarFeedType } from '@/types/calendarFeed';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -554,6 +555,9 @@ export const ContractDetailPage = () => {
                 )}
               </div>
             </div>
+
+            {/* Payment Instructions */}
+            <ContractPaymentInstructionSection contractIdentifier={id!} />
 
             {/* Additional Terms */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">

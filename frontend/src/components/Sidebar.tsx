@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Home,
@@ -9,14 +9,17 @@ import {
   Folder,
   Image,
   BarChart3,
+  CreditCard,
+  Calendar,
   ClipboardList,
   Settings,
   LogOut,
   Menu,
   X,
   Shield,
+  ChevronDown,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { TeamSwitcher } from './TeamSwitcher';
@@ -33,14 +36,40 @@ const navigation = [
   { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];
 
-const adminNavigation = [
-  { name: 'Activity Log', href: '/audit-log', icon: ClipboardList },
+const administrationNavigation = [
+  { name: 'Team Members', href: '/admin/team-members', icon: Users },
+  { name: 'Preferences', href: '/admin/preferences', icon: Settings },
+  { name: 'Payment Instructions', href: '/admin/payment-instructions', icon: CreditCard },
+  { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
+  { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
+  { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
 ];
+
+const navLinkClass = (isActive: boolean, isOpen: boolean) => `
+  flex items-center gap-3 px-3 py-2.5 rounded-lg
+  transition-all duration-200
+  ${
+    isActive
+      ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
+      : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
+  }
+  ${!isOpen && 'lg:justify-center'}
+`;
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
+  const location = useLocation();
+
+  // Auto-expand admin section when navigating to an admin page
+  const isOnAdminPage = location.pathname.startsWith('/admin');
+  useEffect(() => {
+    if (isOnAdminPage) {
+      setIsAdminOpen(true);
+    }
+  }, [isOnAdminPage]);
 
   return (
     <>
@@ -86,18 +115,7 @@ export const Sidebar = () => {
                 <li key={item.name}>
                   <NavLink
                     to={item.href}
-                    className={({ isActive }) =>
-                      `
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg
-                        transition-all duration-200
-                        ${
-                          isActive
-                            ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
-                            : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
-                        }
-                        ${!isOpen && 'lg:justify-center'}
-                      `
-                    }
+                    className={({ isActive }) => navLinkClass(isActive, isOpen)}
                     title={!isOpen ? item.name : undefined}
                   >
                     <item.icon className="h-5 w-5 flex-shrink-0" />
@@ -105,36 +123,53 @@ export const Sidebar = () => {
                   </NavLink>
                 </li>
               ))}
-              {canEditTeamSettings &&
-                adminNavigation.map((item) => (
-                  <li key={item.name}>
-                    <NavLink
-                      to={item.href}
-                      className={({ isActive }) =>
-                        `
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg
-                        transition-all duration-200
-                        ${
-                          isActive
-                            ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
-                            : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
-                        }
-                        ${!isOpen && 'lg:justify-center'}
-                      `
-                      }
-                      title={!isOpen ? item.name : undefined}
-                    >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {isOpen && (
-                        <span className="truncate flex items-center gap-2">
-                          {item.name}
-                          <Shield className="h-3.5 w-3.5 text-accent-600" />
-                        </span>
-                      )}
-                    </NavLink>
-                  </li>
-                ))}
             </ul>
+
+            {/* Administration Group */}
+            {canEditTeamSettings && (
+              <div className="mt-4">
+                {/* Group Header - only shown when sidebar is expanded */}
+                {isOpen && (
+                  <button
+                    onClick={() => setIsAdminOpen(!isAdminOpen)}
+                    className="w-full flex items-center justify-between px-3 py-2 mb-1 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      Administration
+                      <Shield className="h-3.5 w-3.5 text-accent-600" />
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${isAdminOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                )}
+
+                {/* Divider when sidebar is collapsed */}
+                {!isOpen && (
+                  <div className="hidden lg:block mx-3 my-2 border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                )}
+
+                {/* Admin Items */}
+                {(isAdminOpen || !isOpen) && (
+                  <ul className="space-y-1">
+                    {administrationNavigation.map((item) => (
+                      <li key={item.name}>
+                        <NavLink
+                          to={item.href}
+                          className={({ isActive }) => navLinkClass(isActive, isOpen)}
+                          title={!isOpen ? item.name : undefined}
+                        >
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          {isOpen && (
+                            <span className="truncate">{item.name}</span>
+                          )}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </nav>
 
           {/* Footer Actions */}
@@ -147,18 +182,7 @@ export const Sidebar = () => {
             )}
             <NavLink
               to="/settings"
-              className={({ isActive }) =>
-                `
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  transition-all duration-200
-                  ${
-                    isActive
-                      ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
-                      : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
-                  }
-                  ${!isOpen && 'lg:justify-center'}
-                `
-              }
+              className={({ isActive }) => navLinkClass(isActive, isOpen)}
               title={!isOpen ? 'Settings' : undefined}
             >
               <Settings className="h-5 w-5 flex-shrink-0" />

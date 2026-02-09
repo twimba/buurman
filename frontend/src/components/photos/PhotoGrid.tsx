@@ -317,7 +317,10 @@ export const PhotoGrid = ({
                 </p>
                 {photo.notes && (
                   <div className="mt-0.5">
-                    <RichTextDisplay html={photo.notes} className="text-xs text-[#6b7194] dark:text-[#8b90a8]" />
+                    <RichTextDisplay
+                      html={photo.notes}
+                      className="text-xs text-[#6b7194] dark:text-[#8b90a8]"
+                    />
                   </div>
                 )}
                 {showEntityLink && (

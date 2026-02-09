@@ -136,7 +136,10 @@ export const DocumentPreviewModal = ({
             <div className="bg-white dark:bg-[#14161f] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
               <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 <span className="font-medium">Notes:</span>
-                <RichTextDisplay html={document.notes} className="mt-1 text-sm" />
+                <RichTextDisplay
+                  html={document.notes}
+                  className="mt-1 text-sm"
+                />
               </div>
             </div>
           ) : null}

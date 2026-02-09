@@ -6,7 +6,10 @@ interface RichTextDisplayProps {
 }
 
 /** Renders sanitized HTML content inline. Use for displaying rich text notes. */
-export const RichTextDisplay = ({ html, className = '' }: RichTextDisplayProps) => {
+export const RichTextDisplay = ({
+  html,
+  className = '',
+}: RichTextDisplayProps) => {
   const sanitized = DOMPurify.sanitize(html);
   return (
     <div
@@ -18,6 +21,9 @@ export const RichTextDisplay = ({ html, className = '' }: RichTextDisplayProps) 
 
 /** Strips HTML tags and returns plain text, useful for truncated previews. */
 export const stripHtml = (html: string): string => {
-  const doc = new DOMParser().parseFromString(DOMPurify.sanitize(html), 'text/html');
+  const doc = new DOMParser().parseFromString(
+    DOMPurify.sanitize(html),
+    'text/html'
+  );
   return doc.body.textContent || '';
 };

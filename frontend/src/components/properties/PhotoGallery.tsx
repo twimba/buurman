@@ -90,13 +90,10 @@ export const PhotoGallery = ({
   const handleUpload = async () => {
     if (!selectedFile) return;
     const cleanNotes = uploadNotes.trim();
-    const notesValue = !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;
+    const notesValue =
+      !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;
 
-    await onUpload(
-      selectedFile,
-      uploadTitle || undefined,
-      notesValue
-    );
+    await onUpload(selectedFile, uploadTitle || undefined, notesValue);
     setShowUploadModal(false);
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -160,11 +157,15 @@ export const PhotoGallery = ({
         <DocumentPreviewModal
           document={previewPhoto}
           onClose={() => setPreviewPhoto(null)}
-          onEdit={readOnly ? undefined : () => {
-            const photo = previewPhoto;
-            setPreviewPhoto(null);
-            setEditingPhoto(photo);
-          }}
+          onEdit={
+            readOnly
+              ? undefined
+              : () => {
+                  const photo = previewPhoto;
+                  setPreviewPhoto(null);
+                  setEditingPhoto(photo);
+                }
+          }
         />
       )}
 

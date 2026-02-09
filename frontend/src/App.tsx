@@ -32,6 +32,11 @@ import { FinancialReportsPage } from './pages/FinancialReportsPage';
 import { TransactionHistoryPage } from './pages/TransactionHistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuditLogPage } from './pages/AuditLogPage';
+import { AdminTeamMembersPage } from './pages/admin/AdminTeamMembersPage';
+import { AdminPreferencesPage } from './pages/admin/AdminPreferencesPage';
+import { AdminPaymentInstructionsPage } from './pages/admin/AdminPaymentInstructionsPage';
+import { AdminCalendarFeedsPage } from './pages/admin/AdminCalendarFeedsPage';
+import { AdminBillingPage } from './pages/admin/AdminBillingPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 
@@ -280,16 +285,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="/audit-log"
-                    element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <AuditLogPage />
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
+                  {/* Personal Settings */}
                   <Route
                     path="/settings"
                     element={
@@ -300,6 +296,79 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+
+                  {/* Administration Pages (Admin Only) */}
+                  <Route
+                    path="/admin/team-members"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminTeamMembersPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/preferences"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminPreferencesPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/payment-instructions"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminPaymentInstructionsPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/calendar-feeds"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminCalendarFeedsPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/billing"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminBillingPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/activity-log"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AuditLogPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  {/* Backwards-compat redirects */}
+                  <Route
+                    path="/team-settings"
+                    element={<Navigate to="/admin/team-members" replace />}
+                  />
+                  <Route
+                    path="/audit-log"
+                    element={<Navigate to="/admin/activity-log" replace />}
+                  />
+
                   <Route
                     path="/"
                     element={<Navigate to="/dashboard" replace />}

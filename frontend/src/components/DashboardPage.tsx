@@ -399,7 +399,7 @@ export const DashboardPage = () => {
           </h2>
           {activities && activities.length > 0 && (
             <button
-              onClick={() => navigate('/audit-log')}
+              onClick={() => navigate('/admin/activity-log')}
               className="text-sm text-[#5c7cfa] hover:text-[#4263eb] font-medium flex items-center gap-1"
             >
               View all
