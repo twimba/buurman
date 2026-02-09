@@ -67,7 +67,7 @@ export const TenantForm = ({
 
     try {
       await onSubmit(formData);
-      navigate('/tenants');
+      navigate(tenant ? `/tenants/${tenant.identifier}` : '/tenants');
     } catch (error) {
       console.error('Failed to save tenant:', error);
     }

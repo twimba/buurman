@@ -134,12 +134,21 @@ public class AuditService {
 
             if (oldValue == null && newValue != null) {
                 changes.put(key, newValue);
-            } else if (oldValue != null && !oldValue.equals(newValue)) {
+            } else if (oldValue != null && !valuesEqual(oldValue, newValue)) {
                 changes.put(key, newValue);
             }
         }
 
         return changes;
+    }
+
+    private boolean valuesEqual(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a instanceof java.math.BigDecimal && b instanceof java.math.BigDecimal) {
+            return ((java.math.BigDecimal) a).compareTo((java.math.BigDecimal) b) == 0;
+        }
+        return a.equals(b);
     }
 
     public List<RecentActivityResponse> getEntityAuditLog(UUID teamId, String entityType, UUID entityId) {

@@ -32,12 +32,15 @@ import { useFormatDate } from '../../hooks/useFormatDate';
 
 interface Props {
   contractIdentifier: string;
+  readOnly?: boolean;
 }
 
 export const ContractPaymentInstructionSection = ({
   contractIdentifier,
+  readOnly = false,
 }: Props) => {
   const { canEditData } = useTeam();
+  const canModify = canEditData && !readOnly;
   const { formatDate } = useFormatDate();
   const { data: current, isLoading: loadingCurrent } =
     useCurrentContractPaymentInstruction(contractIdentifier);
@@ -150,7 +153,7 @@ export const ContractPaymentInstructionSection = ({
           <CreditCard className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
           Payment Instructions
         </h2>
-        {canEditData && !showForm && (
+        {canModify && !showForm && (
           <Button
             variant="secondary"
             leftIcon={current ? <Edit /> : <Plus />}
@@ -257,7 +260,7 @@ export const ContractPaymentInstructionSection = ({
                 entry={entry}
                 isCurrent={index === 0 && !entry.effectiveTo}
                 formatDate={formatDate}
-                canDelete={canEditData && !!entry.effectiveTo}
+                canDelete={canModify && !!entry.effectiveTo}
                 onDelete={() => {
                   deleteMutation.mutate(entry.identifier);
                 }}

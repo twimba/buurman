@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useProperty,
@@ -1910,21 +1911,25 @@ export const PropertyDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           Old:{' '}
                                         </span>
-                                        <span className="text-red-600 line-through">
-                                          {formatFieldValue(
-                                            activity.oldValues?.[field]
-                                          )}
-                                        </span>
+                                        {typeof activity.oldValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.oldValues[field]) ? (
+                                          <RichTextDisplay content={activity.oldValues[field]} className="text-xs text-red-600 line-through [&_p]:m-0 inline" />
+                                        ) : (
+                                          <span className="text-red-600 line-through">
+                                            {formatFieldValue(activity.oldValues?.[field])}
+                                          </span>
+                                        )}
                                       </div>
                                       <div>
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           New:{' '}
                                         </span>
-                                        <span className="text-green-600 font-medium">
-                                          {formatFieldValue(
-                                            activity.newValues?.[field]
-                                          )}
-                                        </span>
+                                        {typeof activity.newValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.newValues[field]) ? (
+                                          <RichTextDisplay content={activity.newValues[field]} className="text-xs text-green-600 font-medium [&_p]:m-0 inline" />
+                                        ) : (
+                                          <span className="text-green-600 font-medium">
+                                            {formatFieldValue(activity.newValues?.[field])}
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

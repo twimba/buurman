@@ -243,8 +243,9 @@ export const ContractDetailPage = () => {
     );
   }
 
-  const canDelete = contract.status !== ContractStatus.ACTIVE;
-  const canEdit = contract.status !== ContractStatus.ACTIVE;
+  const isLocked = contract.status === ContractStatus.ACTIVE || contract.status === ContractStatus.TERMINATED || contract.status === ContractStatus.EXPIRED;
+  const canDelete = !isLocked;
+  const canEdit = !isLocked;
   const canReopen =
     contract.status === ContractStatus.TERMINATED ||
     contract.status === ContractStatus.EXPIRED;
@@ -557,7 +558,7 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Payment Instructions */}
-            <ContractPaymentInstructionSection contractIdentifier={id!} />
+            <ContractPaymentInstructionSection contractIdentifier={id!} readOnly={isLocked} />
 
             {/* Additional Terms */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
@@ -1064,21 +1065,25 @@ export const ContractDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           Old:{' '}
                                         </span>
-                                        <span className="text-red-600 line-through">
-                                          {String(
-                                            activity.oldValues?.[field] ?? 'N/A'
-                                          )}
-                                        </span>
+                                        {typeof activity.oldValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.oldValues[field]) ? (
+                                          <RichTextDisplay content={activity.oldValues[field]} className="text-xs text-red-600 line-through [&_p]:m-0 inline" />
+                                        ) : (
+                                          <span className="text-red-600 line-through">
+                                            {String(activity.oldValues?.[field] ?? 'N/A')}
+                                          </span>
+                                        )}
                                       </div>
                                       <div>
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           New:{' '}
                                         </span>
-                                        <span className="text-green-600 font-medium">
-                                          {String(
-                                            activity.newValues?.[field] ?? 'N/A'
-                                          )}
-                                        </span>
+                                        {typeof activity.newValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.newValues[field]) ? (
+                                          <RichTextDisplay content={activity.newValues[field]} className="text-xs text-green-600 font-medium [&_p]:m-0 inline" />
+                                        ) : (
+                                          <span className="text-green-600 font-medium">
+                                            {String(activity.newValues?.[field] ?? 'N/A')}
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

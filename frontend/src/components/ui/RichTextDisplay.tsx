@@ -13,7 +13,7 @@ export const RichTextDisplay = ({
   const sanitized = DOMPurify.sanitize(html);
   return (
     <div
-      className={`prose prose-sm dark:prose-invert max-w-none [&_p]:my-0 [&_p]:min-h-[1.25em] [&_ul]:my-1 [&_ol]:my-1 ${className}`}
+      className={`rich-text-display ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );

@@ -213,9 +213,15 @@ public class ContractService {
         Contract contract = contractRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
-        // Prevent updates to ACTIVE contracts (except via status change)
+        // Prevent updates to ACTIVE, TERMINATED, or EXPIRED contracts (except via status change)
         if (contract.getStatus() == Contract.ContractStatus.ACTIVE) {
             throw new IllegalArgumentException("Cannot update ACTIVE contracts. Please change status first.");
+        }
+        if (contract.getStatus() == Contract.ContractStatus.TERMINATED) {
+            throw new IllegalArgumentException("Cannot update TERMINATED contracts.");
+        }
+        if (contract.getStatus() == Contract.ContractStatus.EXPIRED) {
+            throw new IllegalArgumentException("Cannot update EXPIRED contracts.");
         }
 
         // Resolve property by identifier
@@ -274,13 +280,13 @@ public class ContractService {
         if (!java.util.Objects.equals(oldContract.getSignedDate(), updatedContract.getSignedDate())) {
             changedFields.put("signedDate", updatedContract.getSignedDate());
         }
-        if (!oldContract.getRentAmount().equals(updatedContract.getRentAmount())) {
+        if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0) {
             changedFields.put("rentAmount", updatedContract.getRentAmount());
         }
-        if (!java.util.Objects.equals(oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
+        if (!bigDecimalEquals(oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
             changedFields.put("depositAmount", updatedContract.getDepositAmount());
         }
-        if (!java.util.Objects.equals(oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
+        if (!bigDecimalEquals(oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
             changedFields.put("securityDeposit", updatedContract.getSecurityDeposit());
         }
         if (!oldContract.getCurrency().equals(updatedContract.getCurrency())) {
@@ -301,7 +307,7 @@ public class ContractService {
         if (!java.util.Objects.equals(oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
             changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
         }
-        if (!java.util.Objects.equals(oldContract.getLateFeePercentage(), updatedContract.getLateFeePercentage())) {
+        if (!bigDecimalEquals(oldContract.getLateFeePercentage(), updatedContract.getLateFeePercentage())) {
             changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage());
         }
         if (!java.util.Objects.equals(oldContract.getTermsAndConditions(), updatedContract.getTermsAndConditions())) {
@@ -651,6 +657,12 @@ public class ContractService {
                 response.createdAt(),
                 response.updatedAt()
         );
+    }
+
+    private static boolean bigDecimalEquals(java.math.BigDecimal a, java.math.BigDecimal b) {
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.compareTo(b) == 0;
     }
 
     private void updatePropertyStatusBasedOnContract(UUID propertyId, Contract.ContractStatus newStatus,

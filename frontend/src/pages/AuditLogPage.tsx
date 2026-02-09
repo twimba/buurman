@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
 import { usePagination } from '@/hooks/usePagination';
@@ -440,7 +441,9 @@ export const AuditLogPage = () => {
                                             <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                               {oldValue !== null &&
                                               oldValue !== undefined
-                                                ? String(oldValue)
+                                                ? typeof oldValue === 'string' && /<[a-z][\s\S]*>/i.test(oldValue)
+                                                  ? <RichTextDisplay content={oldValue} className="text-xs [&_p]:m-0" />
+                                                  : String(oldValue)
                                                 : '\u2014'}
                                             </div>
                                           </div>
@@ -451,7 +454,9 @@ export const AuditLogPage = () => {
                                             <div className="text-[#1a1d2e] dark:text-[#eef0f6] font-semibold">
                                               {newValue !== null &&
                                               newValue !== undefined
-                                                ? String(newValue)
+                                                ? typeof newValue === 'string' && /<[a-z][\s\S]*>/i.test(newValue)
+                                                  ? <RichTextDisplay content={newValue} className="text-xs [&_p]:m-0" />
+                                                  : String(newValue)
                                                 : '\u2014'}
                                             </div>
                                           </div>
