@@ -99,6 +99,9 @@ public class DemoDataService implements ApplicationRunner {
             log.warn("Photo generation failed (non-fatal): {}", e.getMessage());
         }
 
+        // 5. Force logout demo user so they get fresh session with reset data
+        keycloakSetup.logoutDemoUser();
+
         long durationMs = System.currentTimeMillis() - startTime;
         lastGeneratedAt = Instant.now();
 
@@ -199,23 +202,35 @@ public class DemoDataService implements ApplicationRunner {
                 .execute();
         log.debug("Deleted {} photos", deleted);
 
-        // 6. Payments (FK -> contracts)
+        // 6. Contract payment instructions (FK -> contracts, payment_instructions)
+        deleted = dsl.deleteFrom(CONTRACT_PAYMENT_INSTRUCTIONS)
+                .where(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} contract payment instructions", deleted);
+
+        // 7. Payments (FK -> contracts)
         deleted = dsl.deleteFrom(PAYMENTS)
                 .where(PAYMENTS.TEAM_ID.in(demoTeamIds))
                 .execute();
         log.debug("Deleted {} payments", deleted);
 
-        // 7. Expenses (FK -> properties)
+        // 8. Expenses (FK -> properties)
         deleted = dsl.deleteFrom(EXPENSES)
                 .where(EXPENSES.TEAM_ID.in(demoTeamIds))
                 .execute();
         log.debug("Deleted {} expenses", deleted);
 
-        // 8. Contracts (FK -> properties, tenants)
+        // 9. Contracts (FK -> properties, tenants)
         deleted = dsl.deleteFrom(CONTRACTS)
                 .where(CONTRACTS.TEAM_ID.in(demoTeamIds))
                 .execute();
         log.debug("Deleted {} contracts", deleted);
+
+        // 10. Payment instructions (FK -> users)
+        deleted = dsl.deleteFrom(PAYMENT_INSTRUCTIONS)
+                .where(PAYMENT_INSTRUCTIONS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} payment instructions", deleted);
 
         // 9. Property tenant history
         deleted = dsl.deleteFrom(PROPERTY_TENANT_HISTORY)
@@ -286,6 +301,11 @@ public class DemoDataService implements ApplicationRunner {
                 .fetch(USERS.ID);
 
         if (!demoUserIds.isEmpty()) {
+            deleted = dsl.deleteFrom(EMAIL_VERIFICATION_CODES)
+                    .where(EMAIL_VERIFICATION_CODES.USER_ID.in(demoUserIds))
+                    .execute();
+            log.debug("Deleted {} email verification codes", deleted);
+
             dsl.deleteFrom(USER_PREFERENCES)
                     .where(USER_PREFERENCES.USER_ID.in(demoUserIds))
                     .execute();

@@ -97,6 +97,18 @@ public class DemoKeycloakSetup {
         }
     }
 
+    public void logoutDemoUser() {
+        try {
+            String keycloakId = findExistingKeycloakUser(DemoUsers.DEMO_USER.email());
+            if (keycloakId != null) {
+                keycloak.realm(realm).users().get(keycloakId).logout();
+                log.info("Logged out all sessions for demo user: {}", DemoUsers.DEMO_USER.email());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to logout demo user: {}", e.getMessage());
+        }
+    }
+
     private String findExistingKeycloakUser(String email) {
         try {
             List<UserRepresentation> users = keycloak.realm(realm).users()
