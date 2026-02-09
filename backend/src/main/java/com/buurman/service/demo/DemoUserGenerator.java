@@ -38,6 +38,7 @@ public class DemoUserGenerator {
                     .set(USERS.EMAIL, user.email())
                     .set(USERS.FIRST_NAME, user.firstName())
                     .set(USERS.LAST_NAME, user.lastName())
+                    .set(USERS.EMAIL_VERIFIED_AT, now)
                     .set(USERS.CREATED_AT, now)
                     .set(USERS.UPDATED_AT, now)
                     .execute();

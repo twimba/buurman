@@ -11,9 +11,10 @@ public class UserPrincipal implements Principal {
     private final UUID teamId;      // nullable for users without team membership
     private final String role;      // nullable for users without team membership
     private final boolean isOwner;
+    private final boolean emailVerified;
 
     public UserPrincipal(UUID userId, String keycloakId, String email, String name,
-                        UUID teamId, String role, boolean isOwner) {
+                        UUID teamId, String role, boolean isOwner, boolean emailVerified) {
         this.userId = userId;
         this.keycloakId = keycloakId;
         this.email = email;
@@ -21,12 +22,17 @@ public class UserPrincipal implements Principal {
         this.teamId = teamId;
         this.role = role;
         this.isOwner = isOwner;
+        this.emailVerified = emailVerified;
     }
 
-    // Convenience constructor for backward compatibility
+    public UserPrincipal(UUID userId, String keycloakId, String email, String name,
+                        UUID teamId, String role, boolean isOwner) {
+        this(userId, keycloakId, email, name, teamId, role, isOwner, true);
+    }
+
     public UserPrincipal(UUID userId, String keycloakId, String email, String name,
                         UUID teamId, String role) {
-        this(userId, keycloakId, email, name, teamId, role, false);
+        this(userId, keycloakId, email, name, teamId, role, false, true);
     }
 
     public UUID getUserId() {
@@ -56,6 +62,10 @@ public class UserPrincipal implements Principal {
 
     public boolean isOwner() {
         return isOwner;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
     public boolean hasTeam() {

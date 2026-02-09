@@ -89,7 +89,8 @@ export const RichTextEditor = ({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-primary-600 dark:text-primary-400 underline cursor-pointer',
+          class:
+            'text-primary-600 dark:text-primary-400 underline cursor-pointer',
         },
       }),
       Placeholder.configure({ placeholder }),
@@ -110,7 +111,12 @@ export const RichTextEditor = ({
     if (linkUrl === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
     } else {
-      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange('link')
+        .setLink({ href: linkUrl })
+        .run();
     }
 
     setLinkUrl('');
@@ -142,21 +148,27 @@ export const RichTextEditor = ({
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-[#f8f9fc] dark:bg-[#12131a] border-b border-[#d8dce8] dark:border-[#2a2e3f]">
         {/* Headings */}
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           isActive={editor.isActive('heading', { level: 1 })}
           title="Heading 1"
         >
           <Heading1 className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           isActive={editor.isActive('heading', { level: 2 })}
           title="Heading 2"
         >
           <Heading2 className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           isActive={editor.isActive('heading', { level: 3 })}
           title="Heading 3"
         >
@@ -323,7 +335,10 @@ export const RichTextEditor = ({
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') { e.preventDefault(); setLink(); }
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                setLink();
+              }
               if (e.key === 'Escape') setShowLinkInput(false);
             }}
             placeholder="https://example.com"

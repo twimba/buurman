@@ -1911,11 +1911,20 @@ export const PropertyDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           Old:{' '}
                                         </span>
-                                        {typeof activity.oldValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.oldValues[field]) ? (
-                                          <RichTextDisplay content={activity.oldValues[field]} className="text-xs text-red-600 line-through [&_p]:m-0 inline" />
+                                        {typeof activity.oldValues?.[field] ===
+                                          'string' &&
+                                        /<[a-z][\s\S]*>/i.test(
+                                          activity.oldValues[field]
+                                        ) ? (
+                                          <RichTextDisplay
+                                            content={activity.oldValues[field]}
+                                            className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                          />
                                         ) : (
                                           <span className="text-red-600 line-through">
-                                            {formatFieldValue(activity.oldValues?.[field])}
+                                            {formatFieldValue(
+                                              activity.oldValues?.[field]
+                                            )}
                                           </span>
                                         )}
                                       </div>
@@ -1923,11 +1932,20 @@ export const PropertyDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           New:{' '}
                                         </span>
-                                        {typeof activity.newValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.newValues[field]) ? (
-                                          <RichTextDisplay content={activity.newValues[field]} className="text-xs text-green-600 font-medium [&_p]:m-0 inline" />
+                                        {typeof activity.newValues?.[field] ===
+                                          'string' &&
+                                        /<[a-z][\s\S]*>/i.test(
+                                          activity.newValues[field]
+                                        ) ? (
+                                          <RichTextDisplay
+                                            content={activity.newValues[field]}
+                                            className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                          />
                                         ) : (
                                           <span className="text-green-600 font-medium">
-                                            {formatFieldValue(activity.newValues?.[field])}
+                                            {formatFieldValue(
+                                              activity.newValues?.[field]
+                                            )}
                                           </span>
                                         )}
                                       </div>

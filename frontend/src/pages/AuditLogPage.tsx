@@ -440,11 +440,21 @@ export const AuditLogPage = () => {
                                             </div>
                                             <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
                                               {oldValue !== null &&
-                                              oldValue !== undefined
-                                                ? typeof oldValue === 'string' && /<[a-z][\s\S]*>/i.test(oldValue)
-                                                  ? <RichTextDisplay content={oldValue} className="text-xs [&_p]:m-0" />
-                                                  : String(oldValue)
-                                                : '\u2014'}
+                                              oldValue !== undefined ? (
+                                                typeof oldValue === 'string' &&
+                                                /<[a-z][\s\S]*>/i.test(
+                                                  oldValue
+                                                ) ? (
+                                                  <RichTextDisplay
+                                                    content={oldValue}
+                                                    className="text-xs [&_p]:m-0"
+                                                  />
+                                                ) : (
+                                                  String(oldValue)
+                                                )
+                                              ) : (
+                                                '\u2014'
+                                              )}
                                             </div>
                                           </div>
                                           <div>
@@ -453,11 +463,21 @@ export const AuditLogPage = () => {
                                             </div>
                                             <div className="text-[#1a1d2e] dark:text-[#eef0f6] font-semibold">
                                               {newValue !== null &&
-                                              newValue !== undefined
-                                                ? typeof newValue === 'string' && /<[a-z][\s\S]*>/i.test(newValue)
-                                                  ? <RichTextDisplay content={newValue} className="text-xs [&_p]:m-0" />
-                                                  : String(newValue)
-                                                : '\u2014'}
+                                              newValue !== undefined ? (
+                                                typeof newValue === 'string' &&
+                                                /<[a-z][\s\S]*>/i.test(
+                                                  newValue
+                                                ) ? (
+                                                  <RichTextDisplay
+                                                    content={newValue}
+                                                    className="text-xs [&_p]:m-0"
+                                                  />
+                                                ) : (
+                                                  String(newValue)
+                                                )
+                                              ) : (
+                                                '\u2014'
+                                              )}
                                             </div>
                                           </div>
                                         </div>

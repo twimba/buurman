@@ -47,6 +47,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         // Extract realm roles from JWT (realm_access.roles)
         List<SimpleGrantedAuthority> realmAuthorities = extractRealmRoles(jwt);
 
+        boolean emailVerified = user.getEmailVerifiedAt() != null;
+
         if (membership != null) {
             principal = new UserPrincipal(
                 user.getId(),
@@ -55,7 +57,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 name,
                 membership.getTeamId(),
                 membership.getRole(),
-                membership.isOwner()
+                membership.isOwner(),
+                emailVerified
             );
             List<SimpleGrantedAuthority> allAuthorities = new ArrayList<>();
             allAuthorities.add(new SimpleGrantedAuthority("ROLE_" + membership.getRole()));
@@ -70,7 +73,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
                 name,
                 null,
                 null,
-                false
+                false,
+                emailVerified
             );
             authorities = realmAuthorities.isEmpty() ? Collections.emptyList() : realmAuthorities;
         }
@@ -135,6 +139,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         User user = new User();
         user.setKeycloakId(keycloakId);
         user.setEmail(email);
+        user.setEmailVerifiedAt(java.time.Instant.now());
 
         String[] nameParts = name != null ? name.split(" ", 2) : new String[]{"", ""};
         user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");

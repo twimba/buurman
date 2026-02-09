@@ -15,10 +15,12 @@ public interface UserRecordMapper {
 
     @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
     @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
+    @Mapping(target = "emailVerifiedAt", expression = "java(toInstant(record.getEmailVerifiedAt()))")
     User toDomain(UsersRecord record);
 
     @Mapping(target = "createdAt", expression = "java(toLocalDateTime(user.getCreatedAt()))")
     @Mapping(target = "updatedAt", expression = "java(toLocalDateTime(user.getUpdatedAt()))")
+    @Mapping(target = "emailVerifiedAt", expression = "java(toLocalDateTime(user.getEmailVerifiedAt()))")
     @Mapping(target = "deletedAt", ignore = true)
     UsersRecord toRecord(User user);
 

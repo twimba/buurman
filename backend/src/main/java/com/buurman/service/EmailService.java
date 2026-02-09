@@ -57,6 +57,16 @@ public class EmailService {
     }
 
     @Async("emailTaskExecutor")
+    public void sendVerificationCode(User user, String code) {
+        Context context = new Context();
+        context.setVariable("userName", user.getFirstName());
+        context.setVariable("verificationCode", code);
+        context.setVariable("expiresMinutes", 15);
+
+        sendEmail(user.getEmail(), "Verify your email - Buurman", "email/verification-code", context);
+    }
+
+    @Async("emailTaskExecutor")
     public void sendTeamInvitation(TeamInvitation invitation, String inviterName, String teamName) {
         Context context = new Context();
         context.setVariable("inviterName", inviterName);

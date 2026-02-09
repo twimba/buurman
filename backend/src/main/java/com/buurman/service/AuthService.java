@@ -1,12 +1,15 @@
 package com.buurman.service;
 
+import com.buurman.domain.EmailVerificationCode;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
 import com.buurman.dto.request.RegisterRequest;
 import com.buurman.dto.request.UpdateProfileRequest;
 import com.buurman.dto.response.UserResponse;
+import com.buurman.exception.VerificationCodeException;
 import com.buurman.mapper.UserMapper;
+import com.buurman.repository.EmailVerificationCodeRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
@@ -17,30 +20,38 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
 public class AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private static final int VERIFICATION_CODE_EXPIRY_MINUTES = 15;
+    private static final int MAX_RESEND_PER_HOUR = 5;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final KeycloakService keycloakService;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final EmailVerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final EmailService emailService;
     private final MetricsService metricsService;
 
     public AuthService(KeycloakService keycloakService, UserRepository userRepository,
                       TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
+                      EmailVerificationCodeRepository verificationCodeRepository,
                       UserMapper userMapper, EmailService emailService,
                       MetricsService metricsService) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.verificationCodeRepository = verificationCodeRepository;
         this.userMapper = userMapper;
         this.emailService = emailService;
         this.metricsService = metricsService;
@@ -97,8 +108,9 @@ public class AuthService {
             member.setJoinedAt(Instant.now());
             teamMemberRepository.save(member);
 
-            // Send welcome email
-            emailService.sendWelcomeEmail(user);
+            // Send verification code email
+            String code = generateVerificationCode();
+            createAndSendVerificationCode(user, code);
 
             metricsService.incrementCounter("team.registered.total");
             metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
@@ -179,6 +191,65 @@ public class AuthService {
         }
 
         return memberships.get(0);
+    }
+
+    @Transactional
+    public UserResponse verifyEmail(UUID userId, String code) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getEmailVerifiedAt() != null) {
+            throw new VerificationCodeException("Email is already verified");
+        }
+
+        EmailVerificationCode validCode = verificationCodeRepository.findValidCode(userId, code)
+            .orElseThrow(() -> new VerificationCodeException("Invalid or expired verification code"));
+
+        verificationCodeRepository.markUsed(validCode.getId());
+        userRepository.updateEmailVerifiedAt(userId);
+
+        // Send welcome email now that email is verified
+        user.setEmailVerifiedAt(Instant.now());
+        emailService.sendWelcomeEmail(user);
+
+        TeamMember member = getActiveMembership(user);
+        String teamIdentifier = resolveTeamIdentifier(member);
+        return userMapper.toResponse(user, teamIdentifier,
+                                     member != null ? member.getRole() : null);
+    }
+
+    @Transactional
+    public void resendVerificationCode(UUID userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getEmailVerifiedAt() != null) {
+            throw new VerificationCodeException("Email is already verified");
+        }
+
+        int recentCount = verificationCodeRepository.countRecentByUserId(
+            userId, Instant.now().minus(1, ChronoUnit.HOURS));
+        if (recentCount >= MAX_RESEND_PER_HOUR) {
+            throw new VerificationCodeException("Too many verification attempts. Please try again later.");
+        }
+
+        verificationCodeRepository.invalidateAllForUser(userId);
+        String code = generateVerificationCode();
+        createAndSendVerificationCode(user, code);
+    }
+
+    private void createAndSendVerificationCode(User user, String code) {
+        EmailVerificationCode verificationCode = new EmailVerificationCode();
+        verificationCode.setUserId(user.getId());
+        verificationCode.setCode(code);
+        verificationCode.setExpiresAt(Instant.now().plus(VERIFICATION_CODE_EXPIRY_MINUTES, ChronoUnit.MINUTES));
+        verificationCodeRepository.save(verificationCode);
+
+        emailService.sendVerificationCode(user, code);
+    }
+
+    private String generateVerificationCode() {
+        return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
     }
 
     /**

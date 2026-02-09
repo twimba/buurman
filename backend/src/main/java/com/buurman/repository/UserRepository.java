@@ -58,6 +58,8 @@ public class UserRepository {
                     .set(USERS.LAST_NAME, user.getLastName())
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+                    .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
+                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.CREATED_AT, now)
                     .set(USERS.UPDATED_AT, now)
                     .execute();
@@ -75,6 +77,8 @@ public class UserRepository {
                     .set(USERS.LAST_NAME, user.getLastName())
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+                    .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
+                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.UPDATED_AT, now)
                     .where(USERS.ID.eq(user.getId()))
                     .execute();
@@ -128,6 +132,15 @@ public class UserRepository {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         dsl.update(USERS)
                 .set(USERS.ACTIVE_TEAM_ID, teamId)
+                .set(USERS.UPDATED_AT, now)
+                .where(USERS.ID.eq(userId))
+                .execute();
+    }
+
+    public void updateEmailVerifiedAt(UUID userId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .set(USERS.EMAIL_VERIFIED_AT, now)
                 .set(USERS.UPDATED_AT, now)
                 .where(USERS.ID.eq(userId))
                 .execute();

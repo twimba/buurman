@@ -15,6 +15,7 @@ export interface UserResponse {
   teamIdentifier: string;
   teamName: string;
   role: string;
+  emailVerified: boolean;
   createdAt: string;
 }
 
@@ -40,4 +41,13 @@ export const updateProfile = async (
 ): Promise<UserResponse> => {
   const response = await client.put('/auth/me', data);
   return response.data;
+};
+
+export const verifyEmail = async (code: string): Promise<UserResponse> => {
+  const response = await client.post('/auth/verify-email', { code });
+  return response.data;
+};
+
+export const resendVerificationCode = async (): Promise<void> => {
+  await client.post('/auth/resend-verification');
 };

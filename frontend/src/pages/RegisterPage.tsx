@@ -176,8 +176,8 @@ const RegisterPage: React.FC = () => {
                   Account created!
                 </h2>
                 <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
-                  Your account has been created successfully. Redirecting you to
-                  the login page...
+                  Your account has been created successfully. Please check your
+                  email for a verification code, then log in.
                 </p>
                 <a
                   href="/login"

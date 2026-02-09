@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import com.buurman.dto.request.RegisterRequest;
 import com.buurman.dto.request.UpdateProfileRequest;
+import com.buurman.dto.request.VerifyEmailRequest;
 import com.buurman.dto.response.UserResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuthService;
@@ -44,5 +45,21 @@ public class AuthController {
     public UserResponse updateProfile(@AuthenticationPrincipal UserPrincipal principal,
                                      @Valid @RequestBody UpdateProfileRequest request) {
         return authService.updateProfile(principal.getUserId(), request);
+    }
+
+    @Operation(summary = "Verify email", description = "Verify email address with 6-digit code",
+               security = @SecurityRequirement(name = "bearer-jwt"))
+    @PostMapping("/verify-email")
+    public UserResponse verifyEmail(@AuthenticationPrincipal UserPrincipal principal,
+                                    @Valid @RequestBody VerifyEmailRequest request) {
+        return authService.verifyEmail(principal.getUserId(), request.code());
+    }
+
+    @Operation(summary = "Resend verification code", description = "Resend email verification code",
+               security = @SecurityRequirement(name = "bearer-jwt"))
+    @PostMapping("/resend-verification")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resendVerification(@AuthenticationPrincipal UserPrincipal principal) {
+        authService.resendVerificationCode(principal.getUserId());
     }
 }

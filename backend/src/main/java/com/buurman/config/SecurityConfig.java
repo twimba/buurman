@@ -27,14 +27,16 @@ public class SecurityConfig {
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final MdcFilter mdcFilter;
     private final DemoApiKeyFilter demoApiKeyFilter;
+    private final EmailVerificationFilter emailVerificationFilter;
     private final List<String> allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter, MdcFilter mdcFilter,
-                         DemoApiKeyFilter demoApiKeyFilter,
+                         DemoApiKeyFilter demoApiKeyFilter, EmailVerificationFilter emailVerificationFilter,
                          @Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.mdcFilter = mdcFilter;
         this.demoApiKeyFilter = demoApiKeyFilter;
+        this.emailVerificationFilter = emailVerificationFilter;
         this.allowedOrigins = allowedOrigins;
     }
 
@@ -49,7 +51,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/health", "/api/info", "/api/reference/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
-                .requestMatchers("/api-docs/**", "/swagger-ui/**", "/v3/api-docs/**").hasRole("API_ACCESS")
+                .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/invitations/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/calendar/ical/*").permitAll()
@@ -61,6 +63,7 @@ public class SecurityConfig {
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
             )
             .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class)
+            .addFilterAfter(emailVerificationFilter, MdcFilter.class)
             .addFilterBefore(demoApiKeyFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();

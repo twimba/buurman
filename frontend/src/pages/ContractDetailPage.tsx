@@ -243,7 +243,10 @@ export const ContractDetailPage = () => {
     );
   }
 
-  const isLocked = contract.status === ContractStatus.ACTIVE || contract.status === ContractStatus.TERMINATED || contract.status === ContractStatus.EXPIRED;
+  const isLocked =
+    contract.status === ContractStatus.ACTIVE ||
+    contract.status === ContractStatus.TERMINATED ||
+    contract.status === ContractStatus.EXPIRED;
   const canDelete = !isLocked;
   const canEdit = !isLocked;
   const canReopen =
@@ -558,7 +561,10 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Payment Instructions */}
-            <ContractPaymentInstructionSection contractIdentifier={id!} readOnly={isLocked} />
+            <ContractPaymentInstructionSection
+              contractIdentifier={id!}
+              readOnly={isLocked}
+            />
 
             {/* Additional Terms */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
@@ -1065,11 +1071,21 @@ export const ContractDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           Old:{' '}
                                         </span>
-                                        {typeof activity.oldValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.oldValues[field]) ? (
-                                          <RichTextDisplay content={activity.oldValues[field]} className="text-xs text-red-600 line-through [&_p]:m-0 inline" />
+                                        {typeof activity.oldValues?.[field] ===
+                                          'string' &&
+                                        /<[a-z][\s\S]*>/i.test(
+                                          activity.oldValues[field]
+                                        ) ? (
+                                          <RichTextDisplay
+                                            content={activity.oldValues[field]}
+                                            className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                          />
                                         ) : (
                                           <span className="text-red-600 line-through">
-                                            {String(activity.oldValues?.[field] ?? 'N/A')}
+                                            {String(
+                                              activity.oldValues?.[field] ??
+                                                'N/A'
+                                            )}
                                           </span>
                                         )}
                                       </div>
@@ -1077,11 +1093,21 @@ export const ContractDetailPage = () => {
                                         <span className="text-[#6b7194] dark:text-[#8b90a8]">
                                           New:{' '}
                                         </span>
-                                        {typeof activity.newValues?.[field] === 'string' && /<[a-z][\s\S]*>/i.test(activity.newValues[field]) ? (
-                                          <RichTextDisplay content={activity.newValues[field]} className="text-xs text-green-600 font-medium [&_p]:m-0 inline" />
+                                        {typeof activity.newValues?.[field] ===
+                                          'string' &&
+                                        /<[a-z][\s\S]*>/i.test(
+                                          activity.newValues[field]
+                                        ) ? (
+                                          <RichTextDisplay
+                                            content={activity.newValues[field]}
+                                            className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                          />
                                         ) : (
                                           <span className="text-green-600 font-medium">
-                                            {String(activity.newValues?.[field] ?? 'N/A')}
+                                            {String(
+                                              activity.newValues?.[field] ??
+                                                'N/A'
+                                            )}
                                           </span>
                                         )}
                                       </div>

@@ -42,6 +42,16 @@ client.interceptors.response.use(
       }
     }
 
+    // Redirect unverified users to verification page (unless already there)
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.error === 'EMAIL_NOT_VERIFIED' &&
+      window.location.pathname !== '/verify-email'
+    ) {
+      window.location.href = '/verify-email';
+      return Promise.reject(error);
+    }
+
     return Promise.reject(error);
   }
 );

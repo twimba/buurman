@@ -2,7 +2,6 @@
   TO Verify
 ------------------------
 
-
 ------------------------
   QUEUE
 ------------------------
@@ -72,7 +71,7 @@ You can assume that all .local.buurman.io subdomains point to localhost
    Verify phone number when user signs up using SMS verification code using Twilio.
   
   ## email verificaiton
-   Verify email when user signs up using email verification code using Sendgrid.
+   Verify email when user signs up using email verification code
    While the user has not verified their email address they should not be able to access the application, and they should see a message asking them to verify their email address, and a button to resend the verification email.
    
 # UI/UX

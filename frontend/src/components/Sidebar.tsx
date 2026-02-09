@@ -19,7 +19,7 @@ import {
   Shield,
   ChevronDown,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { TeamSwitcher } from './TeamSwitcher';
@@ -39,7 +39,11 @@ const navigation = [
 const administrationNavigation = [
   { name: 'Team Members', href: '/admin/team-members', icon: Users },
   { name: 'Preferences', href: '/admin/preferences', icon: Settings },
-  { name: 'Payment Instructions', href: '/admin/payment-instructions', icon: CreditCard },
+  {
+    name: 'Payment Instructions',
+    href: '/admin/payment-instructions',
+    icon: CreditCard,
+  },
   { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
   { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
@@ -58,18 +62,12 @@ const navLinkClass = (isActive: boolean, isOpen: boolean) => `
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
   const location = useLocation();
 
-  // Auto-expand admin section when navigating to an admin page
   const isOnAdminPage = location.pathname.startsWith('/admin');
-  useEffect(() => {
-    if (isOnAdminPage) {
-      setIsAdminOpen(true);
-    }
-  }, [isOnAdminPage]);
+  const [isAdminOpen, setIsAdminOpen] = useState(isOnAdminPage);
 
   return (
     <>
@@ -156,7 +154,9 @@ export const Sidebar = () => {
                       <li key={item.name}>
                         <NavLink
                           to={item.href}
-                          className={({ isActive }) => navLinkClass(isActive, isOpen)}
+                          className={({ isActive }) =>
+                            navLinkClass(isActive, isOpen)
+                          }
                           title={!isOpen ? item.name : undefined}
                         >
                           <item.icon className="h-5 w-5 flex-shrink-0" />

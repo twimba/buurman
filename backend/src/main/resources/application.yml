@@ -142,3 +142,6 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
     display-request-duration: true
+    doc-expansion: none
+    disable-swagger-default-url: true
+    urls-primary-name: Buurman API

@@ -13,6 +13,7 @@ public class User {
     private String lastName;
     private UUID defaultTeamId;
     private UUID activeTeamId;
+    private Instant emailVerifiedAt;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -107,5 +108,13 @@ public class User {
 
     public void setActiveTeamId(UUID activeTeamId) {
         this.activeTeamId = activeTeamId;
+    }
+
+    public Instant getEmailVerifiedAt() {
+        return emailVerifiedAt;
+    }
+
+    public void setEmailVerifiedAt(Instant emailVerifiedAt) {
+        this.emailVerifiedAt = emailVerifiedAt;
     }
 }

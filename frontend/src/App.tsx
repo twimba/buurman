@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { InvitationPage } from './pages/InvitationPage';
+import { VerifyEmailPage } from './pages/VerifyEmailPage';
 import { DashboardPage } from './components/DashboardPage';
 import { PropertyListPage } from './pages/PropertyListPage';
 import { PropertyDetailPage } from './pages/PropertyDetailPage';
@@ -54,6 +55,14 @@ function App() {
                   <Route
                     path="/invitation/:token"
                     element={<InvitationPage />}
+                  />
+                  <Route
+                    path="/verify-email"
+                    element={
+                      <ProtectedRoute requireVerification={false}>
+                        <VerifyEmailPage />
+                      </ProtectedRoute>
+                    }
                   />
                   <Route
                     path="/dashboard"
