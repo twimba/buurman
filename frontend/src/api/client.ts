@@ -1,8 +1,11 @@
 import axios from 'axios';
 import keycloak from '../config/keycloak';
 
+// Derive API base URL from current hostname: app.X → api.X
+const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname.replace(/^app\./, '')}`;
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

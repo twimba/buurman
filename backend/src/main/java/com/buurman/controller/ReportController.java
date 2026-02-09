@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("/reports")
 @Tag(name = "Reports", description = "Financial reporting and analytics")
 @SecurityRequirement(name = "bearer-jwt")
 public class ReportController {

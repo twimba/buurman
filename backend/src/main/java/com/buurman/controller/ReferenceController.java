@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reference")
+@RequestMapping("/reference")
 @Tag(name = "Reference", description = "Technical reference data for integrators and developers")
 public class ReferenceController {
 

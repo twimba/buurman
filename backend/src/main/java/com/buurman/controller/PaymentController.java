@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/payments")
 @Tag(name = "Payments", description = "Rent payment tracking and management")
 @SecurityRequirement(name = "bearer-jwt")
 public class PaymentController {

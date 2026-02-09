@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/dashboard")
 @Tag(name = "Dashboard", description = "Dashboard statistics and recent activities")
 @SecurityRequirement(name = "bearer-jwt")
 public class DashboardController {

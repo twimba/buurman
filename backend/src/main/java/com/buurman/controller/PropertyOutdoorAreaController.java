@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/properties/{propertyIdentifier}/outdoor-areas")
+@RequestMapping("/properties/{propertyIdentifier}/outdoor-areas")
 @Tag(name = "Property Outdoor Areas", description = "Manage outdoor areas for properties")
 @SecurityRequirement(name = "bearer-jwt")
 public class PropertyOutdoorAreaController {

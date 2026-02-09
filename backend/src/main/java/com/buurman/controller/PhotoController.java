@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/photos")
+@RequestMapping("/photos")
 @Tag(name = "Photos", description = "Photo management endpoints")
 public class PhotoController {
 

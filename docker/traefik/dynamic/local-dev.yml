@@ -1,0 +1,32 @@
+# Routes for local development (backend + frontend running on host machine).
+# These have low priority (10) so Docker container labels (priority 100) win
+# when running with: docker compose --profile docker up -d
+
+http:
+  routers:
+    backend-local:
+      rule: "Host(`api.local.buurman.io`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      service: backend-local
+      priority: 10
+
+    frontend-local:
+      rule: "Host(`app.local.buurman.io`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      service: frontend-local
+      priority: 10
+
+  services:
+    backend-local:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8081"
+
+    frontend-local:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5173"

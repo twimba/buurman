@@ -75,7 +75,7 @@
       "name": "Buurman Web Application",
       "description": "Frontend web application for Buurman property management",
       "enabled": true,
-      "baseUrl": "http://localhost:5173",
+      "baseUrl": "https://app.local.buurman.io",
       "publicClient": true,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
@@ -85,10 +85,12 @@
       "protocol": "openid-connect",
       "fullScopeAllowed": true,
       "redirectUris": [
+        "https://app.local.buurman.io/*",
         "http://localhost:5173/*",
         "http://localhost:3000/*"
       ],
       "webOrigins": [
+        "https://app.local.buurman.io",
         "http://localhost:5173",
         "http://localhost:3000"
       ],

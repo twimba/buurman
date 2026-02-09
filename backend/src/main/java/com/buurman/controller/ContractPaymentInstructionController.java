@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contracts/{contractIdentifier}/payment-instructions")
+@RequestMapping("/contracts/{contractIdentifier}/payment-instructions")
 @Tag(name = "Contract Payment Instructions", description = "Per-contract payment instructions with history")
 @SecurityRequirement(name = "bearer-jwt")
 public class ContractPaymentInstructionController {

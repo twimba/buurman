@@ -1,8 +1,9 @@
 # =============================================================================
 # Docker Profile
 # =============================================================================
-# All services run inside Docker Compose containers.
-# Service hostnames use container names (postgres, keycloak, localstack, etc.).
+# All services run inside Docker Compose behind Traefik reverse proxy (HTTPS).
+# Service-to-service calls use container hostnames (internal network, HTTP).
+# Browser-visible URLs use https://*.local.buurman.io (via Traefik).
 #
 # Start everything: docker compose up
 # =============================================================================
@@ -16,7 +17,7 @@ spring:
       resourceserver:
         jwt:
           # Issuer URI must match the browser-visible URL (embedded in JWT tokens)
-          issuer-uri: http://localhost:8080/realms/buurman
+          issuer-uri: https://keycloak.local.buurman.io/realms/buurman
           # JWK set URI uses container hostname (backend-to-keycloak internal call)
           jwk-set-uri: http://keycloak:8080/realms/buurman/protocol/openid-connect/certs
 
@@ -27,12 +28,12 @@ keycloak:
 aws:
   s3:
     endpoint: http://localstack:4566
-    # Browser still accesses S3 via localhost (port-mapped)
-    public-endpoint: http://localhost:4566
+    # Browser accesses S3 via Traefik hostname (HTTPS)
+    public-endpoint: https://localstack.local.buurman.io
     use-presigned-urls: false
 
 spring.mail:
-  host: mailhog
+  host: mailpit
 
 server:
   error:
@@ -42,4 +43,4 @@ app:
   api:
     base-url: http://backend:8081
   email:
-    base-url: http://localhost:5173
+    base-url: https://app.local.buurman.io

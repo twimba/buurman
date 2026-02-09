@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/properties")
+@RequestMapping("/properties")
 @Tag(name = "Properties", description = "Property management")
 @SecurityRequirement(name = "bearer-jwt")
 public class PropertyController {

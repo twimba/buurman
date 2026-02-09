@@ -1,37 +1,44 @@
 # =============================================================================
 # Local Development Profile
 # =============================================================================
-# All services (PostgreSQL, Keycloak, LocalStack, MailHog) run on localhost
-# via Docker Compose. Backend and frontend run on the host machine.
+# Infrastructure services run in Docker behind Traefik reverse proxy (HTTPS).
+# Backend and frontend run on the host machine.
 #
-# Start infra:  docker compose up postgres keycloak localstack mailhog
+# Start infra:  docker compose up postgres keycloak localstack mailpit traefik
 # Start backend: mvn spring-boot:run
 # Start frontend: yarn dev
+#
+# Hostnames (all resolve to 127.0.0.1 via DNS, HTTPS via Traefik + mkcert):
+#   https://keycloak.local.buurman.io    → Keycloak
+#   https://localstack.local.buurman.io  → S3
+#   https://mailpit.local.buurman.io     → MailHog Web UI
+#   postgresql.local.buurman.io:5432     → PostgreSQL (TCP direct)
 # =============================================================================
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/buurman
+    url: jdbc:postgresql://postgresql.local.buurman.io:5432/buurman
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/buurman
-          jwk-set-uri: http://localhost:8080/realms/buurman/protocol/openid-connect/certs
+          issuer-uri: https://keycloak.local.buurman.io/realms/buurman
+          jwk-set-uri: https://keycloak.local.buurman.io/realms/buurman/protocol/openid-connect/certs
 
 keycloak:
   admin:
-    server-url: http://localhost:8080
+    server-url: https://keycloak.local.buurman.io
 
 aws:
   s3:
-    endpoint: http://localhost:4566
-    public-endpoint: http://localhost:4566
+    endpoint: https://localstack.local.buurman.io
+    public-endpoint: https://localstack.local.buurman.io
     use-presigned-urls: false
 
 spring.mail:
   host: localhost
+  port: 1025
 
 server:
   error:
@@ -39,6 +46,6 @@ server:
 
 app:
   api:
-    base-url: http://localhost:8081
+    base-url: https://api.local.buurman.io
   email:
-    base-url: http://localhost:5173
+    base-url: https://app.local.buurman.io

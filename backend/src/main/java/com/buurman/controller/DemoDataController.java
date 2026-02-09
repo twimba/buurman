@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/demo-data")
+@RequestMapping("/admin/demo-data")
 @Tag(name = "Demo Data", description = "Demo data generation and cleanup")
 @SecurityRequirement(name = "demo-api-key")
 public class DemoDataController {

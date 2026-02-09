@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/tenants")
+@RequestMapping("/tenants")
 @Tag(name = "Tenants", description = "Tenant management")
 @SecurityRequirement(name = "bearer-jwt")
 public class TenantController {

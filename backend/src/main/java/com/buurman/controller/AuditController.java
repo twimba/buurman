@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/audit-logs")
+@RequestMapping("/audit-logs")
 @Tag(name = "Audit Logs", description = "Activity log management")
 @SecurityRequirement(name = "bearer-jwt")
 public class AuditController {

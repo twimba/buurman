@@ -11,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/invitations")
+@RequestMapping("/invitations")
 @Tag(name = "Invitations", description = "Team invitation management")
 public class InvitationController {
 

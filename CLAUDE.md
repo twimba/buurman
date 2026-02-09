@@ -41,24 +41,33 @@ Buurman is a property management dashboard for small landlords (properties, tena
 - Tests: `yarn test`
 - Lint: `yarn lint` / `yarn lint --fix`
 
-### Docker Services
+### Docker Services (Traefik Reverse Proxy + HTTPS)
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| postgres | 5432 | Database (PostgreSQL 18) |
-| keycloak | 8080 | Authentication |
-| localstack | 4566 | S3 storage (dev) |
-| mailhog | 1025/8025 | SMTP / Email UI (dev) |
-| backend | 8081 | Spring Boot API |
-| frontend | 5173 | React app |
-| prometheus | 9090 | Metrics collection |
-| grafana | 3000 | Dashboards |
+All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP automatically redirects to HTTPS. TLS certificates are generated locally via [mkcert](https://github.com/FiloSottile/mkcert) (zero browser warnings).
 
-Commands: `docker-compose up -d`, `docker-compose down`, `docker-compose down -v` (reset)
+| Service | URL | Purpose |
+|---------|-----|---------|
+| traefik | https://traefik.local.buurman.io | Reverse proxy dashboard |
+| postgres | postgresql.local.buurman.io:5432 | Database (PostgreSQL 18, TCP via Traefik) |
+| keycloak | https://keycloak.local.buurman.io | Authentication |
+| localstack | https://localstack.local.buurman.io | S3 storage (dev) |
+| mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
+| backend | https://api.local.buurman.io | Spring Boot API |
+| frontend | https://app.local.buurman.io | React app |
+| prometheus | https://prometheus.local.buurman.io | Metrics collection |
+| grafana | https://grafana.local.buurman.io | Dashboards |
+
+Commands (via Makefile):
+- `make up` — start everything in Docker (including backend + frontend)
+- `make dev` — start infrastructure only (for local backend/frontend development)
+- `make down` — stop all containers
+- `make down-v` — stop + remove volumes (full reset)
+- `make logs` — tail all service logs
+- `make certs` — generate local TLS certificates (one-time)
 
 ### Application Profiles
-- `local` (default): Services on localhost
-- `docker`: Services use container hostnames
+- `local` (default): Infrastructure in Docker behind Traefik, backend/frontend on host (`make dev`)
+- `docker`: All services in Docker behind Traefik (`make up`)
 - Credentials externalized via `.env` file
 
 ### Database Migrations (Flyway)
@@ -190,17 +199,30 @@ src/
 
 ## Development Workflow
 
+### First-Time Setup (one-time)
+1. Install mkcert: `brew install mkcert` (macOS) — see [mkcert docs](https://github.com/FiloSottile/mkcert) for other OS
+2. Install local CA: `mkcert -install` (may prompt for sudo password)
+3. Generate certificates: `bash scripts/setup-local-certs.sh`
+
 ### Starting Local Development
-1. `docker-compose up -d`
+1. `make dev` (infrastructure + Traefik only, backend/frontend excluded)
 2. Wait ~30s for PostgreSQL + Keycloak
-3. `mvn spring-boot:run` (backend on **8081**)
-4. `yarn dev` (frontend on 5173)
-5. App: http://localhost:5173 | Keycloak: http://localhost:8080 | Grafana: http://localhost:3000 | MailHog: http://localhost:8025
+3. `cd backend && mvn spring-boot:run` (backend on 8081)
+4. `cd frontend && yarn dev` (frontend on 5173)
+5. Access everything via the same HTTPS URLs — Traefik routes to your host machine:
+   - App: https://app.local.buurman.io | API: https://api.local.buurman.io
+   - Keycloak: https://keycloak.local.buurman.io | Mailpit: https://mailpit.local.buurman.io
+
+### Starting Full Docker (everything containerized)
+1. `make up` (all services including backend + frontend containers)
+2. App: https://app.local.buurman.io | API: https://api.local.buurman.io | Traefik: https://traefik.local.buurman.io
 
 ### Common Issues
-- **Port conflicts**: Check 5173, 8080, 8081, 5432, 4566
-- **Database connection**: Ensure PostgreSQL container running
-- **JWT validation**: Check Keycloak running and realm configured
-- **CORS errors**: Verify SecurityConfig frontend origin
+- **Port 80/443 conflict**: Traefik needs both — check for other web servers
+- **TLS cert errors**: Run `bash scripts/setup-local-certs.sh` (requires mkcert)
+- **DNS resolution**: All `*.local.buurman.io` must resolve to `127.0.0.1`
+- **Database connection**: Ensure PostgreSQL container running (`postgresql.local.buurman.io:5432`)
+- **JWT validation**: Check Keycloak running at `https://keycloak.local.buurman.io` and realm configured
+- **CORS errors**: Verify SecurityConfig frontend origin includes `https://app.local.buurman.io`
 - **Flyway failure**: Check syntax; rollback may need manual intervention
-- **S3/images**: LocalStack uses direct URLs, production uses presigned URLs
+- **S3/images**: LocalStack uses direct URLs via `https://localstack.local.buurman.io`, production uses presigned URLs

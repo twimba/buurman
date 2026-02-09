@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/teams")
+@RequestMapping("/teams")
 @Tag(name = "Teams", description = "Team management")
 @SecurityRequirement(name = "bearer-jwt")
 public class TeamController {

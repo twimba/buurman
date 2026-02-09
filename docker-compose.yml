@@ -1,4 +1,28 @@
 services:
+  traefik:
+    image: traefik:v3.3
+    container_name: buurman-traefik
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5432:5432"  # PostgreSQL TCP passthrough
+      - "8082:8080"  # Traefik dashboard API
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./docker/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./docker/traefik/certs:/etc/traefik/certs:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.local.buurman.io`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+    networks:
+      - buurman-network
+
   postgres:
     image: postgres:18.1-alpine3.23
     container_name: buurman-postgres
@@ -6,8 +30,11 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_ADMIN_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-admin}
-    ports:
-      - "5432:5432"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.postgres.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.postgres.entrypoints=postgres"
+      - "traefik.tcp.services.postgres.loadbalancer.server.port=5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
@@ -30,12 +57,17 @@ services:
       KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak}
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
     command: start-dev --import-realm --metrics-enabled=true --health-enabled=true
-    ports:
-      - "8080:8080"
     volumes:
       - ./docker/keycloak/buurman-realm.json:/opt/keycloak/data/import/buurman-realm.json
       - ./docker/keycloak/themes:/opt/keycloak/themes
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.local.buurman.io`)"
+      - "traefik.http.routers.keycloak.entrypoints=websecure"
+      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,37 +81,58 @@ services:
       DEBUG: ${DEBUG:-0}
       DATA_DIR: /var/lib/localstack
       DISABLE_CORS_CHECKS: 1
-    ports:
-      - "4566:4566"
     volumes:
       - ./docker/localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
       - localstack-data:/var/lib/localstack
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.localstack.rule=Host(`localstack.local.buurman.io`)"
+      - "traefik.http.routers.localstack.entrypoints=websecure"
+      - "traefik.http.routers.localstack.tls=true"
+      - "traefik.http.routers.localstack.middlewares=localstack-cors"
+      - "traefik.http.middlewares.localstack-cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://app.local.buurman.io"
+      - "traefik.http.services.localstack.loadbalancer.server.port=4566"
     networks:
       - buurman-network
 
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: buurman-mailhog
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: buurman-mailpit
     ports:
-      - "1025:1025"  # SMTP server
-      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP — direct port mapping (no Traefik)
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailpit.rule=Host(`mailpit.local.buurman.io`)"
+      - "traefik.http.routers.mailpit.entrypoints=websecure"
+      - "traefik.http.routers.mailpit.tls=true"
+      - "traefik.http.services.mailpit.loadbalancer.server.port=8025"
     networks:
       - buurman-network
 
+  # --------------------------------------------------------------------------
+  # Application services — included by default with `docker compose up -d`
+  # For local dev, exclude these with `make dev` and run on the host instead.
+  # Traefik routes to host via docker/traefik/dynamic/local-dev.yml (priority 10)
+  # --------------------------------------------------------------------------
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
       target: dev
     container_name: buurman-backend
-    user: "0:991"  # Run as root with docker group to access socket
+    user: "0:991"
     env_file: .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
-    ports:
-      - "8081:8081"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.local.buurman.io`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.priority=100"
+      - "traefik.http.services.backend.loadbalancer.server.port=8081"
     depends_on:
       postgres:
         condition: service_healthy
@@ -101,18 +154,23 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-/api}
-        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-http://localhost:8080}
+        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-buurman-web}
+        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
     container_name: buurman-frontend
-    ports:
-      - "5173:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`app.local.buurman.io`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.priority=100"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:80 || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -123,8 +181,6 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: buurman-prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -133,6 +189,12 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=30d"
       - "--web.enable-lifecycle"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.local.buurman.io`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
       interval: 15s
@@ -147,8 +209,6 @@ services:
     container_name: buurman-postgres-exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${DB_USERNAME:-buurman}:${DB_PASSWORD:-buurman}@postgres:5432/buurman?sslmode=disable"
-    ports:
-      - "9187:9187"
     depends_on:
       postgres:
         condition: service_healthy
@@ -169,12 +229,16 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
-    ports:
-      - "3000:3000"
     volumes:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.local.buurman.io`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     depends_on:
       prometheus:
         condition: service_healthy

@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/documents")
 @Tag(name = "Documents", description = "Document management endpoints")
 public class DocumentController {
 

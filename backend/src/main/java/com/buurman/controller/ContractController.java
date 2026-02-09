@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/contracts")
+@RequestMapping("/contracts")
 @Tag(name = "Contracts", description = "Rental agreement management")
 @SecurityRequirement(name = "bearer-jwt")
 public class ContractController {

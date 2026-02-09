@@ -16,7 +16,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
 @Tag(name = "Health", description = "Health and info endpoints")
 public class HealthController {
 

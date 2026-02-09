@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/calendar")
+@RequestMapping("/calendar")
 @Tag(name = "Calendar Feeds", description = "iCalendar feed management and serving")
 public class CalendarFeedController {
 

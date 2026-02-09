@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping("/expenses")
 @Tag(name = "Expenses", description = "Property expense tracking and management")
 @SecurityRequirement(name = "bearer-jwt")
 public class ExpenseController {

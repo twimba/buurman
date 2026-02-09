@@ -7,23 +7,11 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/api-docs': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/swagger-ui': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
+    allowedHosts: ['app.local.buurman.io'],
+    // HMR websocket goes through Traefik (wss://app.local.buurman.io:443)
+    hmr: {
+      clientPort: 443,
+    },
   },
   build: {
     outDir: 'dist',

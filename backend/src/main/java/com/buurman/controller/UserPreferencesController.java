@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users/preferences")
+@RequestMapping("/users/preferences")
 @Tag(name = "User Preferences", description = "User and team notification preferences")
 @SecurityRequirement(name = "bearer-jwt")
 public class UserPreferencesController {

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @Tag(name = "Users", description = "User team management")
 @SecurityRequirement(name = "bearer-jwt")
 public class UserController {
