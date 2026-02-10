@@ -37,6 +37,7 @@ import { AdminTeamMembersPage } from './pages/admin/AdminTeamMembersPage';
 import { AdminPreferencesPage } from './pages/admin/AdminPreferencesPage';
 import { AdminPaymentInstructionsPage } from './pages/admin/AdminPaymentInstructionsPage';
 import { AdminCalendarFeedsPage } from './pages/admin/AdminCalendarFeedsPage';
+import { AdminNotificationsPage } from './pages/admin/AdminNotificationsPage';
 import { AdminBillingPage } from './pages/admin/AdminBillingPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
@@ -343,6 +344,16 @@ function App() {
                       <ProtectedRoute>
                         <Layout>
                           <AdminCalendarFeedsPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/notifications"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminNotificationsPage />
                         </Layout>
                       </ProtectedRoute>
                     }

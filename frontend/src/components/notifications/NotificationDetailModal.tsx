@@ -1,0 +1,186 @@
+import { useEffect } from 'react';
+import { X, Mail, Phone, RotateCcw } from 'lucide-react';
+import { NotificationResponse, NotificationChannel, NotificationStatus } from '@/types/notification';
+import { NotificationStatusBadge } from './NotificationStatusBadge';
+
+const typeLabels: Record<string, string> = {
+  WELCOME: 'Welcome',
+  VERIFICATION_CODE: 'Verification Code',
+  TEAM_INVITATION: 'Team Invitation',
+  INVITATION_ACCEPTED: 'Invitation Accepted',
+  PASSWORD_CHANGED: 'Password Changed',
+  PAYMENT_REMINDER: 'Payment Reminder',
+  CONTRACT_EXPIRY: 'Contract Expiry',
+};
+
+interface NotificationDetailModalProps {
+  notification: NotificationResponse;
+  onClose: () => void;
+  onResend: (identifier: string) => void;
+  isResending: boolean;
+}
+
+export const NotificationDetailModal = ({
+  notification,
+  onClose,
+  onResend,
+  isResending,
+}: NotificationDetailModalProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const canResend =
+    notification.status === NotificationStatus.FAILED ||
+    notification.status === NotificationStatus.BOUNCED ||
+    notification.status === NotificationStatus.REJECTED;
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleString();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
+      <div className="flex items-center justify-center min-h-screen px-4 py-8">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+
+        <div
+          className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-lg"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              Notification Details
+            </h3>
+            <button
+              onClick={onClose}
+              className="p-1 text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#3d4463] dark:hover:text-[#c4c8db] rounded transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="px-6 py-4 space-y-4">
+            <div className="flex items-center gap-3">
+              <NotificationStatusBadge status={notification.status} />
+              <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]">
+                {notification.channel === NotificationChannel.EMAIL ? (
+                  <Mail className="h-3 w-3 mr-1" />
+                ) : (
+                  <Phone className="h-3 w-3 mr-1" />
+                )}
+                {notification.channel}
+              </span>
+            </div>
+
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-[#6b7194] dark:text-[#8b90a8]">Type</dt>
+                <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  {typeLabels[notification.notificationType] ?? notification.notificationType}
+                </dd>
+              </div>
+
+              {notification.subject && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Subject</dt>
+                  <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {notification.subject}
+                  </dd>
+                </div>
+              )}
+
+              <div>
+                <dt className="text-[#6b7194] dark:text-[#8b90a8]">Recipient</dt>
+                <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  {notification.recipientEmail}
+                  {notification.recipientPhone && (
+                    <span className="text-[#6b7194] dark:text-[#8b90a8] ml-2">
+                      ({notification.recipientPhone})
+                    </span>
+                  )}
+                </dd>
+              </div>
+
+              <div>
+                <dt className="text-[#6b7194] dark:text-[#8b90a8]">Sent at</dt>
+                <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  {formatDate(notification.createdAt)}
+                </dd>
+              </div>
+
+              {notification.statusUpdatedAt && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Status updated</dt>
+                  <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {formatDate(notification.statusUpdatedAt)}
+                  </dd>
+                </div>
+              )}
+
+              {notification.providerStatus && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Provider status</dt>
+                  <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {notification.providerStatus}
+                  </dd>
+                </div>
+              )}
+
+              {notification.providerError && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Error</dt>
+                  <dd className="font-medium text-red-600 dark:text-red-400">
+                    {notification.providerError}
+                  </dd>
+                </div>
+              )}
+
+              {notification.resentFromIdentifier && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Resent from</dt>
+                  <dd className="font-mono text-xs text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {notification.resentFromIdentifier}
+                  </dd>
+                </div>
+              )}
+
+              {notification.resendReason && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Resend reason</dt>
+                  <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {notification.resendReason}
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors"
+            >
+              Close
+            </button>
+            {canResend && (
+              <button
+                onClick={() => onResend(notification.identifier)}
+                disabled={isResending}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Resend
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

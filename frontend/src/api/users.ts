@@ -5,11 +5,13 @@ export interface UserProfileResponse {
   email: string;
   firstName: string;
   lastName: string;
+  phone: string | null;
 }
 
 export interface UpdateUserProfileRequest {
   firstName: string;
   lastName: string;
+  phone?: string | null;
 }
 
 export interface UserTeamResponse {
@@ -39,6 +41,7 @@ export interface UserPreferencesResponse {
   currencyFormat: string;
   emailNotifications: boolean;
   inAppNotifications: boolean;
+  smsNotifications: boolean;
 }
 
 export interface UpdateUserPreferencesRequest {
@@ -49,6 +52,7 @@ export interface UpdateUserPreferencesRequest {
   currencyFormat?: string;
   emailNotifications?: boolean;
   inAppNotifications?: boolean;
+  smsNotifications?: boolean;
 }
 
 export interface UserTeamNotificationPreferencesResponse {
@@ -56,6 +60,7 @@ export interface UserTeamNotificationPreferencesResponse {
   contractExpiryAlerts: boolean;
   newMemberNotifications: boolean;
   weeklySummary: boolean;
+  preferredChannels: string[];
 }
 
 export interface UpdateTeamNotificationPreferencesRequest {
@@ -63,6 +68,7 @@ export interface UpdateTeamNotificationPreferencesRequest {
   contractExpiryAlerts?: boolean;
   newMemberNotifications?: boolean;
   weeklySummary?: boolean;
+  preferredChannels?: string[];
 }
 
 // User profile

@@ -11,6 +11,7 @@ import {
   BarChart3,
   CreditCard,
   Calendar,
+  Bell,
   ClipboardList,
   Settings,
   LogOut,
@@ -45,6 +46,7 @@ const administrationNavigation = [
     icon: CreditCard,
   },
   { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
+  { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
   { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
 ];

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Mail, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
+import { User, Mail, Phone, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
 import {
   useCurrentUser,
   useUpdateUserProfile,
@@ -14,6 +14,7 @@ export const UserProfileSection = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     avatarUrl: null as string | null,
   });
 
@@ -24,6 +25,7 @@ export const UserProfileSection = () => {
       firstName: currentUser.firstName || '',
       lastName: currentUser.lastName || '',
       email: currentUser.email || '',
+      phone: currentUser.phone || '',
       avatarUrl: null,
     });
   }
@@ -38,6 +40,7 @@ export const UserProfileSection = () => {
         firstName: currentUser.firstName || '',
         lastName: currentUser.lastName || '',
         email: currentUser.email || '',
+        phone: currentUser.phone || '',
         avatarUrl: null,
       });
     }
@@ -49,6 +52,7 @@ export const UserProfileSection = () => {
       {
         firstName: userData.firstName,
         lastName: userData.lastName,
+        phone: userData.phone || null,
       },
       {
         onSuccess: () => setIsEditing(false),
@@ -187,6 +191,28 @@ export const UserProfileSection = () => {
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] dark:text-[#5c6180] mt-1">
                 Email address cannot be changed. Contact support if you need to
                 update it.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                Phone Number
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                <input
+                  type="tel"
+                  value={userData.phone}
+                  onChange={(e) =>
+                    setUserData({ ...userData, phone: e.target.value })
+                  }
+                  disabled={!isEditing}
+                  placeholder="+31612345678"
+                  className="w-full pl-10 pr-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed"
+                />
+              </div>
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                E.164 format required for SMS notifications (e.g., +31612345678)
               </p>
             </div>
 

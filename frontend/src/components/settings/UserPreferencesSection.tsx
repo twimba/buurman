@@ -4,6 +4,7 @@ import {
   Moon,
   Sun,
   Mail,
+  MessageSquare,
   Save,
   Loader2,
   Globe,
@@ -27,6 +28,7 @@ export const UserPreferencesSection = () => {
     dateFormat: 'DD/MM/YYYY',
     emailNotifications: true,
     inAppNotifications: true,
+    smsNotifications: false,
   });
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -41,6 +43,7 @@ export const UserPreferencesSection = () => {
       dateFormat: preferencesData.dateFormat || 'DD/MM/YYYY',
       emailNotifications: preferencesData.emailNotifications ?? true,
       inAppNotifications: preferencesData.inAppNotifications ?? true,
+      smsNotifications: preferencesData.smsNotifications ?? false,
     });
   }
 
@@ -78,6 +81,14 @@ export const UserPreferencesSection = () => {
     setPreferences((prev) => ({
       ...prev,
       inAppNotifications: !prev.inAppNotifications,
+    }));
+    setHasChanges(true);
+  };
+
+  const handleSmsNotificationsToggle = () => {
+    setPreferences((prev) => ({
+      ...prev,
+      smsNotifications: !prev.smsNotifications,
     }));
     setHasChanges(true);
   };
@@ -347,6 +358,37 @@ export const UserPreferencesSection = () => {
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                       preferences.inAppNotifications
+                        ? 'translate-x-6'
+                        : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                  <div>
+                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      SMS Notifications
+                    </p>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      Receive critical alerts via text message (requires phone
+                      number)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSmsNotificationsToggle}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    preferences.smsNotifications
+                      ? 'bg-[#5c7cfa]'
+                      : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      preferences.smsNotifications
                         ? 'translate-x-6'
                         : 'translate-x-1'
                     }`}
