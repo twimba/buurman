@@ -296,7 +296,7 @@
                         <configuration>
                             <database>
                                 <type>POSTGRES</type>
-                                <containerImage>postgres:16-alpine</containerImage>
+                                <containerImage>postgres:18-alpine</containerImage>
                             </database>
                             <flyway>
                                 <locations>
@@ -309,6 +309,8 @@
                                         <includes>.*</includes>
                                         <excludes>flyway_schema_history</excludes>
                                         <inputSchema>public</inputSchema>
+                                        <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
+                                        <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
                                     </database>
                                     <target>
                                         <packageName>com.buurman.jooq.generated</packageName>
@@ -354,6 +356,8 @@
                                     <includes>.*</includes>
                                     <excludes>flyway_schema_history</excludes>
                                     <inputSchema>public</inputSchema>
+                                    <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
+                                    <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
                                 </database>
                                 <target>
                                     <packageName>com.buurman.jooq.generated</packageName>
