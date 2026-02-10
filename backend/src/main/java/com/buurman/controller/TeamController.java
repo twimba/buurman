@@ -55,6 +55,21 @@ public class TeamController {
         return teamService.createInvitation(teamIdentifier, request, principal);
     }
 
+    @Operation(summary = "Get pending invitations", description = "Get all pending invitations for the team (Admin only)")
+    @GetMapping("/{teamIdentifier}/invitations/pending")
+    public List<InvitationResponse> getTeamPendingInvitations(@PathVariable String teamIdentifier,
+                                                               @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.getTeamPendingInvitations(teamIdentifier, principal);
+    }
+
+    @Operation(summary = "Resend invitation", description = "Resend an invitation email with a new token (Admin only)")
+    @PostMapping("/{teamIdentifier}/invitations/{token}/resend")
+    public InvitationResponse resendInvitation(@PathVariable String teamIdentifier,
+                                               @PathVariable String token,
+                                               @AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.resendInvitation(teamIdentifier, token, principal);
+    }
+
     @Operation(summary = "Remove team member", description = "Remove member from team (Admin only)")
     @DeleteMapping("/{teamIdentifier}/members/{userIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

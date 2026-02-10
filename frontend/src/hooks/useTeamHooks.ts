@@ -18,6 +18,14 @@ export const useTeamMembers = (teamId: string | undefined) => {
   });
 };
 
+export const useTeamPendingInvitations = (teamId: string | undefined) => {
+  return useQuery({
+    queryKey: ['teamPendingInvitations', teamId],
+    queryFn: () => teamsApi.getTeamPendingInvitations(teamId!),
+    enabled: !!teamId,
+  });
+};
+
 export const useCreateInvitation = (teamId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -26,6 +34,26 @@ export const useCreateInvitation = (teamId: string) => {
       teamsApi.createInvitation(teamId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
+      queryClient.invalidateQueries({
+        queryKey: ['teamPendingInvitations', teamId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useResendInvitation = (teamId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (token: string) => teamsApi.resendInvitation(teamId, token),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['teamPendingInvitations', teamId],
+      });
+      showToast('Invitation resent successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -76,6 +104,13 @@ export const useInvitation = (token: string | undefined) => {
   });
 };
 
+export const usePendingInvitations = () => {
+  return useQuery({
+    queryKey: ['pendingInvitations'],
+    queryFn: teamsApi.getPendingInvitations,
+  });
+};
+
 export const useAcceptInvitation = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -84,6 +119,8 @@ export const useAcceptInvitation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
+      queryClient.invalidateQueries({ queryKey: ['pendingInvitations'] });
+      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/invitations")
 @Tag(name = "Invitations", description = "Team invitation management")
@@ -19,6 +21,13 @@ public class InvitationController {
 
     public InvitationController(TeamService teamService) {
         this.teamService = teamService;
+    }
+
+    @Operation(summary = "Get pending invitations", description = "Get all pending invitations for the authenticated user",
+               security = @SecurityRequirement(name = "bearer-jwt"))
+    @GetMapping("/pending")
+    public List<InvitationResponse> getPendingInvitations(@AuthenticationPrincipal UserPrincipal principal) {
+        return teamService.getPendingInvitationsForUser(principal);
     }
 
     @Operation(summary = "View invitation", description = "Get invitation details (public)")

@@ -1,5 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Users,
   CheckCircle,
@@ -9,7 +10,8 @@ import {
   LogIn,
   UserPlus,
 } from 'lucide-react';
-import { getInvitation, acceptInvitation } from '../api/teams';
+import { getInvitation } from '../api/teams';
+import { useAcceptInvitation } from '../hooks/useTeamHooks';
 import { useAuth } from '../contexts/AuthContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -32,6 +34,8 @@ export const InvitationPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
 
+  const queryClient = useQueryClient();
+
   const {
     data: invitation,
     isLoading,
@@ -43,15 +47,34 @@ export const InvitationPage = () => {
     retry: false,
   });
 
-  const acceptMutation = useMutation({
-    mutationFn: () => acceptInvitation(token!),
-    onSuccess: () => {
-      // Clear the pending invitation
-      localStorage.removeItem('pendingInvitation');
-      // Reload to refresh team data and redirect to dashboard
-      window.location.href = '/dashboard';
-    },
-  });
+  const acceptMutation = useAcceptInvitation();
+
+  const handleAcceptSuccess = () => {
+    localStorage.removeItem('pendingInvitation');
+    // Clear all cached queries so the dashboard loads with fresh team data
+    queryClient.clear();
+    window.location.href = '/dashboard';
+  };
+
+  // Auto-accept when user comes back from login flow
+  const autoAcceptTriggered = useRef(false);
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      !autoAcceptTriggered.current &&
+      invitation &&
+      !invitation.isAccepted &&
+      !invitation.isExpired
+    ) {
+      const pendingToken = localStorage.getItem('pendingInvitation');
+      if (pendingToken === token) {
+        autoAcceptTriggered.current = true;
+        acceptMutation.mutate(token!, {
+          onSuccess: handleAcceptSuccess,
+        });
+      }
+    }
+  }, [isAuthenticated, invitation]);
 
   const handleLogin = () => {
     // Store the invitation token to redirect back after login
@@ -66,7 +89,9 @@ export const InvitationPage = () => {
   };
 
   const handleAccept = () => {
-    acceptMutation.mutate();
+    acceptMutation.mutate(token!, {
+      onSuccess: handleAcceptSuccess,
+    });
   };
 
   if (isLoading || authLoading) {

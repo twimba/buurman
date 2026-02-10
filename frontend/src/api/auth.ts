@@ -5,6 +5,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   password: string;
+  invitationToken?: string;
 }
 
 export interface UserResponse {

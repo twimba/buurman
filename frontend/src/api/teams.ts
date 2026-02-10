@@ -65,6 +65,7 @@ export interface InvitationResponse {
   teamName: string;
   role: string;
   inviterName: string;
+  invitedAt: string;
   expiresAt: string;
   invitationUrl: string;
   isExpired: boolean;
@@ -123,6 +124,28 @@ export const getInvitation = async (
 
 export const acceptInvitation = async (token: string): Promise<void> => {
   await client.post(`/invitations/${token}/accept`);
+};
+
+export const getPendingInvitations = async (): Promise<InvitationResponse[]> => {
+  const response = await client.get('/invitations/pending');
+  return response.data;
+};
+
+export const getTeamPendingInvitations = async (
+  teamId: string
+): Promise<InvitationResponse[]> => {
+  const response = await client.get(`/teams/${teamId}/invitations/pending`);
+  return response.data;
+};
+
+export const resendInvitation = async (
+  teamId: string,
+  token: string
+): Promise<InvitationResponse> => {
+  const response = await client.post(
+    `/teams/${teamId}/invitations/${token}/resend`
+  );
+  return response.data;
 };
 
 export const transferOwnership = async (

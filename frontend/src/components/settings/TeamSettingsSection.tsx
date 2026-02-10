@@ -10,11 +10,15 @@ import {
   Shield,
   Crown,
   Loader2,
+  Clock,
+  RefreshCw,
 } from 'lucide-react';
 import {
   useCurrentTeam,
   useTeamMembers,
+  useTeamPendingInvitations,
   useCreateInvitation,
+  useResendInvitation,
   useRemoveMember,
   useUpdateMemberRole,
   useTransferOwnership,
@@ -44,8 +48,13 @@ export const TeamSettingsSection = () => {
   const [inviteRole, setInviteRole] = useState<Role>('TEAM_VIEWER');
   const [newRole, setNewRole] = useState<Role>('TEAM_VIEWER');
 
+  const { data: pendingInvitations } = useTeamPendingInvitations(
+    team?.identifier
+  );
+
   const updateTeamMutation = useUpdateTeam(team?.identifier || '');
   const createInvitationMutation = useCreateInvitation(team?.identifier || '');
+  const resendInvitationMutation = useResendInvitation(team?.identifier || '');
   const removeMemberMutation = useRemoveMember(team?.identifier || '');
   const updateRoleMutation = useUpdateMemberRole(team?.identifier || '');
   const transferOwnershipMutation = useTransferOwnership(
@@ -333,6 +342,73 @@ export const TeamSettingsSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Pending Invitations Card */}
+      {canManageMembers && pendingInvitations && pendingInvitations.length > 0 && (
+        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
+          <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-500" />
+              <div>
+                <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Pending Invitations
+                </h2>
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  {pendingInvitations.length} pending invitation{pendingInvitations.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+            {pendingInvitations.map((inv) => (
+              <div
+                key={inv.token}
+                className="p-6 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
+                      <Mail className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                        {inv.email}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`px-3 py-0.5 text-xs font-semibold rounded ${roleColors[inv.role as Role]}`}
+                        >
+                          {roleLabels[inv.role as Role]}
+                        </span>
+                        <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                          Invited by {inv.inviterName}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                        Sent {formatDate(inv.invitedAt)} &middot; Expires {formatDate(inv.expiresAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => resendInvitationMutation.mutate(inv.token)}
+                    disabled={resendInvitationMutation.isPending}
+                    className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[#5c7cfa] border border-[#5c7cfa]/30 hover:bg-[#5c7cfa]/5 dark:hover:bg-[#5c7cfa]/10 rounded-lg transition-colors disabled:opacity-50"
+                    title="Resend invitation"
+                  >
+                    {resendInvitationMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                    Resend
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Roles Reference Card */}
       <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">

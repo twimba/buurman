@@ -98,6 +98,12 @@ public class TeamService {
             throw new RuntimeException("Access denied");
         }
 
+        // Check for existing pending invitation for same email + team
+        invitationRepository.findPendingByEmailAndTeamId(request.email(), team.getId())
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("A pending invitation already exists for this email address");
+                });
+
         // Create invitation
         TeamInvitation invitation = new TeamInvitation();
         invitation.setTeamId(team.getId());
@@ -149,6 +155,105 @@ public class TeamService {
         return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
     }
 
+    public List<InvitationResponse> getPendingInvitationsForUser(UserPrincipal principal) {
+        User user = userRepository.findById(principal.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<TeamInvitation> pending = invitationRepository.findPendingByEmail(user.getEmail());
+
+        // Exclude teams the user is already a member of
+        var memberTeamIds = teamMemberRepository.findAllByUserId(principal.getUserId()).stream()
+                .map(TeamMember::getTeamId)
+                .collect(java.util.stream.Collectors.toSet());
+
+        return pending.stream()
+                .filter(inv -> !memberTeamIds.contains(inv.getTeamId()))
+                .map(invitation -> {
+                    Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
+                    if (team == null) return null;
+
+                    String inviterName = "Team Admin";
+                    if (invitation.getInvitedBy() != null) {
+                        User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
+                        if (inviter != null) {
+                            inviterName = inviter.getFirstName() + " " + inviter.getLastName();
+                        }
+                    }
+
+                    return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+                }).filter(r -> r != null).toList();
+    }
+
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    public List<InvitationResponse> getTeamPendingInvitations(String teamIdentifier, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
+        if (!team.getId().equals(principal.getTeamId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        List<TeamInvitation> pending = invitationRepository.findPendingByTeamId(team.getId());
+
+        return pending.stream().map(invitation -> {
+            String inviterName = "Team Admin";
+            if (invitation.getInvitedBy() != null) {
+                User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
+                if (inviter != null) {
+                    inviterName = inviter.getFirstName() + " " + inviter.getLastName();
+                }
+            }
+            return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+        }).toList();
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    public InvitationResponse resendInvitation(String teamIdentifier, String token, UserPrincipal principal) {
+        Team team = resolveTeam(teamIdentifier);
+
+        if (!team.getId().equals(principal.getTeamId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        TeamInvitation invitation = invitationRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+
+        if (!invitation.getTeamId().equals(team.getId())) {
+            throw new RuntimeException("Invitation does not belong to this team");
+        }
+
+        if (invitation.getAcceptedAt() != null) {
+            throw new RuntimeException("Invitation already accepted");
+        }
+
+        // Reset token, expiry, and resend tracking
+        invitation.setToken(UUID.randomUUID().toString());
+        invitation.setExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS));
+        invitation.setResentAt(Instant.now());
+        invitation.setResentCount(invitation.getResentCount() == null ? 1 : invitation.getResentCount() + 1);
+
+        invitation = invitationRepository.save(invitation);
+
+        // Re-send notification email
+        String inviterName = principal.getName();
+        notificationService.send(SendNotificationRequest.builder()
+                .teamId(team.getId())
+                .notificationType(NotificationType.TEAM_INVITATION)
+                .recipientEmail(invitation.getEmail())
+                .templateName("team-invitation")
+                .templateVariables(Map.of(
+                        "inviterName", inviterName,
+                        "teamName", team.getName(),
+                        "role", formatRole(invitation.getRole()),
+                        "inviteUrl", baseUrl + "/invitation/" + invitation.getToken(),
+                        "expiresAt", formatInstantDate(invitation.getExpiresAt())
+                ))
+                .createdBy(principal.getUserId())
+                .build());
+
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+    }
+
     @Transactional
     public void acceptInvitation(String token, UserPrincipal principal) {
         TeamInvitation invitation = invitationRepository.findByToken(token)
@@ -189,13 +294,9 @@ public class TeamService {
         invitation.setAcceptedBy(principal.getUserId());
         invitationRepository.save(invitation);
 
-        // If this is the user's first team, set it as default and active
-        if (user.getDefaultTeamId() == null) {
-            user.setDefaultTeamId(invitation.getTeamId());
-        }
-        if (user.getActiveTeamId() == null) {
-            user.setActiveTeamId(invitation.getTeamId());
-        }
+        // Switch to the invited team as default and active
+        user.setDefaultTeamId(invitation.getTeamId());
+        user.setActiveTeamId(invitation.getTeamId());
         userRepository.save(user);
 
         // Notify inviter

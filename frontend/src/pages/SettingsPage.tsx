@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { User, Bell, Settings as SettingsIcon } from 'lucide-react';
+import { User, Bell, Users, Settings as SettingsIcon } from 'lucide-react';
 import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
+import { MyTeamsSection } from '@/components/settings/MyTeamsSection';
 
-type SettingsTab = 'profile' | 'preferences';
+type SettingsTab = 'profile' | 'preferences' | 'teams';
 
 const tabs = [
   { id: 'profile' as const, label: 'Profile & Security', icon: User },
   { id: 'preferences' as const, label: 'My Preferences', icon: Bell },
+  { id: 'teams' as const, label: 'My Teams', icon: Users },
 ];
 
 export const SettingsPage = () => {
@@ -68,6 +70,7 @@ export const SettingsPage = () => {
         <div className="pb-12">
           {activeTab === 'profile' && <UserProfileSection />}
           {activeTab === 'preferences' && <UserPreferencesSection />}
+          {activeTab === 'teams' && <MyTeamsSection />}
         </div>
       </div>
     </div>

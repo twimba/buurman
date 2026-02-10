@@ -54,7 +54,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
   } = useQuery({
     queryKey: ['user-teams'],
     queryFn: getUserTeams,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 1000, // 30 seconds
     enabled: isAuthenticated, // Only fetch when authenticated
   });
 

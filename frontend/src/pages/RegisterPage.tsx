@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRegister } from '../hooks/useAuthHooks';
+import { useInvitation } from '../hooks/useTeamHooks';
 import {
   UserPlus,
   Home,
@@ -12,6 +13,9 @@ import {
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const invitationToken = searchParams.get('invitation') || undefined;
+  const { data: invitation } = useInvitation(invitationToken);
   const registerMutation = useRegister();
 
   const [formData, setFormData] = useState({
@@ -21,6 +25,13 @@ const RegisterPage: React.FC = () => {
     password: '',
     confirmPassword: '',
   });
+
+  // Pre-fill email from invitation
+  useEffect(() => {
+    if (invitation?.email && !formData.email) {
+      setFormData((prev) => ({ ...prev, email: invitation.email }));
+    }
+  }, [invitation?.email]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
@@ -57,7 +68,12 @@ const RegisterPage: React.FC = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         password: formData.password,
+        invitationToken,
       });
+      // Clear pending invitation since it was auto-accepted during registration
+      if (invitationToken) {
+        localStorage.removeItem('pendingInvitation');
+      }
       setRegistrationSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (error: unknown) {
@@ -247,9 +263,15 @@ const RegisterPage: React.FC = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                      readOnly={!!invitationToken && !!invitation?.email}
+                      className={`w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${invitationToken && invitation?.email ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] cursor-not-allowed' : ''}`}
                       placeholder="john.doe@example.com"
                     />
+                    {invitationToken && invitation?.email && (
+                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                        Email is pre-filled from your invitation
+                      </p>
+                    )}
                     {errors.email && (
                       <p className="text-red-600 text-xs mt-1">
                         {errors.email}

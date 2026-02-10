@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import com.buurman.domain.EmailVerificationCode;
 import com.buurman.domain.Team;
+import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.User;
@@ -11,6 +12,7 @@ import com.buurman.dto.response.UserResponse;
 import com.buurman.exception.VerificationCodeException;
 import com.buurman.mapper.UserMapper;
 import com.buurman.repository.EmailVerificationCodeRepository;
+import com.buurman.repository.TeamInvitationRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
@@ -41,6 +43,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamInvitationRepository invitationRepository;
     private final EmailVerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final NotificationService notificationService;
@@ -51,6 +54,7 @@ public class AuthService {
 
     public AuthService(KeycloakService keycloakService, UserRepository userRepository,
                       TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
+                      TeamInvitationRepository invitationRepository,
                       EmailVerificationCodeRepository verificationCodeRepository,
                       UserMapper userMapper, NotificationService notificationService,
                       MetricsService metricsService) {
@@ -58,6 +62,7 @@ public class AuthService {
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.invitationRepository = invitationRepository;
         this.verificationCodeRepository = verificationCodeRepository;
         this.userMapper = userMapper;
         this.notificationService = notificationService;
@@ -118,6 +123,11 @@ public class AuthService {
             // Send verification code email
             String code = generateVerificationCode();
             createAndSendVerificationCode(user, code);
+
+            // Auto-accept invitation if token provided
+            if (request.invitationToken() != null && !request.invitationToken().isBlank()) {
+                acceptInvitationForNewUser(request.invitationToken(), user);
+            }
 
             metricsService.incrementCounter("team.registered.total");
             metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
@@ -276,6 +286,52 @@ public class AuthService {
                         "expiresMinutes", 15
                 ))
                 .build());
+    }
+
+    private void acceptInvitationForNewUser(String token, User user) {
+        try {
+            TeamInvitation invitation = invitationRepository.findByToken(token).orElse(null);
+            if (invitation == null) {
+                log.warn("Invitation token not found during registration: {}", token);
+                return;
+            }
+
+            if (invitation.getAcceptedAt() != null || invitation.getExpiresAt().isBefore(Instant.now())) {
+                log.warn("Invitation already accepted or expired during registration: {}", token);
+                return;
+            }
+
+            if (!invitation.getEmail().equalsIgnoreCase(user.getEmail())) {
+                log.warn("Invitation email mismatch during registration: expected={}, got={}", invitation.getEmail(), user.getEmail());
+                return;
+            }
+
+            // Create team membership
+            TeamMember member = new TeamMember();
+            member.setTeamId(invitation.getTeamId());
+            member.setUserId(user.getId());
+            member.setRole(invitation.getRole());
+            member.setOwner(false);
+            member.setInvitedAt(invitation.getInvitedAt());
+            member.setInvitedBy(invitation.getInvitedBy());
+            member.setJoinedAt(Instant.now());
+            teamMemberRepository.save(member);
+
+            // Mark invitation as accepted
+            invitation.setAcceptedAt(Instant.now());
+            invitation.setAcceptedBy(user.getId());
+            invitationRepository.save(invitation);
+
+            // Switch to the invited team as default and active
+            user.setDefaultTeamId(invitation.getTeamId());
+            user.setActiveTeamId(invitation.getTeamId());
+            userRepository.save(user);
+
+            log.info("Auto-accepted invitation for new user: email={}, teamId={}", user.getEmail(), invitation.getTeamId());
+        } catch (Exception e) {
+            // Don't fail registration if invitation acceptance fails
+            log.error("Failed to auto-accept invitation during registration", e);
+        }
     }
 
     private String generateVerificationCode() {

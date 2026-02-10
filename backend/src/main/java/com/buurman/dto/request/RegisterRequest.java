@@ -8,5 +8,6 @@ public record RegisterRequest(
     @NotBlank @Email String email,
     @NotBlank String firstName,
     @NotBlank String lastName,
-    @NotBlank @Size(min = 8) String password
+    @NotBlank @Size(min = 8) String password,
+    String invitationToken
 ) {}

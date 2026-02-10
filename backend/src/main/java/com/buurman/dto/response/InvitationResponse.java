@@ -9,6 +9,7 @@ public record InvitationResponse(
     String teamName,
     String role,
     String inviterName,
+    Instant invitedAt,
     Instant expiresAt,
     String invitationUrl,
     boolean isExpired,

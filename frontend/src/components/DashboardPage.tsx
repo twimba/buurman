@@ -5,6 +5,7 @@ import { useTeam } from '@/context/TeamContext';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
 import { PropertyStatusChart } from './PropertyStatusChart';
+import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import {
   Home,
   Users,
@@ -79,6 +80,9 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-8">
+      {/* Pending Invitations */}
+      <PendingInvitationsPanel />
+
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
