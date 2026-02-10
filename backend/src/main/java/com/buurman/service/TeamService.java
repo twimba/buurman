@@ -10,17 +10,23 @@ import com.buurman.dto.request.UpdateMemberRoleRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
+import com.buurman.domain.NotificationType;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +40,23 @@ public class TeamService {
     private final TeamInvitationRepository invitationRepository;
     private final UserRepository userRepository;
     private final TeamMapper teamMapper;
-    private final EmailService emailService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url}")
+    private String baseUrl;
 
     @Value("${app.email.base-url}/invitation/")
     private String invitationBaseUrl;
 
     public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       TeamInvitationRepository invitationRepository, UserRepository userRepository,
-                      TeamMapper teamMapper, EmailService emailService) {
+                      TeamMapper teamMapper, NotificationService notificationService) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.teamMapper = teamMapper;
-        this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
@@ -101,9 +110,22 @@ public class TeamService {
 
         invitation = invitationRepository.save(invitation);
 
-        // Send invitation email
+        // Send invitation notification
         String inviterName = principal.getName();
-        emailService.sendTeamInvitation(invitation, inviterName, team.getName());
+        notificationService.send(SendNotificationRequest.builder()
+                .teamId(team.getId())
+                .notificationType(NotificationType.TEAM_INVITATION)
+                .recipientEmail(invitation.getEmail())
+                .templateName("team-invitation")
+                .templateVariables(Map.of(
+                        "inviterName", inviterName,
+                        "teamName", team.getName(),
+                        "role", formatRole(invitation.getRole()),
+                        "inviteUrl", baseUrl + "/invitation/" + invitation.getToken(),
+                        "expiresAt", formatInstantDate(invitation.getExpiresAt())
+                ))
+                .createdBy(principal.getUserId())
+                .build());
 
         return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
     }
@@ -180,7 +202,21 @@ public class TeamService {
         User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
         Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
         if (inviter != null && team != null) {
-            emailService.sendInvitationAccepted(inviter, user, team);
+            notificationService.send(SendNotificationRequest.builder()
+                    .teamId(team.getId())
+                    .notificationType(NotificationType.INVITATION_ACCEPTED)
+                    .recipientUserId(inviter.getId())
+                    .recipientEmail(inviter.getEmail())
+                    .recipientPhone(inviter.getPhone())
+                    .templateName("invitation-accepted")
+                    .templateVariables(Map.of(
+                            "inviterName", inviter.getFirstName(),
+                            "memberName", user.getFirstName() + " " + user.getLastName(),
+                            "memberEmail", user.getEmail(),
+                            "teamName", team.getName(),
+                            "baseUrl", baseUrl
+                    ))
+                    .build());
         }
     }
 
@@ -375,5 +411,21 @@ public class TeamService {
     private Team resolveTeam(String teamIdentifier) {
         return teamRepository.findByIdentifier(teamIdentifier)
             .orElseThrow(() -> new RuntimeException("Team not found"));
+    }
+
+    private String formatRole(String role) {
+        return switch (role) {
+            case "TEAM_ADMIN" -> "Administrator";
+            case "TEAM_EDITOR" -> "Editor";
+            case "TEAM_VIEWER" -> "Viewer";
+            default -> role;
+        };
+    }
+
+    private String formatInstantDate(Instant instant) {
+        return instant != null
+                ? LocalDate.ofInstant(instant, ZoneOffset.UTC)
+                           .format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
+                : "";
     }
 }

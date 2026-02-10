@@ -3,6 +3,7 @@ package com.buurman.service;
 import com.buurman.domain.EmailVerificationCode;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
+import com.buurman.domain.NotificationType;
 import com.buurman.domain.User;
 import com.buurman.dto.request.RegisterRequest;
 import com.buurman.dto.request.UpdateProfileRequest;
@@ -13,6 +14,8 @@ import com.buurman.repository.EmailVerificationCodeRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -39,13 +43,16 @@ public class AuthService {
     private final TeamMemberRepository teamMemberRepository;
     private final EmailVerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
-    private final EmailService emailService;
+    private final NotificationService notificationService;
     private final MetricsService metricsService;
+
+    @org.springframework.beans.factory.annotation.Value("${app.email.base-url}")
+    private String baseUrl;
 
     public AuthService(KeycloakService keycloakService, UserRepository userRepository,
                       TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       EmailVerificationCodeRepository verificationCodeRepository,
-                      UserMapper userMapper, EmailService emailService,
+                      UserMapper userMapper, NotificationService notificationService,
                       MetricsService metricsService) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
@@ -53,7 +60,7 @@ public class AuthService {
         this.teamMemberRepository = teamMemberRepository;
         this.verificationCodeRepository = verificationCodeRepository;
         this.userMapper = userMapper;
-        this.emailService = emailService;
+        this.notificationService = notificationService;
         this.metricsService = metricsService;
     }
 
@@ -208,9 +215,20 @@ public class AuthService {
         verificationCodeRepository.markUsed(validCode.getId());
         userRepository.updateEmailVerifiedAt(userId);
 
-        // Send welcome email now that email is verified
+        // Send welcome notification now that email is verified
         user.setEmailVerifiedAt(Instant.now());
-        emailService.sendWelcomeEmail(user);
+        notificationService.send(SendNotificationRequest.builder()
+                .teamId(user.getActiveTeamId())
+                .notificationType(NotificationType.WELCOME)
+                .recipientUserId(user.getId())
+                .recipientEmail(user.getEmail())
+                .recipientPhone(user.getPhone())
+                .templateName("welcome")
+                .templateVariables(Map.of(
+                        "userName", user.getFirstName(),
+                        "baseUrl", baseUrl
+                ))
+                .build());
 
         TeamMember member = getActiveMembership(user);
         String teamIdentifier = resolveTeamIdentifier(member);
@@ -245,7 +263,19 @@ public class AuthService {
         verificationCode.setExpiresAt(Instant.now().plus(VERIFICATION_CODE_EXPIRY_MINUTES, ChronoUnit.MINUTES));
         verificationCodeRepository.save(verificationCode);
 
-        emailService.sendVerificationCode(user, code);
+        notificationService.send(SendNotificationRequest.builder()
+                .teamId(user.getActiveTeamId())
+                .notificationType(NotificationType.VERIFICATION_CODE)
+                .recipientUserId(user.getId())
+                .recipientEmail(user.getEmail())
+                .recipientPhone(user.getPhone())
+                .templateName("verification-code")
+                .templateVariables(Map.of(
+                        "userName", user.getFirstName(),
+                        "verificationCode", code,
+                        "expiresMinutes", 15
+                ))
+                .build());
     }
 
     private String generateVerificationCode() {

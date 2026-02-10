@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.TeamMember;
@@ -11,15 +12,21 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -33,7 +40,10 @@ public class NotificationSchedulerService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
-    private final EmailService emailService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url:https://app.local.buurman.io}")
+    private String baseUrl;
 
     public NotificationSchedulerService(ContractRepository contractRepository,
                                         PaymentRepository paymentRepository,
@@ -41,19 +51,16 @@ public class NotificationSchedulerService {
                                         TeamRepository teamRepository,
                                         TeamMemberRepository teamMemberRepository,
                                         UserRepository userRepository,
-                                        EmailService emailService) {
+                                        NotificationService notificationService) {
         this.contractRepository = contractRepository;
         this.paymentRepository = paymentRepository;
         this.propertyRepository = propertyRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
-        this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
-    /**
-     * Check for contracts expiring within 30 days and send alerts.
-     */
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional(readOnly = true)
     public void checkContractExpiry() {
@@ -69,7 +76,6 @@ public class NotificationSchedulerService {
                 for (Contract contract : expiringContracts) {
                     int daysUntilExpiry = (int) ChronoUnit.DAYS.between(LocalDate.now(), contract.getEndDate());
 
-                    // Only send at 30, 14, 7, 3, 1 day marks to avoid spamming
                     if (daysUntilExpiry != 30 && daysUntilExpiry != 14 &&
                             daysUntilExpiry != 7 && daysUntilExpiry != 3 && daysUntilExpiry != 1) {
                         continue;
@@ -77,9 +83,22 @@ public class NotificationSchedulerService {
 
                     String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
 
-                    // Notify all team admins and editors
                     notifyTeamMembers(team.getId(), user ->
-                            emailService.sendContractExpiryAlert(user, contract, propertyName, daysUntilExpiry));
+                            notificationService.send(SendNotificationRequest.builder()
+                                    .teamId(team.getId())
+                                    .notificationType(NotificationType.CONTRACT_EXPIRY)
+                                    .recipientUserId(user.getId())
+                                    .recipientEmail(user.getEmail())
+                                    .recipientPhone(user.getPhone())
+                                    .templateName("contract-expiry")
+                                    .templateVariables(Map.of(
+                                            "userName", user.getFirstName(),
+                                            "propertyName", propertyName,
+                                            "daysUntilExpiry", daysUntilExpiry,
+                                            "expiryDate", formatDate(contract.getEndDate()),
+                                            "baseUrl", baseUrl
+                                    ))
+                                    .build()));
                 }
 
                 if (!expiringContracts.isEmpty()) {
@@ -93,9 +112,6 @@ public class NotificationSchedulerService {
         log.info("Contract expiry check completed");
     }
 
-    /**
-     * Check for overdue/unpaid payments and send reminders.
-     */
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional(readOnly = true)
     public void checkPaymentReminders() {
@@ -112,9 +128,22 @@ public class NotificationSchedulerService {
 
                     String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
 
-                    // Notify all team admins and editors
                     notifyTeamMembers(team.getId(), user ->
-                            emailService.sendPaymentReminder(user, payment, propertyName, payment.getAmount()));
+                            notificationService.send(SendNotificationRequest.builder()
+                                    .teamId(team.getId())
+                                    .notificationType(NotificationType.PAYMENT_REMINDER)
+                                    .recipientUserId(user.getId())
+                                    .recipientEmail(user.getEmail())
+                                    .recipientPhone(user.getPhone())
+                                    .templateName("payment-reminder")
+                                    .templateVariables(Map.of(
+                                            "userName", user.getFirstName(),
+                                            "propertyName", propertyName,
+                                            "amount", formatCurrency(payment.getAmount()),
+                                            "dueDate", formatDate(payment.getDueDate()),
+                                            "baseUrl", baseUrl
+                                    ))
+                                    .build()));
                 }
 
                 if (!overduePayments.isEmpty()) {
@@ -137,10 +166,17 @@ public class NotificationSchedulerService {
     private void notifyTeamMembers(UUID teamId, java.util.function.Consumer<User> notifier) {
         List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
         for (TeamMember member : members) {
-            // Only notify admins and editors
             if ("TEAM_ADMIN".equals(member.getRole()) || "TEAM_EDITOR".equals(member.getRole())) {
                 userRepository.findById(member.getUserId()).ifPresent(notifier);
             }
         }
+    }
+
+    private String formatDate(LocalDate date) {
+        return date != null ? date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) : "";
+    }
+
+    private String formatCurrency(BigDecimal amount) {
+        return amount != null ? String.format("€%.2f", amount) : "";
     }
 }
