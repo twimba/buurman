@@ -1,0 +1,111 @@
+package com.buurman.job;
+
+import com.buurman.domain.NotificationChannel;
+import com.buurman.domain.NotificationOutbox;
+import com.buurman.domain.NotificationStatus;
+import com.buurman.repository.NotificationOutboxRepository;
+import com.buurman.repository.NotificationRepository;
+import com.buurman.service.notification.NotificationChannelSender;
+import com.buurman.service.notification.NotificationSendException;
+import com.buurman.service.notification.NotificationSendRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Component
+@DisallowConcurrentExecution
+public class NotificationOutboxJob implements Job {
+
+    private static final Logger log = LoggerFactory.getLogger(NotificationOutboxJob.class);
+
+    private final NotificationOutboxRepository outboxRepository;
+    private final NotificationRepository notificationRepository;
+    private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
+    private final ObjectMapper objectMapper;
+    private final int batchSize;
+
+    public NotificationOutboxJob(NotificationOutboxRepository outboxRepository,
+                                  NotificationRepository notificationRepository,
+                                  List<NotificationChannelSender> senders,
+                                  ObjectMapper objectMapper,
+                                  @Value("${notification.outbox.batch-size:50}") int batchSize) {
+        this.outboxRepository = outboxRepository;
+        this.notificationRepository = notificationRepository;
+        this.objectMapper = objectMapper;
+        this.batchSize = batchSize;
+
+        this.channelSenders = new HashMap<>();
+        for (NotificationChannelSender sender : senders) {
+            this.channelSenders.put(sender.getChannel(), sender);
+        }
+    }
+
+    @Override
+    public void execute(JobExecutionContext context) {
+        List<NotificationOutbox> pending = outboxRepository.findPendingBatch(batchSize);
+
+        if (pending.isEmpty()) {
+            return;
+        }
+
+        log.info("Processing {} outbox entries", pending.size());
+
+        for (NotificationOutbox entry : pending) {
+            processEntry(entry);
+        }
+    }
+
+    private void processEntry(NotificationOutbox entry) {
+        try {
+            outboxRepository.markProcessing(entry.getId());
+
+            NotificationChannelSender sender = channelSenders.get(entry.getChannel());
+            if (sender == null) {
+                String error = "No sender registered for channel: " + entry.getChannel();
+                log.error(error);
+                outboxRepository.markFailed(entry.getId(), error, entry.getRetryCount());
+                notificationRepository.updateStatus(entry.getNotificationId(),
+                        NotificationStatus.FAILED, null, null, error);
+                return;
+            }
+
+            NotificationSendRequest sendRequest = objectMapper.readValue(
+                    entry.getPayload(), NotificationSendRequest.class);
+
+            String providerMessageId = sender.send(sendRequest);
+
+            outboxRepository.markSent(entry.getId());
+            notificationRepository.updateStatus(entry.getNotificationId(),
+                    NotificationStatus.SENT, providerMessageId, "sent", null);
+
+            log.debug("Successfully sent notification {} via {} (provider ID: {})",
+                    entry.getNotificationId(), entry.getChannel(), providerMessageId);
+
+        } catch (NotificationSendException e) {
+            log.warn("Failed to send notification {} via {}: {}",
+                    entry.getNotificationId(), entry.getChannel(), e.getMessage());
+            outboxRepository.markFailed(entry.getId(), e.getMessage(), entry.getRetryCount());
+
+            if (entry.getRetryCount() + 1 >= entry.getMaxRetries()) {
+                notificationRepository.updateStatus(entry.getNotificationId(),
+                        NotificationStatus.FAILED, null, null, e.getMessage());
+            } else {
+                notificationRepository.updateStatus(entry.getNotificationId(),
+                        NotificationStatus.QUEUED, null, "retrying", null);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error processing outbox entry {}: {}",
+                    entry.getId(), e.getMessage(), e);
+            outboxRepository.markFailed(entry.getId(), e.getMessage(), entry.getRetryCount());
+        }
+    }
+}
