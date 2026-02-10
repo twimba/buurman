@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/invitations/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/calendar/ical/*").permitAll()
                 .requestMatchers("/api/admin/demo-data/**").permitAll()
+                .requestMatchers("/webhooks/**").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
