@@ -47,7 +47,14 @@ export const UserProfileSection = () => {
     setIsEditing(false);
   };
 
+  const [phoneError, setPhoneError] = useState('');
+
   const handleSaveProfile = () => {
+    if (userData.phone && !/^\+[1-9]\d{1,14}$/.test(userData.phone)) {
+      setPhoneError('Phone must be in E.164 format (e.g., +31612345678)');
+      return;
+    }
+    setPhoneError('');
     updateProfileMutation.mutate(
       {
         firstName: userData.firstName,
@@ -203,17 +210,27 @@ export const UserProfileSection = () => {
                 <input
                   type="tel"
                   value={userData.phone}
-                  onChange={(e) =>
-                    setUserData({ ...userData, phone: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setUserData({ ...userData, phone: e.target.value });
+                    if (phoneError) setPhoneError('');
+                  }}
                   disabled={!isEditing}
                   placeholder="+31612345678"
-                  className="w-full pl-10 pr-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed"
+                  className={`w-full pl-10 pr-3 py-2 border dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed ${
+                    phoneError
+                      ? 'border-red-500'
+                      : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+                  }`}
                 />
               </div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                E.164 format required for SMS notifications (e.g., +31612345678)
-              </p>
+              {phoneError ? (
+                <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+              ) : (
+                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  E.164 format required for SMS notifications (e.g.,
+                  +31612345678)
+                </p>
+              )}
             </div>
 
             {isEditing && (

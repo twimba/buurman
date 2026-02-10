@@ -56,6 +56,9 @@ export const TenantForm = ({
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Email must be valid';
     }
+    if (formData.phone && formData.phone.trim() && !/^\+[1-9]\d{1,14}$/.test(formData.phone.trim())) {
+      newErrors.phone = 'Phone must be in E.164 format (e.g., +31612345678)';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -145,9 +148,20 @@ export const TenantForm = ({
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
-              placeholder="+31 6 1234 5678"
+              className={`w-full border rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] ${
+                errors.phone
+                  ? 'border-red-500'
+                  : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+              }`}
+              placeholder="+31612345678"
             />
+            {errors.phone ? (
+              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            ) : (
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                E.164 format (e.g., +31612345678)
+              </p>
+            )}
           </div>
 
           <div>

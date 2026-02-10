@@ -65,7 +65,7 @@ public class DemoTenantGenerator {
                         .set(TENANTS.FIRST_NAME, firstName)
                         .set(TENANTS.LAST_NAME, lastName)
                         .set(TENANTS.EMAIL, email)
-                        .set(TENANTS.PHONE, "+31 6 " + String.format("%08d", random.nextInt(10000000, 99999999)))
+                        .set(TENANTS.PHONE, "+316" + String.format("%08d", random.nextInt(10000000, 99999999)))
                         .set(TENANTS.TAX_NUMBER, "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01")
                         .set(TENANTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
                         .set(TENANTS.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
