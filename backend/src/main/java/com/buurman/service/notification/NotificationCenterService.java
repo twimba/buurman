@@ -109,6 +109,7 @@ public class NotificationCenterService {
                 notification.getNotificationType().name(),
                 notification.getChannel().name(),
                 notification.getSubject(),
+                notification.getBody(),
                 notification.getRecipientEmail(),
                 notification.getRecipientPhone(),
                 notification.getStatus().name(),

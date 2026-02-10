@@ -1,21 +1,7 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CreditCard } from 'lucide-react';
-import { useTeam } from '@/context/TeamContext';
 import { PaymentInstructionsSection } from '@/components/settings/PaymentInstructionsSection';
 
 export const AdminPaymentInstructionsPage = () => {
-  const { canEditTeamSettings, isLoading } = useTeam();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading && !canEditTeamSettings) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isLoading, canEditTeamSettings, navigate]);
-
-  if (isLoading || !canEditTeamSettings) return null;
-
   return (
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8">

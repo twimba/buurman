@@ -8,6 +8,7 @@ import { Plus, Users, User, Search } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components/ui/Pagination';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 export const TenantListPage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ export const TenantListPage = () => {
   const {
     data: tenantsData,
     isLoading,
+    isFetching,
+    refetch,
     error,
   } = useTenants({ search: debouncedSearch || undefined, ...pageParams });
 
@@ -70,14 +73,20 @@ export const TenantListPage = () => {
               Manage your tenants and their information
             </p>
           </div>
-          <button
-            onClick={() => navigate('/tenants/new')}
-            disabled={!canEditData}
-            className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
-          >
-            <Plus className="h-5 w-5" />
-            Add Tenant
-          </button>
+          <div className="flex items-center gap-2">
+            <RefreshButton
+              onClick={() => refetch()}
+              isRefreshing={isFetching}
+            />
+            <button
+              onClick={() => navigate('/tenants/new')}
+              disabled={!canEditData}
+              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+            >
+              <Plus className="h-5 w-5" />
+              Add Tenant
+            </button>
+          </div>
         </div>
 
         {/* Search Bar */}

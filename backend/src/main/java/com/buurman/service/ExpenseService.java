@@ -20,10 +20,14 @@ import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.domain.NotificationType;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -48,6 +53,10 @@ public class ExpenseService {
     private final DocumentService documentService;
     private final com.buurman.mapper.DocumentMapper documentMapper;
     private final MetricsService metricsService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url:https://app.local.buurman.io}")
+    private String baseUrl;
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
@@ -58,7 +67,8 @@ public class ExpenseService {
             AuditService auditService,
             DocumentService documentService,
             com.buurman.mapper.DocumentMapper documentMapper,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            NotificationService notificationService) {
         this.expenseRepository = expenseRepository;
         this.propertyRepository = propertyRepository;
         this.documentRepository = documentRepository;
@@ -68,6 +78,7 @@ public class ExpenseService {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.metricsService = metricsService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -97,6 +108,24 @@ public class ExpenseService {
                 savedExpense.getIdentifier(), property.getIdentifier(), principal.getUserId());
 
         auditService.logCreate(principal.getTeamId(), "EXPENSE", savedExpense.getId(), principal.getUserId(), savedExpense);
+
+        String propertyName = property.getStreet() != null
+                ? property.getStreet() + ", " + property.getCity()
+                : property.getIdentifier();
+        String currency = savedExpense.getCurrency() != null ? savedExpense.getCurrency() : "EUR";
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(principal.getTeamId())
+                .notificationType(NotificationType.EXPENSE_CREATED)
+                .templateName("expense-created")
+                .templateVariables(Map.of(
+                        "propertyName", propertyName,
+                        "category", savedExpense.getCategory() != null ? savedExpense.getCategory().name() : "N/A",
+                        "amount", currency + " " + savedExpense.getAmount(),
+                        "description", savedExpense.getDescription() != null ? savedExpense.getDescription() : "",
+                        "baseUrl", baseUrl
+                ))
+                .createdBy(principal.getUserId())
+                .build());
 
         return enrichExpenseResponse(savedExpense, principal.getTeamId());
     }

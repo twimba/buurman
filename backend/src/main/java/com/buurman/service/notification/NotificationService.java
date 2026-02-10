@@ -3,8 +3,10 @@ package com.buurman.service.notification;
 import com.buurman.domain.*;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
+import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
-import com.buurman.repository.UserTeamNotificationPreferencesRepository;
+import com.buurman.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -21,21 +23,27 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationOutboxRepository outboxRepository;
+    private final TeamMemberRepository teamMemberRepository;
     private final UserPreferencesRepository userPreferencesRepository;
-    private final UserTeamNotificationPreferencesRepository teamNotifPrefsRepository;
+    private final UserRepository userRepository;
+    private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
     private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
     private final ObjectMapper objectMapper;
 
     public NotificationService(NotificationRepository notificationRepository,
                                NotificationOutboxRepository outboxRepository,
+                               TeamMemberRepository teamMemberRepository,
                                UserPreferencesRepository userPreferencesRepository,
-                               UserTeamNotificationPreferencesRepository teamNotifPrefsRepository,
+                               UserRepository userRepository,
+                               UserNotificationTypePreferenceRepository notifTypePrefRepository,
                                List<NotificationChannelSender> senders,
                                ObjectMapper objectMapper) {
         this.notificationRepository = notificationRepository;
         this.outboxRepository = outboxRepository;
+        this.teamMemberRepository = teamMemberRepository;
         this.userPreferencesRepository = userPreferencesRepository;
-        this.teamNotifPrefsRepository = teamNotifPrefsRepository;
+        this.userRepository = userRepository;
+        this.notifTypePrefRepository = notifTypePrefRepository;
         this.objectMapper = objectMapper;
 
         this.channelSenders = new HashMap<>();
@@ -46,6 +54,7 @@ public class NotificationService {
 
     @Transactional
     public List<Notification> send(SendNotificationRequest request) {
+        request = resolveRecipientPhone(request);
         List<NotificationChannel> channels = resolveChannels(request);
         List<Notification> notifications = new ArrayList<>();
 
@@ -68,6 +77,7 @@ public class NotificationService {
             notification.setTeamId(request.teamId());
             notification.setNotificationType(request.notificationType());
             notification.setSubject(content.subject());
+            notification.setBody(content.body());
             notification.setRecipientEmail(request.recipientEmail());
             notification.setRecipientPhone(request.recipientPhone());
             notification.setRecipientUserId(request.recipientUserId());
@@ -109,6 +119,32 @@ public class NotificationService {
     }
 
     @Transactional
+    public List<Notification> sendToTeam(SendNotificationRequest request) {
+        List<Notification> allNotifications = new ArrayList<>();
+        List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId());
+        for (TeamMember member : members) {
+            if (!"TEAM_ADMIN".equals(member.getRole()) && !"TEAM_EDITOR".equals(member.getRole())) {
+                continue;
+            }
+            userRepository.findById(member.getUserId()).ifPresent(user -> {
+                SendNotificationRequest perUser = SendNotificationRequest.builder()
+                        .teamId(request.teamId())
+                        .notificationType(request.notificationType())
+                        .recipientUserId(user.getId())
+                        .recipientTenantId(request.recipientTenantId())
+                        .recipientEmail(user.getEmail())
+                        .recipientPhone(user.getPhone())
+                        .templateName(request.templateName())
+                        .templateVariables(request.templateVariables())
+                        .createdBy(request.createdBy())
+                        .build();
+                allNotifications.addAll(send(perUser));
+            });
+        }
+        return allNotifications;
+    }
+
+    @Transactional
     public Notification resend(UUID teamId, String notificationIdentifier, UUID userId) {
         Notification original = notificationRepository.findByIdentifierAndTeamId(notificationIdentifier, teamId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
@@ -124,6 +160,7 @@ public class NotificationService {
         resent.setTeamId(original.getTeamId());
         resent.setNotificationType(original.getNotificationType());
         resent.setSubject(content.subject());
+        resent.setBody(content.body());
         resent.setRecipientEmail(original.getRecipientEmail());
         resent.setRecipientPhone(original.getRecipientPhone());
         resent.setRecipientUserId(original.getRecipientUserId());
@@ -164,6 +201,7 @@ public class NotificationService {
     }
 
     private List<NotificationChannel> resolveChannels(SendNotificationRequest request) {
+        // No user → EMAIL only (e.g., tenant notifications)
         if (request.recipientUserId() == null) {
             return List.of(NotificationChannel.EMAIL);
         }
@@ -171,62 +209,54 @@ public class NotificationService {
         UserPreferences globalPrefs = userPreferencesRepository.findByUserId(request.recipientUserId())
                 .orElseGet(UserPreferences::new);
 
-        if (request.teamId() == null) {
+        NotificationType type = request.notificationType();
+
+        // System notification types → all globally-enabled channels
+        if (!type.isConfigurable()) {
             List<NotificationChannel> channels = new ArrayList<>();
-            if (globalPrefs.isEmailNotifications()) {
-                channels.add(NotificationChannel.EMAIL);
-            }
-            if (globalPrefs.isSmsNotifications()) {
-                channels.add(NotificationChannel.SMS);
-            }
+            if (globalPrefs.isEmailNotifications()) channels.add(NotificationChannel.EMAIL);
+            if (globalPrefs.isSmsNotifications()) channels.add(NotificationChannel.SMS);
             return channels.isEmpty() ? List.of(NotificationChannel.EMAIL) : channels;
         }
 
-        Optional<UserTeamNotificationPreferences> teamPrefsOpt = teamNotifPrefsRepository
-                .findByUserIdAndTeamId(request.recipientUserId(), request.teamId());
-
-        if (teamPrefsOpt.isEmpty()) {
-            List<NotificationChannel> channels = new ArrayList<>();
-            if (globalPrefs.isEmailNotifications()) {
-                channels.add(NotificationChannel.EMAIL);
-            }
-            if (globalPrefs.isSmsNotifications()) {
-                channels.add(NotificationChannel.SMS);
-            }
-            return channels.isEmpty() ? List.of(NotificationChannel.EMAIL) : channels;
-        }
-
-        UserTeamNotificationPreferences teamPrefs = teamPrefsOpt.get();
-
-        if (!isNotificationTypeEnabled(request.notificationType(), teamPrefs)) {
-            return List.of();
-        }
-
-        String preferredChannels = teamPrefs.getPreferredChannels();
-        if (preferredChannels == null || preferredChannels.isBlank()) {
-            preferredChannels = "EMAIL";
-        }
+        // Configurable types → intersect global prefs AND per-type prefs
+        UserNotificationTypePreference typePref = notifTypePrefRepository
+                .findByUserIdAndType(request.recipientUserId(), type)
+                .orElseGet(UserNotificationTypePreference::new);
 
         List<NotificationChannel> channels = new ArrayList<>();
-        for (String ch : preferredChannels.split(",")) {
-            String trimmed = ch.trim();
-            if ("EMAIL".equals(trimmed) && globalPrefs.isEmailNotifications()) {
-                channels.add(NotificationChannel.EMAIL);
-            } else if ("SMS".equals(trimmed) && globalPrefs.isSmsNotifications()) {
-                channels.add(NotificationChannel.SMS);
-            }
+        if (globalPrefs.isEmailNotifications() && typePref.isEmailEnabled()) {
+            channels.add(NotificationChannel.EMAIL);
+        }
+        if (globalPrefs.isSmsNotifications() && typePref.isSmsEnabled()) {
+            channels.add(NotificationChannel.SMS);
         }
 
-        return channels.isEmpty() ? List.of(NotificationChannel.EMAIL) : channels;
+        return channels;
     }
 
-    private boolean isNotificationTypeEnabled(NotificationType type, UserTeamNotificationPreferences prefs) {
-        return switch (type) {
-            case PAYMENT_REMINDER -> prefs.isPaymentReminders();
-            case CONTRACT_EXPIRY -> prefs.isContractExpiryAlerts();
-            case INVITATION_ACCEPTED -> prefs.isNewMemberNotifications();
-            default -> true;
-        };
+    private SendNotificationRequest resolveRecipientPhone(SendNotificationRequest request) {
+        if (request.recipientPhone() != null && !request.recipientPhone().isBlank()) {
+            return request;
+        }
+        if (request.recipientUserId() == null) {
+            return request;
+        }
+        return userRepository.findById(request.recipientUserId())
+                .map(User::getPhone)
+                .filter(phone -> phone != null && !phone.isBlank())
+                .map(phone -> SendNotificationRequest.builder()
+                        .teamId(request.teamId())
+                        .notificationType(request.notificationType())
+                        .recipientUserId(request.recipientUserId())
+                        .recipientTenantId(request.recipientTenantId())
+                        .recipientEmail(request.recipientEmail())
+                        .recipientPhone(phone)
+                        .templateName(request.templateName())
+                        .templateVariables(request.templateVariables())
+                        .createdBy(request.createdBy())
+                        .build())
+                .orElse(request);
     }
 
     private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {

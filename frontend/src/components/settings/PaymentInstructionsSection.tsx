@@ -329,8 +329,7 @@ export const PaymentInstructionsSection = () => {
             Add your first payment method to use with contracts.
           </p>
           {canEditData && (
-            <Button onClick={handleCreate} size="sm">
-              <Plus className="h-4 w-4 mr-1" />
+            <Button variant="primary" leftIcon={<Plus />} onClick={handleCreate}>
               Add Payment Instruction
             </Button>
           )}

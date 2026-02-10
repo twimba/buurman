@@ -73,6 +73,13 @@ public class TwilioSmsSender implements NotificationChannelSender {
             case "password-changed" -> "Buurman: Your password was changed. Contact support if unexpected.";
             case "payment-reminder" -> "Buurman: Payment of {amount} for {propertyName} is overdue (due {dueDate}).";
             case "contract-expiry" -> "Buurman: Contract for {propertyName} expires in {daysUntilExpiry} days ({expiryDate}).";
+            case "property-created" -> "Buurman: Property {propertyName} has been created.";
+            case "contract-created" -> "Buurman: New contract created for {propertyName} with {tenantName}.";
+            case "contract-status-changed" -> "Buurman: Contract for {propertyName} changed from {oldStatus} to {newStatus}.";
+            case "contract-reopened" -> "Buurman: Contract for {propertyName} ({tenantName}) has been reopened for editing.";
+            case "payment-paid" -> "Buurman: Payment of {amount} for {propertyName} has been marked as paid.";
+            case "payment-receival" -> "Buurman: Receival of {receivalAmount} registered for {propertyName} payment.";
+            case "expense-created" -> "Buurman: Expense of {amount} ({category}) created for {propertyName}.";
             default -> "Buurman: You have a new notification.";
         };
     }

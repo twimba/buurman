@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Mail, Phone, RotateCcw, CheckCircle, AlertTriangle, Clock } from 'lucide-react';
+import {
+  Bell,
+  Mail,
+  Phone,
+  RotateCcw,
+  Eye,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+} from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import {
   useNotifications,
@@ -11,13 +20,14 @@ import {
   NotificationResponse,
   NotificationFilterParams,
   NotificationChannel,
-  NotificationStatus,
 } from '@/types/notification';
+import { getNotification } from '@/api/notifications';
 import { NotificationStatusBadge } from '@/components/notifications/NotificationStatusBadge';
 import { NotificationFilters } from '@/components/notifications/NotificationFilters';
 import { NotificationDetailModal } from '@/components/notifications/NotificationDetailModal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Pagination } from '@/components/ui/Pagination';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const typeLabels: Record<string, string> = {
   WELCOME: 'Welcome',
@@ -27,6 +37,13 @@ const typeLabels: Record<string, string> = {
   PASSWORD_CHANGED: 'Password',
   PAYMENT_REMINDER: 'Payment',
   CONTRACT_EXPIRY: 'Contract',
+  PROPERTY_CREATED: 'Property',
+  CONTRACT_CREATED: 'New Contract',
+  CONTRACT_STATUS_CHANGED: 'Status Change',
+  CONTRACT_REOPENED: 'Reopened',
+  PAYMENT_PAID: 'Paid',
+  PAYMENT_RECEIVAL: 'Receival',
+  EXPENSE_CREATED: 'Expense',
 };
 
 export const AdminNotificationsPage = () => {
@@ -40,14 +57,19 @@ export const AdminNotificationsPage = () => {
     useState<NotificationResponse | null>(null);
   const [resendTarget, setResendTarget] = useState<string | null>(null);
 
-  const { data: notifications, isLoading: notifLoading } = useNotifications({
+  const {
+    data: notifications,
+    isLoading: notifLoading,
+    isFetching: notifFetching,
+    refetch: refetchNotifications,
+  } = useNotifications({
     ...filters,
     page,
     size,
     sort: 'createdAt',
     direction: 'desc',
   });
-  const { data: stats } = useNotificationStats();
+  const { data: stats, refetch: refetchStats } = useNotificationStats();
   const resendMutation = useResendNotification();
 
   useEffect(() => {
@@ -72,6 +94,15 @@ export const AdminNotificationsPage = () => {
     }
   };
 
+  const handleViewNotification = async (identifier: string) => {
+    try {
+      const notif = await getNotification(identifier);
+      setSelectedNotification(notif);
+    } catch {
+      // Notification may have been deleted
+    }
+  };
+
   if (teamLoading || !canEditTeamSettings) return null;
 
   const formatDate = (dateStr: string) => {
@@ -88,16 +119,25 @@ export const AdminNotificationsPage = () => {
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-1">
-            <Bell className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Notifications
-            </h1>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <Bell className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                Notifications
+              </h1>
+            </div>
+            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+              Track and manage all notifications sent across your team
+            </p>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
-            Track and manage all notifications sent across your team
-          </p>
+          <RefreshButton
+            onClick={() => {
+              refetchNotifications();
+              refetchStats();
+            }}
+            isRefreshing={notifFetching}
+          />
         </div>
 
         {/* Stats Cards */}
@@ -179,7 +219,7 @@ export const AdminNotificationsPage = () => {
                     Recipient
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
-                    Subject
+                    Subject / Body
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
                     Status
@@ -233,10 +273,14 @@ export const AdminNotificationsPage = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db] max-w-[200px] truncate">
-                        {notif.recipientEmail}
+                        {notif.channel === NotificationChannel.SMS
+                          ? notif.recipientPhone || notif.recipientEmail || '-'
+                          : notif.recipientEmail || '-'}
                       </td>
-                      <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db] max-w-[200px] truncate">
-                        {notif.subject || '-'}
+                      <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db] max-w-[250px] truncate">
+                        {notif.channel === NotificationChannel.EMAIL
+                          ? notif.subject || '-'
+                          : notif.body || notif.subject || '-'}
                       </td>
                       <td className="px-4 py-3">
                         <NotificationStatusBadge status={notif.status} />
@@ -245,9 +289,18 @@ export const AdminNotificationsPage = () => {
                         {formatDate(notif.createdAt)}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {(notif.status === NotificationStatus.FAILED ||
-                          notif.status === NotificationStatus.BOUNCED ||
-                          notif.status === NotificationStatus.REJECTED) && (
+                        <div className="inline-flex items-center gap-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedNotification(notif);
+                            }}
+                            className="inline-flex items-center gap-1 text-xs font-medium text-[#6b7194] hover:text-[#3d4463] dark:text-[#8b90a8] dark:hover:text-[#eef0f6] transition-colors"
+                            title="View details"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            View
+                          </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -259,7 +312,7 @@ export const AdminNotificationsPage = () => {
                             <RotateCcw className="h-3.5 w-3.5" />
                             Resend
                           </button>
-                        )}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -292,6 +345,7 @@ export const AdminNotificationsPage = () => {
           notification={selectedNotification}
           onClose={() => setSelectedNotification(null)}
           onResend={(id) => setResendTarget(id)}
+          onViewNotification={handleViewNotification}
           isResending={resendMutation.isPending}
         />
       )}

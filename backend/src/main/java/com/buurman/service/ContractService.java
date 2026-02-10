@@ -24,10 +24,14 @@ import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.domain.NotificationType;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +60,10 @@ public class ContractService {
     private final DocumentService documentService;
     private final PaymentSchedulingService paymentSchedulingService;
     private final MetricsService metricsService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url:https://app.local.buurman.io}")
+    private String baseUrl;
 
     public ContractService(
             ContractRepository contractRepository,
@@ -68,7 +76,8 @@ public class ContractService {
             AuditService auditService,
             DocumentService documentService,
             PaymentSchedulingService paymentSchedulingService,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            NotificationService notificationService) {
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
@@ -80,6 +89,7 @@ public class ContractService {
         this.documentService = documentService;
         this.paymentSchedulingService = paymentSchedulingService;
         this.metricsService = metricsService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -148,6 +158,25 @@ public class ContractService {
                 principal.getUserId(),
                 savedContract
         );
+
+        String propertyName = property.getStreet() != null
+                ? property.getStreet() + ", " + property.getCity()
+                : property.getIdentifier();
+        String tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+        Map<String, Object> contractVars = new HashMap<>();
+        contractVars.put("propertyName", propertyName);
+        contractVars.put("tenantName", tenantName);
+        contractVars.put("rentAmount", savedContract.getCurrency() + " " + savedContract.getRentAmount());
+        contractVars.put("startDate", savedContract.getStartDate().toString());
+        contractVars.put("endDate", savedContract.getEndDate() != null ? savedContract.getEndDate().toString() : "");
+        contractVars.put("baseUrl", baseUrl);
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(teamId)
+                .notificationType(NotificationType.CONTRACT_CREATED)
+                .templateName("contract-created")
+                .templateVariables(contractVars)
+                .createdBy(principal.getUserId())
+                .build());
 
         return toResponse(savedContract, property, tenant);
     }
@@ -436,6 +465,28 @@ public class ContractService {
                 changedFields
         );
 
+        Property statusChangeProperty = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
+        Tenant statusChangeTenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+        String scPropertyName = statusChangeProperty != null && statusChangeProperty.getStreet() != null
+                ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
+                : identifier;
+        String scTenantName = statusChangeTenant != null
+                ? statusChangeTenant.getFirstName() + " " + statusChangeTenant.getLastName()
+                : "Unknown";
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(teamId)
+                .notificationType(NotificationType.CONTRACT_STATUS_CHANGED)
+                .templateName("contract-status-changed")
+                .templateVariables(Map.of(
+                        "propertyName", scPropertyName,
+                        "tenantName", scTenantName,
+                        "oldStatus", oldStatus.name(),
+                        "newStatus", newStatus.name(),
+                        "baseUrl", baseUrl
+                ))
+                .createdBy(principal.getUserId())
+                .build());
+
         return toResponse(updatedContract, teamId);
     }
 
@@ -494,6 +545,27 @@ public class ContractService {
                 updatedContract,
                 changedFields
         );
+
+        Property reopenProperty = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
+        Tenant reopenTenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+        String reopenPropertyName = reopenProperty != null && reopenProperty.getStreet() != null
+                ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
+                : identifier;
+        String reopenTenantName = reopenTenant != null
+                ? reopenTenant.getFirstName() + " " + reopenTenant.getLastName()
+                : "Unknown";
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(teamId)
+                .notificationType(NotificationType.CONTRACT_REOPENED)
+                .templateName("contract-reopened")
+                .templateVariables(Map.of(
+                        "propertyName", reopenPropertyName,
+                        "tenantName", reopenTenantName,
+                        "oldStatus", oldStatus.name(),
+                        "baseUrl", baseUrl
+                ))
+                .createdBy(principal.getUserId())
+                .build());
 
         return toResponse(updatedContract, teamId);
     }

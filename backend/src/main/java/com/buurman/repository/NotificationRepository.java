@@ -63,6 +63,7 @@ public class NotificationRepository {
                 .set(NOTIFICATIONS.TEAM_ID, notification.getTeamId())
                 .set(NOTIFICATIONS.NOTIFICATION_TYPE, notification.getNotificationType().name())
                 .set(NOTIFICATIONS.SUBJECT, notification.getSubject())
+                .set(NOTIFICATIONS.BODY, notification.getBody())
                 .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail())
                 .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone())
                 .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId())

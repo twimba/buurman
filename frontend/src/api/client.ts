@@ -31,17 +31,20 @@ client.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      try {
-        // Try to refresh token (30 seconds before expiry)
-        const refreshed = await keycloak.updateToken(30);
-        if (refreshed && keycloak.token) {
-          originalRequest.headers.Authorization = `Bearer ${keycloak.token}`;
-          return client(originalRequest);
+      // Only attempt token refresh if the user was authenticated
+      if (keycloak.authenticated) {
+        try {
+          // Try to refresh token (30 seconds before expiry)
+          const refreshed = await keycloak.updateToken(30);
+          if (refreshed && keycloak.token) {
+            originalRequest.headers.Authorization = `Bearer ${keycloak.token}`;
+            return client(originalRequest);
+          }
+        } catch (refreshError) {
+          // Refresh failed, redirect to login
+          keycloak.login();
+          return Promise.reject(refreshError);
         }
-      } catch (refreshError) {
-        // Refresh failed, redirect to login
-        keycloak.login();
-        return Promise.reject(refreshError);
       }
     }
 

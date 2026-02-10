@@ -40,7 +40,6 @@ export interface UserPreferencesResponse {
   dateFormat: string;
   currencyFormat: string;
   emailNotifications: boolean;
-  inAppNotifications: boolean;
   smsNotifications: boolean;
 }
 
@@ -51,24 +50,28 @@ export interface UpdateUserPreferencesRequest {
   dateFormat?: string;
   currencyFormat?: string;
   emailNotifications?: boolean;
-  inAppNotifications?: boolean;
   smsNotifications?: boolean;
 }
 
-export interface UserTeamNotificationPreferencesResponse {
-  paymentReminders: boolean;
-  contractExpiryAlerts: boolean;
-  newMemberNotifications: boolean;
-  weeklySummary: boolean;
-  preferredChannels: string[];
+export interface NotificationTypePreferenceEntry {
+  notificationType: string;
+  displayName: string;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
 }
 
-export interface UpdateTeamNotificationPreferencesRequest {
-  paymentReminders?: boolean;
-  contractExpiryAlerts?: boolean;
-  newMemberNotifications?: boolean;
-  weeklySummary?: boolean;
-  preferredChannels?: string[];
+export interface NotificationTypePreferencesResponse {
+  globalEmailEnabled: boolean;
+  globalSmsEnabled: boolean;
+  preferences: NotificationTypePreferenceEntry[];
+}
+
+export interface UpdateNotificationTypePreferencesRequest {
+  preferences: {
+    notificationType: string;
+    emailEnabled: boolean;
+    smsEnabled: boolean;
+  }[];
 }
 
 // User profile
@@ -122,23 +125,16 @@ export const updateUserPreferences = async (
   return response.data;
 };
 
-// Team notification preferences
-export const getTeamNotificationPreferences = async (
-  teamIdentifier: string
-): Promise<UserTeamNotificationPreferencesResponse> => {
-  const response = await client.get(
-    `/users/preferences/teams/${teamIdentifier}`
-  );
-  return response.data;
-};
+// Notification type preferences
+export const getNotificationTypePreferences =
+  async (): Promise<NotificationTypePreferencesResponse> => {
+    const response = await client.get('/users/preferences/notifications');
+    return response.data;
+  };
 
-export const updateTeamNotificationPreferences = async (
-  teamIdentifier: string,
-  data: UpdateTeamNotificationPreferencesRequest
-): Promise<UserTeamNotificationPreferencesResponse> => {
-  const response = await client.patch(
-    `/users/preferences/teams/${teamIdentifier}`,
-    data
-  );
+export const updateNotificationTypePreferences = async (
+  data: UpdateNotificationTypePreferencesRequest
+): Promise<NotificationTypePreferencesResponse> => {
+  const response = await client.put('/users/preferences/notifications', data);
   return response.data;
 };

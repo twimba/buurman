@@ -25,6 +25,9 @@ public class DemoDataContext {
     // Team UUID -> list of contract UUIDs
     private final Map<UUID, List<UUID>> contractIdsByTeam = new LinkedHashMap<>();
 
+    // Team UUID -> list of payment instruction UUIDs
+    private final Map<UUID, List<UUID>> paymentInstructionIdsByTeam = new LinkedHashMap<>();
+
     // Contract UUID -> list of payment UUIDs
     private final Map<UUID, List<UUID>> paymentIdsByContract = new LinkedHashMap<>();
 
@@ -59,6 +62,10 @@ public class DemoDataContext {
 
     public Map<UUID, List<UUID>> getContractIdsByTeam() {
         return contractIdsByTeam;
+    }
+
+    public Map<UUID, List<UUID>> getPaymentInstructionIdsByTeam() {
+        return paymentInstructionIdsByTeam;
     }
 
     public Map<UUID, List<UUID>> getPaymentIdsByContract() {

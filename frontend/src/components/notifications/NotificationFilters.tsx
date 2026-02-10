@@ -14,6 +14,13 @@ const notificationTypeLabels: Record<NotificationType, string> = {
   [NotificationType.PASSWORD_CHANGED]: 'Password Changed',
   [NotificationType.PAYMENT_REMINDER]: 'Payment Reminder',
   [NotificationType.CONTRACT_EXPIRY]: 'Contract Expiry',
+  [NotificationType.PROPERTY_CREATED]: 'Property Created',
+  [NotificationType.CONTRACT_CREATED]: 'Contract Created',
+  [NotificationType.CONTRACT_STATUS_CHANGED]: 'Contract Status Changed',
+  [NotificationType.CONTRACT_REOPENED]: 'Contract Reopened',
+  [NotificationType.PAYMENT_PAID]: 'Payment Paid',
+  [NotificationType.PAYMENT_RECEIVAL]: 'Payment Receival',
+  [NotificationType.EXPENSE_CREATED]: 'Expense Created',
 };
 
 interface NotificationFiltersProps {

@@ -14,6 +14,7 @@ import {
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -43,8 +44,18 @@ export const TransactionHistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  const { data: paymentsData, isLoading: paymentsLoading } = usePayments({});
-  const { data: expensesData, isLoading: expensesLoading } = useExpenses({});
+  const {
+    data: paymentsData,
+    isLoading: paymentsLoading,
+    isFetching: paymentsFetching,
+    refetch: refetchPayments,
+  } = usePayments({});
+  const {
+    data: expensesData,
+    isLoading: expensesLoading,
+    isFetching: expensesFetching,
+    refetch: refetchExpenses,
+  } = useExpenses({});
   const payments = paymentsData?.content;
   const expenses = expensesData?.content;
 
@@ -269,6 +280,13 @@ export const TransactionHistoryPage = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <RefreshButton
+            onClick={() => {
+              refetchPayments();
+              refetchExpenses();
+            }}
+            isRefreshing={paymentsFetching || expensesFetching}
+          />
           <button
             onClick={handleDownloadCSV}
             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"

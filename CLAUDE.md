@@ -72,7 +72,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V020)
+- Convention: `V<version>__<description>.sql` (currently at V030)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -171,7 +171,7 @@ src/
 - Always test multi-tenant isolation
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `db/migration/` (next version after V020)
+1. Flyway migration in `db/migration/` (next version after V028)
 2. Domain POJO in `domain/`
 3. JOOQ repository with manual `team_id` filtering in all queries
 4. Service with `@Transactional` and `@PreAuthorize`

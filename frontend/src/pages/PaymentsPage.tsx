@@ -31,6 +31,7 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -62,6 +63,8 @@ export const PaymentsPage = () => {
   const {
     data: paymentsData,
     isLoading,
+    isFetching,
+    refetch,
     error,
   } = usePayments({ status: statusFilter, ...pageParams });
 
@@ -101,14 +104,20 @@ export const PaymentsPage = () => {
               Track rent payments and income
             </p>
           </div>
-          <button
-            onClick={() => navigate('/payments/new')}
-            disabled={!canEditData}
-            className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
-          >
-            <Plus className="h-5 w-5" />
-            Add Payment
-          </button>
+          <div className="flex items-center gap-2">
+            <RefreshButton
+              onClick={() => refetch()}
+              isRefreshing={isFetching}
+            />
+            <button
+              onClick={() => navigate('/payments/new')}
+              disabled={!canEditData}
+              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+            >
+              <Plus className="h-5 w-5" />
+              Add Payment
+            </button>
+          </div>
         </div>
 
         {/* Metrics Dashboard */}

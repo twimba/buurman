@@ -15,10 +15,14 @@ import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.domain.NotificationType;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +53,10 @@ public class PropertyService {
     private final PropertyOutdoorAreaRepository outdoorAreaRepository;
     private final PropertyAmenityService propertyAmenityService;
     private final MetricsService metricsService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url:https://app.local.buurman.io}")
+    private String baseUrl;
 
     public PropertyService(
             PropertyRepository propertyRepository,
@@ -60,7 +68,8 @@ public class PropertyService {
             S3StorageService s3StorageService,
             PropertyOutdoorAreaRepository outdoorAreaRepository,
             PropertyAmenityService propertyAmenityService,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            NotificationService notificationService) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
@@ -71,6 +80,7 @@ public class PropertyService {
         this.outdoorAreaRepository = outdoorAreaRepository;
         this.propertyAmenityService = propertyAmenityService;
         this.metricsService = metricsService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -95,6 +105,22 @@ public class PropertyService {
                 principal.getUserId(),
                 savedProperty
         );
+
+        String propertyName = savedProperty.getStreet() != null
+                ? savedProperty.getStreet() + ", " + savedProperty.getCity()
+                : savedProperty.getIdentifier();
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(principal.getTeamId())
+                .notificationType(NotificationType.PROPERTY_CREATED)
+                .templateName("property-created")
+                .templateVariables(Map.of(
+                        "propertyName", propertyName,
+                        "propertyAddress", propertyName,
+                        "propertyType", savedProperty.getPropertyType() != null ? savedProperty.getPropertyType().name() : "N/A",
+                        "baseUrl", baseUrl
+                ))
+                .createdBy(principal.getUserId())
+                .build());
 
         return toResponseWithMainPhoto(savedProperty, principal.getTeamId(), true);
     }

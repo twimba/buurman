@@ -1,40 +1,39 @@
 package com.buurman.service;
 
+import com.buurman.domain.NotificationType;
+import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
-import com.buurman.domain.UserTeamNotificationPreferences;
-import com.buurman.dto.request.UpdateTeamNotificationPreferencesRequest;
+import com.buurman.dto.request.UpdateNotificationTypePreferencesRequest;
 import com.buurman.dto.request.UpdateUserPreferencesRequest;
+import com.buurman.dto.response.NotificationTypePreferencesResponse;
 import com.buurman.dto.response.UserPreferencesResponse;
-import com.buurman.dto.response.UserTeamNotificationPreferencesResponse;
+import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
-import com.buurman.repository.UserTeamNotificationPreferencesRepository;
 import com.buurman.security.UserPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class UserPreferencesService {
 
     private final UserPreferencesRepository preferencesRepository;
-    private final UserTeamNotificationPreferencesRepository teamNotifRepository;
-    private final TeamPermissionService permissionService;
+    private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
 
     public UserPreferencesService(UserPreferencesRepository preferencesRepository,
-                                  UserTeamNotificationPreferencesRepository teamNotifRepository,
-                                  TeamPermissionService permissionService) {
+                                  UserNotificationTypePreferenceRepository notifTypePrefRepository) {
         this.preferencesRepository = preferencesRepository;
-        this.teamNotifRepository = teamNotifRepository;
-        this.permissionService = permissionService;
+        this.notifTypePrefRepository = notifTypePrefRepository;
     }
 
     public UserPreferencesResponse getPreferences(UserPrincipal principal) {
         UserPreferences prefs = preferencesRepository.findByUserId(principal.getUserId())
-            .orElseGet(UserPreferences::new); // Return defaults if not found
-
+            .orElseGet(UserPreferences::new);
         return toResponse(prefs);
     }
 
@@ -48,7 +47,6 @@ public class UserPreferencesService {
                 return newPrefs;
             });
 
-        // Update only non-null fields
         if (request.theme() != null) {
             prefs.setTheme(request.theme());
         }
@@ -67,9 +65,6 @@ public class UserPreferencesService {
         if (request.emailNotifications() != null) {
             prefs.setEmailNotifications(request.emailNotifications());
         }
-        if (request.inAppNotifications() != null) {
-            prefs.setInAppNotifications(request.inAppNotifications());
-        }
         if (request.smsNotifications() != null) {
             prefs.setSmsNotifications(request.smsNotifications());
         }
@@ -78,51 +73,52 @@ public class UserPreferencesService {
         return toResponse(prefs);
     }
 
-    public UserTeamNotificationPreferencesResponse getTeamNotificationPreferences(
-            UserPrincipal principal, UUID teamId) {
-        permissionService.validateTeamAccess(principal, teamId);
+    public NotificationTypePreferencesResponse getNotificationTypePreferences(UserPrincipal principal) {
+        UserPreferences globalPrefs = preferencesRepository.findByUserId(principal.getUserId())
+            .orElseGet(UserPreferences::new);
 
-        UserTeamNotificationPreferences prefs = teamNotifRepository
-            .findByUserIdAndTeamId(principal.getUserId(), teamId)
-            .orElseGet(UserTeamNotificationPreferences::new); // Return defaults if not found
+        List<UserNotificationTypePreference> saved = notifTypePrefRepository.findByUserId(principal.getUserId());
+        Map<NotificationType, UserNotificationTypePreference> savedMap = saved.stream()
+            .collect(Collectors.toMap(UserNotificationTypePreference::getNotificationType, Function.identity()));
 
-        return toTeamNotifResponse(teamId, prefs);
+        List<NotificationTypePreferencesResponse.Entry> entries = new ArrayList<>();
+        for (NotificationType type : NotificationType.configurableTypes()) {
+            UserNotificationTypePreference pref = savedMap.get(type);
+            entries.add(new NotificationTypePreferencesResponse.Entry(
+                type.name(),
+                type.getDisplayName(),
+                pref != null ? pref.isEmailEnabled() : true,
+                pref != null ? pref.isSmsEnabled() : false
+            ));
+        }
+
+        return new NotificationTypePreferencesResponse(
+            globalPrefs.isEmailNotifications(),
+            globalPrefs.isSmsNotifications(),
+            entries
+        );
     }
 
     @Transactional
-    public UserTeamNotificationPreferencesResponse updateTeamNotificationPreferences(
-            UserPrincipal principal, UUID teamId,
-            UpdateTeamNotificationPreferencesRequest request) {
-        permissionService.validateTeamAccess(principal, teamId);
+    public NotificationTypePreferencesResponse updateNotificationTypePreferences(
+            UserPrincipal principal, UpdateNotificationTypePreferencesRequest request) {
 
-        UserTeamNotificationPreferences prefs = teamNotifRepository
-            .findByUserIdAndTeamId(principal.getUserId(), teamId)
-            .orElseGet(() -> {
-                UserTeamNotificationPreferences newPrefs = new UserTeamNotificationPreferences();
-                newPrefs.setUserId(principal.getUserId());
-                newPrefs.setTeamId(teamId);
-                return newPrefs;
-            });
-
-        // Update only non-null fields
-        if (request.paymentReminders() != null) {
-            prefs.setPaymentReminders(request.paymentReminders());
-        }
-        if (request.contractExpiryAlerts() != null) {
-            prefs.setContractExpiryAlerts(request.contractExpiryAlerts());
-        }
-        if (request.newMemberNotifications() != null) {
-            prefs.setNewMemberNotifications(request.newMemberNotifications());
-        }
-        if (request.weeklySummary() != null) {
-            prefs.setWeeklySummary(request.weeklySummary());
-        }
-        if (request.preferredChannels() != null && !request.preferredChannels().isEmpty()) {
-            prefs.setPreferredChannels(String.join(",", request.preferredChannels()));
+        List<UserNotificationTypePreference> prefs = new ArrayList<>();
+        for (UpdateNotificationTypePreferencesRequest.Entry entry : request.preferences()) {
+            NotificationType type = NotificationType.valueOf(entry.notificationType());
+            if (!type.isConfigurable()) {
+                throw new IllegalArgumentException("Cannot configure system notification type: " + type);
+            }
+            UserNotificationTypePreference pref = new UserNotificationTypePreference();
+            pref.setUserId(principal.getUserId());
+            pref.setNotificationType(type);
+            pref.setEmailEnabled(entry.emailEnabled());
+            pref.setSmsEnabled(entry.smsEnabled());
+            prefs.add(pref);
         }
 
-        prefs = teamNotifRepository.save(prefs);
-        return toTeamNotifResponse(teamId, prefs);
+        notifTypePrefRepository.saveAll(principal.getUserId(), prefs);
+        return getNotificationTypePreferences(principal);
     }
 
     private UserPreferencesResponse toResponse(UserPreferences prefs) {
@@ -133,23 +129,7 @@ public class UserPreferencesService {
             prefs.getDateFormat(),
             prefs.getCurrencyFormat(),
             prefs.isEmailNotifications(),
-            prefs.isInAppNotifications(),
             prefs.isSmsNotifications()
-        );
-    }
-
-    private UserTeamNotificationPreferencesResponse toTeamNotifResponse(
-            UUID teamId, UserTeamNotificationPreferences prefs) {
-        List<String> channels = prefs.getPreferredChannels() != null
-            ? Arrays.asList(prefs.getPreferredChannels().split(","))
-            : List.of("EMAIL");
-        return new UserTeamNotificationPreferencesResponse(
-            teamId,
-            prefs.isPaymentReminders(),
-            prefs.isContractExpiryAlerts(),
-            prefs.isNewMemberNotifications(),
-            prefs.isWeeklySummary(),
-            channels
         );
     }
 }

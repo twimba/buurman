@@ -19,9 +19,9 @@ import java.util.Set;
 public class EmailVerificationFilter extends OncePerRequestFilter {
 
     private static final Set<String> ALLOWED_PATHS = Set.of(
-            "/api/auth/me",
-            "/api/auth/verify-email",
-            "/api/auth/resend-verification"
+            "/auth/me",
+            "/auth/verify-email",
+            "/auth/resend-verification"
     );
 
     private final ObjectMapper objectMapper;

@@ -50,7 +50,7 @@ public class PaymentInstructionService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentInstructionResponse create(CreatePaymentInstructionRequest request, UserPrincipal principal) {
         PaymentInstruction pi = mapper.toEntity(request);
         pi.setTeamId(principal.getTeamId());
@@ -78,7 +78,7 @@ public class PaymentInstructionService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentInstructionResponse update(String identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
         PaymentInstruction pi = repository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment instruction not found"));
@@ -125,7 +125,7 @@ public class PaymentInstructionService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public void delete(String identifier, UserPrincipal principal) {
         PaymentInstruction pi = repository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment instruction not found"));

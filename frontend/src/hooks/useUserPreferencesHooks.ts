@@ -5,7 +5,7 @@ import { getErrorMessage } from '../utils/errorMessages';
 
 export const useCurrentUser = () => {
   return useQuery({
-    queryKey: ['currentUser'],
+    queryKey: ['userProfile'],
     queryFn: usersApi.getCurrentUser,
   });
 };
@@ -16,6 +16,7 @@ export const useUpdateUserProfile = () => {
   return useMutation({
     mutationFn: usersApi.updateUserProfile,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
     },
     onError: (error) => {
@@ -46,23 +47,21 @@ export const useUpdateUserPreferences = () => {
   });
 };
 
-export const useTeamNotificationPreferences = (teamId: string | undefined) => {
+export const useNotificationTypePreferences = () => {
   return useQuery({
-    queryKey: ['teamNotificationPreferences', teamId],
-    queryFn: () => usersApi.getTeamNotificationPreferences(teamId!),
-    enabled: !!teamId,
+    queryKey: ['notificationTypePreferences'],
+    queryFn: usersApi.getNotificationTypePreferences,
   });
 };
 
-export const useUpdateTeamNotificationPreferences = (teamId: string) => {
+export const useUpdateNotificationTypePreferences = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: usersApi.UpdateTeamNotificationPreferencesRequest) =>
-      usersApi.updateTeamNotificationPreferences(teamId, data),
+    mutationFn: usersApi.updateNotificationTypePreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['teamNotificationPreferences', teamId],
+        queryKey: ['notificationTypePreferences'],
       });
     },
     onError: (error) => {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
 import { TenantResponse, CreateTenantRequest } from '@/types/tenant';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 
 interface TenantFormProps {
   tenant?: TenantResponse;
@@ -56,9 +57,8 @@ export const TenantForm = ({
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Email must be valid';
     }
-    if (formData.phone && formData.phone.trim() && !/^\+[1-9]\d{1,14}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Phone must be in E.164 format (e.g., +31612345678)';
-    }
+    const phoneErr = validatePhoneE164(formData.phone);
+    if (phoneErr) newErrors.phone = phoneErr;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -144,24 +144,11 @@ export const TenantForm = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Phone
             </label>
-            <input
-              type="tel"
-              value={formData.phone || ''}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              className={`w-full border rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] ${
-                errors.phone
-                  ? 'border-red-500'
-                  : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-              }`}
-              placeholder="+31612345678"
+            <PhoneInput
+              value={formData.phone || null}
+              onChange={(e164) => handleChange('phone', e164 || '')}
+              error={errors.phone}
             />
-            {errors.phone ? (
-              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
-            ) : (
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                E.164 format (e.g., +31612345678)
-              </p>
-            )}
           </div>
 
           <div>

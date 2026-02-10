@@ -14,7 +14,7 @@ import java.io.IOException;
 public class DemoApiKeyFilter extends OncePerRequestFilter {
 
     private static final String API_KEY_HEADER = "X-Demo-Api-Key";
-    private static final String DEMO_DATA_PATH = "/api/admin/demo-data";
+    private static final String DEMO_DATA_PATH = "/admin/demo-data";
 
     private final DemoDataProperties properties;
 

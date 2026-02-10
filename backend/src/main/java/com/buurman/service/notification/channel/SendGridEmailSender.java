@@ -98,6 +98,13 @@ public class SendGridEmailSender implements NotificationChannelSender {
             case "password-changed" -> "Your password has been changed";
             case "payment-reminder" -> "Payment reminder for " + getVar(variables, "propertyName", "your property");
             case "contract-expiry" -> "Contract expiring soon for " + getVar(variables, "propertyName", "your property");
+            case "property-created" -> "Property created: " + getVar(variables, "propertyName", "New property");
+            case "contract-created" -> "New contract for " + getVar(variables, "propertyName", "your property");
+            case "contract-status-changed" -> "Contract status changed to " + getVar(variables, "newStatus", "updated");
+            case "contract-reopened" -> "Contract reopened: " + getVar(variables, "propertyName", "your property");
+            case "payment-paid" -> "Payment marked as paid for " + getVar(variables, "propertyName", "your property");
+            case "payment-receival" -> "Payment receival registered for " + getVar(variables, "propertyName", "your property");
+            case "expense-created" -> "New expense recorded for " + getVar(variables, "propertyName", "your property");
             default -> "Notification from Buurman";
         };
     }

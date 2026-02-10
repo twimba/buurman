@@ -6,6 +6,13 @@ export enum NotificationType {
   PASSWORD_CHANGED = 'PASSWORD_CHANGED',
   PAYMENT_REMINDER = 'PAYMENT_REMINDER',
   CONTRACT_EXPIRY = 'CONTRACT_EXPIRY',
+  PROPERTY_CREATED = 'PROPERTY_CREATED',
+  CONTRACT_CREATED = 'CONTRACT_CREATED',
+  CONTRACT_STATUS_CHANGED = 'CONTRACT_STATUS_CHANGED',
+  CONTRACT_REOPENED = 'CONTRACT_REOPENED',
+  PAYMENT_PAID = 'PAYMENT_PAID',
+  PAYMENT_RECEIVAL = 'PAYMENT_RECEIVAL',
+  EXPENSE_CREATED = 'EXPENSE_CREATED',
 }
 
 export enum NotificationChannel {
@@ -28,6 +35,7 @@ export interface NotificationResponse {
   notificationType: NotificationType;
   channel: NotificationChannel;
   subject: string;
+  body: string | null;
   recipientEmail: string;
   recipientPhone: string | null;
   status: NotificationStatus;

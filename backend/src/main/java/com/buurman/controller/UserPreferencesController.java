@@ -1,9 +1,9 @@
 package com.buurman.controller;
 
-import com.buurman.dto.request.UpdateTeamNotificationPreferencesRequest;
+import com.buurman.dto.request.UpdateNotificationTypePreferencesRequest;
 import com.buurman.dto.request.UpdateUserPreferencesRequest;
+import com.buurman.dto.response.NotificationTypePreferencesResponse;
 import com.buurman.dto.response.UserPreferencesResponse;
-import com.buurman.dto.response.UserTeamNotificationPreferencesResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.UserPreferencesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,11 +13,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/users/preferences")
-@Tag(name = "User Preferences", description = "User and team notification preferences")
+@Tag(name = "User Preferences", description = "User preferences and notification channel settings")
 @SecurityRequirement(name = "bearer-jwt")
 public class UserPreferencesController {
 
@@ -41,22 +39,20 @@ public class UserPreferencesController {
         return preferencesService.updatePreferences(principal, request);
     }
 
-    @Operation(summary = "Get team notification preferences",
-               description = "Get notification preferences for a specific team")
-    @GetMapping("/teams/{teamId}")
-    public UserTeamNotificationPreferencesResponse getTeamNotificationPreferences(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable UUID teamId) {
-        return preferencesService.getTeamNotificationPreferences(principal, teamId);
+    @Operation(summary = "Get notification type preferences",
+               description = "Get per-type notification channel preferences with global toggles")
+    @GetMapping("/notifications")
+    public NotificationTypePreferencesResponse getNotificationTypePreferences(
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return preferencesService.getNotificationTypePreferences(principal);
     }
 
-    @Operation(summary = "Update team notification preferences",
-               description = "Update notification preferences for a specific team")
-    @PatchMapping("/teams/{teamId}")
-    public UserTeamNotificationPreferencesResponse updateTeamNotificationPreferences(
+    @Operation(summary = "Update notification type preferences",
+               description = "Update per-type notification channel preferences")
+    @PutMapping("/notifications")
+    public NotificationTypePreferencesResponse updateNotificationTypePreferences(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable UUID teamId,
-            @Valid @RequestBody UpdateTeamNotificationPreferencesRequest request) {
-        return preferencesService.updateTeamNotificationPreferences(principal, teamId, request);
+            @Valid @RequestBody UpdateNotificationTypePreferencesRequest request) {
+        return preferencesService.updateNotificationTypePreferences(principal, request);
     }
 }

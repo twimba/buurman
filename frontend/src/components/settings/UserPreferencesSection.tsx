@@ -13,25 +13,34 @@ import {
 import {
   useUserPreferences,
   useUpdateUserPreferences,
+  useNotificationTypePreferences,
+  useUpdateNotificationTypePreferences,
 } from '../../hooks/useUserPreferencesHooks';
 import { useTheme } from '../../context/ThemeContext';
+import { NotificationTypePreferenceEntry } from '../../api/users';
 
 export const UserPreferencesSection = () => {
   const { data: preferencesData, isLoading } = useUserPreferences();
   const updatePreferencesMutation = useUpdateUserPreferences();
+  const { data: notifTypeData, isLoading: notifTypeLoading } =
+    useNotificationTypePreferences();
+  const updateNotifTypeMutation = useUpdateNotificationTypePreferences();
   const { setTheme } = useTheme();
 
-  const [preferences, setPreferences] = useState({
-    theme: 'light',
-    language: 'en',
-    timezone: 'Europe/Amsterdam',
-    dateFormat: 'DD/MM/YYYY',
-    emailNotifications: true,
-    inAppNotifications: true,
-    smsNotifications: false,
-  });
+  const [preferences, setPreferences] = useState(() => ({
+    theme: preferencesData?.theme || 'light',
+    language: preferencesData?.language || 'en',
+    timezone: preferencesData?.timezone || 'Europe/Amsterdam',
+    dateFormat: preferencesData?.dateFormat || 'DD/MM/YYYY',
+    emailNotifications: preferencesData?.emailNotifications ?? true,
+    smsNotifications: preferencesData?.smsNotifications ?? false,
+  }));
+  const [typePrefs, setTypePrefs] = useState<NotificationTypePreferenceEntry[]>(
+    () => notifTypeData?.preferences ?? []
+  );
   const [hasChanges, setHasChanges] = useState(false);
 
+  // Sync global preferences from server
   const [lastSyncedPreferences, setLastSyncedPreferences] =
     useState(preferencesData);
   if (preferencesData && preferencesData !== lastSyncedPreferences) {
@@ -42,15 +51,20 @@ export const UserPreferencesSection = () => {
       timezone: preferencesData.timezone || 'Europe/Amsterdam',
       dateFormat: preferencesData.dateFormat || 'DD/MM/YYYY',
       emailNotifications: preferencesData.emailNotifications ?? true,
-      inAppNotifications: preferencesData.inAppNotifications ?? true,
       smsNotifications: preferencesData.smsNotifications ?? false,
     });
+  }
+
+  // Sync notification type preferences from server
+  const [lastSyncedNotifType, setLastSyncedNotifType] = useState(notifTypeData);
+  if (notifTypeData && notifTypeData !== lastSyncedNotifType) {
+    setLastSyncedNotifType(notifTypeData);
+    setTypePrefs(notifTypeData.preferences);
   }
 
   const handleThemeChange = (theme: string) => {
     setPreferences((prev) => ({ ...prev, theme }));
     setHasChanges(true);
-    // Apply theme immediately without waiting for save
     setTheme(theme as 'light' | 'dark' | 'system');
   };
 
@@ -69,35 +83,44 @@ export const UserPreferencesSection = () => {
     setHasChanges(true);
   };
 
-  const handleEmailNotificationsToggle = () => {
-    setPreferences((prev) => ({
-      ...prev,
-      emailNotifications: !prev.emailNotifications,
-    }));
+  const handleGlobalToggle = (
+    field: 'emailNotifications' | 'smsNotifications'
+  ) => {
+    setPreferences((prev) => ({ ...prev, [field]: !prev[field] }));
     setHasChanges(true);
   };
 
-  const handleInAppNotificationsToggle = () => {
-    setPreferences((prev) => ({
-      ...prev,
-      inAppNotifications: !prev.inAppNotifications,
-    }));
-    setHasChanges(true);
-  };
-
-  const handleSmsNotificationsToggle = () => {
-    setPreferences((prev) => ({
-      ...prev,
-      smsNotifications: !prev.smsNotifications,
-    }));
+  const handleTypeToggle = (
+    notificationType: string,
+    channel: 'emailEnabled' | 'smsEnabled'
+  ) => {
+    setTypePrefs((prev) =>
+      prev.map((p) =>
+        p.notificationType === notificationType
+          ? { ...p, [channel]: !p[channel] }
+          : p
+      )
+    );
     setHasChanges(true);
   };
 
   const handleSave = () => {
-    updatePreferencesMutation.mutate(preferences, {
-      onSuccess: () => setHasChanges(false),
+    const globalPromise = updatePreferencesMutation.mutateAsync(preferences);
+    const typePromise = updateNotifTypeMutation.mutateAsync({
+      preferences: typePrefs.map((p) => ({
+        notificationType: p.notificationType,
+        emailEnabled: p.emailEnabled,
+        smsEnabled: p.smsEnabled,
+      })),
+    });
+
+    Promise.all([globalPromise, typePromise]).then(() => {
+      setHasChanges(false);
     });
   };
+
+  const isSaving =
+    updatePreferencesMutation.isPending || updateNotifTypeMutation.isPending;
 
   const timezones = [
     { value: 'Europe/Amsterdam', label: 'Amsterdam (CET/CEST)' },
@@ -123,7 +146,7 @@ export const UserPreferencesSection = () => {
     { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (2024-12-31)' },
   ];
 
-  if (isLoading) {
+  if (isLoading || notifTypeLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
@@ -147,10 +170,10 @@ export const UserPreferencesSection = () => {
             {hasChanges && (
               <button
                 onClick={handleSave}
-                disabled={updatePreferencesMutation.isPending}
+                disabled={isSaving}
                 className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50"
               >
-                {updatePreferencesMutation.isPending ? (
+                {isSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Save className="h-4 w-4" />
@@ -304,8 +327,9 @@ export const UserPreferencesSection = () => {
               </h3>
             </div>
 
+            {/* Global Master Switches */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
                   <div>
@@ -313,12 +337,12 @@ export const UserPreferencesSection = () => {
                       Email Notifications
                     </p>
                     <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Receive important updates via email
+                      Receive notifications via email
                     </p>
                   </div>
                 </div>
                 <button
-                  onClick={handleEmailNotificationsToggle}
+                  onClick={() => handleGlobalToggle('emailNotifications')}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     preferences.emailNotifications
                       ? 'bg-[#5c7cfa]'
@@ -335,37 +359,7 @@ export const UserPreferencesSection = () => {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Bell className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-                  <div>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                      In-App Notifications
-                    </p>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Show notifications within the application
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleInAppNotificationsToggle}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    preferences.inAppNotifications
-                      ? 'bg-[#5c7cfa]'
-                      : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.inAppNotifications
-                        ? 'translate-x-6'
-                        : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
                 <div className="flex items-center gap-3">
                   <MessageSquare className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
                   <div>
@@ -373,13 +367,13 @@ export const UserPreferencesSection = () => {
                       SMS Notifications
                     </p>
                     <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Receive critical alerts via text message (requires phone
+                      Receive notifications via text message (requires phone
                       number)
                     </p>
                   </div>
                 </div>
                 <button
-                  onClick={handleSmsNotificationsToggle}
+                  onClick={() => handleGlobalToggle('smsNotifications')}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     preferences.smsNotifications
                       ? 'bg-[#5c7cfa]'
@@ -397,10 +391,102 @@ export const UserPreferencesSection = () => {
               </div>
             </div>
 
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-              Team-specific notification settings can be configured in the Team
-              Preferences section
-            </p>
+            {/* Per-Type Notification Grid */}
+            {typePrefs.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-3">
+                  Configure notifications per type
+                </p>
+                <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#f8f9fc] dark:bg-[#1a1d2e] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                        <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                          Notification Type
+                        </th>
+                        <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
+                          <div className="flex items-center justify-center gap-1">
+                            <Mail className="h-3.5 w-3.5" />
+                            Email
+                          </div>
+                        </th>
+                        <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
+                          <div className="flex items-center justify-center gap-1">
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            SMS
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {typePrefs.map((pref, index) => (
+                        <tr
+                          key={pref.notificationType}
+                          className={
+                            index < typePrefs.length - 1
+                              ? 'border-b border-[#e2e6f0] dark:border-[#2a2e3f]'
+                              : ''
+                          }
+                        >
+                          <td className="px-4 py-3 text-[#1a1d2e] dark:text-[#eef0f6]">
+                            {pref.displayName}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={pref.emailEnabled}
+                              disabled={!preferences.emailNotifications}
+                              onChange={() =>
+                                handleTypeToggle(
+                                  pref.notificationType,
+                                  'emailEnabled'
+                                )
+                              }
+                              className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="checkbox"
+                              checked={pref.smsEnabled}
+                              disabled={!preferences.smsNotifications}
+                              onChange={() =>
+                                handleTypeToggle(
+                                  pref.notificationType,
+                                  'smsEnabled'
+                                )
+                              }
+                              className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {!preferences.emailNotifications &&
+                  !preferences.smsNotifications && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                      Enable at least one global channel above to configure
+                      per-type settings
+                    </p>
+                  )}
+                {!preferences.emailNotifications &&
+                  preferences.smsNotifications && (
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                      Email column is disabled because the global Email toggle
+                      is off
+                    </p>
+                  )}
+                {preferences.emailNotifications &&
+                  !preferences.smsNotifications && (
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                      SMS column is disabled because the global SMS toggle is
+                      off
+                    </p>
+                  )}
+              </div>
+            )}
           </div>
         </div>
       </div>

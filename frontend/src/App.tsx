@@ -329,7 +329,7 @@ function App() {
                     }
                   />
                   <Route
-                    path="/admin/payment-instructions"
+                    path="/payment-instructions"
                     element={
                       <ProtectedRoute>
                         <Layout>

@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { User, Mail, Phone, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
 import {
   useCurrentUser,
   useUpdateUserProfile,
 } from '../../hooks/useUserPreferencesHooks';
+import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 
 export const UserProfileSection = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
   const updateProfileMutation = useUpdateUserProfile();
-
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
     firstName: '',
@@ -50,8 +50,9 @@ export const UserProfileSection = () => {
   const [phoneError, setPhoneError] = useState('');
 
   const handleSaveProfile = () => {
-    if (userData.phone && !/^\+[1-9]\d{1,14}$/.test(userData.phone)) {
-      setPhoneError('Phone must be in E.164 format (e.g., +31612345678)');
+    const phoneErr = validatePhoneE164(userData.phone || null);
+    if (phoneErr) {
+      setPhoneError(phoneErr);
       return;
     }
     setPhoneError('');
@@ -205,32 +206,15 @@ export const UserProfileSection = () => {
               <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 Phone Number
               </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
-                <input
-                  type="tel"
-                  value={userData.phone}
-                  onChange={(e) => {
-                    setUserData({ ...userData, phone: e.target.value });
-                    if (phoneError) setPhoneError('');
-                  }}
-                  disabled={!isEditing}
-                  placeholder="+31612345678"
-                  className={`w-full pl-10 pr-3 py-2 border dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed ${
-                    phoneError
-                      ? 'border-red-500'
-                      : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-                  }`}
-                />
-              </div>
-              {phoneError ? (
-                <p className="text-red-500 text-xs mt-1">{phoneError}</p>
-              ) : (
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                  E.164 format required for SMS notifications (e.g.,
-                  +31612345678)
-                </p>
-              )}
+              <PhoneInput
+                value={userData.phone || null}
+                onChange={(e164) => {
+                  setUserData({ ...userData, phone: e164 || '' });
+                  if (phoneError) setPhoneError('');
+                }}
+                disabled={!isEditing}
+                error={phoneError}
+              />
             </div>
 
             {isEditing && (

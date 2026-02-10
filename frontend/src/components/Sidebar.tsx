@@ -30,6 +30,12 @@ const navigation = [
   { name: 'Properties', href: '/properties', icon: Home },
   { name: 'Tenants', href: '/tenants', icon: Users },
   { name: 'Contracts', href: '/contracts', icon: FileText },
+  {
+    name: 'Payment Instructions',
+    href: '/payment-instructions',
+    icon: CreditCard,
+    indent: true,
+  },
   { name: 'Payments', href: '/payments', icon: DollarSign },
   { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Documents', href: '/documents', icon: Folder },
@@ -40,11 +46,6 @@ const navigation = [
 const administrationNavigation = [
   { name: 'Team Members', href: '/admin/team-members', icon: Users },
   { name: 'Preferences', href: '/admin/preferences', icon: Settings },
-  {
-    name: 'Payment Instructions',
-    href: '/admin/payment-instructions',
-    icon: CreditCard,
-  },
   { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
@@ -112,13 +113,13 @@ export const Sidebar = () => {
           <nav className="flex-1 overflow-y-auto py-4 px-2">
             <ul className="space-y-1">
               {navigation.map((item) => (
-                <li key={item.name}>
+                <li key={item.name} className={'indent' in item && item.indent && isOpen ? 'pl-4' : ''}>
                   <NavLink
                     to={item.href}
                     className={({ isActive }) => navLinkClass(isActive, isOpen)}
                     title={!isOpen ? item.name : undefined}
                   >
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    <item.icon className={`flex-shrink-0 ${'indent' in item && item.indent ? 'h-4 w-4' : 'h-5 w-5'}`} />
                     {isOpen && <span className="truncate">{item.name}</span>}
                   </NavLink>
                 </li>

@@ -49,13 +49,13 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
-                .requestMatchers("/api/health", "/api/info", "/api/reference/**").permitAll()
+                .requestMatchers("/health", "/info", "/reference/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/invitations/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/calendar/ical/*").permitAll()
-                .requestMatchers("/api/admin/demo-data/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/invitations/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/calendar/ical/*").permitAll()
+                .requestMatchers("/admin/demo-data/**").permitAll()
                 .requestMatchers("/webhooks/**").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()

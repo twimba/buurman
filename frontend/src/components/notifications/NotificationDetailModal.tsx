@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
-import { X, Mail, Phone, RotateCcw } from 'lucide-react';
-import { NotificationResponse, NotificationChannel, NotificationStatus } from '@/types/notification';
+import { useEffect, useRef } from 'react';
+import { X, Mail, Phone, RotateCcw, Smartphone } from 'lucide-react';
+import {
+  NotificationResponse,
+  NotificationChannel,
+} from '@/types/notification';
 import { NotificationStatusBadge } from './NotificationStatusBadge';
 
 const typeLabels: Record<string, string> = {
@@ -11,12 +14,79 @@ const typeLabels: Record<string, string> = {
   PASSWORD_CHANGED: 'Password Changed',
   PAYMENT_REMINDER: 'Payment Reminder',
   CONTRACT_EXPIRY: 'Contract Expiry',
+  PROPERTY_CREATED: 'Property Created',
+  CONTRACT_CREATED: 'Contract Created',
+  CONTRACT_STATUS_CHANGED: 'Contract Status Changed',
+  CONTRACT_REOPENED: 'Contract Reopened',
+  PAYMENT_PAID: 'Payment Paid',
+  PAYMENT_RECEIVAL: 'Payment Receival',
+  EXPENSE_CREATED: 'Expense Created',
 };
+
+const EmailBodyPreview = ({ body }: { body: string }) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const handleLoad = () => {
+      const doc = iframe.contentDocument;
+      if (doc?.body) {
+        iframe.style.height = doc.body.scrollHeight + 'px';
+      }
+    };
+
+    iframe.addEventListener('load', handleLoad);
+    return () => iframe.removeEventListener('load', handleLoad);
+  }, [body]);
+
+  return (
+    <div className="rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f8f9fc] dark:bg-[#1a1d2e] border-b border-[#e2e6f0] dark:border-[#2a2e3f] text-[10px] text-[#9ca0b8] dark:text-[#5c6180]">
+        <Mail className="h-3 w-3" />
+        Email Preview
+      </div>
+      <iframe
+        ref={iframeRef}
+        srcDoc={body}
+        sandbox="allow-same-origin"
+        className="w-full border-0 bg-white min-h-[120px] max-h-[400px]"
+        title="Email content"
+      />
+    </div>
+  );
+};
+
+const SmsBodyPreview = ({ body }: { body: string }) => (
+  <div className="flex justify-center">
+    <div className="w-[300px] rounded-2xl bg-[#1a1d2e] dark:bg-[#0c0e14] p-4 shadow-inner">
+      {/* Phone header */}
+      <div className="flex items-center justify-center gap-1.5 mb-3 text-[10px] text-[#6b7194]">
+        <Smartphone className="h-3 w-3" />
+        SMS Message
+      </div>
+      {/* Message bubble */}
+      <div className="flex justify-start">
+        <div className="relative max-w-[240px] bg-[#e2e6f0] dark:bg-[#2a2e3f] rounded-2xl rounded-bl-sm px-3.5 py-2.5">
+          <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] whitespace-pre-wrap break-words leading-relaxed">
+            {body}
+          </p>
+        </div>
+      </div>
+      {/* Timestamp */}
+      <div className="text-right mt-1.5 text-[10px] text-[#6b7194]">
+        Delivered
+      </div>
+    </div>
+  </div>
+);
 
 interface NotificationDetailModalProps {
   notification: NotificationResponse;
   onClose: () => void;
   onResend: (identifier: string) => void;
+  onViewNotification?: (identifier: string) => void;
   isResending: boolean;
 }
 
@@ -24,6 +94,7 @@ export const NotificationDetailModal = ({
   notification,
   onClose,
   onResend,
+  onViewNotification,
   isResending,
 }: NotificationDetailModalProps) => {
   useEffect(() => {
@@ -33,11 +104,6 @@ export const NotificationDetailModal = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
-
-  const canResend =
-    notification.status === NotificationStatus.FAILED ||
-    notification.status === NotificationStatus.BOUNCED ||
-    notification.status === NotificationStatus.REJECTED;
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '-';
@@ -50,7 +116,7 @@ export const NotificationDetailModal = ({
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
 
         <div
-          className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-lg"
+          className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
@@ -82,21 +148,41 @@ export const NotificationDetailModal = ({
               <div>
                 <dt className="text-[#6b7194] dark:text-[#8b90a8]">Type</dt>
                 <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {typeLabels[notification.notificationType] ?? notification.notificationType}
+                  {typeLabels[notification.notificationType] ??
+                    notification.notificationType}
                 </dd>
               </div>
 
               {notification.subject && (
                 <div>
-                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Subject</dt>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Subject
+                  </dt>
                   <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {notification.subject}
                   </dd>
                 </div>
               )}
 
+              {notification.body && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8] mb-2">
+                    Content
+                  </dt>
+                  <dd>
+                    {notification.channel === NotificationChannel.EMAIL ? (
+                      <EmailBodyPreview body={notification.body} />
+                    ) : (
+                      <SmsBodyPreview body={notification.body} />
+                    )}
+                  </dd>
+                </div>
+              )}
+
               <div>
-                <dt className="text-[#6b7194] dark:text-[#8b90a8]">Recipient</dt>
+                <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                  Recipient
+                </dt>
                 <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                   {notification.recipientEmail}
                   {notification.recipientPhone && (
@@ -116,7 +202,9 @@ export const NotificationDetailModal = ({
 
               {notification.statusUpdatedAt && (
                 <div>
-                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Status updated</dt>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Status updated
+                  </dt>
                   <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {formatDate(notification.statusUpdatedAt)}
                   </dd>
@@ -125,7 +213,9 @@ export const NotificationDetailModal = ({
 
               {notification.providerStatus && (
                 <div>
-                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Provider status</dt>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Provider status
+                  </dt>
                   <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {notification.providerStatus}
                   </dd>
@@ -143,16 +233,33 @@ export const NotificationDetailModal = ({
 
               {notification.resentFromIdentifier && (
                 <div>
-                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Resent from</dt>
-                  <dd className="font-mono text-xs text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {notification.resentFromIdentifier}
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Resent from
+                  </dt>
+                  <dd className="font-mono text-xs">
+                    {onViewNotification ? (
+                      <button
+                        onClick={() =>
+                          onViewNotification(notification.resentFromIdentifier!)
+                        }
+                        className="text-[#5c7cfa] hover:text-[#4c6ef5] hover:underline transition-colors"
+                      >
+                        {notification.resentFromIdentifier}
+                      </button>
+                    ) : (
+                      <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                        {notification.resentFromIdentifier}
+                      </span>
+                    )}
                   </dd>
                 </div>
               )}
 
               {notification.resendReason && (
                 <div>
-                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">Resend reason</dt>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8]">
+                    Resend reason
+                  </dt>
                   <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {notification.resendReason}
                   </dd>
@@ -168,16 +275,14 @@ export const NotificationDetailModal = ({
             >
               Close
             </button>
-            {canResend && (
-              <button
-                onClick={() => onResend(notification.identifier)}
-                disabled={isResending}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                Resend
-              </button>
-            )}
+            <button
+              onClick={() => onResend(notification.identifier)}
+              disabled={isResending}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              Resend
+            </button>
           </div>
         </div>
       </div>

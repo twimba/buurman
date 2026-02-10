@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 import {
   AreaChart,
   Area,
@@ -66,6 +67,8 @@ export const ExpensesPage = () => {
   const {
     data: expensesData,
     isLoading,
+    isFetching,
+    refetch,
     error,
   } = useExpenses({ category: categoryFilter, ...pageParams });
 
@@ -105,14 +108,20 @@ export const ExpensesPage = () => {
               Track property expenses and costs
             </p>
           </div>
-          <button
-            onClick={() => navigate('/expenses/new')}
-            disabled={!canEditData}
-            className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
-          >
-            <Plus className="h-5 w-5" />
-            Add Expense
-          </button>
+          <div className="flex items-center gap-2">
+            <RefreshButton
+              onClick={() => refetch()}
+              isRefreshing={isFetching}
+            />
+            <button
+              onClick={() => navigate('/expenses/new')}
+              disabled={!canEditData}
+              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+            >
+              <Plus className="h-5 w-5" />
+              Add Expense
+            </button>
+          </div>
         </div>
 
         {/* Metrics Dashboard */}

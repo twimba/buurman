@@ -18,6 +18,7 @@ import {
 import { format } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
+import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const entityTypeFilters = [
   { value: undefined, label: 'All Types' },
@@ -111,6 +112,8 @@ export const AuditLogPage = () => {
   const {
     data: activitiesData,
     isLoading,
+    isFetching,
+    refetch,
     error,
   } = useAllAuditLogs({
     entityType: entityTypeFilter,
@@ -177,6 +180,7 @@ export const AuditLogPage = () => {
               Track all changes and actions across your data
             </p>
           </div>
+          <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
         </div>
 
         {/* Search Bar */}

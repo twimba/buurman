@@ -1,0 +1,74 @@
+package com.buurman.repository;
+
+import com.buurman.domain.NotificationType;
+import com.buurman.domain.UserNotificationTypePreference;
+import org.jooq.DSLContext;
+import org.springframework.stereotype.Repository;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.buurman.jooq.generated.Tables.USER_NOTIFICATION_TYPE_PREFERENCES;
+
+@Repository
+public class UserNotificationTypePreferenceRepository {
+
+    private final DSLContext dsl;
+
+    public UserNotificationTypePreferenceRepository(DSLContext dsl) {
+        this.dsl = dsl;
+    }
+
+    public List<UserNotificationTypePreference> findByUserId(UUID userId) {
+        return dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
+                .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
+                .fetch()
+                .map(this::toDomain);
+    }
+
+    public Optional<UserNotificationTypePreference> findByUserIdAndType(UUID userId, NotificationType type) {
+        return dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
+                .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
+                .and(USER_NOTIFICATION_TYPE_PREFERENCES.NOTIFICATION_TYPE.eq(type.name()))
+                .fetchOptional()
+                .map(this::toDomain);
+    }
+
+    public void saveAll(UUID userId, List<UserNotificationTypePreference> prefs) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+
+        for (UserNotificationTypePreference pref : prefs) {
+            dsl.insertInto(USER_NOTIFICATION_TYPE_PREFERENCES)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.ID, UUID.randomUUID())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID, userId)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.NOTIFICATION_TYPE, pref.getNotificationType().name())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.EMAIL_ENABLED, pref.isEmailEnabled())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.SMS_ENABLED, pref.isSmsEnabled())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.CREATED_AT, now)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, now)
+                    .onConflict(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID, USER_NOTIFICATION_TYPE_PREFERENCES.NOTIFICATION_TYPE)
+                    .doUpdate()
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.EMAIL_ENABLED, pref.isEmailEnabled())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.SMS_ENABLED, pref.isSmsEnabled())
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, now)
+                    .execute();
+        }
+    }
+
+    private UserNotificationTypePreference toDomain(
+            com.buurman.jooq.generated.tables.records.UserNotificationTypePreferencesRecord record) {
+        UserNotificationTypePreference pref = new UserNotificationTypePreference();
+        pref.setId(record.getId());
+        pref.setUserId(record.getUserId());
+        pref.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
+        pref.setEmailEnabled(record.getEmailEnabled());
+        pref.setSmsEnabled(record.getSmsEnabled());
+        pref.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
+        pref.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
+        return pref;
+    }
+}

@@ -7,6 +7,7 @@ public record NotificationResponse(
         String notificationType,
         String channel,
         String subject,
+        String body,
         String recipientEmail,
         String recipientPhone,
         String status,

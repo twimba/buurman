@@ -28,14 +28,14 @@ public class AmenityController {
 
     @Tag(name = "Amenities", description = "Reference amenity data")
     @Operation(summary = "List all amenities grouped by category", description = "Get all available amenities grouped by category")
-    @GetMapping("/api/amenities")
+    @GetMapping("/amenities")
     public Map<String, List<AmenityResponse>> getAllAmenities() {
         return propertyAmenityService.getAllAmenitiesGrouped();
     }
 
     @Tag(name = "Property Amenities", description = "Manage amenities for properties")
     @Operation(summary = "List property amenities", description = "Get amenities linked to a property")
-    @GetMapping("/api/properties/{propertyIdentifier}/amenities")
+    @GetMapping("/properties/{propertyIdentifier}/amenities")
     public List<PropertyAmenityResponse> getPropertyAmenities(
             @PathVariable String propertyIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -44,7 +44,7 @@ public class AmenityController {
 
     @Tag(name = "Property Amenities")
     @Operation(summary = "Add amenity to property", description = "Link an amenity to a property (Admin/Editor)")
-    @PostMapping("/api/properties/{propertyIdentifier}/amenities")
+    @PostMapping("/properties/{propertyIdentifier}/amenities")
     @ResponseStatus(HttpStatus.CREATED)
     public PropertyAmenityResponse addAmenity(
             @PathVariable String propertyIdentifier,
@@ -55,7 +55,7 @@ public class AmenityController {
 
     @Tag(name = "Property Amenities")
     @Operation(summary = "Remove amenity from property", description = "Unlink an amenity from a property (Admin/Editor)")
-    @DeleteMapping("/api/properties/{propertyIdentifier}/amenities/{amenityIdentifier}")
+    @DeleteMapping("/properties/{propertyIdentifier}/amenities/{amenityIdentifier}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeAmenity(
             @PathVariable String propertyIdentifier,

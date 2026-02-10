@@ -34,6 +34,7 @@ public class DemoDataService implements ApplicationRunner {
     private final DemoContractGenerator contractGenerator;
     private final DemoPaymentGenerator paymentGenerator;
     private final DemoExpenseGenerator expenseGenerator;
+    private final DemoPaymentInstructionGenerator paymentInstructionGenerator;
     private final DemoPhotoGenerator photoGenerator;
     private final DemoAuditLogGenerator auditLogGenerator;
 
@@ -44,8 +45,8 @@ public class DemoDataService implements ApplicationRunner {
                           DemoUserGenerator userGenerator, DemoTeamMemberGenerator teamMemberGenerator,
                           DemoPropertyGenerator propertyGenerator, DemoTenantGenerator tenantGenerator,
                           DemoContractGenerator contractGenerator, DemoPaymentGenerator paymentGenerator,
-                          DemoExpenseGenerator expenseGenerator, DemoPhotoGenerator photoGenerator,
-                          DemoAuditLogGenerator auditLogGenerator) {
+                          DemoExpenseGenerator expenseGenerator, DemoPaymentInstructionGenerator paymentInstructionGenerator,
+                          DemoPhotoGenerator photoGenerator, DemoAuditLogGenerator auditLogGenerator) {
         this.dsl = dsl;
         this.properties = properties;
         this.keycloakSetup = keycloakSetup;
@@ -57,6 +58,7 @@ public class DemoDataService implements ApplicationRunner {
         this.contractGenerator = contractGenerator;
         this.paymentGenerator = paymentGenerator;
         this.expenseGenerator = expenseGenerator;
+        this.paymentInstructionGenerator = paymentInstructionGenerator;
         this.photoGenerator = photoGenerator;
         this.auditLogGenerator = auditLogGenerator;
     }
@@ -129,6 +131,7 @@ public class DemoDataService implements ApplicationRunner {
         propertyGenerator.generate(ctx);
         tenantGenerator.generate(ctx);
         contractGenerator.generate(ctx);
+        paymentInstructionGenerator.generate(ctx);
         paymentGenerator.generate(ctx);
         expenseGenerator.generate(ctx);
         auditLogGenerator.generate(ctx);

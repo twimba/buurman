@@ -34,10 +34,16 @@ import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.domain.NotificationType;
+import com.buurman.domain.Property;
+import com.buurman.domain.Tenant;
+import com.buurman.service.notification.NotificationService;
+import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +83,10 @@ public class PaymentService {
     private final DocumentService documentService;
     private final com.buurman.mapper.DocumentMapper documentMapper;
     private final MetricsService metricsService;
+    private final NotificationService notificationService;
+
+    @Value("${app.email.base-url:https://app.local.buurman.io}")
+    private String baseUrl;
 
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -93,7 +103,8 @@ public class PaymentService {
             AuditService auditService,
             DocumentService documentService,
             com.buurman.mapper.DocumentMapper documentMapper,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            NotificationService notificationService) {
         this.paymentRepository = paymentRepository;
         this.receivalRepository = receivalRepository;
         this.contractRepository = contractRepository;
@@ -109,6 +120,7 @@ public class PaymentService {
         this.documentService = documentService;
         this.documentMapper = documentMapper;
         this.metricsService = metricsService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -308,6 +320,8 @@ public class PaymentService {
         auditService.logUpdate(teamId, "PAYMENT", updatedPayment.getId(), principal.getUserId(),
                 oldState, newState, auditService.getChangedFields(oldState, newState));
 
+        sendPaymentPaidNotification(updatedPayment, teamId, principal);
+
         return newState;
     }
 
@@ -368,6 +382,12 @@ public class PaymentService {
         changedFields.put("receivalRegistered", request.amount() + " on " + request.receivalDate());
         auditService.logUpdate(teamId, "PAYMENT", paymentId, principal.getUserId(),
                 oldState, newState, changedFields);
+
+        sendReceivalNotification(payment, request.amount(), teamId, principal);
+
+        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+            sendPaymentPaidNotification(payment, teamId, principal);
+        }
 
         return newState;
     }
@@ -637,6 +657,70 @@ public class PaymentService {
                 payment.getDueDate().isBefore(today)) {
             payment.setStatus(Payment.PaymentStatus.OVERDUE);
         }
+    }
+
+    private void sendPaymentPaidNotification(Payment payment, UUID teamId, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
+        String propertyName = "N/A";
+        String tenantName = "N/A";
+        if (contract != null) {
+            Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
+            Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+            if (property != null) {
+                propertyName = property.getStreet() != null ? property.getStreet() + ", " + property.getCity() : property.getIdentifier();
+            }
+            if (tenant != null) {
+                tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+            }
+        }
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(teamId)
+                .notificationType(NotificationType.PAYMENT_PAID)
+                .templateName("payment-paid")
+                .templateVariables(Map.of(
+                        "propertyName", propertyName,
+                        "tenantName", tenantName,
+                        "amount", (payment.getCurrency() != null ? payment.getCurrency() : "EUR") + " " + payment.getAmount(),
+                        "paymentDate", payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "N/A",
+                        "baseUrl", baseUrl
+                ))
+                .createdBy(principal.getUserId())
+                .build());
+    }
+
+    private void sendReceivalNotification(Payment payment, BigDecimal receivalAmount, UUID teamId, UserPrincipal principal) {
+        Contract contract = contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
+        String propertyName = "N/A";
+        String tenantName = "N/A";
+        if (contract != null) {
+            Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
+            Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+            if (property != null) {
+                propertyName = property.getStreet() != null ? property.getStreet() + ", " + property.getCity() : property.getIdentifier();
+            }
+            if (tenant != null) {
+                tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+            }
+        }
+        String currency = payment.getCurrency() != null ? payment.getCurrency() : "EUR";
+        BigDecimal totalReceived = receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId);
+        BigDecimal remainingBalance = payment.getAmount().subtract(totalReceived);
+
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("propertyName", propertyName);
+        vars.put("tenantName", tenantName);
+        vars.put("receivalAmount", currency + " " + receivalAmount);
+        vars.put("amount", currency + " " + payment.getAmount());
+        vars.put("remainingBalance", currency + " " + remainingBalance);
+        vars.put("baseUrl", baseUrl);
+
+        notificationService.sendToTeam(SendNotificationRequest.builder()
+                .teamId(teamId)
+                .notificationType(NotificationType.PAYMENT_RECEIVAL)
+                .templateName("payment-receival")
+                .templateVariables(vars)
+                .createdBy(principal.getUserId())
+                .build());
     }
 
     private List<PaymentResponse> enrichPaymentResponses(List<Payment> payments, UUID teamId) {

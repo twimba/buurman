@@ -11,6 +11,7 @@ public class Notification {
     private UUID teamId;
     private NotificationType notificationType;
     private String subject;
+    private String body;
     private String recipientEmail;
     private String recipientPhone;
     private UUID recipientUserId;
@@ -69,6 +70,14 @@ public class Notification {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getRecipientEmail() {
