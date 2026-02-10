@@ -8,6 +8,7 @@ public enum EntityPrefix {
     DOC("DOC", "Documents"),
     EXP("EXP", "Expenses"),
     GRP("GRP", "Generated Reports"),
+    NTF("NTF", "Notifications"),
     PRE("PRE", "Payment Receivals"),
     PAY("PAY", "Payments"),
     PIN("PIN", "Payment Instructions"),

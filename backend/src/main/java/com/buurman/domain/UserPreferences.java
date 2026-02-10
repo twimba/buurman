@@ -14,6 +14,7 @@ public class UserPreferences {
     private String currencyFormat;
     private boolean emailNotifications;
     private boolean inAppNotifications;
+    private boolean smsNotifications;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -26,6 +27,7 @@ public class UserPreferences {
         this.currencyFormat = "EUR";
         this.emailNotifications = true;
         this.inAppNotifications = true;
+        this.smsNotifications = false;
     }
 
     public UUID getId() {
@@ -98,6 +100,14 @@ public class UserPreferences {
 
     public void setInAppNotifications(boolean inAppNotifications) {
         this.inAppNotifications = inAppNotifications;
+    }
+
+    public boolean isSmsNotifications() {
+        return smsNotifications;
+    }
+
+    public void setSmsNotifications(boolean smsNotifications) {
+        this.smsNotifications = smsNotifications;
     }
 
     public Instant getCreatedAt() {

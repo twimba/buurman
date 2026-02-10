@@ -12,6 +12,7 @@ public class UserTeamNotificationPreferences {
     private boolean contractExpiryAlerts;
     private boolean newMemberNotifications;
     private boolean weeklySummary;
+    private String preferredChannels;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -21,6 +22,7 @@ public class UserTeamNotificationPreferences {
         this.contractExpiryAlerts = true;
         this.newMemberNotifications = true;
         this.weeklySummary = true;
+        this.preferredChannels = "EMAIL";
     }
 
     public UUID getId() {
@@ -77,6 +79,14 @@ public class UserTeamNotificationPreferences {
 
     public void setWeeklySummary(boolean weeklySummary) {
         this.weeklySummary = weeklySummary;
+    }
+
+    public String getPreferredChannels() {
+        return preferredChannels;
+    }
+
+    public void setPreferredChannels(String preferredChannels) {
+        this.preferredChannels = preferredChannels;
     }
 
     public Instant getCreatedAt() {
