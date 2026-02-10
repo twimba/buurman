@@ -12,6 +12,8 @@ import com.buurman.security.UserPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -68,6 +70,9 @@ public class UserPreferencesService {
         if (request.inAppNotifications() != null) {
             prefs.setInAppNotifications(request.inAppNotifications());
         }
+        if (request.smsNotifications() != null) {
+            prefs.setSmsNotifications(request.smsNotifications());
+        }
 
         prefs = preferencesRepository.save(prefs);
         return toResponse(prefs);
@@ -112,6 +117,9 @@ public class UserPreferencesService {
         if (request.weeklySummary() != null) {
             prefs.setWeeklySummary(request.weeklySummary());
         }
+        if (request.preferredChannels() != null && !request.preferredChannels().isEmpty()) {
+            prefs.setPreferredChannels(String.join(",", request.preferredChannels()));
+        }
 
         prefs = teamNotifRepository.save(prefs);
         return toTeamNotifResponse(teamId, prefs);
@@ -125,18 +133,23 @@ public class UserPreferencesService {
             prefs.getDateFormat(),
             prefs.getCurrencyFormat(),
             prefs.isEmailNotifications(),
-            prefs.isInAppNotifications()
+            prefs.isInAppNotifications(),
+            prefs.isSmsNotifications()
         );
     }
 
     private UserTeamNotificationPreferencesResponse toTeamNotifResponse(
             UUID teamId, UserTeamNotificationPreferences prefs) {
+        List<String> channels = prefs.getPreferredChannels() != null
+            ? Arrays.asList(prefs.getPreferredChannels().split(","))
+            : List.of("EMAIL");
         return new UserTeamNotificationPreferencesResponse(
             teamId,
             prefs.isPaymentReminders(),
             prefs.isContractExpiryAlerts(),
             prefs.isNewMemberNotifications(),
-            prefs.isWeeklySummary()
+            prefs.isWeeklySummary(),
+            channels
         );
     }
 }

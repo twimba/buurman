@@ -43,6 +43,7 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat())
                     .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
                     .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
+                    .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
                     .set(USER_PREFERENCES.CREATED_AT, now)
                     .set(USER_PREFERENCES.UPDATED_AT, now)
                     .execute();
@@ -58,6 +59,7 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat())
                     .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
                     .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
+                    .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
                     .set(USER_PREFERENCES.UPDATED_AT, now)
                     .where(USER_PREFERENCES.ID.eq(prefs.getId()))
                     .execute();
@@ -77,6 +79,7 @@ public class UserPreferencesRepository {
         prefs.setCurrencyFormat(record.getCurrencyFormat());
         prefs.setEmailNotifications(record.getEmailNotifications());
         prefs.setInAppNotifications(record.getInAppNotifications());
+        prefs.setSmsNotifications(record.getSmsNotifications());
         prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
         prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
         return prefs;

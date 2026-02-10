@@ -42,6 +42,7 @@ public class UserTeamNotificationPreferencesRepository {
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.CONTRACT_EXPIRY_ALERTS, prefs.isContractExpiryAlerts())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.NEW_MEMBER_NOTIFICATIONS, prefs.isNewMemberNotifications())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.WEEKLY_SUMMARY, prefs.isWeeklySummary())
+                    .set(USER_TEAM_NOTIFICATION_PREFERENCES.PREFERRED_CHANNELS, prefs.getPreferredChannels())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.CREATED_AT, now)
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.UPDATED_AT, now)
                     .execute();
@@ -54,6 +55,7 @@ public class UserTeamNotificationPreferencesRepository {
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.CONTRACT_EXPIRY_ALERTS, prefs.isContractExpiryAlerts())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.NEW_MEMBER_NOTIFICATIONS, prefs.isNewMemberNotifications())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.WEEKLY_SUMMARY, prefs.isWeeklySummary())
+                    .set(USER_TEAM_NOTIFICATION_PREFERENCES.PREFERRED_CHANNELS, prefs.getPreferredChannels())
                     .set(USER_TEAM_NOTIFICATION_PREFERENCES.UPDATED_AT, now)
                     .where(USER_TEAM_NOTIFICATION_PREFERENCES.ID.eq(prefs.getId()))
                     .execute();
@@ -72,6 +74,7 @@ public class UserTeamNotificationPreferencesRepository {
         prefs.setContractExpiryAlerts(record.getContractExpiryAlerts());
         prefs.setNewMemberNotifications(record.getNewMemberNotifications());
         prefs.setWeeklySummary(record.getWeeklySummary());
+        prefs.setPreferredChannels(record.getPreferredChannels());
         prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
         prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
         return prefs;

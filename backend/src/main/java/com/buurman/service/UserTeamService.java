@@ -38,7 +38,8 @@ public class UserTeamService {
             user.getIdentifier(),
             user.getEmail(),
             user.getFirstName(),
-            user.getLastName()
+            user.getLastName(),
+            user.getPhone()
         );
     }
 
@@ -49,13 +50,15 @@ public class UserTeamService {
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
+        user.setPhone(request.phone());
         user = userRepository.save(user);
 
         return new UserProfileResponse(
             user.getIdentifier(),
             user.getEmail(),
             user.getFirstName(),
-            user.getLastName()
+            user.getLastName(),
+            user.getPhone()
         );
     }
 

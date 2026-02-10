@@ -1,5 +1,6 @@
 package com.buurman.dto.response;
 
+import java.util.List;
 import java.util.UUID;
 
 public record UserTeamNotificationPreferencesResponse(
@@ -7,5 +8,6 @@ public record UserTeamNotificationPreferencesResponse(
     boolean paymentReminders,
     boolean contractExpiryAlerts,
     boolean newMemberNotifications,
-    boolean weeklySummary
+    boolean weeklySummary,
+    List<String> preferredChannels
 ) {}

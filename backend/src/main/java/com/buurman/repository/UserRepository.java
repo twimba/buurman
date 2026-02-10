@@ -56,6 +56,7 @@ public class UserRepository {
                     .set(USERS.EMAIL, user.getEmail())
                     .set(USERS.FIRST_NAME, user.getFirstName())
                     .set(USERS.LAST_NAME, user.getLastName())
+                    .set(USERS.PHONE, user.getPhone())
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
@@ -75,6 +76,7 @@ public class UserRepository {
                     .set(USERS.EMAIL, user.getEmail())
                     .set(USERS.FIRST_NAME, user.getFirstName())
                     .set(USERS.LAST_NAME, user.getLastName())
+                    .set(USERS.PHONE, user.getPhone())
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
