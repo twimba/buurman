@@ -34,7 +34,7 @@ Buurman is a property management dashboard for small landlords (properties, tena
 - Tests: `mvn test` / `mvn test -Dtest=ClassName#methodName`
 - Package: `mvn clean package -DskipTests`
 
-### Frontend (React/Vite/Yarn 4)
+### App (React/Vite/Yarn 4)
 - Install: `yarn install`
 - Dev server: `yarn dev` (port 5173)
 - Build: `yarn build`
@@ -53,20 +53,20 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | localstack | https://localstack.local.buurman.io | S3 storage (dev) |
 | mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
 | backend | https://api.local.buurman.io | Spring Boot API |
-| frontend | https://app.local.buurman.io | React app |
+| app | https://app.local.buurman.io | React app |
 | prometheus | https://prometheus.local.buurman.io | Metrics collection |
 | grafana | https://grafana.local.buurman.io | Dashboards |
 
 Commands (via Makefile):
-- `make up` — start everything in Docker (including backend + frontend)
-- `make dev` — start infrastructure only (for local backend/frontend development)
+- `make up` — start everything in Docker (including backend + app)
+- `make dev` — start infrastructure only (for local backend/app development)
 - `make down` — stop all containers
 - `make down-v` — stop + remove volumes (full reset)
 - `make logs` — tail all service logs
 - `make certs` — generate local TLS certificates (one-time)
 
 ### Application Profiles
-- `local` (default): Infrastructure in Docker behind Traefik, backend/frontend on host (`make dev`)
+- `local` (default): Infrastructure in Docker behind Traefik, backend/app on host (`make dev`)
 - `docker`: All services in Docker behind Traefik (`make up`)
 - Credentials externalized via `.env` file
 
@@ -119,7 +119,7 @@ com.buurman
 └── util/            UlidGenerator, PaginationHelper, EntityPrefix, DateUtils
 ```
 
-### Frontend Structure
+### App Structure
 ```
 src/
 ├── api/             Axios client + 16 API modules (properties.ts, tenants.ts, etc.)
@@ -177,7 +177,7 @@ src/
 4. Service with `@Transactional` and `@PreAuthorize`
 5. Request/Response DTOs (records preferred) + MapStruct mapper
 6. REST controller (thin, delegates to service)
-7. Frontend: API module, React Query hook, page components, routes
+7. App: API module, React Query hook, page components, routes
 
 ## Important Rules
 
@@ -193,7 +193,7 @@ src/
 - USE database constraints for validation
 
 ### Code Quality
-- Google Java Style Guide (backend), Airbnb JS Style Guide (frontend)
+- Google Java Style Guide (backend), Airbnb JS Style Guide (app)
 - Conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
 - Self-documenting code, comments only for complex business logic
 
@@ -205,16 +205,16 @@ src/
 3. Generate certificates: `bash scripts/setup-local-certs.sh`
 
 ### Starting Local Development
-1. `make dev` (infrastructure + Traefik only, backend/frontend excluded)
+1. `make dev` (infrastructure + Traefik only, backend/app excluded)
 2. Wait ~30s for PostgreSQL + Keycloak
 3. `cd backend && mvn spring-boot:run` (backend on 8081)
-4. `cd frontend && yarn dev` (frontend on 5173)
+4. `cd app && yarn dev` (app on 5173)
 5. Access everything via the same HTTPS URLs — Traefik routes to your host machine:
    - App: https://app.local.buurman.io | API: https://api.local.buurman.io
    - Keycloak: https://keycloak.local.buurman.io | Mailpit: https://mailpit.local.buurman.io
 
 ### Starting Full Docker (everything containerized)
-1. `make up` (all services including backend + frontend containers)
+1. `make up` (all services including backend + app containers)
 2. App: https://app.local.buurman.io | API: https://api.local.buurman.io | Traefik: https://traefik.local.buurman.io
 
 ### Common Issues
@@ -223,6 +223,6 @@ src/
 - **DNS resolution**: All `*.local.buurman.io` must resolve to `127.0.0.1`
 - **Database connection**: Ensure PostgreSQL container running (`postgresql.local.buurman.io:5432`)
 - **JWT validation**: Check Keycloak running at `https://keycloak.local.buurman.io` and realm configured
-- **CORS errors**: Verify SecurityConfig frontend origin includes `https://app.local.buurman.io`
+- **CORS errors**: Verify SecurityConfig allowed origin includes `https://app.local.buurman.io`
 - **Flyway failure**: Check syntax; rollback may need manual intervention
 - **S3/images**: LocalStack uses direct URLs via `https://localstack.local.buurman.io`, production uses presigned URLs

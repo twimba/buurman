@@ -226,7 +226,7 @@
     }
   ],
   "schemaVersion": 39,
-  "tags": ["buurman", "frontend", "api"],
+  "tags": ["buurman", "app", "api"],
   "templating": {
     "list": [
       {
@@ -246,7 +246,7 @@
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "",
-  "title": "Buurman - Frontend Application",
-  "uid": "buurman-frontend-app",
+  "title": "Buurman - App",
+  "uid": "buurman-app",
   "version": 1
 }

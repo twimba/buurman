@@ -24,7 +24,7 @@
 
 - **Docker & Docker Compose** (required for all setups)
 - **Java 21** + **Maven 3.9+** (for local backend development)
-- **Node.js 22+** + **Yarn 4** (for local frontend development)
+- **Node.js 22+** + **Yarn 4** (for local app development)
 
 ## Quick Start
 
@@ -45,7 +45,7 @@ Wait ~90 seconds for services to become healthy, then open http://localhost:5173
 
 ### 2b. Development Mode (hot reload)
 
-Start infrastructure services, then run backend and frontend locally:
+Start infrastructure services, then run backend and app locally:
 
 ```bash
 # Infrastructure (database, auth, storage, email)
@@ -54,15 +54,15 @@ docker compose up -d postgres keycloak localstack mailhog
 # Terminal 1 — Backend (port 8081)
 cd backend && mvn spring-boot:run
 
-# Terminal 2 — Frontend (port 5173)
-cd frontend && yarn install && yarn dev
+# Terminal 2 — App (port 5173)
+cd app && yarn install && yarn dev
 ```
 
 ### 3. Access the app
 
 | Service | URL | Notes |
 |---------|-----|-------|
-| **Frontend** | http://localhost:5173 | Main application |
+| **App** | http://localhost:5173 | Main application |
 | **Backend API** | http://localhost:8081 | REST API |
 | **Swagger UI** | http://localhost:8081/swagger-ui.html | API documentation |
 | **Keycloak** | http://localhost:8080 | Admin: `admin` / `admin` |
@@ -124,7 +124,7 @@ buurman/
 │   │   └── util/               #   UlidGenerator, PaginationHelper, EntityPrefix
 │   └── src/main/resources/
 │       └── db/migration/       #   Flyway migrations (V001–V020)
-├── frontend/                   # React application
+├── app/                        # React application
 │   └── src/
 │       ├── api/                #   Axios client + API modules per resource
 │       ├── components/         #   Feature-organized React components
@@ -161,7 +161,7 @@ mvn test -Dtest=Class#method   # Run specific test
 mvn clean package -DskipTests  # Package JAR
 ```
 
-### Frontend Commands
+### App Commands
 
 ```bash
 yarn install     # Install dependencies
@@ -223,7 +223,7 @@ Copy `.env.example` to `.env`. All defaults work for local development. Key vari
 | Port conflict | Check ports 5173, 8080, 8081, 5432, 4566 are free |
 | Database connection failure | Ensure PostgreSQL container is running |
 | JWT validation error | Verify Keycloak is running and realm is configured |
-| CORS errors | Check `SecurityConfig` frontend origin setting |
+| CORS errors | Check `SecurityConfig` allowed origin setting |
 | Flyway migration failure | Check SQL syntax; rollback may need manual intervention |
 | Images not loading | LocalStack uses direct URLs; production uses presigned URLs |
 

@@ -1,15 +1,15 @@
 # Dependency locks (Huge token sinks)
-frontend/package-lock.json
-frontend/yarn.lock
-frontend/pnpm-lock.yaml
+app/package-lock.json
+app/yarn.lock
+app/pnpm-lock.yaml
 
 # Build & Cache
-frontend/dist/
-frontend/build/
-frontend/.next/
-frontend/.cache/
-frontend/.yarn/
-frontend/node_modules/
+app/dist/
+app/build/
+app/.next/
+app/.cache/
+app/.yarn/
+app/node_modules/
 
 # Heavy Media & Data
 *.svg

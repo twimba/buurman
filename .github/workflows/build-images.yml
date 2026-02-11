@@ -84,8 +84,8 @@ jobs:
 
           EOF
 
-  build-frontend:
-    name: Build & Publish Frontend
+  build-app:
+    name: Build & Publish App
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -96,7 +96,7 @@ jobs:
 
       - name: Resolve version
         id: version
-        working-directory: frontend
+        working-directory: app
         run: |
           VERSION=$(node -p "require('./package.json').version")
           SHA=${GITHUB_SHA::7}
@@ -119,12 +119,12 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: ./frontend
+          context: ./app
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/frontend:${{ steps.version.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/frontend:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:latest
           build-args: |
             VITE_API_URL=${{ vars.VITE_API_URL }}
             VITE_KEYCLOAK_URL=${{ vars.VITE_KEYCLOAK_URL }}
@@ -135,12 +135,12 @@ jobs:
         if: always()
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ## Frontend Image
+          ## App Image
 
           | | |
           |---|---|
           | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
-          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/frontend\` |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/app\` |
           | **Tag** | \`${{ steps.version.outputs.tag }}\` |
           | **Digest** | \`${{ steps.build.outputs.digest }}\` |
 
@@ -148,7 +148,7 @@ jobs:
 
   summary:
     name: Build Summary
-    needs: [build-backend, build-frontend]
+    needs: [build-backend, build-app]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -163,7 +163,7 @@ jobs:
           | **Ref** | \`${{ github.ref_name }}\` |
           | **Triggered by** | ${{ github.actor }} via \`${{ github.event_name }}\` |
           | **Backend** | ${{ needs.build-backend.result == 'success' && '✅' || '❌' }} ${{ needs.build-backend.result }} |
-          | **Frontend** | ${{ needs.build-frontend.result == 'success' && '✅' || '❌' }} ${{ needs.build-frontend.result }} |
+          | **App** | ${{ needs.build-app.result == 'success' && '✅' || '❌' }} ${{ needs.build-app.result }} |
 
           ### How to pull
 
@@ -175,7 +175,7 @@ jobs:
           3. Pull the images:
           \`\`\`bash
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/backend:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/frontend:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:latest
           \`\`\`
 
           EOF

@@ -1,15 +1,15 @@
 .PHONY: up dev down down-v restart restart-dev logs ps certs
 
-## Start everything in Docker (including backend + frontend containers)
+## Start everything in Docker (including backend + app containers)
 up:
 	docker compose up -d
 
-## Start infrastructure only (for local backend/frontend development)
+## Start infrastructure only (for local backend/app development)
 dev:
-	docker compose up -d --scale backend=0 --scale frontend=0
+	docker compose up -d --scale backend=0 --scale app=0
 
 dev-fg:
-	docker compose up --scale backend=0 --scale frontend=0
+	docker compose up --scale backend=0 --scale app=0
 
 ## Stop all containers
 down:

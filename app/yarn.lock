@@ -2112,9 +2112,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buurman-frontend@workspace:.":
+"buurman-app@workspace:.":
   version: 0.0.0-use.local
-  resolution: "buurman-frontend@workspace:."
+  resolution: "buurman-app@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.39.2"
     "@floating-ui/dom": "npm:^1.7.5"

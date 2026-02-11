@@ -2,11 +2,11 @@
 # Local Development Profile
 # =============================================================================
 # Infrastructure services run in Docker behind Traefik reverse proxy (HTTPS).
-# Backend and frontend run on the host machine.
+# Backend and app run on the host machine.
 #
 # Start infra:  docker compose up postgres keycloak localstack mailpit traefik
 # Start backend: mvn spring-boot:run
-# Start frontend: yarn dev
+# Start app: cd app && yarn dev
 #
 # Hostnames (all resolve to 127.0.0.1 via DNS, HTTPS via Traefik + mkcert):
 #   https://keycloak.local.buurman.io    → Keycloak

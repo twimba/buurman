@@ -388,8 +388,8 @@ Location: `docker/keycloak/themes/buurman/login/resources/css/styles.css`
 ### Frontend (React/Tailwind)
 
 Colors are defined in:
-- **Tailwind Config**: `frontend/tailwind.config.js`
-- **CSS Variables**: `frontend/src/index.css`
+- **Tailwind Config**: `app/tailwind.config.js`
+- **CSS Variables**: `app/src/index.css`
 
 All components use Tailwind utility classes:
 - `bg-primary` for primary backgrounds

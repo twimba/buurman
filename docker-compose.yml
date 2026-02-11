@@ -149,23 +149,23 @@ services:
     networks:
       - buurman-network
 
-  frontend:
+  app:
     build:
-      context: ./frontend
+      context: ./app
       dockerfile: Dockerfile
       args:
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-buurman-web}
         VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
-    container_name: buurman-frontend
+    container_name: buurman-app
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`app.local.buurman.io`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.routers.frontend.priority=100"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.app.rule=Host(`app.local.buurman.io`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.priority=100"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
     depends_on:
       backend:
         condition: service_healthy
