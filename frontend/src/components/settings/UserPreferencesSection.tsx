@@ -86,7 +86,15 @@ export const UserPreferencesSection = () => {
   const handleGlobalToggle = (
     field: 'emailNotifications' | 'smsNotifications'
   ) => {
-    setPreferences((prev) => ({ ...prev, [field]: !prev[field] }));
+    setPreferences((prev) => {
+      const newValue = !prev[field];
+      const typeChannel =
+        field === 'emailNotifications' ? 'emailEnabled' : 'smsEnabled';
+      setTypePrefs((prevTypes) =>
+        prevTypes.map((p) => ({ ...p, [typeChannel]: newValue }))
+      );
+      return { ...prev, [field]: newValue };
+    });
     setHasChanges(true);
   };
 

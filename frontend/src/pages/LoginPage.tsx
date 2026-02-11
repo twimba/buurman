@@ -122,7 +122,7 @@ const LoginPage: React.FC = () => {
             </div>
 
             <button
-              onClick={login}
+              onClick={() => login()}
               className="w-full bg-[#5c7cfa] text-white py-3.5 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <LogIn className="h-5 w-5" />

@@ -71,4 +71,12 @@ public class NotificationController {
             @AuthenticationPrincipal UserPrincipal principal) {
         return centerService.resendNotification(principal, identifier);
     }
+
+    @Operation(summary = "Refresh notification status", description = "Fetch latest delivery status from provider (Admin only)")
+    @PostMapping("/{identifier}/refresh-status")
+    public NotificationResponse refreshStatus(
+            @PathVariable String identifier,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return centerService.refreshNotificationStatus(principal, identifier);
+    }
 }

@@ -6,6 +6,7 @@ import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
 import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.util.Map;
 
 @Component
@@ -22,19 +24,28 @@ public class TwilioSmsSender implements NotificationChannelSender {
     private static final Logger log = LoggerFactory.getLogger(TwilioSmsSender.class);
 
     private final String fromNumber;
+    private final String statusCallbackUrl;
 
-    public TwilioSmsSender(@Value("${twilio.from-number}") String fromNumber) {
+    public TwilioSmsSender(@Value("${twilio.from-number}") String fromNumber,
+                           @Value("${twilio.status-callback-url:}") String statusCallbackUrl) {
         this.fromNumber = fromNumber;
+        this.statusCallbackUrl = statusCallbackUrl;
     }
 
     @Override
     public String send(NotificationSendRequest request) throws NotificationSendException {
         try {
-            Message message = Message.creator(
+            MessageCreator creator = Message.creator(
                     new PhoneNumber(request.recipientPhone()),
                     new PhoneNumber(fromNumber),
                     request.body()
-            ).create();
+            );
+
+            if (statusCallbackUrl != null && !statusCallbackUrl.isBlank()) {
+                creator.setStatusCallback(URI.create(statusCallbackUrl));
+            }
+
+            Message message = creator.create();
 
             log.info("Twilio SMS sent to {}, SID: {}", request.recipientPhone(), message.getSid());
             return message.getSid();

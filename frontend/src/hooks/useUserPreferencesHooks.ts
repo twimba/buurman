@@ -1,12 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as usersApi from '../api/users';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
 export const useCurrentUser = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['userProfile'],
     queryFn: usersApi.getCurrentUser,
+    enabled: isAuthenticated,
   });
 };
 
@@ -25,11 +28,12 @@ export const useUpdateUserProfile = () => {
   });
 };
 
-export const useUserPreferences = (enabled: boolean = true) => {
+export const useUserPreferences = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['userPreferences'],
     queryFn: usersApi.getUserPreferences,
-    enabled,
+    enabled: isAuthenticated,
   });
 };
 

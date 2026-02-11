@@ -1,5 +1,6 @@
 package com.buurman.service.notification;
 
+import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,6 +16,16 @@ import java.util.Map;
 public class WebhookService {
 
     private static final Logger log = LoggerFactory.getLogger(WebhookService.class);
+
+    private static final Map<NotificationStatus, Integer> STATUS_RANK = Map.of(
+            NotificationStatus.PENDING, 0,
+            NotificationStatus.QUEUED, 1,
+            NotificationStatus.SENT, 2,
+            NotificationStatus.DELIVERED, 3,
+            NotificationStatus.FAILED, 10,
+            NotificationStatus.BOUNCED, 10,
+            NotificationStatus.REJECTED, 10
+    );
 
     private final NotificationRepository notificationRepository;
     private final ObjectMapper objectMapper;
@@ -43,10 +54,13 @@ public class WebhookService {
                 NotificationStatus status = mapSendGridStatus(eventType);
                 String reason = (String) event.get("reason");
 
-                notificationRepository.updateStatusByProviderMessageId(
-                        messageId, status, eventType, reason);
-
-                log.debug("SendGrid event: {} -> {} for message {}", eventType, status, messageId);
+                if (shouldUpdateStatus(messageId, status)) {
+                    notificationRepository.updateStatusByProviderMessageId(
+                            messageId, status, eventType, reason);
+                    log.debug("SendGrid event: {} -> {} for message {}", eventType, status, messageId);
+                } else {
+                    log.debug("SendGrid event skipped (status regression): {} for message {}", eventType, messageId);
+                }
             }
         } catch (Exception e) {
             log.error("Failed to parse SendGrid events: {}", e.getMessage(), e);
@@ -68,10 +82,23 @@ public class WebhookService {
 
         String providerError = errorCode != null ? errorCode + ": " + errorMessage : null;
 
-        notificationRepository.updateStatusByProviderMessageId(
-                messageSid, status, messageStatus, providerError);
+        if (shouldUpdateStatus(messageSid, status)) {
+            notificationRepository.updateStatusByProviderMessageId(
+                    messageSid, status, messageStatus, providerError);
+            log.debug("Twilio status: {} -> {} for SID {}", messageStatus, status, messageSid);
+        } else {
+            log.debug("Twilio status skipped (status regression): {} for SID {}", messageStatus, messageSid);
+        }
+    }
 
-        log.debug("Twilio status: {} -> {} for SID {}", messageStatus, status, messageSid);
+    private boolean shouldUpdateStatus(String providerMessageId, NotificationStatus newStatus) {
+        return notificationRepository.findByProviderMessageId(providerMessageId)
+                .map(notification -> {
+                    int currentRank = STATUS_RANK.getOrDefault(notification.getStatus(), 0);
+                    int newRank = STATUS_RANK.getOrDefault(newStatus, 0);
+                    return newRank > currentRank;
+                })
+                .orElse(true); // If notification not found, allow the update (it may arrive before our DB write)
     }
 
     private NotificationStatus mapSendGridStatus(String eventType) {

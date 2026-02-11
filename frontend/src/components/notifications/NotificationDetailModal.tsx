@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { X, Mail, Phone, RotateCcw, Smartphone } from 'lucide-react';
+import { X, Mail, Phone, RotateCcw, RefreshCw, Smartphone, Loader2 } from 'lucide-react';
 import {
   NotificationResponse,
   NotificationChannel,
@@ -86,16 +86,20 @@ interface NotificationDetailModalProps {
   notification: NotificationResponse;
   onClose: () => void;
   onResend: (identifier: string) => void;
+  onRefreshStatus?: (identifier: string) => void;
   onViewNotification?: (identifier: string) => void;
   isResending: boolean;
+  isRefreshing?: boolean;
 }
 
 export const NotificationDetailModal = ({
   notification,
   onClose,
   onResend,
+  onRefreshStatus,
   onViewNotification,
   isResending,
+  isRefreshing,
 }: NotificationDetailModalProps) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -216,8 +220,23 @@ export const NotificationDetailModal = ({
                   <dt className="text-[#6b7194] dark:text-[#8b90a8]">
                     Provider status
                   </dt>
-                  <dd className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <dd className="flex items-center gap-2 font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                     {notification.providerStatus}
+                    {onRefreshStatus && (
+                      <button
+                        onClick={() => onRefreshStatus(notification.identifier)}
+                        disabled={isRefreshing}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors disabled:opacity-50"
+                        title="Refresh status from provider"
+                      >
+                        {isRefreshing ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3" />
+                        )}
+                        Refresh
+                      </button>
+                    )}
                   </dd>
                 </div>
               )}

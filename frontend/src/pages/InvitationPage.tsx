@@ -77,9 +77,9 @@ export const InvitationPage = () => {
   }, [isAuthenticated, invitation]);
 
   const handleLogin = () => {
-    // Store the invitation token to redirect back after login
+    // Store the invitation token for auto-accept after login
     localStorage.setItem('pendingInvitation', token!);
-    login();
+    login(`${window.location.origin}/invitation/${token}`);
   };
 
   const handleRegister = () => {
@@ -93,6 +93,13 @@ export const InvitationPage = () => {
       onSuccess: handleAcceptSuccess,
     });
   };
+
+  // Clear stale pendingInvitation when invitation is invalid/expired/accepted
+  useEffect(() => {
+    if (!isLoading && (error || !invitation || invitation.isAccepted || invitation.isExpired)) {
+      localStorage.removeItem('pendingInvitation');
+    }
+  }, [isLoading, error, invitation]);
 
   if (isLoading || authLoading) {
     return (

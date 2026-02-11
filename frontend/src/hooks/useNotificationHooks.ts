@@ -52,3 +52,21 @@ export const useResendNotification = () => {
     },
   });
 };
+
+export const useRefreshNotificationStatus = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+
+  return useMutation({
+    mutationFn: (identifier: string) =>
+      notificationsApi.refreshNotificationStatus(identifier),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notification-stats'] });
+      showToast('Status refreshed', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};

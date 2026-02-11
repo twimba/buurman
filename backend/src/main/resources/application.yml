@@ -100,12 +100,14 @@ sendgrid:
   api-key: ${SENDGRID_API_KEY:}
   from-email: ${SENDGRID_FROM_EMAIL:noreply@buurman.io}
   from-name: ${SENDGRID_FROM_NAME:Buurman}
+  webhook-verification-key: ${SENDGRID_WEBHOOK_VERIFICATION_KEY:}
 
 # Twilio Configuration
 twilio:
   account-sid: ${TWILIO_ACCOUNT_SID:}
   auth-token: ${TWILIO_AUTH_TOKEN:}
   from-number: ${TWILIO_FROM_NUMBER:}
+  status-callback-url: ${TWILIO_STATUS_CALLBACK_URL:}
 
 # Notification Configuration
 notification:

@@ -24,11 +24,14 @@ public class NotificationCenterService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
+    private final DeliveryStatusLookupService deliveryStatusLookupService;
 
     public NotificationCenterService(NotificationRepository notificationRepository,
-                                      NotificationService notificationService) {
+                                      NotificationService notificationService,
+                                      DeliveryStatusLookupService deliveryStatusLookupService) {
         this.notificationRepository = notificationRepository;
         this.notificationService = notificationService;
+        this.deliveryStatusLookupService = deliveryStatusLookupService;
     }
 
     @PreAuthorize("hasRole('TEAM_ADMIN')")
@@ -93,6 +96,16 @@ public class NotificationCenterService {
         Notification resent = notificationService.resend(
                 principal.getTeamId(), identifier, principal.getUserId());
         return toResponse(resent);
+    }
+
+    @PreAuthorize("hasRole('TEAM_ADMIN')")
+    public NotificationResponse refreshNotificationStatus(UserPrincipal principal, String identifier) {
+        Notification notification = notificationRepository
+                .findByIdentifierAndTeamId(identifier, principal.getTeamId())
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        Notification updated = deliveryStatusLookupService.refreshStatus(notification);
+        return toResponse(updated);
     }
 
     private NotificationResponse toResponse(Notification notification) {

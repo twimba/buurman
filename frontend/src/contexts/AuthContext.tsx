@@ -14,7 +14,7 @@ import type Keycloak from 'keycloak-js';
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: () => void;
+  login: (redirectUri?: string) => void;
   logout: () => void;
   token: string | undefined;
   keycloak: Keycloak;
@@ -91,15 +91,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     initKeycloak();
   }, []);
 
-  const login = () => {
-    // Check for pending invitation to redirect back after login
-    const pendingInvitation = localStorage.getItem('pendingInvitation');
-    const redirectUri = pendingInvitation
-      ? `${window.location.origin}/invitation/${pendingInvitation}`
-      : `${window.location.origin}/dashboard`;
-
+  const login = (redirectUri?: string) => {
     keycloak.login({
-      redirectUri,
+      redirectUri: redirectUri || `${window.location.origin}/dashboard`,
     });
   };
 

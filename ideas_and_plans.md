@@ -1,39 +1,11 @@
 ------------------------
   TO Verify
 ------------------------
-
-[INFO] No modified files        : This code generation run has not produced any file modifications.
-This means, the schema has not changed, and no other parameters (jOOQ version, driver version, database version,
-and any configuration elements) have changed either.
-
-In automated builds, it is recommended to prevent unnecessary code generation runs. This run took: 890.437ms
-Possible means to prevent this:
-- Use manual code generation and check in generated sources: https://www.jooq.org/doc/latest/manual/code-generation/codegen-version-control/
-- Use schema version providers: https://www.jooq.org/doc/latest/manual/code-generation/codegen-advanced/codegen-config-database/codegen-database-version-providers/
-- Use gradle tasks and inputs: https://docs.gradle.org/current/userguide/incremental_build.html
-
-
 ------------------------
   QUEUE
 ------------------------
 
 # Notifications & communication
- ## SMS Notifcations 
- Send notifications also via SMS using Twilio.
- Each notification sent via SMS should also be tracked in the database and linked to the relevant Twilio data.
- A list of SMS notifications sent should be available in the UI, showing the relevant information about each notification (recipient, content, status, etc) and its status (from the providers (ie: Twilio) and from the database (ie: delivered, failed, etc).
- If Twilio is down or not working there should be a "info not available" shown to the user
- The SMS notifcation system should be extensible as in the future we will add other types of notifications (ie: push notifications, whatsapp, etc) and other providers (ie: sendgrid, etc) and we want to be able to easily add support for them without having to change the existing code too much.
- There should be an outbox pattern implemented for sending SMS notifications, so that if the provider is down or not working we can retry sending the notifications later without losing any data.
-
- ## Email Notifications
- We want to use sendgrid to send email notifications. We also want to make use of the advanced features of sendgrid to track emails sent. 
- Every email sent should be tracked in the database - and linked to the relevant sendgrid data.
- A list of notifications send should be available in the UI, showing the relevant information about each notification (recipient, subject, status, etc) and its staus (from the providers (ie: sendgrid) and from the database (ie: delivered, failed, etc).
- If sendgrid is down or not working there should be a "info not available" shown to the user
- The notifcation system should be extensible as in the future we will add other types of notifications (ie: SMS, push notifications, whatsapp, etc) and other providers (ie: twilio, etc) and we want to be able to easily add support for them without having to change the existing code too much.
- There should be an outbox pattern implemented for sending notifications, so that if the provider is down or not working we can retry sending the notifications later without losing any data.
-
  ## Tenant-Landlord Communication
  Messaging center where tenants and landlods can communicate - like a persistent chat, but ominichannel - email, web, sms, etc
  

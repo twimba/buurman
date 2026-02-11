@@ -32,3 +32,12 @@ export const resendNotification = async (
   const response = await client.post(`/notifications/${identifier}/resend`);
   return response.data;
 };
+
+export const refreshNotificationStatus = async (
+  identifier: string
+): Promise<NotificationResponse> => {
+  const response = await client.post(
+    `/notifications/${identifier}/refresh-status`
+  );
+  return response.data;
+};

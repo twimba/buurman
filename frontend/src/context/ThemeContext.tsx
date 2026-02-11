@@ -7,7 +7,6 @@ import {
   ReactNode,
 } from 'react';
 import { useUserPreferences } from '../hooks/useUserPreferencesHooks';
-import { useAuth } from '../contexts/AuthContext';
 
 type Theme = 'light' | 'dark';
 type ThemePreference = 'light' | 'dark' | 'system';
@@ -50,8 +49,7 @@ function applyThemeToDOM(effectiveTheme: Theme) {
 }
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
-  const { data: preferences } = useUserPreferences(isAuthenticated);
+  const { data: preferences } = useUserPreferences();
   const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
   const [themePreference, setThemePreference] =
     useState<ThemePreference>(getStoredTheme);

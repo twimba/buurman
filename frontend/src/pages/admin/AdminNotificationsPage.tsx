@@ -15,6 +15,7 @@ import {
   useNotifications,
   useNotificationStats,
   useResendNotification,
+  useRefreshNotificationStatus,
 } from '@/hooks/useNotificationHooks';
 import {
   NotificationResponse,
@@ -71,6 +72,7 @@ export const AdminNotificationsPage = () => {
   });
   const { data: stats, refetch: refetchStats } = useNotificationStats();
   const resendMutation = useResendNotification();
+  const refreshStatusMutation = useRefreshNotificationStatus();
 
   useEffect(() => {
     if (!teamLoading && !canEditTeamSettings) {
@@ -92,6 +94,14 @@ export const AdminNotificationsPage = () => {
         },
       });
     }
+  };
+
+  const handleRefreshStatus = (identifier: string) => {
+    refreshStatusMutation.mutate(identifier, {
+      onSuccess: (updated) => {
+        setSelectedNotification(updated);
+      },
+    });
   };
 
   const handleViewNotification = async (identifier: string) => {
@@ -345,8 +355,10 @@ export const AdminNotificationsPage = () => {
           notification={selectedNotification}
           onClose={() => setSelectedNotification(null)}
           onResend={(id) => setResendTarget(id)}
+          onRefreshStatus={handleRefreshStatus}
           onViewNotification={handleViewNotification}
           isResending={resendMutation.isPending}
+          isRefreshing={refreshStatusMutation.isPending}
         />
       )}
 
