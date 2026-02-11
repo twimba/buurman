@@ -6,10 +6,10 @@ up:
 
 ## Start infrastructure only (for local backend/app development)
 dev:
-	docker compose up -d --scale backend=0 --scale app=0
+	docker compose up -d --scale backend=0 --scale app=0 --scale backoffice=0
 
 dev-fg:
-	docker compose up --scale backend=0 --scale app=0
+	docker compose up --scale backend=0 --scale app=0 --scale backoffice=0
 
 ## Stop all containers
 down:

@@ -37,6 +37,7 @@ public class TeamRecordMapper {
         team.setUpdatedAt(toInstant(record.getUpdatedAt()));
         team.setCreatedBy(record.getCreatedBy());
         team.setUpdatedBy(record.getUpdatedBy());
+        team.setDeletedAt(toInstant(record.getDeletedAt()));
 
         return team;
     }

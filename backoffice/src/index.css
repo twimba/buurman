@@ -1,0 +1,54 @@
+@import "@buurman/ui/src/styles/theme.css";
+@import "tailwindcss";
+@source "../../packages/ui/src";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  margin: 0;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Dark mode base styles */
+.dark body,
+.dark {
+  color-scheme: dark;
+  --color-background: #0c0d14;
+  --color-surface: #14161f;
+  --color-text-primary: #eef0f6;
+  --color-text-secondary: #8b90a8;
+  --color-text-muted: #5c6180;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
+  --color-info: #91a7ff;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Dark mode form element overrides */
+.dark select,
+.dark input[type="text"],
+.dark input[type="search"],
+.dark textarea {
+  background-color: #1a1d28;
+  border-color: #2a2e3f;
+  color: #eef0f6;
+}
+
+.dark select:focus,
+.dark input:focus,
+.dark textarea:focus {
+  border-color: #748ffc;
+  box-shadow: 0 0 0 2px rgba(116, 143, 252, 0.15);
+}

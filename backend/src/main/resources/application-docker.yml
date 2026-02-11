@@ -20,6 +20,9 @@ spring:
           issuer-uri: https://keycloak.local.buurman.io/realms/buurman
           # JWK set URI uses container hostname (backend-to-keycloak internal call)
           jwk-set-uri: http://keycloak:8080/realms/buurman/protocol/openid-connect/certs
+          backoffice:
+            issuer-uri: https://keycloak.local.buurman.io/realms/buurman-backoffice
+            jwk-set-uri: http://keycloak:8080/realms/buurman-backoffice/protocol/openid-connect/certs
 
 keycloak:
   admin:

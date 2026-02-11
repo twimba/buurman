@@ -25,6 +25,9 @@ spring:
         jwt:
           issuer-uri: https://keycloak.local.buurman.io/realms/buurman
           jwk-set-uri: https://keycloak.local.buurman.io/realms/buurman/protocol/openid-connect/certs
+          backoffice:
+            issuer-uri: https://keycloak.local.buurman.io/realms/buurman-backoffice
+            jwk-set-uri: https://keycloak.local.buurman.io/realms/buurman-backoffice/protocol/openid-connect/certs
 
 keycloak:
   admin:

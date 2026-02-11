@@ -186,7 +186,7 @@ export const TeamSettingsPage = () => {
               <PermissionDenied section="Team Preferences" />
             ))}
           {activeTab === 'paymentInstructions' && (
-              <PaymentInstructionsSection />
+            <PaymentInstructionsSection />
           )}
           {activeTab === 'calendarFeeds' &&
             (canEditTeamSettings ? (

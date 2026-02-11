@@ -20,6 +20,14 @@ http:
       service: app-local
       priority: 10
 
+    backoffice-local:
+      rule: "Host(`backoffice.local.buurman.io`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      service: backoffice-local
+      priority: 10
+
   services:
     backend-local:
       loadBalancer:
@@ -30,3 +38,8 @@ http:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:5173"
+
+    backoffice-local:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:5174"

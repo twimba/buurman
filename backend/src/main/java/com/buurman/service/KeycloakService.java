@@ -64,4 +64,23 @@ public class KeycloakService {
         RealmResource realmResource = keycloak.realm(realm);
         realmResource.users().delete(keycloakUserId);
     }
+
+    public void disableUser(String keycloakUserId) {
+        RealmResource realmResource = keycloak.realm(realm);
+        UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
+        user.setEnabled(false);
+        realmResource.users().get(keycloakUserId).update(user);
+    }
+
+    public void enableUser(String keycloakUserId) {
+        RealmResource realmResource = keycloak.realm(realm);
+        UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
+        user.setEnabled(true);
+        realmResource.users().get(keycloakUserId).update(user);
+    }
+
+    public void sendPasswordResetEmail(String keycloakUserId) {
+        RealmResource realmResource = keycloak.realm(realm);
+        realmResource.users().get(keycloakUserId).executeActionsEmail(List.of("UPDATE_PASSWORD"));
+    }
 }

@@ -126,7 +126,9 @@ export const acceptInvitation = async (token: string): Promise<void> => {
   await client.post(`/invitations/${token}/accept`);
 };
 
-export const getPendingInvitations = async (): Promise<InvitationResponse[]> => {
+export const getPendingInvitations = async (): Promise<
+  InvitationResponse[]
+> => {
   const response = await client.get('/invitations/pending');
   return response.data;
 };

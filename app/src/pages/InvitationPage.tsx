@@ -96,7 +96,10 @@ export const InvitationPage = () => {
 
   // Clear stale pendingInvitation when invitation is invalid/expired/accepted
   useEffect(() => {
-    if (!isLoading && (error || !invitation || invitation.isAccepted || invitation.isExpired)) {
+    if (
+      !isLoading &&
+      (error || !invitation || invitation.isAccepted || invitation.isExpired)
+    ) {
       localStorage.removeItem('pendingInvitation');
     }
   }, [isLoading, error, invitation]);

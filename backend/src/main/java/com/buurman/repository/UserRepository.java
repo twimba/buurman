@@ -1,10 +1,16 @@
 package com.buurman.repository;
 
 import com.buurman.domain.User;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
 import com.buurman.util.EntityPrefix;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.UlidGenerator;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -12,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -155,5 +162,56 @@ public class UserRepository {
                 .set(USERS.UPDATED_AT, now)
                 .where(USERS.ID.eq(userId))
                 .execute();
+    }
+
+    public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, String search) {
+        Condition condition = USERS.DELETED_AT.isNull();
+        if (search != null && !search.isBlank()) {
+            String pattern = "%" + search + "%";
+            condition = condition.and(
+                USERS.EMAIL.likeIgnoreCase(pattern)
+                .or(USERS.FIRST_NAME.likeIgnoreCase(pattern))
+                .or(USERS.LAST_NAME.likeIgnoreCase(pattern))
+            );
+        }
+
+        Map<String, Field<?>> sortableFields = Map.of(
+            "email", USERS.EMAIL,
+            "firstName", USERS.FIRST_NAME,
+            "lastName", USERS.LAST_NAME,
+            "createdAt", USERS.CREATED_AT
+        );
+
+        return PaginationHelper.paginate(dsl, USERS, condition, sortableFields,
+            USERS.CREATED_AT, pageRequest, r -> mapper.toDomain((UsersRecord) r));
+    }
+
+    public Optional<User> findByIdentifierUnscoped(String identifier) {
+        return dsl.selectFrom(USERS)
+            .where(USERS.IDENTIFIER.eq(identifier))
+            .and(USERS.DELETED_AT.isNull())
+            .fetchOptional()
+            .map(mapper::toDomain);
+    }
+
+    public void updateDisabledAt(UUID userId, LocalDateTime disabledAt) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+            .set(USERS.DISABLED_AT, disabledAt)
+            .set(USERS.UPDATED_AT, now)
+            .where(USERS.ID.eq(userId))
+            .execute();
+    }
+
+    public long countAll() {
+        return dsl.selectCount().from(USERS)
+            .where(USERS.DELETED_AT.isNull())
+            .fetchOne(0, long.class);
+    }
+
+    public long countDisabled() {
+        return dsl.selectCount().from(USERS)
+            .where(USERS.DELETED_AT.isNull().and(USERS.DISABLED_AT.isNotNull()))
+            .fetchOne(0, long.class);
     }
 }

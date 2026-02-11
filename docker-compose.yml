@@ -61,13 +61,17 @@ services:
     command: start-dev --import-realm --metrics-enabled=true --health-enabled=true
     volumes:
       - ./docker/keycloak/buurman-realm.json:/opt/keycloak/data/import/buurman-realm.json
+      - ./docker/keycloak/buurman-backoffice-realm.json:/opt/keycloak/data/import/buurman-backoffice-realm.json
       - ./docker/keycloak/themes:/opt/keycloak/themes
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloak.rule=Host(`keycloak.local.buurman.io`)"
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.routers.keycloak.middlewares=keycloak-headers"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.keycloak-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.buurman.io; object-src 'none'"
+      - "traefik.http.middlewares.keycloak-headers.headers.customResponseHeaders.X-Frame-Options="
     depends_on:
       postgres:
         condition: service_healthy
@@ -151,8 +155,8 @@ services:
 
   app:
     build:
-      context: ./app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: app/Dockerfile
       args:
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
@@ -166,6 +170,34 @@ services:
       - "traefik.http.routers.app.tls=true"
       - "traefik.http.routers.app.priority=100"
       - "traefik.http.services.app.loadbalancer.server.port=80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:80 || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - buurman-network
+
+  backoffice:
+    build:
+      context: .
+      dockerfile: backoffice/Dockerfile
+      args:
+        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
+        VITE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
+    container_name: buurman-backoffice
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backoffice.rule=Host(`backoffice.local.buurman.io`)"
+      - "traefik.http.routers.backoffice.entrypoints=websecure"
+      - "traefik.http.routers.backoffice.tls=true"
+      - "traefik.http.routers.backoffice.priority=100"
+      - "traefik.http.services.backoffice.loadbalancer.server.port=80"
     depends_on:
       backend:
         condition: service_healthy
@@ -231,6 +263,10 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: light
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SECURITY_CONTENT_SECURITY_POLICY: "true"
+      GF_SECURITY_CONTENT_SECURITY_POLICY_TEMPLATE: "script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors https://backoffice.local.buurman.io;"
     volumes:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
@@ -240,6 +276,10 @@ services:
       - "traefik.http.routers.grafana.rule=Host(`grafana.local.buurman.io`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.middlewares=grafana-cors"
+      - "traefik.http.middlewares.grafana-cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://backoffice.local.buurman.io"
+      - "traefik.http.middlewares.grafana-cors.headers.customResponseHeaders.Access-Control-Allow-Methods=GET, OPTIONS"
+      - "traefik.http.middlewares.grafana-cors.headers.customResponseHeaders.Access-Control-Allow-Headers=Content-Type, Accept"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
     depends_on:
       prometheus:

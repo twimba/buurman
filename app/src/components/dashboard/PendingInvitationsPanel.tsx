@@ -47,7 +47,10 @@ export const PendingInvitationsPanel = () => {
             Pending Team Invitations
           </h2>
           <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-            You have been invited to join {invitations.length === 1 ? 'a team' : `${invitations.length} teams`}
+            You have been invited to join{' '}
+            {invitations.length === 1
+              ? 'a team'
+              : `${invitations.length} teams`}
           </p>
         </div>
       </div>
@@ -67,21 +70,26 @@ export const PendingInvitationsPanel = () => {
                   <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
                     {inv.teamName}
                   </span>
-                  <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(inv.role)}`}>
+                  <span
+                    className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(inv.role)}`}
+                  >
                     {formatRole(inv.role)}
                   </span>
                 </div>
                 <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                  Invited by {inv.inviterName} &middot; Expires {formatDate(inv.expiresAt)}
+                  Invited by {inv.inviterName} &middot; Expires{' '}
+                  {formatDate(inv.expiresAt)}
                 </p>
               </div>
             </div>
             <button
-              onClick={() => acceptMutation.mutate(inv.token, {
-                onSuccess: () => {
-                  window.location.reload();
-                },
-              })}
+              onClick={() =>
+                acceptMutation.mutate(inv.token, {
+                  onSuccess: () => {
+                    window.location.reload();
+                  },
+                })
+              }
               disabled={acceptMutation.isPending}
               className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-lg transition-colors disabled:opacity-50"
             >

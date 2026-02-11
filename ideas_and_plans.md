@@ -1,6 +1,41 @@
 ------------------------
   TO Verify
 ------------------------
+
+ ## Create a backoffice application
+   This should be where the admin can manage the application, and where we can have all the features that are not available to the users, etc
+   This should be a separate application from the landlord portal and tenant portal, etc
+    This should be only accessible to buurman admin users, etc
+
+    Let's create a backoffice application!
+The app is the public frontend to be used by the buurman users and the backoffice is to be used by buurman staff to manage the platform.
+
+This backfoffice applciation should be the same technology stack as the app (ie; react) and use the api for the logic.
+Main features and requirements:
+ * backoffice users (let's call them buurmies or buurmy (singular)) have accounts in Keycloak - but segregated from the buurman.io users
+ * Strong security is needed
+ * Complete isolation between the backoffice and the app
+ * No app user should be able to use anytihing from the backoffice
+ * The api/backend is still the source of of all the logic
+ * The endpoints neessary for the backoffice should be segreated from the endpoints needed for the app (ie: with a '/backoffice' prefix)
+ * the backoffice endpoints can not be shown in the swagger api/ui with the other endpoints
+ * There should be a specific bakcoffice swagger api/ui for the backoffice api
+ * The Look&feel of both the app and the backoffice should be the same – maybe we can have a shared component for that? 
+ * the backoffice is to be deployed as another app (docker compose for example)
+ * The only feature for now is to list and manage (edit name and delete) teams 
+
+
+In the backoffice, add a section where we can manage users. In this section we want at least:
+ * List all users (in a table, paged, searcheable, orderable)
+ * View user details
+ * Force reset password
+ * Make user active or inactive
+ * View all notifications (in a table, paged, searcheable, orderable); possibility to view details and resend
+ * While the data should not be limited to a specific team; the buurmy should be able to filter the data by team
+ * Add a dashboard to the backoffice with the main information about the platform from a backoffice PoV
+ * Add a section with links to grafana, twilio, sendgrid (mailpit in local development), AWS S3 (localstack?), keycloak, traefik, prometheus
+  ** Can these websites open in the area to the right of the navigation panel and lookg like they are "part of the app"??
+
 ------------------------
   QUEUE
 ------------------------
@@ -93,10 +128,6 @@
    Use goolge ads to servce the ads, and track the performance of the ads using google analytics, etc?
 
 # Backoffice application
- ## Create a backoffice application
-   This should be where the admin can manage the application, and where we can have all the features that are not available to the users, etc
-   This should be a separate application from the landlord portal and tenant portal, etc
-    This should be only accessible to buurman admin users, etc
 
   ## Feaures of the backoffice application
    Have a backoffice application to manage

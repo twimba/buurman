@@ -13,6 +13,7 @@ public class Team {
     private Instant updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private Instant deletedAt;
 
     public Team() {
     }
@@ -91,5 +92,13 @@ public class Team {
 
     public void setUpdatedBy(UUID updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

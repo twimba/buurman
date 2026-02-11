@@ -1,5 +1,13 @@
 import { useEffect, useRef } from 'react';
-import { X, Mail, Phone, RotateCcw, RefreshCw, Smartphone, Loader2 } from 'lucide-react';
+import {
+  X,
+  Mail,
+  Phone,
+  RotateCcw,
+  RefreshCw,
+  Smartphone,
+  Loader2,
+} from 'lucide-react';
 import {
   NotificationResponse,
   NotificationChannel,

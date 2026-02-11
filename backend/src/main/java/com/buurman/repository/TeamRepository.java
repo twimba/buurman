@@ -2,19 +2,27 @@ package com.buurman.repository;
 
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamSettings;
+import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.TeamRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.jooq.generated.tables.records.TeamsRecord;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -115,5 +123,40 @@ public class TeamRepository {
                 .where(TEAMS.IDENTIFIER.eq(identifier))
                 .fetchOptional()
                 .map(mapper::toDomain);
+    }
+
+    /**
+     * Platform-wide paginated query for backoffice. No team_id filter.
+     * Only returns teams where deleted_at IS NULL.
+     */
+    public PaginatedResult<Team> findAllPaginated(PageRequest pageRequest, String search) {
+        Condition condition = TEAMS.DELETED_AT.isNull();
+        if (search != null && !search.isBlank()) {
+            condition = condition.and(TEAMS.NAME.likeIgnoreCase("%" + search + "%"));
+        }
+        Map<String, Field<?>> sortableFields = Map.of(
+            "name", TEAMS.NAME,
+            "createdAt", TEAMS.CREATED_AT,
+            "updatedAt", TEAMS.UPDATED_AT
+        );
+        return PaginationHelper.paginate(dsl, TEAMS, condition, sortableFields, TEAMS.CREATED_AT, pageRequest,
+                r -> mapper.toDomain((TeamsRecord) r));
+    }
+
+    /**
+     * Find by identifier including soft-deleted teams. For backoffice use.
+     */
+    public Optional<Team> findByIdentifierForBackoffice(String identifier) {
+        return dsl.selectFrom(TEAMS)
+                .where(TEAMS.IDENTIFIER.eq(identifier)
+                        .and(TEAMS.DELETED_AT.isNull()))
+                .fetchOptional()
+                .map(mapper::toDomain);
+    }
+
+    public long countAll() {
+        return dsl.selectCount().from(TEAMS)
+            .where(TEAMS.DELETED_AT.isNull())
+            .fetchOne(0, long.class);
     }
 }

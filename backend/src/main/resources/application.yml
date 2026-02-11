@@ -94,6 +94,7 @@ app:
     base-url: ${APP_BASE_URL:https://app.local.buurman.io}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,https://app.local.buurman.io}
+    backoffice-allowed-origins: ${CORS_BACKOFFICE_ALLOWED_ORIGINS:http://localhost:5174,https://backoffice.local.buurman.io}
 
 # SendGrid Configuration
 sendgrid:
@@ -166,4 +167,9 @@ springdoc:
     display-request-duration: true
     doc-expansion: none
     disable-swagger-default-url: true
-    urls-primary-name: Buurman API
+    urls-primary-name: app
+  group-configs:
+    - group: app
+      paths-to-exclude: /backoffice/**
+    - group: backoffice
+      paths-to-match: /backoffice/**

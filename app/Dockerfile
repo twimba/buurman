@@ -1,43 +1,37 @@
-# Build stage
 FROM node:24.13.0-alpine3.22 AS build
-WORKDIR /app
+WORKDIR /monorepo
 
-# Build arguments for environment variables
 ARG VITE_KEYCLOAK_URL
 ARG VITE_KEYCLOAK_REALM
 ARG VITE_KEYCLOAK_CLIENT_ID
 ARG VITE_GOOGLE_MAPS_API_KEY
 
-# Set as environment variables for Vite build
 ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
 ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
 ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
 
-# Enable Corepack for Yarn 4 (required by packageManager field)
 RUN corepack enable
 
-# Copy package files and install dependencies (cached layer)
-COPY package.json yarn.lock ./
+# Copy workspace files
+COPY package.json .yarnrc.yml ./
+COPY packages/ui/package.json packages/ui/
+COPY app/package.json app/
+
 RUN yarn config set nodeLinker node-modules && yarn install
 
-# Copy source and build
-COPY . .
+COPY packages/ui/ packages/ui/
+COPY app/ app/
+
+WORKDIR /monorepo/app
 RUN rm -rf dist
 RUN yarn build
 
-# Runtime stage - Nginx to serve static files
 FROM nginx:1.29.4-alpine
 WORKDIR /usr/share/nginx/html
-
-# Remove default nginx static files
 RUN rm -rf ./*
-
-# Copy built app from build stage
-COPY --from=build /app/dist .
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /monorepo/app/dist .
+COPY app/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

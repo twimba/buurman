@@ -81,13 +81,16 @@ export const MyTeamsSection = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(team.role)}`}>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(team.role)}`}
+                      >
                         {team.isOwner && <Crown className="h-3 w-3" />}
                         {formatRole(team.role)}
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <Users className="h-3.5 w-3.5" />
-                        {team.memberCount} {team.memberCount === 1 ? 'member' : 'members'}
+                        {team.memberCount}{' '}
+                        {team.memberCount === 1 ? 'member' : 'members'}
                       </span>
                     </div>
                   </div>
@@ -128,7 +131,9 @@ export const MyTeamsSection = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(inv.role)}`}>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${roleBadgeClass(inv.role)}`}
+                        >
                           {formatRole(inv.role)}
                         </span>
                         <span>Invited by {inv.inviterName}</span>
@@ -139,11 +144,13 @@ export const MyTeamsSection = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => acceptMutation.mutate(inv.token, {
-                      onSuccess: () => {
-                        window.location.reload();
-                      },
-                    })}
+                    onClick={() =>
+                      acceptMutation.mutate(inv.token, {
+                        onSuccess: () => {
+                          window.location.reload();
+                        },
+                      })
+                    }
                     disabled={acceptMutation.isPending}
                     className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-lg transition-colors disabled:opacity-50"
                   >

@@ -194,4 +194,72 @@ public class NotificationRepository {
                 .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
                 .fetchOne(0, long.class);
     }
+
+    public PaginatedResult<Notification> findAllPaginatedUnscoped(
+            UUID teamId, String type, String channel, String status,
+            String recipientEmail, LocalDateTime dateFrom, LocalDateTime dateTo,
+            PageRequest pageRequest) {
+
+        Condition condition = DSL.trueCondition();
+
+        if (teamId != null) {
+            condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
+        }
+        if (type != null && !type.isEmpty()) {
+            condition = condition.and(NOTIFICATIONS.NOTIFICATION_TYPE.eq(type));
+        }
+        if (channel != null && !channel.isEmpty()) {
+            condition = condition.and(NOTIFICATIONS.CHANNEL.eq(channel));
+        }
+        if (status != null && !status.isEmpty()) {
+            condition = condition.and(NOTIFICATIONS.STATUS.eq(status));
+        }
+        if (recipientEmail != null && !recipientEmail.isEmpty()) {
+            condition = condition.and(NOTIFICATIONS.RECIPIENT_EMAIL.likeIgnoreCase("%" + recipientEmail + "%"));
+        }
+        if (dateFrom != null) {
+            condition = condition.and(NOTIFICATIONS.CREATED_AT.ge(dateFrom));
+        }
+        if (dateTo != null) {
+            condition = condition.and(NOTIFICATIONS.CREATED_AT.le(dateTo));
+        }
+
+        Map<String, Field<?>> sortableFields = Map.of(
+            "createdAt", NOTIFICATIONS.CREATED_AT,
+            "notificationType", NOTIFICATIONS.NOTIFICATION_TYPE,
+            "channel", NOTIFICATIONS.CHANNEL,
+            "status", NOTIFICATIONS.STATUS,
+            "recipientEmail", NOTIFICATIONS.RECIPIENT_EMAIL
+        );
+
+        return PaginationHelper.paginate(dsl, NOTIFICATIONS, condition, sortableFields,
+            NOTIFICATIONS.CREATED_AT, pageRequest, r -> mapper.toDomain(
+                (com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+    }
+
+    public Optional<Notification> findByIdentifierUnscoped(String identifier) {
+        return dsl.selectFrom(NOTIFICATIONS)
+            .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
+            .fetchOptional()
+            .map(r -> mapper.toDomain(
+                (com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+    }
+
+    public long countAll() {
+        return dsl.selectCount().from(NOTIFICATIONS).fetchOne(0, long.class);
+    }
+
+    public List<Record2<String, Integer>> countGroupedByStatus() {
+        return dsl.select(NOTIFICATIONS.STATUS, DSL.count().as("count"))
+            .from(NOTIFICATIONS)
+            .groupBy(NOTIFICATIONS.STATUS)
+            .fetch();
+    }
+
+    public List<Record2<String, Integer>> countGroupedByChannel() {
+        return dsl.select(NOTIFICATIONS.CHANNEL, DSL.count().as("count"))
+            .from(NOTIFICATIONS)
+            .groupBy(NOTIFICATIONS.CHANNEL)
+            .fetch();
+    }
 }
