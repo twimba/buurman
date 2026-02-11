@@ -78,24 +78,54 @@ services:
     networks:
       - buurman-network
 
-  localstack:
-    image: localstack/localstack:4.13.1
-    container_name: buurman-localstack
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: buurman-seaweedfs
+    entrypoint: ["/bin/sh", "/etc/seaweedfs/entrypoint.sh"]
     environment:
-      DEBUG: ${DEBUG:-0}
-      DATA_DIR: /var/lib/localstack
-      DISABLE_CORS_CHECKS: 1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-test}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-test}
     volumes:
-      - ./docker/localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh
-      - localstack-data:/var/lib/localstack
+      - ./docker/seaweedfs/entrypoint.sh:/etc/seaweedfs/entrypoint.sh:ro
+      - seaweedfs-data:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.localstack.rule=Host(`localstack.local.buurman.io`)"
-      - "traefik.http.routers.localstack.entrypoints=websecure"
-      - "traefik.http.routers.localstack.tls=true"
-      - "traefik.http.routers.localstack.middlewares=localstack-cors"
-      - "traefik.http.middlewares.localstack-cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://app.local.buurman.io"
-      - "traefik.http.services.localstack.loadbalancer.server.port=4566"
+      # S3 API (used by backend + browser for public file URLs)
+      - "traefik.http.routers.seaweedfs-s3.rule=Host(`seaweedfs.local.buurman.io`)"
+      - "traefik.http.routers.seaweedfs-s3.entrypoints=websecure"
+      - "traefik.http.routers.seaweedfs-s3.tls=true"
+      - "traefik.http.routers.seaweedfs-s3.service=seaweedfs-s3"
+      - "traefik.http.routers.seaweedfs-s3.middlewares=seaweedfs-cors"
+      - "traefik.http.middlewares.seaweedfs-cors.headers.customResponseHeaders.Access-Control-Allow-Origin=https://app.local.buurman.io"
+      - "traefik.http.services.seaweedfs-s3.loadbalancer.server.port=8333"
+      # Filer UI (file browser, embedded in backoffice)
+      - "traefik.http.routers.seaweedfs-filer.rule=Host(`seaweedfs-ui.local.buurman.io`)"
+      - "traefik.http.routers.seaweedfs-filer.entrypoints=websecure"
+      - "traefik.http.routers.seaweedfs-filer.tls=true"
+      - "traefik.http.routers.seaweedfs-filer.service=seaweedfs-filer"
+      - "traefik.http.services.seaweedfs-filer.loadbalancer.server.port=8888"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:9333/cluster/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - buurman-network
+
+  seaweedfs-init:
+    image: amazon/aws-cli:latest
+    container_name: buurman-seaweedfs-init
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/init-s3.sh"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-test}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-test}
+      AWS_DEFAULT_REGION: ${AWS_S3_REGION:-eu-west-1}
+    volumes:
+      - ./docker/seaweedfs/init-s3.sh:/init-s3.sh:ro
     networks:
       - buurman-network
 
@@ -142,8 +172,8 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_started
-      localstack:
-        condition: service_started
+      seaweedfs-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
       interval: 30s
@@ -295,7 +325,7 @@ services:
 
 volumes:
   postgres_data:
-  localstack-data:
+  seaweedfs-data:
   prometheus_data:
   grafana_data:
 

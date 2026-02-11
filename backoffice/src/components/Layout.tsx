@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -11,6 +16,7 @@ import {
   ChevronsRight,
   ChevronDown,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 import { SidebarTooltip } from "@buurman/ui";
 import { useAuth } from "../contexts/AuthContext";
@@ -20,7 +26,10 @@ import {
   MailpitIcon,
   PrometheusIcon,
   TraefikIcon,
-  LocalStackIcon,
+  SeaweedFSIcon,
+  TwilioIcon,
+  SendGridIcon,
+  AwsIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
 
@@ -33,13 +42,45 @@ const navigation = [
   { name: "Notifications", href: "/notifications", icon: Bell },
 ];
 
-const tools = [
-  { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
-  { name: "Mailpit", href: "/tools/mailpit", icon: MailpitIcon },
-  { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
-  { name: "Traefik", href: "/tools/traefik", icon: TraefikIcon },
-  { name: "LocalStack", href: "/tools/localstack", icon: LocalStackIcon },
-];
+const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
+
+type ToolItem = {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  external?: boolean;
+};
+
+const getTools = (): ToolItem[] => {
+  const local = isLocalEnv();
+  return [
+    { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
+    { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
+    { name: "Traefik", href: "/tools/traefik", icon: TraefikIcon },
+    ...(local
+      ? [{ name: "Mailpit", href: "/tools/mailpit", icon: MailpitIcon }]
+      : [
+          { name: "Twilio", href: "/tools/twilio", icon: TwilioIcon },
+          {
+            name: "SendGrid",
+            href: "https://app.sendgrid.com",
+            icon: SendGridIcon,
+            external: true,
+          },
+        ]),
+
+    ...(local
+      ? [{ name: "SeaweedFS", href: "/tools/seaweedfs", icon: SeaweedFSIcon }]
+      : [
+          {
+            name: "AWS S3",
+            href: "https://console.aws.amazon.com/s3",
+            icon: AwsIcon,
+            external: true,
+          },
+        ]),
+  ];
+};
 
 const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   flex items-center gap-3 px-3 py-2.5 rounded-lg
@@ -111,7 +152,10 @@ export const Layout = () => {
       {/* Sidebar — subtle blue-tinted background to distinguish from the app */}
       <aside
         className={`fixed top-0 left-0 h-full ${sidebarWidth} z-40 transition-all duration-300 ease-in-out`}
-        style={{ background: 'var(--bo-sidebar-bg)', borderRight: '1px solid var(--bo-sidebar-border)' }}
+        style={{
+          background: "var(--bo-sidebar-bg)",
+          borderRight: "1px solid var(--bo-sidebar-border)",
+        }}
       >
         <style>{`
           :root {
@@ -133,7 +177,7 @@ export const Layout = () => {
           {/* Logo / Title */}
           <div
             className="flex items-center h-16 border-b border-[#cdd3e6] dark:border-[#1c2040] px-3"
-            style={{ justifyContent: 'space-between' }}
+            style={{ justifyContent: "space-between" }}
           >
             <div className="flex items-center gap-2.5" style={{ minWidth: 0 }}>
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#5c7cfa] to-[#4263eb] flex items-center justify-center flex-shrink-0">
@@ -208,18 +252,16 @@ export const Layout = () => {
                           <span className="truncate">Grafana</span>
                         )}
                       </NavLink>
-                      {!collapsed &&
-                        dashboards &&
-                        dashboards.length > 0 && (
-                          <button
-                            onClick={() => setGrafanaOpen(!grafanaOpen)}
-                            className="p-1 mr-1 rounded text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#5c7cfa]/5 transition-colors"
-                          >
-                            <ChevronDown
-                              className={`h-3.5 w-3.5 transition-transform duration-200 ${grafanaOpen ? "rotate-180" : ""}`}
-                            />
-                          </button>
-                        )}
+                      {!collapsed && dashboards && dashboards.length > 0 && (
+                        <button
+                          onClick={() => setGrafanaOpen(!grafanaOpen)}
+                          className="p-1 mr-1 rounded text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#5c7cfa]/5 transition-colors"
+                        >
+                          <ChevronDown
+                            className={`h-3.5 w-3.5 transition-transform duration-200 ${grafanaOpen ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                      )}
                       {!collapsed && dashboardsLoading && (
                         <Loader2 className="h-3 w-3 mr-2 animate-spin text-[#9ca0b8]" />
                       )}
@@ -251,20 +293,37 @@ export const Layout = () => {
                     )}
                 </li>
                 {/* Other tools */}
-                {tools.map((item) => (
+                {getTools().map((item) => (
                   <li key={item.name}>
                     <SidebarTooltip label={item.name} show={collapsed}>
-                      <NavLink
-                        to={item.href}
-                        className={({ isActive }) =>
-                          toolLinkClass(isActive, collapsed)
-                        }
-                      >
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
-                        {!collapsed && (
-                          <span className="truncate">{item.name}</span>
-                        )}
-                      </NavLink>
+                      {item.external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={toolLinkClass(false, collapsed)}
+                        >
+                          <item.icon className="h-4 w-4 flex-shrink-0" />
+                          {!collapsed && (
+                            <>
+                              <span className="truncate">{item.name}</span>
+                              <ExternalLink className="h-3 w-3 ml-auto flex-shrink-0 opacity-50" />
+                            </>
+                          )}
+                        </a>
+                      ) : (
+                        <NavLink
+                          to={item.href}
+                          className={({ isActive }) =>
+                            toolLinkClass(isActive, collapsed)
+                          }
+                        >
+                          <item.icon className="h-4 w-4 flex-shrink-0" />
+                          {!collapsed && (
+                            <span className="truncate">{item.name}</span>
+                          )}
+                        </NavLink>
+                      )}
                     </SidebarTooltip>
                   </li>
                 ))}

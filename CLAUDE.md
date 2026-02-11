@@ -19,7 +19,7 @@ Buurman is a property management dashboard for small landlords (properties, tena
 - **Backend**: Java 21, Spring Boot 4.0.2, Spring Security, JOOQ 3.20, Flyway, PostgreSQL
 - **Frontend**: React 19, TypeScript, Vite 7, TanStack React Query 5, Tailwind CSS 4
 - **Auth**: Keycloak 26 with JWT (OAuth2 Resource Server)
-- **Storage**: AWS SDK v2 / S3 (LocalStack for dev)
+- **Storage**: AWS SDK v2 / S3 (SeaweedFS for dev)
 - **Email**: Spring Mail + Thymeleaf templates (MailHog for dev)
 - **Jobs**: Quartz Scheduler
 - **Docs**: SpringDoc OpenAPI 3.0.1, iText7 (PDF), OpenCSV
@@ -50,7 +50,8 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | traefik | https://traefik.local.buurman.io | Reverse proxy dashboard |
 | postgres | postgresql.local.buurman.io:5432 | Database (PostgreSQL 18, TCP via Traefik) |
 | keycloak | https://keycloak.local.buurman.io | Authentication |
-| localstack | https://localstack.local.buurman.io | S3 storage (dev) |
+| seaweedfs | https://seaweedfs.local.buurman.io | S3 storage (dev) |
+| seaweedfs-ui | https://seaweedfs-ui.local.buurman.io | S3 file browser (dev) |
 | mailpit | https://mailpit.local.buurman.io (SMTP: port 1025) | Email UI / SMTP (dev) |
 | backend | https://api.local.buurman.io | Spring Boot API |
 | app | https://app.local.buurman.io | React app |
@@ -148,7 +149,7 @@ src/
 
 **Frontend API**: Axios instance with Keycloak token interceptor. React Query hooks per resource with automatic cache invalidation on mutations.
 
-**Document Storage**: S3 with metadata in `documents` + `photos` tables. LocalStack uses direct URLs; production uses presigned URLs.
+**Document Storage**: S3 with metadata in `documents` + `photos` tables. SeaweedFS uses direct URLs; production uses presigned URLs.
 
 ## Database Schema Conventions
 
@@ -225,4 +226,4 @@ src/
 - **JWT validation**: Check Keycloak running at `https://keycloak.local.buurman.io` and realm configured
 - **CORS errors**: Verify SecurityConfig allowed origin includes `https://app.local.buurman.io`
 - **Flyway failure**: Check syntax; rollback may need manual intervention
-- **S3/images**: LocalStack uses direct URLs via `https://localstack.local.buurman.io`, production uses presigned URLs
+- **S3/images**: SeaweedFS uses direct URLs via `https://seaweedfs.local.buurman.io`, production uses presigned URLs

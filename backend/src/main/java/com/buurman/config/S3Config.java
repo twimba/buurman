@@ -36,7 +36,7 @@ public class S3Config {
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
-                .forcePathStyle(true) // Required for LocalStack
+                .forcePathStyle(true) // Required for S3-compatible storage (SeaweedFS, etc.)
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class S3Config {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
                 .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true) // Required for LocalStack
+                        .pathStyleAccessEnabled(true) // Required for S3-compatible storage (SeaweedFS, etc.)
                         .build())
                 .build();
     }

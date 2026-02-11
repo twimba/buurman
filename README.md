@@ -13,7 +13,7 @@
 | **Backend** | Java 21, Spring Boot 4.0.2, Spring Security, JOOQ 3.20, Flyway, PostgreSQL 18 |
 | **Frontend** | React 19, TypeScript 5.9, Vite 7, TanStack React Query 5, Tailwind CSS 4 |
 | **Auth** | Keycloak 26 (OAuth2/OIDC, JWT) |
-| **Storage** | AWS SDK v2 / S3 (LocalStack for dev) |
+| **Storage** | AWS SDK v2 / S3 (SeaweedFS for dev) |
 | **Email** | Spring Mail + Thymeleaf templates (MailHog for dev) |
 | **Jobs** | Quartz Scheduler |
 | **Docs** | SpringDoc OpenAPI 3, iText7 (PDF generation), OpenCSV |
@@ -49,7 +49,7 @@ Start infrastructure services, then run backend and app locally:
 
 ```bash
 # Infrastructure (database, auth, storage, email)
-docker compose up -d postgres keycloak localstack mailhog
+docker compose up -d postgres keycloak seaweedfs mailpit
 
 # Terminal 1 — Backend (port 8081)
 cd backend && mvn spring-boot:run
@@ -80,7 +80,7 @@ cd app && yarn install && yarn dev
 │  (Vite/TS)  │     │   REST API   │     │   (JOOQ)    │
 └──────┬──────┘     └──────┬───────┘     └─────────────┘
        │                   │
-       │ OAuth2/JWT        ├──▶ S3 (LocalStack)
+       │ OAuth2/JWT        ├──▶ S3 (SeaweedFS)
        ▼                   ├──▶ SMTP (MailHog)
 ┌─────────────┐            └──▶ Quartz Jobs
 │  Keycloak   │
@@ -137,7 +137,7 @@ buurman/
 ├── docker/                     # Docker init scripts
 │   ├── grafana/                #   Grafana provisioning & dashboards
 │   ├── keycloak/               #   Realm import configuration
-│   ├── localstack/             #   S3 bucket init scripts
+│   ├── seaweedfs/              #   S3 bucket init scripts
 │   ├── postgres/               #   Database init scripts
 │   └── prometheus/             #   Prometheus configuration
 ├── docs/                       # Documentation
@@ -176,7 +176,7 @@ yarn lint --fix  # ESLint auto-fix
 
 ```bash
 docker compose up -d           # Start all services
-docker compose up -d postgres keycloak localstack mailhog  # Infrastructure only
+docker compose up -d postgres keycloak seaweedfs mailpit  # Infrastructure only
 docker compose down            # Stop services
 docker compose down -v         # Stop + delete volumes (full reset)
 docker compose logs -f backend # Tail backend logs
@@ -225,7 +225,7 @@ Copy `.env.example` to `.env`. All defaults work for local development. Key vari
 | JWT validation error | Verify Keycloak is running and realm is configured |
 | CORS errors | Check `SecurityConfig` allowed origin setting |
 | Flyway migration failure | Check SQL syntax; rollback may need manual intervention |
-| Images not loading | LocalStack uses direct URLs; production uses presigned URLs |
+| Images not loading | SeaweedFS uses direct URLs; production uses presigned URLs |
 
 ## Documentation
 

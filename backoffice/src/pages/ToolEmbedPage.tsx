@@ -1,26 +1,42 @@
 import { useParams, useSearchParams } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 
+const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
+
 const getToolUrl = (subdomain: string) => {
   const hostname = window.location.hostname;
   const base = hostname.replace(/^backoffice\./, "");
   return `${window.location.protocol}//${subdomain}.${base}`;
 };
 
-export const TOOLS_CONFIG: Record<string, { name: string; subdomain: string }> =
-  {
+type ToolConfig = { name: string } & (
+  | { subdomain: string; url?: never }
+  | { url: string; subdomain?: never }
+);
+
+const getToolsConfig = (): Record<string, ToolConfig> => {
+  const local = isLocalEnv();
+  return {
     grafana: { name: "Grafana", subdomain: "grafana" },
     keycloak: { name: "Keycloak", subdomain: "keycloak" },
-    mailpit: { name: "Mailpit", subdomain: "mailpit" },
     prometheus: { name: "Prometheus", subdomain: "prometheus" },
     traefik: { name: "Traefik", subdomain: "traefik" },
-    localstack: { name: "LocalStack", subdomain: "localstack" },
+    ...(local
+      ? {
+          mailpit: { name: "Mailpit", subdomain: "mailpit" },
+          seaweedfs: { name: "SeaweedFS", subdomain: "seaweedfs-ui" },
+        }
+      : {
+          twilio: { name: "Twilio", url: "https://console.twilio.com" },
+        }),
   };
+};
 
 export const ToolEmbedPage = () => {
   const { toolKey } = useParams<{ toolKey: string }>();
   const [searchParams] = useSearchParams();
-  const tool = toolKey ? TOOLS_CONFIG[toolKey] : undefined;
+  const config = getToolsConfig();
+  const tool = toolKey ? config[toolKey] : undefined;
 
   if (!tool) {
     return (
@@ -30,7 +46,7 @@ export const ToolEmbedPage = () => {
     );
   }
 
-  const baseUrl = getToolUrl(tool.subdomain);
+  const baseUrl = tool.url ?? getToolUrl(tool.subdomain!);
   const path = searchParams.get("path");
   const url = path ? `${baseUrl}${path}?kiosk` : baseUrl;
 

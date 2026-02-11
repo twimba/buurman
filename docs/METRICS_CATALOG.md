@@ -176,7 +176,7 @@ Metrics observed from the backend HTTP layer for frontend API patterns.
 
 ## 4. External Integrations Dashboard
 
-### 4.1 S3/LocalStack Storage Metrics (custom)
+### 4.1 S3 Storage Metrics (custom)
 
 | Metric | Type | Labels | Description | Panel |
 |--------|------|--------|-------------|-------|
