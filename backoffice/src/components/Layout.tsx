@@ -10,6 +10,7 @@ import {
   Users,
   UserCog,
   Bell,
+  MessageSquare,
   LogOut,
   Shield,
   ChevronsLeft,
@@ -40,6 +41,7 @@ const navigation = [
   { name: "Teams", href: "/teams", icon: Users },
   { name: "Users", href: "/users", icon: UserCog },
   { name: "Notifications", href: "/notifications", icon: Bell },
+  { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");

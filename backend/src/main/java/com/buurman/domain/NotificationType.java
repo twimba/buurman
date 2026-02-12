@@ -6,6 +6,7 @@ import java.util.List;
 public enum NotificationType {
     WELCOME("Welcome", false),
     VERIFICATION_CODE("Verification Code", false),
+    PHONE_VERIFICATION_CODE("Phone Verification Code", false),
     TEAM_INVITATION("Team Invitation", false),
     INVITATION_ACCEPTED("Invitation Accepted", false),
     PASSWORD_CHANGED("Password Changed", false),

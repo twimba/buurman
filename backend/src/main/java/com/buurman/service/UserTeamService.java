@@ -22,25 +22,25 @@ public class UserTeamService {
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final PhoneVerificationService phoneVerificationService;
+    private final PhoneNumberPolicyService phoneNumberPolicyService;
 
     public UserTeamService(UserRepository userRepository, TeamRepository teamRepository,
-                          TeamMemberRepository teamMemberRepository) {
+                          TeamMemberRepository teamMemberRepository,
+                          PhoneVerificationService phoneVerificationService,
+                          PhoneNumberPolicyService phoneNumberPolicyService) {
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.phoneVerificationService = phoneVerificationService;
+        this.phoneNumberPolicyService = phoneNumberPolicyService;
     }
 
     public UserProfileResponse getCurrentUserProfile(UserPrincipal principal) {
         User user = userRepository.findById(principal.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new UserProfileResponse(
-            user.getIdentifier(),
-            user.getEmail(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getPhone()
-        );
+        return toProfileResponse(user);
     }
 
     @Transactional
@@ -48,17 +48,42 @@ public class UserTeamService {
         User user = userRepository.findById(principal.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found"));
 
+        String oldPhone = user.getPhone();
+        String newPhone = request.phone();
+
+        // Validate phone against policy before saving
+        if (newPhone != null && !newPhone.isBlank()) {
+            phoneNumberPolicyService.validate(newPhone);
+        }
+
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
-        user.setPhone(request.phone());
+        user.setPhone(newPhone);
+
+        // If phone changed or removed, clear verification
+        boolean phoneChanged = !java.util.Objects.equals(oldPhone, newPhone);
+        if (phoneChanged) {
+            user.setPhoneVerifiedAt(null);
+        }
+
         user = userRepository.save(user);
 
+        // If phone changed to a new (non-null) value, trigger verification
+        if (phoneChanged && newPhone != null && !newPhone.isBlank()) {
+            phoneVerificationService.sendVerificationCode(user.getId());
+        }
+
+        return toProfileResponse(user);
+    }
+
+    private UserProfileResponse toProfileResponse(User user) {
         return new UserProfileResponse(
             user.getIdentifier(),
             user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
-            user.getPhone()
+            user.getPhone(),
+            user.getPhoneVerifiedAt() != null
         );
     }
 

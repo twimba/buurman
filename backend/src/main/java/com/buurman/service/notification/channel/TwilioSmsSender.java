@@ -79,6 +79,7 @@ public class TwilioSmsSender implements NotificationChannelSender {
         return switch (templateName) {
             case "welcome" -> "Buurman: Welcome, {userName}! Your account is ready at {baseUrl}";
             case "verification-code" -> "Buurman: Your code is {verificationCode}. Expires in 15 min.";
+            case "phone-verification-code" -> "Buurman: Your phone verification code is {verificationCode}. Expires in {expiresMinutes} min.";
             case "team-invitation" -> "Buurman: {inviterName} invited you to {teamName}. Check your email.";
             case "invitation-accepted" -> "Buurman: {memberName} joined your team {teamName}.";
             case "password-changed" -> "Buurman: Your password was changed. Contact support if unexpected.";

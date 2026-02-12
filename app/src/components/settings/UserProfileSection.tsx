@@ -1,14 +1,102 @@
-import { useState } from 'react';
-import { User, Mail, Lock, Camera, Save, X, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  User,
+  Mail,
+  Lock,
+  Camera,
+  Save,
+  X,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 import {
   useCurrentUser,
   useUpdateUserProfile,
+  useVerifyPhone,
+  useResendPhoneVerification,
+  useCancelPhoneVerification,
+  usePhonePolicy,
 } from '../../hooks/useUserPreferencesHooks';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
+import { parsePhoneNumber } from 'libphonenumber-js/max';
+import type { PhoneNumberPolicyResponse } from '@/api/users';
+
+const NUMBER_TYPE_LABELS: Record<string, string> = {
+  MOBILE: 'mobile',
+  FIXED_LINE: 'fixed line',
+  FIXED_LINE_OR_MOBILE: 'fixed line or mobile',
+  VOIP: 'VoIP',
+  TOLL_FREE: 'toll-free',
+  PREMIUM_RATE: 'premium rate',
+  SHARED_COST: 'shared cost',
+  PERSONAL_NUMBER: 'personal number',
+  PAGER: 'pager',
+  UAN: 'UAN',
+};
+
+function validatePhoneAgainstPolicy(
+  phone: string,
+  policy: PhoneNumberPolicyResponse
+): string | null {
+  try {
+    const parsed = parsePhoneNumber(phone);
+    if (!parsed) return null;
+
+    const country = parsed.country;
+    if (!country) return null;
+
+    const allowedTypes = policy.policyMatrix[country];
+    if (!allowedTypes || allowedTypes.length === 0) {
+      return 'Phone numbers from this country are not allowed';
+    }
+
+    const phoneType = parsed.getType();
+    if (phoneType) {
+      const mappedType = phoneType
+        .replace(/_/g, ' ')
+        .replace(/\s+/g, '_')
+        .toUpperCase();
+      const typeMap: Record<string, string> = {
+        MOBILE: 'MOBILE',
+        FIXED_LINE: 'FIXED_LINE',
+        FIXED_LINE_OR_MOBILE: 'FIXED_LINE_OR_MOBILE',
+        VOIP: 'VOIP',
+        TOLL_FREE: 'TOLL_FREE',
+        PREMIUM_RATE: 'PREMIUM_RATE',
+        SHARED_COST: 'SHARED_COST',
+        PERSONAL_NUMBER: 'PERSONAL_NUMBER',
+        PAGER: 'PAGER',
+        UAN: 'UAN',
+      };
+      const policyType = typeMap[mappedType];
+      if (policyType && !allowedTypes.includes(policyType)) {
+        const label =
+          NUMBER_TYPE_LABELS[policyType] || policyType.toLowerCase();
+        return `This phone number type (${label}) is not allowed`;
+      }
+    }
+  } catch {
+    // Parse failed — let server-side validation handle it
+  }
+  return null;
+}
+
+function maskPhone(phone: string): string {
+  if (phone.length <= 6) return phone;
+  return (
+    phone.slice(0, 4) + '\u2022'.repeat(phone.length - 6) + phone.slice(-2)
+  );
+}
 
 export const UserProfileSection = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
   const updateProfileMutation = useUpdateUserProfile();
+  const verifyPhoneMutation = useVerifyPhone();
+  const resendMutation = useResendPhoneVerification();
+  const cancelVerificationMutation = useCancelPhoneVerification();
+  const { data: phonePolicy } = usePhonePolicy();
+
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
     firstName: '',
@@ -30,6 +118,69 @@ export const UserProfileSection = () => {
     });
   }
 
+  // Phone verification state
+  const [showVerification, setShowVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const COOLDOWN_KEY = 'buurman-phone-verify-cooldown';
+  const [cooldown, setCooldown] = useState(() => {
+    try {
+      const expiresAt = Number(localStorage.getItem(COOLDOWN_KEY) || 0);
+      const remaining = Math.ceil((expiresAt - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const codeInputRef = useRef<HTMLInputElement>(null);
+
+  const startCooldown = useCallback(() => {
+    const seconds = 60;
+    setCooldown(seconds);
+    try {
+      localStorage.setItem(COOLDOWN_KEY, String(Date.now() + seconds * 1000));
+    } catch { /* noop */ }
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          try { localStorage.removeItem(COOLDOWN_KEY); } catch { /* noop */ }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  // Resume cooldown tick on mount if time remains
+  useEffect(() => {
+    if (cooldown > 0 && !cooldownRef.current) {
+      cooldownRef.current = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            if (cooldownRef.current) clearInterval(cooldownRef.current);
+            cooldownRef.current = null;
+            try { localStorage.removeItem(COOLDOWN_KEY); } catch { /* noop */ }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+      cooldownRef.current = null;
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-focus code input when verification UI shows
+  useEffect(() => {
+    if (showVerification && codeInputRef.current) {
+      codeInputRef.current.focus();
+    }
+  }, [showVerification]);
+
   const handleStartEdit = () => {
     setIsEditing(true);
   };
@@ -45,6 +196,8 @@ export const UserProfileSection = () => {
       });
     }
     setIsEditing(false);
+    setShowVerification(false);
+    setVerificationCode('');
   };
 
   const [phoneError, setPhoneError] = useState('');
@@ -55,6 +208,14 @@ export const UserProfileSection = () => {
       setPhoneError(phoneErr);
       return;
     }
+    // Validate against phone number policy (country + type)
+    if (userData.phone && phonePolicy) {
+      const policyErr = validatePhoneAgainstPolicy(userData.phone, phonePolicy);
+      if (policyErr) {
+        setPhoneError(policyErr);
+        return;
+      }
+    }
     setPhoneError('');
     updateProfileMutation.mutate(
       {
@@ -63,9 +224,50 @@ export const UserProfileSection = () => {
         phone: userData.phone || null,
       },
       {
-        onSuccess: () => setIsEditing(false),
+        onSuccess: (data) => {
+          setIsEditing(false);
+          // If phone is set but not verified, show verification UI
+          if (data.phone && !data.phoneVerified) {
+            setShowVerification(true);
+            setVerificationCode('');
+            startCooldown();
+          } else {
+            setShowVerification(false);
+          }
+        },
       }
     );
+  };
+
+  const handleVerifyCode = useCallback(
+    (code: string) => {
+      if (code.length !== 6) return;
+      verifyPhoneMutation.mutate(code, {
+        onSuccess: () => {
+          setShowVerification(false);
+          setVerificationCode('');
+        },
+      });
+    },
+    [verifyPhoneMutation]
+  );
+
+  const handleCodeChange = (value: string) => {
+    const cleaned = value.replace(/\D/g, '').slice(0, 6);
+    setVerificationCode(cleaned);
+    if (cleaned.length === 6) {
+      handleVerifyCode(cleaned);
+    }
+  };
+
+  const handleResend = () => {
+    if (cooldown > 0) return;
+    resendMutation.mutate(undefined, {
+      onSuccess: () => {
+        setVerificationCode('');
+        startCooldown();
+      },
+    });
   };
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +277,16 @@ export const UserProfileSection = () => {
       setUserData({ ...userData, avatarUrl: previewUrl });
     }
   };
+
+  const phoneVerified = currentUser?.phoneVerified ?? false;
+  const hasPhone = !!currentUser?.phone;
+  const needsVerification = hasPhone && !phoneVerified;
+
+  const allowedCountryCodes = phonePolicy
+    ? Object.keys(phonePolicy.policyMatrix).filter(
+        (code) => phonePolicy.policyMatrix[code]?.length > 0
+      )
+    : undefined;
 
   if (isLoading) {
     return (
@@ -203,9 +415,24 @@ export const UserProfileSection = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                Phone Number
-              </label>
+              <div className="flex items-center gap-2 mb-1">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db]">
+                  Phone Number
+                </label>
+                {hasPhone &&
+                  !isEditing &&
+                  (phoneVerified ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                      <AlertTriangle className="h-3 w-3" />
+                      Unverified
+                    </span>
+                  ))}
+              </div>
               <PhoneInput
                 value={userData.phone || null}
                 onChange={(e164) => {
@@ -214,8 +441,85 @@ export const UserProfileSection = () => {
                 }}
                 disabled={!isEditing}
                 error={phoneError}
+                allowedCountryCodes={allowedCountryCodes}
               />
             </div>
+
+            {/* Phone Verification UI */}
+            {!isEditing && (needsVerification || showVerification) && (
+              <div className="rounded-lg border border-amber-200 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-950/20 p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                      Verify your phone number
+                    </p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                      We sent a 6-digit code to{' '}
+                      {maskPhone(currentUser?.phone || '')}. SMS notifications
+                      won&apos;t be sent until your phone is verified.
+                    </p>
+
+                    <div className="mt-3 flex items-center gap-3">
+                      <input
+                        ref={codeInputRef}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="000000"
+                        value={verificationCode}
+                        onChange={(e) => handleCodeChange(e.target.value)}
+                        disabled={verifyPhoneMutation.isPending}
+                        className="w-32 px-3 py-2 text-center text-lg font-mono tracking-[0.3em] border border-amber-300 dark:border-amber-700 rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:ring-2 focus:ring-amber-400 focus:border-transparent disabled:opacity-50"
+                      />
+                      {verifyPhoneMutation.isPending && (
+                        <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
+                      )}
+                    </div>
+
+                    {verifyPhoneMutation.isError && (
+                      <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+                        Invalid or expired code. Please try again.
+                      </p>
+                    )}
+
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        onClick={handleResend}
+                        disabled={cooldown > 0 || resendMutation.isPending}
+                        className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 disabled:text-amber-400 dark:disabled:text-amber-600 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {resendMutation.isPending
+                          ? 'Sending...'
+                          : cooldown > 0
+                            ? `Resend code in ${cooldown}s`
+                            : "Didn't receive a code? Resend"}
+                      </button>
+                      <span className="text-amber-300 dark:text-amber-700">
+                        |
+                      </span>
+                      <button
+                        onClick={() => {
+                          cancelVerificationMutation.mutate(undefined, {
+                            onSuccess: () => {
+                              setShowVerification(false);
+                              setVerificationCode('');
+                              setIsEditing(true);
+                            },
+                          });
+                        }}
+                        disabled={cancelVerificationMutation.isPending}
+                        className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 disabled:text-amber-400 dark:disabled:text-amber-600 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {cancelVerificationMutation.isPending
+                          ? 'Cancelling...'
+                          : 'Change number'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {isEditing && (
               <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">

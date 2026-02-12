@@ -28,6 +28,58 @@ export const useUpdateUserProfile = () => {
   });
 };
 
+export const useVerifyPhone = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (code: string) => usersApi.verifyPhone(code),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      showToast('Phone number verified successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useResendPhoneVerification = () => {
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: usersApi.resendPhoneVerification,
+    onSuccess: () => {
+      showToast('Verification code sent', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useCancelPhoneVerification = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: usersApi.cancelPhoneVerification,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const usePhonePolicy = () => {
+  return useQuery({
+    queryKey: ['phonePolicy'],
+    queryFn: usersApi.getPhonePolicy,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
 export const useUserPreferences = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({

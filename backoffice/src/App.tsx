@@ -10,6 +10,7 @@ import { UserDetailPage } from "./pages/UserDetailPage";
 import { NotificationsPage } from "./pages/NotificationsPage";
 import { NotificationDetailPage } from "./pages/NotificationDetailPage";
 import { ToolEmbedPage } from "./pages/ToolEmbedPage";
+import { SmsPolicyPage } from "./pages/SmsPolicyPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                 path="/notifications/:identifier"
                 element={<NotificationDetailPage />}
               />
+              <Route path="/sms-policy" element={<SmsPolicyPage />} />
               <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
             </Route>
           </Route>

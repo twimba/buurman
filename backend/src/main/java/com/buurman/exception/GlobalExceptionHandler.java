@@ -50,6 +50,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
     }
 
+    @ExceptionHandler(PhoneNumberPolicyException.class)
+    public ResponseEntity<Map<String, Object>> handlePhoneNumberPolicy(PhoneNumberPolicyException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "PHONE_POLICY_VIOLATION", ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
-import type { CountryCode } from 'libphonenumber-js';
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js/max';
+import type { CountryCode } from 'libphonenumber-js/max';
 import {
   countriesWithCallingCode,
   type CountryWithCallingCode,
@@ -13,6 +13,7 @@ interface PhoneInputProps {
   defaultCountryCode?: string;
   disabled?: boolean;
   error?: string;
+  allowedCountryCodes?: string[];
 }
 
 export const validatePhoneE164 = (
@@ -29,6 +30,7 @@ export const PhoneInput = ({
   defaultCountryCode = 'NL',
   disabled = false,
   error,
+  allowedCountryCodes,
 }: PhoneInputProps) => {
   const [selectedCountryCode, setSelectedCountryCode] =
     useState<string>(defaultCountryCode);
@@ -42,11 +44,17 @@ export const PhoneInput = ({
   const listRef = useRef<HTMLDivElement>(null);
   const isInternalChange = useRef(false);
 
-  const selectedCountry = countriesWithCallingCode.find(
-    (c) => c.code === selectedCountryCode
-  );
+  const availableCountries = allowedCountryCodes
+    ? countriesWithCallingCode.filter((c) =>
+        allowedCountryCodes.includes(c.code)
+      )
+    : countriesWithCallingCode;
 
-  const filtered = countriesWithCallingCode.filter(
+  const selectedCountry =
+    availableCountries.find((c) => c.code === selectedCountryCode) ||
+    countriesWithCallingCode.find((c) => c.code === selectedCountryCode);
+
+  const filtered = availableCountries.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.code.toLowerCase().includes(search.toLowerCase()) ||

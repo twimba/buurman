@@ -262,7 +262,21 @@ public class NotificationService {
     private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {
         return switch (channel) {
             case EMAIL -> request.recipientEmail() != null && !request.recipientEmail().isBlank();
-            case SMS -> request.recipientPhone() != null && !request.recipientPhone().isBlank();
+            case SMS -> {
+                if (request.recipientPhone() == null || request.recipientPhone().isBlank()) {
+                    yield false;
+                }
+                // Allow phone verification SMS to unverified phones
+                if (request.notificationType() == NotificationType.PHONE_VERIFICATION_CODE) {
+                    yield true;
+                }
+                // Block other SMS to users with unverified phones
+                if (request.recipientUserId() != null) {
+                    User user = userRepository.findById(request.recipientUserId()).orElse(null);
+                    yield user != null && user.getPhoneVerifiedAt() != null;
+                }
+                yield true; // Non-user SMS (e.g. tenant notifications)
+            }
         };
     }
 }

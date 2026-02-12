@@ -182,6 +182,13 @@
             <artifactId>twilio</artifactId>
             <version>10.6.4</version>
         </dependency>
+
+        <!-- Phone number validation -->
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>8.13.52</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>

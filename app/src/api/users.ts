@@ -6,6 +6,7 @@ export interface UserProfileResponse {
   firstName: string;
   lastName: string;
   phone: string | null;
+  phoneVerified: boolean;
 }
 
 export interface UpdateUserProfileRequest {
@@ -109,6 +110,34 @@ export const setDefaultTeam = async (
 
 export const leaveTeam = async (teamIdentifier: string): Promise<void> => {
   await client.post(`/users/teams/${teamIdentifier}/leave`);
+};
+
+// Phone verification
+export const verifyPhone = async (
+  code: string
+): Promise<UserProfileResponse> => {
+  const response = await client.post('/users/me/phone/verify', { code });
+  return response.data;
+};
+
+export const resendPhoneVerification = async (): Promise<void> => {
+  await client.post('/users/me/phone/resend-verification');
+};
+
+export const cancelPhoneVerification =
+  async (): Promise<UserProfileResponse> => {
+    const response = await client.post('/users/me/phone/cancel-verification');
+    return response.data;
+  };
+
+// Phone number policy
+export interface PhoneNumberPolicyResponse {
+  policyMatrix: Record<string, string[]>;
+}
+
+export const getPhonePolicy = async (): Promise<PhoneNumberPolicyResponse> => {
+  const response = await client.get('/users/phone-policy');
+  return response.data;
 };
 
 // User preferences

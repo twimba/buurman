@@ -3,9 +3,14 @@ package com.buurman.controller;
 import com.buurman.dto.request.SetDefaultTeamRequest;
 import com.buurman.dto.request.SwitchTeamRequest;
 import com.buurman.dto.request.UpdateUserProfileRequest;
+import com.buurman.dto.request.VerifyPhoneRequest;
+import com.buurman.domain.PhoneNumberPolicy;
+import com.buurman.dto.response.PhoneNumberPolicyResponse;
 import com.buurman.dto.response.UserProfileResponse;
 import com.buurman.dto.response.UserTeamResponse;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.PhoneNumberPolicyService;
+import com.buurman.service.PhoneVerificationService;
 import com.buurman.service.UserTeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,9 +29,15 @@ import java.util.List;
 public class UserController {
 
     private final UserTeamService userTeamService;
+    private final PhoneVerificationService phoneVerificationService;
+    private final PhoneNumberPolicyService phoneNumberPolicyService;
 
-    public UserController(UserTeamService userTeamService) {
+    public UserController(UserTeamService userTeamService,
+                          PhoneVerificationService phoneVerificationService,
+                          PhoneNumberPolicyService phoneNumberPolicyService) {
         this.userTeamService = userTeamService;
+        this.phoneVerificationService = phoneVerificationService;
+        this.phoneNumberPolicyService = phoneNumberPolicyService;
     }
 
     @Operation(summary = "Get current user profile", description = "Get the current user's profile information")
@@ -40,6 +51,33 @@ public class UserController {
     public UserProfileResponse updateProfile(@AuthenticationPrincipal UserPrincipal principal,
                                              @Valid @RequestBody UpdateUserProfileRequest request) {
         return userTeamService.updateUserProfile(request, principal);
+    }
+
+    @Operation(summary = "Verify phone number", description = "Verify phone number with SMS code")
+    @PostMapping("/me/phone/verify")
+    public UserProfileResponse verifyPhone(@AuthenticationPrincipal UserPrincipal principal,
+                                           @Valid @RequestBody VerifyPhoneRequest request) {
+        return phoneVerificationService.verifyPhone(principal.getUserId(), request.code());
+    }
+
+    @Operation(summary = "Resend phone verification code", description = "Resend SMS verification code (rate limited)")
+    @PostMapping("/me/phone/resend-verification")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resendPhoneVerification(@AuthenticationPrincipal UserPrincipal principal) {
+        phoneVerificationService.resendVerificationCode(principal.getUserId());
+    }
+
+    @Operation(summary = "Cancel phone verification", description = "Cancel pending phone verification to allow changing the number")
+    @PostMapping("/me/phone/cancel-verification")
+    public UserProfileResponse cancelPhoneVerification(@AuthenticationPrincipal UserPrincipal principal) {
+        return phoneVerificationService.cancelVerification(principal.getUserId());
+    }
+
+    @Operation(summary = "Get phone number policy", description = "Get the current phone number policy for client-side validation")
+    @GetMapping("/phone-policy")
+    public PhoneNumberPolicyResponse getPhonePolicy() {
+        PhoneNumberPolicy policy = phoneNumberPolicyService.getPolicy();
+        return new PhoneNumberPolicyResponse(policy.getPolicyMatrix());
     }
 
     @Operation(summary = "Get user's teams", description = "List all teams the current user belongs to")

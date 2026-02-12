@@ -68,6 +68,8 @@ public class UserRepository {
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
                             ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
+                    .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
+                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.CREATED_AT, now)
                     .set(USERS.UPDATED_AT, now)
                     .execute();
@@ -88,6 +90,8 @@ public class UserRepository {
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
                             ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
+                    .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
+                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.UPDATED_AT, now)
                     .where(USERS.ID.eq(user.getId()))
                     .execute();
@@ -150,6 +154,24 @@ public class UserRepository {
         LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
         dsl.update(USERS)
                 .set(USERS.EMAIL_VERIFIED_AT, now)
+                .set(USERS.UPDATED_AT, now)
+                .where(USERS.ID.eq(userId))
+                .execute();
+    }
+
+    public void updatePhoneVerifiedAt(UUID userId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .set(USERS.PHONE_VERIFIED_AT, now)
+                .set(USERS.UPDATED_AT, now)
+                .where(USERS.ID.eq(userId))
+                .execute();
+    }
+
+    public void clearPhoneVerifiedAt(UUID userId) {
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        dsl.update(USERS)
+                .setNull(USERS.PHONE_VERIFIED_AT)
                 .set(USERS.UPDATED_AT, now)
                 .where(USERS.ID.eq(userId))
                 .execute();

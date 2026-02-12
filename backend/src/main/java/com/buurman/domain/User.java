@@ -15,6 +15,7 @@ public class User {
     private UUID activeTeamId;
     private String phone;
     private Instant emailVerifiedAt;
+    private Instant phoneVerifiedAt;
     private Instant disabledAt;
     private Instant createdAt;
     private Instant updatedAt;
@@ -126,6 +127,14 @@ public class User {
 
     public void setEmailVerifiedAt(Instant emailVerifiedAt) {
         this.emailVerifiedAt = emailVerifiedAt;
+    }
+
+    public Instant getPhoneVerifiedAt() {
+        return phoneVerifiedAt;
+    }
+
+    public void setPhoneVerifiedAt(Instant phoneVerifiedAt) {
+        this.phoneVerifiedAt = phoneVerifiedAt;
     }
 
     public Instant getDisabledAt() {
