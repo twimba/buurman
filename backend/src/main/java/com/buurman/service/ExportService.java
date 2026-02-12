@@ -2,6 +2,8 @@ package com.buurman.service;
 
 import com.buurman.domain.*;
 import com.buurman.repository.*;
+
+import static com.buurman.domain.Payment.PaymentStatus.*;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
@@ -18,7 +20,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class ExportService {
@@ -157,7 +161,7 @@ public class ExportService {
             List<Payment> payments = paymentRepository.findAllByTeamId(teamId).stream()
                     .filter(p -> p.getContractId() != null &&
                                contracts.stream().anyMatch(c -> c.getId().equals(p.getContractId())))
-                    .collect(Collectors.toList());
+                    .toList();
 
             // Get expenses for this property
             List<Expense> expenses = expenseRepository.findByPropertyId(propertyId, teamId);
@@ -281,7 +285,7 @@ public class ExportService {
                 : paymentRepository.findAllByTeamId(teamId);
 
         for (Payment payment : payments) {
-            if (payment.getStatus() == Payment.PaymentStatus.PAID && payment.getPaymentDate() != null) {
+            if (payment.getStatus() == PAID && payment.getPaymentDate() != null) {
                 Contract contract = contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
                 Property property = contract != null
                         ? propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null)
@@ -339,7 +343,7 @@ public class ExportService {
 
         // Process payments
         for (Payment payment : payments) {
-            if (payment.getStatus() == Payment.PaymentStatus.PAID && payment.getPaymentDate() != null) {
+            if (payment.getStatus() == PAID && payment.getPaymentDate() != null) {
                 int year = payment.getPaymentDate().getYear();
                 summaries.computeIfAbsent(year, FinancialYearSummary::new);
                 summaries.get(year).addIncome(payment.getAmount());
@@ -443,7 +447,7 @@ public class ExportService {
     ) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
         Map<UUID, Amenity> amenityMap = allAmenities.stream()
-                .collect(Collectors.toMap(Amenity::getId, a -> a));
+                .collect(toMap(Amenity::getId, a -> a));
 
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
@@ -869,12 +873,12 @@ public class ExportService {
 
     private String buildContractReportHTML(Contract contract, Property property, Tenant tenant, List<Payment> payments) {
         BigDecimal totalPaid = payments.stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .map(Payment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalPending = payments.stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PENDING)
+                .filter(p -> p.getStatus() == PENDING)
                 .map(Payment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -980,11 +984,11 @@ public class ExportService {
         DateTimeFormatter shortDateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
 
         BigDecimal totalPaid = allPayments.stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .map(Payment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal totalPending = allPayments.stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PENDING || p.getStatus() == Payment.PaymentStatus.OVERDUE)
+                .filter(p -> p.getStatus() == PENDING || p.getStatus() == OVERDUE)
                 .map(Payment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         long activeContracts = contracts.stream()
@@ -1175,7 +1179,7 @@ public class ExportService {
                 int year = dateRef.getYear();
                 yearPayments.computeIfAbsent(year, k -> new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO});
                 BigDecimal[] amounts = yearPayments.get(year);
-                if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+                if (payment.getStatus() == PAID) {
                     amounts[0] = amounts[0].add(payment.getAmount());
                 } else {
                     amounts[1] = amounts[1].add(payment.getAmount());
@@ -1208,7 +1212,7 @@ public class ExportService {
                         return db.compareTo(da);
                     })
                     .limit(50)
-                    .collect(Collectors.toList());
+                    .toList();
 
             html.append("<table class='data-table'><thead><tr>");
             html.append("<th>Due Date</th><th>Amount</th><th>Payment Date</th><th>Status</th>");
@@ -1220,9 +1224,9 @@ public class ExportService {
                 html.append("<td>").append(payment.getCurrency()).append(" ").append(String.format("%.2f", payment.getAmount())).append("</td>");
                 html.append("<td>").append(payment.getPaymentDate() != null ? payment.getPaymentDate().format(shortDateFormatter) : "-").append("</td>");
                 String statusStyle = "";
-                if (payment.getStatus() == Payment.PaymentStatus.PAID) statusStyle = "color: #059669; font-weight: 600;";
-                else if (payment.getStatus() == Payment.PaymentStatus.OVERDUE) statusStyle = "color: #dc2626; font-weight: 600;";
-                else if (payment.getStatus() == Payment.PaymentStatus.PENDING) statusStyle = "color: #d97706; font-weight: 600;";
+                if (payment.getStatus() == PAID) statusStyle = "color: #059669; font-weight: 600;";
+                else if (payment.getStatus() == OVERDUE) statusStyle = "color: #dc2626; font-weight: 600;";
+                else if (payment.getStatus() == PENDING) statusStyle = "color: #d97706; font-weight: 600;";
                 html.append("<td style='").append(statusStyle).append("'>").append(payment.getStatus() != null ? formatEnumValue(payment.getStatus().name()) : "-").append("</td>");
                 html.append("</tr>");
             }
@@ -1265,7 +1269,7 @@ public class ExportService {
         if (value == null) return "";
         return Arrays.stream(value.split("_"))
                 .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-                .collect(Collectors.joining(" "));
+                .collect(joining(" "));
     }
 
     private String getEnergyRatingColor(String rating) {

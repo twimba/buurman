@@ -12,10 +12,10 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
+import com.buurman.config.AppProperties;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class CalendarFeedService {
@@ -40,27 +41,27 @@ public class CalendarFeedService {
     private final ContractRepository contractRepository;
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
-
-    @Value("${app.api.base-url}")
-    private String apiBaseUrl;
+    private final AppProperties appProperties;
 
     public CalendarFeedService(CalendarFeedRepository calendarFeedRepository,
                                PaymentRepository paymentRepository,
                                ContractRepository contractRepository,
                                PropertyRepository propertyRepository,
-                               TenantRepository tenantRepository) {
+                               TenantRepository tenantRepository,
+                               AppProperties appProperties) {
         this.calendarFeedRepository = calendarFeedRepository;
         this.paymentRepository = paymentRepository;
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
+        this.appProperties = appProperties;
     }
 
     @PreAuthorize("hasRole('TEAM_ADMIN')")
     public List<CalendarFeedResponse> getUserFeeds(UserPrincipal principal) {
         List<CalendarFeed> feeds = calendarFeedRepository.findByUserIdAndTeamId(
                 principal.getUserId(), principal.getTeamId());
-        return feeds.stream().map(f -> toResponse(f, principal.getTeamId())).collect(Collectors.toList());
+        return feeds.stream().map(f -> toResponse(f, principal.getTeamId())).toList();
     }
 
     @Transactional
@@ -167,12 +168,12 @@ public class CalendarFeedService {
         // Filter out cancelled payments
         payments = payments.stream()
                 .filter(p -> p.getStatus() != Payment.PaymentStatus.CANCELLED)
-                .collect(Collectors.toList());
+                .toList();
 
         // Batch load related entities to avoid N+1
         Set<UUID> contractIds = payments.stream()
                 .map(Payment::getContractId)
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         // Load contracts whose milestones should appear in the feed
         List<Contract> milestoneContracts = new ArrayList<>();
@@ -202,19 +203,19 @@ public class CalendarFeedService {
         }
 
         Map<UUID, Contract> contractMap = contractRepository.findByIdsAndTeamId(contractIds, teamId)
-                .stream().collect(Collectors.toMap(Contract::getId, Function.identity()));
+                .stream().collect(toMap(Contract::getId, identity()));
 
         Set<UUID> propertyIds = contractMap.values().stream()
                 .map(Contract::getPropertyId)
-                .collect(Collectors.toSet());
+                .collect(toSet());
         Map<UUID, Property> propertyMap = propertyRepository.findByIdsAndTeamId(propertyIds, teamId)
-                .stream().collect(Collectors.toMap(Property::getId, Function.identity()));
+                .stream().collect(toMap(Property::getId, identity()));
 
         Set<UUID> tenantIds = contractMap.values().stream()
                 .map(Contract::getTenantId)
-                .collect(Collectors.toSet());
+                .collect(toSet());
         Map<UUID, Tenant> tenantMap = tenantRepository.findByIdsAndTeamId(tenantIds, teamId)
-                .stream().collect(Collectors.toMap(Tenant::getId, Function.identity()));
+                .stream().collect(toMap(Tenant::getId, identity()));
 
         String calName = buildCalendarName(feed, teamId, propertyMap, tenantMap);
 
@@ -435,7 +436,7 @@ public class CalendarFeedService {
             entityLabel = "All Payment Due Dates";
         }
 
-        String feedUrl = apiBaseUrl + "/calendar/ical/" + feed.getFeedToken();
+        String feedUrl = appProperties.api().baseUrl() + "/calendar/ical/" + feed.getFeedToken();
 
         return new CalendarFeedResponse(
                 feed.getIdentifier(),

@@ -1,0 +1,81 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:18:///buurman?TC_REUSABLE=true
+    username: buurman
+    password: buurman
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak.test.invalid/realms/buurman
+          jwk-set-uri: https://keycloak.test.invalid/realms/buurman/protocol/openid-connect/certs
+          backoffice:
+            issuer-uri: https://keycloak.test.invalid/realms/buurman-backoffice
+            jwk-set-uri: https://keycloak.test.invalid/realms/buurman-backoffice/protocol/openid-connect/certs
+
+  quartz:
+    auto-startup: false
+
+keycloak:
+  admin:
+    server-url: https://keycloak.test.invalid
+    realm: master
+    client-id: admin-cli
+    username: admin
+    password: admin
+  realm: buurman
+
+aws:
+  s3:
+    endpoint: http://localhost:19333
+    region: eu-west-1
+    access-key: test
+    secret-key: test
+    bucket-name: buurman-test
+    public-endpoint: http://localhost:19333
+    use-presigned-urls: false
+
+app:
+  version: test
+  api:
+    base-url: http://localhost:8081
+  documents:
+    max-file-size: 52428800
+    allowed-mime-types:
+      - application/pdf
+      - image/jpeg
+      - image/png
+  email:
+    from: test@buurman.io
+    from-name: Buurman Test
+    base-url: http://localhost:5173
+  cors:
+    allowed-origins: http://localhost:5173
+    backoffice-allowed-origins: http://localhost:5174
+
+sendgrid:
+  api-key: test
+  from-email: test@buurman.io
+  from-name: Buurman Test
+  webhook-verification-key: test
+
+twilio:
+  account-sid: test
+  auth-token: test
+  from-number: "+15551234567"
+  status-callback-url: ""
+
+notification:
+  outbox:
+    poll-interval-ms: 60000
+    batch-size: 10
+    max-retries: 1
+
+buurman:
+  demo:
+    enabled: false
+    api-key: test
+    auto-regenerate: false
+    cron: "0 0 0 1 1 *"

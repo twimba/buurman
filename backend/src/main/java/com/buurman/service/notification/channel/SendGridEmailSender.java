@@ -2,9 +2,12 @@ package com.buurman.service.notification.channel;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.service.notification.NotificationChannelSender;
+
+import static com.buurman.domain.NotificationChannel.EMAIL;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
+import com.buurman.config.SendGridProperties;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -14,7 +17,6 @@ import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
@@ -35,12 +37,11 @@ public class SendGridEmailSender implements NotificationChannelSender {
     private final String fromName;
 
     public SendGridEmailSender(SendGrid sendGrid, TemplateEngine templateEngine,
-                                @Value("${sendgrid.from-email:noreply@buurman.io}") String fromEmail,
-                                @Value("${sendgrid.from-name:Buurman}") String fromName) {
+                                SendGridProperties sendGridProperties) {
         this.sendGrid = sendGrid;
         this.templateEngine = templateEngine;
-        this.fromEmail = fromEmail;
-        this.fromName = fromName;
+        this.fromEmail = sendGridProperties.fromEmail();
+        this.fromName = sendGridProperties.fromName();
     }
 
     @Override
@@ -73,7 +74,7 @@ public class SendGridEmailSender implements NotificationChannelSender {
 
     @Override
     public NotificationChannel getChannel() {
-        return NotificationChannel.EMAIL;
+        return EMAIL;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class SendGridEmailSender implements NotificationChannelSender {
         String subject = deriveSubject(templateName, variables);
         String body = templateEngine.process("email/" + templateName, context);
 
-        return new RenderedContent(subject, body, NotificationChannel.EMAIL);
+        return new RenderedContent(subject, body, EMAIL);
     }
 
     private String deriveSubject(String templateName, Map<String, Object> variables) {

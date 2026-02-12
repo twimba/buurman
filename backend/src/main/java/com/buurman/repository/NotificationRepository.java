@@ -17,8 +17,9 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.Record2;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+
+import static org.jooq.impl.DSL.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -173,7 +174,7 @@ public class NotificationRepository {
     }
 
     public List<Record2<String, Integer>> countByTeamIdGroupedByStatus(UUID teamId) {
-        return dsl.select(NOTIFICATIONS.STATUS, DSL.count().as("count"))
+        return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
                 .from(NOTIFICATIONS)
                 .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
                 .groupBy(NOTIFICATIONS.STATUS)
@@ -181,7 +182,7 @@ public class NotificationRepository {
     }
 
     public List<Record2<String, Integer>> countByTeamIdGroupedByChannel(UUID teamId) {
-        return dsl.select(NOTIFICATIONS.CHANNEL, DSL.count().as("count"))
+        return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
                 .from(NOTIFICATIONS)
                 .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
                 .groupBy(NOTIFICATIONS.CHANNEL)
@@ -200,7 +201,7 @@ public class NotificationRepository {
             String recipientEmail, LocalDateTime dateFrom, LocalDateTime dateTo,
             PageRequest pageRequest) {
 
-        Condition condition = DSL.trueCondition();
+        Condition condition = trueCondition();
 
         if (teamId != null) {
             condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
@@ -250,14 +251,14 @@ public class NotificationRepository {
     }
 
     public List<Record2<String, Integer>> countGroupedByStatus() {
-        return dsl.select(NOTIFICATIONS.STATUS, DSL.count().as("count"))
+        return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
             .from(NOTIFICATIONS)
             .groupBy(NOTIFICATIONS.STATUS)
             .fetch();
     }
 
     public List<Record2<String, Integer>> countGroupedByChannel() {
-        return dsl.select(NOTIFICATIONS.CHANNEL, DSL.count().as("count"))
+        return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
             .from(NOTIFICATIONS)
             .groupBy(NOTIFICATIONS.CHANNEL)
             .fetch();

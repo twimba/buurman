@@ -16,9 +16,9 @@ import com.buurman.dto.response.TeamResponse;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
 @Service
 public class TeamService {
 
@@ -41,22 +44,19 @@ public class TeamService {
     private final UserRepository userRepository;
     private final TeamMapper teamMapper;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url}")
-    private String baseUrl;
-
-    @Value("${app.email.base-url}/invitation/")
-    private String invitationBaseUrl;
+    private final AppProperties appProperties;
 
     public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       TeamInvitationRepository invitationRepository, UserRepository userRepository,
-                      TeamMapper teamMapper, NotificationService notificationService) {
+                      TeamMapper teamMapper, NotificationService notificationService,
+                      AppProperties appProperties) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.teamMapper = teamMapper;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
@@ -80,7 +80,7 @@ public class TeamService {
         // Batch-fetch all users to avoid N+1 queries
         List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
         Map<UUID, User> usersById = userRepository.findByIds(userIds).stream()
-                .collect(java.util.stream.Collectors.toMap(User::getId, u -> u));
+                .collect(toMap(User::getId, u -> u));
 
         return members.stream()
             .map(member -> teamMapper.toMemberResponse(member, usersById.get(member.getUserId()), principal.getUserId()))
@@ -127,13 +127,13 @@ public class TeamService {
                         "inviterName", inviterName,
                         "teamName", team.getName(),
                         "role", formatRole(invitation.getRole()),
-                        "inviteUrl", baseUrl + "/invitation/" + invitation.getToken(),
+                        "inviteUrl", appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                         "expiresAt", formatInstantDate(invitation.getExpiresAt())
                 ))
                 .createdBy(principal.getUserId())
                 .build());
 
-        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, appProperties.email().baseUrl() + "/invitation/");
     }
 
     public InvitationResponse getInvitation(String token) {
@@ -152,7 +152,7 @@ public class TeamService {
             }
         }
 
-        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, appProperties.email().baseUrl() + "/invitation/");
     }
 
     public List<InvitationResponse> getPendingInvitationsForUser(UserPrincipal principal) {
@@ -164,7 +164,7 @@ public class TeamService {
         // Exclude teams the user is already a member of
         var memberTeamIds = teamMemberRepository.findAllByUserId(principal.getUserId()).stream()
                 .map(TeamMember::getTeamId)
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(toSet());
 
         return pending.stream()
                 .filter(inv -> !memberTeamIds.contains(inv.getTeamId()))
@@ -180,7 +180,7 @@ public class TeamService {
                         }
                     }
 
-                    return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+                    return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, appProperties.email().baseUrl() + "/invitation/");
                 }).filter(r -> r != null).toList();
     }
 
@@ -202,7 +202,7 @@ public class TeamService {
                     inviterName = inviter.getFirstName() + " " + inviter.getLastName();
                 }
             }
-            return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+            return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, appProperties.email().baseUrl() + "/invitation/");
         }).toList();
     }
 
@@ -245,13 +245,13 @@ public class TeamService {
                         "inviterName", inviterName,
                         "teamName", team.getName(),
                         "role", formatRole(invitation.getRole()),
-                        "inviteUrl", baseUrl + "/invitation/" + invitation.getToken(),
+                        "inviteUrl", appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                         "expiresAt", formatInstantDate(invitation.getExpiresAt())
                 ))
                 .createdBy(principal.getUserId())
                 .build());
 
-        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, invitationBaseUrl);
+        return teamMapper.toInvitationResponse(invitation, team.getIdentifier(), team.getName(), inviterName, appProperties.email().baseUrl() + "/invitation/");
     }
 
     @Transactional
@@ -315,7 +315,7 @@ public class TeamService {
                             "memberName", user.getFirstName() + " " + user.getLastName(),
                             "memberEmail", user.getEmail(),
                             "teamName", team.getName(),
-                            "baseUrl", baseUrl
+                            "baseUrl", appProperties.email().baseUrl()
                     ))
                     .build());
         }

@@ -1,5 +1,6 @@
 package com.buurman.controller.backoffice;
 
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
@@ -33,7 +34,7 @@ public class BackofficeTeamController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "DESC") SortDirection direction) {
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
         return backofficeTeamService.listTeams(pageRequest, search);
     }

@@ -3,6 +3,9 @@ package com.buurman.job;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.NotificationStatus;
+import com.buurman.config.NotificationOutboxProperties;
+
+import static com.buurman.domain.NotificationStatus.*;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.service.notification.NotificationChannelSender;
@@ -14,12 +17,13 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 @Component
 @DisallowConcurrentExecution
@@ -37,16 +41,13 @@ public class NotificationOutboxJob implements Job {
                                   NotificationRepository notificationRepository,
                                   List<NotificationChannelSender> senders,
                                   ObjectMapper objectMapper,
-                                  @Value("${notification.outbox.batch-size:50}") int batchSize) {
+                                  NotificationOutboxProperties outboxProperties) {
         this.outboxRepository = outboxRepository;
         this.notificationRepository = notificationRepository;
         this.objectMapper = objectMapper;
-        this.batchSize = batchSize;
-
-        this.channelSenders = new HashMap<>();
-        for (NotificationChannelSender sender : senders) {
-            this.channelSenders.put(sender.getChannel(), sender);
-        }
+        this.batchSize = outboxProperties.batchSize();
+        this.channelSenders = senders.stream()
+                .collect(toMap(NotificationChannelSender::getChannel, identity()));
     }
 
     @Override
@@ -74,7 +75,7 @@ public class NotificationOutboxJob implements Job {
                 log.error(error);
                 outboxRepository.markFailed(entry.getId(), error, entry.getRetryCount());
                 notificationRepository.updateStatus(entry.getNotificationId(),
-                        NotificationStatus.FAILED, null, null, error);
+                        FAILED, null, null, error);
                 return;
             }
 
@@ -85,7 +86,7 @@ public class NotificationOutboxJob implements Job {
 
             outboxRepository.markSent(entry.getId());
             notificationRepository.updateStatus(entry.getNotificationId(),
-                    NotificationStatus.SENT, providerMessageId, "sent", null);
+                    SENT, providerMessageId, "sent", null);
 
             log.debug("Successfully sent notification {} via {} (provider ID: {})",
                     entry.getNotificationId(), entry.getChannel(), providerMessageId);
@@ -97,10 +98,10 @@ public class NotificationOutboxJob implements Job {
 
             if (entry.getRetryCount() + 1 >= entry.getMaxRetries()) {
                 notificationRepository.updateStatus(entry.getNotificationId(),
-                        NotificationStatus.FAILED, null, null, e.getMessage());
+                        FAILED, null, null, e.getMessage());
             } else {
                 notificationRepository.updateStatus(entry.getNotificationId(),
-                        NotificationStatus.QUEUED, null, "retrying", null);
+                        QUEUED, null, "retrying", null);
             }
         } catch (Exception e) {
             log.error("Unexpected error processing outbox entry {}: {}",

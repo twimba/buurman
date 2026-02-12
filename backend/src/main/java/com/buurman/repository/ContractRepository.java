@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 
 @Repository
@@ -109,7 +110,7 @@ public class ContractRepository {
         return dsl.selectFrom(CONTRACTS)
                 .where(CONTRACTS.PROPERTY_ID.eq(propertyId)
                         .and(CONTRACTS.TEAM_ID.eq(teamId))
-                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                         .and(CONTRACTS.DELETED_AT.isNull()))
                 .fetchOptional()
                 .map(mapper::toDomain);
@@ -222,7 +223,7 @@ public class ContractRepository {
     public List<Contract> findActiveByTeamId(UUID teamId) {
         return dsl.selectFrom(CONTRACTS)
                 .where(CONTRACTS.TEAM_ID.eq(teamId)
-                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                         .and(CONTRACTS.DELETED_AT.isNull()))
                 .fetch()
                 .map(mapper::toDomain);
@@ -245,7 +246,7 @@ public class ContractRepository {
     public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
         return dsl.selectFrom(CONTRACTS)
                 .where(CONTRACTS.TEAM_ID.eq(teamId)
-                        .and(CONTRACTS.STATUS.eq(Contract.ContractStatus.ACTIVE.name()))
+                        .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                         .and(CONTRACTS.END_DATE.isNotNull())
                         .and(CONTRACTS.END_DATE.le(beforeDate))
                         .and(CONTRACTS.DELETED_AT.isNull()))

@@ -5,12 +5,12 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PhotoResponse;
 import com.buurman.mapper.PhotoMapper;
+import com.buurman.config.AppProperties;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,15 +48,14 @@ public class PhotoService {
             PhotoMapper photoMapper,
             AuditService auditService,
             MetricsService metricsService,
-            @Value("${app.documents.max-file-size}") long maxFileSize,
-            @Value("${app.documents.allowed-mime-types}") String allowedMimeTypesStr) {
+            AppProperties appProperties) {
         this.photoRepository = photoRepository;
         this.s3StorageService = s3StorageService;
         this.photoMapper = photoMapper;
         this.auditService = auditService;
         this.metricsService = metricsService;
-        this.maxFileSize = maxFileSize;
-        this.allowedMimeTypes = Arrays.asList(allowedMimeTypesStr.split(","));
+        this.maxFileSize = appProperties.documents().maxFileSize();
+        this.allowedMimeTypes = appProperties.documents().allowedMimeTypes();
     }
 
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")

@@ -7,8 +7,9 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+
+import static org.jooq.impl.DSL.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,32 +22,32 @@ import java.util.UUID;
 @Repository
 public class ContractPaymentInstructionRepository {
 
-    private static final Table<?> TABLE = DSL.table("contract_payment_instructions");
-    private static final Field<UUID> ID = DSL.field("id", UUID.class);
-    private static final Field<String> IDENTIFIER = DSL.field("identifier", String.class);
-    private static final Field<UUID> TEAM_ID = DSL.field("team_id", UUID.class);
-    private static final Field<UUID> CONTRACT_ID = DSL.field("contract_id", UUID.class);
-    private static final Field<UUID> PAYMENT_INSTRUCTION_ID = DSL.field("payment_instruction_id", UUID.class);
-    private static final Field<Boolean> IS_CUSTOM = DSL.field("is_custom", Boolean.class);
-    private static final Field<String> CUSTOM_NAME = DSL.field("custom_name", String.class);
-    private static final Field<String> CUSTOM_DESCRIPTION = DSL.field("custom_description", String.class);
-    private static final Field<String> CUSTOM_PAYMENT_METHOD = DSL.field("custom_payment_method", String.class);
-    private static final Field<String> CUSTOM_BANK_NAME = DSL.field("custom_bank_name", String.class);
-    private static final Field<String> CUSTOM_ACCOUNT_HOLDER_NAME = DSL.field("custom_account_holder_name", String.class);
-    private static final Field<String> CUSTOM_IBAN = DSL.field("custom_iban", String.class);
-    private static final Field<String> CUSTOM_BIC_SWIFT = DSL.field("custom_bic_swift", String.class);
-    private static final Field<String> CUSTOM_ACCOUNT_NUMBER = DSL.field("custom_account_number", String.class);
-    private static final Field<String> CUSTOM_ROUTING_NUMBER = DSL.field("custom_routing_number", String.class);
-    private static final Field<String> CUSTOM_PAYMENT_REFERENCE = DSL.field("custom_payment_reference", String.class);
-    private static final Field<String> CUSTOM_ADDITIONAL_DETAILS = DSL.field("custom_additional_details", String.class);
-    private static final Field<LocalDate> EFFECTIVE_FROM = DSL.field("effective_from", LocalDate.class);
-    private static final Field<LocalDate> EFFECTIVE_TO = DSL.field("effective_to", LocalDate.class);
-    private static final Field<String> NOTES = DSL.field("notes", String.class);
-    private static final Field<LocalDateTime> CREATED_AT = DSL.field("created_at", LocalDateTime.class);
-    private static final Field<LocalDateTime> UPDATED_AT = DSL.field("updated_at", LocalDateTime.class);
-    private static final Field<UUID> CREATED_BY = DSL.field("created_by", UUID.class);
-    private static final Field<UUID> UPDATED_BY = DSL.field("updated_by", UUID.class);
-    private static final Field<LocalDateTime> DELETED_AT = DSL.field("deleted_at", LocalDateTime.class);
+    private static final Table<?> TABLE = table("contract_payment_instructions");
+    private static final Field<UUID> ID = field("id", UUID.class);
+    private static final Field<String> IDENTIFIER = field("identifier", String.class);
+    private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
+    private static final Field<UUID> CONTRACT_ID = field("contract_id", UUID.class);
+    private static final Field<UUID> PAYMENT_INSTRUCTION_ID = field("payment_instruction_id", UUID.class);
+    private static final Field<Boolean> IS_CUSTOM = field("is_custom", Boolean.class);
+    private static final Field<String> CUSTOM_NAME = field("custom_name", String.class);
+    private static final Field<String> CUSTOM_DESCRIPTION = field("custom_description", String.class);
+    private static final Field<String> CUSTOM_PAYMENT_METHOD = field("custom_payment_method", String.class);
+    private static final Field<String> CUSTOM_BANK_NAME = field("custom_bank_name", String.class);
+    private static final Field<String> CUSTOM_ACCOUNT_HOLDER_NAME = field("custom_account_holder_name", String.class);
+    private static final Field<String> CUSTOM_IBAN = field("custom_iban", String.class);
+    private static final Field<String> CUSTOM_BIC_SWIFT = field("custom_bic_swift", String.class);
+    private static final Field<String> CUSTOM_ACCOUNT_NUMBER = field("custom_account_number", String.class);
+    private static final Field<String> CUSTOM_ROUTING_NUMBER = field("custom_routing_number", String.class);
+    private static final Field<String> CUSTOM_PAYMENT_REFERENCE = field("custom_payment_reference", String.class);
+    private static final Field<String> CUSTOM_ADDITIONAL_DETAILS = field("custom_additional_details", String.class);
+    private static final Field<LocalDate> EFFECTIVE_FROM = field("effective_from", LocalDate.class);
+    private static final Field<LocalDate> EFFECTIVE_TO = field("effective_to", LocalDate.class);
+    private static final Field<String> NOTES = field("notes", String.class);
+    private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
+    private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
+    private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
+    private static final Field<UUID> UPDATED_BY = field("updated_by", UUID.class);
+    private static final Field<LocalDateTime> DELETED_AT = field("deleted_at", LocalDateTime.class);
 
     private final DSLContext dsl;
 

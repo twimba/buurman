@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static org.jooq.impl.DSL.*;
 
 @Repository
 public class ExpenseRepository {
@@ -171,8 +172,8 @@ public class ExpenseRepository {
 
     public Record2<Integer, BigDecimal> getTotalStats(UUID teamId) {
         return dsl.select(
-                org.jooq.impl.DSL.count().as("count"),
-                org.jooq.impl.DSL.sum(EXPENSES.AMOUNT).as("total")
+                count().as("count"),
+                sum(EXPENSES.AMOUNT).as("total")
         )
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
@@ -182,28 +183,28 @@ public class ExpenseRepository {
     public List<Record3<String, Integer, BigDecimal>> getCategoryBreakdown(UUID teamId) {
         return dsl.select(
                 EXPENSES.CATEGORY,
-                org.jooq.impl.DSL.count().as("count"),
-                org.jooq.impl.DSL.sum(EXPENSES.AMOUNT).as("total")
+                count().as("count"),
+                sum(EXPENSES.AMOUNT).as("total")
         )
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
         .groupBy(EXPENSES.CATEGORY)
-        .orderBy(org.jooq.impl.DSL.sum(EXPENSES.AMOUNT).desc())
+        .orderBy(sum(EXPENSES.AMOUNT).desc())
         .fetch();
     }
 
     public List<Record2<String, BigDecimal>> getMonthlyExpenseTrend(UUID teamId, int months) {
         LocalDate startDate = LocalDate.now().minusMonths(months).withDayOfMonth(1);
         return dsl.select(
-                org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
-                org.jooq.impl.DSL.sum(EXPENSES.AMOUNT).as("total")
+                field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
+                sum(EXPENSES.AMOUNT).as("total")
         )
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId)
                 .and(EXPENSES.EXPENSE_DATE.ge(startDate))
                 .and(EXPENSES.DELETED_AT.isNull()))
-        .groupBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
-        .orderBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
+        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
+        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
         .fetch();
     }
 

@@ -25,13 +25,19 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.domain.NotificationType;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
+
+import static com.buurman.domain.Contract.ContractStatus.*;
+import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
+import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
+import static com.buurman.domain.Property.PropertyStatus.VACANT;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,9 +67,7 @@ public class ContractService {
     private final PaymentSchedulingService paymentSchedulingService;
     private final MetricsService metricsService;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url:https://app.local.buurman.io}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     public ContractService(
             ContractRepository contractRepository,
@@ -77,7 +81,8 @@ public class ContractService {
             DocumentService documentService,
             PaymentSchedulingService paymentSchedulingService,
             MetricsService metricsService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AppProperties appProperties) {
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
@@ -90,6 +95,7 @@ public class ContractService {
         this.paymentSchedulingService = paymentSchedulingService;
         this.metricsService = metricsService;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -118,7 +124,7 @@ public class ContractService {
         }
 
         // Validate FIXED_TERM contracts have end date
-        if (request.contractType() == Contract.ContractType.FIXED_TERM && request.endDate() == null) {
+        if (request.contractType() == FIXED_TERM && request.endDate() == null) {
             throw new IllegalArgumentException("FIXED_TERM contracts must have an end date");
         }
 
@@ -127,7 +133,7 @@ public class ContractService {
         contract.setTenantId(tenant.getId());
         contract.setIdentifier(UlidGenerator.generate(EntityPrefix.CON));
         contract.setTeamId(teamId);
-        contract.setStatus(Contract.ContractStatus.DRAFT);
+        contract.setStatus(DRAFT);
         contract.setCreatedBy(principal.getUserId());
         contract.setUpdatedBy(principal.getUserId());
         contract.setCreatedAt(Instant.now());
@@ -169,7 +175,7 @@ public class ContractService {
         contractVars.put("rentAmount", savedContract.getCurrency() + " " + savedContract.getRentAmount());
         contractVars.put("startDate", savedContract.getStartDate().toString());
         contractVars.put("endDate", savedContract.getEndDate() != null ? savedContract.getEndDate().toString() : "");
-        contractVars.put("baseUrl", baseUrl);
+        contractVars.put("baseUrl", appProperties.email().baseUrl());
         notificationService.sendToTeam(SendNotificationRequest.builder()
                 .teamId(teamId)
                 .notificationType(NotificationType.CONTRACT_CREATED)
@@ -243,13 +249,13 @@ public class ContractService {
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Prevent updates to ACTIVE, TERMINATED, or EXPIRED contracts (except via status change)
-        if (contract.getStatus() == Contract.ContractStatus.ACTIVE) {
+        if (contract.getStatus() == ACTIVE) {
             throw new IllegalArgumentException("Cannot update ACTIVE contracts. Please change status first.");
         }
-        if (contract.getStatus() == Contract.ContractStatus.TERMINATED) {
+        if (contract.getStatus() == TERMINATED) {
             throw new IllegalArgumentException("Cannot update TERMINATED contracts.");
         }
-        if (contract.getStatus() == Contract.ContractStatus.EXPIRED) {
+        if (contract.getStatus() == EXPIRED) {
             throw new IllegalArgumentException("Cannot update EXPIRED contracts.");
         }
 
@@ -369,7 +375,7 @@ public class ContractService {
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Prevent deletion of ACTIVE contracts
-        if (contract.getStatus() == Contract.ContractStatus.ACTIVE) {
+        if (contract.getStatus() == ACTIVE) {
             throw new IllegalArgumentException("Cannot delete ACTIVE contracts. Please terminate the contract first.");
         }
 
@@ -402,7 +408,7 @@ public class ContractService {
         validateStatusTransition(oldStatus, newStatus);
 
         // If changing to ACTIVE, ensure no other active contract on property
-        if (newStatus == Contract.ContractStatus.ACTIVE) {
+        if (newStatus == ACTIVE) {
             contractRepository.findActiveContractByPropertyId(contract.getPropertyId(), teamId)
                     .ifPresent(existing -> {
                         if (!existing.getId().equals(contractId)) {
@@ -482,7 +488,7 @@ public class ContractService {
                         "tenantName", scTenantName,
                         "oldStatus", oldStatus.name(),
                         "newStatus", newStatus.name(),
-                        "baseUrl", baseUrl
+                        "baseUrl", appProperties.email().baseUrl()
                 ))
                 .createdBy(principal.getUserId())
                 .build());
@@ -499,8 +505,8 @@ public class ContractService {
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
 
         // Only TERMINATED or EXPIRED contracts can be reopened
-        if (contract.getStatus() != Contract.ContractStatus.TERMINATED &&
-            contract.getStatus() != Contract.ContractStatus.EXPIRED) {
+        if (contract.getStatus() != TERMINATED &&
+            contract.getStatus() != EXPIRED) {
             throw new IllegalArgumentException(
                     String.format("Only TERMINATED or EXPIRED contracts can be reopened. Current status: %s",
                             contract.getStatus()));
@@ -521,7 +527,7 @@ public class ContractService {
                 contract.getCreatedBy(), contract.getUpdatedBy(), contract.getDeletedAt()
         );
 
-        contract.setStatus(Contract.ContractStatus.DRAFT);
+        contract.setStatus(DRAFT);
         contract.setUpdatedBy(principal.getUserId());
         contract.setUpdatedAt(Instant.now());
 
@@ -533,7 +539,7 @@ public class ContractService {
 
         // Log to audit trail
         Map<String, Object> changedFields = new HashMap<>();
-        changedFields.put("status", Contract.ContractStatus.DRAFT);
+        changedFields.put("status", DRAFT);
         changedFields.put("statusChangeReason", "Contract reopened for editing");
 
         auditService.logUpdate(
@@ -562,7 +568,7 @@ public class ContractService {
                         "propertyName", reopenPropertyName,
                         "tenantName", reopenTenantName,
                         "oldStatus", oldStatus.name(),
-                        "baseUrl", baseUrl
+                        "baseUrl", appProperties.email().baseUrl()
                 ))
                 .createdBy(principal.getUserId())
                 .build());
@@ -599,7 +605,7 @@ public class ContractService {
                 sourceContract.getRenewalNoticeDays(),
                 sourceContract.getTerminationNoticeDays(),
                 sourceContract.getLateFeePercentage(),
-                Contract.ContractStatus.DRAFT, // Always start as DRAFT
+                DRAFT, // Always start as DRAFT
                 sourceContract.getTermsAndConditions(),
                 sourceContract.getNotes(),
                 Instant.now(),
@@ -680,9 +686,9 @@ public class ContractService {
 
     private void validateStatusTransition(Contract.ContractStatus from, Contract.ContractStatus to) {
         boolean isValid = switch (from) {
-            case DRAFT -> to == Contract.ContractStatus.PENDING_SIGNATURE || to == Contract.ContractStatus.ACTIVE;
-            case PENDING_SIGNATURE -> to == Contract.ContractStatus.DRAFT || to == Contract.ContractStatus.ACTIVE;
-            case ACTIVE -> to == Contract.ContractStatus.TERMINATED || to == Contract.ContractStatus.EXPIRED;
+            case DRAFT -> to == PENDING_SIGNATURE || to == ACTIVE;
+            case PENDING_SIGNATURE -> to == DRAFT || to == ACTIVE;
+            case ACTIVE -> to == TERMINATED || to == EXPIRED;
             case EXPIRED, TERMINATED -> false;
         };
 
@@ -749,16 +755,16 @@ public class ContractService {
 
         Property.PropertyStatus newPropertyStatus = null;
 
-        if (newStatus == Contract.ContractStatus.ACTIVE && oldStatus != Contract.ContractStatus.ACTIVE) {
-            newPropertyStatus = Property.PropertyStatus.OCCUPIED;
+        if (newStatus == ACTIVE && oldStatus != ACTIVE) {
+            newPropertyStatus = OCCUPIED;
         }
-        else if (oldStatus == Contract.ContractStatus.ACTIVE &&
-                 (newStatus == Contract.ContractStatus.EXPIRED || newStatus == Contract.ContractStatus.TERMINATED)) {
+        else if (oldStatus == ACTIVE &&
+                 (newStatus == EXPIRED || newStatus == TERMINATED)) {
             boolean hasOtherActiveContracts = contractRepository.findActiveContractByPropertyId(propertyId, principal.getTeamId())
                     .isPresent();
 
             if (!hasOtherActiveContracts) {
-                newPropertyStatus = Property.PropertyStatus.VACANT;
+                newPropertyStatus = VACANT;
             }
         }
 

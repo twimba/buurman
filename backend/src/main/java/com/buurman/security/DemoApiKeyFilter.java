@@ -32,7 +32,7 @@ public class DemoApiKeyFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String apiKey = request.getHeader(API_KEY_HEADER);
 
-        if (apiKey == null || !apiKey.equals(properties.getApiKey())) {
+        if (apiKey == null || !apiKey.equals(properties.apiKey())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"Invalid or missing API key\"}");

@@ -16,14 +16,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
+
+import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
+import static com.buurman.domain.Payment.PaymentStatus.PAID;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class ReportService {
@@ -76,11 +81,11 @@ public class ReportService {
 
         // Pre-fetch all contracts for the team to resolve payment→property mapping
         Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
-                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+                .collect(toMap(Contract::getId, identity()));
 
         // Get all payments in period (PAID status only)
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .filter(p -> propertyIds == null || propertyIds.isEmpty() ||
                         propertyIds.contains(getPropertyIdFromContract(p.getContractId(), contractsById)))
                 .toList();
@@ -97,9 +102,9 @@ public class ReportService {
 
         // Calculate income by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         p -> getPropertyIdFromContract(p.getContractId(), contractsById),
-                        Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
         // Calculate total expenses
@@ -112,9 +117,9 @@ public class ReportService {
 
         // Calculate expenses by property
         Map<UUID, BigDecimal> expensesByProperty = expenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         Expense::getPropertyId,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         // Combine property data
@@ -125,12 +130,12 @@ public class ReportService {
 
         // Batch-fetch all properties
         Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
-                .collect(Collectors.toMap(Property::getId, Function.identity()));
+                .collect(toMap(Property::getId, identity()));
 
         // Pre-group contracts by property for occupancy calculation
         Map<UUID, List<Contract>> contractsByProperty = contractsById.values().stream()
                 .filter(c -> c.getPropertyId() != null)
-                .collect(Collectors.groupingBy(Contract::getPropertyId));
+                .collect(groupingBy(Contract::getPropertyId));
 
         List<PropertyFinancialSummary> incomeByPropertyList = allPropertyIds.stream()
                 .map(propId -> {
@@ -190,20 +195,20 @@ public class ReportService {
 
         // Fetch full range once
         List<Payment> allPayments = paymentRepository.findByDateRange(startDate, rangeEnd, teamId).stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .toList();
         List<Expense> allExpenses = expenseRepository.findByDateRange(startDate, rangeEnd, teamId);
 
         // Group by month
         Map<YearMonth, BigDecimal> incomeByMonth = allPayments.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         p -> YearMonth.from(p.getPaymentDate() != null ? p.getPaymentDate() : p.getDueDate()),
-                        Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
         Map<YearMonth, BigDecimal> expensesByMonth = allExpenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         e -> YearMonth.from(e.getExpenseDate()),
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
@@ -240,9 +245,9 @@ public class ReportService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<Expense.ExpenseCategory, BigDecimal> expensesByCategory = expenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         Expense::getCategory,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         List<ExpenseBreakdownResponse.Category> categories = expensesByCategory.entrySet().stream()
@@ -267,26 +272,26 @@ public class ReportService {
 
         // Pre-fetch all contracts for payment→property mapping
         Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
-                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+                .collect(toMap(Contract::getId, identity()));
 
         // Get all payments and expenses in period
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .toList();
 
         List<Expense> expenses = expenseRepository.findByDateRange(startDate, endDate, teamId);
 
         // Group by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         p -> getPropertyIdFromContract(p.getContractId(), contractsById),
-                        Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
         Map<UUID, BigDecimal> expensesByProperty = expenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         Expense::getPropertyId,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         Set<UUID> allPropertyIds = new HashSet<>();
@@ -296,7 +301,7 @@ public class ReportService {
 
         // Batch-fetch all properties
         Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
-                .collect(Collectors.toMap(Property::getId, Function.identity()));
+                .collect(toMap(Property::getId, identity()));
 
         List<PropertyComparisonResponse.PropertyData> propertyData = allPropertyIds.stream()
                 .map(propId -> {
@@ -332,7 +337,7 @@ public class ReportService {
 
         // Fetch all active contracts once, outside the loop
         List<Contract> allActiveContracts = contractRepository.findAllByTeamId(teamId).stream()
-                .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+                .filter(c -> c.getStatus() == ACTIVE)
                 .toList();
 
         List<OccupancyTrendResponse.DataPoint> dataPoints = new ArrayList<>();
@@ -377,11 +382,11 @@ public class ReportService {
 
         // Pre-fetch all contracts for payment→property mapping and occupancy
         Map<UUID, Contract> contractsById = contractRepository.findAllByTeamId(teamId).stream()
-                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+                .collect(toMap(Contract::getId, identity()));
 
         // Get all paid payments for the year
         List<Payment> payments = paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
-                .filter(p -> p.getStatus() == Payment.PaymentStatus.PAID)
+                .filter(p -> p.getStatus() == PAID)
                 .toList();
 
         BigDecimal totalIncome = payments.stream()
@@ -402,15 +407,15 @@ public class ReportService {
 
         // Calculate by property
         Map<UUID, BigDecimal> incomeByProperty = payments.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         p -> getPropertyIdFromContract(p.getContractId(), contractsById),
-                        Collectors.reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)
                 ));
 
         Map<UUID, BigDecimal> expensesByProperty = expenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         Expense::getPropertyId,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         Set<UUID> allPropertyIds = new HashSet<>();
@@ -420,12 +425,12 @@ public class ReportService {
 
         // Batch-fetch all properties
         Map<UUID, Property> propertiesById = propertyRepository.findByIdsAndTeamId(allPropertyIds, teamId).stream()
-                .collect(Collectors.toMap(Property::getId, Function.identity()));
+                .collect(toMap(Property::getId, identity()));
 
         // Pre-group contracts by property for occupancy
         Map<UUID, List<Contract>> contractsByProperty = contractsById.values().stream()
                 .filter(c -> c.getPropertyId() != null)
-                .collect(Collectors.groupingBy(Contract::getPropertyId));
+                .collect(groupingBy(Contract::getPropertyId));
 
         List<PropertyFinancialSummary> properties = allPropertyIds.stream()
                 .map(propId -> {
@@ -468,13 +473,13 @@ public class ReportService {
             BigDecimal total) {
 
         Map<Expense.ExpenseCategory, BigDecimal> expensesByCategory = expenses.stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         Expense::getCategory,
-                        Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
+                        reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)
                 ));
 
         Map<Expense.ExpenseCategory, Long> countsByCategory = expenses.stream()
-                .collect(Collectors.groupingBy(Expense::getCategory, Collectors.counting()));
+                .collect(groupingBy(Expense::getCategory, counting()));
 
         return expensesByCategory.entrySet().stream()
                 .map(entry -> {
@@ -498,7 +503,7 @@ public class ReportService {
     private int calculateOccupancyDays(List<Contract> contracts, LocalDate startDate, LocalDate endDate) {
         long totalDays = 0;
         for (Contract contract : contracts) {
-            if (contract.getStatus() != Contract.ContractStatus.ACTIVE) {
+            if (contract.getStatus() != ACTIVE) {
                 continue;
             }
 

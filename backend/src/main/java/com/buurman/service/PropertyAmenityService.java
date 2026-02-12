@@ -17,8 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class PropertyAmenityService {
@@ -39,7 +40,7 @@ public class PropertyAmenityService {
     public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped() {
         return amenityRepository.findAll().stream()
                 .map(a -> new AmenityResponse(a.getIdentifier(), a.getName(), a.getCategory(), a.getIcon()))
-                .collect(Collectors.groupingBy(AmenityResponse::category));
+                .collect(groupingBy(AmenityResponse::category));
     }
 
     public List<PropertyAmenityResponse> getPropertyAmenities(String propertyIdentifier, UserPrincipal principal) {
@@ -102,7 +103,7 @@ public class PropertyAmenityService {
         }
 
         Map<UUID, Amenity> amenityMap = amenityRepository.findAll().stream()
-                .collect(Collectors.toMap(Amenity::getId, Function.identity()));
+                .collect(toMap(Amenity::getId, identity()));
 
         return links.stream()
                 .map(pa -> {

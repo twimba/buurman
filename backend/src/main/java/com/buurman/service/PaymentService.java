@@ -37,13 +37,17 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
+
+import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
+import static com.buurman.domain.Payment.PaymentStatus.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,8 +64,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class PaymentService {
@@ -84,9 +89,7 @@ public class PaymentService {
     private final com.buurman.mapper.DocumentMapper documentMapper;
     private final MetricsService metricsService;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url:https://app.local.buurman.io}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -104,7 +107,8 @@ public class PaymentService {
             DocumentService documentService,
             com.buurman.mapper.DocumentMapper documentMapper,
             MetricsService metricsService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AppProperties appProperties) {
         this.paymentRepository = paymentRepository;
         this.receivalRepository = receivalRepository;
         this.contractRepository = contractRepository;
@@ -121,6 +125,7 @@ public class PaymentService {
         this.documentMapper = documentMapper;
         this.metricsService = metricsService;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -136,7 +141,7 @@ public class PaymentService {
         payment.setContractId(contract.getId());
         payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
         payment.setTeamId(teamId);
-        payment.setStatus(Payment.PaymentStatus.PENDING);
+        payment.setStatus(PENDING);
         payment.setCreatedBy(principal.getUserId());
         payment.setUpdatedBy(principal.getUserId());
         payment.setCreatedAt(Instant.now());
@@ -269,11 +274,11 @@ public class PaymentService {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+        if (payment.getStatus() == PAID) {
             throw new IllegalArgumentException("Payment is already marked as paid");
         }
 
-        if (payment.getStatus() == Payment.PaymentStatus.CANCELLED) {
+        if (payment.getStatus() == CANCELLED) {
             throw new IllegalArgumentException("Cannot mark a cancelled payment as paid");
         }
 
@@ -300,7 +305,7 @@ public class PaymentService {
 
         payment.setPaymentDate(request.paymentDate());
         Payment.PaymentStatus oldStatus = payment.getStatus();
-        payment.setStatus(Payment.PaymentStatus.PAID);
+        payment.setStatus(PAID);
         if (request.notes() != null && !request.notes().isEmpty()) {
             payment.setNotes(request.notes());
         }
@@ -337,11 +342,11 @@ public class PaymentService {
 
         UUID paymentId = payment.getId();
 
-        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+        if (payment.getStatus() == PAID) {
             throw new IllegalArgumentException("Payment is already fully paid");
         }
 
-        if (payment.getStatus() == Payment.PaymentStatus.CANCELLED) {
+        if (payment.getStatus() == CANCELLED) {
             throw new IllegalArgumentException("Cannot register receival on a cancelled payment");
         }
 
@@ -385,7 +390,7 @@ public class PaymentService {
 
         sendReceivalNotification(payment, request.amount(), teamId, principal);
 
-        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+        if (payment.getStatus() == PAID) {
             sendPaymentPaidNotification(payment, teamId, principal);
         }
 
@@ -494,7 +499,7 @@ public class PaymentService {
 
         Payment.PaymentStatus newStatus;
         if (balance.compareTo(BigDecimal.ZERO) <= 0) {
-            newStatus = Payment.PaymentStatus.PAID;
+            newStatus = PAID;
             // Set payment date to the latest receival date
             List<PaymentReceival> receivals = receivalRepository.findByPaymentIdAndTeamId(payment.getId(), principal.getTeamId());
             if (!receivals.isEmpty()) {
@@ -505,14 +510,14 @@ public class PaymentService {
                 payment.setPaymentDate(latestDate);
             }
         } else if (totalReceived.compareTo(BigDecimal.ZERO) > 0) {
-            newStatus = Payment.PaymentStatus.PARTIALLY_PAID;
+            newStatus = PARTIALLY_PAID;
             payment.setPaymentDate(null);
         } else {
             // No receivals - check if overdue
             if (payment.getDueDate().isBefore(LocalDate.now())) {
-                newStatus = Payment.PaymentStatus.OVERDUE;
+                newStatus = OVERDUE;
             } else {
-                newStatus = Payment.PaymentStatus.PENDING;
+                newStatus = PENDING;
             }
             payment.setPaymentDate(null);
         }
@@ -533,7 +538,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
 
-        if (payment.getStatus() == Payment.PaymentStatus.PAID) {
+        if (payment.getStatus() == PAID) {
             throw new IllegalArgumentException("Cannot delete a paid payment. Please cancel it instead.");
         }
 
@@ -550,7 +555,7 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
         YearMonth month = YearMonth.parse(request.forMonth());
 
-        List<Contract> activeContracts = contractRepository.findByStatus(Contract.ContractStatus.ACTIVE, teamId);
+        List<Contract> activeContracts = contractRepository.findByStatus(ACTIVE, teamId);
 
         if (activeContracts.isEmpty()) {
             log.warn("No active contracts found for team {} to generate payments", teamId);
@@ -579,7 +584,7 @@ public class PaymentService {
             payment.setAmount(contract.getRentAmount());
             payment.setCurrency(contract.getCurrency());
             payment.setDueDate(dueDate);
-            payment.setStatus(Payment.PaymentStatus.PENDING);
+            payment.setStatus(PENDING);
             payment.setNotes("Auto-generated for " + month);
             payment.setCreatedBy(principal.getUserId());
             payment.setUpdatedBy(principal.getUserId());
@@ -653,9 +658,9 @@ public class PaymentService {
     }
 
     private void updatePaymentStatus(Payment payment, LocalDate today) {
-        if (payment.getStatus() == Payment.PaymentStatus.PENDING &&
+        if (payment.getStatus() == PENDING &&
                 payment.getDueDate().isBefore(today)) {
-            payment.setStatus(Payment.PaymentStatus.OVERDUE);
+            payment.setStatus(OVERDUE);
         }
     }
 
@@ -682,7 +687,7 @@ public class PaymentService {
                         "tenantName", tenantName,
                         "amount", (payment.getCurrency() != null ? payment.getCurrency() : "EUR") + " " + payment.getAmount(),
                         "paymentDate", payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "N/A",
-                        "baseUrl", baseUrl
+                        "baseUrl", appProperties.email().baseUrl()
                 ))
                 .createdBy(principal.getUserId())
                 .build());
@@ -712,7 +717,7 @@ public class PaymentService {
         vars.put("receivalAmount", currency + " " + receivalAmount);
         vars.put("amount", currency + " " + payment.getAmount());
         vars.put("remainingBalance", currency + " " + remainingBalance);
-        vars.put("baseUrl", baseUrl);
+        vars.put("baseUrl", appProperties.email().baseUrl());
 
         notificationService.sendToTeam(SendNotificationRequest.builder()
                 .teamId(teamId)
@@ -733,28 +738,28 @@ public class PaymentService {
         // Batch-fetch receivals
         List<PaymentReceival> allReceivals = receivalRepository.findByPaymentIdsAndTeamId(paymentIds, teamId);
         Map<UUID, List<PaymentReceival>> receivalsByPaymentId = allReceivals.stream()
-                .collect(Collectors.groupingBy(PaymentReceival::getPaymentId));
+                .collect(groupingBy(PaymentReceival::getPaymentId));
 
         // Batch-fetch contracts
-        Set<UUID> contractIds = payments.stream().map(Payment::getContractId).collect(Collectors.toSet());
+        Set<UUID> contractIds = payments.stream().map(Payment::getContractId).collect(toSet());
         Map<UUID, Contract> contractsById = contractRepository.findByIdsAndTeamId(contractIds, teamId).stream()
-                .collect(Collectors.toMap(Contract::getId, Function.identity()));
+                .collect(toMap(Contract::getId, identity()));
 
         // Batch-fetch properties and tenants from contracts
         Set<UUID> propertyIds = contractsById.values().stream()
-                .map(Contract::getPropertyId).filter(java.util.Objects::nonNull).collect(Collectors.toSet());
+                .map(Contract::getPropertyId).filter(java.util.Objects::nonNull).collect(toSet());
         Set<UUID> tenantIds = contractsById.values().stream()
-                .map(Contract::getTenantId).filter(java.util.Objects::nonNull).collect(Collectors.toSet());
+                .map(Contract::getTenantId).filter(java.util.Objects::nonNull).collect(toSet());
 
         Map<UUID, com.buurman.domain.Property> propertiesById = propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
-                .collect(Collectors.toMap(com.buurman.domain.Property::getId, Function.identity()));
+                .collect(toMap(com.buurman.domain.Property::getId, identity()));
         Map<UUID, com.buurman.domain.Tenant> tenantsById = tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-                .collect(Collectors.toMap(com.buurman.domain.Tenant::getId, Function.identity()));
+                .collect(toMap(com.buurman.domain.Tenant::getId, identity()));
 
         // Batch-fetch documents for all payments
         List<com.buurman.domain.Document> allDocs = documentRepository.findByEntityTypeAndEntityIdsAndTeamId("PAYMENT", paymentIds, teamId);
         Map<UUID, List<com.buurman.domain.Document>> docsByPaymentId = allDocs.stream()
-                .collect(Collectors.groupingBy(com.buurman.domain.Document::getEntityId));
+                .collect(groupingBy(com.buurman.domain.Document::getEntityId));
 
         // Build responses
         List<PaymentResponse> responses = new ArrayList<>(payments.size());

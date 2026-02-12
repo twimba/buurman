@@ -1,6 +1,11 @@
 package com.buurman.service.notification;
 
 import com.buurman.domain.*;
+
+import static com.buurman.domain.NotificationChannel.EMAIL;
+import static com.buurman.domain.NotificationChannel.SMS;
+import static com.buurman.domain.NotificationStatus.PENDING;
+
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
@@ -85,7 +90,7 @@ public class NotificationService {
             notification.setChannel(channel);
             notification.setContentTemplate(request.templateName());
             notification.setContentVariables(request.templateVariables());
-            notification.setStatus(NotificationStatus.PENDING);
+            notification.setStatus(PENDING);
             notification.setCreatedBy(request.createdBy());
 
             notification = notificationRepository.save(notification);
@@ -203,7 +208,7 @@ public class NotificationService {
     private List<NotificationChannel> resolveChannels(SendNotificationRequest request) {
         // No user → EMAIL only (e.g., tenant notifications)
         if (request.recipientUserId() == null) {
-            return List.of(NotificationChannel.EMAIL);
+            return List.of(EMAIL);
         }
 
         UserPreferences globalPrefs = userPreferencesRepository.findByUserId(request.recipientUserId())
@@ -214,9 +219,9 @@ public class NotificationService {
         // System notification types → all globally-enabled channels
         if (!type.isConfigurable()) {
             List<NotificationChannel> channels = new ArrayList<>();
-            if (globalPrefs.isEmailNotifications()) channels.add(NotificationChannel.EMAIL);
-            if (globalPrefs.isSmsNotifications()) channels.add(NotificationChannel.SMS);
-            return channels.isEmpty() ? List.of(NotificationChannel.EMAIL) : channels;
+            if (globalPrefs.isEmailNotifications()) channels.add(EMAIL);
+            if (globalPrefs.isSmsNotifications()) channels.add(SMS);
+            return channels.isEmpty() ? List.of(EMAIL) : channels;
         }
 
         // Configurable types → intersect global prefs AND per-type prefs
@@ -226,10 +231,10 @@ public class NotificationService {
 
         List<NotificationChannel> channels = new ArrayList<>();
         if (globalPrefs.isEmailNotifications() && typePref.isEmailEnabled()) {
-            channels.add(NotificationChannel.EMAIL);
+            channels.add(EMAIL);
         }
         if (globalPrefs.isSmsNotifications() && typePref.isSmsEnabled()) {
-            channels.add(NotificationChannel.SMS);
+            channels.add(SMS);
         }
 
         return channels;

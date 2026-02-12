@@ -1,7 +1,6 @@
 package com.buurman.config;
 
 import com.sendgrid.SendGrid;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 public class SendGridConfig {
 
     @Bean
-    public SendGrid sendGrid(@Value("${sendgrid.api-key}") String apiKey) {
-        return new SendGrid(apiKey);
+    public SendGrid sendGrid(SendGridProperties sendGridProperties) {
+        return new SendGrid(sendGridProperties.apiKey());
     }
 }

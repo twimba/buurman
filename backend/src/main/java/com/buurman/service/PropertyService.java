@@ -16,13 +16,13 @@ import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.domain.NotificationType;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +54,7 @@ public class PropertyService {
     private final PropertyAmenityService propertyAmenityService;
     private final MetricsService metricsService;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url:https://app.local.buurman.io}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     public PropertyService(
             PropertyRepository propertyRepository,
@@ -69,7 +67,8 @@ public class PropertyService {
             PropertyOutdoorAreaRepository outdoorAreaRepository,
             PropertyAmenityService propertyAmenityService,
             MetricsService metricsService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AppProperties appProperties) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
@@ -81,6 +80,7 @@ public class PropertyService {
         this.propertyAmenityService = propertyAmenityService;
         this.metricsService = metricsService;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -117,7 +117,7 @@ public class PropertyService {
                         "propertyName", propertyName,
                         "propertyAddress", propertyName,
                         "propertyType", savedProperty.getPropertyType() != null ? savedProperty.getPropertyType().name() : "N/A",
-                        "baseUrl", baseUrl
+                        "baseUrl", appProperties.email().baseUrl()
                 ))
                 .createdBy(principal.getUserId())
                 .build());

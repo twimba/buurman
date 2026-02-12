@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import com.buurman.domain.Expense;
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
@@ -54,12 +55,12 @@ public class ExpenseController {
     @Operation(summary = "List expenses", description = "Get all expenses with optional filters and pagination")
     @GetMapping
     public PageResponse<ExpenseResponse> getExpenses(
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Expense.ExpenseCategory category,
             @RequestParam(required = false) String propertyIdentifier,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         // When filtering by propertyIdentifier, use existing non-paginated method wrapped in PageResponse
@@ -69,7 +70,7 @@ public class ExpenseController {
         }
 
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-        return expenseService.getExpensesPaginated(principal, category, null, pageRequest);
+        return expenseService.getExpensesPaginated(principal, category != null ? category.name() : null, null, pageRequest);
     }
 
     @Operation(summary = "Get expense stats", description = "Get expense statistics for the team")

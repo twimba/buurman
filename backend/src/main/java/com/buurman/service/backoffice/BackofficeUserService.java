@@ -9,8 +9,9 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.KeycloakService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.slf4j.Logger;
+
+import static org.jooq.impl.DSL.count;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,11 +46,11 @@ public class BackofficeUserService {
     public PageResponse<BackofficeUserResponse> listUsers(PageRequest pageRequest, String search) {
         PaginatedResult<User> result = userRepository.findAllPaginated(pageRequest, search);
 
-        Map<UUID, Integer> teamCountMap = dsl.select(TEAM_MEMBERS.USER_ID, DSL.count())
+        Map<UUID, Integer> teamCountMap = dsl.select(TEAM_MEMBERS.USER_ID, count())
                 .from(TEAM_MEMBERS)
                 .where(TEAM_MEMBERS.DELETED_AT.isNull())
                 .groupBy(TEAM_MEMBERS.USER_ID)
-                .fetchMap(TEAM_MEMBERS.USER_ID, DSL.count());
+                .fetchMap(TEAM_MEMBERS.USER_ID, count());
 
         List<BackofficeUserResponse> responses = result.items().stream()
                 .map(user -> toResponse(user, teamCountMap.getOrDefault(user.getId(), 0)))

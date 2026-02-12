@@ -1,5 +1,6 @@
 package com.buurman.service.demo;
 
+import com.buurman.config.KeycloakProperties;
 import com.buurman.service.KeycloakService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -7,7 +8,6 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,13 +20,13 @@ public class DemoKeycloakSetup {
 
     private final KeycloakService keycloakService;
     private final Keycloak keycloak;
+    private final String realm;
 
-    @Value("${keycloak.realm}")
-    private String realm;
-
-    public DemoKeycloakSetup(KeycloakService keycloakService, Keycloak keycloak) {
+    public DemoKeycloakSetup(KeycloakService keycloakService, Keycloak keycloak,
+                              KeycloakProperties keycloakProperties) {
         this.keycloakService = keycloakService;
         this.keycloak = keycloak;
+        this.realm = keycloakProperties.realm();
     }
 
     public void createUsers(DemoDataContext ctx) {

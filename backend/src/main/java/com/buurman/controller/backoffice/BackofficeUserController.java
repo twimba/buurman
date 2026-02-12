@@ -1,5 +1,6 @@
 package com.buurman.controller.backoffice;
 
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
@@ -31,7 +32,7 @@ public class BackofficeUserController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "DESC") SortDirection direction) {
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
         return backofficeUserService.listUsers(pageRequest, search);
     }

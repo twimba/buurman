@@ -4,6 +4,8 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
+
+import static com.buurman.domain.NotificationStatus.*;
 import com.buurman.service.notification.DeliveryStatusLookupService;
 import com.twilio.rest.api.v2010.account.Message;
 import org.slf4j.Logger;
@@ -71,11 +73,11 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
 
     private NotificationStatus mapTwilioStatus(String status) {
         return switch (status.toLowerCase()) {
-            case "queued", "accepted" -> NotificationStatus.QUEUED;
-            case "sending", "sent" -> NotificationStatus.SENT;
-            case "delivered" -> NotificationStatus.DELIVERED;
-            case "failed", "undelivered" -> NotificationStatus.FAILED;
-            default -> NotificationStatus.SENT;
+            case "queued", "accepted" -> QUEUED;
+            case "sending", "sent" -> SENT;
+            case "delivered" -> DELIVERED;
+            case "failed", "undelivered" -> FAILED;
+            default -> SENT;
         };
     }
 }

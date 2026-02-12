@@ -5,9 +5,10 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
-import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
+
+import static org.jooq.impl.DSL.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,19 +23,19 @@ import java.util.UUID;
 @Repository
 public class PaymentReceivalRepository {
 
-    private static final Table<?> TABLE = DSL.table("payment_receivals");
-    private static final Field<UUID> ID = DSL.field("id", UUID.class);
-    private static final Field<String> IDENTIFIER = DSL.field("identifier", String.class);
-    private static final Field<UUID> TEAM_ID = DSL.field("team_id", UUID.class);
-    private static final Field<UUID> PAYMENT_ID = DSL.field("payment_id", UUID.class);
-    private static final Field<BigDecimal> AMOUNT = DSL.field("amount", BigDecimal.class);
-    private static final Field<LocalDate> RECEIVAL_DATE = DSL.field("receival_date", LocalDate.class);
-    private static final Field<String> NOTES = DSL.field("notes", String.class);
-    private static final Field<LocalDateTime> CREATED_AT = DSL.field("created_at", LocalDateTime.class);
-    private static final Field<LocalDateTime> UPDATED_AT = DSL.field("updated_at", LocalDateTime.class);
-    private static final Field<UUID> CREATED_BY = DSL.field("created_by", UUID.class);
-    private static final Field<UUID> UPDATED_BY = DSL.field("updated_by", UUID.class);
-    private static final Field<LocalDateTime> DELETED_AT = DSL.field("deleted_at", LocalDateTime.class);
+    private static final Table<?> TABLE = table("payment_receivals");
+    private static final Field<UUID> ID = field("id", UUID.class);
+    private static final Field<String> IDENTIFIER = field("identifier", String.class);
+    private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
+    private static final Field<UUID> PAYMENT_ID = field("payment_id", UUID.class);
+    private static final Field<BigDecimal> AMOUNT = field("amount", BigDecimal.class);
+    private static final Field<LocalDate> RECEIVAL_DATE = field("receival_date", LocalDate.class);
+    private static final Field<String> NOTES = field("notes", String.class);
+    private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
+    private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
+    private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
+    private static final Field<UUID> UPDATED_BY = field("updated_by", UUID.class);
+    private static final Field<LocalDateTime> DELETED_AT = field("deleted_at", LocalDateTime.class);
 
     private final DSLContext dsl;
 
@@ -85,7 +86,7 @@ public class PaymentReceivalRepository {
     }
 
     public BigDecimal sumByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
-        BigDecimal sum = dsl.select(DSL.coalesce(DSL.sum(AMOUNT), BigDecimal.ZERO))
+        BigDecimal sum = dsl.select(coalesce(sum(AMOUNT), BigDecimal.ZERO))
                 .from(TABLE)
                 .where(PAYMENT_ID.eq(paymentId)
                         .and(TEAM_ID.eq(teamId))

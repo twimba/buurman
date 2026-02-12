@@ -1,6 +1,5 @@
 package com.buurman.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -16,26 +15,20 @@ import java.net.URI;
 @Configuration
 public class S3Config {
 
-    @Value("${aws.s3.endpoint}")
-    private String s3Endpoint;
+    private final AwsS3Properties awsS3Properties;
 
-    @Value("${aws.s3.region}")
-    private String region;
-
-    @Value("${aws.s3.access-key}")
-    private String accessKey;
-
-    @Value("${aws.s3.secret-key}")
-    private String secretKey;
+    public S3Config(AwsS3Properties awsS3Properties) {
+        this.awsS3Properties = awsS3Properties;
+    }
 
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
                 .httpClient(UrlConnectionHttpClient.builder().build())
-                .endpointOverride(URI.create(s3Endpoint))
-                .region(Region.of(region))
+                .endpointOverride(URI.create(awsS3Properties.endpoint()))
+                .region(Region.of(awsS3Properties.region()))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)))
+                        AwsBasicCredentials.create(awsS3Properties.accessKey(), awsS3Properties.secretKey())))
                 .forcePathStyle(true) // Required for S3-compatible storage (SeaweedFS, etc.)
                 .build();
     }
@@ -43,10 +36,10 @@ public class S3Config {
     @Bean
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
-                .endpointOverride(URI.create(s3Endpoint))
-                .region(Region.of(region))
+                .endpointOverride(URI.create(awsS3Properties.endpoint()))
+                .region(Region.of(awsS3Properties.region()))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)))
+                        AwsBasicCredentials.create(awsS3Properties.accessKey(), awsS3Properties.secretKey())))
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true) // Required for S3-compatible storage (SeaweedFS, etc.)
                         .build())

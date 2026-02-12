@@ -20,8 +20,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class ContractPaymentInstructionService {
@@ -60,7 +61,7 @@ public class ContractPaymentInstructionService {
                 ? Map.of()
                 : piRepository.findAllByTeamId(principal.getTeamId()).stream()
                         .filter(pi -> templateIds.contains(pi.getId()))
-                        .collect(Collectors.toMap(PaymentInstruction::getId, Function.identity()));
+                        .collect(toMap(PaymentInstruction::getId, identity()));
 
         return history.stream()
                 .map(cpi -> toResolvedResponse(cpi, templateMap))

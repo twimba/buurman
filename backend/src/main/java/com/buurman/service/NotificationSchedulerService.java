@@ -12,11 +12,11 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +41,7 @@ public class NotificationSchedulerService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url:https://app.local.buurman.io}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     public NotificationSchedulerService(ContractRepository contractRepository,
                                         PaymentRepository paymentRepository,
@@ -51,7 +49,8 @@ public class NotificationSchedulerService {
                                         TeamRepository teamRepository,
                                         TeamMemberRepository teamMemberRepository,
                                         UserRepository userRepository,
-                                        NotificationService notificationService) {
+                                        NotificationService notificationService,
+                                        AppProperties appProperties) {
         this.contractRepository = contractRepository;
         this.paymentRepository = paymentRepository;
         this.propertyRepository = propertyRepository;
@@ -59,6 +58,7 @@ public class NotificationSchedulerService {
         this.teamMemberRepository = teamMemberRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
@@ -96,7 +96,7 @@ public class NotificationSchedulerService {
                                             "propertyName", propertyName,
                                             "daysUntilExpiry", daysUntilExpiry,
                                             "expiryDate", formatDate(contract.getEndDate()),
-                                            "baseUrl", baseUrl
+                                            "baseUrl", appProperties.email().baseUrl()
                                     ))
                                     .build()));
                 }
@@ -141,7 +141,7 @@ public class NotificationSchedulerService {
                                             "propertyName", propertyName,
                                             "amount", formatCurrency(payment.getAmount()),
                                             "dueDate", formatDate(payment.getDueDate()),
-                                            "baseUrl", baseUrl
+                                            "baseUrl", appProperties.email().baseUrl()
                                     ))
                                     .build()));
                 }

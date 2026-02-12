@@ -2,7 +2,6 @@ package com.buurman.config;
 
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -10,14 +9,14 @@ import org.springframework.context.annotation.Profile;
 @Profile("!local")
 public class TwilioConfig {
 
-    @Value("${twilio.account-sid}")
-    private String accountSid;
+    private final TwilioProperties twilioProperties;
 
-    @Value("${twilio.auth-token}")
-    private String authToken;
+    public TwilioConfig(TwilioProperties twilioProperties) {
+        this.twilioProperties = twilioProperties;
+    }
 
     @PostConstruct
     public void init() {
-        Twilio.init(accountSid, authToken);
+        Twilio.init(twilioProperties.accountSid(), twilioProperties.authToken());
     }
 }

@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.buurman.domain.Payment.PaymentStatus.*;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static org.jooq.impl.DSL.*;
 
 @Repository
 public class PaymentRepository {
@@ -87,7 +89,7 @@ public class PaymentRepository {
         LocalDate today = LocalDate.now();
         return dsl.selectFrom(PAYMENTS)
                 .where(PAYMENTS.TEAM_ID.eq(teamId)
-                        .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                        .and(PAYMENTS.STATUS.eq(PENDING.name()))
                         .and(PAYMENTS.DUE_DATE.lt(today))
                         .and(PAYMENTS.DELETED_AT.isNull()))
                 .orderBy(PAYMENTS.DUE_DATE.asc())
@@ -189,7 +191,7 @@ public class PaymentRepository {
         return dsl.selectFrom(PAYMENTS)
                 .where(PAYMENTS.CONTRACT_ID.eq(contractId)
                         .and(PAYMENTS.TEAM_ID.eq(teamId))
-                        .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                        .and(PAYMENTS.STATUS.eq(PENDING.name()))
                         .and(PAYMENTS.DUE_DATE.gt(today))
                         .and(PAYMENTS.DELETED_AT.isNull()))
                 .fetch()
@@ -200,7 +202,7 @@ public class PaymentRepository {
         Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
         if (status != null && !status.isEmpty()) {
             if ("OVERDUE".equalsIgnoreCase(status)) {
-                condition = condition.and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                condition = condition.and(PAYMENTS.STATUS.eq(PENDING.name()))
                         .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()));
             } else {
                 condition = condition.and(PAYMENTS.STATUS.eq(status));
@@ -220,12 +222,12 @@ public class PaymentRepository {
 
     public Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
         return dsl.select(
-                org.jooq.impl.DSL.count().as("count"),
-                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+                count().as("count"),
+                sum(PAYMENTS.AMOUNT).as("total")
         )
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId)
-                .and(PAYMENTS.STATUS.in(Payment.PaymentStatus.PENDING.name(), Payment.PaymentStatus.PARTIALLY_PAID.name()))
+                .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name()))
                 .and(PAYMENTS.DUE_DATE.ge(LocalDate.now()))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOne();
@@ -233,12 +235,12 @@ public class PaymentRepository {
 
     public Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
         return dsl.select(
-                org.jooq.impl.DSL.count().as("count"),
-                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+                count().as("count"),
+                sum(PAYMENTS.AMOUNT).as("total")
         )
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId)
-                .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PENDING.name()))
+                .and(PAYMENTS.STATUS.eq(PENDING.name()))
                 .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOne();
@@ -247,17 +249,17 @@ public class PaymentRepository {
     public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
         LocalDate startDate = LocalDate.now().minusMonths(months).withDayOfMonth(1);
         return dsl.select(
-                org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
-                org.jooq.impl.DSL.sum(PAYMENTS.AMOUNT).as("total")
+                field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
+                sum(PAYMENTS.AMOUNT).as("total")
         )
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId)
-                .and(PAYMENTS.STATUS.eq(Payment.PaymentStatus.PAID.name()))
+                .and(PAYMENTS.STATUS.eq(PAID.name()))
                 .and(PAYMENTS.PAYMENT_DATE.isNotNull())
                 .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .groupBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
-        .orderBy(org.jooq.impl.DSL.field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
+        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
+        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
         .fetch();
     }
 

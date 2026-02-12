@@ -1,5 +1,6 @@
 package com.buurman.controller;
 
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePhotoRequest;
@@ -40,7 +41,7 @@ public class PhotoController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);

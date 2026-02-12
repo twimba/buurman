@@ -8,8 +8,9 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
-import org.jooq.impl.DSL;
 import org.slf4j.Logger;
+
+import static org.jooq.impl.DSL.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class DatabaseMetricsService {
     @Scheduled(fixedRate = 600_000, initialDelay = 60_000)
     public void refreshCounts() {
         try {
-            var nonDemoTeamIds = DSL.select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+            var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
 
             propertiesCount.set(dsl.fetchCount(PROPERTIES,
                     PROPERTIES.DELETED_AT.isNull().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds))));
@@ -89,9 +90,9 @@ public class DatabaseMetricsService {
     }
 
     private void refreshContractsByStatus() {
-        var nonDemoTeamIds = DSL.select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+        var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
         Result<Record2<String, Integer>> result = dsl
-                .select(CONTRACTS.STATUS, DSL.count())
+                .select(CONTRACTS.STATUS, count())
                 .from(CONTRACTS)
                 .where(CONTRACTS.DELETED_AT.isNull())
                 .and(CONTRACTS.TEAM_ID.in(nonDemoTeamIds))
@@ -105,9 +106,9 @@ public class DatabaseMetricsService {
     }
 
     private void refreshPaymentsByStatus() {
-        var nonDemoTeamIds = DSL.select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+        var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
         Result<Record2<String, Integer>> result = dsl
-                .select(PAYMENTS.STATUS, DSL.count())
+                .select(PAYMENTS.STATUS, count())
                 .from(PAYMENTS)
                 .where(PAYMENTS.DELETED_AT.isNull())
                 .and(PAYMENTS.TEAM_ID.in(nonDemoTeamIds))

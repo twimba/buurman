@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import com.buurman.config.SendGridProperties;
+import com.buurman.config.TwilioProperties;
 import com.buurman.service.notification.WebhookService;
 import com.sendgrid.helpers.eventwebhook.EventWebhook;
 import com.twilio.security.RequestValidator;
@@ -8,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,15 +25,15 @@ public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     private final WebhookService webhookService;
-    private final String twilioAuthToken;
-    private final String sendGridVerificationKey;
+    private final TwilioProperties twilioProperties;
+    private final SendGridProperties sendGridProperties;
 
     public WebhookController(WebhookService webhookService,
-                             @Value("${twilio.auth-token:}") String twilioAuthToken,
-                             @Value("${sendgrid.webhook-verification-key:}") String sendGridVerificationKey) {
+                             TwilioProperties twilioProperties,
+                             SendGridProperties sendGridProperties) {
         this.webhookService = webhookService;
-        this.twilioAuthToken = twilioAuthToken;
-        this.sendGridVerificationKey = sendGridVerificationKey;
+        this.twilioProperties = twilioProperties;
+        this.sendGridProperties = sendGridProperties;
     }
 
     @Operation(summary = "SendGrid event webhook", description = "Receives delivery status events from SendGrid")
@@ -73,7 +74,8 @@ public class WebhookController {
     }
 
     private boolean verifySendGridSignature(String payload, String signature, String timestamp) {
-        if (sendGridVerificationKey == null || sendGridVerificationKey.isBlank()) {
+        String verificationKey = sendGridProperties.webhookVerificationKey();
+        if (verificationKey == null || verificationKey.isBlank()) {
             return true; // Skip verification in dev
         }
         if (signature == null || timestamp == null) {
@@ -81,7 +83,7 @@ public class WebhookController {
         }
         try {
             EventWebhook eventWebhook = new EventWebhook();
-            ECPublicKey publicKey = eventWebhook.ConvertPublicKeyToECDSA(sendGridVerificationKey);
+            ECPublicKey publicKey = eventWebhook.ConvertPublicKeyToECDSA(verificationKey);
             return eventWebhook.VerifySignature(publicKey, payload, signature, timestamp);
         } catch (Exception e) {
             log.error("SendGrid signature verification error: {}", e.getMessage());
@@ -90,14 +92,15 @@ public class WebhookController {
     }
 
     private boolean verifyTwilioSignature(HttpServletRequest request, Map<String, String> params, String signature) {
-        if (twilioAuthToken == null || twilioAuthToken.isBlank()) {
+        String authToken = twilioProperties.authToken();
+        if (authToken == null || authToken.isBlank()) {
             return true; // Skip verification in dev
         }
         if (signature == null) {
             return false;
         }
         try {
-            RequestValidator validator = new RequestValidator(twilioAuthToken);
+            RequestValidator validator = new RequestValidator(authToken);
             String url = request.getRequestURL().toString();
             return validator.validate(url, params, signature);
         } catch (Exception e) {

@@ -2,6 +2,8 @@ package com.buurman.service.notification.channel;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.service.notification.NotificationChannelSender;
+
+import static com.buurman.domain.NotificationChannel.SMS;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
@@ -34,13 +36,13 @@ public class LocalSmsSender implements NotificationChannelSender {
 
     @Override
     public NotificationChannel getChannel() {
-        return NotificationChannel.SMS;
+        return SMS;
     }
 
     @Override
     public RenderedContent render(String templateName, Map<String, Object> variables) {
         String body = renderSmsTemplate(templateName, variables);
-        return new RenderedContent(null, body, NotificationChannel.SMS);
+        return new RenderedContent(null, body, SMS);
     }
 
     private String renderSmsTemplate(String templateName, Map<String, Object> variables) {

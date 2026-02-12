@@ -21,13 +21,13 @@ import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.domain.NotificationType;
+import com.buurman.config.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +54,7 @@ public class ExpenseService {
     private final com.buurman.mapper.DocumentMapper documentMapper;
     private final MetricsService metricsService;
     private final NotificationService notificationService;
-
-    @Value("${app.email.base-url:https://app.local.buurman.io}")
-    private String baseUrl;
+    private final AppProperties appProperties;
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
@@ -68,7 +66,8 @@ public class ExpenseService {
             DocumentService documentService,
             com.buurman.mapper.DocumentMapper documentMapper,
             MetricsService metricsService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AppProperties appProperties) {
         this.expenseRepository = expenseRepository;
         this.propertyRepository = propertyRepository;
         this.documentRepository = documentRepository;
@@ -79,6 +78,7 @@ public class ExpenseService {
         this.documentMapper = documentMapper;
         this.metricsService = metricsService;
         this.notificationService = notificationService;
+        this.appProperties = appProperties;
     }
 
     @Transactional
@@ -122,7 +122,7 @@ public class ExpenseService {
                         "category", savedExpense.getCategory() != null ? savedExpense.getCategory().name() : "N/A",
                         "amount", currency + " " + savedExpense.getAmount(),
                         "description", savedExpense.getDescription() != null ? savedExpense.getDescription() : "",
-                        "baseUrl", baseUrl
+                        "baseUrl", appProperties.email().baseUrl()
                 ))
                 .createdBy(principal.getUserId())
                 .build());

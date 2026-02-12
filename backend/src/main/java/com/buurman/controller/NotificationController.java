@@ -1,5 +1,9 @@
 package com.buurman.controller;
 
+import com.buurman.domain.NotificationChannel;
+import com.buurman.domain.NotificationStatus;
+import com.buurman.domain.NotificationType;
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
 import com.buurman.dto.response.NotificationStatsResponse;
@@ -29,21 +33,25 @@ public class NotificationController {
     @Operation(summary = "List notifications", description = "Paginated list of all team notifications (Admin only)")
     @GetMapping
     public PageResponse<NotificationResponse> getNotifications(
-            @RequestParam(required = false) String type,
-            @RequestParam(required = false) String channel,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) NotificationType type,
+            @RequestParam(required = false) NotificationChannel channel,
+            @RequestParam(required = false) NotificationStatus status,
             @RequestParam(required = false) String recipientEmail,
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
-        PageRequest pageRequest = new PageRequest(page, size, sort, direction);
+        PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
         PaginatedResult<NotificationResponse> result = centerService.getNotifications(
-                principal, type, channel, status, recipientEmail, dateFrom, dateTo, pageRequest);
+                principal,
+                type != null ? type.name() : null,
+                channel != null ? channel.name() : null,
+                status != null ? status.name() : null,
+                recipientEmail, dateFrom, dateTo, pageRequest);
 
         return PageResponse.of(result.items(), page, size, result.totalElements());
     }

@@ -1,0 +1,17 @@
+package com.buurman.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "keycloak")
+public record KeycloakProperties(
+        Admin admin,
+        String realm
+) {
+    public record Admin(
+            String serverUrl,
+            String realm,
+            String clientId,
+            String username,
+            String password
+    ) {}
+}

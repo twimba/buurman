@@ -3,6 +3,8 @@ package com.buurman.service.notification;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
+
+import static com.buurman.domain.NotificationStatus.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -18,13 +20,13 @@ public class WebhookService {
     private static final Logger log = LoggerFactory.getLogger(WebhookService.class);
 
     private static final Map<NotificationStatus, Integer> STATUS_RANK = Map.of(
-            NotificationStatus.PENDING, 0,
-            NotificationStatus.QUEUED, 1,
-            NotificationStatus.SENT, 2,
-            NotificationStatus.DELIVERED, 3,
-            NotificationStatus.FAILED, 10,
-            NotificationStatus.BOUNCED, 10,
-            NotificationStatus.REJECTED, 10
+            PENDING, 0,
+            QUEUED, 1,
+            SENT, 2,
+            DELIVERED, 3,
+            FAILED, 10,
+            BOUNCED, 10,
+            REJECTED, 10
     );
 
     private final NotificationRepository notificationRepository;
@@ -103,22 +105,22 @@ public class WebhookService {
 
     private NotificationStatus mapSendGridStatus(String eventType) {
         return switch (eventType) {
-            case "processed" -> NotificationStatus.QUEUED;
-            case "delivered" -> NotificationStatus.DELIVERED;
-            case "bounce", "blocked" -> NotificationStatus.BOUNCED;
-            case "dropped" -> NotificationStatus.REJECTED;
-            case "deferred" -> NotificationStatus.QUEUED;
-            default -> NotificationStatus.SENT;
+            case "processed" -> QUEUED;
+            case "delivered" -> DELIVERED;
+            case "bounce", "blocked" -> BOUNCED;
+            case "dropped" -> REJECTED;
+            case "deferred" -> QUEUED;
+            default -> SENT;
         };
     }
 
     private NotificationStatus mapTwilioStatus(String status) {
         return switch (status) {
-            case "queued", "accepted" -> NotificationStatus.QUEUED;
-            case "sending", "sent" -> NotificationStatus.SENT;
-            case "delivered" -> NotificationStatus.DELIVERED;
-            case "failed", "undelivered" -> NotificationStatus.FAILED;
-            default -> NotificationStatus.SENT;
+            case "queued", "accepted" -> QUEUED;
+            case "sending", "sent" -> SENT;
+            case "delivered" -> DELIVERED;
+            case "failed", "undelivered" -> FAILED;
+            default -> SENT;
         };
     }
 }

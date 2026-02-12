@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.buurman.domain.SortDirection.ASC;
+
 public final class PaginationHelper {
 
     private PaginationHelper() {}
@@ -28,7 +30,7 @@ public final class PaginationHelper {
                 ? sortableFields.get(pageRequest.sort())
                 : defaultSort;
 
-        SortField<?> orderBy = "asc".equals(pageRequest.direction())
+        SortField<?> orderBy = pageRequest.direction() == ASC
                 ? sortField.asc()
                 : sortField.desc();
 

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.buurman.domain.AuditLog.Action.*;
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.USERS;
 
@@ -50,7 +51,7 @@ public class AuditService {
                     teamId,
                     entityType,
                     entityId,
-                    AuditLog.Action.CREATE.name(),
+                    CREATE.name(),
                     null,
                     null,
                     JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
@@ -60,7 +61,7 @@ public class AuditService {
 
             metricsService.incrementCounter("audit.log.total",
                     "entity_type", entityType, "action", "CREATE");
-            log.debug("Audit log created: {} {} for team {}", AuditLog.Action.CREATE, entityType, teamId);
+            log.debug("Audit log created: {} {} for team {}", CREATE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
         }
@@ -77,7 +78,7 @@ public class AuditService {
                     teamId,
                     entityType,
                     entityId,
-                    AuditLog.Action.UPDATE.name(),
+                    UPDATE.name(),
                     JSONB.valueOf(objectMapper.writeValueAsString(changedFields)),
                     JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
                     JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
@@ -87,7 +88,7 @@ public class AuditService {
 
             metricsService.incrementCounter("audit.log.total",
                     "entity_type", entityType, "action", "UPDATE");
-            log.debug("Audit log created: {} {} for team {}", AuditLog.Action.UPDATE, entityType, teamId);
+            log.debug("Audit log created: {} {} for team {}", UPDATE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
         }
@@ -102,7 +103,7 @@ public class AuditService {
                     teamId,
                     entityType,
                     entityId,
-                    AuditLog.Action.DELETE.name(),
+                    DELETE.name(),
                     null,
                     JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
                     null,
@@ -112,7 +113,7 @@ public class AuditService {
 
             metricsService.incrementCounter("audit.log.total",
                     "entity_type", entityType, "action", "DELETE");
-            log.debug("Audit log created: {} {} for team {}", AuditLog.Action.DELETE, entityType, teamId);
+            log.debug("Audit log created: {} {} for team {}", DELETE, entityType, teamId);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity for audit log", e);
         }

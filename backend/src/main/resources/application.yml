@@ -85,9 +85,15 @@ buurman:
 # Application Configuration
 app:
   version: @project.version@
+  api:
+    base-url: ${API_BASE_URL:https://api.local.buurman.io}
   documents:
     max-file-size: 52428800
-    allowed-mime-types: application/pdf,image/jpeg,image/png,image/gif
+    allowed-mime-types:
+      - application/pdf
+      - image/jpeg
+      - image/png
+      - image/gif
   email:
     from: ${EMAIL_FROM:noreply@buurman.io}
     from-name: ${EMAIL_FROM_NAME:Buurman}

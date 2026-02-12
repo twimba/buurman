@@ -1,8 +1,8 @@
 package com.buurman.service;
 
+import com.buurman.config.AwsS3Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -20,11 +20,9 @@ public class S3BucketInitializer {
     private final S3Client s3Client;
     private final String bucketName;
 
-    public S3BucketInitializer(
-            S3Client s3Client,
-            @Value("${aws.s3.bucket-name}") String bucketName) {
+    public S3BucketInitializer(S3Client s3Client, AwsS3Properties s3Properties) {
         this.s3Client = s3Client;
-        this.bucketName = bucketName;
+        this.bucketName = s3Properties.bucketName();
     }
 
     @EventListener(ApplicationReadyEvent.class)

@@ -2,15 +2,17 @@ package com.buurman.service.notification.channel;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.service.notification.NotificationChannelSender;
+
+import static com.buurman.domain.NotificationChannel.SMS;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
+import com.buurman.config.TwilioProperties;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +28,9 @@ public class TwilioSmsSender implements NotificationChannelSender {
     private final String fromNumber;
     private final String statusCallbackUrl;
 
-    public TwilioSmsSender(@Value("${twilio.from-number}") String fromNumber,
-                           @Value("${twilio.status-callback-url:}") String statusCallbackUrl) {
-        this.fromNumber = fromNumber;
-        this.statusCallbackUrl = statusCallbackUrl;
+    public TwilioSmsSender(TwilioProperties twilioProperties) {
+        this.fromNumber = twilioProperties.fromNumber();
+        this.statusCallbackUrl = twilioProperties.statusCallbackUrl();
     }
 
     @Override
@@ -56,13 +57,13 @@ public class TwilioSmsSender implements NotificationChannelSender {
 
     @Override
     public NotificationChannel getChannel() {
-        return NotificationChannel.SMS;
+        return SMS;
     }
 
     @Override
     public RenderedContent render(String templateName, Map<String, Object> variables) {
         String body = renderSmsTemplate(templateName, variables);
-        return new RenderedContent(null, body, NotificationChannel.SMS);
+        return new RenderedContent(null, body, SMS);
     }
 
     private String renderSmsTemplate(String templateName, Map<String, Object> variables) {

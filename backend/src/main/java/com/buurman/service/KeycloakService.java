@@ -1,12 +1,12 @@
 package com.buurman.service;
 
+import com.buurman.config.KeycloakProperties;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +17,11 @@ import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD
 public class KeycloakService {
 
     private final Keycloak keycloak;
+    private final String realm;
 
-    @Value("${keycloak.realm}")
-    private String realm;
-
-    public KeycloakService(Keycloak keycloak) {
+    public KeycloakService(Keycloak keycloak, KeycloakProperties keycloakProperties) {
         this.keycloak = keycloak;
+        this.realm = keycloakProperties.realm();
     }
 
     public String createUser(String email, String firstName, String lastName, String password) {

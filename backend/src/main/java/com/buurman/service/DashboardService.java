@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.buurman.domain.Property.PropertyStatus.*;
 import static com.buurman.jooq.generated.Tables.*;
 
 @Service
@@ -36,16 +37,16 @@ public class DashboardService {
 
         int totalProperties = allProperties.size();
         int occupiedUnits = (int) allProperties.stream()
-                .filter(p -> p.getStatus() == Property.PropertyStatus.OCCUPIED)
+                .filter(p -> p.getStatus() == OCCUPIED)
                 .count();
         int vacantUnits = (int) allProperties.stream()
-                .filter(p -> p.getStatus() == Property.PropertyStatus.VACANT)
+                .filter(p -> p.getStatus() == VACANT)
                 .count();
         int maintenanceUnits = (int) allProperties.stream()
-                .filter(p -> p.getStatus() == Property.PropertyStatus.MAINTENANCE)
+                .filter(p -> p.getStatus() == MAINTENANCE)
                 .count();
         int unavailableUnits = (int) allProperties.stream()
-                .filter(p -> p.getStatus() == Property.PropertyStatus.UNAVAILABLE)
+                .filter(p -> p.getStatus() == UNAVAILABLE)
                 .count();
 
         // Calculate occupancy rate (excluding unavailable units)

@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+
+import static org.jooq.impl.DSL.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -22,13 +23,13 @@ public class PhoneNumberPolicyRepository {
     private final DSLContext dsl;
     private final ObjectMapper objectMapper;
 
-    private static final org.jooq.Table<?> TABLE = DSL.table("phone_number_policy");
-    private static final org.jooq.Field<UUID> ID = DSL.field("id", UUID.class);
-    private static final org.jooq.Field<JSONB> POLICY_MATRIX = DSL.field("policy_matrix", JSONB.class);
-    private static final org.jooq.Field<Integer> MAX_CODES_PER_HOUR = DSL.field("max_codes_per_hour", Integer.class);
-    private static final org.jooq.Field<Integer> VERIFICATION_CODE_EXPIRY_MINUTES = DSL.field("verification_code_expiry_minutes", Integer.class);
-    private static final org.jooq.Field<Timestamp> UPDATED_AT = DSL.field("updated_at", Timestamp.class);
-    private static final org.jooq.Field<String> UPDATED_BY = DSL.field("updated_by", String.class);
+    private static final org.jooq.Table<?> TABLE = table("phone_number_policy");
+    private static final org.jooq.Field<UUID> ID = field("id", UUID.class);
+    private static final org.jooq.Field<JSONB> POLICY_MATRIX = field("policy_matrix", JSONB.class);
+    private static final org.jooq.Field<Integer> MAX_CODES_PER_HOUR = field("max_codes_per_hour", Integer.class);
+    private static final org.jooq.Field<Integer> VERIFICATION_CODE_EXPIRY_MINUTES = field("verification_code_expiry_minutes", Integer.class);
+    private static final org.jooq.Field<Timestamp> UPDATED_AT = field("updated_at", Timestamp.class);
+    private static final org.jooq.Field<String> UPDATED_BY = field("updated_by", String.class);
 
     public PhoneNumberPolicyRepository(DSLContext dsl, ObjectMapper objectMapper) {
         this.dsl = dsl;

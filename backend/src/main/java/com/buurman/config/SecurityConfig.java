@@ -1,5 +1,6 @@
 package com.buurman.security;
 
+import com.buurman.config.AppProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +34,7 @@ public class SecurityConfig {
     private final MdcFilter mdcFilter;
     private final DemoApiKeyFilter demoApiKeyFilter;
     private final EmailVerificationFilter emailVerificationFilter;
-    private final List<String> allowedOrigins;
-    private final List<String> backofficeAllowedOrigins;
+    private final AppProperties appProperties;
     private final String backofficeJwkSetUri;
     private final String backofficeIssuerUri;
 
@@ -43,8 +43,7 @@ public class SecurityConfig {
                          MdcFilter mdcFilter,
                          DemoApiKeyFilter demoApiKeyFilter,
                          EmailVerificationFilter emailVerificationFilter,
-                         @Value("${app.cors.allowed-origins}") List<String> allowedOrigins,
-                         @Value("${app.cors.backoffice-allowed-origins:http://localhost:5174,https://backoffice.local.buurman.io}") List<String> backofficeAllowedOrigins,
+                         AppProperties appProperties,
                          @Value("${spring.security.oauth2.resourceserver.jwt.backoffice.jwk-set-uri:}") String backofficeJwkSetUri,
                          @Value("${spring.security.oauth2.resourceserver.jwt.backoffice.issuer-uri:}") String backofficeIssuerUri) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
@@ -52,8 +51,7 @@ public class SecurityConfig {
         this.mdcFilter = mdcFilter;
         this.demoApiKeyFilter = demoApiKeyFilter;
         this.emailVerificationFilter = emailVerificationFilter;
-        this.allowedOrigins = allowedOrigins;
-        this.backofficeAllowedOrigins = backofficeAllowedOrigins;
+        this.appProperties = appProperties;
         this.backofficeJwkSetUri = backofficeJwkSetUri;
         this.backofficeIssuerUri = backofficeIssuerUri;
     }
@@ -114,28 +112,29 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-Demo-Api-Key"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        return buildCorsSource(
+                appProperties.cors().allowedOrigins(),
+                "/**",
+                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-Demo-Api-Key"));
     }
 
     private CorsConfigurationSource backofficeCorsConfigurationSource() {
+        return buildCorsSource(
+                appProperties.cors().backofficeAllowedOrigins(),
+                "/backoffice/**",
+                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
+    }
+
+    private CorsConfigurationSource buildCorsSource(List<String> origins, String pathPattern, List<String> allowedHeaders) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(backofficeAllowedOrigins);
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        configuration.setAllowedHeaders(allowedHeaders);
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/backoffice/**", configuration);
+        source.registerCorsConfiguration(pathPattern, configuration);
         return source;
     }
 

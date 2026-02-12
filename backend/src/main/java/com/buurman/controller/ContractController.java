@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
@@ -60,13 +61,13 @@ public class ContractController {
     @Operation(summary = "List contracts", description = "Get all contracts with optional filters and pagination")
     @GetMapping
     public PageResponse<ContractResponse> getContracts(
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Contract.ContractStatus status,
             @RequestParam(required = false) String propertyIdentifier,
             @RequestParam(required = false) String tenantIdentifier,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         // When filtering by property or tenant identifier, use the existing non-paginated methods wrapped in PageResponse
@@ -81,7 +82,7 @@ public class ContractController {
         }
 
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-        return contractService.getContractsPaginated(principal, status, pageRequest);
+        return contractService.getContractsPaginated(principal, status != null ? status.name() : null, pageRequest);
     }
 
     @Operation(summary = "Get contract details", description = "Get details of a specific contract")

@@ -6,7 +6,6 @@ import org.quartz.JobDetail;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,12 +22,12 @@ public class NotificationQuartzConfig {
 
     @Bean
     public Trigger notificationOutboxTrigger(JobDetail notificationOutboxJobDetail,
-                                              @Value("${notification.outbox.poll-interval-ms:10000}") long intervalMs) {
+                                              NotificationOutboxProperties notificationOutboxProperties) {
         return TriggerBuilder.newTrigger()
                 .forJob(notificationOutboxJobDetail)
                 .withIdentity("notificationOutboxTrigger", "notification")
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInMilliseconds(intervalMs)
+                        .withIntervalInMilliseconds(notificationOutboxProperties.pollIntervalMs())
                         .repeatForever())
                 .build();
     }

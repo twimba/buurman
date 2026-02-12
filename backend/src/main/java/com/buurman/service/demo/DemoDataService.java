@@ -65,7 +65,7 @@ public class DemoDataService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (!properties.isEnabled()) {
+        if (!properties.enabled()) {
             log.info("Demo data loading is disabled");
             return;
         }
@@ -328,7 +328,7 @@ public class DemoDataService implements ApplicationRunner {
 
     @Scheduled(cron = "${buurman.demo.cron:0 0 */12 * * *}")
     public void scheduledRegenerate() {
-        if (!properties.isEnabled() || !properties.isAutoRegenerate()) {
+        if (!properties.enabled() || !properties.autoRegenerate()) {
             return;
         }
         log.info("Starting scheduled demo data regeneration");
@@ -340,6 +340,6 @@ public class DemoDataService implements ApplicationRunner {
     }
 
     public boolean isEnabled() {
-        return properties.isEnabled();
+        return properties.enabled();
     }
 }

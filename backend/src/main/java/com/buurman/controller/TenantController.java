@@ -1,5 +1,6 @@
 package com.buurman.controller;
 
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
@@ -56,7 +57,7 @@ public class TenantController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
         return tenantService.getTenantsPaginated(principal, search, pageRequest);

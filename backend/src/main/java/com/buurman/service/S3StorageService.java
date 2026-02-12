@@ -1,8 +1,8 @@
 package com.buurman.service;
 
+import com.buurman.config.AwsS3Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -40,15 +40,13 @@ public class S3StorageService {
     public S3StorageService(
             S3Client s3Client,
             S3Presigner s3Presigner,
-            @Value("${aws.s3.bucket-name}") String bucketName,
-            @Value("${aws.s3.public-endpoint}") String s3PublicEndpoint,
-            @Value("${aws.s3.use-presigned-urls}") boolean usePresignedUrls,
+            AwsS3Properties s3Properties,
             MetricsService metricsService) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
-        this.bucketName = bucketName;
-        this.s3PublicEndpoint = s3PublicEndpoint;
-        this.usePresignedUrls = usePresignedUrls;
+        this.bucketName = s3Properties.bucketName();
+        this.s3PublicEndpoint = s3Properties.publicEndpoint();
+        this.usePresignedUrls = s3Properties.usePresignedUrls();
         this.metricsService = metricsService;
     }
 

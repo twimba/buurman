@@ -1,11 +1,11 @@
 package com.buurman.service.demo;
 
+import com.buurman.config.AwsS3Properties;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -29,9 +29,7 @@ public class DemoPhotoGenerator {
 
     private final DSLContext dsl;
     private final S3Client s3Client;
-
-    @Value("${aws.s3.bucket-name}")
-    private String bucketName;
+    private final String bucketName;
 
     private final Random random = new Random(42);
 
@@ -44,9 +42,10 @@ public class DemoPhotoGenerator {
 
     private static final int PHOTOS_PER_PROPERTY = 4;
 
-    public DemoPhotoGenerator(DSLContext dsl, S3Client s3Client) {
+    public DemoPhotoGenerator(DSLContext dsl, S3Client s3Client, AwsS3Properties s3Properties) {
         this.dsl = dsl;
         this.s3Client = s3Client;
+        this.bucketName = s3Properties.bucketName();
     }
 
     public void generate(DemoDataContext ctx) {

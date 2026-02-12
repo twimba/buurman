@@ -16,8 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class UserPreferencesService {
@@ -79,7 +80,7 @@ public class UserPreferencesService {
 
         List<UserNotificationTypePreference> saved = notifTypePrefRepository.findByUserId(principal.getUserId());
         Map<NotificationType, UserNotificationTypePreference> savedMap = saved.stream()
-            .collect(Collectors.toMap(UserNotificationTypePreference::getNotificationType, Function.identity()));
+            .collect(toMap(UserNotificationTypePreference::getNotificationType, identity()));
 
         List<NotificationTypePreferencesResponse.Entry> entries = new ArrayList<>();
         for (NotificationType type : NotificationType.configurableTypes()) {

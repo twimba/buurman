@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import com.buurman.domain.Payment;
+import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
@@ -62,12 +64,12 @@ public class PaymentController {
     @Operation(summary = "List payments", description = "Get all payments with optional filters and pagination")
     @GetMapping
     public PageResponse<PaymentResponse> getPayments(
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Payment.PaymentStatus status,
             @RequestParam(required = false) String contractIdentifier,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,
             @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(defaultValue = "DESC") SortDirection direction,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         // When filtering by contractIdentifier, use existing per-contract list wrapped in PageResponse
@@ -77,7 +79,7 @@ public class PaymentController {
         }
 
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-        return paymentService.getPaymentsPaginated(principal, status, null, pageRequest);
+        return paymentService.getPaymentsPaginated(principal, status != null ? status.name() : null, null, pageRequest);
     }
 
     @Operation(summary = "Get overdue payments", description = "Get all overdue payments for the team")

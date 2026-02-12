@@ -7,8 +7,9 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
-import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
+
+import static org.jooq.impl.DSL.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -20,27 +21,27 @@ import java.util.UUID;
 @Repository
 public class PaymentInstructionRepository {
 
-    private static final Table<?> TABLE = DSL.table("payment_instructions");
-    private static final Field<UUID> ID = DSL.field("id", UUID.class);
-    private static final Field<String> IDENTIFIER = DSL.field("identifier", String.class);
-    private static final Field<UUID> TEAM_ID = DSL.field("team_id", UUID.class);
-    private static final Field<String> NAME = DSL.field("name", String.class);
-    private static final Field<String> DESCRIPTION = DSL.field("description", String.class);
-    private static final Field<String> PAYMENT_METHOD = DSL.field("payment_method", String.class);
-    private static final Field<String> BANK_NAME = DSL.field("bank_name", String.class);
-    private static final Field<String> ACCOUNT_HOLDER_NAME = DSL.field("account_holder_name", String.class);
-    private static final Field<String> IBAN = DSL.field("iban", String.class);
-    private static final Field<String> BIC_SWIFT = DSL.field("bic_swift", String.class);
-    private static final Field<String> ACCOUNT_NUMBER = DSL.field("account_number", String.class);
-    private static final Field<String> ROUTING_NUMBER = DSL.field("routing_number", String.class);
-    private static final Field<String> PAYMENT_REFERENCE = DSL.field("payment_reference", String.class);
-    private static final Field<String> ADDITIONAL_DETAILS = DSL.field("additional_details", String.class);
-    private static final Field<Boolean> IS_DEFAULT = DSL.field("is_default", Boolean.class);
-    private static final Field<LocalDateTime> CREATED_AT = DSL.field("created_at", LocalDateTime.class);
-    private static final Field<LocalDateTime> UPDATED_AT = DSL.field("updated_at", LocalDateTime.class);
-    private static final Field<UUID> CREATED_BY = DSL.field("created_by", UUID.class);
-    private static final Field<UUID> UPDATED_BY = DSL.field("updated_by", UUID.class);
-    private static final Field<LocalDateTime> DELETED_AT = DSL.field("deleted_at", LocalDateTime.class);
+    private static final Table<?> TABLE = table("payment_instructions");
+    private static final Field<UUID> ID = field("id", UUID.class);
+    private static final Field<String> IDENTIFIER = field("identifier", String.class);
+    private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
+    private static final Field<String> NAME = field("name", String.class);
+    private static final Field<String> DESCRIPTION = field("description", String.class);
+    private static final Field<String> PAYMENT_METHOD = field("payment_method", String.class);
+    private static final Field<String> BANK_NAME = field("bank_name", String.class);
+    private static final Field<String> ACCOUNT_HOLDER_NAME = field("account_holder_name", String.class);
+    private static final Field<String> IBAN = field("iban", String.class);
+    private static final Field<String> BIC_SWIFT = field("bic_swift", String.class);
+    private static final Field<String> ACCOUNT_NUMBER = field("account_number", String.class);
+    private static final Field<String> ROUTING_NUMBER = field("routing_number", String.class);
+    private static final Field<String> PAYMENT_REFERENCE = field("payment_reference", String.class);
+    private static final Field<String> ADDITIONAL_DETAILS = field("additional_details", String.class);
+    private static final Field<Boolean> IS_DEFAULT = field("is_default", Boolean.class);
+    private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
+    private static final Field<LocalDateTime> UPDATED_AT = field("updated_at", LocalDateTime.class);
+    private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
+    private static final Field<UUID> UPDATED_BY = field("updated_by", UUID.class);
+    private static final Field<LocalDateTime> DELETED_AT = field("deleted_at", LocalDateTime.class);
 
     private final DSLContext dsl;
 
