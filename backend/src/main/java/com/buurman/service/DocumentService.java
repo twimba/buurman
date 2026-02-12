@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import com.buurman.domain.Document;
+import com.buurman.exception.ExternalServiceException;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
@@ -328,7 +329,7 @@ public class DocumentService {
 
         } catch (Exception e) {
             log.error("Failed to create zip archive: {}", e.getMessage());
-            throw new RuntimeException("Failed to create zip archive", e);
+            throw new ExternalServiceException("Failed to create zip archive", e);
         }
     }
 

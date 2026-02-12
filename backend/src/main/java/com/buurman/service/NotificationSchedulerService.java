@@ -61,7 +61,7 @@ public class NotificationSchedulerService {
         this.appProperties = appProperties;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${scheduling.notification-reminders.contract-expiry-cron}")
     @Transactional(readOnly = true)
     public void checkContractExpiry() {
         log.info("Running contract expiry check...");
@@ -112,7 +112,7 @@ public class NotificationSchedulerService {
         log.info("Contract expiry check completed");
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "${scheduling.notification-reminders.payment-reminder-cron}")
     @Transactional(readOnly = true)
     public void checkPaymentReminders() {
         log.info("Running payment reminder check...");

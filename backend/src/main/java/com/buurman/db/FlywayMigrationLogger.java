@@ -3,7 +3,6 @@ package com.buurman.db;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -21,7 +20,6 @@ public class FlywayMigrationLogger implements ApplicationListener<ApplicationRea
 
     private final Flyway flyway;
 
-    @Autowired
     public FlywayMigrationLogger(Flyway flyway) {
         this.flyway = flyway;
     }

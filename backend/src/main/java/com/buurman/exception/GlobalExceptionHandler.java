@@ -1,78 +1,142 @@
 package com.buurman.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.time.Instant;
+import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(TeamNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleTeamNotFound(TeamNotFoundException ex) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "Team Not Found", ex.getMessage());
+    @ExceptionHandler(NotFoundException.class)
+    public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Not Found");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
-    @ExceptionHandler(TeamMembershipNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleTeamMembershipNotFound(TeamMembershipNotFoundException ex) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "Membership Not Found", ex.getMessage());
+    @ExceptionHandler(ForbiddenException.class)
+    public ProblemDetail handleForbidden(ForbiddenException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setTitle("Forbidden");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
-    @ExceptionHandler(InsufficientPermissionsException.class)
-    public ResponseEntity<Map<String, Object>> handleInsufficientPermissions(InsufficientPermissionsException ex) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "Forbidden", ex.getMessage());
+    @ExceptionHandler(BusinessRuleException.class)
+    public ProblemDetail handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Conflict");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
-    @ExceptionHandler(CrossTeamAccessException.class)
-    public ResponseEntity<Map<String, Object>> handleCrossTeamAccess(CrossTeamAccessException ex) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "Forbidden", ex.getMessage());
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Bad Request");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
-    @ExceptionHandler(CannotLeaveOwnedTeamException.class)
-    public ResponseEntity<Map<String, Object>> handleCannotLeaveOwnedTeam(CannotLeaveOwnedTeamException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+    @ExceptionHandler(ExternalServiceException.class)
+    public ProblemDetail handleExternalService(ExternalServiceException ex, HttpServletRequest request) {
+        log.error("External service error: {}", ex.getMessage(), ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, ex.getMessage());
+        problem.setTitle("Bad Gateway");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
-    @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<Map<String, Object>> handleEmailNotVerified(EmailNotVerifiedException ex) {
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "EMAIL_NOT_VERIFIED", ex.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Validation Failed");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
+        }
+        problem.setProperty("fieldErrors", fieldErrors);
+        problem.setDetail("Validation failed for " + fieldErrors.size() + " field(s)");
+        return problem;
     }
 
-    @ExceptionHandler(VerificationCodeException.class)
-    public ResponseEntity<Map<String, Object>> handleVerificationCode(VerificationCodeException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Validation Failed");
+        problem.setInstance(URI.create(request.getRequestURI()));
+
+        Map<String, String> fieldErrors = ex.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        v -> v.getPropertyPath().toString(),
+                        ConstraintViolation::getMessage,
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+        problem.setProperty("fieldErrors", fieldErrors);
+        problem.setDetail("Validation failed for " + fieldErrors.size() + " field(s)");
+        return problem;
     }
 
-    @ExceptionHandler(PhoneNumberPolicyException.class)
-    public ResponseEntity<Map<String, Object>> handlePhoneNumberPolicy(PhoneNumberPolicyException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "PHONE_POLICY_VIOLATION", ex.getMessage());
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Malformed request body");
+        problem.setTitle("Bad Request");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ProblemDetail handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Not Found");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage());
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Bad Request");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied");
+        problem.setTitle("Forbidden");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+    public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception", ex);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred");
-    }
-
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String error, String message) {
-        Map<String, Object> body = Map.of(
-                "timestamp", Instant.now(),
-                "status", status.value(),
-                "error", error,
-                "message", message
-        );
-        return ResponseEntity.status(status).body(body);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+        problem.setTitle("Internal Server Error");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
     }
 }

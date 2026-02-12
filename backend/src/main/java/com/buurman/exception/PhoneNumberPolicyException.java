@@ -1,6 +1,6 @@
 package com.buurman.exception;
 
-public class PhoneNumberPolicyException extends RuntimeException {
+public class PhoneNumberPolicyException extends BadRequestException {
     public PhoneNumberPolicyException(String message) {
         super(message);
     }

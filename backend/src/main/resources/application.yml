@@ -123,6 +123,17 @@ notification:
     batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:50}
     max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:3}
 
+# Scheduling Configuration
+scheduling:
+  payment-generation:
+    cron: "0 0 * * * *"
+  notification-reminders:
+    contract-expiry-cron: "0 0 0 * * *"
+    payment-reminder-cron: "0 0 0 * * *"
+  metrics:
+    fixed-rate-ms: 600000
+    initial-delay-ms: 60000
+
 # Actuator Configuration
 management:
   endpoints:

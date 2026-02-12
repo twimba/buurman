@@ -1,8 +1,13 @@
 package com.buurman.domain;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Data
+@NoArgsConstructor
 public class Document {
 
     private UUID id;
@@ -20,9 +25,6 @@ public class Document {
     private Instant uploadedAt;
     private Instant deletedAt;
 
-    public Document() {
-    }
-
     public Document(UUID id, UUID teamId, String entityType, UUID entityId, String fileKey,
                     String fileName, Long fileSize, String mimeType, String title, String notes,
                     UUID uploadedBy, Instant uploadedAt, Instant deletedAt) {
@@ -38,118 +40,6 @@ public class Document {
         this.notes = notes;
         this.uploadedBy = uploadedBy;
         this.uploadedAt = uploadedAt;
-        this.deletedAt = deletedAt;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public UUID getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(UUID teamId) {
-        this.teamId = teamId;
-    }
-
-    public String getEntityType() {
-        return entityType;
-    }
-
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
-    }
-
-    public UUID getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(UUID entityId) {
-        this.entityId = entityId;
-    }
-
-    public String getFileKey() {
-        return fileKey;
-    }
-
-    public void setFileKey(String fileKey) {
-        this.fileKey = fileKey;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public Long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
-
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public UUID getUploadedBy() {
-        return uploadedBy;
-    }
-
-    public void setUploadedBy(UUID uploadedBy) {
-        this.uploadedBy = uploadedBy;
-    }
-
-    public Instant getUploadedAt() {
-        return uploadedAt;
-    }
-
-    public void setUploadedAt(Instant uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
-
-    public Instant getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
 

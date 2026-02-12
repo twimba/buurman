@@ -14,6 +14,9 @@ import com.buurman.domain.NotificationType;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
 import com.buurman.mapper.TeamMapper;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.ForbiddenException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
 import com.buurman.config.AppProperties;
@@ -61,7 +64,7 @@ public class TeamService {
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
         Team team = teamRepository.findById(principal.getTeamId())
-            .orElseThrow(() -> new RuntimeException("Team not found"));
+            .orElseThrow(() -> new NotFoundException("Team not found"));
 
         long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
         return teamMapper.toResponse(team, memberCount);
@@ -72,7 +75,7 @@ public class TeamService {
 
         // Verify user belongs to this team
         if (!team.getId().equals(principal.getTeamId())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
@@ -95,13 +98,13 @@ public class TeamService {
 
         // Verify user is admin of this team
         if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         // Check for existing pending invitation for same email + team
         invitationRepository.findPendingByEmailAndTeamId(request.email(), team.getId())
                 .ifPresent(existing -> {
-                    throw new IllegalArgumentException("A pending invitation already exists for this email address");
+                    throw new BusinessRuleException("A pending invitation already exists for this email address");
                 });
 
         // Create invitation
@@ -138,11 +141,11 @@ public class TeamService {
 
     public InvitationResponse getInvitation(String token) {
         TeamInvitation invitation = invitationRepository.findByToken(token)
-            .orElseThrow(() -> new RuntimeException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException("Invitation not found"));
 
         // Fetch team and inviter details for the response
         Team team = teamRepository.findById(invitation.getTeamId())
-            .orElseThrow(() -> new RuntimeException("Team not found"));
+            .orElseThrow(() -> new NotFoundException("Team not found"));
 
         String inviterName = "Team Admin";
         if (invitation.getInvitedBy() != null) {
@@ -157,7 +160,7 @@ public class TeamService {
 
     public List<InvitationResponse> getPendingInvitationsForUser(UserPrincipal principal) {
         User user = userRepository.findById(principal.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         List<TeamInvitation> pending = invitationRepository.findPendingByEmail(user.getEmail());
 
@@ -189,7 +192,7 @@ public class TeamService {
         Team team = resolveTeam(teamIdentifier);
 
         if (!team.getId().equals(principal.getTeamId())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         List<TeamInvitation> pending = invitationRepository.findPendingByTeamId(team.getId());
@@ -212,18 +215,18 @@ public class TeamService {
         Team team = resolveTeam(teamIdentifier);
 
         if (!team.getId().equals(principal.getTeamId())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         TeamInvitation invitation = invitationRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+                .orElseThrow(() -> new NotFoundException("Invitation not found"));
 
         if (!invitation.getTeamId().equals(team.getId())) {
-            throw new RuntimeException("Invitation does not belong to this team");
+            throw new BusinessRuleException("Invitation does not belong to this team");
         }
 
         if (invitation.getAcceptedAt() != null) {
-            throw new RuntimeException("Invitation already accepted");
+            throw new BusinessRuleException("Invitation already accepted");
         }
 
         // Reset token, expiry, and resend tracking
@@ -257,27 +260,27 @@ public class TeamService {
     @Transactional
     public void acceptInvitation(String token, UserPrincipal principal) {
         TeamInvitation invitation = invitationRepository.findByToken(token)
-            .orElseThrow(() -> new RuntimeException("Invitation not found"));
+            .orElseThrow(() -> new NotFoundException("Invitation not found"));
 
         // Validate
         if (invitation.getAcceptedAt() != null) {
-            throw new RuntimeException("Invitation already accepted");
+            throw new BusinessRuleException("Invitation already accepted");
         }
         if (invitation.getExpiresAt().isBefore(Instant.now())) {
-            throw new RuntimeException("Invitation expired");
+            throw new BusinessRuleException("Invitation expired");
         }
         if (!invitation.getEmail().equalsIgnoreCase(principal.getEmail())) {
-            throw new RuntimeException("Invitation email does not match");
+            throw new BusinessRuleException("Invitation email does not match");
         }
 
         // Check user not already member of this specific team
         if (teamMemberRepository.existsByTeamIdAndUserId(invitation.getTeamId(), principal.getUserId())) {
-            throw new RuntimeException("User already member of this team");
+            throw new BusinessRuleException("User already member of this team");
         }
 
         // Create team member
         User user = userRepository.findById(principal.getUserId())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
         TeamMember member = new TeamMember();
         member.setTeamId(invitation.getTeamId());
@@ -328,19 +331,19 @@ public class TeamService {
 
         // Verify user is admin of this team
         if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         // Resolve user by identifier
         User targetUser = userRepository.findByIdentifier(userIdentifier)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
         TeamMember member = teamMemberRepository.findByUserIdAndTeamId(targetUser.getId(), team.getId())
-            .orElseThrow(() -> new RuntimeException("Member not found"));
+            .orElseThrow(() -> new NotFoundException("Member not found"));
 
         // Cannot remove self
         if (member.getUserId().equals(principal.getUserId())) {
-            throw new RuntimeException("Cannot remove yourself");
+            throw new BusinessRuleException("Cannot remove yourself");
         }
 
         teamMemberRepository.softDeleteById(member.getId());
@@ -355,19 +358,19 @@ public class TeamService {
 
         // Verify user is admin of this team
         if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         // Resolve user by identifier
         User targetUser = userRepository.findByIdentifier(userIdentifier)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
         TeamMember member = teamMemberRepository.findByUserIdAndTeamId(targetUser.getId(), team.getId())
-            .orElseThrow(() -> new RuntimeException("Member not found"));
+            .orElseThrow(() -> new NotFoundException("Member not found"));
 
         // Cannot change own role
         if (member.getUserId().equals(principal.getUserId())) {
-            throw new RuntimeException("Cannot change your own role");
+            throw new BusinessRuleException("Cannot change your own role");
         }
 
         member.setRole(request.role());
@@ -383,7 +386,7 @@ public class TeamService {
 
         // Verify user is admin of this team
         if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         team.setName(request.name());
@@ -402,7 +405,7 @@ public class TeamService {
 
         // Verify user is admin of this team
         if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         // Update settings
@@ -456,7 +459,7 @@ public class TeamService {
 
         // Verify user belongs to this team
         if (!team.getId().equals(principal.getTeamId())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         TeamSettings settings = team.getSettings();
@@ -473,25 +476,25 @@ public class TeamService {
 
         // Verify user is owner of this team
         if (!team.getId().equals(principal.getTeamId()) || !principal.isOwner()) {
-            throw new RuntimeException("Only team owner can transfer ownership");
+            throw new ForbiddenException("Only team owner can transfer ownership");
         }
 
         // Resolve new owner by identifier
         User newOwnerUser = userRepository.findByIdentifier(newOwnerIdentifier)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
         // Cannot transfer to self
         if (newOwnerUser.getId().equals(principal.getUserId())) {
-            throw new RuntimeException("Cannot transfer ownership to yourself");
+            throw new BusinessRuleException("Cannot transfer ownership to yourself");
         }
 
         // Find new owner's membership
         TeamMember newOwnerMember = teamMemberRepository.findByUserIdAndTeamId(newOwnerUser.getId(), team.getId())
-            .orElseThrow(() -> new RuntimeException("User is not a member of this team"));
+            .orElseThrow(() -> new NotFoundException("User is not a member of this team"));
 
         // Find current owner's membership
         TeamMember currentOwnerMember = teamMemberRepository.findByUserIdAndTeamId(principal.getUserId(), team.getId())
-            .orElseThrow(() -> new RuntimeException("Current owner membership not found"));
+            .orElseThrow(() -> new NotFoundException("Current owner membership not found"));
 
         // Transfer ownership
         currentOwnerMember.setOwner(false);
@@ -511,7 +514,7 @@ public class TeamService {
 
     private Team resolveTeam(String teamIdentifier) {
         return teamRepository.findByIdentifier(teamIdentifier)
-            .orElseThrow(() -> new RuntimeException("Team not found"));
+            .orElseThrow(() -> new NotFoundException("Team not found"));
     }
 
     private String formatRole(String role) {

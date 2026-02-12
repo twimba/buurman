@@ -4,6 +4,8 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
@@ -135,7 +137,7 @@ public class PaymentService {
 
         // Resolve contract by identifier
         Contract contract = contractRepository.findByIdentifierAndTeamId(request.contractIdentifier(), teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Contract not found or access denied"));
 
         Payment payment = paymentMapper.toEntity(request);
         payment.setContractId(contract.getId());
@@ -168,7 +170,7 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         return enrichPaymentResponse(payment, principal.getTeamId());
     }
@@ -224,7 +226,7 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Contract not found or access denied"));
 
         List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
@@ -247,7 +249,7 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -272,14 +274,14 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         if (payment.getStatus() == PAID) {
-            throw new IllegalArgumentException("Payment is already marked as paid");
+            throw new BusinessRuleException("Payment is already marked as paid");
         }
 
         if (payment.getStatus() == CANCELLED) {
-            throw new IllegalArgumentException("Cannot mark a cancelled payment as paid");
+            throw new BusinessRuleException("Cannot mark a cancelled payment as paid");
         }
 
         // Register a receival for the remaining balance
@@ -338,16 +340,16 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         UUID paymentId = payment.getId();
 
         if (payment.getStatus() == PAID) {
-            throw new IllegalArgumentException("Payment is already fully paid");
+            throw new BusinessRuleException("Payment is already fully paid");
         }
 
         if (payment.getStatus() == CANCELLED) {
-            throw new IllegalArgumentException("Cannot register receival on a cancelled payment");
+            throw new BusinessRuleException("Cannot register receival on a cancelled payment");
         }
 
         // Validate amount does not exceed balance
@@ -355,7 +357,7 @@ public class PaymentService {
         BigDecimal currentBalance = payment.getAmount().subtract(currentReceived);
 
         if (request.amount().compareTo(currentBalance) > 0) {
-            throw new IllegalArgumentException("Receival amount (" + request.amount() +
+            throw new BusinessRuleException("Receival amount (" + request.amount() +
                     ") exceeds remaining balance (" + currentBalance + ")");
         }
 
@@ -402,7 +404,7 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         return receivalRepository.findByPaymentIdAndTeamId(payment.getId(), teamId)
                 .stream()
@@ -417,13 +419,13 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         UUID paymentId = payment.getId();
 
         PaymentReceival receival = receivalRepository.findByIdentifierAndPaymentIdAndTeamId(
                         receivalIdentifier, paymentId, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Receival not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Receival not found or access denied"));
 
         // Validate new amount: total received minus old amount plus new amount must not exceed payment amount
         BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId);
@@ -431,7 +433,7 @@ public class PaymentService {
         BigDecimal newBalance = payment.getAmount().subtract(receivedWithoutThis).subtract(request.amount());
 
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Updated receival amount (" + request.amount() +
+            throw new BusinessRuleException("Updated receival amount (" + request.amount() +
                     ") would exceed the payment amount");
         }
 
@@ -464,13 +466,13 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         UUID paymentId = payment.getId();
 
         PaymentReceival receival = receivalRepository.findByIdentifierAndPaymentIdAndTeamId(
                         receivalIdentifier, paymentId, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Receival not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Receival not found or access denied"));
 
         PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -536,10 +538,10 @@ public class PaymentService {
         UUID teamId = principal.getTeamId();
 
         Payment payment = paymentRepository.findByIdentifierAndTeamId(identifier, teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
 
         if (payment.getStatus() == PAID) {
-            throw new IllegalArgumentException("Cannot delete a paid payment. Please cancel it instead.");
+            throw new BusinessRuleException("Cannot delete a paid payment. Please cancel it instead.");
         }
 
         paymentRepository.softDeleteByIdAndTeamId(payment.getId(), teamId);
@@ -615,31 +617,31 @@ public class PaymentService {
     public DocumentResponse uploadDocument(String paymentIdentifier, MultipartFile file,
                                            String title, String notes, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
         return documentService.uploadDocument(file, "PAYMENT", payment.getId(), title, notes, principal);
     }
 
     public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
         return documentService.getDocuments("PAYMENT", payment.getId(), principal);
     }
 
     public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
         Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Document not found or access denied"));
         return documentService.getDownloadUrl(document.getIdentifier(), principal);
     }
 
     public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
         Document document = documentRepository.findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Document not found or access denied"));
         documentService.deleteDocument(document.getIdentifier(), principal);
     }
 
     public List<RecentActivityResponse> getAuditLog(String paymentIdentifier, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Payment not found or access denied"));
+                .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
         return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", payment.getId());
     }
 

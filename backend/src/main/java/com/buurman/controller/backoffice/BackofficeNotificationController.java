@@ -1,11 +1,9 @@
 package com.buurman.controller.backoffice;
 
 import com.buurman.domain.SortDirection;
-import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
-import com.buurman.repository.TeamRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/backoffice/notifications")
@@ -26,12 +23,9 @@ import java.util.UUID;
 public class BackofficeNotificationController {
 
     private final BackofficeNotificationService backofficeNotificationService;
-    private final TeamRepository teamRepository;
 
-    public BackofficeNotificationController(BackofficeNotificationService backofficeNotificationService,
-                                             TeamRepository teamRepository) {
+    public BackofficeNotificationController(BackofficeNotificationService backofficeNotificationService) {
         this.backofficeNotificationService = backofficeNotificationService;
-        this.teamRepository = teamRepository;
     }
 
     @Operation(summary = "List notifications", description = "Get all notifications with filtering and pagination")
@@ -49,19 +43,12 @@ public class BackofficeNotificationController {
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "DESC") SortDirection direction) {
 
-        UUID teamId = null;
-        if (teamIdentifier != null && !teamIdentifier.isBlank()) {
-            teamId = teamRepository.findByIdentifierForBackoffice(teamIdentifier)
-                    .map(Team::getId)
-                    .orElse(null);
-        }
-
         LocalDateTime from = parseDateTime(dateFrom);
         LocalDateTime to = parseDateTime(dateTo);
 
         PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
         return backofficeNotificationService.listNotifications(
-                pageRequest, teamId, type, channel, status, recipientEmail, from, to);
+                pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
     }
 
     @Operation(summary = "Get notification", description = "Get notification details by identifier")

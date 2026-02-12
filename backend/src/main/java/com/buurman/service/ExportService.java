@@ -1,6 +1,8 @@
 package com.buurman.service;
 
 import com.buurman.domain.*;
+import com.buurman.exception.ExternalServiceException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.*;
 
 import static com.buurman.domain.Payment.PaymentStatus.*;
@@ -104,7 +106,7 @@ public class ExportService {
                     "type", "transaction_csv", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "transaction_csv", "result", "failure");
-            throw new RuntimeException("Failed to generate CSV", e);
+            throw new ExternalServiceException("Failed to generate CSV", e);
         }
     }
 
@@ -150,7 +152,7 @@ public class ExportService {
         Instant start = Instant.now();
         try {
             Property property = propertyRepository.findByIdentifierAndTeamId(propertyIdentifier, teamId)
-                    .orElseThrow(() -> new RuntimeException("Property not found"));
+                    .orElseThrow(() -> new NotFoundException("Property not found"));
 
             UUID propertyId = property.getId();
 
@@ -200,13 +202,13 @@ public class ExportService {
         Instant start = Instant.now();
         try {
             Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, teamId)
-                    .orElseThrow(() -> new RuntimeException("Contract not found"));
+                    .orElseThrow(() -> new NotFoundException("Contract not found"));
 
             Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId)
-                    .orElseThrow(() -> new RuntimeException("Property not found"));
+                    .orElseThrow(() -> new NotFoundException("Property not found"));
 
             Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId)
-                    .orElseThrow(() -> new RuntimeException("Tenant not found"));
+                    .orElseThrow(() -> new NotFoundException("Tenant not found"));
 
             List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
@@ -235,7 +237,7 @@ public class ExportService {
         Instant start = Instant.now();
         try {
             Tenant tenant = tenantRepository.findByIdentifierAndTeamId(tenantIdentifier, teamId)
-                    .orElseThrow(() -> new RuntimeException("Tenant not found"));
+                    .orElseThrow(() -> new NotFoundException("Tenant not found"));
 
             List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenant.getId(), teamId);
             List<Contract> contracts = contractRepository.findByTenantId(tenant.getId(), teamId);
@@ -1252,7 +1254,7 @@ public class ExportService {
 
             return baos.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate PDF", e);
+            throw new ExternalServiceException("Failed to generate PDF", e);
         }
     }
 

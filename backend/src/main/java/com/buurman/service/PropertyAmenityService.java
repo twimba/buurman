@@ -3,6 +3,7 @@ package com.buurman.service;
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAmenity;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.dto.request.PropertyAmenityRequest;
 import com.buurman.dto.response.AmenityResponse;
 import com.buurman.dto.response.PropertyAmenityResponse;
@@ -62,7 +63,7 @@ public class PropertyAmenityService {
         propertyAmenityRepository.findByPropertyIdAndAmenityIdAndTeamId(
                 property.getId(), amenity.getId(), principal.getTeamId())
                 .ifPresent(existing -> {
-                    throw new IllegalArgumentException("Amenity already linked to this property");
+                    throw new BusinessRuleException("Amenity already linked to this property");
                 });
 
         PropertyAmenity pa = new PropertyAmenity();

@@ -73,6 +73,16 @@ notification:
     batch-size: 10
     max-retries: 1
 
+scheduling:
+  payment-generation:
+    cron: "-"
+  notification-reminders:
+    contract-expiry-cron: "-"
+    payment-reminder-cron: "-"
+  metrics:
+    fixed-rate-ms: 3600000
+    initial-delay-ms: 3600000
+
 buurman:
   demo:
     enabled: false

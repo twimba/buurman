@@ -1,6 +1,8 @@
 package com.buurman.service.notification;
 
 import com.buurman.domain.*;
+import com.buurman.exception.ExternalServiceException;
+import com.buurman.exception.NotFoundException;
 
 import static com.buurman.domain.NotificationChannel.EMAIL;
 import static com.buurman.domain.NotificationChannel.SMS;
@@ -113,7 +115,7 @@ public class NotificationService {
             try {
                 outbox.setPayload(objectMapper.writeValueAsString(sendRequest));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("Failed to serialize send request", e);
+                throw new ExternalServiceException("Failed to serialize send request", e);
             }
 
             outboxRepository.save(outbox);
@@ -152,11 +154,11 @@ public class NotificationService {
     @Transactional
     public Notification resend(UUID teamId, String notificationIdentifier, UUID userId) {
         Notification original = notificationRepository.findByIdentifierAndTeamId(notificationIdentifier, teamId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new NotFoundException("Notification not found"));
 
         NotificationChannelSender sender = channelSenders.get(original.getChannel());
         if (sender == null) {
-            throw new RuntimeException("No sender for channel: " + original.getChannel());
+            throw new ExternalServiceException("No sender for channel: " + original.getChannel());
         }
 
         RenderedContent content = sender.render(original.getContentTemplate(), original.getContentVariables());
@@ -198,7 +200,7 @@ public class NotificationService {
         try {
             outbox.setPayload(objectMapper.writeValueAsString(sendRequest));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize send request", e);
+            throw new ExternalServiceException("Failed to serialize send request", e);
         }
 
         outboxRepository.save(outbox);

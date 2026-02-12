@@ -4,6 +4,8 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamSettings;
+import com.buurman.exception.BusinessRuleException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
@@ -50,7 +52,7 @@ public class PaymentSchedulingService {
      * Scheduled job that generates future payments for all teams with auto-generation enabled.
      * Runs every hour.
      */
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "${scheduling.payment-generation.cron}")
     public void scheduledPaymentGeneration() {
         log.info("Starting scheduled payment generation");
         long startTime = System.currentTimeMillis();
@@ -90,7 +92,7 @@ public class PaymentSchedulingService {
     @Transactional
     public int generateFuturePaymentsForContract(UUID contractId, UUID teamId, UUID userId) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, teamId)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+                .orElseThrow(() -> new NotFoundException("Contract not found"));
 
         if (contract.getStatus() != ACTIVE) {
             log.debug("Skipping payment generation for non-ACTIVE contract: {}", contract.getIdentifier());
@@ -98,7 +100,7 @@ public class PaymentSchedulingService {
         }
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new NotFoundException("Team not found"));
 
         TeamSettings settings = team.getSettings();
         if (settings == null || settings.getPayments() == null) {
@@ -119,10 +121,10 @@ public class PaymentSchedulingService {
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public int generatePaymentsManually(UUID contractId, UUID teamId, UUID userId, int count) {
         Contract contract = contractRepository.findByIdAndTeamId(contractId, teamId)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+                .orElseThrow(() -> new NotFoundException("Contract not found"));
 
         if (contract.getStatus() != ACTIVE) {
-            throw new IllegalStateException("Can only generate payments for ACTIVE contracts");
+            throw new BusinessRuleException("Can only generate payments for ACTIVE contracts");
         }
 
         return generatePayments(contract, teamId, userId, count, false);

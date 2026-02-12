@@ -65,7 +65,7 @@ public class DatabaseMetricsService {
         refreshCounts();
     }
 
-    @Scheduled(fixedRate = 600_000, initialDelay = 60_000)
+    @Scheduled(fixedRateString = "${scheduling.metrics.fixed-rate-ms}", initialDelayString = "${scheduling.metrics.initial-delay-ms}")
     public void refreshCounts() {
         try {
             var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);

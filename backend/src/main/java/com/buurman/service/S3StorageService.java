@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import com.buurman.config.AwsS3Properties;
+import com.buurman.exception.ExternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -85,7 +86,7 @@ public class S3StorageService {
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "upload", "result", "failure");
             log.error("Failed to upload file to S3", e);
-            throw new RuntimeException("Failed to upload file", e);
+            throw new ExternalServiceException("Failed to upload file", e);
         }
     }
 
@@ -138,7 +139,7 @@ public class S3StorageService {
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "presign", "result", "failure");
             log.error("Failed to generate URL for file: {}", fileKey, e);
-            throw new RuntimeException("Failed to generate download URL", e);
+            throw new ExternalServiceException("Failed to generate download URL", e);
         }
     }
 
@@ -170,7 +171,7 @@ public class S3StorageService {
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "download", "result", "failure");
             log.error("Failed to download file from S3: {}", fileKey, e);
-            throw new RuntimeException("Failed to download file", e);
+            throw new ExternalServiceException("Failed to download file", e);
         }
     }
 

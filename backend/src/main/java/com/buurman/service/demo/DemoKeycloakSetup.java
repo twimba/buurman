@@ -1,6 +1,7 @@
 package com.buurman.service.demo;
 
 import com.buurman.config.KeycloakProperties;
+import com.buurman.exception.ExternalServiceException;
 import com.buurman.service.KeycloakService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -49,7 +50,7 @@ public class DemoKeycloakSetup {
 
             } catch (Exception e) {
                 log.error("Failed to create Keycloak user: {}", user.email(), e);
-                throw new RuntimeException("Failed to create Keycloak user: " + user.email(), e);
+                throw new ExternalServiceException("Failed to create Keycloak user: " + user.email(), e);
             }
         }
     }

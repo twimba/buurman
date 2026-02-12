@@ -5,6 +5,7 @@ import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
+import com.buurman.exception.NotFoundException;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -41,8 +42,15 @@ public class BackofficeNotificationService {
 
     @Transactional(readOnly = true)
     public PageResponse<BackofficeNotificationResponse> listNotifications(
-            PageRequest pageRequest, UUID teamId, String type, String channel,
+            PageRequest pageRequest, String teamIdentifier, String type, String channel,
             String status, String recipientEmail, LocalDateTime dateFrom, LocalDateTime dateTo) {
+
+        UUID teamId = null;
+        if (teamIdentifier != null && !teamIdentifier.isBlank()) {
+            teamId = teamRepository.findByIdentifierForBackoffice(teamIdentifier)
+                    .map(Team::getId)
+                    .orElse(null);
+        }
 
         PaginatedResult<Notification> result = notificationRepository.findAllPaginatedUnscoped(
                 teamId, type, channel, status, recipientEmail, dateFrom, dateTo, pageRequest);
@@ -57,14 +65,14 @@ public class BackofficeNotificationService {
     @Transactional(readOnly = true)
     public BackofficeNotificationResponse getNotification(String identifier) {
         Notification notification = notificationRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new NotFoundException("Notification not found"));
         return toResponse(notification);
     }
 
     @Transactional
     public BackofficeNotificationResponse resendNotification(String identifier, BackofficePrincipal principal) {
         Notification original = notificationRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new NotFoundException("Notification not found"));
 
         Notification resent = notificationService.resend(
                 original.getTeamId(), original.getIdentifier(), null);

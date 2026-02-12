@@ -139,13 +139,19 @@ export const UserProfileSection = () => {
     setCooldown(seconds);
     try {
       localStorage.setItem(COOLDOWN_KEY, String(Date.now() + seconds * 1000));
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
     if (cooldownRef.current) clearInterval(cooldownRef.current);
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) {
           if (cooldownRef.current) clearInterval(cooldownRef.current);
-          try { localStorage.removeItem(COOLDOWN_KEY); } catch { /* noop */ }
+          try {
+            localStorage.removeItem(COOLDOWN_KEY);
+          } catch {
+            /* noop */
+          }
           return 0;
         }
         return prev - 1;
@@ -161,7 +167,11 @@ export const UserProfileSection = () => {
           if (prev <= 1) {
             if (cooldownRef.current) clearInterval(cooldownRef.current);
             cooldownRef.current = null;
-            try { localStorage.removeItem(COOLDOWN_KEY); } catch { /* noop */ }
+            try {
+              localStorage.removeItem(COOLDOWN_KEY);
+            } catch {
+              /* noop */
+            }
             return 0;
           }
           return prev - 1;

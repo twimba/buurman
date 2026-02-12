@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -51,17 +52,22 @@ public class NotificationOutboxJob implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext context) {
-        List<NotificationOutbox> pending = outboxRepository.findPendingBatch(batchSize);
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        try {
+            List<NotificationOutbox> pending = outboxRepository.findPendingBatch(batchSize);
 
-        if (pending.isEmpty()) {
-            return;
-        }
+            if (pending.isEmpty()) {
+                return;
+            }
 
-        log.info("Processing {} outbox entries", pending.size());
+            log.info("Processing {} outbox entries", pending.size());
 
-        for (NotificationOutbox entry : pending) {
-            processEntry(entry);
+            for (NotificationOutbox entry : pending) {
+                processEntry(entry);
+            }
+        } catch (Exception e) {
+            log.error("Notification outbox job failed", e);
+            throw new JobExecutionException("Notification outbox processing failed", e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import com.buurman.config.KeycloakProperties;
+import com.buurman.exception.ExternalServiceException;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -48,7 +49,7 @@ public class KeycloakService {
         Response response = usersResource.create(user);
 
         if (response.getStatus() != 201) {
-            throw new RuntimeException("Failed to create user in Keycloak: " + response.getStatusInfo());
+            throw new ExternalServiceException("Failed to create user in Keycloak: " + response.getStatusInfo());
         }
 
         // Extract user ID from location header
