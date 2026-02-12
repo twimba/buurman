@@ -7,6 +7,54 @@ export interface BackofficeTeam {
   updatedAt: string;
 }
 
+export interface BackofficeTeamDetail {
+  identifier: string;
+  teamName: string;
+  createdAt: string;
+  updatedAt: string;
+  members: TeamMemberInfo[];
+  dataCounts: DataCounts;
+  financialSnapshot: FinancialSnapshot;
+  settings: TeamSettingsInfo;
+}
+
+export interface TeamMemberInfo {
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  role: string;
+  isOwner: boolean;
+  joinedAt: string | null;
+  disabled: boolean;
+}
+
+export interface DataCounts {
+  properties: number;
+  tenants: number;
+  contracts: number;
+  expenses: number;
+  payments: number;
+  documents: number;
+}
+
+export interface FinancialSnapshot {
+  totalActiveRent: number;
+  currency: string;
+  propertyStatusDistribution: Record<string, number>;
+  contractStatusDistribution: Record<string, number>;
+  paymentStatusDistribution: Record<string, number>;
+}
+
+export interface TeamSettingsInfo {
+  paymentsAheadCount: number;
+  autoGenerationEnabled: boolean;
+  defaultCurrency: string;
+  defaultCountry: string;
+  timezone: string;
+  dateFormat: string;
+  fiscalYearStartMonth: string;
+}
+
 export interface PageResponse<T> {
   content: T[];
   page: number;

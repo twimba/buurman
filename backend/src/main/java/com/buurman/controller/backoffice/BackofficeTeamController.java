@@ -4,6 +4,7 @@ import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse;
 import com.buurman.dto.response.backoffice.BackofficeTeamResponse;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeTeamService;
@@ -39,9 +40,9 @@ public class BackofficeTeamController {
         return backofficeTeamService.listTeams(pageRequest, search);
     }
 
-    @Operation(summary = "Get team", description = "Get team details by identifier")
+    @Operation(summary = "Get team", description = "Get detailed team overview by identifier")
     @GetMapping("/{identifier}")
-    public BackofficeTeamResponse getTeam(@PathVariable String identifier) {
+    public BackofficeTeamDetailResponse getTeam(@PathVariable String identifier) {
         return backofficeTeamService.getTeam(identifier);
     }
 
