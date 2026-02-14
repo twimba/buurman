@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -49,12 +49,12 @@ export const InvitationPage = () => {
 
   const acceptMutation = useAcceptInvitation();
 
-  const handleAcceptSuccess = () => {
+  const handleAcceptSuccess = useCallback(() => {
     localStorage.removeItem('pendingInvitation');
     // Clear all cached queries so the dashboard loads with fresh team data
     queryClient.clear();
     window.location.href = '/dashboard';
-  };
+  }, [queryClient]);
 
   // Auto-accept when user comes back from login flow
   const autoAcceptTriggered = useRef(false);
@@ -74,7 +74,7 @@ export const InvitationPage = () => {
         });
       }
     }
-  }, [isAuthenticated, invitation]);
+  }, [isAuthenticated, invitation, acceptMutation, handleAcceptSuccess, token]);
 
   const handleLogin = () => {
     // Store the invitation token for auto-accept after login

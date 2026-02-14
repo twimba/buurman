@@ -1,16 +1,8 @@
 import { useState } from "react";
-import {
-  Pause,
-  Play,
-  Zap,
-  Timer,
-  Clock,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-} from "lucide-react";
+import { Pause, Play, Zap, Timer, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
+import { SortableHeader } from "../components/SortableHeader";
 import {
   useScheduledJobs,
   usePauseJob,
@@ -212,32 +204,6 @@ export const SchedulerPage = () => {
       variant: "default" as const,
     },
   };
-
-  const SortableHeader = ({
-    field,
-    label,
-  }: {
-    field: string;
-    label: string;
-  }) => (
-    <th
-      onClick={() => handleSortChange(field)}
-      className="cursor-pointer select-none text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-        {label}
-        {sort === field ? (
-          direction === "asc" ? (
-            <ChevronUp className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronDown className="h-3.5 w-3.5" />
-          )
-        ) : (
-          <ArrowUpDown className="h-3.5 w-3.5 opacity-30" />
-        )}
-      </div>
-    </th>
-  );
 
   if (isLoading) {
     return <LoadingSpinner message="Loading scheduler..." />;
@@ -503,9 +469,27 @@ export const SchedulerPage = () => {
               <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
                 <th className={thClass}>Job Name</th>
                 <th className={thClass}>Group</th>
-                <SortableHeader field="startedAt" label="Started" />
-                <SortableHeader field="durationMs" label="Duration" />
-                <SortableHeader field="status" label="Status" />
+                <SortableHeader
+                  field="startedAt"
+                  label="Started"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="durationMs"
+                  label="Duration"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="status"
+                  label="Status"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className={thClass}>Error</th>
               </tr>
             </thead>

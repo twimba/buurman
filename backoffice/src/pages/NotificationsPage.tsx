@@ -9,12 +9,10 @@ import {
   CheckCircle,
   Clock,
   AlertTriangle,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
+import { SortableHeader } from "../components/SortableHeader";
 import {
   useNotifications,
   useNotificationStats,
@@ -184,32 +182,6 @@ export const NotificationsPage = () => {
 
   const canResend = (status: string) =>
     ["FAILED", "BOUNCED", "REJECTED"].includes(status);
-
-  const SortableHeader = ({
-    field,
-    label,
-  }: {
-    field: string;
-    label: string;
-  }) => (
-    <th
-      onClick={() => handleSortChange(field)}
-      className="cursor-pointer select-none text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-        {label}
-        {sort === field ? (
-          direction === "asc" ? (
-            <ChevronUp className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronDown className="h-3.5 w-3.5" />
-          )
-        ) : (
-          <ArrowUpDown className="h-3.5 w-3.5 opacity-30" />
-        )}
-      </div>
-    </th>
-  );
 
   if (isLoading) {
     return <LoadingSpinner message="Loading notifications..." />;
@@ -403,7 +375,13 @@ export const NotificationsPage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <SortableHeader field="notificationType" label="Type" />
+                <SortableHeader
+                  field="notificationType"
+                  label="Type"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Channel
                 </th>
@@ -416,8 +394,20 @@ export const NotificationsPage = () => {
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Subject
                 </th>
-                <SortableHeader field="status" label="Status" />
-                <SortableHeader field="createdAt" label="Created" />
+                <SortableHeader
+                  field="status"
+                  label="Status"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="createdAt"
+                  label="Created"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Actions
                 </th>

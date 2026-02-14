@@ -65,7 +65,7 @@ function getRowCheckState(
   types: string[],
   matrix: Record<string, string[]>,
 ): CheckState {
-  let totalCells = countryCodes.length * types.length;
+  const totalCells = countryCodes.length * types.length;
   let checked = 0;
   for (const code of countryCodes) {
     for (const type of types) {

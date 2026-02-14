@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Search,
-  Eye,
-  UserX,
-  UserCheck,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-} from "lucide-react";
+import { Search, Eye, UserX, UserCheck } from "lucide-react";
 import { RefreshButton } from "@buurman/ui";
+import { SortableHeader } from "../components/SortableHeader";
 import { format } from "date-fns";
 import { Pagination, ConfirmDialog } from "@buurman/ui";
 import { useUsers, useDisableUser, useEnableUser } from "../hooks/useUsers";
@@ -58,32 +51,6 @@ export const UsersPage = () => {
       onSuccess: () => setActionTarget(null),
     });
   };
-
-  const SortableHeader = ({
-    field,
-    label,
-  }: {
-    field: string;
-    label: string;
-  }) => (
-    <th
-      onClick={() => handleSortChange(field)}
-      className="cursor-pointer select-none text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-        {label}
-        {sort === field ? (
-          direction === "asc" ? (
-            <ChevronUp className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronDown className="h-3.5 w-3.5" />
-          )
-        ) : (
-          <ArrowUpDown className="h-3.5 w-3.5 opacity-30" />
-        )}
-      </div>
-    </th>
-  );
 
   if (isLoading) {
     return <LoadingSpinner message="Loading users..." />;
@@ -141,8 +108,20 @@ export const UsersPage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <SortableHeader field="email" label="Email" />
-                <SortableHeader field="firstName" label="Name" />
+                <SortableHeader
+                  field="email"
+                  label="Email"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="firstName"
+                  label="Name"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Phone
                 </th>
@@ -155,7 +134,13 @@ export const UsersPage = () => {
                 <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Teams
                 </th>
-                <SortableHeader field="createdAt" label="Created" />
+                <SortableHeader
+                  field="createdAt"
+                  label="Created"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
                   Actions
                 </th>

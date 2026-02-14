@@ -71,6 +71,7 @@ export const PhoneInput = ({
       try {
         const parsed = parsePhoneNumber(value);
         if (parsed && parsed.country) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- prop-to-state sync
           setSelectedCountryCode(parsed.country);
           setNationalNumber(parsed.nationalNumber);
           return;
