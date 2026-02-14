@@ -6,10 +6,6 @@
   QUEUE
 ------------------------
 
-# Notifications & communication
- ## Tenant-Landlord Communication
- Messaging center where tenants and landlods can communicate - like a persistent chat, but ominichannel - email, web, sms, etc
- 
 # Tenant Portal
   ## New application for tenants
   A new application - Tenant portal where tenants can:
@@ -19,8 +15,20 @@
    * see the history of their payments and download invoices, etc
    * Send requests to the landlord (ie: maintenance requests, etc) and track their status
    * View payment instructions
- 
+
+# Notifications & communication
+ ## Tenant-Landlord Communication
+ Messaging center where tenants and landlods can communicate - like a persistent chat, but ominichannel - email, web, sms, etc
+  
 # Infrastructure
+ ## Setup host in Hetzner
+ ## Deploy Postgres
+ ## Deploy Flagsmith
+ ## Deploy app to Hetzner
+ ## setup DNS
+ ## Setup Twilio
+ ## Setup Sendgrid
+ ## Setup S3
  ## Application domain
  Have the applications be on their own subdomain:
   * Main application (landlord) portal: app.buurman.io
