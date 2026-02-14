@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.SendGridProperties;
 import com.sendgrid.SendGrid;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

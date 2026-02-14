@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.KeycloakProperties;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;

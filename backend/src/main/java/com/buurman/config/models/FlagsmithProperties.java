@@ -1,10 +1,9 @@
-package com.buurman.config;
+package com.buurman.config.models;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "flagsmith")
 public record FlagsmithProperties(
-        String apiKey,
         String apiUrl,
         boolean enableAnalytics,
         int environmentRefreshIntervalSeconds,

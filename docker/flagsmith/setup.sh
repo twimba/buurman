@@ -19,8 +19,6 @@ API = os.environ.get("FLAGSMITH_API_URL", "http://flagsmith:8000")
 EMAIL = os.environ.get("FLAGSMITH_ADMIN_EMAIL", "buurmy@buurman.io")
 PASSWORD = os.environ.get("FLAGSMITH_ADMIN_PASSWORD", "buurmy")
 PROJECT_NAME = "Buurman"
-ENV_FILE = "/.env"
-
 # Parse flag keys from FeatureFlags.java — no manual list to maintain
 FEATURE_FLAGS_FILE = "/FeatureFlags.java"
 _FLAG_PATTERN = re.compile(r'public static final String \w+\s*=\s*"([^"]+)"')
@@ -225,38 +223,5 @@ for seg in SEGMENTS:
             log(f"  Created segment '{seg['name']}'.")
         else:
             log(f"  WARNING: Failed to create segment '{seg['name']}': {resp}")
-
-# --- 8. Write key to .env file (for local dev where backend runs on host) ---
-if not os.path.isfile(ENV_FILE):
-    log(f"WARNING: .env file not found at {ENV_FILE}, skipping key write.")
-    sys.exit(0)
-
-with open(ENV_FILE, "r") as f:
-    lines = f.readlines()
-
-found = False
-updated = False
-new_lines = []
-for line in lines:
-    if line.startswith("FLAGSMITH_SERVER_SIDE_KEY="):
-        found = True
-        current = line.strip().split("=", 1)[1]
-        if current == server_key:
-            log(".env already has correct FLAGSMITH_SERVER_SIDE_KEY.")
-            new_lines.append(line)
-        else:
-            new_lines.append(f"FLAGSMITH_SERVER_SIDE_KEY={server_key}\n")
-            updated = True
-    else:
-        new_lines.append(line)
-
-if not found:
-    new_lines.append(f"FLAGSMITH_SERVER_SIDE_KEY={server_key}\n")
-    updated = True
-
-if updated:
-    with open(ENV_FILE, "w") as f:
-        f.writelines(new_lines)
-    log(f"Wrote FLAGSMITH_SERVER_SIDE_KEY={server_key} to .env.")
 
 log("Done.")

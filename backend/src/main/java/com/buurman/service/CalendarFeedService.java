@@ -12,7 +12,7 @@ import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;

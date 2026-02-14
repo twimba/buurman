@@ -7,7 +7,7 @@ import static com.buurman.domain.NotificationChannel.SMS;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
-import com.buurman.config.TwilioProperties;
+import com.buurman.config.models.TwilioProperties;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;

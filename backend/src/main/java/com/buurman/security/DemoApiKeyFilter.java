@@ -1,6 +1,6 @@
 package com.buurman.security;
 
-import com.buurman.config.DemoDataProperties;
+import com.buurman.config.models.DemoDataProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

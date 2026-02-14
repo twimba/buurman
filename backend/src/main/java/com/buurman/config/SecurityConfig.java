@@ -1,6 +1,6 @@
 package com.buurman.security;
 
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

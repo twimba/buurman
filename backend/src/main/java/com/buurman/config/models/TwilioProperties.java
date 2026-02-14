@@ -1,4 +1,4 @@
-package com.buurman.config;
+package com.buurman.config.models;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

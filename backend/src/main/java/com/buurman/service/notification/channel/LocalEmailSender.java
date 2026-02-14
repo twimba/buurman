@@ -7,7 +7,7 @@ import static com.buurman.domain.NotificationChannel.EMAIL;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;

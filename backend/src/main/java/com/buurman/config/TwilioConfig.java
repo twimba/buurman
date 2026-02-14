@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.TwilioProperties;
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;

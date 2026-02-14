@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import com.buurman.config.KeycloakProperties;
+import com.buurman.config.models.KeycloakProperties;
 import com.buurman.exception.ExternalServiceException;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;

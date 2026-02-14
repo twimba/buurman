@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flagsmith.FlagsmithClient;
@@ -14,11 +15,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Optional;
 
 @Configuration
 public class FlagsmithConfig {
 
     private static final Logger log = LoggerFactory.getLogger(FlagsmithConfig.class);
+    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
+    private static final String SERVER_KEY_NAME = "Backend";
 
     private final FlagsmithProperties properties;
 
@@ -28,12 +32,12 @@ public class FlagsmithConfig {
 
     @Bean
     public FlagsmithClient flagsmithClient() {
-        String apiKey = resolveApiKey();
-        if (apiKey == null || apiKey.isBlank()) {
-            log.warn("Flagsmith API key not available — feature flags disabled");
-            return null;
-        }
+        return discoverServerKey()
+                .map(this::buildClient)
+                .orElse(null);
+    }
 
+    private FlagsmithClient buildClient(String apiKey) {
         log.info("Initialising Flagsmith client (url={})", properties.apiUrl());
 
         var config = com.flagsmith.config.FlagsmithConfig.newBuilder()
@@ -49,176 +53,39 @@ public class FlagsmithConfig {
                 .build();
     }
 
-    private String resolveApiKey() {
-        // 1. Explicit key from property / env var
-        if (properties.apiKey() != null && !properties.apiKey().isBlank()) {
-            return properties.apiKey();
-        }
-
-        // 2. Auto-discover from Flagsmith admin API
-        if (properties.adminEmail() != null && properties.adminPassword() != null) {
-            return discoverApiKey();
-        }
-
-        return null;
-    }
-
     /**
-     * Discovers the server-side environment key by logging into Flagsmith's admin API
-     * and looking up the project/environment. Same flow as the setup script.
+     * Discovers the server-side environment key by logging into the Flagsmith
+     * admin API and walking: login → project → environment → server-side key.
+     * Returns empty if Flagsmith is unreachable or not yet set up — the app
+     * boots normally with all feature flags defaulting to OFF.
      */
-    private String discoverApiKey() {
-        String baseUrl = properties.apiUrl().replaceAll("/+$", "");
-        // The apiUrl includes /api/v1/ already, strip it for the admin auth endpoints
-        String adminBase = baseUrl.contains("/api/v1") ? baseUrl : baseUrl + "/api/v1";
-
-        String projectName = properties.projectName() != null ? properties.projectName() : "Buurman";
-        String envName = properties.environmentName() != null ? properties.environmentName() : "Local";
-
-        log.info("Discovering Flagsmith API key (project='{}', env='{}')", projectName, envName);
+    private Optional<String> discoverServerKey() {
+        if (properties.adminEmail() == null || properties.adminPassword() == null) {
+            log.warn("Flagsmith admin credentials not configured — feature flags disabled");
+            return Optional.empty();
+        }
 
         try {
+            var http = HttpClient.newBuilder().connectTimeout(REQUEST_TIMEOUT).build();
             var mapper = new ObjectMapper();
-            var httpClient = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(10))
-                    .build();
+            var api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
-            // Login
-            String loginBody = mapper.writeValueAsString(
-                    mapper.createObjectNode()
-                            .put("email", properties.adminEmail())
-                            .put("password", properties.adminPassword())
-            );
+            String token = api.login(properties.adminEmail(), properties.adminPassword());
+            int projectId = api.findProjectId(token, properties.projectName());
+            String clientKey = api.findEnvironmentClientKey(token, projectId, properties.environmentName());
+            String serverKey = api.findOrCreateServerKey(token, clientKey);
 
-            HttpResponse<String> loginResp = httpClient.send(
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(adminBase + "/auth/login/"))
-                            .header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(loginBody))
-                            .timeout(Duration.ofSeconds(10))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            JsonNode loginJson = mapper.readTree(loginResp.body());
-            String token = loginJson.has("key") ? loginJson.get("key").asText() : null;
-            if (token == null) {
-                log.warn("Flagsmith auto-discovery: login failed ({})", loginResp.body());
-                return null;
-            }
-
-            // Find project
-            HttpResponse<String> projResp = httpClient.send(
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(adminBase + "/projects/"))
-                            .header("Authorization", "Token " + token)
-                            .GET()
-                            .timeout(Duration.ofSeconds(10))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            JsonNode projects = mapper.readTree(projResp.body());
-            if (!projects.isArray()) {
-                log.warn("Flagsmith auto-discovery: unexpected projects response");
-                return null;
-            }
-
-            Integer projectId = null;
-            for (JsonNode p : projects) {
-                if (projectName.equals(p.get("name").asText())) {
-                    projectId = p.get("id").asInt();
-                    break;
-                }
-            }
-            if (projectId == null) {
-                log.warn("Flagsmith auto-discovery: project '{}' not found", projectName);
-                return null;
-            }
-
-            // Find environment
-            HttpResponse<String> envResp = httpClient.send(
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(adminBase + "/environments/?project=" + projectId))
-                            .header("Authorization", "Token " + token)
-                            .GET()
-                            .timeout(Duration.ofSeconds(10))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            JsonNode envsJson = mapper.readTree(envResp.body());
-            JsonNode envList = envsJson.has("results") ? envsJson.get("results") : envsJson;
-            if (!envList.isArray()) {
-                log.warn("Flagsmith auto-discovery: unexpected environments response");
-                return null;
-            }
-
-            String clientKey = null;
-            for (JsonNode env : envList) {
-                if (envName.equals(env.get("name").asText())) {
-                    clientKey = env.get("api_key").asText();
-                    break;
-                }
-            }
-
-            if (clientKey == null) {
-                log.warn("Flagsmith auto-discovery: environment '{}' not found in project '{}'", envName, projectName);
-                return null;
-            }
-
-            // Fetch server-side API key (the client-side key cannot be used by server SDKs)
-            String serverKeyName = "Backend";
-            HttpResponse<String> keysResp = httpClient.send(
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(adminBase + "/environments/" + clientKey + "/api-keys/"))
-                            .header("Authorization", "Token " + token)
-                            .GET()
-                            .timeout(Duration.ofSeconds(10))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            JsonNode keysJson = mapper.readTree(keysResp.body());
-            JsonNode keysList = keysJson.isArray() ? keysJson : keysJson.has("results") ? keysJson.get("results") : mapper.createArrayNode();
-
-            for (JsonNode k : keysList) {
-                if (serverKeyName.equals(k.get("name").asText())) {
-                    String serverKey = k.get("key").asText();
-                    log.info("Flagsmith auto-discovery: resolved server-side key for env '{}'", envName);
-                    return serverKey;
-                }
-            }
-
-            // Server-side key not found — create one
-            log.info("Flagsmith auto-discovery: creating server-side key '{}'", serverKeyName);
-            String createBody = mapper.writeValueAsString(
-                    mapper.createObjectNode().put("name", serverKeyName)
-            );
-            HttpResponse<String> createResp = httpClient.send(
-                    HttpRequest.newBuilder()
-                            .uri(URI.create(adminBase + "/environments/" + clientKey + "/api-keys/"))
-                            .header("Content-Type", "application/json")
-                            .header("Authorization", "Token " + token)
-                            .POST(HttpRequest.BodyPublishers.ofString(createBody))
-                            .timeout(Duration.ofSeconds(10))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString()
-            );
-
-            JsonNode created = mapper.readTree(createResp.body());
-            if (created.has("key")) {
-                String serverKey = created.get("key").asText();
-                log.info("Flagsmith auto-discovery: created server-side key for env '{}'", envName);
-                return serverKey;
-            }
-
-            log.warn("Flagsmith auto-discovery: failed to create server-side key: {}", createResp.body());
-            return null;
+            log.info("Flagsmith auto-discovery: resolved server-side key for env '{}'", properties.environmentName());
+            return Optional.of(serverKey);
         } catch (Exception e) {
-            log.warn("Flagsmith auto-discovery failed: {}", e.getMessage());
-            return null;
+            log.warn("Flagsmith auto-discovery failed — feature flags disabled: {}", e.getMessage());
+            return Optional.empty();
         }
+    }
+
+    private String resolveBaseUrl() {
+        String url = properties.apiUrl().replaceAll("/+$", "");
+        return url.contains("/api/v1") ? url : url + "/api/v1";
     }
 
     private static DefaultFlag defaultFlagHandler(String featureName) {
@@ -226,5 +93,103 @@ public class FlagsmithConfig {
         flag.setEnabled(false);
         flag.setValue(null);
         return flag;
+    }
+
+    /**
+     * Thin wrapper around Flagsmith's admin REST API. Each method throws
+     * on failure so the caller can handle everything in a single catch block.
+     */
+    private static class FlagsmithAdminApi {
+
+        private final HttpClient http;
+        private final ObjectMapper mapper;
+        private final String baseUrl;
+
+        FlagsmithAdminApi(HttpClient http, ObjectMapper mapper, String baseUrl) {
+            this.http = http;
+            this.mapper = mapper;
+            this.baseUrl = baseUrl;
+        }
+
+        String login(String email, String password) throws Exception {
+            var body = mapper.createObjectNode()
+                    .put("email", email)
+                    .put("password", password);
+
+            JsonNode resp = post("/auth/login/", body, null);
+            if (!resp.has("key")) {
+                throw new IllegalStateException("login failed");
+            }
+            return resp.get("key").asText();
+        }
+
+        int findProjectId(String token, String projectName) throws Exception {
+            JsonNode projects = get("/projects/", token);
+            for (JsonNode p : asArray(projects)) {
+                if (projectName.equals(text(p, "name"))) {
+                    return p.get("id").asInt();
+                }
+            }
+            throw new IllegalStateException("project '%s' not found".formatted(projectName));
+        }
+
+        String findEnvironmentClientKey(String token, int projectId, String envName) throws Exception {
+            JsonNode envs = get("/environments/?project=" + projectId, token);
+            for (JsonNode env : asArray(envs)) {
+                if (envName.equals(text(env, "name"))) {
+                    return env.get("api_key").asText();
+                }
+            }
+            throw new IllegalStateException("environment '%s' not found".formatted(envName));
+        }
+
+        String findOrCreateServerKey(String token, String clientKey) throws Exception {
+            String path = "/environments/" + clientKey + "/api-keys/";
+            JsonNode keys = get(path, token);
+            for (JsonNode k : asArray(keys)) {
+                if (SERVER_KEY_NAME.equals(text(k, "name"))) {
+                    return k.get("key").asText();
+                }
+            }
+
+            var body = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
+            JsonNode created = post(path, body, token);
+            if (!created.has("key")) {
+                throw new IllegalStateException("failed to create server-side key");
+            }
+            return created.get("key").asText();
+        }
+
+        private JsonNode get(String path, String token) throws Exception {
+            var req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + path))
+                    .header("Authorization", "Token " + token)
+                    .GET()
+                    .timeout(REQUEST_TIMEOUT)
+                    .build();
+            return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
+        }
+
+        private JsonNode post(String path, JsonNode payload, String token) throws Exception {
+            var builder = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + path))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+                    .timeout(REQUEST_TIMEOUT);
+            if (token != null) {
+                builder.header("Authorization", "Token " + token);
+            }
+            return mapper.readTree(http.send(builder.build(), HttpResponse.BodyHandlers.ofString()).body());
+        }
+
+        private static JsonNode asArray(JsonNode node) {
+            if (node.isArray()) return node;
+            if (node.has("results")) return node.get("results");
+            throw new IllegalStateException("unexpected response format");
+        }
+
+        private static String text(JsonNode node, String field) {
+            return node.has(field) ? node.get(field).asText() : null;
+        }
     }
 }

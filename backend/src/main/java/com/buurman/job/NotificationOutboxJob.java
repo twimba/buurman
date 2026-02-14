@@ -2,8 +2,7 @@ package com.buurman.job;
 
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
-import com.buurman.domain.NotificationStatus;
-import com.buurman.config.NotificationOutboxProperties;
+import com.buurman.config.models.NotificationOutboxProperties;
 
 import static com.buurman.domain.NotificationStatus.*;
 import com.buurman.repository.NotificationOutboxRepository;

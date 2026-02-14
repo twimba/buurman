@@ -6,7 +6,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.mapper.DocumentMapper;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;

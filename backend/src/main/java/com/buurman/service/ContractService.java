@@ -25,7 +25,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.domain.NotificationType;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;

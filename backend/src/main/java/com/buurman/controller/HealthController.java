@@ -1,6 +1,6 @@
 package com.buurman.controller;
 
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.dto.response.HealthResponse;
 import com.buurman.dto.response.InfoResponse;
 import io.swagger.v3.oas.annotations.Operation;

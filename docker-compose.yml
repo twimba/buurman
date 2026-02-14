@@ -192,7 +192,6 @@ services:
     volumes:
       - ./docker/flagsmith/setup.sh:/setup.py:ro
       - ./backend/src/main/java/com/buurman/util/FeatureFlags.java:/FeatureFlags.java:ro
-      - ./.env:/.env
     depends_on:
       flagsmith:
         condition: service_healthy

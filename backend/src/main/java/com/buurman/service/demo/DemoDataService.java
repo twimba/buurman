@@ -1,9 +1,8 @@
 package com.buurman.service.demo;
 
-import com.buurman.config.DemoDataProperties;
+import com.buurman.config.models.DemoDataProperties;
 import com.buurman.dto.response.DemoDataResponse;
 import org.jooq.DSLContext;
-import org.jooq.JSONB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;

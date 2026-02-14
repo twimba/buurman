@@ -1,6 +1,6 @@
 package com.buurman.service.demo;
 
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

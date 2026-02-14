@@ -6,7 +6,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PhotoResponse;
 import com.buurman.mapper.PhotoMapper;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;

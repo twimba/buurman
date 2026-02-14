@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.AwsS3Properties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

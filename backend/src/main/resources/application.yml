@@ -84,7 +84,6 @@ buurman:
 
 # Flagsmith Feature Flags
 flagsmith:
-  api-key: ${FLAGSMITH_SERVER_SIDE_KEY:}
   api-url: ${FLAGSMITH_API_URL:http://flagsmith:8000/api/v1/}
   admin-email: ${FLAGSMITH_ADMIN_EMAIL:}
   admin-password: ${FLAGSMITH_ADMIN_PASSWORD:}

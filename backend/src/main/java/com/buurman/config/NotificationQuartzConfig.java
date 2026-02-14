@@ -1,5 +1,6 @@
 package com.buurman.config;
 
+import com.buurman.config.models.NotificationOutboxProperties;
 import com.buurman.job.NotificationOutboxJob;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;

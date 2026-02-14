@@ -1,6 +1,6 @@
 package com.buurman.service.demo;
 
-import com.buurman.config.AwsS3Properties;
+import com.buurman.config.models.AwsS3Properties;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;

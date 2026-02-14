@@ -1,7 +1,7 @@
 package com.buurman.controller;
 
-import com.buurman.config.SendGridProperties;
-import com.buurman.config.TwilioProperties;
+import com.buurman.config.models.SendGridProperties;
+import com.buurman.config.models.TwilioProperties;
 import com.buurman.service.notification.WebhookService;
 import com.sendgrid.helpers.eventwebhook.EventWebhook;
 import com.twilio.security.RequestValidator;

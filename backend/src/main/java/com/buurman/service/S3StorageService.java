@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import com.buurman.config.AwsS3Properties;
+import com.buurman.config.models.AwsS3Properties;
 import com.buurman.exception.ExternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

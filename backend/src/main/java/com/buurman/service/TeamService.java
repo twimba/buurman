@@ -19,7 +19,7 @@ import com.buurman.exception.ForbiddenException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.*;
 import com.buurman.security.UserPrincipal;
-import com.buurman.config.AppProperties;
+import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
