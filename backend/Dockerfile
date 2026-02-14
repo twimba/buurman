@@ -25,7 +25,14 @@ FROM eclipse-temurin:21-jre-alpine AS prod
 
 WORKDIR /app
 
-RUN apk add --no-cache wget
+RUN apk add --no-cache wget ca-certificates \
+    && wget -qO /tmp/isrg-root-x1.pem https://letsencrypt.org/certs/isrgrootx1.pem \
+    && keytool -importcert -noprompt -trustcacerts \
+        -alias isrg-root-x1 \
+        -file /tmp/isrg-root-x1.pem \
+        -keystore $JAVA_HOME/lib/security/cacerts \
+        -storepass changeit 2>/dev/null || true \
+    && rm /tmp/isrg-root-x1.pem
 
 COPY target/buurman-backend-*.jar app.jar
 
