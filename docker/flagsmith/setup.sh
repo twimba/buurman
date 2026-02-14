@@ -163,7 +163,45 @@ for flag_name in desired_flags:
         else:
             log(f"  WARNING: Failed to create flag '{flag_name}': {resp}")
 
-# --- 7. Write key to .env file ---
+# --- 7. Create segments for role-based targeting ---
+SEGMENTS = [
+    {"name": "Team Admins", "description": "Users with TEAM_ADMIN role", "trait": "role", "value": "TEAM_ADMIN"},
+    {"name": "Team Editors", "description": "Users with TEAM_EDITOR role", "trait": "role", "value": "TEAM_EDITOR"},
+    {"name": "Team Viewers", "description": "Users with TEAM_VIEWER role", "trait": "role", "value": "TEAM_VIEWER"},
+]
+
+log("Syncing segments...")
+existing_segments = api_call("GET", f"/api/v1/projects/{project_id}/segments/", token=token)
+seg_list = existing_segments.get("results", existing_segments) if isinstance(existing_segments, dict) else existing_segments
+existing_seg_names = {s["name"] for s in seg_list} if isinstance(seg_list, list) else set()
+
+for seg in SEGMENTS:
+    if seg["name"] in existing_seg_names:
+        log(f"  Segment '{seg['name']}' already exists, skipping.")
+    else:
+        resp = api_call("POST", f"/api/v1/projects/{project_id}/segments/", {
+            "name": seg["name"],
+            "description": seg["description"],
+            "project": project_id,
+            "rules": [{
+                "type": "ALL",
+                "rules": [{
+                    "type": "ALL",
+                    "conditions": [{
+                        "property": seg["trait"],
+                        "operator": "EQUAL",
+                        "value": seg["value"],
+                    }],
+                }],
+                "conditions": [],
+            }],
+        }, token=token)
+        if resp.get("id"):
+            log(f"  Created segment '{seg['name']}'.")
+        else:
+            log(f"  WARNING: Failed to create segment '{seg['name']}': {resp}")
+
+# --- 8. Write key to .env file ---
 if not os.path.isfile(ENV_FILE):
     log(f"WARNING: .env file not found at {ENV_FILE}, skipping key write.")
     sys.exit(0)

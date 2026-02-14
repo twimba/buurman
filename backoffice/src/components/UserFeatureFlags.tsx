@@ -60,6 +60,27 @@ const RoleBadge = ({ role }: { role: string }) => {
   );
 };
 
+const ValueCell = ({ value }: { value: unknown }) => (
+  <td className="px-5 py-3.5 text-sm text-[#6b7194] dark:text-[#8b90a8] font-mono">
+    {value !== null && value !== undefined ? (
+      String(value)
+    ) : (
+      <Minus className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+    )}
+  </td>
+);
+
+const isOverridden = (
+  flag: { enabled: boolean; value: unknown },
+  globalFlag?: { enabled: boolean; value: unknown },
+) => {
+  if (!globalFlag) return false;
+  return (
+    flag.enabled !== globalFlag.enabled ||
+    String(flag.value ?? "") !== String(globalFlag.value ?? "")
+  );
+};
+
 const FlagRow = ({
   name,
   flag,
@@ -71,9 +92,8 @@ const FlagRow = ({
   globalFlag?: { enabled: boolean; value: unknown };
   showOverrideOnly: boolean;
 }) => {
-  const isOverride =
-    globalFlag !== undefined && flag.enabled !== globalFlag.enabled;
-  if (showOverrideOnly && !isOverride) return null;
+  const override = isOverridden(flag, globalFlag);
+  if (showOverrideOnly && !override) return null;
 
   return (
     <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f1f3f9]/50 dark:hover:bg-[#1a1d2e]/50 transition-colors">
@@ -82,7 +102,7 @@ const FlagRow = ({
           <code className="text-sm font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
             {name}
           </code>
-          {isOverride && <OverrideBadge />}
+          {override && <OverrideBadge />}
         </div>
       </td>
       <td className="px-5 py-3.5">
@@ -93,13 +113,8 @@ const FlagRow = ({
           <FlagBadge enabled={globalFlag.enabled} />
         </td>
       )}
-      <td className="px-5 py-3.5 text-sm text-[#6b7194] dark:text-[#8b90a8] font-mono">
-        {flag.value !== null && flag.value !== undefined ? (
-          String(flag.value)
-        ) : (
-          <Minus className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
-        )}
-      </td>
+      <ValueCell value={flag.value} />
+      {globalFlag !== undefined && <ValueCell value={globalFlag.value} />}
     </tr>
   );
 };
@@ -118,10 +133,8 @@ const FlagTable = ({
   const sortedNames = useMemo(() => Object.keys(flags).sort(), [flags]);
 
   const visibleCount = showOverrideOnly
-    ? sortedNames.filter(
-        (name) =>
-          globalFlags && flags[name]?.enabled !== globalFlags[name]?.enabled,
-      ).length
+    ? sortedNames.filter((name) => isOverridden(flags[name], globalFlags?.[name]))
+        .length
     : sortedNames.length;
 
   if (sortedNames.length === 0) {
@@ -155,12 +168,17 @@ const FlagTable = ({
             </th>
             {isUserContext && (
               <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
-                Global Default
+                Global Status
               </th>
             )}
             <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
-              Value
+              {isUserContext ? "User Value" : "Value"}
             </th>
+            {isUserContext && (
+              <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+                Global Value
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -189,8 +207,8 @@ const TeamFlagSection = ({
   showOverrideOnly: boolean;
 }) => {
   const overrideCount = globalFlags
-    ? Object.keys(evaluation.flags).filter(
-        (k) => evaluation.flags[k]?.enabled !== globalFlags[k]?.enabled,
+    ? Object.keys(evaluation.flags).filter((k) =>
+        isOverridden(evaluation.flags[k], globalFlags[k]),
       ).length
     : 0;
 
@@ -260,8 +278,8 @@ export const UserFeatureFlags = ({
       ? teamEvaluations.reduce(
           (total, ev) =>
             total +
-            Object.keys(ev.flags).filter(
-              (k) => ev.flags[k]?.enabled !== globalFlags[k]?.enabled,
+            Object.keys(ev.flags).filter((k) =>
+              isOverridden(ev.flags[k], globalFlags[k]),
             ).length,
           0,
         )

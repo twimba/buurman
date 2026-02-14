@@ -245,6 +245,8 @@ services:
         condition: service_started
       seaweedfs-init:
         condition: service_completed_successfully
+      flagsmith-setup:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
       interval: 30s

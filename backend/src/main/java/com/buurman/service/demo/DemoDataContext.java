@@ -39,6 +39,8 @@ public class DemoDataContext {
     private int contractsCreated;
     private int paymentsCreated;
     private int expensesCreated;
+    private int notificationsCreated;
+    private int documentsCreated;
 
     public Map<String, UUID> getTeamIds() {
         return teamIds;
@@ -126,6 +128,22 @@ public class DemoDataContext {
 
     public void incrementExpenses() {
         expensesCreated++;
+    }
+
+    public int getNotificationsCreated() {
+        return notificationsCreated;
+    }
+
+    public void incrementNotifications(int count) {
+        notificationsCreated += count;
+    }
+
+    public int getDocumentsCreated() {
+        return documentsCreated;
+    }
+
+    public void incrementDocuments(int count) {
+        documentsCreated += count;
     }
 
     /**

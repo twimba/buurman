@@ -45,7 +45,12 @@ const navigation = [
   { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Documents', href: '/documents', icon: Folder },
   { name: 'Photos', href: '/photos', icon: Image },
-  { name: 'Reports', href: '/reports', icon: BarChart3, featureFlag: FeatureFlags.REPORTS },
+  {
+    name: 'Reports',
+    href: '/reports',
+    icon: BarChart3,
+    featureFlag: FeatureFlags.REPORTS,
+  },
 ];
 
 const administrationNavigation = [

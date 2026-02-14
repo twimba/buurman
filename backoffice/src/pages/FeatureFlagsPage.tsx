@@ -162,9 +162,7 @@ export const FeatureFlagsPage = () => {
                   >
                     <div className="h-7 w-7 rounded-full bg-[#5c7cfa]/10 flex items-center justify-center flex-shrink-0">
                       <span className="text-xs font-semibold text-[#5c7cfa]">
-                        {(
-                          user.firstName?.[0] ?? user.email[0]
-                        ).toUpperCase()}
+                        {(user.firstName?.[0] ?? user.email[0]).toUpperCase()}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">

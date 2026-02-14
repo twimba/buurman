@@ -19,7 +19,5 @@ export interface TeamFlagEvaluation {
 export const featureFlagsApi = {
   getGlobal: () => client.get<FlagMap>("/feature-flags"),
   getForUser: (userIdentifier: string) =>
-    client.get<TeamFlagEvaluation[]>(
-      `/feature-flags/users/${userIdentifier}`,
-    ),
+    client.get<TeamFlagEvaluation[]>(`/feature-flags/users/${userIdentifier}`),
 };

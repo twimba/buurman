@@ -8,5 +8,7 @@ public record DemoDataResponse(
         int contractsCreated,
         int paymentsCreated,
         int expensesCreated,
+        int notificationsCreated,
+        int documentsCreated,
         long durationMs
 ) {}

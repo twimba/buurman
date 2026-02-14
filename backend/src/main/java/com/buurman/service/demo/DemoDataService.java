@@ -36,6 +36,8 @@ public class DemoDataService implements ApplicationRunner {
     private final DemoExpenseGenerator expenseGenerator;
     private final DemoPaymentInstructionGenerator paymentInstructionGenerator;
     private final DemoPhotoGenerator photoGenerator;
+    private final DemoNotificationGenerator notificationGenerator;
+    private final DemoDocumentGenerator documentGenerator;
     private final DemoAuditLogGenerator auditLogGenerator;
 
     private volatile Instant lastGeneratedAt;
@@ -46,7 +48,8 @@ public class DemoDataService implements ApplicationRunner {
                           DemoPropertyGenerator propertyGenerator, DemoTenantGenerator tenantGenerator,
                           DemoContractGenerator contractGenerator, DemoPaymentGenerator paymentGenerator,
                           DemoExpenseGenerator expenseGenerator, DemoPaymentInstructionGenerator paymentInstructionGenerator,
-                          DemoPhotoGenerator photoGenerator, DemoAuditLogGenerator auditLogGenerator) {
+                          DemoPhotoGenerator photoGenerator, DemoNotificationGenerator notificationGenerator,
+                          DemoDocumentGenerator documentGenerator, DemoAuditLogGenerator auditLogGenerator) {
         this.dsl = dsl;
         this.properties = properties;
         this.keycloakSetup = keycloakSetup;
@@ -60,6 +63,8 @@ public class DemoDataService implements ApplicationRunner {
         this.expenseGenerator = expenseGenerator;
         this.paymentInstructionGenerator = paymentInstructionGenerator;
         this.photoGenerator = photoGenerator;
+        this.notificationGenerator = notificationGenerator;
+        this.documentGenerator = documentGenerator;
         this.auditLogGenerator = auditLogGenerator;
     }
 
@@ -107,9 +112,10 @@ public class DemoDataService implements ApplicationRunner {
         long durationMs = System.currentTimeMillis() - startTime;
         lastGeneratedAt = Instant.now();
 
-        log.info("Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {} contracts, {} payments, {} expenses",
+        log.info("Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {} contracts, {} payments, {} expenses, {} notifications, {} documents",
                 durationMs, ctx.getTeamsCreated(), ctx.getUsersCreated(), ctx.getPropertiesCreated(),
-                ctx.getTenantsCreated(), ctx.getContractsCreated(), ctx.getPaymentsCreated(), ctx.getExpensesCreated());
+                ctx.getTenantsCreated(), ctx.getContractsCreated(), ctx.getPaymentsCreated(), ctx.getExpensesCreated(),
+                ctx.getNotificationsCreated(), ctx.getDocumentsCreated());
 
         return new DemoDataResponse(
                 ctx.getTeamsCreated(),
@@ -119,6 +125,8 @@ public class DemoDataService implements ApplicationRunner {
                 ctx.getContractsCreated(),
                 ctx.getPaymentsCreated(),
                 ctx.getExpensesCreated(),
+                ctx.getNotificationsCreated(),
+                ctx.getDocumentsCreated(),
                 durationMs
         );
     }
@@ -134,6 +142,8 @@ public class DemoDataService implements ApplicationRunner {
         paymentInstructionGenerator.generate(ctx);
         paymentGenerator.generate(ctx);
         expenseGenerator.generate(ctx);
+        notificationGenerator.generate(ctx);
+        documentGenerator.generate(ctx);
         auditLogGenerator.generate(ctx);
     }
 
@@ -181,7 +191,25 @@ public class DemoDataService implements ApplicationRunner {
                 .execute();
         log.debug("Deleted {} calendar feeds", deleted);
 
-        // 3. Audit log
+        // 3. Notification outbox (FK -> notifications)
+        List<UUID> notificationIds = dsl.select(NOTIFICATIONS.ID)
+                .from(NOTIFICATIONS)
+                .where(NOTIFICATIONS.TEAM_ID.in(demoTeamIds))
+                .fetch(NOTIFICATIONS.ID);
+        if (!notificationIds.isEmpty()) {
+            deleted = dsl.deleteFrom(NOTIFICATION_OUTBOX)
+                    .where(NOTIFICATION_OUTBOX.NOTIFICATION_ID.in(notificationIds))
+                    .execute();
+            log.debug("Deleted {} notification outbox entries", deleted);
+        }
+
+        // 3b. Notifications
+        deleted = dsl.deleteFrom(NOTIFICATIONS)
+                .where(NOTIFICATIONS.TEAM_ID.in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} notifications", deleted);
+
+        // 4. Audit log
         deleted = dsl.deleteFrom(AUDIT_LOG)
                 .where(AUDIT_LOG.TEAM_ID.in(demoTeamIds))
                 .execute();
