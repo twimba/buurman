@@ -91,6 +91,32 @@ public class S3StorageService {
     }
 
     /**
+     * Upload raw bytes to S3 and return the file key.
+     * Same key pattern as the MultipartFile variant.
+     */
+    public String uploadFile(byte[] data, String contentType, UUID teamId, String entityType, UUID entityId, String filename) {
+        Instant start = Instant.now();
+        String fileKey = generateFileKey(teamId, entityType, entityId, filename);
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileKey)
+                .contentType(contentType)
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(data));
+
+        metricsService.recordTimer("s3.operation.seconds",
+                Duration.between(start, Instant.now()),
+                "operation", "upload", "result", "success");
+        metricsService.incrementCounter("s3.operation.total",
+                "operation", "upload", "result", "success");
+
+        log.info("File uploaded to S3: {}", fileKey);
+        return fileKey;
+    }
+
+    /**
      * Generate presigned URL for downloading a file.
      * URL is valid for 15 minutes.
      * For local dev (SeaweedFS), uses direct URLs without presigning to avoid CORS issues.

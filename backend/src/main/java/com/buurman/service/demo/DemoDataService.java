@@ -98,11 +98,16 @@ public class DemoDataService implements ApplicationRunner {
         // 3. Generate database records (transactional)
         generateDatabaseRecords(ctx);
 
-        // 4. Upload property photos (non-transactional, S3 + DB)
+        // 4. Upload files to S3 (non-transactional, S3 + DB)
         try {
             photoGenerator.generate(ctx);
         } catch (Exception e) {
             log.warn("Photo generation failed (non-fatal): {}", e.getMessage());
+        }
+        try {
+            documentGenerator.generate(ctx);
+        } catch (Exception e) {
+            log.warn("Document generation failed (non-fatal): {}", e.getMessage());
         }
 
         // 5. Force logout demo user so they get fresh session with reset data
@@ -142,7 +147,6 @@ public class DemoDataService implements ApplicationRunner {
         paymentGenerator.generate(ctx);
         expenseGenerator.generate(ctx);
         notificationGenerator.generate(ctx);
-        documentGenerator.generate(ctx);
         auditLogGenerator.generate(ctx);
     }
 
