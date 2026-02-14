@@ -87,5 +87,4 @@ buurman:
   demo:
     enabled: false
     api-key: test
-    auto-regenerate: false
     cron: "0 0 0 1 1 *"

@@ -23,6 +23,9 @@ spring:
           backoffice:
             issuer-uri: https://keycloak.local.buurman.io/realms/buurman-backoffice
             jwk-set-uri: http://keycloak:8080/realms/buurman-backoffice/protocol/openid-connect/certs
+  web:
+    error:
+      include-message: never
 
 keycloak:
   admin:
@@ -41,10 +44,6 @@ flagsmith:
 
 spring.mail:
   host: mailpit
-
-server:
-  error:
-    include-message: never
 
 app:
   api:

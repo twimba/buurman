@@ -6,6 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record DemoDataProperties(
         boolean enabled,
         String apiKey,
-        boolean autoRegenerate,
         String cron
 ) {}

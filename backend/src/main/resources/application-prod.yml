@@ -1,0 +1,70 @@
+# =============================================================================
+# Production Profile
+# =============================================================================
+# Deployed on Dokploy. All secrets injected via environment variables.
+# Activate with: SPRING_PROFILES_ACTIVE=prod
+# =============================================================================
+
+spring:
+  datasource:
+    url: ${DB_URL}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak.buurman.io/realms/buurman
+          jwk-set-uri: https://keycloak.buurman.io/realms/buurman/protocol/openid-connect/certs
+          backoffice:
+            issuer-uri: https://keycloak.buurman.io/realms/buurman-backoffice
+            jwk-set-uri: https://keycloak.buurman.io/realms/buurman-backoffice/protocol/openid-connect/certs
+  web:
+    error:
+      include-message: never
+
+keycloak:
+  admin:
+    server-url: https://keycloak.buurman.io
+
+aws:
+  s3:
+    use-presigned-urls: true
+
+spring.mail:
+  host: ${SMTP_HOST:localhost}
+  port: ${SMTP_PORT:587}
+  username: ${SMTP_USERNAME:}
+  password: ${SMTP_PASSWORD:}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+
+buurman:
+  demo:
+    cron: "0 * * * * *"
+
+flagsmith:
+  environment-name: Production
+
+app:
+  api:
+    base-url: https://api.buurman.io
+  email:
+    base-url: https://app.buurman.io
+  cors:
+    allowed-origins: https://app.buurman.io
+    backoffice-allowed-origins: https://backoffice.buurman.io
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

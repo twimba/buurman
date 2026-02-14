@@ -387,7 +387,7 @@ public class DemoDataService implements ApplicationRunner {
     }
 
     public void scheduledRegenerate() {
-        if (!properties.enabled() || !properties.autoRegenerate()) {
+        if (!properties.enabled()) {
             return;
         }
         log.info("Starting scheduled demo data regeneration");

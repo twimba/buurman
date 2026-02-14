@@ -69,8 +69,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/backend:${{ steps.version.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/backend:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:latest
 
       - name: Summary
         if: always()
@@ -81,7 +81,7 @@ jobs:
           | | |
           |---|---|
           | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
-          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/backend\` |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend\` |
           | **Tag** | \`${{ steps.version.outputs.tag }}\` |
           | **Digest** | \`${{ steps.build.outputs.digest }}\` |
           | **JAR** | \`${{ steps.jar.outputs.name }}\` (${{ steps.jar.outputs.size }}) |
@@ -128,13 +128,13 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:${{ steps.version.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
           build-args: |
-            VITE_API_URL=${{ vars.VITE_API_URL }}
             VITE_KEYCLOAK_URL=${{ vars.VITE_KEYCLOAK_URL }}
             VITE_KEYCLOAK_REALM=${{ vars.VITE_KEYCLOAK_REALM }}
             VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
+            VITE_GOOGLE_MAPS_API_KEY=${{ vars.VITE_GOOGLE_MAPS_API_KEY }}
 
       - name: Summary
         if: always()
@@ -145,7 +145,7 @@ jobs:
           | | |
           |---|---|
           | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
-          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/app\` |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app\` |
           | **Tag** | \`${{ steps.version.outputs.tag }}\` |
           | **Digest** | \`${{ steps.build.outputs.digest }}\` |
 
@@ -191,12 +191,12 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/backoffice:${{ steps.version.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/backoffice:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
           build-args: |
             VITE_KEYCLOAK_URL=${{ vars.VITE_KEYCLOAK_URL }}
-            VITE_KEYCLOAK_REALM=${{ vars.VITE_KEYCLOAK_REALM }}
-            VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
+            VITE_KEYCLOAK_REALM=${{ vars.VITE_BACKOFFICE_KEYCLOAK_REALM }}
+            VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID }}
 
       - name: Summary
         if: always()
@@ -207,7 +207,7 @@ jobs:
           | | |
           |---|---|
           | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
-          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/backoffice\` |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice\` |
           | **Tag** | \`${{ steps.version.outputs.tag }}\` |
           | **Digest** | \`${{ steps.build.outputs.digest }}\` |
 
@@ -215,7 +215,7 @@ jobs:
 
   summary:
     name: Build Summary
-    needs: [build-backend, build-app, build-backoffice]
+    needs: [build-backend, build-app, build-backoffice, deploy]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -232,6 +232,7 @@ jobs:
           | **Backend** | ${{ needs.build-backend.result == 'success' && '✅' || '❌' }} ${{ needs.build-backend.result }} |
           | **App** | ${{ needs.build-app.result == 'success' && '✅' || '❌' }} ${{ needs.build-app.result }} |
           | **Backoffice** | ${{ needs.build-backoffice.result == 'success' && '✅' || '❌' }} ${{ needs.build-backoffice.result }} |
+          | **Deploy** | ${{ needs.deploy.result == 'success' && '✅' || '❌' }} ${{ needs.deploy.result }} |
 
           ### How to pull
 
@@ -242,9 +243,9 @@ jobs:
           \`\`\`
           3. Pull the images:
           \`\`\`bash
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/backend:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/app:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/backoffice:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
           \`\`\`
 
           EOF
