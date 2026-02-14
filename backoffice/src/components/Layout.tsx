@@ -33,6 +33,7 @@ import {
   SendGridIcon,
   AwsIcon,
   FlagsmithIcon,
+  HetznerIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
 
@@ -85,6 +86,12 @@ const getTools = (): ToolItem[] => {
             external: true,
           },
         ]),
+    {
+      name: "Hetzner",
+      href: "https://console.hetzner.cloud/projects",
+      icon: HetznerIcon,
+      external: true,
+    },
   ];
 };
 
