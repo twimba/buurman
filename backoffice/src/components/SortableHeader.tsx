@@ -3,8 +3,8 @@ import { ChevronUp, ChevronDown, ArrowUpDown } from "lucide-react";
 interface SortableHeaderProps {
   field: string;
   label: string;
-  sort: string;
-  direction: string;
+  sort?: string;
+  direction?: string;
   onSortChange: (field: string) => void;
 }
 
