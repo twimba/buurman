@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.select;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -71,7 +71,6 @@ public class DatabaseMetricsService {
         refreshCounts();
     }
 
-    @Scheduled(fixedRateString = "${scheduling.metrics.fixed-rate-ms}", initialDelayString = "${scheduling.metrics.initial-delay-ms}")
     public void refreshCounts() {
         try {
             var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);

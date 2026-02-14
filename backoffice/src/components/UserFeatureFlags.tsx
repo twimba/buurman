@@ -133,8 +133,9 @@ const FlagTable = ({
   const sortedNames = useMemo(() => Object.keys(flags).sort(), [flags]);
 
   const visibleCount = showOverrideOnly
-    ? sortedNames.filter((name) => isOverridden(flags[name], globalFlags?.[name]))
-        .length
+    ? sortedNames.filter((name) =>
+        isOverridden(flags[name], globalFlags?.[name]),
+      ).length
     : sortedNames.length;
 
   if (sortedNames.length === 0) {

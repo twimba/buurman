@@ -1,0 +1,135 @@
+package com.buurman.service.backoffice;
+
+import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.backoffice.JobExecutionHistoryResponse;
+import com.buurman.dto.response.backoffice.ScheduledJobResponse;
+import com.buurman.repository.JobExecutionHistoryRepository;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class BackofficeSchedulerService {
+
+    private static final Logger log = LoggerFactory.getLogger(BackofficeSchedulerService.class);
+
+    private final Scheduler scheduler;
+    private final JobExecutionHistoryRepository executionHistoryRepository;
+
+    public BackofficeSchedulerService(Scheduler scheduler,
+                                       JobExecutionHistoryRepository executionHistoryRepository) {
+        this.scheduler = scheduler;
+        this.executionHistoryRepository = executionHistoryRepository;
+    }
+
+    public List<ScheduledJobResponse> listAllJobs() throws SchedulerException {
+        List<ScheduledJobResponse> jobs = new ArrayList<>();
+
+        for (String groupName : scheduler.getJobGroupNames()) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                JobDetail detail = scheduler.getJobDetail(jobKey);
+                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+
+                if (triggers.isEmpty()) {
+                    jobs.add(new ScheduledJobResponse(
+                            jobKey.getName(),
+                            jobKey.getGroup(),
+                            detail.getJobClass().getSimpleName(),
+                            null, null, null, null,
+                            "NONE",
+                            null, null
+                    ));
+                    continue;
+                }
+
+                for (Trigger trigger : triggers) {
+                    Trigger.TriggerState state = scheduler.getTriggerState(trigger.getKey());
+                    String triggerType;
+                    String scheduleExpression;
+
+                    if (trigger instanceof CronTrigger cronTrigger) {
+                        triggerType = "cron";
+                        scheduleExpression = cronTrigger.getCronExpression();
+                    } else if (trigger instanceof SimpleTrigger simpleTrigger) {
+                        triggerType = "simple";
+                        long intervalMs = simpleTrigger.getRepeatInterval();
+                        scheduleExpression = formatInterval(intervalMs);
+                    } else {
+                        triggerType = trigger.getClass().getSimpleName();
+                        scheduleExpression = "unknown";
+                    }
+
+                    jobs.add(new ScheduledJobResponse(
+                            jobKey.getName(),
+                            jobKey.getGroup(),
+                            detail.getJobClass().getSimpleName(),
+                            trigger.getKey().getName(),
+                            trigger.getKey().getGroup(),
+                            triggerType,
+                            scheduleExpression,
+                            state.name(),
+                            formatDate(trigger.getNextFireTime()),
+                            formatDate(trigger.getPreviousFireTime())
+                    ));
+                }
+            }
+        }
+
+        return jobs;
+    }
+
+    public void pauseJob(String jobName, String group) throws SchedulerException {
+        scheduler.pauseJob(JobKey.jobKey(jobName, group));
+        log.info("Paused job {}.{}", group, jobName);
+    }
+
+    public void resumeJob(String jobName, String group) throws SchedulerException {
+        scheduler.resumeJob(JobKey.jobKey(jobName, group));
+        log.info("Resumed job {}.{}", group, jobName);
+    }
+
+    public void triggerJobNow(String jobName, String group) throws SchedulerException {
+        scheduler.triggerJob(JobKey.jobKey(jobName, group));
+        log.info("Triggered job {}.{}", group, jobName);
+    }
+
+    public PageResponse<JobExecutionHistoryResponse> getExecutionHistory(PageRequest pageRequest,
+                                                                          String jobNameFilter,
+                                                                          String statusFilter) {
+        return executionHistoryRepository.findAll(pageRequest, jobNameFilter, statusFilter);
+    }
+
+    private String formatDate(Date date) {
+        if (date == null) return null;
+        return Instant.ofEpochMilli(date.getTime())
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
+    private String formatInterval(long intervalMs) {
+        if (intervalMs >= 3600000) {
+            return "every " + (intervalMs / 3600000) + "h";
+        } else if (intervalMs >= 60000) {
+            return "every " + (intervalMs / 60000) + "m";
+        } else if (intervalMs >= 1000) {
+            return "every " + (intervalMs / 1000) + "s";
+        }
+        return "every " + intervalMs + "ms";
+    }
+}

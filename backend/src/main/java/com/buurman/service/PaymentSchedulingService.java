@@ -14,7 +14,7 @@ import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +56,6 @@ public class PaymentSchedulingService {
      * Scheduled job that generates future payments for all teams with auto-generation enabled.
      * Runs every hour.
      */
-    @Scheduled(cron = "${scheduling.payment-generation.cron}")
     public void scheduledPaymentGeneration() {
         log.info("Starting scheduled payment generation");
         long startTime = clock.millis();

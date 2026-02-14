@@ -118,3 +118,28 @@ export interface NotificationStats {
   failedCount: number;
   byChannel: Record<string, number>;
 }
+
+export interface ScheduledJob {
+  jobName: string;
+  jobGroup: string;
+  jobClass: string;
+  triggerName: string | null;
+  triggerGroup: string | null;
+  triggerType: "cron" | "simple" | null;
+  scheduleExpression: string | null;
+  triggerState: string;
+  nextFireTime: string | null;
+  previousFireTime: string | null;
+}
+
+export interface JobExecutionHistory {
+  id: string;
+  jobName: string;
+  jobGroup: string;
+  startedAt: string;
+  endedAt: string | null;
+  durationMs: number | null;
+  status: "RUNNING" | "SUCCESS" | "FAILED";
+  errorMessage: string | null;
+  nodeId: string | null;
+}

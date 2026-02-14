@@ -80,7 +80,7 @@ buurman:
     enabled: ${DEMO_DATA_ENABLED:true}
     api-key: ${DEMO_DATA_API_KEY:demo-secret-key}
     auto-regenerate: ${DEMO_DATA_AUTO_REGENERATE:true}
-    cron: "0 0 */12 * * *"
+    cron: "0 0 */12 * * ?"
 
 # Flagsmith Feature Flags
 flagsmith:
@@ -136,10 +136,10 @@ notification:
 # Scheduling Configuration
 scheduling:
   payment-generation:
-    cron: "0 0 * * * *"
+    cron: "0 0 * * * ?"
   notification-reminders:
-    contract-expiry-cron: "0 0 0 * * *"
-    payment-reminder-cron: "0 0 0 * * *"
+    contract-expiry-cron: "0 0 0 * * ?"
+    payment-reminder-cron: "0 0 0 * * ?"
   metrics:
     fixed-rate-ms: 600000
     initial-delay-ms: 60000

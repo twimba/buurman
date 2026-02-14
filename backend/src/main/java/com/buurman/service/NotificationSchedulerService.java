@@ -16,7 +16,7 @@ import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +64,6 @@ public class NotificationSchedulerService {
         this.clock = clock;
     }
 
-    @Scheduled(cron = "${scheduling.notification-reminders.contract-expiry-cron}")
     @Transactional(readOnly = true)
     public void checkContractExpiry() {
         log.info("Running contract expiry check...");
@@ -115,7 +114,6 @@ public class NotificationSchedulerService {
         log.info("Contract expiry check completed");
     }
 
-    @Scheduled(cron = "${scheduling.notification-reminders.payment-reminder-cron}")
     @Transactional(readOnly = true)
     public void checkPaymentReminders() {
         log.info("Running payment reminder check...");

@@ -28,12 +28,6 @@
   * backoffice: backoffice.buurman.io
   * public website: www.buurman.io
 
- ## Feature flags
-  Implement a feature flag system to be able to enable/disable features in the application without having to deploy new code. This will allow us to test new features with a subset of users, and to quickly disable features if we find any issues with them.
-  The feature flag system should be extensible to support different types of flags (ie: boolean flags, percentage flags, etc) and different providers (ie: launchdarkly, etc) and we want to be able to easily add support for them without having to change the existing code too much.
-  The feature flag system should also be integrated with the subscription plans, so that we can enable/disable features based on the user's subscription plan, etc
-  It is BEST TO USE AN OFF THE SHELF - open source/free SOLUTION FOR THIS! - First determine which one should be used!
-
 # UI/UX
  ## Review Template
   Review the UI template and make sure it is consistent across the different pages and applications, and that it follows good UI/UX practices, etc

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -386,7 +386,6 @@ public class DemoDataService implements ApplicationRunner {
         log.debug("Deleted {} teams", deleted);
     }
 
-    @Scheduled(cron = "${buurman.demo.cron:0 0 */12 * * *}")
     public void scheduledRegenerate() {
         if (!properties.enabled() || !properties.autoRegenerate()) {
             return;
