@@ -201,7 +201,17 @@ for seg in SEGMENTS:
         else:
             log(f"  WARNING: Failed to create segment '{seg['name']}': {resp}")
 
-# --- 8. Write key to .env file ---
+# --- 8. Write key to shared volume (for Docker backend) ---
+SHARED_KEY_FILE = "/shared/flagsmith-server-key"
+try:
+    os.makedirs(os.path.dirname(SHARED_KEY_FILE), exist_ok=True)
+    with open(SHARED_KEY_FILE, "w") as f:
+        f.write(server_key)
+    log(f"Wrote server-side key to {SHARED_KEY_FILE}")
+except Exception as e:
+    log(f"WARNING: Could not write to {SHARED_KEY_FILE}: {e}")
+
+# --- 9. Write key to .env file ---
 if not os.path.isfile(ENV_FILE):
     log(f"WARNING: .env file not found at {ENV_FILE}, skipping key write.")
     sys.exit(0)
