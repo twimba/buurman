@@ -5,6 +5,7 @@ import com.buurman.mapper.TeamInvitationRecordMapper;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,14 +20,16 @@ public class TeamInvitationRepository {
 
     private final DSLContext dsl;
     private final TeamInvitationRecordMapper mapper;
+    private final Clock clock;
 
-    public TeamInvitationRepository(DSLContext dsl, TeamInvitationRecordMapper mapper) {
+    public TeamInvitationRepository(DSLContext dsl, TeamInvitationRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public TeamInvitation save(TeamInvitation invitation) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (invitation.getId() == null) {
             // INSERT
@@ -77,7 +80,7 @@ public class TeamInvitationRepository {
     }
 
     public void softDeleteById(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TEAM_INVITATIONS)
                 .set(TEAM_INVITATIONS.DELETED_AT, now)
                 .where(TEAM_INVITATIONS.ID.eq(id))
@@ -100,7 +103,7 @@ public class TeamInvitationRepository {
     }
 
     public Optional<TeamInvitation> findPendingByEmailAndTeamId(String email, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         return dsl.selectFrom(TEAM_INVITATIONS)
                 .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
                 .and(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
@@ -112,7 +115,7 @@ public class TeamInvitationRepository {
     }
 
     public List<TeamInvitation> findPendingByTeamId(UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         return dsl.selectFrom(TEAM_INVITATIONS)
                 .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
                 .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
@@ -124,7 +127,7 @@ public class TeamInvitationRepository {
     }
 
     public List<TeamInvitation> findPendingByEmail(String email) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         return dsl.selectFrom(TEAM_INVITATIONS)
                 .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
                 .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())

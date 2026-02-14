@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.TenantsRecord;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,10 +30,12 @@ public class TenantRepository {
 
     private final DSLContext dsl;
     private final TenantRecordMapper mapper;
+    private final Clock clock;
 
-    public TenantRepository(DSLContext dsl, TenantRecordMapper mapper) {
+    public TenantRepository(DSLContext dsl, TenantRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Tenant> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -95,11 +98,18 @@ public class TenantRepository {
     }
 
     public Tenant save(Tenant tenant) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (tenant.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = tenant.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(tenant.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = tenant.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(TENANTS)
                     .set(TENANTS.ID, newId)
                     .set(TENANTS.IDENTIFIER, tenant.getIdentifier())
@@ -112,17 +122,21 @@ public class TenantRepository {
                     .set(TENANTS.ID_NUMBER, tenant.getIdNumber())
                     .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo())
                     .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId())
-                    .set(TENANTS.CREATED_AT, now)
-                    .set(TENANTS.UPDATED_AT, now)
+                    .set(TENANTS.CREATED_AT, createdAt)
+                    .set(TENANTS.UPDATED_AT, updatedAt)
                     .set(TENANTS.CREATED_BY, tenant.getCreatedBy())
                     .set(TENANTS.UPDATED_BY, tenant.getUpdatedBy())
                     .execute();
 
             tenant.setId(newId);
-            tenant.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            tenant.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            tenant.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            tenant.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE
+            LocalDateTime updatedAt = tenant.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(TENANTS)
                     .set(TENANTS.FIRST_NAME, tenant.getFirstName())
                     .set(TENANTS.LAST_NAME, tenant.getLastName())
@@ -132,13 +146,13 @@ public class TenantRepository {
                     .set(TENANTS.ID_NUMBER, tenant.getIdNumber())
                     .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo())
                     .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId())
-                    .set(TENANTS.UPDATED_AT, now)
+                    .set(TENANTS.UPDATED_AT, updatedAt)
                     .set(TENANTS.UPDATED_BY, tenant.getUpdatedBy())
                     .where(TENANTS.ID.eq(tenant.getId())
                             .and(TENANTS.TEAM_ID.eq(tenant.getTeamId())))
                     .execute();
 
-            tenant.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            tenant.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return tenant;
@@ -177,7 +191,7 @@ public class TenantRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TENANTS)
                 .set(TENANTS.DELETED_AT, now)
                 .where(TENANTS.ID.eq(id)

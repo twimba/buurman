@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,7 @@ public class ContractService {
     private final MetricsService metricsService;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public ContractService(
             ContractRepository contractRepository,
@@ -82,7 +84,8 @@ public class ContractService {
             PaymentSchedulingService paymentSchedulingService,
             MetricsService metricsService,
             NotificationService notificationService,
-            AppProperties appProperties) {
+            AppProperties appProperties,
+            Clock clock) {
         this.contractRepository = contractRepository;
         this.propertyRepository = propertyRepository;
         this.tenantRepository = tenantRepository;
@@ -96,6 +99,7 @@ public class ContractService {
         this.metricsService = metricsService;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     @Transactional
@@ -136,8 +140,8 @@ public class ContractService {
         contract.setStatus(DRAFT);
         contract.setCreatedBy(principal.getUserId());
         contract.setUpdatedBy(principal.getUserId());
-        contract.setCreatedAt(Instant.now());
-        contract.setUpdatedAt(Instant.now());
+        contract.setCreatedAt(clock.instant());
+        contract.setUpdatedAt(clock.instant());
 
         // Set defaults
         if (contract.getCurrency() == null) {
@@ -290,7 +294,7 @@ public class ContractService {
         contract.setPropertyId(property.getId());
         contract.setTenantId(tenant.getId());
         contract.setUpdatedBy(principal.getUserId());
-        contract.setUpdatedAt(Instant.now());
+        contract.setUpdatedAt(clock.instant());
 
         Contract updatedContract = contractRepository.save(contract);
         log.info("Contract updated: {} in team {}", identifier, teamId);
@@ -433,7 +437,7 @@ public class ContractService {
 
         contract.setStatus(newStatus);
         contract.setUpdatedBy(principal.getUserId());
-        contract.setUpdatedAt(Instant.now());
+        contract.setUpdatedAt(clock.instant());
 
         Contract updatedContract = contractRepository.save(contract);
 
@@ -529,7 +533,7 @@ public class ContractService {
 
         contract.setStatus(DRAFT);
         contract.setUpdatedBy(principal.getUserId());
-        contract.setUpdatedAt(Instant.now());
+        contract.setUpdatedAt(clock.instant());
 
         Contract updatedContract = contractRepository.save(contract);
 
@@ -608,8 +612,8 @@ public class ContractService {
                 DRAFT, // Always start as DRAFT
                 sourceContract.getTermsAndConditions(),
                 sourceContract.getNotes(),
-                Instant.now(),
-                Instant.now(),
+                clock.instant(),
+                clock.instant(),
                 principal.getUserId(),
                 principal.getUserId(),
                 null
@@ -771,7 +775,7 @@ public class ContractService {
         if (newPropertyStatus != null && property.getStatus() != newPropertyStatus) {
             property.setStatus(newPropertyStatus);
             property.setUpdatedBy(principal.getUserId());
-            property.setUpdatedAt(Instant.now());
+            property.setUpdatedAt(clock.instant());
             propertyRepository.save(property);
 
             log.info("Updated property {} status to {} based on contract status change to {}",

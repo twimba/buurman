@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,7 @@ public class DemoDataService implements ApplicationRunner {
     private final DemoNotificationGenerator notificationGenerator;
     private final DemoDocumentGenerator documentGenerator;
     private final DemoAuditLogGenerator auditLogGenerator;
+    private final Clock clock;
 
     private volatile Instant lastGeneratedAt;
 
@@ -48,7 +50,8 @@ public class DemoDataService implements ApplicationRunner {
                           DemoContractGenerator contractGenerator, DemoPaymentGenerator paymentGenerator,
                           DemoExpenseGenerator expenseGenerator, DemoPaymentInstructionGenerator paymentInstructionGenerator,
                           DemoPhotoGenerator photoGenerator, DemoNotificationGenerator notificationGenerator,
-                          DemoDocumentGenerator documentGenerator, DemoAuditLogGenerator auditLogGenerator) {
+                          DemoDocumentGenerator documentGenerator, DemoAuditLogGenerator auditLogGenerator,
+                          Clock clock) {
         this.dsl = dsl;
         this.properties = properties;
         this.keycloakSetup = keycloakSetup;
@@ -65,6 +68,7 @@ public class DemoDataService implements ApplicationRunner {
         this.notificationGenerator = notificationGenerator;
         this.documentGenerator = documentGenerator;
         this.auditLogGenerator = auditLogGenerator;
+        this.clock = clock;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class DemoDataService implements ApplicationRunner {
     }
 
     public DemoDataResponse generate() {
-        long startTime = System.currentTimeMillis();
+        long startTime = clock.millis();
         log.info("Starting demo data generation...");
 
         DemoDataContext ctx = new DemoDataContext();
@@ -113,8 +117,8 @@ public class DemoDataService implements ApplicationRunner {
         // 5. Force logout demo user so they get fresh session with reset data
         keycloakSetup.logoutDemoUser();
 
-        long durationMs = System.currentTimeMillis() - startTime;
-        lastGeneratedAt = Instant.now();
+        long durationMs = clock.millis() - startTime;
+        lastGeneratedAt = clock.instant();
 
         log.info("Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {} contracts, {} payments, {} expenses, {} notifications, {} documents",
                 durationMs, ctx.getTeamsCreated(), ctx.getUsersCreated(), ctx.getPropertiesCreated(),

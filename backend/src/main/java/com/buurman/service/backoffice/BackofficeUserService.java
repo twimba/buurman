@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,13 +34,16 @@ public class BackofficeUserService {
     private final UserRepository userRepository;
     private final KeycloakService keycloakService;
     private final DSLContext dsl;
+    private final Clock clock;
 
     public BackofficeUserService(UserRepository userRepository,
                                  KeycloakService keycloakService,
-                                 DSLContext dsl) {
+                                 DSLContext dsl,
+                                 Clock clock) {
         this.userRepository = userRepository;
         this.keycloakService = keycloakService;
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +82,7 @@ public class BackofficeUserService {
         User user = userRepository.findByIdentifierUnscoped(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         userRepository.updateDisabledAt(user.getId(), now);
         keycloakService.disableUser(user.getKeycloakId());
 

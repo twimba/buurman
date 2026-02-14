@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -20,14 +21,16 @@ public class DemoPaymentInstructionGenerator {
     private static final Logger log = LoggerFactory.getLogger(DemoPaymentInstructionGenerator.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
     private final Random random = new Random(42);
 
-    public DemoPaymentInstructionGenerator(DSLContext dsl) {
+    public DemoPaymentInstructionGenerator(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (var teamEntry : ctx.getTeamIds().entrySet()) {
             String teamKey = teamEntry.getKey();
@@ -108,7 +111,7 @@ public class DemoPaymentInstructionGenerator {
             int linked = 0;
             for (int i = 0; i < contractIds.size(); i++) {
                 UUID contractId = contractIds.get(i);
-                LocalDate effectiveFrom = LocalDate.now().minusMonths(random.nextInt(6, 18));
+                LocalDate effectiveFrom = LocalDate.now(clock).minusMonths(random.nextInt(6, 18));
 
                 if (i % 3 == 2) {
                     // Custom payment instruction (every 3rd contract)

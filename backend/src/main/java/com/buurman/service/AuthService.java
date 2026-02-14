@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final NotificationService notificationService;
     private final MetricsService metricsService;
+    private final Clock clock;
 
     @org.springframework.beans.factory.annotation.Value("${app.email.base-url}")
     private String baseUrl;
@@ -57,7 +59,7 @@ public class AuthService {
                       TeamInvitationRepository invitationRepository,
                       EmailVerificationCodeRepository verificationCodeRepository,
                       UserMapper userMapper, NotificationService notificationService,
-                      MetricsService metricsService) {
+                      MetricsService metricsService, Clock clock) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;
@@ -67,6 +69,7 @@ public class AuthService {
         this.userMapper = userMapper;
         this.notificationService = notificationService;
         this.metricsService = metricsService;
+        this.clock = clock;
     }
 
     @Transactional
@@ -100,8 +103,8 @@ public class AuthService {
             Team team = new Team();
             team.setIdentifier(UlidGenerator.generate(EntityPrefix.TEA));
             team.setName(teamName);
-            team.setCreatedAt(Instant.now());
-            team.setUpdatedAt(Instant.now());
+            team.setCreatedAt(clock.instant());
+            team.setUpdatedAt(clock.instant());
             team.setCreatedBy(user.getId());
             team = teamRepository.save(team);
 
@@ -116,8 +119,8 @@ public class AuthService {
             member.setUserId(user.getId());
             member.setRole("TEAM_ADMIN");
             member.setOwner(true);
-            member.setInvitedAt(Instant.now());
-            member.setJoinedAt(Instant.now());
+            member.setInvitedAt(clock.instant());
+            member.setJoinedAt(clock.instant());
             teamMemberRepository.save(member);
 
             // Send verification code email
@@ -226,7 +229,7 @@ public class AuthService {
         userRepository.updateEmailVerifiedAt(userId);
 
         // Send welcome notification now that email is verified
-        user.setEmailVerifiedAt(Instant.now());
+        user.setEmailVerifiedAt(clock.instant());
         notificationService.send(SendNotificationRequest.builder()
                 .teamId(user.getActiveTeamId())
                 .notificationType(NotificationType.WELCOME)
@@ -256,7 +259,7 @@ public class AuthService {
         }
 
         int recentCount = verificationCodeRepository.countRecentByUserId(
-            userId, Instant.now().minus(1, ChronoUnit.HOURS));
+            userId, clock.instant().minus(1, ChronoUnit.HOURS));
         if (recentCount >= MAX_RESEND_PER_HOUR) {
             throw new VerificationCodeException("Too many verification attempts. Please try again later.");
         }
@@ -270,7 +273,7 @@ public class AuthService {
         EmailVerificationCode verificationCode = new EmailVerificationCode();
         verificationCode.setUserId(user.getId());
         verificationCode.setCode(code);
-        verificationCode.setExpiresAt(Instant.now().plus(VERIFICATION_CODE_EXPIRY_MINUTES, ChronoUnit.MINUTES));
+        verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, ChronoUnit.MINUTES));
         verificationCodeRepository.save(verificationCode);
 
         notificationService.send(SendNotificationRequest.builder()
@@ -296,7 +299,7 @@ public class AuthService {
                 return;
             }
 
-            if (invitation.getAcceptedAt() != null || invitation.getExpiresAt().isBefore(Instant.now())) {
+            if (invitation.getAcceptedAt() != null || invitation.getExpiresAt().isBefore(clock.instant())) {
                 log.warn("Invitation already accepted or expired during registration: {}", token);
                 return;
             }
@@ -314,11 +317,11 @@ public class AuthService {
             member.setOwner(false);
             member.setInvitedAt(invitation.getInvitedAt());
             member.setInvitedBy(invitation.getInvitedBy());
-            member.setJoinedAt(Instant.now());
+            member.setJoinedAt(clock.instant());
             teamMemberRepository.save(member);
 
             // Mark invitation as accepted
-            invitation.setAcceptedAt(Instant.now());
+            invitation.setAcceptedAt(clock.instant());
             invitation.setAcceptedBy(user.getId());
             invitationRepository.save(invitation);
 

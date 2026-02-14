@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -21,17 +22,19 @@ public class DemoContractGenerator {
     private static final Logger log = LoggerFactory.getLogger(DemoContractGenerator.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
     private final Random random = new Random(42);
 
     private static final String[] CONTRACT_TYPES = {"FIXED_TERM", "INDEFINITE", "FURNISHED", "UNFURNISHED"};
 
-    public DemoContractGenerator(DSLContext dsl) {
+    public DemoContractGenerator(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDate today = LocalDate.now(clock);
 
         for (var teamEntry : ctx.getTeamIds().entrySet()) {
             String teamKey = teamEntry.getKey();

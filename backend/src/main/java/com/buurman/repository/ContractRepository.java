@@ -10,6 +10,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import org.jooq.Record;
 
@@ -31,10 +32,12 @@ public class ContractRepository {
 
     private final DSLContext dsl;
     private final ContractRecordMapper mapper;
+    private final Clock clock;
 
-    public ContractRepository(DSLContext dsl, ContractRecordMapper mapper) {
+    public ContractRepository(DSLContext dsl, ContractRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Contract> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -117,7 +120,7 @@ public class ContractRepository {
     }
 
     public Contract save(Contract contract) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (contract.getId() == null) {
             // Insert
@@ -255,7 +258,7 @@ public class ContractRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(CONTRACTS)
                 .set(CONTRACTS.DELETED_AT, now)
                 .where(CONTRACTS.ID.eq(id)

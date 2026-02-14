@@ -8,6 +8,7 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -21,15 +22,20 @@ public class NotificationOutboxRepository {
 
     private final DSLContext dsl;
     private final NotificationOutboxRecordMapper mapper;
+    private final Clock clock;
 
-    public NotificationOutboxRepository(DSLContext dsl, NotificationOutboxRecordMapper mapper) {
+    public NotificationOutboxRepository(DSLContext dsl, NotificationOutboxRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public NotificationOutbox save(NotificationOutbox outbox) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
+        LocalDateTime createdAt = outbox.getCreatedAt() != null
+                ? LocalDateTime.ofInstant(outbox.getCreatedAt(), ZoneOffset.UTC)
+                : now;
 
         dsl.insertInto(NOTIFICATION_OUTBOX)
                 .set(NOTIFICATION_OUTBOX.ID, id)
@@ -39,19 +45,19 @@ public class NotificationOutboxRepository {
                 .set(NOTIFICATION_OUTBOX.STATUS, OutboxStatus.PENDING.name())
                 .set(NOTIFICATION_OUTBOX.RETRY_COUNT, 0)
                 .set(NOTIFICATION_OUTBOX.MAX_RETRIES, outbox.getMaxRetries() > 0 ? outbox.getMaxRetries() : 3)
-                .set(NOTIFICATION_OUTBOX.CREATED_AT, now)
+                .set(NOTIFICATION_OUTBOX.CREATED_AT, createdAt)
                 .execute();
 
         outbox.setId(id);
         outbox.setStatus(OutboxStatus.PENDING);
         outbox.setRetryCount(0);
-        outbox.setCreatedAt(now.toInstant(ZoneOffset.UTC));
+        outbox.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
 
         return outbox;
     }
 
     public List<NotificationOutbox> findPendingBatch(int batchSize) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         return dsl.selectFrom(NOTIFICATION_OUTBOX)
                 .where(NOTIFICATION_OUTBOX.STATUS.in(OutboxStatus.PENDING.name(), OutboxStatus.FAILED.name())
                         .and(NOTIFICATION_OUTBOX.RETRY_COUNT.lt(NOTIFICATION_OUTBOX.MAX_RETRIES))
@@ -64,7 +70,7 @@ public class NotificationOutboxRepository {
     }
 
     public void markProcessing(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(NOTIFICATION_OUTBOX)
                 .set(NOTIFICATION_OUTBOX.STATUS, OutboxStatus.PROCESSING.name())
                 .set(NOTIFICATION_OUTBOX.PROCESSED_AT, now)
@@ -73,7 +79,7 @@ public class NotificationOutboxRepository {
     }
 
     public void markSent(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(NOTIFICATION_OUTBOX)
                 .set(NOTIFICATION_OUTBOX.STATUS, OutboxStatus.SENT.name())
                 .set(NOTIFICATION_OUTBOX.PROCESSED_AT, now)
@@ -82,7 +88,7 @@ public class NotificationOutboxRepository {
     }
 
     public void markFailed(UUID id, String error, int currentRetryCount) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         int newRetryCount = currentRetryCount + 1;
 
         // Exponential backoff: 30s, 2min, 10min

@@ -4,6 +4,7 @@ import com.buurman.domain.EmailVerificationCode;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,29 +17,34 @@ import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
 public class EmailVerificationCodeRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public EmailVerificationCodeRepository(DSLContext dsl) {
+    public EmailVerificationCodeRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void save(EmailVerificationCode code) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
+        LocalDateTime createdAt = code.getCreatedAt() != null
+                ? LocalDateTime.ofInstant(code.getCreatedAt(), ZoneOffset.UTC)
+                : now;
 
         dsl.insertInto(EMAIL_VERIFICATION_CODES)
                 .set(EMAIL_VERIFICATION_CODES.ID, id)
                 .set(EMAIL_VERIFICATION_CODES.USER_ID, code.getUserId())
                 .set(EMAIL_VERIFICATION_CODES.CODE, code.getCode())
                 .set(EMAIL_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), ZoneOffset.UTC))
-                .set(EMAIL_VERIFICATION_CODES.CREATED_AT, now)
+                .set(EMAIL_VERIFICATION_CODES.CREATED_AT, createdAt)
                 .execute();
 
         code.setId(id);
-        code.setCreatedAt(now.toInstant(ZoneOffset.UTC));
+        code.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
     }
 
     public Optional<EmailVerificationCode> findValidCode(UUID userId, String code) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         return dsl.selectFrom(EMAIL_VERIFICATION_CODES)
                 .where(EMAIL_VERIFICATION_CODES.USER_ID.eq(userId))
@@ -61,7 +67,7 @@ public class EmailVerificationCodeRepository {
     }
 
     public void invalidateAllForUser(UUID userId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         dsl.update(EMAIL_VERIFICATION_CODES)
                 .set(EMAIL_VERIFICATION_CODES.USED_AT, now)
@@ -81,7 +87,7 @@ public class EmailVerificationCodeRepository {
     }
 
     public void markUsed(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         dsl.update(EMAIL_VERIFICATION_CODES)
                 .set(EMAIL_VERIFICATION_CODES.USED_AT, now)

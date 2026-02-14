@@ -5,6 +5,7 @@ import com.buurman.mapper.CalendarFeedRecordMapper;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,10 +20,12 @@ public class CalendarFeedRepository {
 
     private final DSLContext dsl;
     private final CalendarFeedRecordMapper mapper;
+    private final Clock clock;
 
-    public CalendarFeedRepository(DSLContext dsl, CalendarFeedRecordMapper mapper) {
+    public CalendarFeedRepository(DSLContext dsl, CalendarFeedRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<CalendarFeed> findByFeedToken(String feedToken) {
@@ -78,7 +81,7 @@ public class CalendarFeedRepository {
     }
 
     public CalendarFeed save(CalendarFeed feed) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (feed.getId() == null) {
             UUID id = UUID.randomUUID();
@@ -130,7 +133,7 @@ public class CalendarFeedRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(CALENDAR_FEEDS)
                 .set(CALENDAR_FEEDS.DELETED_AT, now)
                 .where(CALENDAR_FEEDS.ID.eq(id)

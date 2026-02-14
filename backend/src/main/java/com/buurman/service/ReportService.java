@@ -22,6 +22,7 @@ import static com.buurman.domain.Payment.PaymentStatus.PAID;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
@@ -56,16 +57,20 @@ public class ReportService {
             Map.entry("OTHER", "#6B7280")
     );
 
+    private final Clock clock;
+
     public ReportService(PaymentRepository paymentRepository,
                         ExpenseRepository expenseRepository,
                         PropertyRepository propertyRepository,
                         ContractRepository contractRepository,
-                        PropertyMapper propertyMapper) {
+                        PropertyMapper propertyMapper,
+                        Clock clock) {
         this.paymentRepository = paymentRepository;
         this.expenseRepository = expenseRepository;
         this.propertyRepository = propertyRepository;
         this.contractRepository = contractRepository;
         this.propertyMapper = propertyMapper;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -189,7 +194,7 @@ public class ReportService {
             UserPrincipal principal) {
 
         UUID teamId = principal.getTeamId();
-        LocalDate endDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now(clock);
         LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
         LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
 
@@ -330,7 +335,7 @@ public class ReportService {
             UserPrincipal principal) {
 
         UUID teamId = principal.getTeamId();
-        LocalDate endDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now(clock);
         LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
 
         int totalProperties = propertyRepository.findAllByTeamId(teamId).size();

@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class ExpenseService {
     private final MetricsService metricsService;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public ExpenseService(
             ExpenseRepository expenseRepository,
@@ -66,7 +68,8 @@ public class ExpenseService {
             com.buurman.mapper.DocumentMapper documentMapper,
             MetricsService metricsService,
             NotificationService notificationService,
-            AppProperties appProperties) {
+            AppProperties appProperties,
+            Clock clock) {
         this.expenseRepository = expenseRepository;
         this.propertyRepository = propertyRepository;
         this.documentRepository = documentRepository;
@@ -78,6 +81,7 @@ public class ExpenseService {
         this.metricsService = metricsService;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     @Transactional
@@ -93,8 +97,8 @@ public class ExpenseService {
         expense.setTeamId(principal.getTeamId());
         expense.setCreatedBy(principal.getUserId());
         expense.setUpdatedBy(principal.getUserId());
-        expense.setCreatedAt(Instant.now());
-        expense.setUpdatedAt(Instant.now());
+        expense.setCreatedAt(clock.instant());
+        expense.setUpdatedAt(clock.instant());
 
         // Set defaults
         if (expense.getCurrency() == null || expense.getCurrency().isEmpty()) {
@@ -217,7 +221,7 @@ public class ExpenseService {
 
         expenseMapper.updateEntity(expense, request);
         expense.setUpdatedBy(principal.getUserId());
-        expense.setUpdatedAt(Instant.now());
+        expense.setUpdatedAt(clock.instant());
 
         Expense updatedExpense = expenseRepository.save(expense);
         ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.getTeamId());

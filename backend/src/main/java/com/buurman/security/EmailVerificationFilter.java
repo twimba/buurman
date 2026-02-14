@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
@@ -25,9 +26,11 @@ public class EmailVerificationFilter extends OncePerRequestFilter {
     );
 
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
-    public EmailVerificationFilter(ObjectMapper objectMapper) {
+    public EmailVerificationFilter(ObjectMapper objectMapper, Clock clock) {
         this.objectMapper = objectMapper;
+        this.clock = clock;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class EmailVerificationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
             response.getWriter().write(objectMapper.writeValueAsString(Map.of(
-                    "timestamp", Instant.now().toString(),
+                    "timestamp", clock.instant().toString(),
                     "status", 403,
                     "error", "EMAIL_NOT_VERIFIED",
                     "message", "Please verify your email address"

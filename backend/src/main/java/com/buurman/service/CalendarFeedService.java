@@ -481,7 +481,7 @@ public class CalendarFeedService {
             int maxLen = firstLine ? 75 : 74; // continuation lines start with a space
             int end = Math.min(offset + maxLen, bytes.length);
 
-            // Avoid splitting multi-byte UTF-8 characters
+            // Avoid splitting multibyte UTF-8 characters
             while (end > offset && end < bytes.length && (bytes[end] & 0xC0) == 0x80) {
                 end--;
             }

@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ public class TenantService {
     private final TenantAddressService addressService;
     private final TenantAddressRepository addressRepository;
     private final MetricsService metricsService;
+    private final Clock clock;
 
     public TenantService(
             TenantRepository tenantRepository,
@@ -80,7 +82,8 @@ public class TenantService {
             ContractRepository contractRepository,
             TenantAddressService addressService,
             TenantAddressRepository addressRepository,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            Clock clock) {
         this.tenantRepository = tenantRepository;
         this.propertyRepository = propertyRepository;
         this.historyRepository = historyRepository;
@@ -95,6 +98,7 @@ public class TenantService {
         this.addressService = addressService;
         this.addressRepository = addressRepository;
         this.metricsService = metricsService;
+        this.clock = clock;
     }
 
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -240,10 +244,10 @@ public class TenantService {
         history.setTeamId(principal.getTeamId());
         history.setPropertyId(property.getId());
         history.setTenantId(tenant.getId());
-        history.setMovedInAt(request.movedInAt() != null ? request.movedInAt() : Instant.now());
+        history.setMovedInAt(request.movedInAt() != null ? request.movedInAt() : clock.instant());
         history.setActionType(PropertyTenantHistory.ActionType.LINKED);
         history.setPerformedBy(principal.getUserId());
-        history.setPerformedAt(Instant.now());
+        history.setPerformedAt(clock.instant());
         historyRepository.save(history);
 
         metricsService.incrementCounter("tenant.linked.total");
@@ -281,10 +285,10 @@ public class TenantService {
         history.setTeamId(principal.getTeamId());
         history.setPropertyId(propertyId);
         history.setTenantId(tenant.getId());
-        history.setMovedOutAt(Instant.now());
+        history.setMovedOutAt(clock.instant());
         history.setActionType(PropertyTenantHistory.ActionType.UNLINKED);
         history.setPerformedBy(principal.getUserId());
-        history.setPerformedAt(Instant.now());
+        history.setPerformedAt(clock.instant());
         historyRepository.save(history);
 
         metricsService.incrementCounter("tenant.unlinked.total");
@@ -512,10 +516,10 @@ public class TenantService {
         history.setTeamId(principal.getTeamId());
         history.setPropertyId(propertyId);
         history.setTenantId(tenantId);
-        history.setMovedOutAt(Instant.now());
+        history.setMovedOutAt(clock.instant());
         history.setActionType(PropertyTenantHistory.ActionType.UNLINKED);
         history.setPerformedBy(principal.getUserId());
-        history.setPerformedAt(Instant.now());
+        history.setPerformedAt(clock.instant());
         historyRepository.save(history);
 
         auditService.logCreate(

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -37,18 +38,21 @@ public class S3StorageService {
     private final String s3PublicEndpoint;
     private final boolean usePresignedUrls;
     private final MetricsService metricsService;
+    private final Clock clock;
 
     public S3StorageService(
             S3Client s3Client,
             S3Presigner s3Presigner,
             AwsS3Properties s3Properties,
-            MetricsService metricsService) {
+            MetricsService metricsService,
+            Clock clock) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
         this.bucketName = s3Properties.bucketName();
         this.s3PublicEndpoint = s3Properties.publicEndpoint();
         this.usePresignedUrls = s3Properties.usePresignedUrls();
         this.metricsService = metricsService;
+        this.clock = clock;
     }
 
     /**
@@ -56,7 +60,7 @@ public class S3StorageService {
      * File key pattern: {teamId}/{entityType}/{entityId}/{uuid}_{filename}
      */
     public String uploadFile(MultipartFile file, UUID teamId, String entityType, UUID entityId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             String originalFilename = file.getOriginalFilename();
             String fileKey = generateFileKey(teamId, entityType, entityId, originalFilename);
@@ -72,7 +76,7 @@ public class S3StorageService {
                     file.getInputStream(), file.getSize()));
 
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "upload", "result", "success");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "upload", "result", "success");
@@ -81,7 +85,7 @@ public class S3StorageService {
             return fileKey;
         } catch (IOException e) {
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "upload", "result", "failure");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "upload", "result", "failure");
@@ -95,7 +99,7 @@ public class S3StorageService {
      * Same key pattern as the MultipartFile variant.
      */
     public String uploadFile(byte[] data, String contentType, UUID teamId, String entityType, UUID entityId, String filename) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         String fileKey = generateFileKey(teamId, entityType, entityId, filename);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -107,7 +111,7 @@ public class S3StorageService {
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(data));
 
         metricsService.recordTimer("s3.operation.seconds",
-                Duration.between(start, Instant.now()),
+                Duration.between(start, clock.instant()),
                 "operation", "upload", "result", "success");
         metricsService.incrementCounter("s3.operation.total",
                 "operation", "upload", "result", "success");
@@ -122,14 +126,14 @@ public class S3StorageService {
      * For local dev (SeaweedFS), uses direct URLs without presigning to avoid CORS issues.
      */
     public URL generatePresignedUrl(String fileKey) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             // For local/docker dev, use direct URLs via the public endpoint
             if (!usePresignedUrls) {
                 String directUrl = s3PublicEndpoint + "/" + bucketName + "/" + fileKey;
                 log.debug("Generated direct URL: {}", directUrl);
                 metricsService.recordTimer("s3.operation.seconds",
-                        Duration.between(start, Instant.now()),
+                        Duration.between(start, clock.instant()),
                         "operation", "presign", "result", "success");
                 metricsService.incrementCounter("s3.operation.total",
                         "operation", "presign", "result", "success");
@@ -151,7 +155,7 @@ public class S3StorageService {
             URL url = presignedRequest.url();
 
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "presign", "result", "success");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "presign", "result", "success");
@@ -160,7 +164,7 @@ public class S3StorageService {
             return url;
         } catch (Exception e) {
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "presign", "result", "failure");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "presign", "result", "failure");
@@ -173,7 +177,7 @@ public class S3StorageService {
      * Download file from S3 and return as InputStream.
      */
     public InputStream downloadFile(String fileKey) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
@@ -183,7 +187,7 @@ public class S3StorageService {
             ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(getObjectRequest);
 
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "download", "result", "success");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "download", "result", "success");
@@ -192,7 +196,7 @@ public class S3StorageService {
             return s3Object;
         } catch (Exception e) {
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "download", "result", "failure");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "download", "result", "failure");
@@ -205,7 +209,7 @@ public class S3StorageService {
      * Delete file from S3.
      */
     public void deleteFile(String fileKey) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -215,7 +219,7 @@ public class S3StorageService {
             s3Client.deleteObject(deleteObjectRequest);
 
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "delete", "result", "success");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "delete", "result", "success");
@@ -223,7 +227,7 @@ public class S3StorageService {
             log.info("File deleted from S3: {}", fileKey);
         } catch (Exception e) {
             metricsService.recordTimer("s3.operation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "operation", "delete", "result", "failure");
             metricsService.incrementCounter("s3.operation.total",
                     "operation", "delete", "result", "failure");

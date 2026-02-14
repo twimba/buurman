@@ -4,6 +4,7 @@ import com.buurman.domain.PropertyAmenity;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,9 +18,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
 public class PropertyAmenityRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public PropertyAmenityRepository(DSLContext dsl) {
+    public PropertyAmenityRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public List<PropertyAmenity> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
@@ -43,42 +46,53 @@ public class PropertyAmenityRepository {
     }
 
     public PropertyAmenity save(PropertyAmenity pa) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (pa.getId() == null) {
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = pa.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(pa.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = pa.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(PROPERTY_AMENITIES)
                     .set(PROPERTY_AMENITIES.ID, newId)
                     .set(PROPERTY_AMENITIES.PROPERTY_ID, pa.getPropertyId())
                     .set(PROPERTY_AMENITIES.AMENITY_ID, pa.getAmenityId())
                     .set(PROPERTY_AMENITIES.TEAM_ID, pa.getTeamId())
                     .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
-                    .set(PROPERTY_AMENITIES.CREATED_AT, now)
-                    .set(PROPERTY_AMENITIES.UPDATED_AT, now)
+                    .set(PROPERTY_AMENITIES.CREATED_AT, createdAt)
+                    .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
                     .set(PROPERTY_AMENITIES.CREATED_BY, pa.getCreatedBy())
                     .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
                     .execute();
 
             pa.setId(newId);
-            pa.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            pa.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            pa.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            pa.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
+            LocalDateTime updatedAt = pa.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(PROPERTY_AMENITIES)
                     .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
-                    .set(PROPERTY_AMENITIES.UPDATED_AT, now)
+                    .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
                     .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
                     .where(PROPERTY_AMENITIES.ID.eq(pa.getId())
                             .and(PROPERTY_AMENITIES.TEAM_ID.eq(pa.getTeamId())))
                     .execute();
 
-            pa.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            pa.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return pa;
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(PROPERTY_AMENITIES)
                 .set(PROPERTY_AMENITIES.DELETED_AT, now)
                 .where(PROPERTY_AMENITIES.ID.eq(id)

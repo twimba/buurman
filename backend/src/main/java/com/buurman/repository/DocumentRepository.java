@@ -15,6 +15,7 @@ import com.buurman.jooq.generated.tables.records.DocumentsRecord;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -31,10 +32,12 @@ public class DocumentRepository {
 
     private final DSLContext dsl;
     private final DocumentRecordMapper mapper;
+    private final Clock clock;
 
-    public DocumentRepository(DSLContext dsl, DocumentRecordMapper mapper) {
+    public DocumentRepository(DSLContext dsl, DocumentRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Document> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -79,12 +82,16 @@ public class DocumentRepository {
     }
 
     public Document save(Document document) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (document.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.DOC);
+            LocalDateTime uploadedAt = document.getUploadedAt() != null
+                    ? LocalDateTime.ofInstant(document.getUploadedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(DOCUMENTS)
                     .set(DOCUMENTS.ID, newId)
                     .set(DOCUMENTS.IDENTIFIER, identifier)
@@ -98,12 +105,12 @@ public class DocumentRepository {
                     .set(DOCUMENTS.TITLE, document.getTitle())
                     .set(DOCUMENTS.NOTES, document.getNotes())
                     .set(DOCUMENTS.UPLOADED_BY, document.getUploadedBy())
-                    .set(DOCUMENTS.UPLOADED_AT, now)
+                    .set(DOCUMENTS.UPLOADED_AT, uploadedAt)
                     .execute();
 
             document.setId(newId);
             document.setIdentifier(identifier);
-            document.setUploadedAt(now.toInstant(ZoneOffset.UTC));
+            document.setUploadedAt(uploadedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE (title and notes are updatable)
             dsl.update(DOCUMENTS)
@@ -118,7 +125,7 @@ public class DocumentRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(DOCUMENTS)
                 .set(DOCUMENTS.DELETED_AT, now)
                 .where(DOCUMENTS.ID.eq(id)

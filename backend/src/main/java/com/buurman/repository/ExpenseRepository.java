@@ -12,6 +12,7 @@ import org.jooq.Record2;
 import org.jooq.Record3;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import com.buurman.jooq.generated.tables.records.ExpensesRecord;
 
 import java.math.BigDecimal;
@@ -32,10 +33,12 @@ public class ExpenseRepository {
 
     private final DSLContext dsl;
     private final ExpenseRecordMapper mapper;
+    private final Clock clock;
 
-    public ExpenseRepository(DSLContext dsl, ExpenseRecordMapper mapper) {
+    public ExpenseRepository(DSLContext dsl, ExpenseRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Expense> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -96,7 +99,7 @@ public class ExpenseRepository {
     }
 
     public Expense save(Expense expense) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (expense.getId() == null) {
             // Insert
@@ -194,7 +197,7 @@ public class ExpenseRepository {
     }
 
     public List<Record2<String, BigDecimal>> getMonthlyExpenseTrend(UUID teamId, int months) {
-        LocalDate startDate = LocalDate.now().minusMonths(months).withDayOfMonth(1);
+        LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
         return dsl.select(
                 field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
                 sum(EXPENSES.AMOUNT).as("total")
@@ -219,7 +222,7 @@ public class ExpenseRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(EXPENSES)
                 .set(EXPENSES.DELETED_AT, now)
                 .where(EXPENSES.ID.eq(id)

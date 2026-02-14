@@ -5,6 +5,7 @@ import com.buurman.mapper.TeamMemberRecordMapper;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,10 +20,12 @@ public class TeamMemberRepository {
 
     private final DSLContext dsl;
     private final TeamMemberRecordMapper mapper;
+    private final Clock clock;
 
-    public TeamMemberRepository(DSLContext dsl, TeamMemberRecordMapper mapper) {
+    public TeamMemberRepository(DSLContext dsl, TeamMemberRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<TeamMember> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -35,7 +38,7 @@ public class TeamMemberRepository {
     }
 
     public TeamMember save(TeamMember teamMember) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (teamMember.getId() == null) {
             // INSERT
@@ -70,7 +73,7 @@ public class TeamMemberRepository {
     }
 
     public void softDeleteById(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TEAM_MEMBERS)
                 .set(TEAM_MEMBERS.DELETED_AT, now)
                 .where(TEAM_MEMBERS.ID.eq(id))

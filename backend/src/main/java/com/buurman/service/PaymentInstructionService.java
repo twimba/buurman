@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +28,17 @@ public class PaymentInstructionService {
     private final PaymentInstructionRepository repository;
     private final PaymentInstructionMapper mapper;
     private final AuditService auditService;
+    private final Clock clock;
 
     public PaymentInstructionService(
             PaymentInstructionRepository repository,
             PaymentInstructionMapper mapper,
-            AuditService auditService) {
+            AuditService auditService,
+            Clock clock) {
         this.repository = repository;
         this.mapper = mapper;
         this.auditService = auditService;
+        this.clock = clock;
     }
 
     public List<PaymentInstructionResponse> getAll(UserPrincipal principal) {
@@ -56,8 +60,8 @@ public class PaymentInstructionService {
         pi.setTeamId(principal.getTeamId());
         pi.setCreatedBy(principal.getUserId());
         pi.setUpdatedBy(principal.getUserId());
-        pi.setCreatedAt(Instant.now());
-        pi.setUpdatedAt(Instant.now());
+        pi.setCreatedAt(clock.instant());
+        pi.setUpdatedAt(clock.instant());
 
         if (Boolean.TRUE.equals(request.isDefault())) {
             repository.clearDefaultByTeamId(principal.getTeamId());
@@ -94,7 +98,7 @@ public class PaymentInstructionService {
 
         mapper.updateEntity(pi, request);
         pi.setUpdatedBy(principal.getUserId());
-        pi.setUpdatedAt(Instant.now());
+        pi.setUpdatedAt(clock.instant());
 
         PaymentInstruction updated = repository.save(pi);
         log.info("Payment instruction updated: {} in team {}", identifier, principal.getTeamId());

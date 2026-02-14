@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.util.*;
 
 @Component
@@ -20,13 +21,16 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
+    private final Clock clock;
 
     public JwtAuthenticationConverter(UserRepository userRepository,
                                      TeamMemberRepository teamMemberRepository,
-                                     TeamRepository teamRepository) {
+                                     TeamRepository teamRepository,
+                                     Clock clock) {
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.teamRepository = teamRepository;
+        this.clock = clock;
     }
 
     @Override
@@ -151,7 +155,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         User user = new User();
         user.setKeycloakId(keycloakId);
         user.setEmail(email);
-        user.setEmailVerifiedAt(java.time.Instant.now());
+        user.setEmailVerifiedAt(clock.instant());
 
         String[] nameParts = name != null ? name.split(" ", 2) : new String[]{"", ""};
         user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");

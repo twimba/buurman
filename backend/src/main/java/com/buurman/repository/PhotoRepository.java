@@ -15,6 +15,7 @@ import com.buurman.jooq.generated.tables.records.PhotosRecord;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -31,10 +32,12 @@ public class PhotoRepository {
 
     private final DSLContext dsl;
     private final PhotoRecordMapper mapper;
+    private final Clock clock;
 
-    public PhotoRepository(DSLContext dsl, PhotoRecordMapper mapper) {
+    public PhotoRepository(DSLContext dsl, PhotoRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Photo> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -79,12 +82,16 @@ public class PhotoRepository {
     }
 
     public Photo save(Photo photo) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (photo.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.PHO);
+            LocalDateTime uploadedAt = photo.getUploadedAt() != null
+                    ? LocalDateTime.ofInstant(photo.getUploadedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(PHOTOS)
                     .set(PHOTOS.ID, newId)
                     .set(PHOTOS.IDENTIFIER, identifier)
@@ -99,12 +106,12 @@ public class PhotoRepository {
                     .set(PHOTOS.NOTES, photo.getNotes())
                     .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
                     .set(PHOTOS.UPLOADED_BY, photo.getUploadedBy())
-                    .set(PHOTOS.UPLOADED_AT, now)
+                    .set(PHOTOS.UPLOADED_AT, uploadedAt)
                     .execute();
 
             photo.setId(newId);
             photo.setIdentifier(identifier);
-            photo.setUploadedAt(now.toInstant(ZoneOffset.UTC));
+            photo.setUploadedAt(uploadedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE (title, notes, and isMainPhoto are updatable)
             dsl.update(PHOTOS)
@@ -120,7 +127,7 @@ public class PhotoRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(PHOTOS)
                 .set(PHOTOS.DELETED_AT, now)
                 .where(PHOTOS.ID.eq(id)

@@ -6,7 +6,4 @@ public record HealthResponse(
         String status,
         Instant timestamp
 ) {
-    public static HealthResponse up() {
-        return new HealthResponse("UP", Instant.now());
-    }
 }

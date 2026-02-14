@@ -11,6 +11,7 @@ import org.jooq.Field;
 import org.jooq.Record2;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import com.buurman.jooq.generated.tables.records.PaymentsRecord;
 
 import java.math.BigDecimal;
@@ -32,10 +33,12 @@ public class PaymentRepository {
 
     private final DSLContext dsl;
     private final PaymentRecordMapper mapper;
+    private final Clock clock;
 
-    public PaymentRepository(DSLContext dsl, PaymentRecordMapper mapper) {
+    public PaymentRepository(DSLContext dsl, PaymentRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Payment> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -86,7 +89,7 @@ public class PaymentRepository {
     }
 
     public List<Payment> findOverduePayments(UUID teamId) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         return dsl.selectFrom(PAYMENTS)
                 .where(PAYMENTS.TEAM_ID.eq(teamId)
                         .and(PAYMENTS.STATUS.eq(PENDING.name()))
@@ -119,7 +122,7 @@ public class PaymentRepository {
     }
 
     public Payment save(Payment payment) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (payment.getId() == null) {
             // Insert
@@ -187,7 +190,7 @@ public class PaymentRepository {
     }
 
     public List<Payment> findFuturePendingByContractId(UUID contractId, UUID teamId) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         return dsl.selectFrom(PAYMENTS)
                 .where(PAYMENTS.CONTRACT_ID.eq(contractId)
                         .and(PAYMENTS.TEAM_ID.eq(teamId))
@@ -203,7 +206,7 @@ public class PaymentRepository {
         if (status != null && !status.isEmpty()) {
             if ("OVERDUE".equalsIgnoreCase(status)) {
                 condition = condition.and(PAYMENTS.STATUS.eq(PENDING.name()))
-                        .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()));
+                        .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)));
             } else {
                 condition = condition.and(PAYMENTS.STATUS.eq(status));
             }
@@ -228,7 +231,7 @@ public class PaymentRepository {
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId)
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name()))
-                .and(PAYMENTS.DUE_DATE.ge(LocalDate.now()))
+                .and(PAYMENTS.DUE_DATE.ge(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOne();
     }
@@ -241,13 +244,13 @@ public class PaymentRepository {
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId)
                 .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.lt(LocalDate.now()))
+                .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOne();
     }
 
     public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
-        LocalDate startDate = LocalDate.now().minusMonths(months).withDayOfMonth(1);
+        LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
         return dsl.select(
                 field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
                 sum(PAYMENTS.AMOUNT).as("total")
@@ -274,7 +277,7 @@ public class PaymentRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(PAYMENTS)
                 .set(PAYMENTS.DELETED_AT, now)
                 .where(PAYMENTS.ID.eq(id)

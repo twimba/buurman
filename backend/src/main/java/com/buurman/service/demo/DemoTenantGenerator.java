@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,6 +22,7 @@ public class DemoTenantGenerator {
     private static final Logger log = LoggerFactory.getLogger(DemoTenantGenerator.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
     private final Faker faker = new Faker(Locale.ENGLISH, new Random(42));
     private final Random random = new Random(42);
 
@@ -36,12 +38,13 @@ public class DemoTenantGenerator {
             "Tilburg", "Groningen", "Almere", "Breda", "Nijmegen"
     };
 
-    public DemoTenantGenerator(DSLContext dsl) {
+    public DemoTenantGenerator(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (var entry : TENANTS_PER_TEAM.entrySet()) {
             String teamKey = entry.getKey();

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -34,12 +35,14 @@ public class AuditService {
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
     private final MetricsService metricsService;
+    private final Clock clock;
 
     public AuditService(AuditLogRepository auditLogRepository, ObjectMapper objectMapper,
-                        MetricsService metricsService) {
+                        MetricsService metricsService, Clock clock) {
         this.auditLogRepository = auditLogRepository;
         this.objectMapper = objectMapper;
         this.metricsService = metricsService;
+        this.clock = clock;
     }
 
     public void logCreate(UUID teamId, String entityType, UUID entityId, UUID userId, Object entity) {
@@ -56,7 +59,7 @@ public class AuditService {
                     null,
                     JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
                     userId,
-                    LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+                    LocalDateTime.now(clock)
             );
 
             metricsService.incrementCounter("audit.log.total",
@@ -83,7 +86,7 @@ public class AuditService {
                     JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
                     JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
                     userId,
-                    LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+                    LocalDateTime.now(clock)
             );
 
             metricsService.incrementCounter("audit.log.total",
@@ -108,7 +111,7 @@ public class AuditService {
                     JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
                     null,
                     userId,
-                    LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+                    LocalDateTime.now(clock)
             );
 
             metricsService.incrementCounter("audit.log.total",

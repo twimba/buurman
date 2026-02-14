@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -23,19 +24,22 @@ public class HealthController {
     private final AppProperties appProperties;
     private final Environment environment;
     private final Optional<Flyway> flyway;
+    private final Clock clock;
 
     public HealthController(AppProperties appProperties,
                             Environment environment,
-                            Optional<Flyway> flyway) {
+                            Optional<Flyway> flyway,
+                            Clock clock) {
         this.appProperties = appProperties;
         this.environment = environment;
         this.flyway = flyway;
+        this.clock = clock;
     }
 
     @Operation(summary = "Health check", description = "Returns the health status of the application")
     @GetMapping("/health")
     public HealthResponse health() {
-        return HealthResponse.up();
+        return new HealthResponse("UP", clock.instant());
     }
 
     @Operation(summary = "Application info", description = "Returns application version, environment, and database migration info")
@@ -59,6 +63,6 @@ public class HealthController {
         }
 
         String activeProfiles = String.join(",", environment.getActiveProfiles());
-        return new InfoResponse(appProperties.version(), activeProfiles.isEmpty() ? "default" : activeProfiles, Instant.now(), dbInfo);
+        return new InfoResponse(appProperties.version(), activeProfiles.isEmpty() ? "default" : activeProfiles, clock.instant(), dbInfo);
     }
 }

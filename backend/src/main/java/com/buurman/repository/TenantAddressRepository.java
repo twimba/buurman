@@ -7,6 +7,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,13 +21,15 @@ import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
 public class TenantAddressRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public TenantAddressRepository(DSLContext dsl) {
+    public TenantAddressRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public TenantAddress save(TenantAddress address) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (address.getId() == null) {
             // Insert
@@ -108,7 +111,7 @@ public class TenantAddressRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TENANT_ADDRESSES)
                 .set(TENANT_ADDRESSES.DELETED_AT, now)
                 .where(TENANT_ADDRESSES.ID.eq(id).and(TENANT_ADDRESSES.TEAM_ID.eq(teamId)))

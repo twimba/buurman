@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -28,10 +29,12 @@ public class PropertyRepository {
 
     private final DSLContext dsl;
     private final PropertyRecordMapper mapper;
+    private final Clock clock;
 
-    public PropertyRepository(DSLContext dsl, PropertyRecordMapper mapper) {
+    public PropertyRepository(DSLContext dsl, PropertyRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<Property> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -72,11 +75,18 @@ public class PropertyRepository {
     }
 
     public Property save(Property property) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (property.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = property.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(property.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = property.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(PROPERTIES)
                     .set(PROPERTIES.ID, newId)
                     .set(PROPERTIES.IDENTIFIER, property.getIdentifier())
@@ -139,17 +149,21 @@ public class PropertyRepository {
                     .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
                     .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
                     // Audit
-                    .set(PROPERTIES.CREATED_AT, now)
-                    .set(PROPERTIES.UPDATED_AT, now)
+                    .set(PROPERTIES.CREATED_AT, createdAt)
+                    .set(PROPERTIES.UPDATED_AT, updatedAt)
                     .set(PROPERTIES.CREATED_BY, property.getCreatedBy())
                     .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())
                     .execute();
 
             property.setId(newId);
-            property.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            property.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            property.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            property.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE
+            LocalDateTime updatedAt = property.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(PROPERTIES)
                     .set(PROPERTIES.STREET, property.getStreet())
                     .set(PROPERTIES.CITY, property.getCity())
@@ -209,13 +223,13 @@ public class PropertyRepository {
                     .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
                     .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
                     // Audit
-                    .set(PROPERTIES.UPDATED_AT, now)
+                    .set(PROPERTIES.UPDATED_AT, updatedAt)
                     .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())
                     .where(PROPERTIES.ID.eq(property.getId())
                             .and(PROPERTIES.TEAM_ID.eq(property.getTeamId())))
                     .execute();
 
-            property.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            property.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return property;
@@ -249,7 +263,7 @@ public class PropertyRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(PROPERTIES)
                 .set(PROPERTIES.DELETED_AT, now)
                 .where(PROPERTIES.ID.eq(id)

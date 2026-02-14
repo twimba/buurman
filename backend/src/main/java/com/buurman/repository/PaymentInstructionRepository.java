@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.*;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -44,13 +45,15 @@ public class PaymentInstructionRepository {
     private static final Field<LocalDateTime> DELETED_AT = field("deleted_at", LocalDateTime.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public PaymentInstructionRepository(DSLContext dsl) {
+    public PaymentInstructionRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public PaymentInstruction save(PaymentInstruction pi) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (pi.getId() == null) {
             UUID id = UUID.randomUUID();
@@ -153,7 +156,7 @@ public class PaymentInstructionRepository {
     }
 
     public void clearDefaultByTeamId(UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TABLE)
                 .set(IS_DEFAULT, false)
                 .set(UPDATED_AT, now)
@@ -164,7 +167,7 @@ public class PaymentInstructionRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TABLE)
                 .set(DELETED_AT, now)
                 .where(ID.eq(id)

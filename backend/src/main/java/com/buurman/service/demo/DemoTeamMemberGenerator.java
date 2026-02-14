@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,13 +17,15 @@ public class DemoTeamMemberGenerator {
     private static final Logger log = LoggerFactory.getLogger(DemoTeamMemberGenerator.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public DemoTeamMemberGenerator(DSLContext dsl) {
+    public DemoTeamMemberGenerator(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
             UUID userId = ctx.getUserIds().get(user.email());

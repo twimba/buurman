@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import static org.jooq.impl.DSL.*;
 
 import java.sql.Timestamp;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class PhoneNumberPolicyRepository {
 
     private final DSLContext dsl;
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     private static final org.jooq.Table<?> TABLE = table("phone_number_policy");
     private static final org.jooq.Field<UUID> ID = field("id", UUID.class);
@@ -31,9 +33,10 @@ public class PhoneNumberPolicyRepository {
     private static final org.jooq.Field<Timestamp> UPDATED_AT = field("updated_at", Timestamp.class);
     private static final org.jooq.Field<String> UPDATED_BY = field("updated_by", String.class);
 
-    public PhoneNumberPolicyRepository(DSLContext dsl, ObjectMapper objectMapper) {
+    public PhoneNumberPolicyRepository(DSLContext dsl, ObjectMapper objectMapper, Clock clock) {
         this.dsl = dsl;
         this.objectMapper = objectMapper;
+        this.clock = clock;
     }
 
     public Optional<PhoneNumberPolicy> findCurrent() {
@@ -45,18 +48,21 @@ public class PhoneNumberPolicyRepository {
     }
 
     public PhoneNumberPolicy save(PhoneNumberPolicy policy) {
-        Timestamp now = Timestamp.from(Instant.now());
+        Timestamp now = Timestamp.from(clock.instant());
+        Timestamp updatedAt = policy.getUpdatedAt() != null
+                ? Timestamp.from(policy.getUpdatedAt())
+                : now;
 
         dsl.update(TABLE)
                 .set(POLICY_MATRIX, toJsonbMap(policy.getPolicyMatrix()))
                 .set(MAX_CODES_PER_HOUR, policy.getMaxCodesPerHour())
                 .set(VERIFICATION_CODE_EXPIRY_MINUTES, policy.getVerificationCodeExpiryMinutes())
-                .set(UPDATED_AT, now)
+                .set(UPDATED_AT, updatedAt)
                 .set(UPDATED_BY, policy.getUpdatedBy())
                 .where(ID.eq(policy.getId()))
                 .execute();
 
-        policy.setUpdatedAt(now.toInstant());
+        policy.setUpdatedAt(updatedAt.toInstant());
         return policy;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -30,15 +31,18 @@ public class PhoneVerificationService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final PhoneNumberPolicyService phoneNumberPolicyService;
+    private final Clock clock;
 
     public PhoneVerificationService(PhoneVerificationCodeRepository verificationCodeRepository,
                                     UserRepository userRepository,
                                     NotificationService notificationService,
-                                    PhoneNumberPolicyService phoneNumberPolicyService) {
+                                    PhoneNumberPolicyService phoneNumberPolicyService,
+                                    Clock clock) {
         this.verificationCodeRepository = verificationCodeRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
         this.phoneNumberPolicyService = phoneNumberPolicyService;
+        this.clock = clock;
     }
 
     @Transactional
@@ -56,7 +60,7 @@ public class PhoneVerificationService {
 
         // Enforce minimum 60s between codes
         verificationCodeRepository.findMostRecentCreatedAt(userId).ifPresent(lastSent -> {
-            long secondsSince = Instant.now().getEpochSecond() - lastSent.getEpochSecond();
+            long secondsSince = clock.instant().getEpochSecond() - lastSent.getEpochSecond();
             if (secondsSince < 60) {
                 throw new VerificationCodeException(
                     "Please wait " + (60 - secondsSince) + " seconds before requesting another code.");
@@ -65,7 +69,7 @@ public class PhoneVerificationService {
 
         int maxCodesPerHour = phoneNumberPolicyService.getPolicy().getMaxCodesPerHour();
         int recentCount = verificationCodeRepository.countRecentByUserId(
-            userId, Instant.now().minus(1, ChronoUnit.HOURS));
+            userId, clock.instant().minus(1, ChronoUnit.HOURS));
         if (recentCount >= maxCodesPerHour) {
             throw new VerificationCodeException("Too many verification attempts. Please try again later.");
         }
@@ -95,7 +99,7 @@ public class PhoneVerificationService {
         verificationCodeRepository.markUsed(validCode.getId());
         userRepository.updatePhoneVerifiedAt(userId);
 
-        user.setPhoneVerifiedAt(Instant.now());
+        user.setPhoneVerifiedAt(clock.instant());
 
         return new UserProfileResponse(
             user.getIdentifier(),
@@ -142,7 +146,7 @@ public class PhoneVerificationService {
         verificationCode.setUserId(user.getId());
         verificationCode.setPhone(user.getPhone());
         verificationCode.setCode(code);
-        verificationCode.setExpiresAt(Instant.now().plus(expiryMinutes, ChronoUnit.MINUTES));
+        verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, ChronoUnit.MINUTES));
         verificationCodeRepository.save(verificationCode);
 
         notificationService.send(SendNotificationRequest.builder()

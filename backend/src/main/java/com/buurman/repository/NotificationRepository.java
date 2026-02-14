@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.*;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -37,17 +38,22 @@ public class NotificationRepository {
     private final DSLContext dsl;
     private final NotificationRecordMapper mapper;
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
-    public NotificationRepository(DSLContext dsl, NotificationRecordMapper mapper, ObjectMapper objectMapper) {
+    public NotificationRepository(DSLContext dsl, NotificationRecordMapper mapper, ObjectMapper objectMapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
+        this.clock = clock;
     }
 
     public Notification save(Notification notification) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
         String identifier = UlidGenerator.generate(EntityPrefix.NTF);
+        LocalDateTime createdAt = notification.getCreatedAt() != null
+                ? LocalDateTime.ofInstant(notification.getCreatedAt(), ZoneOffset.UTC)
+                : now;
 
         JSONB contentVariablesJson = null;
         if (notification.getContentVariables() != null) {
@@ -75,13 +81,13 @@ public class NotificationRepository {
                 .set(NOTIFICATIONS.STATUS, notification.getStatus().name())
                 .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId())
                 .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason())
-                .set(NOTIFICATIONS.CREATED_AT, now)
+                .set(NOTIFICATIONS.CREATED_AT, createdAt)
                 .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy())
                 .execute();
 
         notification.setId(id);
         notification.setIdentifier(identifier);
-        notification.setCreatedAt(now.toInstant(ZoneOffset.UTC));
+        notification.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
 
         return notification;
     }
@@ -150,7 +156,7 @@ public class NotificationRepository {
 
     public void updateStatus(UUID id, NotificationStatus status, String providerMessageId,
                              String providerStatus, String providerError) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(NOTIFICATIONS)
                 .set(NOTIFICATIONS.STATUS, status.name())
                 .set(NOTIFICATIONS.PROVIDER_MESSAGE_ID, providerMessageId)
@@ -163,7 +169,7 @@ public class NotificationRepository {
 
     public void updateStatusByProviderMessageId(String providerMessageId, NotificationStatus status,
                                                  String providerStatus, String providerError) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(NOTIFICATIONS)
                 .set(NOTIFICATIONS.STATUS, status.name())
                 .set(NOTIFICATIONS.PROVIDER_STATUS, providerStatus)

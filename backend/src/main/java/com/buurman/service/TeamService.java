@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -48,11 +49,12 @@ public class TeamService {
     private final TeamMapper teamMapper;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
                       TeamInvitationRepository invitationRepository, UserRepository userRepository,
                       TeamMapper teamMapper, NotificationService notificationService,
-                      AppProperties appProperties) {
+                      AppProperties appProperties, Clock clock) {
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.invitationRepository = invitationRepository;
@@ -60,6 +62,7 @@ public class TeamService {
         this.teamMapper = teamMapper;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
@@ -113,9 +116,9 @@ public class TeamService {
         invitation.setEmail(request.email());
         invitation.setRole(request.role());
         invitation.setToken(UUID.randomUUID().toString());
-        invitation.setExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS));
+        invitation.setExpiresAt(clock.instant().plus(7, ChronoUnit.DAYS));
         invitation.setInvitedBy(principal.getUserId());
-        invitation.setInvitedAt(Instant.now());
+        invitation.setInvitedAt(clock.instant());
 
         invitation = invitationRepository.save(invitation);
 
@@ -231,8 +234,8 @@ public class TeamService {
 
         // Reset token, expiry, and resend tracking
         invitation.setToken(UUID.randomUUID().toString());
-        invitation.setExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS));
-        invitation.setResentAt(Instant.now());
+        invitation.setExpiresAt(clock.instant().plus(7, ChronoUnit.DAYS));
+        invitation.setResentAt(clock.instant());
         invitation.setResentCount(invitation.getResentCount() == null ? 1 : invitation.getResentCount() + 1);
 
         invitation = invitationRepository.save(invitation);
@@ -266,7 +269,7 @@ public class TeamService {
         if (invitation.getAcceptedAt() != null) {
             throw new BusinessRuleException("Invitation already accepted");
         }
-        if (invitation.getExpiresAt().isBefore(Instant.now())) {
+        if (invitation.getExpiresAt().isBefore(clock.instant())) {
             throw new BusinessRuleException("Invitation expired");
         }
         if (!invitation.getEmail().equalsIgnoreCase(principal.getEmail())) {
@@ -289,11 +292,11 @@ public class TeamService {
         member.setOwner(false); // Invited members are not owners
         member.setInvitedAt(invitation.getInvitedAt());
         member.setInvitedBy(invitation.getInvitedBy());
-        member.setJoinedAt(Instant.now());
+        member.setJoinedAt(clock.instant());
         teamMemberRepository.save(member);
 
         // Mark invitation as accepted
-        invitation.setAcceptedAt(Instant.now());
+        invitation.setAcceptedAt(clock.instant());
         invitation.setAcceptedBy(principal.getUserId());
         invitationRepository.save(invitation);
 

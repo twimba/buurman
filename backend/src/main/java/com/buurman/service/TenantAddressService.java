@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -30,16 +31,19 @@ public class TenantAddressService {
     private final TenantRepository tenantRepository;
     private final TenantAddressMapper addressMapper;
     private final AuditService auditService;
+    private final Clock clock;
 
     public TenantAddressService(
             TenantAddressRepository addressRepository,
             TenantRepository tenantRepository,
             TenantAddressMapper addressMapper,
-            AuditService auditService) {
+            AuditService auditService,
+            Clock clock) {
         this.addressRepository = addressRepository;
         this.tenantRepository = tenantRepository;
         this.addressMapper = addressMapper;
         this.auditService = auditService;
+        this.clock = clock;
     }
 
     @Transactional
@@ -71,8 +75,8 @@ public class TenantAddressService {
         address.setTeamId(principal.getTeamId());
         address.setCreatedBy(principal.getUserId());
         address.setUpdatedBy(principal.getUserId());
-        address.setCreatedAt(Instant.now());
-        address.setUpdatedAt(Instant.now());
+        address.setCreatedAt(clock.instant());
+        address.setUpdatedAt(clock.instant());
 
         // Set default status if not provided
         if (address.getStatus() == null) {
@@ -171,7 +175,7 @@ public class TenantAddressService {
         // Update address fields
         addressMapper.updateEntity(address, request);
         address.setUpdatedBy(principal.getUserId());
-        address.setUpdatedAt(Instant.now());
+        address.setUpdatedAt(clock.instant());
 
         TenantAddress updatedAddress = addressRepository.save(address);
         log.info("Address updated: {} for tenant {} in team {}",

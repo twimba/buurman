@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import static org.jooq.impl.DSL.*;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Collection;
 import java.time.LocalDate;
@@ -38,9 +39,11 @@ public class PaymentReceivalRepository {
     private static final Field<LocalDateTime> DELETED_AT = field("deleted_at", LocalDateTime.class);
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public PaymentReceivalRepository(DSLContext dsl) {
+    public PaymentReceivalRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public List<PaymentReceival> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
@@ -96,7 +99,7 @@ public class PaymentReceivalRepository {
     }
 
     public PaymentReceival save(PaymentReceival receival) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = receival.getCreatedAt() != null
@@ -128,7 +131,7 @@ public class PaymentReceivalRepository {
     }
 
     public void update(UUID id, UUID teamId, BigDecimal amount, LocalDate receivalDate, String notes, UUID updatedBy) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TABLE)
                 .set(AMOUNT, amount)
                 .set(RECEIVAL_DATE, receivalDate)
@@ -142,7 +145,7 @@ public class PaymentReceivalRepository {
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TABLE)
                 .set(DELETED_AT, now)
                 .where(ID.eq(id)

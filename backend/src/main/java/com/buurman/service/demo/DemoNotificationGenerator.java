@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -30,18 +31,21 @@ public class DemoNotificationGenerator {
     private final TemplateEngine templateEngine;
     private final ObjectMapper objectMapper;
     private final String baseUrl;
+    private final Clock clock;
     private final Random random = new Random(42);
 
     public DemoNotificationGenerator(DSLContext dsl, TemplateEngine templateEngine,
-                                     ObjectMapper objectMapper, AppProperties appProperties) {
+                                     ObjectMapper objectMapper, AppProperties appProperties,
+                                     Clock clock) {
         this.dsl = dsl;
         this.templateEngine = templateEngine;
         this.objectMapper = objectMapper;
         this.baseUrl = appProperties.email().baseUrl();
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (var teamEntry : ctx.getTeamIds().entrySet()) {
             String teamKey = teamEntry.getKey();
@@ -285,7 +289,7 @@ public class DemoNotificationGenerator {
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
                 String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@buurman.io";
                 String adminName = admin != null ? admin.get(USERS.FIRST_NAME) : "Admin";
-                long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDate.now(), endDate);
+                long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDate.now(clock), endDate);
 
                 Map<String, Object> vars = Map.of(
                         "userName", adminName,
@@ -328,7 +332,7 @@ public class DemoNotificationGenerator {
                             "userName", tenantName,
                             "propertyName", propertyName,
                             "amount", "EUR 1200.00",
-                            "dueDate", LocalDate.now().minusDays(15).toString(),
+                            "dueDate", LocalDate.now(clock).minusDays(15).toString(),
                             "baseUrl", baseUrl
                     );
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ public class ExportService {
     private final AmenityRepository amenityRepository;
     private final TenantAddressRepository tenantAddressRepository;
     private final MetricsService metricsService;
+    private final Clock clock;
 
     public ExportService(
             PaymentRepository paymentRepository,
@@ -50,7 +52,8 @@ public class ExportService {
             PropertyOutdoorAreaRepository propertyOutdoorAreaRepository,
             AmenityRepository amenityRepository,
             TenantAddressRepository tenantAddressRepository,
-            MetricsService metricsService
+            MetricsService metricsService,
+            Clock clock
     ) {
         this.paymentRepository = paymentRepository;
         this.expenseRepository = expenseRepository;
@@ -62,10 +65,11 @@ public class ExportService {
         this.amenityRepository = amenityRepository;
         this.tenantAddressRepository = tenantAddressRepository;
         this.metricsService = metricsService;
+        this.clock = clock;
     }
 
     public byte[] generateTransactionHistoryCSV(LocalDate startDate, LocalDate endDate, UUID teamId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             List<TransactionDTO> transactions = getTransactionHistory(startDate, endDate, teamId);
 
@@ -92,7 +96,7 @@ public class ExportService {
 
                 byte[] result = sw.toString().getBytes();
                 metricsService.recordTimer("export.generation.seconds",
-                        Duration.between(start, Instant.now()),
+                        Duration.between(start, clock.instant()),
                         "type", "transaction_csv", "result", "success");
                 metricsService.incrementCounter("export.generation.total",
                         "type", "transaction_csv", "result", "success");
@@ -102,7 +106,7 @@ public class ExportService {
             }
         } catch (Exception e) {
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "transaction_csv", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "transaction_csv", "result", "failure");
@@ -111,7 +115,7 @@ public class ExportService {
     }
 
     public byte[] generateTransactionHistoryPDF(LocalDate startDate, LocalDate endDate, UUID teamId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             List<TransactionDTO> transactions = getTransactionHistory(startDate, endDate, teamId);
 
@@ -131,7 +135,7 @@ public class ExportService {
 
             byte[] result = convertHTMLToPDF(html);
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "transaction_pdf", "result", "success");
             metricsService.incrementCounter("export.generation.total",
                     "type", "transaction_pdf", "result", "success");
@@ -140,7 +144,7 @@ public class ExportService {
             return result;
         } catch (Exception e) {
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "transaction_pdf", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "transaction_pdf", "result", "failure");
@@ -149,7 +153,7 @@ public class ExportService {
     }
 
     public byte[] generatePropertyBrochurePDF(String propertyIdentifier, UUID teamId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             Property property = propertyRepository.findByIdentifierAndTeamId(propertyIdentifier, teamId)
                     .orElseThrow(() -> new NotFoundException("Property not found"));
@@ -181,7 +185,7 @@ public class ExportService {
 
             byte[] result = convertHTMLToPDF(html);
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "property_brochure", "result", "success");
             metricsService.incrementCounter("export.generation.total",
                     "type", "property_brochure", "result", "success");
@@ -190,7 +194,7 @@ public class ExportService {
             return result;
         } catch (Exception e) {
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "property_brochure", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "property_brochure", "result", "failure");
@@ -199,7 +203,7 @@ public class ExportService {
     }
 
     public byte[] generateContractReportPDF(String contractIdentifier, UUID teamId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, teamId)
                     .orElseThrow(() -> new NotFoundException("Contract not found"));
@@ -216,7 +220,7 @@ public class ExportService {
 
             byte[] result = convertHTMLToPDF(html);
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "contract_report", "result", "success");
             metricsService.incrementCounter("export.generation.total",
                     "type", "contract_report", "result", "success");
@@ -225,7 +229,7 @@ public class ExportService {
             return result;
         } catch (Exception e) {
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "contract_report", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "contract_report", "result", "failure");
@@ -234,7 +238,7 @@ public class ExportService {
     }
 
     public byte[] generateTenantReportPDF(String tenantIdentifier, UUID teamId) {
-        Instant start = Instant.now();
+        Instant start = clock.instant();
         try {
             Tenant tenant = tenantRepository.findByIdentifierAndTeamId(tenantIdentifier, teamId)
                     .orElseThrow(() -> new NotFoundException("Tenant not found"));
@@ -261,7 +265,7 @@ public class ExportService {
 
             byte[] result = convertHTMLToPDF(html);
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "tenant_report", "result", "success");
             metricsService.incrementCounter("export.generation.total",
                     "type", "tenant_report", "result", "success");
@@ -270,7 +274,7 @@ public class ExportService {
             return result;
         } catch (Exception e) {
             metricsService.recordTimer("export.generation.seconds",
-                    Duration.between(start, Instant.now()),
+                    Duration.between(start, clock.instant()),
                     "type", "tenant_report", "result", "failure");
             metricsService.incrementCounter("export.generation.total",
                     "type", "tenant_report", "result", "failure");
@@ -401,7 +405,7 @@ public class ExportService {
 
         html.append("<h1>Transaction History Report</h1>");
         html.append("<p style='color: #6b7280; font-size: 14px;'>Period: ").append(periodText).append("</p>");
-        html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ").append(LocalDate.now().format(formatter)).append("</p>");
+        html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ").append(LocalDate.now(clock).format(formatter)).append("</p>");
 
         html.append("<div class='summary'>");
         html.append("<div class='summary-card income'><h3>Total Income</h3><p>EUR ").append(String.format("%.2f", totalIncome)).append("</p></div>");
@@ -548,7 +552,7 @@ public class ExportService {
         }
         html.append("</p>");
         html.append("<div class='cover-divider'></div>");
-        html.append("<p class='cover-date'>").append(LocalDate.now().format(dateFormatter).toUpperCase()).append("</p>");
+        html.append("<p class='cover-date'>").append(LocalDate.now(clock).format(dateFormatter).toUpperCase()).append("</p>");
         html.append("<p class='cover-id'>REF #").append(property.getIdentifier()).append("</p>");
         html.append("</div>");
 
@@ -912,7 +916,7 @@ public class ExportService {
 
         html.append("<h1>Contract Report</h1>");
         html.append("<p style='color: #6b7280; font-size: 14px;'>Contract #").append(contract.getIdentifier()).append("</p>");
-        html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ").append(LocalDate.now().format(DateTimeFormatter.ofPattern("MMM d, yyyy"))).append("</p>");
+        html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ").append(LocalDate.now(clock).format(DateTimeFormatter.ofPattern("MMM d, yyyy"))).append("</p>");
 
         html.append("<div class='info-grid'>");
 
@@ -1071,7 +1075,7 @@ public class ExportService {
             html.append("<p class='cover-detail'>").append(escapeHtml(tenant.getPhone())).append("</p>");
         }
         html.append("<div class='cover-divider'></div>");
-        html.append("<p class='cover-date'>").append(LocalDate.now().format(dateFormatter).toUpperCase()).append("</p>");
+        html.append("<p class='cover-date'>").append(LocalDate.now(clock).format(dateFormatter).toUpperCase()).append("</p>");
         html.append("<p class='cover-id'>REF #").append(tenant.getIdentifier()).append("</p>");
         html.append("</div>");
 

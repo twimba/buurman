@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -41,6 +42,7 @@ public class NotificationSchedulerService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public NotificationSchedulerService(ContractRepository contractRepository,
                                         PaymentRepository paymentRepository,
@@ -49,7 +51,8 @@ public class NotificationSchedulerService {
                                         TeamMemberRepository teamMemberRepository,
                                         UserRepository userRepository,
                                         NotificationService notificationService,
-                                        AppProperties appProperties) {
+                                        AppProperties appProperties,
+                                        Clock clock) {
         this.contractRepository = contractRepository;
         this.paymentRepository = paymentRepository;
         this.propertyRepository = propertyRepository;
@@ -58,6 +61,7 @@ public class NotificationSchedulerService {
         this.userRepository = userRepository;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     @Scheduled(cron = "${scheduling.notification-reminders.contract-expiry-cron}")
@@ -65,7 +69,7 @@ public class NotificationSchedulerService {
     public void checkContractExpiry() {
         log.info("Running contract expiry check...");
 
-        LocalDate thirtyDaysFromNow = LocalDate.now().plusDays(30);
+        LocalDate thirtyDaysFromNow = LocalDate.now(clock).plusDays(30);
 
         teamRepository.findAllWithAutoGenerationEnabled().forEach(team -> {
             try {
@@ -73,7 +77,7 @@ public class NotificationSchedulerService {
                         team.getId(), thirtyDaysFromNow);
 
                 for (Contract contract : expiringContracts) {
-                    int daysUntilExpiry = (int) ChronoUnit.DAYS.between(LocalDate.now(), contract.getEndDate());
+                    int daysUntilExpiry = (int) ChronoUnit.DAYS.between(LocalDate.now(clock), contract.getEndDate());
 
                     if (daysUntilExpiry != 30 && daysUntilExpiry != 14 &&
                             daysUntilExpiry != 7 && daysUntilExpiry != 3 && daysUntilExpiry != 1) {

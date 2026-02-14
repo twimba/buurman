@@ -5,6 +5,7 @@ import com.buurman.domain.UserNotificationTypePreference;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -18,9 +19,11 @@ import static com.buurman.jooq.generated.Tables.USER_NOTIFICATION_TYPE_PREFERENC
 public class UserNotificationTypePreferenceRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public UserNotificationTypePreferenceRepository(DSLContext dsl) {
+    public UserNotificationTypePreferenceRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public List<UserNotificationTypePreference> findByUserId(UUID userId) {
@@ -39,22 +42,29 @@ public class UserNotificationTypePreferenceRepository {
     }
 
     public void saveAll(UUID userId, List<UserNotificationTypePreference> prefs) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (UserNotificationTypePreference pref : prefs) {
+            LocalDateTime createdAt = pref.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(pref.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = pref.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(pref.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(USER_NOTIFICATION_TYPE_PREFERENCES)
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.ID, UUID.randomUUID())
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID, userId)
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.NOTIFICATION_TYPE, pref.getNotificationType().name())
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.EMAIL_ENABLED, pref.isEmailEnabled())
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.SMS_ENABLED, pref.isSmsEnabled())
-                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.CREATED_AT, now)
-                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, now)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.CREATED_AT, createdAt)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, updatedAt)
                     .onConflict(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID, USER_NOTIFICATION_TYPE_PREFERENCES.NOTIFICATION_TYPE)
                     .doUpdate()
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.EMAIL_ENABLED, pref.isEmailEnabled())
                     .set(USER_NOTIFICATION_TYPE_PREFERENCES.SMS_ENABLED, pref.isSmsEnabled())
-                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, now)
+                    .set(USER_NOTIFICATION_TYPE_PREFERENCES.UPDATED_AT, updatedAt)
                     .execute();
         }
     }

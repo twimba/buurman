@@ -4,6 +4,7 @@ import com.buurman.domain.UserPreferences;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,9 +17,11 @@ import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 public class UserPreferencesRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public UserPreferencesRepository(DSLContext dsl) {
+    public UserPreferencesRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public Optional<UserPreferences> findByUserId(UUID userId) {
@@ -29,10 +32,17 @@ public class UserPreferencesRepository {
     }
 
     public UserPreferences save(UserPreferences prefs) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (prefs.getId() == null) {
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = prefs.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(prefs.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = prefs.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(USER_PREFERENCES)
                     .set(USER_PREFERENCES.ID, newId)
                     .set(USER_PREFERENCES.USER_ID, prefs.getUserId())
@@ -44,13 +54,17 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
                     .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
                     .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
-                    .set(USER_PREFERENCES.CREATED_AT, now)
-                    .set(USER_PREFERENCES.UPDATED_AT, now)
+                    .set(USER_PREFERENCES.CREATED_AT, createdAt)
+                    .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
                     .execute();
             prefs.setId(newId);
-            prefs.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            prefs.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            prefs.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            prefs.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
+            LocalDateTime updatedAt = prefs.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(USER_PREFERENCES)
                     .set(USER_PREFERENCES.THEME, prefs.getTheme())
                     .set(USER_PREFERENCES.LANGUAGE, prefs.getLanguage())
@@ -60,10 +74,10 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
                     .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
                     .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
-                    .set(USER_PREFERENCES.UPDATED_AT, now)
+                    .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
                     .where(USER_PREFERENCES.ID.eq(prefs.getId()))
                     .execute();
-            prefs.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            prefs.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
         return prefs;
     }

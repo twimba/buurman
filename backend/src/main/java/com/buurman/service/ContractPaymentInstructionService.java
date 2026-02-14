@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -33,16 +34,19 @@ public class ContractPaymentInstructionService {
     private final ContractRepository contractRepository;
     private final PaymentInstructionRepository piRepository;
     private final AuditService auditService;
+    private final Clock clock;
 
     public ContractPaymentInstructionService(
             ContractPaymentInstructionRepository cpiRepository,
             ContractRepository contractRepository,
             PaymentInstructionRepository piRepository,
-            AuditService auditService) {
+            AuditService auditService,
+            Clock clock) {
         this.cpiRepository = cpiRepository;
         this.contractRepository = contractRepository;
         this.piRepository = piRepository;
         this.auditService = auditService;
+        this.clock = clock;
     }
 
     public List<ContractPaymentInstructionResponse> getHistory(String contractIdentifier, UserPrincipal principal) {
@@ -158,8 +162,8 @@ public class ContractPaymentInstructionService {
         cpi.setNotes(request.notes());
         cpi.setCreatedBy(principal.getUserId());
         cpi.setUpdatedBy(principal.getUserId());
-        cpi.setCreatedAt(Instant.now());
-        cpi.setUpdatedAt(Instant.now());
+        cpi.setCreatedAt(clock.instant());
+        cpi.setUpdatedAt(clock.instant());
 
         if (request.paymentInstructionIdentifier() != null && !Boolean.TRUE.equals(request.isCustom())) {
             PaymentInstruction template = piRepository.findByIdentifierAndTeamId(
@@ -239,8 +243,8 @@ public class ContractPaymentInstructionService {
         cpi.setNotes(request.notes());
         cpi.setCreatedBy(principal.getUserId());
         cpi.setUpdatedBy(principal.getUserId());
-        cpi.setCreatedAt(Instant.now());
-        cpi.setUpdatedAt(Instant.now());
+        cpi.setCreatedAt(clock.instant());
+        cpi.setUpdatedAt(clock.instant());
 
         if (request.paymentInstructionIdentifier() != null && !Boolean.TRUE.equals(request.isCustom())) {
             PaymentInstruction template = piRepository.findByIdentifierAndTeamId(

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.TeamsRecord;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -36,11 +37,13 @@ public class TeamRepository {
     private final DSLContext dsl;
     private final TeamRecordMapper mapper;
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
-    public TeamRepository(DSLContext dsl, TeamRecordMapper mapper, ObjectMapper objectMapper) {
+    public TeamRepository(DSLContext dsl, TeamRecordMapper mapper, ObjectMapper objectMapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
+        this.clock = clock;
     }
 
     public Optional<Team> findById(UUID id) {
@@ -51,7 +54,7 @@ public class TeamRepository {
     }
 
     public Team save(Team team) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         // Serialize settings to JSONB
         JSONB settingsJsonb = serializeSettings(team.getSettings());
@@ -59,31 +62,42 @@ public class TeamRepository {
         if (team.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = team.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(team.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = team.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(TEAMS)
                     .set(TEAMS.ID, newId)
                     .set(TEAMS.IDENTIFIER, team.getIdentifier())
                     .set(TEAMS.NAME, team.getName())
                     .set(TEAMS.SETTINGS, settingsJsonb)
-                    .set(TEAMS.CREATED_AT, now)
-                    .set(TEAMS.UPDATED_AT, now)
+                    .set(TEAMS.CREATED_AT, createdAt)
+                    .set(TEAMS.UPDATED_AT, updatedAt)
                     .set(TEAMS.CREATED_BY, team.getCreatedBy())
                     .execute();
 
             team.setId(newId);
-            team.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            team.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            team.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            team.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE
+            LocalDateTime updatedAt = team.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(TEAMS)
                     .set(TEAMS.IDENTIFIER, team.getIdentifier())
                     .set(TEAMS.NAME, team.getName())
                     .set(TEAMS.SETTINGS, settingsJsonb)
-                    .set(TEAMS.UPDATED_AT, now)
+                    .set(TEAMS.UPDATED_AT, updatedAt)
                     .set(TEAMS.UPDATED_BY, team.getUpdatedBy())
                     .where(TEAMS.ID.eq(team.getId()))
                     .execute();
 
-            team.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            team.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return team;
@@ -111,7 +125,7 @@ public class TeamRepository {
     }
 
     public void softDeleteById(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(TEAMS)
                 .set(TEAMS.DELETED_AT, now)
                 .where(TEAMS.ID.eq(id))

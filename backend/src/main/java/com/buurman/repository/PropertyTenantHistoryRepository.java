@@ -4,6 +4,7 @@ import com.buurman.domain.PropertyTenantHistory;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,9 +17,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
 public class PropertyTenantHistoryRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public PropertyTenantHistoryRepository(DSLContext dsl) {
+    public PropertyTenantHistoryRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public List<PropertyTenantHistory> findByTenantId(UUID tenantId, UUID teamId) {
@@ -60,7 +63,7 @@ public class PropertyTenantHistoryRepository {
     }
 
     public void save(PropertyTenantHistory history) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         dsl.insertInto(PROPERTY_TENANT_HISTORY)
                 .set(PROPERTY_TENANT_HISTORY.ID, history.getId() != null ? history.getId() : UUID.randomUUID())

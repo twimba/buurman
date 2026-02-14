@@ -57,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -92,6 +93,7 @@ public class PaymentService {
     private final MetricsService metricsService;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public PaymentService(
             PaymentRepository paymentRepository,
@@ -110,7 +112,8 @@ public class PaymentService {
             com.buurman.mapper.DocumentMapper documentMapper,
             MetricsService metricsService,
             NotificationService notificationService,
-            AppProperties appProperties) {
+            AppProperties appProperties,
+            Clock clock) {
         this.paymentRepository = paymentRepository;
         this.receivalRepository = receivalRepository;
         this.contractRepository = contractRepository;
@@ -128,6 +131,7 @@ public class PaymentService {
         this.metricsService = metricsService;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     @Transactional
@@ -146,8 +150,8 @@ public class PaymentService {
         payment.setStatus(PENDING);
         payment.setCreatedBy(principal.getUserId());
         payment.setUpdatedBy(principal.getUserId());
-        payment.setCreatedAt(Instant.now());
-        payment.setUpdatedAt(Instant.now());
+        payment.setCreatedAt(clock.instant());
+        payment.setUpdatedAt(clock.instant());
 
         if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
             payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
@@ -179,7 +183,7 @@ public class PaymentService {
     public List<PaymentResponse> getAllPayments(UserPrincipal principal) {
         List<Payment> payments = paymentRepository.findAllByTeamId(principal.getTeamId());
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         payments.forEach(payment -> updatePaymentStatus(payment, today));
 
         return enrichPaymentResponses(payments, principal.getTeamId());
@@ -190,7 +194,7 @@ public class PaymentService {
         PaginatedResult<Payment> result = paymentRepository.findAllByTeamIdPaginated(
                 principal.getTeamId(), status, contractId, pageRequest);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         result.items().forEach(payment -> updatePaymentStatus(payment, today));
 
         List<PaymentResponse> responses = enrichPaymentResponses(result.items(), principal.getTeamId());
@@ -230,7 +234,7 @@ public class PaymentService {
 
         List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(clock);
         payments.forEach(payment -> updatePaymentStatus(payment, today));
 
         return enrichPaymentResponses(payments, teamId);
@@ -255,7 +259,7 @@ public class PaymentService {
 
         paymentMapper.updateEntity(payment, request);
         payment.setUpdatedBy(principal.getUserId());
-        payment.setUpdatedAt(Instant.now());
+        payment.setUpdatedAt(clock.instant());
 
         Payment updatedPayment = paymentRepository.save(payment);
         PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
@@ -298,8 +302,8 @@ public class PaymentService {
             receival.setNotes(request.notes());
             receival.setCreatedBy(principal.getUserId());
             receival.setUpdatedBy(principal.getUserId());
-            receival.setCreatedAt(Instant.now());
-            receival.setUpdatedAt(Instant.now());
+            receival.setCreatedAt(clock.instant());
+            receival.setUpdatedAt(clock.instant());
             receivalRepository.save(receival);
         }
 
@@ -312,7 +316,7 @@ public class PaymentService {
             payment.setNotes(request.notes());
         }
         payment.setUpdatedBy(principal.getUserId());
-        payment.setUpdatedAt(Instant.now());
+        payment.setUpdatedAt(clock.instant());
 
         Payment updatedPayment = paymentRepository.save(payment);
         PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
@@ -370,8 +374,8 @@ public class PaymentService {
         receival.setNotes(request.notes());
         receival.setCreatedBy(principal.getUserId());
         receival.setUpdatedBy(principal.getUserId());
-        receival.setCreatedAt(Instant.now());
-        receival.setUpdatedAt(Instant.now());
+        receival.setCreatedAt(clock.instant());
+        receival.setUpdatedAt(clock.instant());
 
         receivalRepository.save(receival);
 
@@ -508,7 +512,7 @@ public class PaymentService {
                 LocalDate latestDate = receivals.stream()
                         .map(PaymentReceival::getReceivalDate)
                         .max(LocalDate::compareTo)
-                        .orElse(LocalDate.now());
+                        .orElse(LocalDate.now(clock));
                 payment.setPaymentDate(latestDate);
             }
         } else if (totalReceived.compareTo(BigDecimal.ZERO) > 0) {
@@ -516,7 +520,7 @@ public class PaymentService {
             payment.setPaymentDate(null);
         } else {
             // No receivals - check if overdue
-            if (payment.getDueDate().isBefore(LocalDate.now())) {
+            if (payment.getDueDate().isBefore(LocalDate.now(clock))) {
                 newStatus = OVERDUE;
             } else {
                 newStatus = PENDING;
@@ -526,7 +530,7 @@ public class PaymentService {
 
         payment.setStatus(newStatus);
         payment.setUpdatedBy(principal.getUserId());
-        payment.setUpdatedAt(Instant.now());
+        payment.setUpdatedAt(clock.instant());
         paymentRepository.save(payment);
     }
 
@@ -590,8 +594,8 @@ public class PaymentService {
             payment.setNotes("Auto-generated for " + month);
             payment.setCreatedBy(principal.getUserId());
             payment.setUpdatedBy(principal.getUserId());
-            payment.setCreatedAt(Instant.now());
-            payment.setUpdatedAt(Instant.now());
+            payment.setCreatedAt(clock.instant());
+            payment.setUpdatedAt(clock.instant());
 
             Payment savedPayment = paymentRepository.save(payment);
             generatedPayments.add(savedPayment);

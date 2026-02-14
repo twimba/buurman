@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,10 +30,12 @@ public class UserRepository {
 
     private final DSLContext dsl;
     private final UserRecordMapper mapper;
+    private final Clock clock;
 
-    public UserRepository(DSLContext dsl, UserRecordMapper mapper) {
+    public UserRepository(DSLContext dsl, UserRecordMapper mapper, Clock clock) {
         this.dsl = dsl;
         this.mapper = mapper;
+        this.clock = clock;
     }
 
     public Optional<User> findByIdentifier(String identifier) {
@@ -50,12 +53,19 @@ public class UserRepository {
     }
 
     public User save(User user) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (user.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.USR);
+            LocalDateTime createdAt = user.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(user.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = user.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(USERS)
                     .set(USERS.ID, newId)
                     .set(USERS.IDENTIFIER, identifier)
@@ -70,16 +80,20 @@ public class UserRepository {
                             ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
                             ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
-                    .set(USERS.CREATED_AT, now)
-                    .set(USERS.UPDATED_AT, now)
+                    .set(USERS.CREATED_AT, createdAt)
+                    .set(USERS.UPDATED_AT, updatedAt)
                     .execute();
 
             user.setId(newId);
             user.setIdentifier(identifier);
-            user.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            user.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            user.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            user.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
             // UPDATE
+            LocalDateTime updatedAt = user.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(USERS)
                     .set(USERS.KEYCLOAK_ID, user.getKeycloakId())
                     .set(USERS.EMAIL, user.getEmail())
@@ -92,18 +106,18 @@ public class UserRepository {
                             ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
                     .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
                             ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
-                    .set(USERS.UPDATED_AT, now)
+                    .set(USERS.UPDATED_AT, updatedAt)
                     .where(USERS.ID.eq(user.getId()))
                     .execute();
 
-            user.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            user.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return user;
     }
 
     public void softDeleteById(UUID id) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .set(USERS.DELETED_AT, now)
                 .where(USERS.ID.eq(id))
@@ -142,7 +156,7 @@ public class UserRepository {
     }
 
     public void updateActiveTeamId(UUID userId, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .set(USERS.ACTIVE_TEAM_ID, teamId)
                 .set(USERS.UPDATED_AT, now)
@@ -151,7 +165,7 @@ public class UserRepository {
     }
 
     public void updateEmailVerifiedAt(UUID userId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .set(USERS.EMAIL_VERIFIED_AT, now)
                 .set(USERS.UPDATED_AT, now)
@@ -160,7 +174,7 @@ public class UserRepository {
     }
 
     public void updatePhoneVerifiedAt(UUID userId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .set(USERS.PHONE_VERIFIED_AT, now)
                 .set(USERS.UPDATED_AT, now)
@@ -169,7 +183,7 @@ public class UserRepository {
     }
 
     public void clearPhoneVerifiedAt(UUID userId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .setNull(USERS.PHONE_VERIFIED_AT)
                 .set(USERS.UPDATED_AT, now)
@@ -178,7 +192,7 @@ public class UserRepository {
     }
 
     public void updateDefaultTeamId(UUID userId, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
                 .set(USERS.DEFAULT_TEAM_ID, teamId)
                 .set(USERS.UPDATED_AT, now)
@@ -218,7 +232,7 @@ public class UserRepository {
     }
 
     public void updateDisabledAt(UUID userId, LocalDateTime disabledAt) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(USERS)
             .set(USERS.DISABLED_AT, disabledAt)
             .set(USERS.UPDATED_AT, now)

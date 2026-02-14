@@ -4,6 +4,7 @@ import com.buurman.domain.PropertyOutdoorArea;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,9 +18,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 public class PropertyOutdoorAreaRepository {
 
     private final DSLContext dsl;
+    private final Clock clock;
 
-    public PropertyOutdoorAreaRepository(DSLContext dsl) {
+    public PropertyOutdoorAreaRepository(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public List<PropertyOutdoorArea> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
@@ -42,10 +45,17 @@ public class PropertyOutdoorAreaRepository {
     }
 
     public PropertyOutdoorArea save(PropertyOutdoorArea area) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
 
         if (area.getId() == null) {
             UUID newId = UUID.randomUUID();
+            LocalDateTime createdAt = area.getCreatedAt() != null
+                    ? LocalDateTime.ofInstant(area.getCreatedAt(), ZoneOffset.UTC)
+                    : now;
+            LocalDateTime updatedAt = area.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
                     .set(PROPERTY_OUTDOOR_AREAS.ID, newId)
                     .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, area.getIdentifier())
@@ -54,34 +64,38 @@ public class PropertyOutdoorAreaRepository {
                     .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
                     .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
                     .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
-                    .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, now)
-                    .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, now)
+                    .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, createdAt)
+                    .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
                     .set(PROPERTY_OUTDOOR_AREAS.CREATED_BY, area.getCreatedBy())
                     .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
                     .execute();
 
             area.setId(newId);
-            area.setCreatedAt(now.toInstant(ZoneOffset.UTC));
-            area.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            area.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+            area.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         } else {
+            LocalDateTime updatedAt = area.getUpdatedAt() != null
+                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), ZoneOffset.UTC)
+                    : now;
+
             dsl.update(PROPERTY_OUTDOOR_AREAS)
                     .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
                     .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
                     .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
-                    .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, now)
+                    .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
                     .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
                     .where(PROPERTY_OUTDOOR_AREAS.ID.eq(area.getId())
                             .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(area.getTeamId())))
                     .execute();
 
-            area.setUpdatedAt(now.toInstant(ZoneOffset.UTC));
+            area.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
         }
 
         return area;
     }
 
     public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now(clock);
         dsl.update(PROPERTY_OUTDOOR_AREAS)
                 .set(PROPERTY_OUTDOOR_AREAS.DELETED_AT, now)
                 .where(PROPERTY_OUTDOOR_AREAS.ID.eq(id)

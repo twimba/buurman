@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -73,12 +74,15 @@ public class DemoPropertyGenerator {
     record CountryData(String name, String[] cities, String[] streets, String postalFormat,
                         double latMin, double latMax, double lonMin, double lonMax) {}
 
-    public DemoPropertyGenerator(DSLContext dsl) {
+    private final Clock clock;
+
+    public DemoPropertyGenerator(DSLContext dsl, Clock clock) {
         this.dsl = dsl;
+        this.clock = clock;
     }
 
     public void generate(DemoDataContext ctx) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
 
         for (var entry : PROPERTIES_PER_TEAM.entrySet()) {
             String teamKey = entry.getKey();
@@ -145,7 +149,7 @@ public class DemoPropertyGenerator {
                         .set(PROPERTIES.WINDOW_TYPE, pick(WINDOW_TYPES))
                         .set(PROPERTIES.NUMBER_OF_FLOORS, random.nextInt(1, 4))
                         .set(PROPERTIES.ENERGY_EFFICIENCY_RATING, pick(ENERGY_RATINGS))
-                        .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, LocalDate.now().plusYears(random.nextInt(1, 5)))
+                        .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, LocalDate.now(clock).plusYears(random.nextInt(1, 5)))
                         .set(PROPERTIES.HEATING_TYPE, pick(HEATING_TYPES))
                         .set(PROPERTIES.COOLING_TYPE, random.nextBoolean() ? "CENTRAL_AC" : "NONE")
                         .set(PROPERTIES.HOT_WATER_SYSTEM, "BOILER")
