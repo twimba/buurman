@@ -1,9 +1,12 @@
 package com.buurman.controller;
 
 import com.buurman.dto.response.*;
+import com.buurman.exception.ForbiddenException;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
+import com.buurman.service.FeatureFlagService;
 import com.buurman.service.ReportService;
+import com.buurman.util.FeatureFlags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,10 +29,19 @@ public class ReportController {
 
     private final ReportService reportService;
     private final ExportService exportService;
+    private final FeatureFlagService featureFlagService;
 
-    public ReportController(ReportService reportService, ExportService exportService) {
+    public ReportController(ReportService reportService, ExportService exportService, FeatureFlagService featureFlagService) {
         this.reportService = reportService;
         this.exportService = exportService;
+        this.featureFlagService = featureFlagService;
+    }
+
+    @ModelAttribute
+    private void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {
+        if (!featureFlagService.isEnabled(FeatureFlags.REPORTS, principal)) {
+            throw new ForbiddenException("Reports feature is not available");
+        }
     }
 
     @Operation(

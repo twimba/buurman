@@ -11,6 +11,7 @@ import { NotificationsPage } from "./pages/NotificationsPage";
 import { NotificationDetailPage } from "./pages/NotificationDetailPage";
 import { ToolEmbedPage } from "./pages/ToolEmbedPage";
 import { SmsPolicyPage } from "./pages/SmsPolicyPage";
+import { FeatureFlagsPage } from "./pages/FeatureFlagsPage";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                 element={<NotificationDetailPage />}
               />
               <Route path="/sms-policy" element={<SmsPolicyPage />} />
+              <Route path="/feature-flags" element={<FeatureFlagsPage />} />
               <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
             </Route>
           </Route>

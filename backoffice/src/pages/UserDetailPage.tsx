@@ -19,6 +19,7 @@ import {
   useResetPassword,
 } from "../hooks/useUsers";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { UserFeatureFlags } from "../components/UserFeatureFlags";
 
 export const UserDetailPage = () => {
   const { identifier } = useParams<{ identifier: string }>();
@@ -165,6 +166,11 @@ export const UserDetailPage = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Feature Flags */}
+      <div className="mt-6">
+        <UserFeatureFlags userIdentifier={identifier!} />
       </div>
 
       {/* Disable/Enable confirmation dialog */}

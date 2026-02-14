@@ -1,8 +1,10 @@
 package com.buurman.security;
 
+import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
 import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -17,11 +19,14 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamRepository teamRepository;
 
     public JwtAuthenticationConverter(UserRepository userRepository,
-                                     TeamMemberRepository teamMemberRepository) {
+                                     TeamMemberRepository teamMemberRepository,
+                                     TeamRepository teamRepository) {
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.teamRepository = teamRepository;
     }
 
     @Override
@@ -50,12 +55,17 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
         boolean emailVerified = user.getEmailVerifiedAt() != null;
 
         if (membership != null) {
+            String teamIdentifier = teamRepository.findById(membership.getTeamId())
+                .map(Team::getIdentifier)
+                .orElse(null);
             principal = new UserPrincipal(
                 user.getId(),
+                user.getIdentifier(),
                 keycloakId,
                 email,
                 name,
                 membership.getTeamId(),
+                teamIdentifier,
                 membership.getRole(),
                 membership.isOwner(),
                 emailVerified
@@ -68,9 +78,11 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
             // User without team membership (e.g., accepting invitation)
             principal = new UserPrincipal(
                 user.getId(),
+                user.getIdentifier(),
                 keycloakId,
                 email,
                 name,
+                null,
                 null,
                 null,
                 false,

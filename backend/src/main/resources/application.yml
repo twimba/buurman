@@ -82,6 +82,13 @@ buurman:
     auto-regenerate: ${DEMO_DATA_AUTO_REGENERATE:true}
     cron: "0 0 */12 * * *"
 
+# Flagsmith Feature Flags
+flagsmith:
+  api-key: ${FLAGSMITH_SERVER_SIDE_KEY:}
+  api-url: ${FLAGSMITH_API_URL:http://flagsmith:8000/api/v1/}
+  enable-analytics: true
+  environment-refresh-interval-seconds: 60
+
 # Application Configuration
 app:
   version: @project.version@

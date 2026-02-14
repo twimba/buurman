@@ -194,6 +194,7 @@ public class UserRepository {
                 USERS.EMAIL.likeIgnoreCase(pattern)
                 .or(USERS.FIRST_NAME.likeIgnoreCase(pattern))
                 .or(USERS.LAST_NAME.likeIgnoreCase(pattern))
+                .or(USERS.IDENTIFIER.likeIgnoreCase(pattern))
             );
         }
 

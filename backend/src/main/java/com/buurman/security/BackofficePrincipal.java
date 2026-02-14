@@ -1,7 +1,10 @@
 package com.buurman.security;
 
+import lombok.Getter;
+
 import java.security.Principal;
 
+@Getter
 public class BackofficePrincipal implements Principal {
     private final String keycloakId;
     private final String email;
@@ -17,7 +20,4 @@ public class BackofficePrincipal implements Principal {
 
     @Override
     public String getName() { return name; }
-    public String getKeycloakId() { return keycloakId; }
-    public String getEmail() { return email; }
-    public String getRole() { return role; }
 }

@@ -202,6 +202,13 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!-- Feature Flags (Flagsmith) -->
+        <dependency>
+            <groupId>com.flagsmith</groupId>
+            <artifactId>flagsmith-java-client</artifactId>
+            <version>7.4.3</version>
+        </dependency>
+
         <!-- AOP for @Aspect support -->
         <dependency>
             <groupId>org.springframework</groupId>

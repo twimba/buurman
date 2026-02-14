@@ -11,6 +11,7 @@ import {
   UserCog,
   Bell,
   MessageSquare,
+  Flag,
   LogOut,
   Shield,
   ChevronsLeft,
@@ -31,6 +32,7 @@ import {
   TwilioIcon,
   SendGridIcon,
   AwsIcon,
+  FlagsmithIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
 
@@ -42,6 +44,7 @@ const navigation = [
   { name: "Users", href: "/users", icon: UserCog },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
+  { name: "Feature Flags", href: "/feature-flags", icon: Flag },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
@@ -56,6 +59,7 @@ type ToolItem = {
 const getTools = (): ToolItem[] => {
   const local = isLocalEnv();
   return [
+    { name: "Flagsmith", href: "/tools/flagsmith", icon: FlagsmithIcon },
     { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
     { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
     { name: "Traefik", href: "/tools/traefik", icon: TraefikIcon },

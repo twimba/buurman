@@ -26,6 +26,8 @@ import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTeam } from '@/context/TeamContext';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 import { TeamSwitcher } from './TeamSwitcher';
 
 const navigation = [
@@ -43,7 +45,7 @@ const navigation = [
   { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Documents', href: '/documents', icon: Folder },
   { name: 'Photos', href: '/photos', icon: Image },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
+  { name: 'Reports', href: '/reports', icon: BarChart3, featureFlag: FeatureFlags.REPORTS },
 ];
 
 const administrationNavigation = [
@@ -75,7 +77,12 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { logout } = useAuth();
   const { teams, canEditTeamSettings } = useTeam();
+  const { isEnabled } = useFeatureFlags();
   const location = useLocation();
+
+  const visibleNavigation = navigation.filter(
+    (item) => !('featureFlag' in item) || isEnabled(item.featureFlag!)
+  );
 
   const isOnAdminPage = location.pathname.startsWith('/admin');
   const [isAdminOpen, setIsAdminOpen] = useState(isOnAdminPage);
@@ -148,7 +155,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-4 px-2">
             <ul className="space-y-1">
-              {navigation.map((item) => (
+              {visibleNavigation.map((item) => (
                 <li
                   key={item.name}
                   className={

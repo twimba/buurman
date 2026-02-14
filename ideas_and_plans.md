@@ -21,7 +21,6 @@
    * View payment instructions
  
 # Infrastructure
- 
  ## Application domain
  Have the applications be on their own subdomain:
   * Main application (landlord) portal: app.buurman.io
