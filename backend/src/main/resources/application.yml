@@ -79,7 +79,7 @@ buurman:
   demo:
     enabled: ${DEMO_DATA_ENABLED:true}
     api-key: ${DEMO_DATA_API_KEY:demo-secret-key}
-    cron: "0 0 */12 * * ?"
+    cron: "23 1 * * * ?"
 
 # Flagsmith Feature Flags
 flagsmith:

@@ -4,6 +4,7 @@ import com.buurman.config.models.AwsS3Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 @Component
+@Profile("!prod")
 public class S3BucketInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(S3BucketInitializer.class);
