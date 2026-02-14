@@ -29,7 +29,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class CalendarFeedService {
@@ -199,7 +200,7 @@ public class CalendarFeedService {
                     tenContracts.forEach(c -> contractIds.add(c.getId()));
                 }
             }
-            default -> { /* ALL_PAYMENTS: no milestones */ }
+            case ALL_PAYMENTS -> { /* no milestones */ }
         }
 
         Map<UUID, Contract> contractMap = contractRepository.findByIdsAndTeamId(contractIds, teamId)
@@ -291,41 +292,35 @@ public class CalendarFeedService {
     }
 
     private List<Payment> loadPayments(CalendarFeed feed, UUID teamId) {
-        switch (feed.getFeedType()) {
-            case ALL_PAYMENTS:
-                return paymentRepository.findAllByTeamId(teamId);
-            case CONTRACT:
-                return paymentRepository.findByContractId(feed.getContractId(), teamId);
-            case PROPERTY_PAYMENTS: {
+        return switch (feed.getFeedType()) {
+            case ALL_PAYMENTS -> paymentRepository.findAllByTeamId(teamId);
+            case CONTRACT -> paymentRepository.findByContractId(feed.getContractId(), teamId);
+            case PROPERTY_PAYMENTS -> {
                 List<Contract> contracts = contractRepository.findByPropertyId(feed.getPropertyId(), teamId);
                 List<Payment> result = new ArrayList<>();
                 for (Contract c : contracts) {
                     result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
                 }
-                return result;
+                yield result;
             }
-            case TENANT_PAYMENTS: {
+            case TENANT_PAYMENTS -> {
                 List<Contract> contracts = contractRepository.findByTenantId(feed.getTenantId(), teamId);
                 List<Payment> result = new ArrayList<>();
                 for (Contract c : contracts) {
                     result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
                 }
-                return result;
+                yield result;
             }
-            default:
-                return List.of();
-        }
+        };
     }
 
     private String buildCalendarName(CalendarFeed feed, UUID teamId,
                                      Map<UUID, Property> propertyMap,
                                      Map<UUID, Tenant> tenantMap) {
-        switch (feed.getFeedType()) {
-            case ALL_PAYMENTS:
-                return "Buurman - All Payment Due Dates";
-            case CONTRACT:
-                return "Buurman - Contract Calendar";
-            case PROPERTY_PAYMENTS: {
+        return switch (feed.getFeedType()) {
+            case ALL_PAYMENTS -> "Buurman - All Payment Due Dates";
+            case CONTRACT -> "Buurman - Contract Calendar";
+            case PROPERTY_PAYMENTS -> {
                 Property p = feed.getPropertyId() != null
                         ? propertyMap.values().stream()
                             .filter(prop -> prop.getId().equals(feed.getPropertyId()))
@@ -335,9 +330,9 @@ public class CalendarFeedService {
                     p = propertyRepository.findByIdAndTeamId(feed.getPropertyId(), teamId).orElse(null);
                 }
                 String name = p != null && p.getStreet() != null ? p.getStreet() : "Property";
-                return "Buurman - " + name + " Payments";
+                yield "Buurman - " + name + " Payments";
             }
-            case TENANT_PAYMENTS: {
+            case TENANT_PAYMENTS -> {
                 Tenant t = feed.getTenantId() != null
                         ? tenantMap.values().stream()
                             .filter(tn -> tn.getId().equals(feed.getTenantId()))
@@ -347,11 +342,9 @@ public class CalendarFeedService {
                     t = tenantRepository.findByIdAndTeamId(feed.getTenantId(), teamId).orElse(null);
                 }
                 String name = t != null ? t.getFirstName() + " " + t.getLastName() : "Tenant";
-                return "Buurman - " + name + " Payments";
+                yield "Buurman - " + name + " Payments";
             }
-            default:
-                return "Buurman - Payment Due Dates";
-        }
+        };
     }
 
     private String buildSummary(Property property) {

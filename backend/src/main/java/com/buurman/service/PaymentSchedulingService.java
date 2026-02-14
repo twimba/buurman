@@ -286,9 +286,6 @@ public class PaymentSchedulingService {
             case PENDING_SIGNATURE:
                 log.debug("Contract {} moved to PENDING_SIGNATURE, no payment action needed", contractId);
                 break;
-
-            default:
-                log.warn("Unknown contract status: {}", newStatus);
         }
     }
 }

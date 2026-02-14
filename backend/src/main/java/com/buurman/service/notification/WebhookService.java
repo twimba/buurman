@@ -4,7 +4,13 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
 
-import static com.buurman.domain.NotificationStatus.*;
+import static com.buurman.domain.NotificationStatus.BOUNCED;
+import static com.buurman.domain.NotificationStatus.DELIVERED;
+import static com.buurman.domain.NotificationStatus.FAILED;
+import static com.buurman.domain.NotificationStatus.PENDING;
+import static com.buurman.domain.NotificationStatus.QUEUED;
+import static com.buurman.domain.NotificationStatus.REJECTED;
+import static com.buurman.domain.NotificationStatus.SENT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

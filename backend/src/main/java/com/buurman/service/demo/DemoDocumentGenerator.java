@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.*;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TENANTS;
 
 @Component
 public class DemoDocumentGenerator {

@@ -9,9 +9,10 @@ import com.buurman.service.backoffice.BackofficeUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/backoffice/users")
@@ -45,7 +46,7 @@ public class BackofficeUserController {
 
     @Operation(summary = "Disable user", description = "Disable a user account in both database and Keycloak")
     @PostMapping("/{identifier}/disable")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void disableUser(
             @PathVariable String identifier,
             @AuthenticationPrincipal BackofficePrincipal principal) {
@@ -54,7 +55,7 @@ public class BackofficeUserController {
 
     @Operation(summary = "Enable user", description = "Re-enable a disabled user account")
     @PostMapping("/{identifier}/enable")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void enableUser(
             @PathVariable String identifier,
             @AuthenticationPrincipal BackofficePrincipal principal) {
@@ -63,7 +64,7 @@ public class BackofficeUserController {
 
     @Operation(summary = "Reset password", description = "Send a password reset email to the user via Keycloak")
     @PostMapping("/{identifier}/reset-password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void resetPassword(
             @PathVariable String identifier,
             @AuthenticationPrincipal BackofficePrincipal principal) {

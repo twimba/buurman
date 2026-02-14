@@ -5,7 +5,10 @@ import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
 
-import static com.buurman.domain.NotificationStatus.*;
+import static com.buurman.domain.NotificationStatus.DELIVERED;
+import static com.buurman.domain.NotificationStatus.FAILED;
+import static com.buurman.domain.NotificationStatus.QUEUED;
+import static com.buurman.domain.NotificationStatus.SENT;
 import com.buurman.service.notification.DeliveryStatusLookupService;
 import com.twilio.rest.api.v2010.account.Message;
 import org.slf4j.Logger;

@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @SecurityRequirement(name = "bearer-jwt")
@@ -45,7 +47,7 @@ public class AmenityController {
     @Tag(name = "Property Amenities")
     @Operation(summary = "Add amenity to property", description = "Link an amenity to a property (Admin/Editor)")
     @PostMapping("/properties/{propertyIdentifier}/amenities")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PropertyAmenityResponse addAmenity(
             @PathVariable String propertyIdentifier,
             @Valid @RequestBody PropertyAmenityRequest request,
@@ -56,7 +58,7 @@ public class AmenityController {
     @Tag(name = "Property Amenities")
     @Operation(summary = "Remove amenity from property", description = "Unlink an amenity from a property (Admin/Editor)")
     @DeleteMapping("/properties/{propertyIdentifier}/amenities/{amenityIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void removeAmenity(
             @PathVariable String propertyIdentifier,
             @PathVariable String amenityIdentifier,

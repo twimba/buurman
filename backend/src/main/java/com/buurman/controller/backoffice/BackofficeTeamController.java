@@ -12,9 +12,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/backoffice/teams")
@@ -57,7 +58,7 @@ public class BackofficeTeamController {
 
     @Operation(summary = "Delete team", description = "Soft delete a team")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteTeam(
             @PathVariable String identifier,
             @AuthenticationPrincipal BackofficePrincipal principal) {

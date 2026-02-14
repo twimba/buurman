@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/contracts")
@@ -51,7 +53,7 @@ public class ContractController {
 
     @Operation(summary = "Create contract", description = "Create a new rental agreement (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public ContractResponse createContract(
             @Valid @RequestBody CreateContractRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -104,7 +106,7 @@ public class ContractController {
 
     @Operation(summary = "Delete contract", description = "Soft delete a contract (Admin only)")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteContract(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -130,7 +132,7 @@ public class ContractController {
 
     @Operation(summary = "Duplicate contract", description = "Create a new contract with the same data in draft status (Admin/Editor)")
     @PostMapping("/{identifier}/duplicate")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public ContractResponse duplicateContract(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -139,7 +141,7 @@ public class ContractController {
 
     @Operation(summary = "Upload document", description = "Upload a document for a contract (Admin/Editor)")
     @PostMapping("/{identifier}/documents")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public DocumentResponse uploadDocument(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -168,7 +170,7 @@ public class ContractController {
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteDocument(
             @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {

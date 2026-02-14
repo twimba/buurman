@@ -1,6 +1,11 @@
 package com.buurman.util;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Collections.unmodifiableSet;
 
 public final class CountryGroups {
 
@@ -106,7 +111,7 @@ public final class CountryGroups {
                 codes.add(country.code());
             }
         }
-        ALL_COUNTRY_CODES = Collections.unmodifiableSet(codes);
+        ALL_COUNTRY_CODES = unmodifiableSet(codes);
         NUMBER_TYPE_SET = new HashSet<>(ALL_NUMBER_TYPES);
     }
 

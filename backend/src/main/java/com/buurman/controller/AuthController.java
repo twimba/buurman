@@ -10,9 +10,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,7 +29,7 @@ public class AuthController {
 
     @Operation(summary = "Register new user", description = "Create user account, team, and assign as admin")
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
@@ -58,7 +60,7 @@ public class AuthController {
     @Operation(summary = "Resend verification code", description = "Resend email verification code",
                security = @SecurityRequirement(name = "bearer-jwt"))
     @PostMapping("/resend-verification")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void resendVerification(@AuthenticationPrincipal UserPrincipal principal) {
         authService.resendVerificationCode(principal.getUserId());
     }

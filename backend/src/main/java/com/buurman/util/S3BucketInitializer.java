@@ -1,4 +1,4 @@
-package com.buurman.service;
+package com.buurman.util;
 
 import com.buurman.config.models.AwsS3Properties;
 import org.slf4j.Logger;

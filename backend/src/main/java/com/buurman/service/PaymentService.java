@@ -46,7 +46,11 @@ import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
-import static com.buurman.domain.Payment.PaymentStatus.*;
+import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
+import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
+import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
+import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +73,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 public class PaymentService {

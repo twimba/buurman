@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/properties/{propertyIdentifier}/outdoor-areas")
@@ -36,7 +38,7 @@ public class PropertyOutdoorAreaController {
 
     @Operation(summary = "Create outdoor area", description = "Add an outdoor area to a property (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PropertyOutdoorAreaResponse createOutdoorArea(
             @PathVariable String propertyIdentifier,
             @Valid @RequestBody PropertyOutdoorAreaRequest request,
@@ -56,7 +58,7 @@ public class PropertyOutdoorAreaController {
 
     @Operation(summary = "Delete outdoor area", description = "Soft delete an outdoor area (Admin/Editor)")
     @DeleteMapping("/{areaIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteOutdoorArea(
             @PathVariable String propertyIdentifier,
             @PathVariable String areaIdentifier,

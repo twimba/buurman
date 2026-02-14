@@ -16,8 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.buurman.domain.Property.PropertyStatus.*;
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.domain.Property.PropertyStatus.MAINTENANCE;
+import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
+import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
+import static com.buurman.domain.Property.PropertyStatus.VACANT;
+import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.USERS;
 
 @Service
 public class DashboardService {

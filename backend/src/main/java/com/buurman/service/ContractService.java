@@ -31,7 +31,11 @@ import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
-import static com.buurman.domain.Contract.ContractStatus.*;
+import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
+import static com.buurman.domain.Contract.ContractStatus.DRAFT;
+import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
+import static com.buurman.domain.Contract.ContractStatus.PENDING_SIGNATURE;
+import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;

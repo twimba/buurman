@@ -10,12 +10,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.interfaces.ECPublicKey;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
 @RequestMapping("/webhooks")
@@ -45,7 +46,7 @@ public class WebhookController {
         try {
             if (!verifySendGridSignature(rawPayload, signature, timestamp)) {
                 log.warn("SendGrid webhook signature verification failed");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                return ResponseEntity.status(FORBIDDEN).build();
             }
             webhookService.processSendGridEvents(rawPayload);
             return ResponseEntity.ok().build();
@@ -64,7 +65,7 @@ public class WebhookController {
         try {
             if (!verifyTwilioSignature(request, params, twilioSignature)) {
                 log.warn("Twilio webhook signature verification failed");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("<Response></Response>");
+                return ResponseEntity.status(FORBIDDEN).body("<Response></Response>");
             }
             webhookService.processTwilioStatus(params);
         } catch (Exception e) {

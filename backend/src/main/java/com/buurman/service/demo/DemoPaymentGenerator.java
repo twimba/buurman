@@ -15,7 +15,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 
 @Component
 public class DemoPaymentGenerator {

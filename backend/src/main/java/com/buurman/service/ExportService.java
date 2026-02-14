@@ -5,7 +5,9 @@ import com.buurman.exception.ExternalServiceException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.*;
 
-import static com.buurman.domain.Payment.PaymentStatus.*;
+import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
+import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;

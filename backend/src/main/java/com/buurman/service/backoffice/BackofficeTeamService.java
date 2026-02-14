@@ -8,7 +8,10 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse;
-import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.*;
+import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
+import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.FinancialSnapshot;
+import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.MemberInfo;
+import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.SettingsInfo;
 import com.buurman.dto.response.backoffice.BackofficeTeamResponse;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
@@ -24,8 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class BackofficeTeamService {
@@ -65,7 +69,7 @@ public class BackofficeTeamService {
         List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
         List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
         Map<UUID, User> usersById = userRepository.findByIds(userIds).stream()
-                .collect(Collectors.toMap(User::getId, Function.identity()));
+                .collect(toMap(User::getId, identity()));
 
         List<MemberInfo> memberInfos = members.stream()
                 .map(m -> {

@@ -9,11 +9,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/contracts/{contractIdentifier}/payment-instructions")
@@ -45,7 +47,7 @@ public class ContractPaymentInstructionController {
 
     @Operation(summary = "Create payment instruction", description = "Assign a payment instruction to a contract (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public ContractPaymentInstructionResponse create(
             @PathVariable String contractIdentifier,
             @Valid @RequestBody CreateContractPaymentInstructionRequest request,
@@ -65,7 +67,7 @@ public class ContractPaymentInstructionController {
 
     @Operation(summary = "Delete payment instruction", description = "Soft delete a payment instruction entry (Admin/Editor)")
     @DeleteMapping("/{instructionIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void delete(
             @PathVariable String contractIdentifier,
             @PathVariable String instructionIdentifier,

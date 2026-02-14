@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/teams")
@@ -48,7 +50,7 @@ public class TeamController {
 
     @Operation(summary = "Create invitation", description = "Invite new member to team (Admin only)")
     @PostMapping("/{teamIdentifier}/invitations")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public InvitationResponse createInvitation(@PathVariable String teamIdentifier,
                                                @Valid @RequestBody CreateInvitationRequest request,
                                                @AuthenticationPrincipal UserPrincipal principal) {
@@ -72,7 +74,7 @@ public class TeamController {
 
     @Operation(summary = "Remove team member", description = "Remove member from team (Admin only)")
     @DeleteMapping("/{teamIdentifier}/members/{userIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void removeMember(@PathVariable String teamIdentifier,
                             @PathVariable String userIdentifier,
                             @AuthenticationPrincipal UserPrincipal principal) {

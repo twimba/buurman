@@ -10,14 +10,20 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.slf4j.Logger;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.select;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.TENANTS;
 
 @Service
 public class DatabaseMetricsService {

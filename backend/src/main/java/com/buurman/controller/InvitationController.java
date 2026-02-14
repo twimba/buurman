@@ -6,11 +6,12 @@ import com.buurman.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/invitations")
@@ -39,7 +40,7 @@ public class InvitationController {
     @Operation(summary = "Accept invitation", description = "Join team via invitation",
                security = @SecurityRequirement(name = "bearer-jwt"))
     @PostMapping("/{token}/accept")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     public void acceptInvitation(@PathVariable String token,
                                 @AuthenticationPrincipal UserPrincipal principal) {
         teamService.acceptInvitation(token, principal);

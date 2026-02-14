@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.buurman.domain.AuditLog.Action.*;
+import static com.buurman.domain.AuditLog.Action.CREATE;
+import static com.buurman.domain.AuditLog.Action.DELETE;
+import static com.buurman.domain.AuditLog.Action.UPDATE;
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.USERS;
 

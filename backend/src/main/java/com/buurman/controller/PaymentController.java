@@ -21,8 +21,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +28,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/payments")
@@ -45,7 +46,7 @@ public class PaymentController {
 
     @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PaymentResponse createPayment(
             @Valid @RequestBody CreatePaymentRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -54,7 +55,7 @@ public class PaymentController {
 
     @Operation(summary = "Bulk generate payments", description = "Generate payments for all active contracts for a given month (Admin/Editor)")
     @PostMapping("/bulk-generate")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public List<PaymentResponse> bulkGeneratePayments(
             @Valid @RequestBody BulkGeneratePaymentsRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -125,7 +126,7 @@ public class PaymentController {
 
     @Operation(summary = "Register receival", description = "Register a partial or full payment receival (Admin/Editor)")
     @PostMapping("/{identifier}/receivals")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PaymentResponse registerReceival(
             @PathVariable String identifier,
             @Valid @RequestBody CreatePaymentReceivalRequest request,
@@ -164,7 +165,7 @@ public class PaymentController {
 
     @Operation(summary = "Delete payment", description = "Soft delete a payment (Admin only, cannot delete paid payments)")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deletePayment(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -173,7 +174,7 @@ public class PaymentController {
 
     @Operation(summary = "Upload document", description = "Upload a document for a payment (Admin/Editor)")
     @PostMapping("/{identifier}/documents")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public DocumentResponse uploadDocument(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -202,7 +203,7 @@ public class PaymentController {
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteDocument(
             @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {

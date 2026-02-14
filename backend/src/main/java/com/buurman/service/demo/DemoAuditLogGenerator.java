@@ -11,7 +11,12 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TENANTS;
 
 @Component
 public class DemoAuditLogGenerator {

@@ -4,7 +4,9 @@ import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.config.models.NotificationOutboxProperties;
 
-import static com.buurman.domain.NotificationStatus.*;
+import static com.buurman.domain.NotificationStatus.FAILED;
+import static com.buurman.domain.NotificationStatus.QUEUED;
+import static com.buurman.domain.NotificationStatus.SENT;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.service.notification.NotificationChannelSender;

@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/expenses")
@@ -45,7 +47,7 @@ public class ExpenseController {
 
     @Operation(summary = "Create expense", description = "Record a new property expense (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public ExpenseResponse createExpense(
             @Valid @RequestBody CreateExpenseRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -98,7 +100,7 @@ public class ExpenseController {
 
     @Operation(summary = "Delete expense", description = "Soft delete an expense (Admin only)")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteExpense(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -107,7 +109,7 @@ public class ExpenseController {
 
     @Operation(summary = "Upload document", description = "Upload a document for an expense (Admin/Editor)")
     @PostMapping("/{identifier}/documents")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public DocumentResponse uploadDocument(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -136,7 +138,7 @@ public class ExpenseController {
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteDocument(
             @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {

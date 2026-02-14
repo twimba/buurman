@@ -16,7 +16,32 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
+import static com.buurman.jooq.generated.Tables.DOCUMENTS;
+import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.GENERATED_REPORTS;
+import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
+import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PAYMENT_INSTRUCTIONS;
+import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
+import static com.buurman.jooq.generated.Tables.PHOTOS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
+import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
+import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
+import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
 
 @Service
 public class DemoDataService implements ApplicationRunner {

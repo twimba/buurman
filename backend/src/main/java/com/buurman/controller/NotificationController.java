@@ -14,9 +14,10 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/notifications")
@@ -73,7 +74,7 @@ public class NotificationController {
 
     @Operation(summary = "Resend notification", description = "Resend a failed notification (Admin only)")
     @PostMapping("/{identifier}/resend")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public NotificationResponse resendNotification(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {

@@ -20,14 +20,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/tenants")
@@ -43,7 +44,7 @@ public class TenantController {
 
     @Operation(summary = "Create tenant", description = "Create a new tenant (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public TenantResponse createTenant(
             @Valid @RequestBody CreateTenantRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -82,7 +83,7 @@ public class TenantController {
 
     @Operation(summary = "Delete tenant", description = "Soft delete a tenant (Admin only)")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteTenant(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -124,7 +125,7 @@ public class TenantController {
 
     @Operation(summary = "Upload document", description = "Upload a document for a tenant (Admin/Editor)")
     @PostMapping("/{identifier}/documents")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public DocumentResponse uploadDocument(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -152,7 +153,7 @@ public class TenantController {
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteDocument(
             @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -169,7 +170,7 @@ public class TenantController {
 
     @Operation(summary = "Upload photo", description = "Upload a photo for a tenant (Admin/Editor)")
     @PostMapping("/{identifier}/photos")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PhotoResponse uploadPhoto(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -190,7 +191,7 @@ public class TenantController {
 
     @Operation(summary = "Create address", description = "Create a new address for a tenant (Admin/Editor)")
     @PostMapping("/{tenantIdentifier}/addresses")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public TenantAddressResponse createAddress(
             @PathVariable String tenantIdentifier,
             @Valid @RequestBody CreateTenantAddressRequest request,
@@ -227,7 +228,7 @@ public class TenantController {
 
     @Operation(summary = "Delete address", description = "Soft delete an address (Admin/Editor)")
     @DeleteMapping("/{tenantIdentifier}/addresses/{addressIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteAddress(
             @PathVariable String tenantIdentifier,
             @PathVariable String addressIdentifier,

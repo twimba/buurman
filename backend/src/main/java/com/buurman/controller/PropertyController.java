@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/properties")
@@ -40,7 +42,7 @@ public class PropertyController {
 
     @Operation(summary = "Create property", description = "Create a new property (Admin/Editor)")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PropertyResponse createProperty(
             @Valid @RequestBody CreatePropertyRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -79,7 +81,7 @@ public class PropertyController {
 
     @Operation(summary = "Delete property", description = "Soft delete a property (Admin only)")
     @DeleteMapping("/{identifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteProperty(
             @PathVariable String identifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -88,7 +90,7 @@ public class PropertyController {
 
     @Operation(summary = "Upload document", description = "Upload a document for a property (Admin/Editor)")
     @PostMapping("/{identifier}/documents")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public DocumentResponse uploadDocument(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,
@@ -116,7 +118,7 @@ public class PropertyController {
 
     @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
     @DeleteMapping("/documents/{documentIdentifier}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void deleteDocument(
             @PathVariable String documentIdentifier,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -141,7 +143,7 @@ public class PropertyController {
 
     @Operation(summary = "Upload photo", description = "Upload a photo for a property (Admin/Editor)")
     @PostMapping("/{identifier}/photos")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public PhotoResponse uploadPhoto(
             @PathVariable String identifier,
             @RequestParam("file") MultipartFile file,

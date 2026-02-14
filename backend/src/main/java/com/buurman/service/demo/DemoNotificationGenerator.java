@@ -20,7 +20,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.buurman.jooq.generated.Tables.*;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.USERS;
 
 @Component
 public class DemoNotificationGenerator {

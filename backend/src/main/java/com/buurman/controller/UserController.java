@@ -16,11 +16,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/users")
@@ -62,7 +63,7 @@ public class UserController {
 
     @Operation(summary = "Resend phone verification code", description = "Resend SMS verification code (rate limited)")
     @PostMapping("/me/phone/resend-verification")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void resendPhoneVerification(@AuthenticationPrincipal UserPrincipal principal) {
         phoneVerificationService.resendVerificationCode(principal.getUserId());
     }
@@ -102,7 +103,7 @@ public class UserController {
 
     @Operation(summary = "Leave team", description = "Leave a team (cannot leave owned teams)")
     @PostMapping("/teams/{teamIdentifier}/leave")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     public void leaveTeam(@AuthenticationPrincipal UserPrincipal principal,
                           @PathVariable String teamIdentifier) {
         userTeamService.leaveTeam(teamIdentifier, principal);
