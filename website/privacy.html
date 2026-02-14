@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Buurman</title>
+    <meta name="description" content="Buurman privacy policy. We collect only what we need, we never sell your data, and we respect your privacy.">
+    <link rel="icon" type="image/x-icon" href="assets/logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #5c7cfa; --primary-dark: #4263eb; --primary-light: #748ffc;
+            --primary-lighter: #91a7ff; --primary-50: #edf2ff; --primary-100: #dbe4ff;
+            --bg: #f8f9fc; --bg-dark: #0c0d14; --surface: #ffffff; --surface-dark: #14161f;
+            --text: #1a1d2e; --text-secondary: #6b7194; --text-muted: #9ca0b8; --text-light: #3d4463;
+            --border: #e2e6f0; --border-light: #f1f3f9; --radius: 0.75rem;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; color: var(--text); line-height: 1.6; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+        .header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo-link { display: flex; align-items: center; text-decoration: none; transition: opacity 0.2s; }
+        .logo-link:hover { opacity: 0.85; }
+        .logo-link img { height: 40px; width: auto; }
+        .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: all 0.2s; }
+        .nav-link:hover { color: var(--primary); background: var(--primary-50); }
+
+        main { flex: 1; }
+        .page { max-width: 720px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+        .page-header { margin-bottom: 3rem; }
+        .page-title { font-size: clamp(2rem, 4vw, 2.5rem); font-weight: 900; letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.5rem; line-height: 1.2; }
+        .page-meta { font-size: 0.875rem; color: var(--text-muted); }
+        .page h2 { font-size: 1.375rem; font-weight: 700; color: var(--text); margin: 2.5rem 0 0.75rem; letter-spacing: -0.01em; }
+        .page h2:first-of-type { margin-top: 0; }
+        .page p { color: var(--text-light); line-height: 1.8; margin-bottom: 1rem; }
+        .page p:last-child { margin-bottom: 0; }
+        .page ul, .page ol { color: var(--text-light); line-height: 1.8; margin-bottom: 1rem; padding-left: 1.5rem; }
+        .page li { margin-bottom: 0.375rem; }
+        .page a { color: var(--primary); }
+        .page strong { color: var(--text); }
+        .tldr { background: var(--primary-50); border: 1px solid var(--primary-100); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 2.5rem; }
+        .tldr p { color: var(--primary-dark); margin-bottom: 0; font-weight: 500; }
+
+        .footer { background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%); color: #8b90a8; padding: 4rem 0 2rem; position: relative; margin-top: auto; }
+        .footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(92,124,250,0.4), transparent); }
+        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #eef0f6; margin-bottom: 0.75rem; }
+        .footer-tagline { font-size: 0.9375rem; color: #a0a4b8; line-height: 1.7; }
+        .footer-col h4 { color: #eef0f6; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.25rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.625rem; }
+        .footer-links a { color: #8b90a8; text-decoration: none; font-size: 0.9375rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--primary-lighter); }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .footer-copy { font-size: 0.875rem; color: #6b7194; }
+        .footer-contact a { font-size: 0.875rem; color: #6b7194; text-decoration: none; transition: color 0.2s; }
+        .footer-contact a:hover { color: var(--primary-lighter); }
+
+        @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+        @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; text-align: center; } .page { padding: 3rem 1.5rem 4rem; } .header-inner { height: 64px; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo-link"><img src="assets/logo/logo_horizontal.png" alt="Buurman" /></a>
+            <a href="/" class="nav-link">&larr; Home</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="page">
+            <div class="page-header">
+                <h1 class="page-title">Privacy Policy</h1>
+                <p class="page-meta">Last updated: February 14, 2026</p>
+            </div>
+
+            <div class="tldr">
+                <p>The short version: we collect only what we need, we never sell your data, and we take your privacy seriously.</p>
+            </div>
+
+            <h2>What We Collect</h2>
+            <ul>
+                <li><strong>Account info</strong> &mdash; your name and email address.</li>
+                <li><strong>Property data</strong> &mdash; addresses, tenant details, financial records, documents, and photos you choose to upload.</li>
+                <li><strong>Usage data</strong> &mdash; how you interact with the app, so we can improve it.</li>
+                <li><strong>Technical data</strong> &mdash; browser type, device info, and IP address.</li>
+            </ul>
+
+            <h2>Why We Collect It</h2>
+            <ul>
+                <li>To provide and operate the service.</li>
+                <li>To communicate with you about your account.</li>
+                <li>To improve the product based on how it's used.</li>
+                <li>To ensure security and prevent fraud.</li>
+                <li>To comply with legal obligations.</li>
+            </ul>
+
+            <h2>Where We Store It</h2>
+            <p>Your data is stored on servers within the <strong>European Union</strong>. All data is encrypted in transit (TLS) and at rest. We follow industry-standard security practices to keep your information safe.</p>
+
+            <h2>Who We Share With</h2>
+            <p><strong>We do not sell your data. Ever.</strong></p>
+            <p>We only share data with:</p>
+            <ul>
+                <li><strong>Infrastructure providers</strong> (hosting, email delivery) &mdash; under strict data processing agreements.</li>
+                <li><strong>Legal authorities</strong> &mdash; only when required by law (court order, valid legal process).</li>
+                <li><strong>You</strong> &mdash; with your explicit consent, if you ask us to share something on your behalf.</li>
+            </ul>
+
+            <h2>Your Rights (GDPR)</h2>
+            <p>You have the right to:</p>
+            <ul>
+                <li><strong>Access</strong> your personal data.</li>
+                <li><strong>Correct</strong> inaccurate information.</li>
+                <li><strong>Delete</strong> your account and all associated data.</li>
+                <li><strong>Export</strong> your data in a portable format.</li>
+                <li><strong>Object</strong> to processing of your data.</li>
+                <li><strong>Withdraw consent</strong> at any time.</li>
+            </ul>
+            <p>To exercise any of these rights, email <a href="mailto:hello@buurman.io">hello@buurman.io</a>. We will respond within 30 days.</p>
+
+            <h2>Cookies</h2>
+            <p>We keep cookies to a minimum:</p>
+            <ul>
+                <li><strong>Session cookies</strong> &mdash; to keep you logged in.</li>
+                <li><strong>No</strong> third-party tracking cookies.</li>
+                <li><strong>No</strong> advertising cookies.</li>
+            </ul>
+
+            <h2>Data Retention</h2>
+            <ul>
+                <li>We keep your data for as long as your account is active.</li>
+                <li>After account deletion, all personal data is permanently removed within 30 days.</li>
+                <li>We may retain anonymized, aggregated data for internal analytics.</li>
+            </ul>
+
+            <h2>Children</h2>
+            <p>Buurman is not intended for users under 18 years of age. We do not knowingly collect data from minors.</p>
+
+            <h2>Changes</h2>
+            <p>We may update this policy from time to time. We will notify you of any significant changes via email. Your continued use of the service constitutes acceptance.</p>
+
+            <h2>Questions?</h2>
+            <p>Privacy questions or concerns? We're here to help: <a href="mailto:hello@buurman.io">hello@buurman.io</a></p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand-name">Buurman</div>
+                    <p class="footer-tagline">Simple property management for small landlords.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/refund.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Reach Out</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/support.html">Support</a></li>
+                        <li><a href="mailto:hello@buurman.io">hello@buurman.io</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
+                <div class="footer-contact"><a href="mailto:hello@buurman.io">hello@buurman.io</a></div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

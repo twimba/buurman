@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Buurman</title>
+    <meta name="description" content="Get in touch with the Buurman team. We'd love to hear from you.">
+    <link rel="icon" type="image/x-icon" href="assets/logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #5c7cfa; --primary-dark: #4263eb; --primary-light: #748ffc;
+            --primary-lighter: #91a7ff; --primary-50: #edf2ff; --primary-100: #dbe4ff;
+            --success: #10b981;
+            --bg: #f8f9fc; --bg-dark: #0c0d14; --surface: #ffffff; --surface-dark: #14161f;
+            --text: #1a1d2e; --text-secondary: #6b7194; --text-muted: #9ca0b8; --text-light: #3d4463;
+            --border: #e2e6f0; --border-light: #f1f3f9; --radius: 0.75rem; --radius-lg: 1.25rem;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; color: var(--text); line-height: 1.6; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+        .header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo-link { display: flex; align-items: center; text-decoration: none; transition: opacity 0.2s; }
+        .logo-link:hover { opacity: 0.85; }
+        .logo-link img { height: 40px; width: auto; }
+        .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: all 0.2s; }
+        .nav-link:hover { color: var(--primary); background: var(--primary-50); }
+
+        main { flex: 1; }
+
+        /* Contact layout */
+        .contact-wrapper { max-width: 880px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+        .contact-header { text-align: center; margin-bottom: 3rem; }
+        .contact-title { font-size: clamp(2rem, 4vw, 2.5rem); font-weight: 900; letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+        .contact-subtitle { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 3.5rem; align-items: start; }
+
+        /* Info side */
+        .contact-info h2 { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 1.5rem; }
+        .contact-method { display: flex; gap: 1rem; margin-bottom: 1.75rem; }
+        .contact-method-icon {
+            width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            box-shadow: 0 4px 12px rgba(92,124,250,0.2);
+        }
+        .contact-method-content h3 { font-size: 0.9375rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+        .contact-method-content p { font-size: 0.875rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+        .contact-method-content a { color: var(--primary); text-decoration: none; font-weight: 500; }
+        .contact-method-content a:hover { text-decoration: underline; }
+
+        /* Form */
+        .contact-form { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.375rem; }
+        .form-input, .form-textarea, .form-select {
+            width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius);
+            font-family: inherit; font-size: 0.9375rem; color: var(--text); background: var(--surface);
+            transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(92,124,250,0.12);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+        .form-textarea { min-height: 130px; resize: vertical; }
+        .form-select { background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7194' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 2rem; border-radius: var(--radius); text-decoration: none; font-weight: 600; font-size: 0.9375rem; border: none; cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); width: 100%; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 4px 14px rgba(92,124,250,0.35); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(92,124,250,0.45); }
+        .form-note { font-size: 0.8125rem; color: var(--text-muted); text-align: center; margin-top: 1rem; }
+        .form-note a { color: var(--primary); }
+
+        .footer { background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%); color: #8b90a8; padding: 4rem 0 2rem; position: relative; margin-top: auto; }
+        .footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(92,124,250,0.4), transparent); }
+        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #eef0f6; margin-bottom: 0.75rem; }
+        .footer-tagline { font-size: 0.9375rem; color: #a0a4b8; line-height: 1.7; }
+        .footer-col h4 { color: #eef0f6; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.25rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.625rem; }
+        .footer-links a { color: #8b90a8; text-decoration: none; font-size: 0.9375rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--primary-lighter); }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .footer-copy { font-size: 0.875rem; color: #6b7194; }
+        .footer-contact a { font-size: 0.875rem; color: #6b7194; text-decoration: none; transition: color 0.2s; }
+        .footer-contact a:hover { color: var(--primary-lighter); }
+
+        @media (max-width: 768px) {
+            .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+        }
+        @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; text-align: center; } .contact-wrapper { padding: 3rem 1.5rem 4rem; } .header-inner { height: 64px; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo-link"><img src="assets/logo/logo_horizontal.png" alt="Buurman" /></a>
+            <a href="/" class="nav-link">&larr; Home</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="contact-wrapper">
+            <div class="contact-header">
+                <h1 class="contact-title">Get in Touch</h1>
+                <p class="contact-subtitle">Have a question, want early access, or just want to say hello? We'd love to hear from you.</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Other Ways to Reach Us</h2>
+
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="contact-method-content">
+                            <h3>Email</h3>
+                            <a href="mailto:hello@buurman.io">hello@buurman.io</a>
+                            <p>We typically respond within 24 hours.</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-method-icon" style="background: linear-gradient(135deg, var(--success), #059669);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="contact-method-content">
+                            <h3>Response Time</h3>
+                            <p>Most emails are answered within one business day. We're a small team that cares about every message.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Name</label>
+                            <input class="form-input" type="text" id="name" name="name" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-input" type="email" id="email" name="email" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Subject</label>
+                        <select class="form-select" id="subject" name="subject" required>
+                            <option value="" disabled selected>What's this about?</option>
+                            <option value="Early Access Request">Early Access Request</option>
+                            <option value="General Question">General Question</option>
+                            <option value="Partnership">Partnership</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="message">Message</label>
+                        <textarea class="form-textarea" id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <p class="form-note">This will open your email client. Prefer to write directly? <a href="mailto:hello@buurman.io">hello@buurman.io</a></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand-name">Buurman</div>
+                    <p class="footer-tagline">Simple property management for small landlords.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/refund.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Reach Out</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/support.html">Support</a></li>
+                        <li><a href="mailto:hello@buurman.io">hello@buurman.io</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
+                <div class="footer-contact"><a href="mailto:hello@buurman.io">hello@buurman.io</a></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var subject = document.getElementById('subject').value;
+            var message = document.getElementById('message').value;
+            var body = 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message;
+            window.location.href = 'mailto:hello@buurman.io?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions - Buurman</title>
+    <meta name="description" content="Buurman terms and conditions. Simple, fair terms for our property management service.">
+    <link rel="icon" type="image/x-icon" href="assets/logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/logo/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #5c7cfa; --primary-dark: #4263eb; --primary-light: #748ffc;
+            --primary-lighter: #91a7ff; --primary-50: #edf2ff; --primary-100: #dbe4ff;
+            --bg: #f8f9fc; --bg-dark: #0c0d14; --surface: #ffffff; --surface-dark: #14161f;
+            --text: #1a1d2e; --text-secondary: #6b7194; --text-muted: #9ca0b8; --text-light: #3d4463;
+            --border: #e2e6f0; --border-light: #f1f3f9; --radius: 0.75rem;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; color: var(--text); line-height: 1.6; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+        .header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo-link { display: flex; align-items: center; text-decoration: none; transition: opacity 0.2s; }
+        .logo-link:hover { opacity: 0.85; }
+        .logo-link img { height: 40px; width: auto; }
+        .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: all 0.2s; }
+        .nav-link:hover { color: var(--primary); background: var(--primary-50); }
+
+        main { flex: 1; }
+        .page { max-width: 720px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+        .page-header { margin-bottom: 3rem; }
+        .page-title { font-size: clamp(2rem, 4vw, 2.5rem); font-weight: 900; letter-spacing: -0.02em; color: var(--text); margin-bottom: 0.5rem; line-height: 1.2; }
+        .page-meta { font-size: 0.875rem; color: var(--text-muted); }
+        .page h2 { font-size: 1.375rem; font-weight: 700; color: var(--text); margin: 2.5rem 0 0.75rem; letter-spacing: -0.01em; }
+        .page h2:first-of-type { margin-top: 0; }
+        .page p { color: var(--text-light); line-height: 1.8; margin-bottom: 1rem; }
+        .page p:last-child { margin-bottom: 0; }
+        .page ul, .page ol { color: var(--text-light); line-height: 1.8; margin-bottom: 1rem; padding-left: 1.5rem; }
+        .page li { margin-bottom: 0.375rem; }
+        .page a { color: var(--primary); }
+        .page strong { color: var(--text); }
+
+        .footer { background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%); color: #8b90a8; padding: 4rem 0 2rem; position: relative; margin-top: auto; }
+        .footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(92,124,250,0.4), transparent); }
+        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+        .footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #eef0f6; margin-bottom: 0.75rem; }
+        .footer-tagline { font-size: 0.9375rem; color: #a0a4b8; line-height: 1.7; }
+        .footer-col h4 { color: #eef0f6; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.25rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.625rem; }
+        .footer-links a { color: #8b90a8; text-decoration: none; font-size: 0.9375rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--primary-lighter); }
+        .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .footer-copy { font-size: 0.875rem; color: #6b7194; }
+        .footer-contact a { font-size: 0.875rem; color: #6b7194; text-decoration: none; transition: color 0.2s; }
+        .footer-contact a:hover { color: var(--primary-lighter); }
+
+        @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+        @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; text-align: center; } .page { padding: 3rem 1.5rem 4rem; } .header-inner { height: 64px; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo-link"><img src="assets/logo/logo_horizontal.png" alt="Buurman" /></a>
+            <a href="/" class="nav-link">&larr; Home</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="page">
+            <div class="page-header">
+                <h1 class="page-title">Terms &amp; Conditions</h1>
+                <p class="page-meta">Last updated: February 14, 2026</p>
+            </div>
+
+            <p><strong>Plain English, no legalese.</strong> By using Buurman you agree to these terms. If you don't agree, please don't use the service.</p>
+
+            <h2>1. The Service</h2>
+            <p>Buurman is a cloud-based property management platform. We provide tools to manage properties, tenants, documents, and finances. We host the service, you use it.</p>
+
+            <h2>2. Your Account</h2>
+            <ul>
+                <li>You must be at least 18 years old.</li>
+                <li>You must provide accurate information when signing up.</li>
+                <li>You are responsible for keeping your login credentials secure.</li>
+                <li>One person per account &mdash; no sharing credentials.</li>
+                <li>You are responsible for all activity under your account.</li>
+            </ul>
+
+            <h2>3. Your Data</h2>
+            <ul>
+                <li><strong>You own your data.</strong> Everything you put into Buurman belongs to you.</li>
+                <li>We do not claim any ownership of your content.</li>
+                <li>You grant us a limited license to store, process, and display your data solely to provide the service.</li>
+                <li>You can export or delete your data at any time.</li>
+            </ul>
+
+            <h2>4. Payment</h2>
+            <ul>
+                <li>Paid plans are billed monthly.</li>
+                <li>All prices are in Euros and include applicable taxes.</li>
+                <li>We may change prices with at least 30 days written notice.</li>
+                <li>Failed payments may result in a temporary suspension of paid features.</li>
+                <li>See our <a href="/refund.html">Refund Policy</a> for cancellations and refunds.</li>
+            </ul>
+
+            <h2>5. Acceptable Use</h2>
+            <p>Use Buurman for its intended purpose. Don't:</p>
+            <ul>
+                <li>Break any applicable laws or regulations.</li>
+                <li>Upload malicious, harmful, or illegal content.</li>
+                <li>Attempt to access other users' data or accounts.</li>
+                <li>Overload, disrupt, or reverse-engineer the service.</li>
+                <li>Resell, sublicense, or redistribute the service.</li>
+            </ul>
+
+            <h2>6. Availability</h2>
+            <p>We aim for high uptime but we cannot guarantee the service will be available 100% of the time. We may perform scheduled maintenance with reasonable advance notice. We are not liable for downtime caused by events beyond our reasonable control.</p>
+
+            <h2>7. Termination</h2>
+            <ul>
+                <li>You may cancel your account at any time.</li>
+                <li>We may suspend or terminate accounts that violate these terms, with notice where possible.</li>
+                <li>Upon cancellation, you have 30 days to export your data before it is permanently deleted.</li>
+            </ul>
+
+            <h2>8. Limitation of Liability</h2>
+            <p>Buurman is provided on an "as is" and "as available" basis. To the maximum extent permitted by applicable law, Buurman shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly. Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim.</p>
+
+            <h2>9. Changes to These Terms</h2>
+            <p>We may update these terms from time to time. We will notify you of any material changes via email or an in-app notification at least 30 days before they take effect. Your continued use of the service after changes take effect constitutes acceptance of the new terms.</p>
+
+            <h2>10. Governing Law</h2>
+            <p>These terms are governed by the laws of the European Union and the applicable local jurisdiction of Buurman's registered office. Any disputes shall be resolved in the competent courts of that jurisdiction.</p>
+
+            <h2>Questions?</h2>
+            <p>If anything here is unclear, just ask. We're happy to explain: <a href="mailto:hello@buurman.io">hello@buurman.io</a></p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand-name">Buurman</div>
+                    <p class="footer-tagline">Simple property management for small landlords.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="/terms.html">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/refund.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Reach Out</h4>
+                    <ul class="footer-links">
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/support.html">Support</a></li>
+                        <li><a href="mailto:hello@buurman.io">hello@buurman.io</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
+                <div class="footer-contact"><a href="mailto:hello@buurman.io">hello@buurman.io</a></div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
