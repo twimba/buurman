@@ -44,7 +44,7 @@ spring.mail:
 
 buurman:
   demo:
-    cron: "0 * * * * *"
+    cron: "0 * * * * ?"
 
 flagsmith:
   environment-name: Production
