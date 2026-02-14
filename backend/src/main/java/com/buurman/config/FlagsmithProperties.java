@@ -5,8 +5,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "flagsmith")
 public record FlagsmithProperties(
         String apiKey,
-        String apiKeyFile,
         String apiUrl,
         boolean enableAnalytics,
-        int environmentRefreshIntervalSeconds
+        int environmentRefreshIntervalSeconds,
+        String adminEmail,
+        String adminPassword,
+        String projectName,
+        String environmentName
 ) {}

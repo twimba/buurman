@@ -193,7 +193,6 @@ services:
       - ./docker/flagsmith/setup.sh:/setup.py:ro
       - ./backend/src/main/java/com/buurman/util/FeatureFlags.java:/FeatureFlags.java:ro
       - ./.env:/.env
-      - flagsmith_shared:/shared
     depends_on:
       flagsmith:
         condition: service_healthy
@@ -232,7 +231,6 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - flagsmith_shared:/shared:ro
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`api.local.buurman.io`)"
@@ -401,7 +399,6 @@ services:
 volumes:
   postgres_data:
   seaweedfs-data:
-  flagsmith_shared:
   prometheus_data:
   grafana_data:
 

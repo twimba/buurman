@@ -1,16 +1,19 @@
 package com.buurman.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flagsmith.FlagsmithClient;
 import com.flagsmith.models.DefaultFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 @Configuration
 public class FlagsmithConfig {
@@ -27,7 +30,7 @@ public class FlagsmithConfig {
     public FlagsmithClient flagsmithClient() {
         String apiKey = resolveApiKey();
         if (apiKey == null || apiKey.isBlank()) {
-            log.warn("Flagsmith API key not configured (neither api-key nor api-key-file) — feature flags disabled");
+            log.warn("Flagsmith API key not available — feature flags disabled");
             return null;
         }
 
@@ -47,30 +50,124 @@ public class FlagsmithConfig {
     }
 
     private String resolveApiKey() {
-        // Prefer explicit env var / property
+        // 1. Explicit key from property / env var
         if (properties.apiKey() != null && !properties.apiKey().isBlank()) {
             return properties.apiKey();
         }
 
-        // Fall back to reading from file (written by flagsmith-setup in Docker)
-        if (properties.apiKeyFile() != null && !properties.apiKeyFile().isBlank()) {
-            Path keyFile = Path.of(properties.apiKeyFile());
-            if (Files.exists(keyFile)) {
-                try {
-                    String key = Files.readString(keyFile).trim();
-                    if (!key.isBlank()) {
-                        log.info("Read Flagsmith API key from file: {}", properties.apiKeyFile());
-                        return key;
-                    }
-                } catch (IOException e) {
-                    log.warn("Failed to read Flagsmith API key from {}: {}", properties.apiKeyFile(), e.getMessage());
-                }
-            } else {
-                log.warn("Flagsmith API key file not found: {}", properties.apiKeyFile());
-            }
+        // 2. Auto-discover from Flagsmith admin API
+        if (properties.adminEmail() != null && properties.adminPassword() != null) {
+            return discoverApiKey();
         }
 
         return null;
+    }
+
+    /**
+     * Discovers the server-side environment key by logging into Flagsmith's admin API
+     * and looking up the project/environment. Same flow as the setup script.
+     */
+    private String discoverApiKey() {
+        String baseUrl = properties.apiUrl().replaceAll("/+$", "");
+        // The apiUrl includes /api/v1/ already, strip it for the admin auth endpoints
+        String adminBase = baseUrl.contains("/api/v1") ? baseUrl : baseUrl + "/api/v1";
+
+        String projectName = properties.projectName() != null ? properties.projectName() : "Buurman";
+        String envName = properties.environmentName() != null ? properties.environmentName() : "Local";
+
+        log.info("Discovering Flagsmith API key (project='{}', env='{}')", projectName, envName);
+
+        try {
+            var mapper = new ObjectMapper();
+            var httpClient = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .build();
+
+            // Login
+            String loginBody = mapper.writeValueAsString(
+                    mapper.createObjectNode()
+                            .put("email", properties.adminEmail())
+                            .put("password", properties.adminPassword())
+            );
+
+            HttpResponse<String> loginResp = httpClient.send(
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(adminBase + "/auth/login/"))
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(loginBody))
+                            .timeout(Duration.ofSeconds(10))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            JsonNode loginJson = mapper.readTree(loginResp.body());
+            String token = loginJson.has("key") ? loginJson.get("key").asText() : null;
+            if (token == null) {
+                log.warn("Flagsmith auto-discovery: login failed ({})", loginResp.body());
+                return null;
+            }
+
+            // Find project
+            HttpResponse<String> projResp = httpClient.send(
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(adminBase + "/projects/"))
+                            .header("Authorization", "Token " + token)
+                            .GET()
+                            .timeout(Duration.ofSeconds(10))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            JsonNode projects = mapper.readTree(projResp.body());
+            if (!projects.isArray()) {
+                log.warn("Flagsmith auto-discovery: unexpected projects response");
+                return null;
+            }
+
+            Integer projectId = null;
+            for (JsonNode p : projects) {
+                if (projectName.equals(p.get("name").asText())) {
+                    projectId = p.get("id").asInt();
+                    break;
+                }
+            }
+            if (projectId == null) {
+                log.warn("Flagsmith auto-discovery: project '{}' not found", projectName);
+                return null;
+            }
+
+            // Find environment
+            HttpResponse<String> envResp = httpClient.send(
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(adminBase + "/environments/?project=" + projectId))
+                            .header("Authorization", "Token " + token)
+                            .GET()
+                            .timeout(Duration.ofSeconds(10))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            JsonNode envsJson = mapper.readTree(envResp.body());
+            JsonNode envList = envsJson.has("results") ? envsJson.get("results") : envsJson;
+            if (!envList.isArray()) {
+                log.warn("Flagsmith auto-discovery: unexpected environments response");
+                return null;
+            }
+
+            for (JsonNode env : envList) {
+                if (envName.equals(env.get("name").asText())) {
+                    String key = env.get("api_key").asText();
+                    log.info("Flagsmith auto-discovery: resolved API key for env '{}'", envName);
+                    return key;
+                }
+            }
+
+            log.warn("Flagsmith auto-discovery: environment '{}' not found in project '{}'", envName, projectName);
+            return null;
+        } catch (Exception e) {
+            log.warn("Flagsmith auto-discovery failed: {}", e.getMessage());
+            return null;
+        }
     }
 
     private static DefaultFlag defaultFlagHandler(String featureName) {
