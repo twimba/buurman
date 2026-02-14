@@ -154,15 +154,66 @@ public class FlagsmithConfig {
                 return null;
             }
 
+            String clientKey = null;
             for (JsonNode env : envList) {
                 if (envName.equals(env.get("name").asText())) {
-                    String key = env.get("api_key").asText();
-                    log.info("Flagsmith auto-discovery: resolved API key for env '{}'", envName);
-                    return key;
+                    clientKey = env.get("api_key").asText();
+                    break;
                 }
             }
 
-            log.warn("Flagsmith auto-discovery: environment '{}' not found in project '{}'", envName, projectName);
+            if (clientKey == null) {
+                log.warn("Flagsmith auto-discovery: environment '{}' not found in project '{}'", envName, projectName);
+                return null;
+            }
+
+            // Fetch server-side API key (the client-side key cannot be used by server SDKs)
+            String serverKeyName = "Backend";
+            HttpResponse<String> keysResp = httpClient.send(
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(adminBase + "/environments/" + clientKey + "/api-keys/"))
+                            .header("Authorization", "Token " + token)
+                            .GET()
+                            .timeout(Duration.ofSeconds(10))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            JsonNode keysJson = mapper.readTree(keysResp.body());
+            JsonNode keysList = keysJson.isArray() ? keysJson : keysJson.has("results") ? keysJson.get("results") : mapper.createArrayNode();
+
+            for (JsonNode k : keysList) {
+                if (serverKeyName.equals(k.get("name").asText())) {
+                    String serverKey = k.get("key").asText();
+                    log.info("Flagsmith auto-discovery: resolved server-side key for env '{}'", envName);
+                    return serverKey;
+                }
+            }
+
+            // Server-side key not found — create one
+            log.info("Flagsmith auto-discovery: creating server-side key '{}'", serverKeyName);
+            String createBody = mapper.writeValueAsString(
+                    mapper.createObjectNode().put("name", serverKeyName)
+            );
+            HttpResponse<String> createResp = httpClient.send(
+                    HttpRequest.newBuilder()
+                            .uri(URI.create(adminBase + "/environments/" + clientKey + "/api-keys/"))
+                            .header("Content-Type", "application/json")
+                            .header("Authorization", "Token " + token)
+                            .POST(HttpRequest.BodyPublishers.ofString(createBody))
+                            .timeout(Duration.ofSeconds(10))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            JsonNode created = mapper.readTree(createResp.body());
+            if (created.has("key")) {
+                String serverKey = created.get("key").asText();
+                log.info("Flagsmith auto-discovery: created server-side key for env '{}'", envName);
+                return serverKey;
+            }
+
+            log.warn("Flagsmith auto-discovery: failed to create server-side key: {}", createResp.body());
             return null;
         } catch (Exception e) {
             log.warn("Flagsmith auto-discovery failed: {}", e.getMessage());

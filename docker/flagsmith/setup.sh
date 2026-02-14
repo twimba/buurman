@@ -115,7 +115,7 @@ if not project_id:
         sys.exit(1)
     log(f"Project created (id={project_id}).")
 
-# --- 5. Create environments if needed, then get Development server-side key ---
+# --- 5. Create environment if needed ---
 log(f"Fetching environments for project {project_id}...")
 envs_resp = api_call("GET", f"/api/v1/environments/?project={project_id}", token=token)
 env_list = envs_resp.get("results", []) if isinstance(envs_resp, dict) else envs_resp
@@ -128,18 +128,43 @@ if ENV_NAME not in env_names:
     log(f"{ENV_NAME} environment created: api_key={env_resp.get('api_key')}")
     env_list.append(env_resp)
 
-# Find Local environment's server-side key
-server_key = None
+# Find Local environment's client-side key (used to manage server-side keys)
+client_key = None
 for env in env_list:
     if env.get("name") == ENV_NAME:
-        server_key = env.get("api_key")
+        client_key = env.get("api_key")
+        break
+
+if not client_key:
+    log(f"WARNING: Could not find {ENV_NAME} environment.")
+    sys.exit(0)
+
+# --- 5b. Create or find server-side API key ---
+SERVER_KEY_NAME = "Backend"
+log("Checking for existing server-side API keys...")
+existing_keys = api_call("GET", f"/api/v1/environments/{client_key}/api-keys/", token=token)
+key_list = existing_keys if isinstance(existing_keys, list) else existing_keys.get("results", [])
+
+server_key = None
+for k in key_list:
+    if k.get("name") == SERVER_KEY_NAME:
+        server_key = k.get("key")
+        log(f"Server-side key '{SERVER_KEY_NAME}' already exists.")
         break
 
 if not server_key:
-    log(f"WARNING: Could not find {ENV_NAME} environment key.")
-    sys.exit(0)
+    log(f"Creating server-side API key '{SERVER_KEY_NAME}'...")
+    key_resp = api_call("POST", f"/api/v1/environments/{client_key}/api-keys/", {
+        "name": SERVER_KEY_NAME,
+    }, token=token)
+    server_key = key_resp.get("key")
+    if server_key:
+        log(f"Created server-side API key '{SERVER_KEY_NAME}'.")
+    else:
+        log(f"WARNING: Failed to create server-side API key: {key_resp}")
+        sys.exit(0)
 
-log(f"Local server-side key: {server_key}")
+log(f"Local server-side key: {server_key[:8]}...")
 
 # --- 6. Create feature flags (skip existing) ---
 log("Syncing feature flags...")
