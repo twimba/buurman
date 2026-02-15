@@ -4,7 +4,6 @@ import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.UlidGenerator;
@@ -14,9 +13,7 @@ import org.jooq.Field;
 import org.springframework.stereotype.Repository;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.util.EntityPrefix.USR;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
@@ -59,7 +57,7 @@ public class UserRepository {
         if (user.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.USR);
+            String identifier = UlidGenerator.generate(USR).value();
             LocalDateTime createdAt = user.getCreatedAt() != null
                     ? LocalDateTime.ofInstant(user.getCreatedAt(), UTC)
                     : now;

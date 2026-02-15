@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import net.datafaker.Faker;
 import org.jooq.DSLContext;
@@ -15,6 +14,8 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static com.buurman.util.EntityPrefix.TAD;
+import static com.buurman.util.EntityPrefix.TEN;
 
 @Component
 public class DemoTenantGenerator {
@@ -61,7 +62,7 @@ public class DemoTenantGenerator {
                         + "." + teamKey.replace("-", "") + i + "@example.com")
                         .replaceAll("[^a-z0-9.@]", "");
 
-                String tenantIdentifier = UlidGenerator.generate(EntityPrefix.TEN);
+                String tenantIdentifier = UlidGenerator.generate(TEN).value();
                 dsl.insertInto(TENANTS)
                         .set(TENANTS.ID, tenantId)
                         .set(TENANTS.IDENTIFIER, tenantIdentifier)
@@ -86,7 +87,7 @@ public class DemoTenantGenerator {
 
                 dsl.insertInto(TENANT_ADDRESSES)
                         .set(TENANT_ADDRESSES.ID, UUID.randomUUID())
-                        .set(TENANT_ADDRESSES.IDENTIFIER, UlidGenerator.generate(EntityPrefix.TAD))
+                        .set(TENANT_ADDRESSES.IDENTIFIER, UlidGenerator.generate(TAD).value())
                         .set(TENANT_ADDRESSES.TENANT_ID, tenantId)
                         .set(TENANT_ADDRESSES.TEAM_ID, teamId)
                         .set(TENANT_ADDRESSES.STREET, faker.address().streetName() + " " + houseNum)

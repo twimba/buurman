@@ -1,7 +1,6 @@
 package com.buurman.repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -9,6 +8,7 @@ import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
+import static com.buurman.util.EntityPrefix.CPI;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
@@ -16,7 +16,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,7 +62,7 @@ public class ContractPaymentInstructionRepository {
         LocalDateTime now = LocalDateTime.now(clock);
 
         UUID id = UUID.randomUUID();
-        String identifier = UlidGenerator.generate(EntityPrefix.CPI);
+        String identifier = UlidGenerator.generate(CPI).value();
         LocalDateTime createdAt = cpi.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC)
                 : now;

@@ -14,7 +14,6 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.config.models.AppProperties;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.buurman.util.EntityPrefix.CAL;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -112,10 +112,10 @@ public class CalendarFeedService {
         }
 
         CalendarFeed feed = new CalendarFeed();
-        feed.setIdentifier(UlidGenerator.generate(EntityPrefix.CAL));
+        feed.setIdentifier(UlidGenerator.generate(CAL).value());
         feed.setTeamId(principal.getTeamId());
         feed.setUserId(principal.getUserId());
-        feed.setFeedToken(UlidGenerator.generate() + UlidGenerator.generate());
+        feed.setFeedToken(UlidGenerator.generate().value() + UlidGenerator.generate().value());
         feed.setFeedType(request.feedType());
         feed.setContractId(contractId);
         feed.setPropertyId(propertyId);
@@ -136,7 +136,7 @@ public class CalendarFeedService {
 
         verifyOwnership(feed, principal);
 
-        feed.setFeedToken(UlidGenerator.generate() + UlidGenerator.generate());
+        feed.setFeedToken(UlidGenerator.generate().value() + UlidGenerator.generate().value());
         feed.setUpdatedBy(principal.getUserId());
         feed.setUpdatedAt(null); // let repository set current time
 

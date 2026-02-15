@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -15,6 +14,8 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static com.buurman.util.EntityPrefix.POA;
+import static com.buurman.util.EntityPrefix.PRO;
 
 @Component
 public class DemoPropertyGenerator {
@@ -124,7 +125,7 @@ public class DemoPropertyGenerator {
                     default -> 75;
                 });
 
-                String propertyIdentifier = UlidGenerator.generate(EntityPrefix.PRO);
+                String propertyIdentifier = UlidGenerator.generate(PRO).value();
                 dsl.insertInto(PROPERTIES)
                         .set(PROPERTIES.ID, propertyId)
                         .set(PROPERTIES.IDENTIFIER, propertyIdentifier)
@@ -194,7 +195,7 @@ public class DemoPropertyGenerator {
                         if (usedTypes.add(outdoorType)) {
                             dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
                                     .set(PROPERTY_OUTDOOR_AREAS.ID, UUID.randomUUID())
-                                    .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.POA))
+                                    .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, UlidGenerator.generate(POA).value())
                                     .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, propertyId)
                                     .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, teamId)
                                     .set(PROPERTY_OUTDOOR_AREAS.TYPE, outdoorType)

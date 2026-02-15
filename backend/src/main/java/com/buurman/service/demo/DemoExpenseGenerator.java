@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import net.datafaker.Faker;
 import org.jooq.DSLContext;
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.util.EntityPrefix.EXP;
 
 @Component
 public class DemoExpenseGenerator {
@@ -94,7 +94,7 @@ public class DemoExpenseGenerator {
 
                     dsl.insertInto(EXPENSES)
                             .set(EXPENSES.ID, UUID.randomUUID())
-                            .set(EXPENSES.IDENTIFIER, UlidGenerator.generate(EntityPrefix.EXP))
+                            .set(EXPENSES.IDENTIFIER, UlidGenerator.generate(EXP).value())
                             .set(EXPENSES.TEAM_ID, teamId)
                             .set(EXPENSES.PROPERTY_ID, propertyId)
                             .set(EXPENSES.CATEGORY, category)

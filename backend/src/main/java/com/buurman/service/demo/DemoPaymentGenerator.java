@@ -1,10 +1,8 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,6 +16,8 @@ import java.util.*;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
+import static com.buurman.util.EntityPrefix.PAY;
+import static com.buurman.util.EntityPrefix.PRE;
 
 @Component
 public class DemoPaymentGenerator {
@@ -120,7 +120,7 @@ public class DemoPaymentGenerator {
 
                     dsl.insertInto(PAYMENTS)
                             .set(PAYMENTS.ID, paymentId)
-                            .set(PAYMENTS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.PAY))
+                            .set(PAYMENTS.IDENTIFIER, UlidGenerator.generate(PAY).value())
                             .set(PAYMENTS.TEAM_ID, teamId)
                             .set(PAYMENTS.CONTRACT_ID, contractId)
                             .set(PAYMENTS.AMOUNT, rentAmount)
@@ -143,7 +143,7 @@ public class DemoPaymentGenerator {
                     if ("PAID".equals(paymentStatus)) {
                         dsl.insertInto(PAYMENT_RECEIVALS)
                                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.PRE))
+                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(PRE).value())
                                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                                 .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
@@ -157,7 +157,7 @@ public class DemoPaymentGenerator {
                         BigDecimal partialAmount = rentAmount.multiply(BigDecimal.valueOf(0.6));
                         dsl.insertInto(PAYMENT_RECEIVALS)
                                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.PRE))
+                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(PRE).value())
                                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)

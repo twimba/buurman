@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.util.EntityPrefix.USR;
 
 @Component
 public class DemoUserGenerator {
@@ -31,7 +31,7 @@ public class DemoUserGenerator {
 
         for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
             UUID userId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.USR);
+            String identifier = UlidGenerator.generate(USR).value();
             String keycloakId = ctx.getKeycloakIds().get(user.email());
 
             dsl.insertInto(USERS)

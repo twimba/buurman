@@ -1,12 +1,9 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Notification;
-import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
-import com.buurman.domain.NotificationType;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.NotificationRecordMapper;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.UlidGenerator;
@@ -19,6 +16,7 @@ import org.jooq.JSONB;
 import org.jooq.Record2;
 import org.springframework.stereotype.Repository;
 
+import static com.buurman.util.EntityPrefix.NTF;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
@@ -49,7 +47,7 @@ public class NotificationRepository {
     public Notification save(Notification notification) {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
-        String identifier = UlidGenerator.generate(EntityPrefix.NTF);
+        String identifier = UlidGenerator.generate(NTF).value();
         LocalDateTime createdAt = notification.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(notification.getCreatedAt(), UTC)
                 : now;

@@ -23,7 +23,6 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +33,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.buurman.util.EntityPrefix.EXP;
 
 @Service
 public class ExpenseService {
@@ -93,7 +93,7 @@ public class ExpenseService {
 
         Expense expense = expenseMapper.toEntity(request);
         expense.setPropertyId(property.getId());
-        expense.setIdentifier(UlidGenerator.generate(EntityPrefix.EXP));
+        expense.setIdentifier(UlidGenerator.generate(EXP).value());
         expense.setTeamId(principal.getTeamId());
         expense.setCreatedBy(principal.getUserId());
         expense.setUpdatedBy(principal.getUserId());

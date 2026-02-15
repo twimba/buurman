@@ -9,18 +9,16 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 
+import static com.buurman.util.EntityPrefix.DOC;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.DocumentsRecord;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +87,7 @@ public class DocumentRepository {
         if (document.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.DOC);
+            String identifier = UlidGenerator.generate(DOC).value();
             LocalDateTime uploadedAt = document.getUploadedAt() != null
                     ? LocalDateTime.ofInstant(document.getUploadedAt(), UTC)
                     : now;

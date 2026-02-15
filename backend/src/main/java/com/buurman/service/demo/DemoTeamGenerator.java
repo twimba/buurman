@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
@@ -14,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.util.EntityPrefix.TEA;
 
 @Component
 public class DemoTeamGenerator {
@@ -40,7 +40,7 @@ public class DemoTeamGenerator {
 
         for (var entry : TEAMS_MAP.entrySet()) {
             UUID teamId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.TEA);
+            String identifier = UlidGenerator.generate(TEA).value();
 
             String settingsJson = """
                     {"demoData": true, "autoPaymentGeneration": {"enabled": true, "daysBefore": 30}}

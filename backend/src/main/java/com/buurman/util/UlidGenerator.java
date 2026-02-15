@@ -1,5 +1,6 @@
 package com.buurman.util;
 
+import com.buurman.domain.Ulid;
 import de.huxhorn.sulky.ulid.ULID;
 
 public class UlidGenerator {
@@ -10,11 +11,11 @@ public class UlidGenerator {
         // Private constructor to prevent instantiation
     }
 
-    public static String generate() {
-        return ulid.nextULID();
+    public static Ulid generate() {
+        return Ulid.of(ulid.nextULID());
     }
 
-    public static String generate(EntityPrefix prefix) {
-        return prefix.getCode() + ulid.nextULID();
+    public static Ulid generate(EntityPrefix prefix) {
+        return Ulid.of(prefix.getCode() + ulid.nextULID());
     }
 }

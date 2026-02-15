@@ -1,7 +1,6 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PaymentInstruction;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -9,13 +8,13 @@ import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
+import static com.buurman.util.EntityPrefix.PIN;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,7 +57,7 @@ public class PaymentInstructionRepository {
 
         if (pi.getId() == null) {
             UUID id = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.PIN);
+            String identifier = UlidGenerator.generate(PIN).value();
             LocalDateTime createdAt = pi.getCreatedAt() != null
                     ? LocalDateTime.ofInstant(pi.getCreatedAt(), UTC)
                     : now;

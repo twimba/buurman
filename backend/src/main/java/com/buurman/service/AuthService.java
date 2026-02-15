@@ -18,7 +18,6 @@ import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.buurman.util.EntityPrefix.TEA;
 
 @Service
 public class AuthService {
@@ -101,7 +101,7 @@ public class AuthService {
 
             // Create team
             Team team = new Team();
-            team.setIdentifier(UlidGenerator.generate(EntityPrefix.TEA));
+            team.setIdentifier(UlidGenerator.generate(TEA).value());
             team.setName(teamName);
             team.setCreatedAt(clock.instant());
             team.setUpdatedAt(clock.instant());

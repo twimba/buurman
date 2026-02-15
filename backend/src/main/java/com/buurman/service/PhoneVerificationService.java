@@ -162,7 +162,7 @@ public class PhoneVerificationService {
                 ))
                 .build());
 
-        log.info("Phone verification code sent to user: {}", user.getId());
+        log.info("Phone verification code sent to user: {}", user.getIdentifier());
     }
 
     private String generateVerificationCode() {

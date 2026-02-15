@@ -7,13 +7,14 @@ import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.buurman.util.EntityPrefix.POA;
 
 @Service
 public class PropertyOutdoorAreaService {
@@ -46,7 +47,7 @@ public class PropertyOutdoorAreaService {
         Property property = resolveProperty(propertyIdentifier, principal);
 
         PropertyOutdoorArea area = new PropertyOutdoorArea();
-        area.setIdentifier(UlidGenerator.generate(EntityPrefix.POA));
+        area.setIdentifier(UlidGenerator.generate(POA).value());
         area.setPropertyId(property.getId());
         area.setTeamId(principal.getTeamId());
         area.setType(request.type());

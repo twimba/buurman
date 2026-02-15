@@ -30,7 +30,6 @@ import com.buurman.repository.TenantAddressRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +40,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.buurman.util.EntityPrefix.TEN;
 
 @Service
 public class TenantService {
@@ -109,7 +109,7 @@ public class TenantService {
                 });
 
         Tenant tenant = tenantMapper.toEntity(request);
-        tenant.setIdentifier(UlidGenerator.generate(EntityPrefix.TEN));
+        tenant.setIdentifier(UlidGenerator.generate(TEN).value());
         tenant.setTeamId(principal.getTeamId());
         tenant.setCreatedBy(principal.getUserId());
         tenant.setUpdatedBy(principal.getUserId());

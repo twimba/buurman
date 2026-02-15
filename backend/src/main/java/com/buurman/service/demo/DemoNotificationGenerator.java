@@ -1,7 +1,6 @@
 package com.buurman.service.demo;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +26,7 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.util.EntityPrefix.NTF;
 
 @Component
 public class DemoNotificationGenerator {
@@ -455,7 +455,7 @@ public class DemoNotificationGenerator {
 
         dsl.insertInto(NOTIFICATIONS)
                 .set(NOTIFICATIONS.ID, UUID.randomUUID())
-                .set(NOTIFICATIONS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.NTF))
+                .set(NOTIFICATIONS.IDENTIFIER, UlidGenerator.generate(NTF).value())
                 .set(NOTIFICATIONS.TEAM_ID, teamId)
                 .set(NOTIFICATIONS.NOTIFICATION_TYPE, type)
                 .set(NOTIFICATIONS.CHANNEL, channel)

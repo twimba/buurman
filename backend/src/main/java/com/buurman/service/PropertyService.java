@@ -19,7 +19,6 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.buurman.util.EntityPrefix.PRO;
 
 @Service
 public class PropertyService {
@@ -87,7 +88,7 @@ public class PropertyService {
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
         Property property = propertyMapper.toEntity(request);
-        property.setIdentifier(UlidGenerator.generate(EntityPrefix.PRO));
+        property.setIdentifier(UlidGenerator.generate(PRO).value());
         property.setTeamId(principal.getTeamId());
         property.setCreatedBy(principal.getUserId());
         property.setUpdatedBy(principal.getUserId());

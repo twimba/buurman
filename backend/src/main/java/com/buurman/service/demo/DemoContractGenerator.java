@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -15,6 +14,7 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.util.EntityPrefix.CON;
 
 @Component
 public class DemoContractGenerator {
@@ -113,7 +113,7 @@ public class DemoContractGenerator {
                 BigDecimal deposit = rentAmount.multiply(BigDecimal.valueOf(2));
                 BigDecimal securityDeposit = rentAmount;
 
-                String contractIdentifier = UlidGenerator.generate(EntityPrefix.CON);
+                String contractIdentifier = UlidGenerator.generate(CON).value();
                 dsl.insertInto(CONTRACTS)
                         .set(CONTRACTS.ID, contractId)
                         .set(CONTRACTS.IDENTIFIER, contractIdentifier)

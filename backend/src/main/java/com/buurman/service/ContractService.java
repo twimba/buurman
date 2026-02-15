@@ -28,7 +28,6 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
@@ -39,6 +38,7 @@ import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
+import static com.buurman.util.EntityPrefix.CON;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +138,7 @@ public class ContractService {
         Contract contract = contractMapper.toEntity(request);
         contract.setPropertyId(property.getId());
         contract.setTenantId(tenant.getId());
-        contract.setIdentifier(UlidGenerator.generate(EntityPrefix.CON));
+        contract.setIdentifier(UlidGenerator.generate(CON).value());
         contract.setTeamId(teamId);
         contract.setStatus(DRAFT);
         contract.setCreatedBy(principal.getUserId());
@@ -595,7 +594,7 @@ public class ContractService {
         // Create new contract with same data
         Contract newContract = new Contract(
                 null, // New ID will be generated
-                UlidGenerator.generate(EntityPrefix.CON), // New identifier
+                UlidGenerator.generate(CON).value(), // New identifier
                 teamId,
                 sourceContract.getPropertyId(),
                 sourceContract.getTenantId(),

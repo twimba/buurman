@@ -9,18 +9,16 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 
+import static com.buurman.util.EntityPrefix.PHO;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.PhotosRecord;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +87,7 @@ public class PhotoRepository {
         if (photo.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(EntityPrefix.PHO);
+            String identifier = UlidGenerator.generate(PHO).value();
             LocalDateTime uploadedAt = photo.getUploadedAt() != null
                     ? LocalDateTime.ofInstant(photo.getUploadedAt(), UTC)
                     : now;

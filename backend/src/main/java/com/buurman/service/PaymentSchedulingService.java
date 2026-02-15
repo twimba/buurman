@@ -9,7 +9,6 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +26,7 @@ import java.util.UUID;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.Constants.SYSTEM_USER_ID;
+import static com.buurman.util.EntityPrefix.PAY;
 
 @Service
 public class PaymentSchedulingService {
@@ -156,7 +155,7 @@ public class PaymentSchedulingService {
 
             try {
                 Payment payment = new Payment();
-                payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
+                payment.setIdentifier(UlidGenerator.generate(PAY).value());
                 payment.setTeamId(teamId);
                 payment.setContractId(contractId);
                 payment.setAmount(contract.getRentAmount());

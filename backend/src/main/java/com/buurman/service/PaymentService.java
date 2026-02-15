@@ -42,7 +42,6 @@ import com.buurman.domain.Tenant;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.EntityPrefix;
 import com.buurman.util.UlidGenerator;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
@@ -62,7 +61,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -72,6 +70,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.buurman.util.EntityPrefix.PAY;
+import static com.buurman.util.EntityPrefix.PRE;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -151,7 +151,7 @@ public class PaymentService {
 
         Payment payment = paymentMapper.toEntity(request);
         payment.setContractId(contract.getId());
-        payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
+        payment.setIdentifier(UlidGenerator.generate(PAY).value());
         payment.setTeamId(teamId);
         payment.setStatus(PENDING);
         payment.setCreatedBy(principal.getUserId());
@@ -300,7 +300,7 @@ public class PaymentService {
 
         if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
             PaymentReceival receival = new PaymentReceival();
-            receival.setIdentifier(UlidGenerator.generate(EntityPrefix.PRE));
+            receival.setIdentifier(UlidGenerator.generate(PRE).value());
             receival.setTeamId(teamId);
             receival.setPaymentId(payment.getId());
             receival.setAmount(remainingBalance);
@@ -372,7 +372,7 @@ public class PaymentService {
         }
 
         PaymentReceival receival = new PaymentReceival();
-        receival.setIdentifier(UlidGenerator.generate(EntityPrefix.PRE));
+        receival.setIdentifier(UlidGenerator.generate(PRE).value());
         receival.setTeamId(teamId);
         receival.setPaymentId(paymentId);
         receival.setAmount(request.amount());
@@ -590,7 +590,7 @@ public class PaymentService {
             }
 
             Payment payment = new Payment();
-            payment.setIdentifier(UlidGenerator.generate(EntityPrefix.PAY));
+            payment.setIdentifier(UlidGenerator.generate(PAY).value());
             payment.setTeamId(teamId);
             payment.setContractId(contract.getId());
             payment.setAmount(contract.getRentAmount());
