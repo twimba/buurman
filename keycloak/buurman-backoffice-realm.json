@@ -68,10 +68,12 @@
       "fullScopeAllowed": true,
       "redirectUris": [
         "https://backoffice.local.buurman.io/*",
+        "https://backoffice.buurman.io/*",
         "http://localhost:5174/*"
       ],
       "webOrigins": [
         "https://backoffice.local.buurman.io",
+        "https://backoffice.buurman.io",
         "http://localhost:5174"
       ],
       "defaultClientScopes": [
@@ -89,7 +91,7 @@
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "https://backoffice.local.buurman.io/*##http://localhost:5174/*",
+        "post.logout.redirect.uris": "https://backoffice.local.buurman.io/*##https://backoffice.buurman.io/*##http://localhost:5174/*",
         "backchannel.logout.session.required": "true",
         "backchannel.logout.revoke.offline.tokens": "false"
       }
