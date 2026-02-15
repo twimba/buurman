@@ -32,9 +32,17 @@ public class FlagsmithConfig {
 
     @Bean
     public FlagsmithClient flagsmithClient() {
-        return discoverServerKey()
+        return resolveServerKey()
                 .map(this::buildClient)
                 .orElse(null);
+    }
+
+    private Optional<String> resolveServerKey() {
+        if (properties.serverSideKey() != null && !properties.serverSideKey().isBlank()) {
+            log.info("Using configured Flagsmith server-side key");
+            return Optional.of(properties.serverSideKey());
+        }
+        return discoverServerKey();
     }
 
     private FlagsmithClient buildClient(String apiKey) {

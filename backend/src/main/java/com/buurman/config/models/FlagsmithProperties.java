@@ -7,6 +7,7 @@ public record FlagsmithProperties(
         String apiUrl,
         boolean enableAnalytics,
         int environmentRefreshIntervalSeconds,
+        String serverSideKey,
         String adminEmail,
         String adminPassword,
         String projectName,
