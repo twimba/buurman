@@ -13,11 +13,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
+          # issuer-uri must match the public URL (iss claim in JWT tokens)
           issuer-uri: https://keycloak.buurman.io/realms/buurman
-          jwk-set-uri: https://keycloak.buurman.io/realms/buurman/protocol/openid-connect/certs
+          # jwk-set-uri can use internal URL to avoid TLS issues
+          jwk-set-uri: ${KEYCLOAK_JWK_BASE_URL:https://keycloak.buurman.io}/realms/buurman/protocol/openid-connect/certs
           backoffice:
             issuer-uri: https://keycloak.buurman.io/realms/buurman-backoffice
-            jwk-set-uri: https://keycloak.buurman.io/realms/buurman-backoffice/protocol/openid-connect/certs
+            jwk-set-uri: ${KEYCLOAK_JWK_BASE_URL:https://keycloak.buurman.io}/realms/buurman-backoffice/protocol/openid-connect/certs
   web:
     error:
       include-message: never
@@ -68,6 +70,6 @@ management:
 
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
   swagger-ui:
-    enabled: false
+    enabled: true
