@@ -14,6 +14,7 @@ import { SmsPolicyPage } from "./pages/SmsPolicyPage";
 import { FeatureFlagsPage } from "./pages/FeatureFlagsPage";
 import { SchedulerPage } from "./pages/SchedulerPage";
 import { LoggersPage } from "./pages/LoggersPage";
+import { BuurmiesPage } from "./pages/BuurmiesPage";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
               <Route path="/teams/:identifier" element={<TeamDetailPage />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/users/:identifier" element={<UserDetailPage />} />
+              <Route path="/buurmies" element={<BuurmiesPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route
                 path="/notifications/:identifier"

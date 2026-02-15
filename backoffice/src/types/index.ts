@@ -149,3 +149,24 @@ export interface LoggerConfiguration {
   configuredLevel: string | null;
   effectiveLevel: string;
 }
+
+export interface Buurmy {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  enabled: boolean;
+  emailVerified: boolean;
+  createdAt: string | null;
+  lastLogin: string | null;
+}
+
+export interface CreateBuurmyRequest {
+  email: string;
+  username?: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  temporaryPassword: boolean;
+}
