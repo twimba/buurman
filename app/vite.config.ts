@@ -16,6 +16,30 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query', 'axios'],
+          'vendor-recharts': ['recharts'],
+          'vendor-tiptap': [
+            '@tiptap/core',
+            '@tiptap/react',
+            '@tiptap/starter-kit',
+            '@tiptap/extensions',
+            '@tiptap/extension-font-family',
+            '@tiptap/extension-highlight',
+            '@tiptap/extension-link',
+            '@tiptap/extension-placeholder',
+            '@tiptap/extension-text-align',
+            '@tiptap/extension-text-style',
+            '@tiptap/extension-underline',
+          ],
+          'vendor-maps': ['@vis.gl/react-google-maps'],
+          'vendor-utils': ['date-fns', 'keycloak-js', 'dompurify', 'libphonenumber-js'],
+        },
+      },
+    },
   },
   resolve: {
     alias: {

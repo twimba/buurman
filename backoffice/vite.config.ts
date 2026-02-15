@@ -15,6 +15,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query', 'axios'],
+          'vendor-utils': ['date-fns', 'keycloak-js', 'cronstrue'],
+        },
+      },
+    },
   },
   resolve: {
     alias: {
