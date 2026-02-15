@@ -2,6 +2,7 @@ package com.buurman.service.demo;
 
 import com.buurman.config.models.DemoDataProperties;
 import com.buurman.dto.response.DemoDataResponse;
+import com.buurman.service.S3StorageService;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,6 +67,7 @@ public class DemoDataService implements ApplicationRunner {
     private final DemoNotificationGenerator notificationGenerator;
     private final DemoDocumentGenerator documentGenerator;
     private final DemoAuditLogGenerator auditLogGenerator;
+    private final S3StorageService s3StorageService;
     private final Clock clock;
 
     private volatile Instant lastGeneratedAt;
@@ -77,7 +80,7 @@ public class DemoDataService implements ApplicationRunner {
                           DemoExpenseGenerator expenseGenerator, DemoPaymentInstructionGenerator paymentInstructionGenerator,
                           DemoPhotoGenerator photoGenerator, DemoNotificationGenerator notificationGenerator,
                           DemoDocumentGenerator documentGenerator, DemoAuditLogGenerator auditLogGenerator,
-                          Clock clock) {
+                          S3StorageService s3StorageService, Clock clock) {
         this.dsl = dsl;
         this.properties = properties;
         this.keycloakSetup = keycloakSetup;
@@ -94,6 +97,7 @@ public class DemoDataService implements ApplicationRunner {
         this.notificationGenerator = notificationGenerator;
         this.documentGenerator = documentGenerator;
         this.auditLogGenerator = auditLogGenerator;
+        this.s3StorageService = s3StorageService;
         this.clock = clock;
     }
 
@@ -199,7 +203,13 @@ public class DemoDataService implements ApplicationRunner {
 
         log.info("Found {} demo teams to clean up", demoTeamIds.size());
 
+        // Collect S3 file keys before deleting DB records
+        List<String> s3Keys = collectS3FileKeys(demoTeamIds);
+
         cleanupDatabaseRecords(demoTeamIds);
+
+        // Delete S3 files (non-transactional, after DB cleanup)
+        deleteS3Files(s3Keys);
 
         // Clean up Keycloak users
         DemoDataContext cleanupCtx = new DemoDataContext();
@@ -390,6 +400,44 @@ public class DemoDataService implements ApplicationRunner {
                 .where(TEAMS.ID.in(demoTeamIds))
                 .execute();
         log.debug("Deleted {} teams", deleted);
+    }
+
+    private List<String> collectS3FileKeys(List<UUID> demoTeamIds) {
+        List<String> keys = new ArrayList<>();
+
+        keys.addAll(dsl.select(DOCUMENTS.FILE_KEY)
+                .from(DOCUMENTS)
+                .where(DOCUMENTS.TEAM_ID.in(demoTeamIds))
+                .and(DOCUMENTS.FILE_KEY.isNotNull())
+                .fetch(DOCUMENTS.FILE_KEY));
+
+        keys.addAll(dsl.select(PHOTOS.FILE_KEY)
+                .from(PHOTOS)
+                .where(PHOTOS.TEAM_ID.in(demoTeamIds))
+                .and(PHOTOS.FILE_KEY.isNotNull())
+                .fetch(PHOTOS.FILE_KEY));
+
+        keys.addAll(dsl.select(GENERATED_REPORTS.FILE_KEY)
+                .from(GENERATED_REPORTS)
+                .where(GENERATED_REPORTS.TEAM_ID.in(demoTeamIds))
+                .and(GENERATED_REPORTS.FILE_KEY.isNotNull())
+                .fetch(GENERATED_REPORTS.FILE_KEY));
+
+        log.info("Collected {} S3 file keys to delete", keys.size());
+        return keys;
+    }
+
+    private void deleteS3Files(List<String> keys) {
+        int deleted = 0;
+        for (String key : keys) {
+            try {
+                s3StorageService.deleteFile(key);
+                deleted++;
+            } catch (Exception e) {
+                log.warn("Failed to delete S3 file {}: {}", key, e.getMessage());
+            }
+        }
+        log.info("Deleted {}/{} S3 files", deleted, keys.size());
     }
 
     public void scheduledRegenerate() {

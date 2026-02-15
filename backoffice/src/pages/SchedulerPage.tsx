@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   Pause,
   Play,
@@ -165,51 +166,79 @@ const CRON_FIELD_COLORS = [
 
 const CronTooltip = ({ expression }: { expression: string }) => {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const description = describeCron(expression);
   if (description === expression) return null;
 
   const parts = expression.split(/\s+/);
 
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.top + window.scrollY,
+      left: rect.left + rect.width / 2 + window.scrollX,
+    });
+  }, []);
+
   return (
     <span
-      ref={ref}
-      className="relative inline-flex ml-1.5"
-      onMouseEnter={() => setOpen(true)}
+      ref={triggerRef}
+      className="inline-flex ml-1.5"
+      onMouseEnter={() => {
+        updatePosition();
+        setOpen(true);
+      }}
       onMouseLeave={() => setOpen(false)}
     >
       <span className="cursor-help p-0.5 rounded-md text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#5c7cfa]/10 transition-all duration-200">
         <Clock className="h-3.5 w-3.5" />
       </span>
-      {open && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2.5 z-50 animate-in fade-in slide-in-from-bottom-1 duration-150">
-          <div className="relative bg-[#1a1d2e] dark:bg-[#0c0d14] rounded-xl shadow-xl shadow-black/20 border border-[#2a2e3f] dark:border-[#1e2130] px-4 py-3.5 min-w-[260px]">
-            {/* Arrow */}
-            <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 rotate-45 bg-[#1a1d2e] dark:bg-[#0c0d14] border-r border-b border-[#2a2e3f] dark:border-[#1e2130]" />
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            className="fixed z-[9999] pointer-events-none"
+            style={{
+              top: pos.top,
+              left: pos.left,
+              transform: "translate(-50%, -100%)",
+            }}
+          >
+            <div className="mb-2.5">
+              <div className="relative bg-[#1a1d2e] dark:bg-[#0c0d14] rounded-xl shadow-xl shadow-black/20 border border-[#2a2e3f] dark:border-[#1e2130] px-4 py-3.5 min-w-[260px]">
+                {/* Arrow */}
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 rotate-45 bg-[#1a1d2e] dark:bg-[#0c0d14] border-r border-b border-[#2a2e3f] dark:border-[#1e2130]" />
 
-            {/* Human-readable description */}
-            <p className="text-[13px] font-medium text-white leading-snug mb-3">
-              {description}
-            </p>
+                {/* Human-readable description */}
+                <p className="text-[13px] font-medium text-white leading-snug mb-3">
+                  {description}
+                </p>
 
-            {/* Cron field breakdown */}
-            <div className="flex gap-1">
-              {parts.slice(0, 7).map((part, i) => (
-                <div key={i} className="flex flex-col items-center gap-1 flex-1 min-w-0">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#6b7194]">
-                    {CRON_FIELD_LABELS[i]}
-                  </span>
-                  <span
-                    className={`w-full text-center text-[11px] font-mono font-semibold text-white rounded-md py-0.5 px-1 bg-gradient-to-b ${CRON_FIELD_COLORS[i]} bg-opacity-80`}
-                  >
-                    {part}
-                  </span>
+                {/* Cron field breakdown */}
+                <div className="flex gap-1">
+                  {parts.slice(0, 7).map((part, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center gap-1 flex-1 min-w-0"
+                    >
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#6b7194]">
+                        {CRON_FIELD_LABELS[i]}
+                      </span>
+                      <span
+                        className={`w-full text-center text-[11px] font-mono font-semibold text-white rounded-md py-0.5 px-1 bg-gradient-to-b ${CRON_FIELD_COLORS[i]} bg-opacity-80`}
+                      >
+                        {part}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </span>
   );
 };
