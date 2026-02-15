@@ -8,8 +8,21 @@
         </encoder>
     </appender>
 
+    <springProfile name="prod">
+        <appender name="Logtail" class="com.logtail.logback.LogtailAppender">
+            <appName>${LOGTAIL_APP_NAME:-buurman-backend}</appName>
+            <sourceToken>${LOGTAIL_SOURCE_TOKEN}</sourceToken>
+            <ingestUrl>${LOGTAIL_INGEST_URL}</ingestUrl>
+            <mdcFields>requestId,userId,teamId,userEmail</mdcFields>
+            <mdcTypes>string,string,string,string</mdcTypes>
+        </appender>
+    </springProfile>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <springProfile name="prod">
+            <appender-ref ref="Logtail"/>
+        </springProfile>
     </root>
 
     <logger name="com.buurman" level="DEBUG"/>
