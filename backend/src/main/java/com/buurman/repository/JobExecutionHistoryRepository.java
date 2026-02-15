@@ -70,11 +70,11 @@ public class JobExecutionHistoryRepository {
     }
 
     public PageResponse<JobExecutionHistoryResponse> findAll(PageRequest pageRequest,
-                                                              String jobNameFilter,
+                                                              List<String> jobNameFilter,
                                                               String statusFilter) {
         List<Condition> conditions = new ArrayList<>();
-        if (jobNameFilter != null && !jobNameFilter.isBlank()) {
-            conditions.add(JOB_NAME.eq(jobNameFilter));
+        if (jobNameFilter != null && !jobNameFilter.isEmpty()) {
+            conditions.add(JOB_NAME.in(jobNameFilter));
         }
         if (statusFilter != null && !statusFilter.isBlank()) {
             conditions.add(STATUS.eq(statusFilter));

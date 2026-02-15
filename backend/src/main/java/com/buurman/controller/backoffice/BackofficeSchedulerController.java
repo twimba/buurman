@@ -60,7 +60,7 @@ public class BackofficeSchedulerController {
     @Operation(summary = "Get execution history", description = "Get paginated job execution history with optional filters")
     @GetMapping("/history")
     public PageResponse<JobExecutionHistoryResponse> getHistory(
-            @RequestParam(required = false) String jobName,
+            @RequestParam(required = false) List<String> jobName,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size,

@@ -43,6 +43,13 @@ const TYPE_TOOLTIPS: Record<string, string> = {
   UAN: "Universal Access Numbers that route to different destinations. Typically used by businesses, not individuals.",
 };
 
+const countryCodeToFlag = (code: string): string =>
+  code
+    .toUpperCase()
+    .split("")
+    .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+    .join("");
+
 // Tri-state: "all" | "some" | "none"
 type CheckState = "all" | "some" | "none";
 
@@ -494,8 +501,11 @@ function GroupRows({
                     onToggleAllForCountries([country.code], numberTypes)
                   }
                 />
-                <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] w-6">
-                  {country.code}
+                <span
+                  className="text-base w-6 text-center cursor-default"
+                  title={country.code}
+                >
+                  {countryCodeToFlag(country.code)}
                 </span>
                 <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
                   {country.name}

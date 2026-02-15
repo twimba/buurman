@@ -44,7 +44,7 @@ export const useTriggerJob = () => {
 };
 
 interface HistoryParams {
-  jobName?: string;
+  jobName?: string[];
   status?: string;
   page?: number;
   size?: number;

@@ -110,7 +110,7 @@ public class BackofficeSchedulerService {
     }
 
     public PageResponse<JobExecutionHistoryResponse> getExecutionHistory(PageRequest pageRequest,
-                                                                          String jobNameFilter,
+                                                                          List<String> jobNameFilter,
                                                                           String statusFilter) {
         return executionHistoryRepository.findAll(pageRequest, jobNameFilter, statusFilter);
     }

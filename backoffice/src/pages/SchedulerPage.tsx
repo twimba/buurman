@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Pause, Play, Zap, Timer, Clock } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Pause, Play, Zap, Timer, Clock, Check, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
@@ -150,8 +150,52 @@ export const SchedulerPage = () => {
   } | null>(null);
 
   // Execution history
-  const [historyJobFilter, setHistoryJobFilter] = useState("");
+  const [selectedJobs, setSelectedJobs] = useState<string[] | null>(null);
   const [historyStatusFilter, setHistoryStatusFilter] = useState("");
+  const [jobDropdownOpen, setJobDropdownOpen] = useState(false);
+  const jobDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Initialize selected jobs: all except notificationOutboxJob
+  const allJobs = jobs ?? [];
+  const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
+  const defaultSelectedJobs = uniqueJobNames.filter(
+    (name) => name !== "notificationOutboxJob",
+  );
+
+  // Use default selection until user interacts
+  const activeSelectedJobs = selectedJobs ?? defaultSelectedJobs;
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        jobDropdownRef.current &&
+        !jobDropdownRef.current.contains(e.target as Node)
+      ) {
+        setJobDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleJob = (name: string) => {
+    const current = activeSelectedJobs;
+    const next = current.includes(name)
+      ? current.filter((n) => n !== name)
+      : [...current, name];
+    setSelectedJobs(next);
+    handlePageChange(0);
+  };
+
+  const toggleAllJobs = () => {
+    if (activeSelectedJobs.length === uniqueJobNames.length) {
+      setSelectedJobs([]);
+    } else {
+      setSelectedJobs([...uniqueJobNames]);
+    }
+    handlePageChange(0);
+  };
   const {
     page,
     size,
@@ -163,7 +207,10 @@ export const SchedulerPage = () => {
   } = usePagination({ defaultSort: "startedAt" });
 
   const { data: historyData } = useJobExecutionHistory({
-    jobName: historyJobFilter || undefined,
+    jobName:
+      activeSelectedJobs.length === uniqueJobNames.length
+        ? undefined
+        : activeSelectedJobs,
     status: historyStatusFilter || undefined,
     page,
     size,
@@ -219,8 +266,6 @@ export const SchedulerPage = () => {
     );
   }
 
-  const jobList = jobs ?? [];
-  const uniqueJobNames = [...new Set(jobList.map((j) => j.jobName))];
   const historyRecords = historyData?.content ?? [];
 
   return (
@@ -256,7 +301,7 @@ export const SchedulerPage = () => {
             Total Jobs
           </div>
           <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {jobList.length}
+            {allJobs.length}
           </div>
         </div>
         <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
@@ -268,7 +313,7 @@ export const SchedulerPage = () => {
             Active
           </div>
           <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            {jobList.filter((j) => j.triggerState === "NORMAL").length}
+            {allJobs.filter((j) => j.triggerState === "NORMAL").length}
           </div>
         </div>
         <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
@@ -280,7 +325,7 @@ export const SchedulerPage = () => {
             Paused
           </div>
           <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-            {jobList.filter((j) => j.triggerState === "PAUSED").length}
+            {allJobs.filter((j) => j.triggerState === "PAUSED").length}
           </div>
         </div>
         <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
@@ -292,7 +337,7 @@ export const SchedulerPage = () => {
             Blocked
           </div>
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {jobList.filter((j) => j.triggerState === "BLOCKED").length}
+            {allJobs.filter((j) => j.triggerState === "BLOCKED").length}
           </div>
         </div>
       </div>
@@ -315,7 +360,7 @@ export const SchedulerPage = () => {
               </tr>
             </thead>
             <tbody>
-              {jobList.length === 0 ? (
+              {allJobs.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -325,7 +370,7 @@ export const SchedulerPage = () => {
                   </td>
                 </tr>
               ) : (
-                jobList.map((job) => (
+                allJobs.map((job) => (
                   <tr
                     key={`${job.jobGroup}.${job.jobName}.${job.triggerName}`}
                     className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
@@ -431,21 +476,58 @@ export const SchedulerPage = () => {
           Execution History
         </h2>
         <div className="flex flex-wrap gap-3 mb-4">
-          <select
-            value={historyJobFilter}
-            onChange={(e) => {
-              setHistoryJobFilter(e.target.value);
-              handlePageChange(0);
-            }}
-            className={selectClass}
-          >
-            <option value="">All Jobs</option>
-            {uniqueJobNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="relative" ref={jobDropdownRef}>
+            <button
+              onClick={() => setJobDropdownOpen(!jobDropdownOpen)}
+              className={`${selectClass} flex items-center gap-2 min-w-[200px] justify-between`}
+            >
+              <span className="truncate">
+                {activeSelectedJobs.length === uniqueJobNames.length
+                  ? "All Jobs"
+                  : activeSelectedJobs.length === 0
+                    ? "No Jobs"
+                    : `${activeSelectedJobs.length} job${activeSelectedJobs.length > 1 ? "s" : ""} selected`}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0" />
+            </button>
+            {jobDropdownOpen && (
+              <div className="absolute z-50 mt-1 w-64 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                <button
+                  onClick={toggleAllJobs}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                >
+                  <span
+                    className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.length === uniqueJobNames.length ? "bg-[#5c7cfa] border-[#5c7cfa] text-white" : "border-[#d1d5e0] dark:border-[#3a3f52]"}`}
+                  >
+                    {activeSelectedJobs.length === uniqueJobNames.length && (
+                      <Check className="h-3 w-3" />
+                    )}
+                  </span>
+                  <span className="text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
+                    Select All
+                  </span>
+                </button>
+                {uniqueJobNames.map((name) => (
+                  <button
+                    key={name}
+                    onClick={() => toggleJob(name)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  >
+                    <span
+                      className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.includes(name) ? "bg-[#5c7cfa] border-[#5c7cfa] text-white" : "border-[#d1d5e0] dark:border-[#3a3f52]"}`}
+                    >
+                      {activeSelectedJobs.includes(name) && (
+                        <Check className="h-3 w-3" />
+                      )}
+                    </span>
+                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <select
             value={historyStatusFilter}
             onChange={(e) => {
