@@ -213,10 +213,19 @@ public class NotificationService {
             return List.of(EMAIL);
         }
 
+        NotificationType type = request.notificationType();
+
+        // Verification notifications bypass preference checks entirely —
+        // they must always be sent via their required channel regardless of user settings
+        if (type == NotificationType.VERIFICATION_CODE) {
+            return List.of(EMAIL);
+        }
+        if (type == NotificationType.PHONE_VERIFICATION_CODE) {
+            return List.of(SMS);
+        }
+
         UserPreferences globalPrefs = userPreferencesRepository.findByUserId(request.recipientUserId())
                 .orElseGet(UserPreferences::new);
-
-        NotificationType type = request.notificationType();
 
         // System notification types → all globally-enabled channels
         if (!type.isConfigurable()) {
