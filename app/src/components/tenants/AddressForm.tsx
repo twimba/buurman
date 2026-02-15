@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import {
   TenantAddressResponse,
@@ -10,6 +10,7 @@ import {
 import { AddressMap } from '../common/AddressMap';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { useGeocode } from '@/hooks/useGeocodingHooks';
 
 interface AddressFormProps {
   address?: TenantAddressResponse;
@@ -32,6 +33,7 @@ export const AddressForm = ({
 }: AddressFormProps) => {
   const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const geocodeMutation = useGeocode();
 
   const [formData, setFormData] = useState({
     street: address?.street || '',
@@ -44,49 +46,44 @@ export const AddressForm = ({
     longitude: address?.longitude || null,
   });
 
-  // Separate state for committed address values (used for map display)
-  const [committedAddress, setCommittedAddress] = useState({
-    street: address?.street || '',
-    city: address?.city || '',
-    postalCode: address?.postalCode || '',
-    country: address?.country || '',
-  });
-
-  // Track if address has changed to determine if we need new coordinates
-  const [shouldRegeocode, setShouldRegeocode] = useState(false);
-
-  // Debounce address changes for map updates (2 seconds)
+  // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      // Check if address actually changed from the original
-      const hasChanged = address
-        ? formData.street !== address.street ||
-          formData.city !== address.city ||
-          formData.postalCode !== address.postalCode ||
-          formData.country !== address.country
-        : true;
+      if (formData.street && formData.city && formData.country) {
+        const hasChanged = address
+          ? formData.street !== address.street ||
+            formData.city !== address.city ||
+            formData.postalCode !== address.postalCode ||
+            formData.country !== address.country
+          : true;
 
-      // If address changed, trigger re-geocoding
-      if (hasChanged) {
-        setShouldRegeocode(true);
+        if (hasChanged) {
+          geocodeMutation.mutate(
+            {
+              street: formData.street,
+              city: formData.city,
+              postalCode: formData.postalCode,
+              country: formData.country,
+            },
+            {
+              onSuccess: (result) => {
+                if (result) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: result.latitude,
+                    longitude: result.longitude,
+                  }));
+                }
+              },
+            }
+          );
+        }
       }
-
-      setCommittedAddress({
-        street: formData.street,
-        city: formData.city,
-        postalCode: formData.postalCode,
-        country: formData.country,
-      });
     }, 2000);
 
     return () => clearTimeout(timeoutId);
-  }, [
-    formData.street,
-    formData.city,
-    formData.postalCode,
-    formData.country,
-    address,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.street, formData.city, formData.postalCode, formData.country, address]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -119,39 +116,6 @@ export const AddressForm = ({
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
-
-  // Immediately commit address values on blur
-  const handleAddressBlur = () => {
-    // Check if address actually changed from the original
-    const hasChanged = address
-      ? formData.street !== address.street ||
-        formData.city !== address.city ||
-        formData.postalCode !== address.postalCode ||
-        formData.country !== address.country
-      : true;
-
-    // If address changed, trigger re-geocoding
-    if (hasChanged) {
-      setShouldRegeocode(true);
-    }
-
-    setCommittedAddress({
-      street: formData.street,
-      city: formData.city,
-      postalCode: formData.postalCode,
-      country: formData.country,
-    });
-  };
-
-  // Handle geocoded coordinates from map
-  const handleCoordinatesChange = useCallback((lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng,
-    }));
-    setShouldRegeocode(false); // Reset flag once new coordinates are obtained
-  }, []);
 
   const addressTypeLabels: Record<AddressType, string> = {
     [AddressType.CURRENT]: 'Current Address',
@@ -189,7 +153,6 @@ export const AddressForm = ({
             type="text"
             value={formData.street}
             onChange={(e) => handleChange('street', e.target.value)}
-            onBlur={handleAddressBlur}
             className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="Main Street 123"
           />
@@ -206,7 +169,6 @@ export const AddressForm = ({
             type="text"
             value={formData.city}
             onChange={(e) => handleChange('city', e.target.value)}
-            onBlur={handleAddressBlur}
             className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="Amsterdam"
           />
@@ -223,7 +185,6 @@ export const AddressForm = ({
             type="text"
             value={formData.postalCode}
             onChange={(e) => handleChange('postalCode', e.target.value)}
-            onBlur={handleAddressBlur}
             className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
             placeholder="1012 AB"
           />
@@ -236,7 +197,6 @@ export const AddressForm = ({
           <CountrySelector
             value={formData.country}
             onChange={(v) => handleChange('country', v)}
-            onBlur={handleAddressBlur}
           />
           {errors.country && (
             <p className="text-red-600 text-sm mt-1">{errors.country}</p>
@@ -286,21 +246,18 @@ export const AddressForm = ({
       </div>
 
       {/* Location Preview */}
-      {committedAddress.street &&
-        committedAddress.city &&
-        committedAddress.country && (
+      {formData.street &&
+        formData.city &&
+        formData.country && (
           <div>
             <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
               Location Preview
             </h4>
             <AddressMap
-              street={committedAddress.street}
-              city={committedAddress.city}
-              postalCode={committedAddress.postalCode}
-              country={committedAddress.country}
-              latitude={shouldRegeocode ? null : formData.latitude}
-              longitude={shouldRegeocode ? null : formData.longitude}
-              onCoordinatesChange={handleCoordinatesChange}
+              street={formData.street}
+              city={formData.city}
+              latitude={formData.latitude}
+              longitude={formData.longitude}
             />
           </div>
         )}

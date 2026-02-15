@@ -24,6 +24,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -67,7 +71,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(backofficeCorsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                session.sessionCreationPolicy(STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/backoffice/**").permitAll()
                 .requestMatchers("/backoffice/api-docs/**", "/backoffice/swagger-ui/**").permitAll()
@@ -89,17 +93,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                session.sessionCreationPolicy(STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/health", "/info", "/reference/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/registration-invitations/validate").permitAll()
-                .requestMatchers(HttpMethod.GET, "/registration/config").permitAll()
-                .requestMatchers(HttpMethod.GET, "/invitations/*").permitAll()
-                .requestMatchers(HttpMethod.GET, "/calendar/ical/*").permitAll()
+                .requestMatchers(POST, "/auth/register").permitAll()
+                .requestMatchers(POST, "/registration-invitations/validate").permitAll()
+                .requestMatchers(GET, "/registration/config").permitAll()
+                .requestMatchers(GET, "/invitations/*").permitAll()
+                .requestMatchers(GET, "/calendar/ical/*").permitAll()
                 .requestMatchers("/admin/demo-data/**").permitAll()
                 .requestMatchers("/webhooks/**").permitAll()
                 // All other endpoints require authentication

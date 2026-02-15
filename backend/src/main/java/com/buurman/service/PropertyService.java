@@ -34,6 +34,7 @@ import com.buurman.repository.PropertyOutdoorAreaRepository;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,6 +57,7 @@ public class PropertyService {
     private final MetricsService metricsService;
     private final NotificationService notificationService;
     private final AppProperties appProperties;
+    private final GeocodingService geocodingService;
 
     public PropertyService(
             PropertyRepository propertyRepository,
@@ -69,7 +71,8 @@ public class PropertyService {
             PropertyAmenityService propertyAmenityService,
             MetricsService metricsService,
             NotificationService notificationService,
-            AppProperties appProperties) {
+            AppProperties appProperties,
+            GeocodingService geocodingService) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.auditService = auditService;
@@ -82,6 +85,7 @@ public class PropertyService {
         this.metricsService = metricsService;
         this.notificationService = notificationService;
         this.appProperties = appProperties;
+        this.geocodingService = geocodingService;
     }
 
     @Transactional
@@ -92,6 +96,16 @@ public class PropertyService {
         property.setTeamId(principal.getTeamId());
         property.setCreatedBy(principal.getUserId());
         property.setUpdatedBy(principal.getUserId());
+
+        if (property.getLatitude() == null || property.getLongitude() == null) {
+            geocodingService.geocode(
+                    request.street(), request.city(),
+                    request.postalCode(), request.country()
+            ).ifPresent(result -> {
+                property.setLatitude(result.latitude());
+                property.setLongitude(result.longitude());
+            });
+        }
 
         Property savedProperty = propertyRepository.save(property);
 
@@ -167,8 +181,29 @@ public class PropertyService {
 
         PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId(), true);
 
+        // Capture old address before update
+        String oldStreet = property.getStreet();
+        String oldCity = property.getCity();
+        String oldPostalCode = property.getPostalCode();
+        String oldCountry = property.getCountry();
+
         propertyMapper.updateEntity(property, request);
         property.setUpdatedBy(principal.getUserId());
+
+        boolean addressChanged = !Objects.equals(oldStreet, property.getStreet())
+                || !Objects.equals(oldCity, property.getCity())
+                || !Objects.equals(oldPostalCode, property.getPostalCode())
+                || !Objects.equals(oldCountry, property.getCountry());
+
+        if (addressChanged && (property.getLatitude() == null || property.getLongitude() == null)) {
+            geocodingService.geocode(
+                    property.getStreet(), property.getCity(),
+                    property.getPostalCode(), property.getCountry()
+            ).ifPresent(result -> {
+                property.setLatitude(result.latitude());
+                property.setLongitude(result.longitude());
+            });
+        }
 
         Property updatedProperty = propertyRepository.save(property);
         PropertyResponse newState = toResponseWithMainPhoto(updatedProperty, principal.getTeamId(), true);

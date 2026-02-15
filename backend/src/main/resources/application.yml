@@ -82,6 +82,11 @@ buurman:
     api-key: ${DEMO_DATA_API_KEY:demo-secret-key}
     cron: "23 1 * * * ?"
 
+# Google Maps Configuration
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+
 # Flagsmith Feature Flags
 flagsmith:
   api-url: ${FLAGSMITH_API_URL:http://flagsmith:8000/api/v1/}

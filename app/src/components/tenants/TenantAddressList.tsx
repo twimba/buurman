@@ -432,8 +432,6 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                               <AddressMap
                                 street={address.street}
                                 city={address.city}
-                                postalCode={address.postalCode || ''}
-                                country={address.country}
                                 latitude={address.latitude}
                                 longitude={address.longitude}
                                 height="h-64"

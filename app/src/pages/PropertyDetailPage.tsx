@@ -642,8 +642,6 @@ export const PropertyDetailPage = () => {
                 <PropertyMap
                   street={property.street}
                   city={property.city}
-                  postalCode={property.postalCode}
-                  country={property.country}
                   latitude={property.latitude}
                   longitude={property.longitude}
                 />

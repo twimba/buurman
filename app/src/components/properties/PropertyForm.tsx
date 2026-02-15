@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
 import {
@@ -14,6 +14,7 @@ import { PropertyMap } from './PropertyMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { useGeocode } from '@/hooks/useGeocodingHooks';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -48,6 +49,7 @@ export const PropertyForm = ({
   const navigate = useNavigate();
   const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const geocodeMutation = useGeocode();
 
   const [formData, setFormData] = useState<CreatePropertyRequest>({
     street: property?.street || '',
@@ -105,23 +107,13 @@ export const PropertyForm = ({
     accessibilityNotes: property?.accessibilityNotes ?? null,
   });
 
-  // Separate state for committed address values (used for map display)
-  const [committedAddress, setCommittedAddress] = useState({
-    street: property?.street || '',
-    city: property?.city || '',
-    postalCode: property?.postalCode || '',
-    country: property?.country || '',
-  });
-
-  // Track if address has changed to determine if we need new coordinates
-  const [shouldRegeocode, setShouldRegeocode] = useState(false);
   const [propertyIdentifier, setPropertyIdentifier] = useState(
     property?.identifier
   );
 
   useEffect(() => {
     // Only update if property identifier changed (editing a different property)
-    /* eslint-disable react-hooks/set-state-in-effect */
+     
     if (property && property.identifier !== propertyIdentifier) {
       setPropertyIdentifier(property.identifier);
       setFormData({
@@ -178,49 +170,48 @@ export const PropertyForm = ({
         hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
         accessibilityNotes: property.accessibilityNotes ?? null,
       });
-      setCommittedAddress({
-        street: property.street,
-        city: property.city,
-        postalCode: property.postalCode,
-        country: property.country,
-      });
     }
-    /* eslint-enable react-hooks/set-state-in-effect */
+     
   }, [property, propertyIdentifier]);
 
-  // Debounce address changes for map updates (2 seconds)
+  // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      // Check if address actually changed from the original
-      const hasChanged = property
-        ? formData.street !== property.street ||
-          formData.city !== property.city ||
-          formData.postalCode !== property.postalCode ||
-          formData.country !== property.country
-        : true;
+      if (formData.street && formData.city && formData.country) {
+        const hasChanged = property
+          ? formData.street !== property.street ||
+            formData.city !== property.city ||
+            formData.postalCode !== property.postalCode ||
+            formData.country !== property.country
+          : true;
 
-      // If address changed, trigger re-geocoding but keep existing coordinates
-      // until new ones are obtained
-      if (hasChanged) {
-        setShouldRegeocode(true);
+        if (hasChanged) {
+          geocodeMutation.mutate(
+            {
+              street: formData.street,
+              city: formData.city,
+              postalCode: formData.postalCode,
+              country: formData.country,
+            },
+            {
+              onSuccess: (result) => {
+                if (result) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: result.latitude,
+                    longitude: result.longitude,
+                  }));
+                }
+              },
+            }
+          );
+        }
       }
-
-      setCommittedAddress({
-        street: formData.street,
-        city: formData.city,
-        postalCode: formData.postalCode,
-        country: formData.country,
-      });
     }, 2000);
 
     return () => clearTimeout(timeoutId);
-  }, [
-    formData.street,
-    formData.city,
-    formData.postalCode,
-    formData.country,
-    property,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.street, formData.city, formData.postalCode, formData.country, property]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -276,40 +267,6 @@ export const PropertyForm = ({
     }
   };
 
-  // Immediately commit address values on blur
-  const handleAddressBlur = () => {
-    // Check if address actually changed from the original
-    const hasChanged = property
-      ? formData.street !== property.street ||
-        formData.city !== property.city ||
-        formData.postalCode !== property.postalCode ||
-        formData.country !== property.country
-      : true;
-
-    // If address changed, trigger re-geocoding but keep existing coordinates
-    // until new ones are obtained
-    if (hasChanged) {
-      setShouldRegeocode(true);
-    }
-
-    setCommittedAddress({
-      street: formData.street,
-      city: formData.city,
-      postalCode: formData.postalCode,
-      country: formData.country,
-    });
-  };
-
-  // Handle geocoded coordinates from map
-  const handleCoordinatesChange = useCallback((lat: number, lng: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      latitude: lat,
-      longitude: lng,
-    }));
-    setShouldRegeocode(false); // Reset flag once new coordinates are obtained
-  }, []);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Address Section */}
@@ -326,7 +283,6 @@ export const PropertyForm = ({
               type="text"
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
-              onBlur={handleAddressBlur}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="Main Street 123"
             />
@@ -343,7 +299,6 @@ export const PropertyForm = ({
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
-              onBlur={handleAddressBlur}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="Amsterdam"
             />
@@ -360,7 +315,6 @@ export const PropertyForm = ({
               type="text"
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
-              onBlur={handleAddressBlur}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="1012 AB"
             />
@@ -376,7 +330,6 @@ export const PropertyForm = ({
             <CountrySelector
               value={formData.country}
               onChange={(v) => handleChange('country', v)}
-              onBlur={handleAddressBlur}
             />
             {errors.country && (
               <p className="text-red-600 text-sm mt-1">{errors.country}</p>
@@ -385,22 +338,18 @@ export const PropertyForm = ({
         </div>
 
         {/* Location Preview */}
-        {committedAddress.street &&
-          committedAddress.city &&
-          committedAddress.postalCode &&
-          committedAddress.country && (
+        {formData.street &&
+          formData.city &&
+          formData.country && (
             <div className="mt-6">
               <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
                 Location Preview
               </h4>
               <PropertyMap
-                street={committedAddress.street}
-                city={committedAddress.city}
-                postalCode={committedAddress.postalCode}
-                country={committedAddress.country}
-                latitude={shouldRegeocode ? null : formData.latitude}
-                longitude={shouldRegeocode ? null : formData.longitude}
-                onCoordinatesChange={handleCoordinatesChange}
+                street={formData.street}
+                city={formData.city}
+                latitude={formData.latitude}
+                longitude={formData.longitude}
               />
             </div>
           )}

@@ -31,6 +31,7 @@ public class TenantAddressService {
     private final TenantRepository tenantRepository;
     private final TenantAddressMapper addressMapper;
     private final AuditService auditService;
+    private final GeocodingService geocodingService;
     private final Clock clock;
 
     public TenantAddressService(
@@ -38,11 +39,13 @@ public class TenantAddressService {
             TenantRepository tenantRepository,
             TenantAddressMapper addressMapper,
             AuditService auditService,
+            GeocodingService geocodingService,
             Clock clock) {
         this.addressRepository = addressRepository;
         this.tenantRepository = tenantRepository;
         this.addressMapper = addressMapper;
         this.auditService = auditService;
+        this.geocodingService = geocodingService;
         this.clock = clock;
     }
 
@@ -81,6 +84,16 @@ public class TenantAddressService {
         // Set default status if not provided
         if (address.getStatus() == null) {
             address.setStatus(TenantAddress.AddressStatus.ACTIVE);
+        }
+
+        if (address.getLatitude() == null || address.getLongitude() == null) {
+            geocodingService.geocode(
+                    request.street(), request.city(),
+                    request.postalCode(), request.country()
+            ).ifPresent(result -> {
+                address.setLatitude(result.latitude().doubleValue());
+                address.setLongitude(result.longitude().doubleValue());
+            });
         }
 
         TenantAddress savedAddress = addressRepository.save(address);
@@ -172,10 +185,31 @@ public class TenantAddressService {
             }
         }
 
+        // Capture old address before update
+        String oldStreet = address.getStreet();
+        String oldCity = address.getCity();
+        String oldPostalCode = address.getPostalCode();
+        String oldCountry = address.getCountry();
+
         // Update address fields
         addressMapper.updateEntity(address, request);
         address.setUpdatedBy(principal.getUserId());
         address.setUpdatedAt(clock.instant());
+
+        boolean addressChanged = !java.util.Objects.equals(oldStreet, address.getStreet())
+                || !java.util.Objects.equals(oldCity, address.getCity())
+                || !java.util.Objects.equals(oldPostalCode, address.getPostalCode())
+                || !java.util.Objects.equals(oldCountry, address.getCountry());
+
+        if (addressChanged && (address.getLatitude() == null || address.getLongitude() == null)) {
+            geocodingService.geocode(
+                    address.getStreet(), address.getCity(),
+                    address.getPostalCode(), address.getCountry()
+            ).ifPresent(result -> {
+                address.setLatitude(result.latitude().doubleValue());
+                address.setLongitude(result.longitude().doubleValue());
+            });
+        }
 
         TenantAddress updatedAddress = addressRepository.save(address);
         log.info("Address updated: {} for tenant {} in team {}",
