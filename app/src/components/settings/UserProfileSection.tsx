@@ -9,6 +9,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertTriangle,
+  MessageSquare,
 } from 'lucide-react';
 import {
   useCurrentUser,
@@ -80,13 +81,6 @@ function validatePhoneAgainstPolicy(
     // Parse failed — let server-side validation handle it
   }
   return null;
-}
-
-function maskPhone(phone: string): string {
-  if (phone.length <= 6) return phone;
-  return (
-    phone.slice(0, 4) + '\u2022'.repeat(phone.length - 6) + phone.slice(-2)
-  );
 }
 
 export const UserProfileSection = () => {
@@ -457,76 +451,67 @@ export const UserProfileSection = () => {
 
             {/* Phone Verification UI */}
             {!isEditing && (needsVerification || showVerification) && (
-              <div className="rounded-lg border border-amber-200 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-950/20 p-4">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                      Verify your phone number
-                    </p>
-                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                      We sent a 6-digit code to{' '}
-                      {maskPhone(currentUser?.phone || '')}. SMS notifications
-                      won&apos;t be sent until your phone is verified.
-                    </p>
-
-                    <div className="mt-3 flex items-center gap-3">
-                      <input
-                        ref={codeInputRef}
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="one-time-code"
-                        placeholder="000000"
-                        value={verificationCode}
-                        onChange={(e) => handleCodeChange(e.target.value)}
-                        disabled={verifyPhoneMutation.isPending}
-                        className="w-32 px-3 py-2 text-center text-lg font-mono tracking-[0.3em] border border-amber-300 dark:border-amber-700 rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:ring-2 focus:ring-amber-400 focus:border-transparent disabled:opacity-50"
-                      />
-                      {verifyPhoneMutation.isPending && (
-                        <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
-                      )}
-                    </div>
-
-                    {verifyPhoneMutation.isError && (
-                      <p className="text-xs text-red-600 dark:text-red-400 mt-2">
-                        Invalid or expired code. Please try again.
-                      </p>
-                    )}
-
-                    <div className="mt-3 flex items-center gap-3">
-                      <button
-                        onClick={handleResend}
-                        disabled={cooldown > 0 || resendMutation.isPending}
-                        className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 disabled:text-amber-400 dark:disabled:text-amber-600 disabled:cursor-not-allowed transition-colors"
-                      >
-                        {resendMutation.isPending
-                          ? 'Sending...'
-                          : cooldown > 0
-                            ? `Resend code in ${cooldown}s`
-                            : "Didn't receive a code? Resend"}
-                      </button>
-                      <span className="text-amber-300 dark:text-amber-700">
-                        |
-                      </span>
-                      <button
-                        onClick={() => {
-                          cancelVerificationMutation.mutate(undefined, {
-                            onSuccess: () => {
-                              setShowVerification(false);
-                              setVerificationCode('');
-                              setIsEditing(true);
-                            },
-                          });
-                        }}
-                        disabled={cancelVerificationMutation.isPending}
-                        className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 disabled:text-amber-400 dark:disabled:text-amber-600 disabled:cursor-not-allowed transition-colors"
-                      >
-                        {cancelVerificationMutation.isPending
-                          ? 'Cancelling...'
-                          : 'Change number'}
-                      </button>
-                    </div>
+              <div className="rounded-xl border border-[#5c7cfa]/20 dark:border-[#5c7cfa]/15 bg-gradient-to-br from-[#f0f4ff] to-white dark:from-[#5c7cfa]/5 dark:to-transparent p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-[#5c7cfa]/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-[#5c7cfa]" />
                   </div>
+                  <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    Almost there! Enter the code sent to{' '}
+                    <span className="text-[#5c7cfa]">{currentUser?.phone}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-3 ml-11">
+                  <input
+                    ref={codeInputRef}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="000000"
+                    value={verificationCode}
+                    onChange={(e) => handleCodeChange(e.target.value)}
+                    disabled={verifyPhoneMutation.isPending}
+                    className="w-28 px-3 py-1.5 text-center text-base font-mono tracking-[0.3em] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1a1d2e] text-[#1a1d2e] dark:text-[#eef0f6] focus:ring-2 focus:ring-[#5c7cfa]/20 focus:border-[#5c7cfa] disabled:opacity-50 transition-colors"
+                  />
+                  {verifyPhoneMutation.isPending && (
+                    <Loader2 className="h-4 w-4 animate-spin text-[#5c7cfa]" />
+                  )}
+                </div>
+                {verifyPhoneMutation.isError && (
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-2 ml-11">
+                    Invalid or expired code. Please try again.
+                  </p>
+                )}
+                <div className="mt-2 ml-11 flex items-center gap-3 text-xs">
+                  <button
+                    onClick={handleResend}
+                    disabled={cooldown > 0 || resendMutation.isPending}
+                    className="font-medium text-[#5c7cfa] hover:text-[#4263eb] disabled:text-[#6b7194] dark:disabled:text-[#5c6180] disabled:cursor-not-allowed transition-colors"
+                  >
+                    {resendMutation.isPending
+                      ? 'Sending...'
+                      : cooldown > 0
+                        ? `Resend in ${cooldown}s`
+                        : 'Resend code'}
+                  </button>
+                  <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
+                  <button
+                    onClick={() => {
+                      cancelVerificationMutation.mutate(undefined, {
+                        onSuccess: () => {
+                          setShowVerification(false);
+                          setVerificationCode('');
+                          setIsEditing(true);
+                        },
+                      });
+                    }}
+                    disabled={cancelVerificationMutation.isPending}
+                    className="font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] disabled:cursor-not-allowed transition-colors"
+                  >
+                    {cancelVerificationMutation.isPending
+                      ? 'Cancelling...'
+                      : 'Change number'}
+                  </button>
                 </div>
               </div>
             )}
