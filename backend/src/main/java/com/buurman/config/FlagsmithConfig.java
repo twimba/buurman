@@ -78,7 +78,7 @@ public class FlagsmithConfig {
             log.info("Flagsmith auto-discovery: resolved server-side key for env '{}'", properties.environmentName());
             return Optional.of(serverKey);
         } catch (Exception e) {
-            log.warn("Flagsmith auto-discovery failed — feature flags disabled: {}", e.getMessage());
+            log.warn("Flagsmith auto-discovery failed — feature flags disabled: {}", e.getMessage(), e);
             return Optional.empty();
         }
     }
