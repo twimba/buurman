@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Home, Users, FileText, TrendingUp } from 'lucide-react';
+import { LogIn, Home, Users, FileText, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -111,49 +111,56 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10">
-            <div className="mb-8">
+          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
+            {/* Decorative gradient accent */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#364fc7] via-[#5c7cfa] to-[#91a7ff]" />
+
+            <div className="mb-8 text-center">
+              <div className="inline-flex items-center gap-1.5 bg-[#5c7cfa]/10 text-[#4c6ef5] px-3 py-1 rounded-full text-xs font-medium mb-4">
+                <Sparkles className="h-3.5 w-3.5" />
+                Free for small landlords
+              </div>
               <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
                 Welcome back
               </h2>
               <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                Sign in to manage your properties
+                Your properties are waiting for you
               </p>
             </div>
 
             <button
               onClick={() => login()}
-              className="w-full bg-[#5c7cfa] text-white py-3.5 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <LogIn className="h-5 w-5" />
-              Sign in
+              Sign in to your account
+              <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
             </button>
 
-            <div className="mt-8 text-center">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Don&apos;t have an account?{' '}
-                <a
-                  href="/register"
-                  className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
-                >
-                  Create one here
-                </a>
-              </p>
+            <div className="mt-6 relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">or</span>
+              </div>
             </div>
 
-            {/* Divider */}
-            <div className="mt-8 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
-                Secure authentication
-              </p>
-            </div>
+            <a
+              href="/register"
+              className="mt-6 w-full py-3 px-6 rounded-xl border-2 border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] font-semibold flex items-center justify-center gap-2 hover:border-[#5c7cfa] hover:text-[#5c7cfa] transition-all duration-200 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/10"
+            >
+              Create a free account
+              <ArrowRight className="h-4 w-4" />
+            </a>
+
           </div>
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               Need help?{' '}
-              <a href="#" className="text-[#5c7cfa] hover:underline">
+              <a href="https://www.buurman.io/support" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:underline">
                 Contact support
               </a>
             </p>

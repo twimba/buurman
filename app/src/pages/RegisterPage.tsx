@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRegister } from '../hooks/useAuthHooks';
 import { useInvitation } from '../hooks/useTeamHooks';
@@ -8,9 +8,13 @@ import {
   Users,
   FileText,
   TrendingUp,
-  CheckCircle,
+  Check,
+  Circle,
   Eye,
   EyeOff,
+  Sparkles,
+  ArrowRight,
+  PartyPopper,
 } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
@@ -43,6 +47,23 @@ const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const passwordRules = useMemo(() => {
+    const p = formData.password;
+    const email = formData.email.toLowerCase();
+    return [
+      { key: 'length', label: '8+ characters', met: p.length >= 8 },
+      { key: 'upper', label: 'Uppercase letter', met: /[A-Z]/.test(p) },
+      { key: 'lower', label: 'Lowercase letter', met: /[a-z]/.test(p) },
+      { key: 'digit', label: 'Number', met: /\d/.test(p) },
+      { key: 'special', label: 'Special character', met: /[^A-Za-z0-9]/.test(p) },
+      { key: 'notEmail', label: 'Not your email', met: p.length > 0 && (!email || p.toLowerCase() !== email) },
+    ];
+  }, [formData.password, formData.email]);
+
+  const allRulesMet = passwordRules.every((r) => r.met);
+  const passwordsMatch = formData.password.length > 0 && formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
+  const passwordsMismatch = formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: '' });
@@ -55,8 +76,7 @@ const RegisterPage: React.FC = () => {
     if (!formData.firstName) newErrors.firstName = 'First name is required';
     if (!formData.lastName) newErrors.lastName = 'Last name is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 8)
-      newErrors.password = 'Password must be at least 8 characters';
+    else if (!allRulesMet) newErrors.password = 'Password does not meet all requirements';
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match';
 
@@ -189,34 +209,48 @@ const RegisterPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10">
+          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
+            {/* Decorative gradient accent */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#364fc7] via-[#5c7cfa] to-[#91a7ff]" />
+
             {registrationSuccess ? (
               <div className="flex flex-col items-center text-center py-8">
-                <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-4 mb-5">
-                  <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
+                <div className="relative mb-5">
+                  <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-5">
+                    <PartyPopper className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 bg-emerald-500 rounded-full p-1">
+                    <Check className="h-3.5 w-3.5 text-white" />
+                  </div>
                 </div>
                 <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
-                  Account created!
+                  You&apos;re all set!
                 </h2>
                 <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
-                  Your account has been created successfully. Please check your
-                  email for a verification code, then log in.
+                  We&apos;ve sent a verification email to your inbox.
+                  <br />
+                  Check it and you&apos;re ready to go!
                 </p>
                 <a
                   href="/login"
-                  className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline text-sm"
+                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-2.5 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                 >
-                  Go to login now
+                  Sign in now
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
               </div>
             ) : (
               <>
-                <div className="mb-8">
+                <div className="mb-8 text-center">
+                  <div className="inline-flex items-center gap-1.5 bg-[#5c7cfa]/10 text-[#4c6ef5] px-3 py-1 rounded-full text-xs font-medium mb-4">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Takes less than a minute
+                  </div>
                   <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
-                    Create your account
+                    Create your free account
                   </h2>
                   <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                    Start managing your properties today
+                    Join landlords who manage smarter, not harder
                   </p>
                 </div>
 
@@ -296,8 +330,12 @@ const RegisterPage: React.FC = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 pr-11 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                        placeholder="At least 8 characters"
+                        className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                          formData.password.length > 0 && allRulesMet
+                            ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
+                            : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                        }`}
+                        placeholder="Create a strong password"
                       />
                       <button
                         type="button"
@@ -317,6 +355,20 @@ const RegisterPage: React.FC = () => {
                         {errors.password}
                       </p>
                     )}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                        {passwordRules.map((rule) => (
+                          <div key={rule.key} className="flex items-center gap-1.5">
+                            {rule.met ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
+                            )}
+                            <span className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}>
+                              {rule.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                   </div>
 
                   <div>
@@ -329,7 +381,13 @@ const RegisterPage: React.FC = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 pr-11 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                        className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                          passwordsMatch
+                            ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
+                            : passwordsMismatch
+                              ? 'border-red-300 dark:border-red-700 focus:border-red-400'
+                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                        }`}
                         placeholder="Re-enter your password"
                       />
                       <button
@@ -345,7 +403,22 @@ const RegisterPage: React.FC = () => {
                         )}
                       </button>
                     </div>
-                    {errors.confirmPassword && (
+                    {formData.confirmPassword.length > 0 && (
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        {passwordsMatch ? (
+                          <>
+                            <Check className="h-3.5 w-3.5 text-emerald-500" />
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400">Passwords match</span>
+                          </>
+                        ) : (
+                          <>
+                            <Circle className="h-3.5 w-3.5 text-red-400" />
+                            <span className="text-xs text-red-500 dark:text-red-400">Passwords do not match</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    {errors.confirmPassword && !formData.confirmPassword.length && (
                       <p className="text-red-600 text-xs mt-1">
                         {errors.confirmPassword}
                       </p>
@@ -375,34 +448,40 @@ const RegisterPage: React.FC = () => {
 
                   <button
                     type="submit"
-                    disabled={registerMutation.isPending}
-                    className="w-full bg-[#5c7cfa] text-white py-3.5 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    disabled={registerMutation.isPending || !allRulesMet || !passwordsMatch}
+                    className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                   >
                     <UserPlus className="h-5 w-5" />
                     {registerMutation.isPending
                       ? 'Creating account...'
-                      : 'Create account'}
+                      : 'Get started for free'}
+                    {!registerMutation.isPending && (
+                      <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 group-disabled:hidden" />
+                    )}
                   </button>
                 </form>
 
-                <div className="mt-8 text-center">
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                    Already have an account?{' '}
-                    <a
-                      href="/login"
-                      className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
-                    >
-                      Sign in here
-                    </a>
-                  </p>
+                <div className="mt-6 relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">already have an account?</span>
+                  </div>
                 </div>
 
-                {/* Divider */}
-                <div className="mt-8 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
-                    By creating an account, you agree to our Terms of Service
-                  </p>
-                </div>
+                <a
+                  href="/login"
+                  className="mt-6 w-full py-3 px-6 rounded-xl border-2 border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] font-semibold flex items-center justify-center gap-2 hover:border-[#5c7cfa] hover:text-[#5c7cfa] transition-all duration-200 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/10"
+                >
+                  Sign in instead
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+
+                <p className="mt-5 text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
+                  By creating an account, you agree to our{' '}
+                  <a href="https://www.buurman.io/terms" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:text-[#4263eb] hover:underline">Terms of Service</a>
+                </p>
               </>
             )}
           </div>
@@ -411,7 +490,7 @@ const RegisterPage: React.FC = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               Need help?{' '}
-              <a href="#" className="text-[#5c7cfa] hover:underline">
+              <a href="https://www.buurman.io/support" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:underline">
                 Contact support
               </a>
             </p>
