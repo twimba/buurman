@@ -1,14 +1,36 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    monitor: 'dokploy-prometheus'
+
 
 scrape_configs:
-  - job_name: "prometheus"
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ['localhost:9090']
 
-  - job_name: "backend"
+  - job_name: 'backend'
     metrics_path: /actuator/prometheus
-    scrape_interval: 15s
+    scrape_interval: 30s
     static_configs:
+      # - targets: ['buurman-api-uucnc9:8081']
       - targets: ["${BACKEND_HOST:-backend}:${BACKEND_PORT:-8081}"]
+
+  - job_name: 'hetzner-nodes'
+    hetzner_sd_configs:
+      - bearer_token: "9cS86hBDSNJKRmD6ooRb8izRbqG7Q52lB5nda3WRzNyfasvyF9Uhrol4oIA5MfNV"
+        role: "hcloud"
+        refresh_interval: 5m
+    relabel_configs:
+      - source_labels: [__meta_hetzner_hcloud_labelpresent_buurman]
+        regex: 'true'
+        action: keep
+      - source_labels: [__meta_hetzner_public_ipv4]
+        regex: '(.*)'
+        target_label: __address__
+        replacement: '${1}:9100'
+      - source_labels: [__meta_hetzner_server_name]
+        target_label: instance
+      - action: labelmap
+        regex: __meta_hetzner_server_label_(.+)
