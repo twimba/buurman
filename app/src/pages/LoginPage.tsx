@@ -1,7 +1,15 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Home, Users, FileText, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
+import {
+  LogIn,
+  Home,
+  Users,
+  FileText,
+  TrendingUp,
+  Sparkles,
+  ArrowRight,
+} from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -142,7 +150,9 @@ const LoginPage: React.FC = () => {
                 <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">or</span>
+                <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">
+                  or
+                </span>
               </div>
             </div>
 
@@ -153,14 +163,18 @@ const LoginPage: React.FC = () => {
               Create a free account
               <ArrowRight className="h-4 w-4" />
             </a>
-
           </div>
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               Need help?{' '}
-              <a href="https://www.buurman.io/support" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:underline">
+              <a
+                href="https://www.buurman.io/support"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#5c7cfa] hover:underline"
+              >
                 Contact support
               </a>
             </p>

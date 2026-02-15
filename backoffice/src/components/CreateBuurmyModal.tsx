@@ -10,7 +10,9 @@ interface CreateBuurmyModalProps {
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError && error.response?.data) {
     const data = error.response.data;
-    return data.detail || data.message || data.title || "Failed to create buurmy";
+    return (
+      data.detail || data.message || data.title || "Failed to create buurmy"
+    );
   }
   if (error instanceof Error) return error.message;
   return "Failed to create buurmy";

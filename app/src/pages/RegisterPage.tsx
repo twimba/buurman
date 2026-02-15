@@ -55,14 +55,27 @@ const RegisterPage: React.FC = () => {
       { key: 'upper', label: 'Uppercase letter', met: /[A-Z]/.test(p) },
       { key: 'lower', label: 'Lowercase letter', met: /[a-z]/.test(p) },
       { key: 'digit', label: 'Number', met: /\d/.test(p) },
-      { key: 'special', label: 'Special character', met: /[^A-Za-z0-9]/.test(p) },
-      { key: 'notEmail', label: 'Not your email', met: p.length > 0 && (!email || p.toLowerCase() !== email) },
+      {
+        key: 'special',
+        label: 'Special character',
+        met: /[^A-Za-z0-9]/.test(p),
+      },
+      {
+        key: 'notEmail',
+        label: 'Not your email',
+        met: p.length > 0 && (!email || p.toLowerCase() !== email),
+      },
     ];
   }, [formData.password, formData.email]);
 
   const allRulesMet = passwordRules.every((r) => r.met);
-  const passwordsMatch = formData.password.length > 0 && formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
-  const passwordsMismatch = formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword;
+  const passwordsMatch =
+    formData.password.length > 0 &&
+    formData.confirmPassword.length > 0 &&
+    formData.password === formData.confirmPassword;
+  const passwordsMismatch =
+    formData.confirmPassword.length > 0 &&
+    formData.password !== formData.confirmPassword;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,7 +89,8 @@ const RegisterPage: React.FC = () => {
     if (!formData.firstName) newErrors.firstName = 'First name is required';
     if (!formData.lastName) newErrors.lastName = 'Last name is required';
     if (!formData.password) newErrors.password = 'Password is required';
-    else if (!allRulesMet) newErrors.password = 'Password does not meet all requirements';
+    else if (!allRulesMet)
+      newErrors.password = 'Password does not meet all requirements';
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = 'Passwords do not match';
 
@@ -356,19 +370,24 @@ const RegisterPage: React.FC = () => {
                       </p>
                     )}
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
-                        {passwordRules.map((rule) => (
-                          <div key={rule.key} className="flex items-center gap-1.5">
-                            {rule.met ? (
-                              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                            ) : (
-                              <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
-                            )}
-                            <span className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}>
-                              {rule.label}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      {passwordRules.map((rule) => (
+                        <div
+                          key={rule.key}
+                          className="flex items-center gap-1.5"
+                        >
+                          {rule.met ? (
+                            <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                          ) : (
+                            <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
+                          )}
+                          <span
+                            className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+                          >
+                            {rule.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div>
@@ -408,21 +427,26 @@ const RegisterPage: React.FC = () => {
                         {passwordsMatch ? (
                           <>
                             <Check className="h-3.5 w-3.5 text-emerald-500" />
-                            <span className="text-xs text-emerald-600 dark:text-emerald-400">Passwords match</span>
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400">
+                              Passwords match
+                            </span>
                           </>
                         ) : (
                           <>
                             <Circle className="h-3.5 w-3.5 text-red-400" />
-                            <span className="text-xs text-red-500 dark:text-red-400">Passwords do not match</span>
+                            <span className="text-xs text-red-500 dark:text-red-400">
+                              Passwords do not match
+                            </span>
                           </>
                         )}
                       </div>
                     )}
-                    {errors.confirmPassword && !formData.confirmPassword.length && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {errors.confirmPassword}
-                      </p>
-                    )}
+                    {errors.confirmPassword &&
+                      !formData.confirmPassword.length && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.confirmPassword}
+                        </p>
+                      )}
                   </div>
 
                   {errors.submit && (
@@ -448,7 +472,11 @@ const RegisterPage: React.FC = () => {
 
                   <button
                     type="submit"
-                    disabled={registerMutation.isPending || !allRulesMet || !passwordsMatch}
+                    disabled={
+                      registerMutation.isPending ||
+                      !allRulesMet ||
+                      !passwordsMatch
+                    }
                     className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                   >
                     <UserPlus className="h-5 w-5" />
@@ -466,7 +494,9 @@ const RegisterPage: React.FC = () => {
                     <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">already have an account?</span>
+                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">
+                      already have an account?
+                    </span>
                   </div>
                 </div>
 
@@ -480,7 +510,14 @@ const RegisterPage: React.FC = () => {
 
                 <p className="mt-5 text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
                   By creating an account, you agree to our{' '}
-                  <a href="https://www.buurman.io/terms" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:text-[#4263eb] hover:underline">Terms of Service</a>
+                  <a
+                    href="https://www.buurman.io/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#5c7cfa] hover:text-[#4263eb] hover:underline"
+                  >
+                    Terms of Service
+                  </a>
                 </p>
               </>
             )}
@@ -490,7 +527,12 @@ const RegisterPage: React.FC = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
               Need help?{' '}
-              <a href="https://www.buurman.io/support" target="_blank" rel="noopener noreferrer" className="text-[#5c7cfa] hover:underline">
+              <a
+                href="https://www.buurman.io/support"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#5c7cfa] hover:underline"
+              >
                 Contact support
               </a>
             </p>
