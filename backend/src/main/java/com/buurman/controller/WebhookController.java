@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.util.Map;
 
@@ -24,6 +27,12 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 public class WebhookController {
 
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
+
+    static {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+    }
 
     private final WebhookService webhookService;
     private final TwilioProperties twilioProperties;

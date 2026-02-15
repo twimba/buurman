@@ -184,6 +184,13 @@
             <version>4.10.3</version>
         </dependency>
 
+        <!-- BouncyCastle (required by SendGrid EventWebhook signature verification) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.80</version>
+        </dependency>
+
         <!-- Twilio -->
         <dependency>
             <groupId>com.twilio.sdk</groupId>
