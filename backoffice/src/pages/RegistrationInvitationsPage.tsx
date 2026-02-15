@@ -63,9 +63,18 @@ export function RegistrationInvitationsPage() {
     setOpenMenu(openMenu === identifier ? null : identifier);
   };
 
-  const { page, size, sort, direction, setPage, setSort } = usePagination({
+  const {
+    page,
+    size,
+    sort,
+    direction,
+    handlePageChange,
+    handleSizeChange,
+    handleSortChange,
+    resetPage,
+  } = usePagination({
     defaultSort: "createdAt",
-    defaultDirection: "DESC",
+    defaultDirection: "desc",
   });
 
   const { data, isLoading, refetch } = useRegistrationInvitations({
@@ -124,7 +133,7 @@ export function RegistrationInvitationsPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(0);
+            resetPage();
           }}
           className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 pl-10 pr-4 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
         />
@@ -142,9 +151,9 @@ export function RegistrationInvitationsPage() {
                   <SortableHeader
                     label="Code"
                     field="code"
-                    currentSort={sort}
-                    currentDirection={direction}
-                    onSort={setSort}
+                    sort={sort}
+                    direction={direction}
+                    onSortChange={handleSortChange}
                   />
                   <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Status
@@ -152,9 +161,9 @@ export function RegistrationInvitationsPage() {
                   <SortableHeader
                     label="Usages"
                     field="usageCount"
-                    currentSort={sort}
-                    currentDirection={direction}
-                    onSort={setSort}
+                    sort={sort}
+                    direction={direction}
+                    onSortChange={handleSortChange}
                   />
                   <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Expires
@@ -165,9 +174,9 @@ export function RegistrationInvitationsPage() {
                   <SortableHeader
                     label="Created"
                     field="createdAt"
-                    currentSort={sort}
-                    currentDirection={direction}
-                    onSort={setSort}
+                    sort={sort}
+                    direction={direction}
+                    onSortChange={handleSortChange}
                   />
                   <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     Actions
@@ -289,7 +298,10 @@ export function RegistrationInvitationsPage() {
             <Pagination
               page={page}
               totalPages={data.totalPages}
-              onPageChange={setPage}
+              totalElements={data.totalElements}
+              size={size}
+              onPageChange={handlePageChange}
+              onSizeChange={handleSizeChange}
             />
           )}
         </>
