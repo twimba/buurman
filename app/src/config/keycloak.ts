@@ -25,8 +25,8 @@ const keycloak = getKeycloakInstance();
 // Keycloak initialization options - only check SSO on protected pages
 export const keycloakInitOptions = {
   pkceMethod: 'S256' as const,
-  // Enable login iframe for silent SSO checks
-  checkLoginIframe: true,
+  // Disable login iframe — blocked by third-party cookie restrictions in modern browsers
+  checkLoginIframe: false,
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   // Disable nonce check to avoid validation errors in development
   useNonce: false,

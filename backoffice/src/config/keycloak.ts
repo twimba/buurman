@@ -28,7 +28,8 @@ const keycloak = getKeycloakInstance();
 export const keycloakInitOptions = {
   onLoad: "login-required" as const,
   pkceMethod: "S256" as const,
-  checkLoginIframe: true,
+  // Disable login iframe — blocked by third-party cookie restrictions in modern browsers
+  checkLoginIframe: false,
   silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
   useNonce: false,
   enableLogging: import.meta.env.DEV,
