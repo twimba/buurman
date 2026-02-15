@@ -81,7 +81,6 @@ const RegisterPage: React.FC = () => {
   const [emailPrefilled, setEmailPrefilled] = useState(false);
   useEffect(() => {
     if (invitation?.email && !emailPrefilled) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- prop-to-state sync
       setFormData((prev) => ({ ...prev, email: invitation.email }));
       setEmailPrefilled(true);
     }

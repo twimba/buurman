@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X, RefreshCw, Loader2, Sparkles } from "lucide-react";
 import {
   useCreateRegistrationInvitation,
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function CreateRegistrationInvitationModal({ onClose }: Props) {
-  const [code, setCode] = useState("");
+  const [codeOverride, setCodeOverride] = useState<string | null>(null);
   const [maxUsages, setMaxUsages] = useState<string>("1");
   const [unlimited, setUnlimited] = useState(false);
   const [expiresAt, setExpiresAt] = useState("");
@@ -20,17 +20,13 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
   const { data: suggestedCode, refetch: refreshCode } = useSuggestCode();
   const createMutation = useCreateRegistrationInvitation();
 
-  // Pre-fill with suggested code
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- prop-to-state sync
-  useEffect(() => {
-    if (suggestedCode && !code) {
-      setCode(suggestedCode);
-    }
-  }, [suggestedCode, code]);
+  const code = codeOverride ?? suggestedCode ?? "";
+  const setCode = (v: string) => setCodeOverride(v);
 
   const handleRefreshCode = () => {
+    setCodeOverride(null);
     refreshCode().then((result) => {
-      if (result.data) setCode(result.data);
+      if (result.data) setCodeOverride(result.data);
     });
   };
 
