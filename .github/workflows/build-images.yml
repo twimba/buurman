@@ -88,7 +88,7 @@ jobs:
           context: ./backend
           target: prod
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:latest
@@ -147,7 +147,7 @@ jobs:
           context: .
           file: ./app/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
@@ -205,7 +205,7 @@ jobs:
           context: .
           file: ./backoffice/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
@@ -261,7 +261,7 @@ jobs:
         with:
           context: ./keycloak
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:latest
@@ -317,7 +317,7 @@ jobs:
         with:
           context: ./grafana
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:latest
