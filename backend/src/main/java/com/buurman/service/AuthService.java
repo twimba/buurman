@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.buurman.util.EntityPrefix.TEA;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
 public class AuthService {
@@ -259,7 +260,7 @@ public class AuthService {
         }
 
         int recentCount = verificationCodeRepository.countRecentByUserId(
-            userId, clock.instant().minus(1, ChronoUnit.HOURS));
+            userId, clock.instant().minus(1, HOURS));
         if (recentCount >= MAX_RESEND_PER_HOUR) {
             throw new VerificationCodeException("Too many verification attempts. Please try again later.");
         }

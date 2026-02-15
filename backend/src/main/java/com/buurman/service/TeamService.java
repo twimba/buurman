@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.time.ZoneOffset.UTC;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -117,7 +118,7 @@ public class TeamService {
         invitation.setEmail(request.email());
         invitation.setRole(request.role());
         invitation.setToken(UUID.randomUUID().toString());
-        invitation.setExpiresAt(clock.instant().plus(7, ChronoUnit.DAYS));
+        invitation.setExpiresAt(clock.instant().plus(7, DAYS));
         invitation.setInvitedBy(principal.getUserId());
         invitation.setInvitedAt(clock.instant());
 
@@ -235,7 +236,7 @@ public class TeamService {
 
         // Reset token, expiry, and resend tracking
         invitation.setToken(UUID.randomUUID().toString());
-        invitation.setExpiresAt(clock.instant().plus(7, ChronoUnit.DAYS));
+        invitation.setExpiresAt(clock.instant().plus(7, DAYS));
         invitation.setResentAt(clock.instant());
         invitation.setResentCount(invitation.getResentCount() == null ? 1 : invitation.getResentCount() + 1);
 

@@ -197,18 +197,18 @@ export const BuurmiesPage = () => {
     removePasswordReset.isPending ||
     removeProfileReset.isPending;
 
-  const allBuurmies = data?.content ?? [];
   const buurmies = useMemo(() => {
-    if (!search.trim()) return allBuurmies;
+    const all = data?.content ?? [];
+    if (!search.trim()) return all;
     const q = search.toLowerCase();
-    return allBuurmies.filter(
+    return all.filter(
       (b) =>
         b.email?.toLowerCase().includes(q) ||
         b.username?.toLowerCase().includes(q) ||
         b.firstName?.toLowerCase().includes(q) ||
         b.lastName?.toLowerCase().includes(q),
     );
-  }, [allBuurmies, search]);
+  }, [data?.content, search]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading buurmies..." />;

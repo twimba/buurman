@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.PhoneVerificationCode;
 import com.buurman.domain.User;
 import com.buurman.dto.response.UserProfileResponse;
@@ -16,10 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.buurman.domain.NotificationType.PHONE_VERIFICATION_CODE;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
 public class PhoneVerificationService {
@@ -69,7 +71,7 @@ public class PhoneVerificationService {
 
         int maxCodesPerHour = phoneNumberPolicyService.getPolicy().getMaxCodesPerHour();
         int recentCount = verificationCodeRepository.countRecentByUserId(
-            userId, clock.instant().minus(1, ChronoUnit.HOURS));
+            userId, clock.instant().minus(1, HOURS));
         if (recentCount >= maxCodesPerHour) {
             throw new VerificationCodeException("Too many verification attempts. Please try again later.");
         }
@@ -146,12 +148,12 @@ public class PhoneVerificationService {
         verificationCode.setUserId(user.getId());
         verificationCode.setPhone(user.getPhone());
         verificationCode.setCode(code);
-        verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, ChronoUnit.MINUTES));
+        verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
         verificationCodeRepository.save(verificationCode);
 
-        notificationService.send(SendNotificationRequest.builder()
+        SendNotificationRequest sendNotificationRequest = SendNotificationRequest.builder()
                 .teamId(user.getActiveTeamId())
-                .notificationType(NotificationType.PHONE_VERIFICATION_CODE)
+                .notificationType(PHONE_VERIFICATION_CODE)
                 .recipientUserId(user.getId())
                 .recipientPhone(user.getPhone())
                 .templateName("phone-verification-code")
@@ -160,7 +162,9 @@ public class PhoneVerificationService {
                         "verificationCode", code,
                         "expiresMinutes", expiryMinutes
                 ))
-                .build());
+                .build();
+
+        notificationService.send(sendNotificationRequest);
 
         log.info("Phone verification code sent to user: {}", user.getIdentifier());
     }

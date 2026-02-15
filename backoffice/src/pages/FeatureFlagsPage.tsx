@@ -1,9 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, Flag, User, XCircle } from "lucide-react";
 import { RefreshButton } from "@buurman/ui";
-import { useGlobalFeatureFlags } from "../hooks/useFeatureFlags";
+import {
+  useGlobalFeatureFlags,
+  useUpdateGlobalFlag,
+} from "../hooks/useFeatureFlags";
 import { useUsers } from "../hooks/useUsers";
-import { UserFeatureFlags, FlagTable } from "../components/UserFeatureFlags";
+import {
+  UserFeatureFlags,
+  GlobalFlagTable,
+  PropagationBanner,
+  SegmentFeatureFlags,
+} from "../components/UserFeatureFlags";
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -19,6 +27,8 @@ export const FeatureFlagsPage = () => {
   const [selectedUserLabel, setSelectedUserLabel] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [mutatingFlag, setMutatingFlag] = useState<string | null>(null);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const debouncedSearch = useDebouncedValue(inputValue, 300);
@@ -30,6 +40,8 @@ export const FeatureFlagsPage = () => {
     refetch: refetchGlobal,
   } = useGlobalFeatureFlags();
 
+  const updateGlobalFlag = useUpdateGlobalFlag();
+
   const { data: usersData } = useUsers({
     search: debouncedSearch || undefined,
     size: 10,
@@ -38,6 +50,34 @@ export const FeatureFlagsPage = () => {
   });
 
   const globalFlagCount = globalFlags ? Object.keys(globalFlags).length : 0;
+
+  const handleToggle = useCallback(
+    (flagName: string, enabled: boolean) => {
+      setMutatingFlag(flagName);
+      updateGlobalFlag.mutate(
+        { flagName, data: { enabled } },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [updateGlobalFlag],
+  );
+
+  const handleValueChange = useCallback(
+    (flagName: string, value: string | null) => {
+      setMutatingFlag(flagName);
+      updateGlobalFlag.mutate(
+        { flagName, data: { value } },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [updateGlobalFlag],
+  );
 
   const handleFocus = () => {
     if (!selectedUser) {
@@ -71,13 +111,18 @@ export const FeatureFlagsPage = () => {
           Feature Flags
         </h1>
         <p className="mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
-          Overview of feature flag status across the platform
+          Manage feature flag status across the platform
         </p>
       </div>
 
       {/* Global Flags */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
+      <section className="space-y-3">
+        <PropagationBanner
+          visible={showBanner}
+          onDismiss={() => setShowBanner(false)}
+        />
+
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Flag className="h-4 w-4 text-[#5c7cfa]" />
             <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -98,10 +143,11 @@ export const FeatureFlagsPage = () => {
               Loading flags...
             </div>
           ) : (
-            <FlagTable
+            <GlobalFlagTable
               flags={globalFlags ?? {}}
-              showOverrideOnly={false}
-              isUserContext={false}
+              onToggle={handleToggle}
+              onValueChange={handleValueChange}
+              mutatingFlag={mutatingFlag}
             />
           )}
         </div>
@@ -200,6 +246,11 @@ export const FeatureFlagsPage = () => {
             </div>
           </div>
         )}
+      </section>
+
+      {/* Segment Overrides */}
+      <section>
+        <SegmentFeatureFlags />
       </section>
     </div>
   );

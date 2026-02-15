@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 @Component
 @DisallowConcurrentExecution
 public class ExecutionHistoryCleanupJob implements Job {
@@ -29,7 +31,7 @@ public class ExecutionHistoryCleanupJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            int deleted = repository.deleteOlderThan(clock.instant().minus(48, ChronoUnit.HOURS));
+            int deleted = repository.deleteOlderThan(clock.instant().minus(48, HOURS));
             if (deleted > 0) {
                 log.info("Cleaned up {} job execution history entries older than 48 hours", deleted);
             }

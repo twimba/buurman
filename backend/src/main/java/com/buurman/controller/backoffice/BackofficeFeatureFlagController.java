@@ -7,9 +7,16 @@ import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.service.FlagsmithAdminService;
+import com.buurman.service.FlagsmithAdminService.FeatureStateInfo;
+import com.buurman.service.FlagsmithAdminService.IdentityInfo;
+import com.buurman.service.FlagsmithAdminService.IdentityOverrideInfo;
+import com.buurman.service.FlagsmithAdminService.SegmentWithOverrides;
+import com.buurman.service.FlagsmithAdminService.SegmentOverrideState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,30 +27,29 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/backoffice/feature-flags")
-@Tag(name = "Backoffice - Feature Flags", description = "Feature flag status overview")
+@Tag(name = "Backoffice - Feature Flags", description = "Feature flag management")
 @SecurityRequirement(name = "bearer-jwt")
 public class BackofficeFeatureFlagController {
 
     private final FeatureFlagService featureFlagService;
+    private final FlagsmithAdminService flagsmithAdminService;
     private final UserRepository userRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
 
     public BackofficeFeatureFlagController(FeatureFlagService featureFlagService,
+                                           FlagsmithAdminService flagsmithAdminService,
                                            UserRepository userRepository,
                                            TeamMemberRepository teamMemberRepository,
                                            TeamRepository teamRepository) {
         this.featureFlagService = featureFlagService;
+        this.flagsmithAdminService = flagsmithAdminService;
         this.userRepository = userRepository;
         this.teamMemberRepository = teamMemberRepository;
         this.teamRepository = teamRepository;
     }
 
-    @Operation(summary = "Get global feature flag status", description = "Returns all flags at environment level (no identity context)")
-    @GetMapping
-    public Map<String, Object> getGlobalFlags() {
-        return featureFlagService.getAllEnvironmentFlags();
-    }
+    // --- Records ---
 
     public record TeamFlagEvaluation(
             String teamIdentifier,
@@ -54,6 +60,27 @@ public class BackofficeFeatureFlagController {
             Map<String, Object> flags
     ) {}
 
+    public record UpdateFeatureFlagRequest(Boolean enabled, String value) {}
+
+    public record FeatureFlagUpdateResponse(String flagName, boolean enabled, Object value) {}
+
+    public record SegmentFlagOverride(String flagName, boolean enabled, Object value) {}
+
+    public record SegmentEvaluation(
+            long segmentId,
+            String segmentName,
+            String description,
+            Map<String, SegmentFlagOverride> overrides
+    ) {}
+
+    // --- Read endpoints ---
+
+    @Operation(summary = "Get global feature flag status", description = "Returns all flags at environment level (no identity context)")
+    @GetMapping
+    public Map<String, Object> getGlobalFlags() {
+        return featureFlagService.getAllEnvironmentFlags();
+    }
+
     @Operation(summary = "Get feature flags for a specific user across all teams",
                description = "Evaluates all flags for each team membership the user has")
     @GetMapping("/users/{userIdentifier}")
@@ -62,7 +89,6 @@ public class BackofficeFeatureFlagController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
-        String identity = "user:" + user.getIdentifier();
         UUID activeTeamId = resolveActiveTeamId(user, memberships);
 
         List<TeamFlagEvaluation> evaluations = new ArrayList<>();
@@ -70,6 +96,8 @@ public class BackofficeFeatureFlagController {
         for (TeamMember membership : memberships) {
             Team team = teamRepository.findById(membership.getTeamId()).orElse(null);
             if (team == null) continue;
+
+            String identity = FlagsmithAdminService.buildIdentity(team.getIdentifier(), user.getIdentifier());
 
             Map<String, Object> traits = new HashMap<>();
             traits.put("team", team.getIdentifier());
@@ -91,10 +119,159 @@ public class BackofficeFeatureFlagController {
         return evaluations;
     }
 
-    /**
-     * Same priority logic as JwtAuthenticationConverter.selectActiveMembership:
-     * activeTeamId → defaultTeamId → first membership.
-     */
+    // --- Mutation endpoints ---
+
+    @Operation(summary = "Update a global feature flag", description = "Toggles enabled state and/or updates the value of an environment-level flag")
+    @PatchMapping("/{flagName}")
+    public ResponseEntity<FeatureFlagUpdateResponse> updateGlobalFlag(
+            @PathVariable String flagName,
+            @RequestBody UpdateFeatureFlagRequest request) {
+
+        FeatureStateInfo current = flagsmithAdminService.findFeatureStateByName(flagName)
+                .orElseThrow(() -> new IllegalArgumentException("Feature flag '%s' not found".formatted(flagName)));
+
+        FeatureStateInfo updated = flagsmithAdminService.updateFeatureState(
+                current.featureStateId(), request.enabled(), request.value());
+
+        return ResponseEntity.ok(new FeatureFlagUpdateResponse(
+                updated.featureName(), updated.enabled(), updated.value()));
+    }
+
+    @Operation(summary = "Create or update an identity override",
+               description = "Sets a feature flag override for a specific user in a specific team")
+    @PutMapping("/identities/{userIdentifier}/teams/{teamIdentifier}/{flagName}")
+    public ResponseEntity<FeatureFlagUpdateResponse> upsertIdentityOverride(
+            @PathVariable String userIdentifier,
+            @PathVariable String teamIdentifier,
+            @PathVariable String flagName,
+            @RequestBody UpdateFeatureFlagRequest request) {
+
+        String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+
+        // Find the feature ID from the global feature states
+        FeatureStateInfo globalState = flagsmithAdminService.findFeatureStateByName(flagName)
+                .orElseThrow(() -> new IllegalArgumentException("Feature flag '%s' not found".formatted(flagName)));
+
+        // Find or get the identity in Flagsmith
+        IdentityInfo identityInfo = flagsmithAdminService.findIdentity(identity)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Identity '%s' not found in Flagsmith. The user must have logged in at least once with this team.".formatted(identity)));
+
+        // Check if an override already exists
+        List<IdentityOverrideInfo> existing = flagsmithAdminService.listIdentityOverrides(identityInfo.id());
+        IdentityOverrideInfo existingOverride = existing.stream()
+                .filter(o -> o.featureId() == globalState.featureId())
+                .findFirst()
+                .orElse(null);
+
+        boolean enabled = request.enabled() != null ? request.enabled() : globalState.enabled();
+        String value = request.value();
+
+        IdentityOverrideInfo result;
+        if (existingOverride != null) {
+            result = flagsmithAdminService.updateIdentityOverride(
+                    identityInfo.id(), existingOverride.featureStateId(), request.enabled(), value);
+        } else {
+            result = flagsmithAdminService.createIdentityOverride(
+                    identityInfo.id(), globalState.featureId(), enabled, value);
+        }
+
+        return ResponseEntity.ok(new FeatureFlagUpdateResponse(
+                flagName, result.enabled(), result.value()));
+    }
+
+    @Operation(summary = "Remove an identity override",
+               description = "Removes a feature flag override so the user falls back to the global default")
+    @DeleteMapping("/identities/{userIdentifier}/teams/{teamIdentifier}/{flagName}")
+    public ResponseEntity<Void> deleteIdentityOverride(
+            @PathVariable String userIdentifier,
+            @PathVariable String teamIdentifier,
+            @PathVariable String flagName) {
+
+        String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+
+        FeatureStateInfo globalState = flagsmithAdminService.findFeatureStateByName(flagName)
+                .orElseThrow(() -> new IllegalArgumentException("Feature flag '%s' not found".formatted(flagName)));
+
+        IdentityInfo identityInfo = flagsmithAdminService.findIdentity(identity)
+                .orElseThrow(() -> new IllegalArgumentException("Identity '%s' not found".formatted(identity)));
+
+        List<IdentityOverrideInfo> overrides = flagsmithAdminService.listIdentityOverrides(identityInfo.id());
+        IdentityOverrideInfo target = overrides.stream()
+                .filter(o -> o.featureId() == globalState.featureId())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No override found for flag '%s' on identity '%s'".formatted(flagName, identity)));
+
+        flagsmithAdminService.deleteIdentityOverride(identityInfo.id(), target.featureStateId());
+        return ResponseEntity.noContent().build();
+    }
+
+    // --- Segment endpoints ---
+
+    @Operation(summary = "Get all segments with their feature flag overrides",
+               description = "Returns segments configured in Flagsmith with any feature flag overrides they define")
+    @GetMapping("/segments")
+    public List<SegmentEvaluation> getSegmentOverrides() {
+        List<SegmentWithOverrides> raw = flagsmithAdminService.getSegmentOverrides();
+
+        return raw.stream().map(seg -> {
+            Map<String, SegmentFlagOverride> overrides = new HashMap<>();
+            for (SegmentOverrideState state : seg.overrides()) {
+                overrides.put(state.featureName(), new SegmentFlagOverride(
+                        state.featureName(), state.enabled(), state.value()));
+            }
+            return new SegmentEvaluation(seg.segmentId(), seg.segmentName(), seg.description(), overrides);
+        }).toList();
+    }
+
+    @Operation(summary = "Create or update a segment override",
+               description = "Sets a feature flag override for a specific segment")
+    @PutMapping("/segments/{segmentId}/{flagName}")
+    public ResponseEntity<FeatureFlagUpdateResponse> upsertSegmentOverride(
+            @PathVariable long segmentId,
+            @PathVariable String flagName,
+            @RequestBody UpdateFeatureFlagRequest request) {
+
+        FeatureStateInfo globalState = flagsmithAdminService.findFeatureStateByName(flagName)
+                .orElseThrow(() -> new IllegalArgumentException("Feature flag '%s' not found".formatted(flagName)));
+
+        // Check if a feature-segment link already exists
+        var existingFsId = flagsmithAdminService.findFeatureSegmentId(globalState.featureId(), segmentId);
+        if (existingFsId.isEmpty()) {
+            // Create the link (auto-creates a FeatureState with env defaults)
+            flagsmithAdminService.createFeatureSegment(globalState.featureId(), segmentId);
+        }
+
+        // Find the feature state for this segment override
+        Long featureStateId = flagsmithAdminService.findSegmentOverrideFeatureStateId(segmentId, globalState.featureId())
+                .orElseThrow(() -> new IllegalStateException(
+                        "Could not find feature state for segment override (segment=%d, feature=%s)".formatted(segmentId, flagName)));
+
+        // Update the segment override feature state (uses /features/featurestates/ not /environments/)
+        FeatureStateInfo updated = flagsmithAdminService.updateSegmentOverrideState(featureStateId, request.enabled(), request.value());
+        return ResponseEntity.ok(new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value()));
+    }
+
+    @Operation(summary = "Remove a segment override",
+               description = "Removes a feature flag override so the segment falls back to the global default")
+    @DeleteMapping("/segments/{segmentId}/{flagName}")
+    public ResponseEntity<Void> deleteSegmentOverride(
+            @PathVariable long segmentId,
+            @PathVariable String flagName) {
+
+        FeatureStateInfo globalState = flagsmithAdminService.findFeatureStateByName(flagName)
+                .orElseThrow(() -> new IllegalArgumentException("Feature flag '%s' not found".formatted(flagName)));
+
+        long featureSegmentId = flagsmithAdminService.findFeatureSegmentId(globalState.featureId(), segmentId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No segment override found for flag '%s' on segment %d".formatted(flagName, segmentId)));
+
+        flagsmithAdminService.deleteFeatureSegment(featureSegmentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // --- Internal ---
+
     private UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
         if (memberships.isEmpty()) return null;
 

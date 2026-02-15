@@ -221,8 +221,12 @@ public class NotificationService {
         // System notification types → all globally-enabled channels
         if (!type.isConfigurable()) {
             List<NotificationChannel> channels = new ArrayList<>();
-            if (globalPrefs.isEmailNotifications()) channels.add(EMAIL);
-            if (globalPrefs.isSmsNotifications()) channels.add(SMS);
+            if (globalPrefs.isEmailNotifications()){
+                channels.add(EMAIL);
+            }
+            if (globalPrefs.isSmsNotifications()){
+                channels.add(SMS);
+            }
             return channels.isEmpty() ? List.of(EMAIL) : channels;
         }
 
