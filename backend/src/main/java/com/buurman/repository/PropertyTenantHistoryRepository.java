@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class PropertyTenantHistoryRepository {
@@ -35,11 +36,11 @@ public class PropertyTenantHistoryRepository {
                         record.getTeamId(),
                         record.getPropertyId(),
                         record.getTenantId(),
-                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(ZoneOffset.UTC) : null,
-                        record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(ZoneOffset.UTC) : null,
+                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
+                        record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(UTC) : null,
                         PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
                         record.getPerformedBy(),
-                        record.getPerformedAt().toInstant(ZoneOffset.UTC)
+                        record.getPerformedAt().toInstant(UTC)
                 ));
     }
 
@@ -54,11 +55,11 @@ public class PropertyTenantHistoryRepository {
                         record.getTeamId(),
                         record.getPropertyId(),
                         record.getTenantId(),
-                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(ZoneOffset.UTC) : null,
-                        record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(ZoneOffset.UTC) : null,
+                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
+                        record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(UTC) : null,
                         PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
                         record.getPerformedBy(),
-                        record.getPerformedAt().toInstant(ZoneOffset.UTC)
+                        record.getPerformedAt().toInstant(UTC)
                 ));
     }
 
@@ -71,13 +72,13 @@ public class PropertyTenantHistoryRepository {
                 .set(PROPERTY_TENANT_HISTORY.PROPERTY_ID, history.getPropertyId())
                 .set(PROPERTY_TENANT_HISTORY.TENANT_ID, history.getTenantId())
                 .set(PROPERTY_TENANT_HISTORY.MOVED_IN_AT, history.getMovedInAt() != null ?
-                        LocalDateTime.ofInstant(history.getMovedInAt(), ZoneOffset.UTC) : null)
+                        LocalDateTime.ofInstant(history.getMovedInAt(), UTC) : null)
                 .set(PROPERTY_TENANT_HISTORY.MOVED_OUT_AT, history.getMovedOutAt() != null ?
-                        LocalDateTime.ofInstant(history.getMovedOutAt(), ZoneOffset.UTC) : null)
+                        LocalDateTime.ofInstant(history.getMovedOutAt(), UTC) : null)
                 .set(PROPERTY_TENANT_HISTORY.ACTION_TYPE, history.getActionType().name())
                 .set(PROPERTY_TENANT_HISTORY.PERFORMED_BY, history.getPerformedBy())
                 .set(PROPERTY_TENANT_HISTORY.PERFORMED_AT, history.getPerformedAt() != null ?
-                        LocalDateTime.ofInstant(history.getPerformedAt(), ZoneOffset.UTC) : now)
+                        LocalDateTime.ofInstant(history.getPerformedAt(), UTC) : now)
                 .execute();
     }
 }

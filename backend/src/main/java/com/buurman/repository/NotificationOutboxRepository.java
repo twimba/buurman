@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class NotificationOutboxRepository {
@@ -34,7 +35,7 @@ public class NotificationOutboxRepository {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = outbox.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(outbox.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(outbox.getCreatedAt(), UTC)
                 : now;
 
         dsl.insertInto(NOTIFICATION_OUTBOX)
@@ -51,7 +52,7 @@ public class NotificationOutboxRepository {
         outbox.setId(id);
         outbox.setStatus(OutboxStatus.PENDING);
         outbox.setRetryCount(0);
-        outbox.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+        outbox.setCreatedAt(createdAt.toInstant(UTC));
 
         return outbox;
     }

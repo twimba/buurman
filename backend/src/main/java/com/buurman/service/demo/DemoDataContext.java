@@ -10,6 +10,9 @@ public class DemoDataContext {
     // Team key (e.g., "demo-team") -> team UUID
     private final Map<String, UUID> teamIds = new LinkedHashMap<>();
 
+    // UUID -> identifier (ULID) for S3 key generation
+    private final Map<UUID, String> identifiers = new LinkedHashMap<>();
+
     // Email -> user UUID
     private final Map<String, UUID> userIds = new LinkedHashMap<>();
 
@@ -44,6 +47,14 @@ public class DemoDataContext {
 
     public Map<String, UUID> getTeamIds() {
         return teamIds;
+    }
+
+    public void putIdentifier(UUID id, String identifier) {
+        identifiers.put(id, identifier);
+    }
+
+    public String getIdentifier(UUID id) {
+        return identifiers.getOrDefault(id, id.toString());
     }
 
     public Map<String, UUID> getUserIds() {

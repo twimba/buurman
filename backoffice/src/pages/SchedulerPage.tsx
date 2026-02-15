@@ -326,7 +326,11 @@ export const SchedulerPage = () => {
     handleSortChange,
   } = usePagination({ defaultSort: "startedAt" });
 
-  const { data: historyData } = useJobExecutionHistory({
+  const {
+    data: historyData,
+    refetch: refetchHistory,
+    isFetching: isHistoryFetching,
+  } = useJobExecutionHistory({
     jobName:
       activeSelectedJobs.length === uniqueJobNames.length
         ? undefined
@@ -615,9 +619,15 @@ export const SchedulerPage = () => {
 
       {/* Execution History Section */}
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
-          Execution History
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            Execution History
+          </h2>
+          <RefreshButton
+            onClick={() => refetchHistory()}
+            isRefreshing={isHistoryFetching}
+          />
+        </div>
         <div className="flex flex-wrap gap-3 mb-4">
           <div className="relative" ref={jobDropdownRef}>
             <button

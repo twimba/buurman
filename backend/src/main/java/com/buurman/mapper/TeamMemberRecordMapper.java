@@ -7,8 +7,9 @@ import org.mapstruct.Mapping;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
+
+import static java.time.ZoneOffset.UTC;
 
 @Mapper(componentModel = "spring")
 public interface TeamMemberRecordMapper {
@@ -27,10 +28,10 @@ public interface TeamMemberRecordMapper {
     List<TeamMember> toDomainList(List<TeamMembersRecord> records);
 
     default Instant toInstant(LocalDateTime localDateTime) {
-        return localDateTime == null ? null : localDateTime.toInstant(ZoneOffset.UTC);
+        return localDateTime == null ? null : localDateTime.toInstant(UTC);
     }
 
     default LocalDateTime toLocalDateTime(Instant instant) {
-        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+        return instant == null ? null : LocalDateTime.ofInstant(instant, UTC);
     }
 }

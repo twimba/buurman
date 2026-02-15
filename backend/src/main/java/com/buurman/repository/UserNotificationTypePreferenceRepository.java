@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USER_NOTIFICATION_TYPE_PREFERENCES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class UserNotificationTypePreferenceRepository {
@@ -46,10 +47,10 @@ public class UserNotificationTypePreferenceRepository {
 
         for (UserNotificationTypePreference pref : prefs) {
             LocalDateTime createdAt = pref.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(pref.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pref.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = pref.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(pref.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pref.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(USER_NOTIFICATION_TYPE_PREFERENCES)
@@ -77,8 +78,8 @@ public class UserNotificationTypePreferenceRepository {
         pref.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
         pref.setEmailEnabled(record.getEmailEnabled());
         pref.setSmsEnabled(record.getSmsEnabled());
-        pref.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
-        pref.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
+        pref.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
+        pref.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
         return pref;
     }
 }

@@ -61,9 +61,10 @@ public class DemoTenantGenerator {
                         + "." + teamKey.replace("-", "") + i + "@example.com")
                         .replaceAll("[^a-z0-9.@]", "");
 
+                String tenantIdentifier = UlidGenerator.generate(EntityPrefix.TEN);
                 dsl.insertInto(TENANTS)
                         .set(TENANTS.ID, tenantId)
-                        .set(TENANTS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.TEN))
+                        .set(TENANTS.IDENTIFIER, tenantIdentifier)
                         .set(TENANTS.TEAM_ID, teamId)
                         .set(TENANTS.FIRST_NAME, firstName)
                         .set(TENANTS.LAST_NAME, lastName)
@@ -103,6 +104,7 @@ public class DemoTenantGenerator {
                         .execute();
 
                 tenantIds.add(tenantId);
+                ctx.putIdentifier(tenantId, tenantIdentifier);
                 ctx.incrementTenants();
             }
 

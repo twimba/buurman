@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZoneOffset;
 
+import static java.time.ZoneOffset.UTC;
+
 @Component
 public class NotificationOutboxRecordMapper {
 
@@ -25,12 +27,12 @@ public class NotificationOutboxRecordMapper {
         outbox.setRetryCount(record.getRetryCount());
         outbox.setMaxRetries(record.getMaxRetries());
         outbox.setNextRetryAt(record.getNextRetryAt() != null
-                ? record.getNextRetryAt().toInstant(ZoneOffset.UTC) : null);
+                ? record.getNextRetryAt().toInstant(UTC) : null);
         outbox.setLastError(record.getLastError());
         outbox.setCreatedAt(record.getCreatedAt() != null
-                ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
+                ? record.getCreatedAt().toInstant(UTC) : null);
         outbox.setProcessedAt(record.getProcessedAt() != null
-                ? record.getProcessedAt().toInstant(ZoneOffset.UTC) : null);
+                ? record.getProcessedAt().toInstant(UTC) : null);
 
         return outbox;
     }

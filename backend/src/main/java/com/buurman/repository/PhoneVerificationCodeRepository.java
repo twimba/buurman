@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class PhoneVerificationCodeRepository {
@@ -28,7 +29,7 @@ public class PhoneVerificationCodeRepository {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = code.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(code.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(code.getCreatedAt(), UTC)
                 : now;
 
         dsl.insertInto(PHONE_VERIFICATION_CODES)
@@ -36,12 +37,12 @@ public class PhoneVerificationCodeRepository {
                 .set(PHONE_VERIFICATION_CODES.USER_ID, code.getUserId())
                 .set(PHONE_VERIFICATION_CODES.PHONE, code.getPhone())
                 .set(PHONE_VERIFICATION_CODES.CODE, code.getCode())
-                .set(PHONE_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), ZoneOffset.UTC))
+                .set(PHONE_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), UTC))
                 .set(PHONE_VERIFICATION_CODES.CREATED_AT, createdAt)
                 .execute();
 
         code.setId(id);
-        code.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+        code.setCreatedAt(createdAt.toInstant(UTC));
     }
 
     public Optional<PhoneVerificationCode> findValidCode(UUID userId, String code, String phone) {
@@ -62,9 +63,9 @@ public class PhoneVerificationCodeRepository {
                     pvc.setUserId(record.getUserId());
                     pvc.setPhone(record.getPhone());
                     pvc.setCode(record.getCode());
-                    pvc.setExpiresAt(record.getExpiresAt().toInstant(ZoneOffset.UTC));
-                    pvc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(ZoneOffset.UTC) : null);
-                    pvc.setCreatedAt(record.getCreatedAt().toInstant(ZoneOffset.UTC));
+                    pvc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
+                    pvc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+                    pvc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
                     return pvc;
                 });
     }
@@ -80,7 +81,7 @@ public class PhoneVerificationCodeRepository {
     }
 
     public int countRecentByUserId(UUID userId, Instant since) {
-        LocalDateTime sinceLocal = LocalDateTime.ofInstant(since, ZoneOffset.UTC);
+        LocalDateTime sinceLocal = LocalDateTime.ofInstant(since, UTC);
 
         return dsl.fetchCount(
                 dsl.selectFrom(PHONE_VERIFICATION_CODES)
@@ -96,7 +97,7 @@ public class PhoneVerificationCodeRepository {
                 .orderBy(PHONE_VERIFICATION_CODES.CREATED_AT.desc())
                 .limit(1)
                 .fetchOptional()
-                .map(r -> r.get(PHONE_VERIFICATION_CODES.CREATED_AT).toInstant(ZoneOffset.UTC));
+                .map(r -> r.get(PHONE_VERIFICATION_CODES.CREATED_AT).toInstant(UTC));
     }
 
     public void markUsed(UUID id) {

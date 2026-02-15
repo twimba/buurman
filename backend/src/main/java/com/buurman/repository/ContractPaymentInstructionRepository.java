@@ -9,6 +9,7 @@ import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 import java.time.Clock;
@@ -64,10 +65,10 @@ public class ContractPaymentInstructionRepository {
         UUID id = UUID.randomUUID();
         String identifier = UlidGenerator.generate(EntityPrefix.CPI);
         LocalDateTime createdAt = cpi.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(cpi.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC)
                 : now;
         LocalDateTime updatedAt = cpi.getUpdatedAt() != null
-                ? LocalDateTime.ofInstant(cpi.getUpdatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(cpi.getUpdatedAt(), UTC)
                 : now;
 
         dsl.insertInto(TABLE)
@@ -99,8 +100,8 @@ public class ContractPaymentInstructionRepository {
 
         cpi.setId(id);
         cpi.setIdentifier(identifier);
-        cpi.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-        cpi.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+        cpi.setCreatedAt(createdAt.toInstant(UTC));
+        cpi.setUpdatedAt(updatedAt.toInstant(UTC));
         return cpi;
     }
 
@@ -200,7 +201,7 @@ public class ContractPaymentInstructionRepository {
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(ZoneOffset.UTC);
+        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
         if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
         return null;
     }

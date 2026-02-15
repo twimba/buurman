@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 @Repository
@@ -105,10 +106,10 @@ public class ExpenseRepository {
             // Insert
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = expense.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(expense.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(expense.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = expense.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(expense.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(expense.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(EXPENSES)
@@ -129,12 +130,12 @@ public class ExpenseRepository {
                     .execute();
 
             expense.setId(id);
-            expense.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            expense.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            expense.setCreatedAt(createdAt.toInstant(UTC));
+            expense.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // Update
             LocalDateTime updatedAt = expense.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(expense.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(expense.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(EXPENSES)
@@ -150,7 +151,7 @@ public class ExpenseRepository {
                             .and(EXPENSES.TEAM_ID.eq(expense.getTeamId())))
                     .execute();
 
-            expense.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            expense.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return expense;

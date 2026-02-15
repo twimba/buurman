@@ -8,6 +8,8 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
@@ -104,10 +106,10 @@ public class TenantRepository {
             // INSERT
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = tenant.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(tenant.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(tenant.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = tenant.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(TENANTS)
@@ -129,12 +131,12 @@ public class TenantRepository {
                     .execute();
 
             tenant.setId(newId);
-            tenant.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            tenant.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            tenant.setCreatedAt(createdAt.toInstant(UTC));
+            tenant.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // UPDATE
             LocalDateTime updatedAt = tenant.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(tenant.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(TENANTS)
@@ -152,7 +154,7 @@ public class TenantRepository {
                             .and(TENANTS.TEAM_ID.eq(tenant.getTeamId())))
                     .execute();
 
-            tenant.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            tenant.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return tenant;

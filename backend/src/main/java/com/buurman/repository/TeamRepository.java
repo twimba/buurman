@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.TEAMS;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class TeamRepository {
@@ -63,10 +64,10 @@ public class TeamRepository {
             // INSERT
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = team.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(team.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(team.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = team.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(TEAMS)
@@ -80,12 +81,12 @@ public class TeamRepository {
                     .execute();
 
             team.setId(newId);
-            team.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            team.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            team.setCreatedAt(createdAt.toInstant(UTC));
+            team.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // UPDATE
             LocalDateTime updatedAt = team.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(team.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(TEAMS)
@@ -97,7 +98,7 @@ public class TeamRepository {
                     .where(TEAMS.ID.eq(team.getId()))
                     .execute();
 
-            team.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            team.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return team;

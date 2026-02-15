@@ -64,6 +64,7 @@ public class DocumentService {
             MultipartFile file,
             String entityType,
             UUID entityId,
+            String entityIdentifier,
             String title,
             String notes,
             UserPrincipal principal) {
@@ -93,7 +94,7 @@ public class DocumentService {
         }
 
         // Upload to S3
-        String fileKey = s3StorageService.uploadFile(file, principal.getTeamId(), entityType, entityId);
+        String fileKey = s3StorageService.uploadFile(file, principal.getTeamIdentifier(), entityType, entityIdentifier);
 
         // Save document metadata
         Document document = new Document();

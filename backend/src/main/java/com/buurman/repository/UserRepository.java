@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USERS;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class UserRepository {
@@ -60,10 +61,10 @@ public class UserRepository {
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.USR);
             LocalDateTime createdAt = user.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(user.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(user.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = user.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(USERS)
@@ -77,21 +78,21 @@ public class UserRepository {
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
-                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
+                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC) : null)
                     .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
-                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
+                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC) : null)
                     .set(USERS.CREATED_AT, createdAt)
                     .set(USERS.UPDATED_AT, updatedAt)
                     .execute();
 
             user.setId(newId);
             user.setIdentifier(identifier);
-            user.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            user.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            user.setCreatedAt(createdAt.toInstant(UTC));
+            user.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // UPDATE
             LocalDateTime updatedAt = user.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(user.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(USERS)
@@ -103,14 +104,14 @@ public class UserRepository {
                     .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
                     .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
                     .set(USERS.EMAIL_VERIFIED_AT, user.getEmailVerifiedAt() != null
-                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), ZoneOffset.UTC) : null)
+                            ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC) : null)
                     .set(USERS.PHONE_VERIFIED_AT, user.getPhoneVerifiedAt() != null
-                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), ZoneOffset.UTC) : null)
+                            ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC) : null)
                     .set(USERS.UPDATED_AT, updatedAt)
                     .where(USERS.ID.eq(user.getId()))
                     .execute();
 
-            user.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            user.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return user;

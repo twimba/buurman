@@ -28,6 +28,7 @@ import static com.buurman.domain.AuditLog.Action.DELETE;
 import static com.buurman.domain.AuditLog.Action.UPDATE;
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.USERS;
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuditService {
@@ -207,7 +208,7 @@ public class AuditService {
                 entityType, // entityName - can be enhanced later
                 action,
                 userName,
-                record.get(AUDIT_LOG.TIMESTAMP).toInstant(ZoneOffset.UTC),
+                record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
                 description,
                 changedFields,
                 oldValues,

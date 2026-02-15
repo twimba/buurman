@@ -113,9 +113,10 @@ public class DemoContractGenerator {
                 BigDecimal deposit = rentAmount.multiply(BigDecimal.valueOf(2));
                 BigDecimal securityDeposit = rentAmount;
 
+                String contractIdentifier = UlidGenerator.generate(EntityPrefix.CON);
                 dsl.insertInto(CONTRACTS)
                         .set(CONTRACTS.ID, contractId)
-                        .set(CONTRACTS.IDENTIFIER, UlidGenerator.generate(EntityPrefix.CON))
+                        .set(CONTRACTS.IDENTIFIER, contractIdentifier)
                         .set(CONTRACTS.TEAM_ID, teamId)
                         .set(CONTRACTS.PROPERTY_ID, propertyId)
                         .set(CONTRACTS.TENANT_ID, tenantId)
@@ -142,6 +143,7 @@ public class DemoContractGenerator {
                         .execute();
 
                 contractIds.add(contractId);
+                ctx.putIdentifier(contractId, contractIdentifier);
                 ctx.incrementContracts();
             }
 

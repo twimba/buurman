@@ -628,7 +628,7 @@ public class PaymentService {
                                            String title, String notes, UserPrincipal principal) {
         Payment payment = paymentRepository.findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
                 .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
-        return documentService.uploadDocument(file, "PAYMENT", payment.getId(), title, notes, principal);
+        return documentService.uploadDocument(file, "PAYMENT", payment.getId(), payment.getIdentifier(), title, notes, principal);
     }
 
     public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {

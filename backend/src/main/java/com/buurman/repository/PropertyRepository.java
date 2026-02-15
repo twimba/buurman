@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class PropertyRepository {
@@ -81,10 +82,10 @@ public class PropertyRepository {
             // INSERT
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = property.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(property.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(property.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = property.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(PROPERTIES)
@@ -156,12 +157,12 @@ public class PropertyRepository {
                     .execute();
 
             property.setId(newId);
-            property.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            property.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            property.setCreatedAt(createdAt.toInstant(UTC));
+            property.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // UPDATE
             LocalDateTime updatedAt = property.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(property.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(PROPERTIES)
@@ -229,7 +230,7 @@ public class PropertyRepository {
                             .and(PROPERTIES.TEAM_ID.eq(property.getTeamId())))
                     .execute();
 
-            property.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            property.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return property;

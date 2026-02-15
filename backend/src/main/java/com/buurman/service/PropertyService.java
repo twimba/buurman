@@ -208,7 +208,7 @@ public class PropertyService {
     public DocumentResponse uploadDocument(String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
         Property property = propertyRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        return documentService.uploadDocument(file, "PROPERTY", property.getId(), title, notes, principal);
+        return documentService.uploadDocument(file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
     }
 
     public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
@@ -241,7 +241,7 @@ public class PropertyService {
     public PhotoResponse uploadPhoto(String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
         Property property = propertyRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Property not found"));
-        return photoService.uploadPhoto(file, "PROPERTY", property.getId(), title, notes, principal);
+        return photoService.uploadPhoto(file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
     }
 
     public PhotoResponse setMainPhoto(String identifier, String photoIdentifier, UserPrincipal principal) {

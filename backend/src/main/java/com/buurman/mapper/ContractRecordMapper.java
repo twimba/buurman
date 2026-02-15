@@ -4,6 +4,8 @@ import com.buurman.domain.Contract;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import org.springframework.stereotype.Component;
 
+import static java.time.ZoneOffset.UTC;
+
 @Component
 public class ContractRecordMapper {
 
@@ -36,13 +38,13 @@ public class ContractRecordMapper {
         contract.setTermsAndConditions(record.getTermsAndConditions());
         contract.setNotes(record.getNotes());
         contract.setCreatedAt(record.getCreatedAt() != null ?
-                record.getCreatedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+                record.getCreatedAt().toInstant(UTC) : null);
         contract.setUpdatedAt(record.getUpdatedAt() != null ?
-                record.getUpdatedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+                record.getUpdatedAt().toInstant(UTC) : null);
         contract.setCreatedBy(record.getCreatedBy());
         contract.setUpdatedBy(record.getUpdatedBy());
         contract.setDeletedAt(record.getDeletedAt() != null ?
-                record.getDeletedAt().toInstant(java.time.ZoneOffset.UTC) : null);
+                record.getDeletedAt().toInstant(UTC) : null);
 
         return contract;
     }

@@ -64,6 +64,7 @@ public class PhotoService {
             MultipartFile file,
             String entityType,
             UUID entityId,
+            String entityIdentifier,
             String title,
             String notes,
             UserPrincipal principal) {
@@ -99,7 +100,7 @@ public class PhotoService {
         }
 
         // Upload to S3
-        String fileKey = s3StorageService.uploadFile(file, principal.getTeamId(), entityType, entityId);
+        String fileKey = s3StorageService.uploadFile(file, principal.getTeamIdentifier(), entityType, entityIdentifier);
 
         // Save photo metadata
         Photo photo = new Photo();

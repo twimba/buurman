@@ -8,6 +8,8 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
@@ -89,7 +91,7 @@ public class DocumentRepository {
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.DOC);
             LocalDateTime uploadedAt = document.getUploadedAt() != null
-                    ? LocalDateTime.ofInstant(document.getUploadedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(document.getUploadedAt(), UTC)
                     : now;
 
             dsl.insertInto(DOCUMENTS)
@@ -110,7 +112,7 @@ public class DocumentRepository {
 
             document.setId(newId);
             document.setIdentifier(identifier);
-            document.setUploadedAt(uploadedAt.toInstant(ZoneOffset.UTC));
+            document.setUploadedAt(uploadedAt.toInstant(UTC));
         } else {
             // UPDATE (title and notes are updatable)
             dsl.update(DOCUMENTS)

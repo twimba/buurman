@@ -8,6 +8,8 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
@@ -89,7 +91,7 @@ public class PhotoRepository {
             UUID newId = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.PHO);
             LocalDateTime uploadedAt = photo.getUploadedAt() != null
-                    ? LocalDateTime.ofInstant(photo.getUploadedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(photo.getUploadedAt(), UTC)
                     : now;
 
             dsl.insertInto(PHOTOS)
@@ -111,7 +113,7 @@ public class PhotoRepository {
 
             photo.setId(newId);
             photo.setIdentifier(identifier);
-            photo.setUploadedAt(uploadedAt.toInstant(ZoneOffset.UTC));
+            photo.setUploadedAt(uploadedAt.toInstant(UTC));
         } else {
             // UPDATE (title, notes, and isMainPhoto are updatable)
             dsl.update(PHOTOS)

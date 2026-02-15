@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+
+import static java.time.ZoneOffset.UTC;
 
 @Component
 public class TeamRecordMapper {
@@ -56,6 +57,6 @@ public class TeamRecordMapper {
     }
 
     private Instant toInstant(LocalDateTime localDateTime) {
-        return localDateTime == null ? null : localDateTime.toInstant(ZoneOffset.UTC);
+        return localDateTime == null ? null : localDateTime.toInstant(UTC);
     }
 }

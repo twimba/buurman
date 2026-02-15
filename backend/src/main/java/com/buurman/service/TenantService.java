@@ -325,7 +325,7 @@ public class TenantService {
     public DocumentResponse uploadDocument(String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
-        return documentService.uploadDocument(file, "TENANT", tenant.getId(), title, notes, principal);
+        return documentService.uploadDocument(file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
     }
 
     public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
@@ -352,7 +352,7 @@ public class TenantService {
     public PhotoResponse uploadPhoto(String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
         Tenant tenant = tenantRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
-        return photoService.uploadPhoto(file, "TENANT", tenant.getId(), title, notes, principal);
+        return photoService.uploadPhoto(file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
     }
 
     public PhotoResponse setMainPhoto(String identifier, String photoIdentifier, UserPrincipal principal) {

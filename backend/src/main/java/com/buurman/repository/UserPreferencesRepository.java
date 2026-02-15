@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class UserPreferencesRepository {
@@ -37,10 +38,10 @@ public class UserPreferencesRepository {
         if (prefs.getId() == null) {
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = prefs.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(prefs.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = prefs.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(USER_PREFERENCES)
@@ -58,11 +59,11 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
                     .execute();
             prefs.setId(newId);
-            prefs.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            prefs.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            prefs.setCreatedAt(createdAt.toInstant(UTC));
+            prefs.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             LocalDateTime updatedAt = prefs.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(USER_PREFERENCES)
@@ -77,7 +78,7 @@ public class UserPreferencesRepository {
                     .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
                     .where(USER_PREFERENCES.ID.eq(prefs.getId()))
                     .execute();
-            prefs.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            prefs.setUpdatedAt(updatedAt.toInstant(UTC));
         }
         return prefs;
     }
@@ -94,8 +95,8 @@ public class UserPreferencesRepository {
         prefs.setEmailNotifications(record.getEmailNotifications());
         prefs.setInAppNotifications(record.getInAppNotifications());
         prefs.setSmsNotifications(record.getSmsNotifications());
-        prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
-        prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(ZoneOffset.UTC) : null);
+        prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
+        prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
         return prefs;
     }
 }

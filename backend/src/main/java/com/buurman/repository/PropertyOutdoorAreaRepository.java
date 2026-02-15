@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class PropertyOutdoorAreaRepository {
@@ -50,10 +51,10 @@ public class PropertyOutdoorAreaRepository {
         if (area.getId() == null) {
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = area.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(area.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(area.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = area.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
@@ -71,11 +72,11 @@ public class PropertyOutdoorAreaRepository {
                     .execute();
 
             area.setId(newId);
-            area.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            area.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            area.setCreatedAt(createdAt.toInstant(UTC));
+            area.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             LocalDateTime updatedAt = area.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(area.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(PROPERTY_OUTDOOR_AREAS)
@@ -88,7 +89,7 @@ public class PropertyOutdoorAreaRepository {
                             .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(area.getTeamId())))
                     .execute();
 
-            area.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            area.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return area;
@@ -112,11 +113,11 @@ public class PropertyOutdoorAreaRepository {
         area.setType(record.getType());
         area.setAreaValue(record.getAreaValue());
         area.setAreaUnit(record.getAreaUnit());
-        area.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(ZoneOffset.UTC));
-        area.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(ZoneOffset.UTC));
+        area.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
+        area.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
         area.setCreatedBy(record.getCreatedBy());
         area.setUpdatedBy(record.getUpdatedBy());
-        area.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(ZoneOffset.UTC));
+        area.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
         return area;
     }
 }

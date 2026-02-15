@@ -252,7 +252,7 @@ public class ExpenseService {
         Expense expense = expenseRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
 
-        return documentService.uploadDocument(file, "EXPENSE", expense.getId(), title, notes, principal);
+        return documentService.uploadDocument(file, "EXPENSE", expense.getId(), expense.getIdentifier(), title, notes, principal);
     }
 
     public List<DocumentResponse> getExpenseDocuments(String identifier, UserPrincipal principal) {

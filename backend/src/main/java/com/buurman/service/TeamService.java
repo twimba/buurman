@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -531,7 +532,7 @@ public class TeamService {
 
     private String formatInstantDate(Instant instant) {
         return instant != null
-                ? LocalDate.ofInstant(instant, ZoneOffset.UTC)
+                ? LocalDate.ofInstant(instant, UTC)
                            .format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
                 : "";
     }

@@ -19,12 +19,11 @@ import org.jooq.JSONB;
 import org.jooq.Record2;
 import org.springframework.stereotype.Repository;
 
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class NotificationRepository {
         UUID id = UUID.randomUUID();
         String identifier = UlidGenerator.generate(EntityPrefix.NTF);
         LocalDateTime createdAt = notification.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(notification.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(notification.getCreatedAt(), UTC)
                 : now;
 
         JSONB contentVariablesJson = null;
@@ -87,7 +86,7 @@ public class NotificationRepository {
 
         notification.setId(id);
         notification.setIdentifier(identifier);
-        notification.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+        notification.setCreatedAt(createdAt.toInstant(UTC));
 
         return notification;
     }

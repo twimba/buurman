@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class CalendarFeedRepository {
@@ -86,10 +87,10 @@ public class CalendarFeedRepository {
         if (feed.getId() == null) {
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = feed.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(feed.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(feed.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = feed.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(feed.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(CALENDAR_FEEDS)
@@ -110,11 +111,11 @@ public class CalendarFeedRepository {
                     .execute();
 
             feed.setId(id);
-            feed.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            feed.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            feed.setCreatedAt(createdAt.toInstant(UTC));
+            feed.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             LocalDateTime updatedAt = feed.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(feed.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(CALENDAR_FEEDS)
@@ -126,7 +127,7 @@ public class CalendarFeedRepository {
                             .and(CALENDAR_FEEDS.TEAM_ID.eq(feed.getTeamId())))
                     .execute();
 
-            feed.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            feed.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return feed;

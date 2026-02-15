@@ -8,6 +8,7 @@ import org.jooq.Table;
 import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
 
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 import java.math.BigDecimal;
@@ -103,10 +104,10 @@ public class PaymentReceivalRepository {
 
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = receival.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(receival.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(receival.getCreatedAt(), UTC)
                 : now;
         LocalDateTime updatedAt = receival.getUpdatedAt() != null
-                ? LocalDateTime.ofInstant(receival.getUpdatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(receival.getUpdatedAt(), UTC)
                 : now;
 
         dsl.insertInto(TABLE)
@@ -124,8 +125,8 @@ public class PaymentReceivalRepository {
                 .execute();
 
         receival.setId(id);
-        receival.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-        receival.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+        receival.setCreatedAt(createdAt.toInstant(UTC));
+        receival.setUpdatedAt(updatedAt.toInstant(UTC));
 
         return receival;
     }
@@ -177,7 +178,7 @@ public class PaymentReceivalRepository {
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(ZoneOffset.UTC);
+        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
         if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
         return null;
     }

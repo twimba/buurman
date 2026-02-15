@@ -9,6 +9,7 @@ import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 import java.time.Clock;
@@ -59,10 +60,10 @@ public class PaymentInstructionRepository {
             UUID id = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.PIN);
             LocalDateTime createdAt = pi.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(pi.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pi.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = pi.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(TABLE)
@@ -89,11 +90,11 @@ public class PaymentInstructionRepository {
 
             pi.setId(id);
             pi.setIdentifier(identifier);
-            pi.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            pi.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            pi.setCreatedAt(createdAt.toInstant(UTC));
+            pi.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             LocalDateTime updatedAt = pi.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(TABLE)
@@ -201,7 +202,7 @@ public class PaymentInstructionRepository {
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(ZoneOffset.UTC);
+        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
         if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
         return null;
     }

@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.ZoneOffset.UTC;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
 @Repository
 public class JobExecutionHistoryRepository {
 
@@ -126,7 +129,9 @@ public class JobExecutionHistoryRepository {
     }
 
     private String formatTimestamp(Timestamp ts) {
-        if (ts == null) return null;
-        return ts.toInstant().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        if (ts == null) {
+            return null;
+        }
+        return ts.toInstant().atOffset(UTC).format(ISO_OFFSET_DATE_TIME);
     }
 }

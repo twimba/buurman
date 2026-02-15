@@ -23,6 +23,7 @@ import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.USERS;
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class DashboardService {
@@ -106,7 +107,7 @@ public class DashboardService {
                             entityName,
                             action,
                             userName,
-                            record.get(AUDIT_LOG.TIMESTAMP).toInstant(java.time.ZoneOffset.UTC),
+                            record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
                             description
                     );
                 })

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class TenantAddressRepository {
@@ -36,10 +37,10 @@ public class TenantAddressRepository {
             UUID id = UUID.randomUUID();
             String identifier = UlidGenerator.generate(EntityPrefix.TAD);
             LocalDateTime createdAt = address.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(address.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(address.getCreatedAt(), UTC)
                 : now;
             LocalDateTime updatedAt = address.getUpdatedAt() != null
-                ? LocalDateTime.ofInstant(address.getUpdatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(address.getUpdatedAt(), UTC)
                 : now;
 
             dsl.insertInto(TENANT_ADDRESSES)
@@ -65,7 +66,7 @@ public class TenantAddressRepository {
         } else {
             // Update
             LocalDateTime updatedAt = address.getUpdatedAt() != null
-                ? LocalDateTime.ofInstant(address.getUpdatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(address.getUpdatedAt(), UTC)
                 : now;
 
             dsl.update(TENANT_ADDRESSES)

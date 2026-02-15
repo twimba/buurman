@@ -648,7 +648,7 @@ public class ContractService {
                                            String title, String notes, UserPrincipal principal) {
         Contract contract = contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
-        return documentService.uploadDocument(file, "CONTRACT", contract.getId(), title, notes, principal);
+        return documentService.uploadDocument(file, "CONTRACT", contract.getId(), contract.getIdentifier(), title, notes, principal);
     }
 
     public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {

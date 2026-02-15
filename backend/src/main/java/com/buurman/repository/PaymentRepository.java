@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static com.buurman.domain.Payment.PaymentStatus.*;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 @Repository
@@ -128,10 +129,10 @@ public class PaymentRepository {
             // Insert
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = payment.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(payment.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(payment.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = payment.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(payment.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(PAYMENTS)
@@ -153,12 +154,12 @@ public class PaymentRepository {
                     .execute();
 
             payment.setId(id);
-            payment.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            payment.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            payment.setCreatedAt(createdAt.toInstant(UTC));
+            payment.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // Update
             LocalDateTime updatedAt = payment.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(payment.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(PAYMENTS)
@@ -174,7 +175,7 @@ public class PaymentRepository {
                             .and(PAYMENTS.TEAM_ID.eq(payment.getTeamId())))
                     .execute();
 
-            payment.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            payment.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return payment;

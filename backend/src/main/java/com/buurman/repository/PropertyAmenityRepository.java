@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class PropertyAmenityRepository {
@@ -51,10 +52,10 @@ public class PropertyAmenityRepository {
         if (pa.getId() == null) {
             UUID newId = UUID.randomUUID();
             LocalDateTime createdAt = pa.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(pa.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pa.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = pa.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(PROPERTY_AMENITIES)
@@ -70,11 +71,11 @@ public class PropertyAmenityRepository {
                     .execute();
 
             pa.setId(newId);
-            pa.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            pa.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            pa.setCreatedAt(createdAt.toInstant(UTC));
+            pa.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             LocalDateTime updatedAt = pa.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(PROPERTY_AMENITIES)
@@ -85,7 +86,7 @@ public class PropertyAmenityRepository {
                             .and(PROPERTY_AMENITIES.TEAM_ID.eq(pa.getTeamId())))
                     .execute();
 
-            pa.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            pa.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return pa;
@@ -107,11 +108,11 @@ public class PropertyAmenityRepository {
         pa.setAmenityId(record.getAmenityId());
         pa.setTeamId(record.getTeamId());
         pa.setNotes(record.getNotes());
-        pa.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(ZoneOffset.UTC));
-        pa.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(ZoneOffset.UTC));
+        pa.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
+        pa.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
         pa.setCreatedBy(record.getCreatedBy());
         pa.setUpdatedBy(record.getUpdatedBy());
-        pa.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(ZoneOffset.UTC));
+        pa.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
         return pa;
     }
 }

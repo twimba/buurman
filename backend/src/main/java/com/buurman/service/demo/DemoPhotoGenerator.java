@@ -47,7 +47,7 @@ public class DemoPhotoGenerator {
             if (propertyIds == null) continue;
 
             for (UUID propertyId : propertyIds) {
-                totalPhotos += generatePropertyPhotos(teamId, propertyId, uploadedBy);
+                totalPhotos += generatePropertyPhotos(teamId, ctx.getIdentifier(teamId), propertyId, ctx.getIdentifier(propertyId), uploadedBy);
             }
 
             log.info("Uploaded photos for {} properties in team {}", propertyIds.size(), teamKey);
@@ -56,7 +56,7 @@ public class DemoPhotoGenerator {
         log.info("Total property photos created: {}", totalPhotos);
     }
 
-    private int generatePropertyPhotos(UUID teamId, UUID propertyId, UUID uploadedBy) {
+    private int generatePropertyPhotos(UUID teamId, String teamIdentifier, UUID propertyId, String propertyIdentifier, UUID uploadedBy) {
         record PhotoSlot(String category, String title, boolean isMain) {}
 
         List<PhotoSlot> slots = List.of(
@@ -75,7 +75,7 @@ public class DemoPhotoGenerator {
             try {
                 String fileName = slot.title.toLowerCase().replace(" ", "-") + ".jpg";
                 String fileKey = s3StorageService.uploadFile(
-                        imageData, "image/jpeg", teamId, "PROPERTY", propertyId, fileName);
+                        imageData, "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier, fileName);
 
                 Photo photo = new Photo();
                 photo.setTeamId(teamId);

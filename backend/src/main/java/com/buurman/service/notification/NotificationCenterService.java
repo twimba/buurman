@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 @Service
 public class NotificationCenterService {
 
@@ -140,10 +142,10 @@ public class NotificationCenterService {
             return null;
         }
         try {
-            return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ISO_DATE_TIME);
+            return LocalDateTime.parse(dateTimeStr, ISO_DATE_TIME);
         } catch (Exception e) {
             try {
-                return LocalDateTime.parse(dateTimeStr + "T00:00:00", DateTimeFormatter.ISO_DATE_TIME);
+                return LocalDateTime.parse(dateTimeStr + "T00:00:00", ISO_DATE_TIME);
             } catch (Exception e2) {
                 return null;
             }

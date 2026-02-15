@@ -124,9 +124,10 @@ public class DemoPropertyGenerator {
                     default -> 75;
                 });
 
+                String propertyIdentifier = UlidGenerator.generate(EntityPrefix.PRO);
                 dsl.insertInto(PROPERTIES)
                         .set(PROPERTIES.ID, propertyId)
-                        .set(PROPERTIES.IDENTIFIER, UlidGenerator.generate(EntityPrefix.PRO))
+                        .set(PROPERTIES.IDENTIFIER, propertyIdentifier)
                         .set(PROPERTIES.TEAM_ID, teamId)
                         .set(PROPERTIES.STREET, street)
                         .set(PROPERTIES.CITY, city)
@@ -181,6 +182,7 @@ public class DemoPropertyGenerator {
                         .execute();
 
                 propertyIds.add(propertyId);
+                ctx.putIdentifier(propertyId, propertyIdentifier);
                 ctx.incrementProperties();
 
                 // Add outdoor areas for some properties

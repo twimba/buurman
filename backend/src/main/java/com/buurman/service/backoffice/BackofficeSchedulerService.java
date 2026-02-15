@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.time.ZoneOffset.UTC;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
 @Service
 public class BackofficeSchedulerService {
 
@@ -144,8 +147,8 @@ public class BackofficeSchedulerService {
     private String formatDate(Date date) {
         if (date == null) return null;
         return Instant.ofEpochMilli(date.getTime())
-                .atOffset(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                .atOffset(UTC)
+                .format(ISO_OFFSET_DATE_TIME);
     }
 
     private String formatInterval(long intervalMs) {

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneOffset;
 import java.util.Map;
 
+import static java.time.ZoneOffset.UTC;
+
 @Component
 public class NotificationRecordMapper {
 
@@ -56,11 +58,11 @@ public class NotificationRecordMapper {
         notification.setProviderStatus(record.getProviderStatus());
         notification.setProviderError(record.getProviderError());
         notification.setStatusUpdatedAt(record.getStatusUpdatedAt() != null
-                ? record.getStatusUpdatedAt().toInstant(ZoneOffset.UTC) : null);
+                ? record.getStatusUpdatedAt().toInstant(UTC) : null);
         notification.setResentFromId(record.getResentFromId());
         notification.setResendReason(record.getResendReason());
         notification.setCreatedAt(record.getCreatedAt() != null
-                ? record.getCreatedAt().toInstant(ZoneOffset.UTC) : null);
+                ? record.getCreatedAt().toInstant(UTC) : null);
         notification.setCreatedBy(record.getCreatedBy());
 
         return notification;

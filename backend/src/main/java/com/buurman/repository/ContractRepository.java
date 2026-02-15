@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class ContractRepository {
@@ -126,10 +127,10 @@ public class ContractRepository {
             // Insert
             UUID id = UUID.randomUUID();
             LocalDateTime createdAt = contract.getCreatedAt() != null
-                    ? LocalDateTime.ofInstant(contract.getCreatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(contract.getCreatedAt(), UTC)
                     : now;
             LocalDateTime updatedAt = contract.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
                     : now;
 
             dsl.insertInto(CONTRACTS)
@@ -162,12 +163,12 @@ public class ContractRepository {
                     .execute();
 
             contract.setId(id);
-            contract.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
-            contract.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            contract.setCreatedAt(createdAt.toInstant(UTC));
+            contract.setUpdatedAt(updatedAt.toInstant(UTC));
         } else {
             // Update
             LocalDateTime updatedAt = contract.getUpdatedAt() != null
-                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), ZoneOffset.UTC)
+                    ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
                     : now;
 
             dsl.update(CONTRACTS)
@@ -196,7 +197,7 @@ public class ContractRepository {
                             .and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))
                     .execute();
 
-            contract.setUpdatedAt(updatedAt.toInstant(ZoneOffset.UTC));
+            contract.setUpdatedAt(updatedAt.toInstant(UTC));
         }
 
         return contract;

@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
+import static java.time.ZoneOffset.UTC;
 
 @Repository
 public class EmailVerificationCodeRepository {
@@ -28,19 +29,19 @@ public class EmailVerificationCodeRepository {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = code.getCreatedAt() != null
-                ? LocalDateTime.ofInstant(code.getCreatedAt(), ZoneOffset.UTC)
+                ? LocalDateTime.ofInstant(code.getCreatedAt(), UTC)
                 : now;
 
         dsl.insertInto(EMAIL_VERIFICATION_CODES)
                 .set(EMAIL_VERIFICATION_CODES.ID, id)
                 .set(EMAIL_VERIFICATION_CODES.USER_ID, code.getUserId())
                 .set(EMAIL_VERIFICATION_CODES.CODE, code.getCode())
-                .set(EMAIL_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), ZoneOffset.UTC))
+                .set(EMAIL_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), UTC))
                 .set(EMAIL_VERIFICATION_CODES.CREATED_AT, createdAt)
                 .execute();
 
         code.setId(id);
-        code.setCreatedAt(createdAt.toInstant(ZoneOffset.UTC));
+        code.setCreatedAt(createdAt.toInstant(UTC));
     }
 
     public Optional<EmailVerificationCode> findValidCode(UUID userId, String code) {
@@ -59,9 +60,9 @@ public class EmailVerificationCodeRepository {
                     evc.setId(record.getId());
                     evc.setUserId(record.getUserId());
                     evc.setCode(record.getCode());
-                    evc.setExpiresAt(record.getExpiresAt().toInstant(ZoneOffset.UTC));
-                    evc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(ZoneOffset.UTC) : null);
-                    evc.setCreatedAt(record.getCreatedAt().toInstant(ZoneOffset.UTC));
+                    evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
+                    evc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+                    evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
                     return evc;
                 });
     }
@@ -77,7 +78,7 @@ public class EmailVerificationCodeRepository {
     }
 
     public int countRecentByUserId(UUID userId, Instant since) {
-        LocalDateTime sinceLocal = LocalDateTime.ofInstant(since, ZoneOffset.UTC);
+        LocalDateTime sinceLocal = LocalDateTime.ofInstant(since, UTC);
 
         return dsl.fetchCount(
                 dsl.selectFrom(EMAIL_VERIFICATION_CODES)

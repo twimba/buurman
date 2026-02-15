@@ -56,6 +56,7 @@ public class DemoTeamGenerator {
                     .execute();
 
             ctx.getTeamIds().put(entry.getKey(), teamId);
+            ctx.putIdentifier(teamId, identifier);
             ctx.incrementTeams();
             log.info("Created demo team: {} ({})", entry.getValue(), teamId);
         }

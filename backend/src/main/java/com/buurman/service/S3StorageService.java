@@ -57,13 +57,13 @@ public class S3StorageService {
 
     /**
      * Upload file to S3 and return the file key.
-     * File key pattern: {teamId}/{entityType}/{entityId}/{uuid}_{filename}
+     * File key pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
      */
-    public String uploadFile(MultipartFile file, UUID teamId, String entityType, UUID entityId) {
+    public String uploadFile(MultipartFile file, String teamIdentifier, String entityType, String entityIdentifier) {
         Instant start = clock.instant();
         try {
             String originalFilename = file.getOriginalFilename();
-            String fileKey = generateFileKey(teamId, entityType, entityId, originalFilename);
+            String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, originalFilename);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -98,9 +98,9 @@ public class S3StorageService {
      * Upload raw bytes to S3 and return the file key.
      * Same key pattern as the MultipartFile variant.
      */
-    public String uploadFile(byte[] data, String contentType, UUID teamId, String entityType, UUID entityId, String filename) {
+    public String uploadFile(byte[] data, String contentType, String teamIdentifier, String entityType, String entityIdentifier, String filename) {
         Instant start = clock.instant();
-        String fileKey = generateFileKey(teamId, entityType, entityId, filename);
+        String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, filename);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -237,12 +237,12 @@ public class S3StorageService {
     }
 
     /**
-     * Generate file key with pattern: {teamId}/{entityType}/{entityId}/{uuid}_{filename}
+     * Generate file key with pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
      */
-    private String generateFileKey(UUID teamId, String entityType, UUID entityId, String filename) {
+    private String generateFileKey(String teamIdentifier, String entityType, String entityIdentifier, String filename) {
         String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
         String uniqueId = UUID.randomUUID().toString();
         return String.format("%s/%s/%s/%s_%s",
-                teamId, entityType, entityId, uniqueId, sanitizedFilename);
+                teamIdentifier, entityType, entityIdentifier, uniqueId, sanitizedFilename);
     }
 }

@@ -93,7 +93,7 @@ public class DemoDocumentGenerator {
                 String street = fetchPropertyStreet(propertyId);
                 String prefix = street != null ? slugify(street) : "property";
                 for (DocTemplate doc : pickRandom(PROPERTY_DOCS, random.nextInt(2, 4))) {
-                    if (uploadDocument(teamId, uploadedBy, "PROPERTY", propertyId,
+                    if (uploadDocument(ctx, teamId, uploadedBy, "PROPERTY", propertyId,
                             doc.title, prefix + "-" + doc.pdfResource, doc.pdfResource, doc.notes)) {
                         teamDocuments++;
                     }
@@ -105,7 +105,7 @@ public class DemoDocumentGenerator {
                 String tenantName = fetchTenantName(tenantId);
                 String prefix = tenantName != null ? slugify(tenantName) : "tenant";
                 for (DocTemplate doc : pickRandom(TENANT_DOCS, random.nextInt(1, 3))) {
-                    if (uploadDocument(teamId, uploadedBy, "TENANT", tenantId,
+                    if (uploadDocument(ctx, teamId, uploadedBy, "TENANT", tenantId,
                             doc.title, prefix + "-" + doc.pdfResource, doc.pdfResource, doc.notes)) {
                         teamDocuments++;
                     }
@@ -119,7 +119,7 @@ public class DemoDocumentGenerator {
 
                 String status = contract.get(CONTRACTS.STATUS);
                 if ("DRAFT".equals(status)) {
-                    if (uploadDocument(teamId, uploadedBy, "CONTRACT", contractId,
+                    if (uploadDocument(ctx, teamId, uploadedBy, "CONTRACT", contractId,
                             "Draft rental agreement", "draft-rental-agreement.pdf",
                             "hud-model-lease.pdf", "Unsigned draft for review")) {
                         teamDocuments++;
@@ -128,7 +128,7 @@ public class DemoDocumentGenerator {
                 }
 
                 for (DocTemplate doc : pickRandom(CONTRACT_DOCS, random.nextInt(2, 4))) {
-                    if (uploadDocument(teamId, uploadedBy, "CONTRACT", contractId,
+                    if (uploadDocument(ctx, teamId, uploadedBy, "CONTRACT", contractId,
                             doc.title, doc.pdfResource, doc.pdfResource, doc.notes)) {
                         teamDocuments++;
                     }
@@ -136,7 +136,7 @@ public class DemoDocumentGenerator {
             }
 
             // Expense documents (~50% of expenses)
-            var expenseRecords = dsl.select(EXPENSES.ID, EXPENSES.DESCRIPTION, EXPENSES.CATEGORY)
+            var expenseRecords = dsl.select(EXPENSES.ID, EXPENSES.IDENTIFIER, EXPENSES.DESCRIPTION, EXPENSES.CATEGORY)
                     .from(EXPENSES)
                     .where(EXPENSES.TEAM_ID.eq(teamId))
                     .fetch();
@@ -145,12 +145,13 @@ public class DemoDocumentGenerator {
                 if (random.nextBoolean()) continue;
 
                 UUID expenseId = expense.get(EXPENSES.ID);
+                ctx.putIdentifier(expenseId, expense.get(EXPENSES.IDENTIFIER));
                 String category = expense.get(EXPENSES.CATEGORY);
                 String description = expense.get(EXPENSES.DESCRIPTION);
                 DocTemplate doc = EXPENSE_DOCS.get(random.nextInt(EXPENSE_DOCS.size()));
                 String prefix = slugify(category.toLowerCase());
 
-                if (uploadDocument(teamId, uploadedBy, "EXPENSE", expenseId,
+                if (uploadDocument(ctx, teamId, uploadedBy, "EXPENSE", expenseId,
                         doc.title + " — " + description,
                         prefix + "-" + doc.pdfResource, doc.pdfResource, doc.notes)) {
                     teamDocuments++;
@@ -162,13 +163,13 @@ public class DemoDocumentGenerator {
         }
     }
 
-    private boolean uploadDocument(UUID teamId, UUID uploadedBy, String entityType, UUID entityId,
+    private boolean uploadDocument(DemoDataContext ctx, UUID teamId, UUID uploadedBy, String entityType, UUID entityId,
                                    String title, String fileName, String pdfResource, String notes) {
         byte[] pdfData = pdfPool.getOrDefault(pdfResource, pdfPool.values().iterator().next());
 
         try {
             String fileKey = s3StorageService.uploadFile(
-                    pdfData, "application/pdf", teamId, entityType, entityId, fileName);
+                    pdfData, "application/pdf", ctx.getIdentifier(teamId), entityType, ctx.getIdentifier(entityId), fileName);
 
             Document document = new Document();
             document.setTeamId(teamId);
