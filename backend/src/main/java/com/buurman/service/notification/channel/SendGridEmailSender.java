@@ -64,8 +64,7 @@ public class SendGridEmailSender implements NotificationChannelSender {
                 log.info("SendGrid email sent to {}, message ID: {}", request.recipientEmail(), messageId);
                 return messageId;
             } else {
-                throw new NotificationSendException(
-                        "SendGrid returned status " + response.getStatusCode() + ": " + response.getBody());
+                throw new NotificationSendException("SendGrid returned status " + response.getStatusCode() + ": " + response.getBody());
             }
         } catch (IOException e) {
             throw new NotificationSendException("Failed to send email via SendGrid", e);

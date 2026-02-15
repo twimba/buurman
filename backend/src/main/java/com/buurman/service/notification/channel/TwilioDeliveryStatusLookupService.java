@@ -1,10 +1,10 @@
 package com.buurman.service.notification.channel;
 
 import com.buurman.domain.Notification;
-import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.repository.NotificationRepository;
 
+import static com.buurman.domain.NotificationChannel.SMS;
 import static com.buurman.domain.NotificationStatus.DELIVERED;
 import static com.buurman.domain.NotificationStatus.FAILED;
 import static com.buurman.domain.NotificationStatus.QUEUED;
@@ -35,13 +35,13 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
             return notification;
         }
 
-        if (notification.getChannel() == NotificationChannel.SMS) {
+        if (notification.getChannel() == SMS) {
             return refreshTwilioStatus(notification);
         }
 
-        // SendGrid doesn't offer a free real-time status lookup API
         log.debug("Status refresh not available for channel {} (notification {})",
                 notification.getChannel(), notification.getIdentifier());
+
         return notification;
     }
 
@@ -49,7 +49,7 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
         try {
             Message message = Message.fetcher(notification.getProviderMessageId()).fetch();
 
-            NotificationStatus newStatus = mapTwilioStatus(message.getStatus().toString());
+            NotificationStatus newStatus = mapTwilioStatus(message.getStatus());
             String providerStatus = message.getStatus().toString();
             String providerError = message.getErrorCode() != null
                     ? message.getErrorCode() + ": " + message.getErrorMessage()
@@ -74,13 +74,21 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
         }
     }
 
-    private NotificationStatus mapTwilioStatus(String status) {
-        return switch (status.toLowerCase()) {
-            case "queued", "accepted" -> QUEUED;
-            case "sending", "sent" -> SENT;
-            case "delivered" -> DELIVERED;
-            case "failed", "undelivered" -> FAILED;
-            default -> SENT;
+    private NotificationStatus mapTwilioStatus(Message.Status status) {
+        return switch (status) {
+            case QUEUED -> QUEUED;
+            case SENDING -> QUEUED;
+            case SENT -> SENT;
+            case FAILED -> DELIVERED;
+            case DELIVERED -> DELIVERED;
+            case UNDELIVERED -> FAILED;
+            case RECEIVING -> QUEUED;
+            case RECEIVED -> DELIVERED;
+            case ACCEPTED -> QUEUED;
+            case SCHEDULED -> QUEUED;
+            case READ -> DELIVERED;
+            case PARTIALLY_DELIVERED -> DELIVERED;
+            case CANCELED -> FAILED;
         };
     }
 }

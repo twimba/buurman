@@ -29,7 +29,9 @@ public class FeatureFlagService {
      * Global flag evaluation (no identity context).
      */
     public boolean isEnabled(String flagKey) {
-        if (flagsmithClient == null) return false;
+        if (flagsmithClient == null) {
+            return false;
+        }
         try {
             Flags flags = flagsmithClient.getEnvironmentFlags();
             return flags.isFeatureEnabled(flagKey);
@@ -43,9 +45,15 @@ public class FeatureFlagService {
      * Identity-aware flag evaluation with user/team traits.
      */
     public boolean isEnabled(String flagKey, UserPrincipal principal) {
-        if (flagsmithClient == null) return false;
+        if (flagsmithClient == null) {
+            return false;
+        }
         try {
-            Flags flags = flagsmithClient.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
+            String identity = buildIdentity(principal);
+            Map<String, Object> traits = buildTraits(principal);
+
+            Flags flags = flagsmithClient.getIdentityFlags(identity, traits);
+            
             return flags.isFeatureEnabled(flagKey);
         } catch (Exception e) {
             log.warn("Failed to evaluate flag '{}' for identity, defaulting to false", flagKey, e);
@@ -57,7 +65,9 @@ public class FeatureFlagService {
      * Get remote config value for a flag (global).
      */
     public Object getValue(String flagKey) {
-        if (flagsmithClient == null) return null;
+        if (flagsmithClient == null) {
+            return null;
+        }
         try {
             Flags flags = flagsmithClient.getEnvironmentFlags();
             return flags.getFeatureValue(flagKey);
@@ -146,10 +156,15 @@ public class FeatureFlagService {
     }
 
     private Map<String, Object> buildTraits(UserPrincipal principal) {
-        return Map.of(
-                "team", principal.getTeamIdentifier().toString(),
-                "role", principal.getRole(),
-                "is_owner", principal.isOwner()
-        );
+        Map<String, Object> traits = new HashMap<>();
+        traits.put("email", principal.getEmail());
+        traits.put("is_owner", principal.isOwner());
+        if (principal.getTeamIdentifier() != null) {
+            traits.put("team", principal.getTeamIdentifier());
+        }
+        if (principal.getRole() != null) {
+            traits.put("role", principal.getRole());
+        }
+        return traits;
     }
 }

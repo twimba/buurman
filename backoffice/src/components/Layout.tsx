@@ -13,6 +13,7 @@ import {
   MessageSquare,
   Flag,
   Timer,
+  ScrollText,
   LogOut,
   Shield,
   ChevronsLeft,
@@ -48,6 +49,7 @@ const navigation = [
   { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
   { name: "Scheduler", href: "/scheduler", icon: Timer },
+  { name: "Loggers", href: "/loggers", icon: ScrollText },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");

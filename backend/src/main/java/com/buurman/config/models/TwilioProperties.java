@@ -7,5 +7,6 @@ public record TwilioProperties(
         String accountSid,
         String authToken,
         String fromNumber,
+        String messagingServiceSid,
         String statusCallbackUrl
 ) {}

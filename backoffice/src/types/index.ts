@@ -143,3 +143,9 @@ export interface JobExecutionHistory {
   errorMessage: string | null;
   nodeId: string | null;
 }
+
+export interface LoggerConfiguration {
+  name: string;
+  configuredLevel: string | null;
+  effectiveLevel: string;
+}

@@ -26,21 +26,32 @@ public class TwilioSmsSender implements NotificationChannelSender {
     private static final Logger log = LoggerFactory.getLogger(TwilioSmsSender.class);
 
     private final String fromNumber;
+    private final String messagingServiceSid;
     private final String statusCallbackUrl;
 
     public TwilioSmsSender(TwilioProperties twilioProperties) {
         this.fromNumber = twilioProperties.fromNumber();
+        this.messagingServiceSid = twilioProperties.messagingServiceSid();
         this.statusCallbackUrl = twilioProperties.statusCallbackUrl();
     }
 
     @Override
     public String send(NotificationSendRequest request) throws NotificationSendException {
         try {
-            MessageCreator creator = Message.creator(
-                    new PhoneNumber(request.recipientPhone()),
-                    new PhoneNumber(fromNumber),
-                    request.body()
-            );
+            MessageCreator creator;
+            if (messagingServiceSid != null && !messagingServiceSid.isBlank()) {
+                creator = Message.creator(
+                        new PhoneNumber(request.recipientPhone()),
+                        messagingServiceSid,
+                        request.body()
+                );
+            } else {
+                creator = Message.creator(
+                        new PhoneNumber(request.recipientPhone()),
+                        new PhoneNumber(fromNumber),
+                        request.body()
+                );
+            }
 
             if (statusCallbackUrl != null && !statusCallbackUrl.isBlank()) {
                 creator.setStatusCallback(URI.create(statusCallbackUrl));

@@ -13,6 +13,7 @@ import { ToolEmbedPage } from "./pages/ToolEmbedPage";
 import { SmsPolicyPage } from "./pages/SmsPolicyPage";
 import { FeatureFlagsPage } from "./pages/FeatureFlagsPage";
 import { SchedulerPage } from "./pages/SchedulerPage";
+import { LoggersPage } from "./pages/LoggersPage";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/sms-policy" element={<SmsPolicyPage />} />
               <Route path="/feature-flags" element={<FeatureFlagsPage />} />
               <Route path="/scheduler" element={<SchedulerPage />} />
+              <Route path="/loggers" element={<LoggersPage />} />
               <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
             </Route>
           </Route>
