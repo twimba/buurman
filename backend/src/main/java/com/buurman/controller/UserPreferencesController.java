@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users/preferences")
 @Tag(name = "User Preferences", description = "User preferences and notification channel settings")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class UserPreferencesController {
 
     private final UserPreferencesService preferencesService;
-
-    public UserPreferencesController(UserPreferencesService preferencesService) {
-        this.preferencesService = preferencesService;
-    }
 
     @Operation(summary = "Get user preferences", description = "Get the current user's global preferences")
     @GetMapping

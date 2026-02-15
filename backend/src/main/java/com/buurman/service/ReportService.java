@@ -10,8 +10,8 @@ import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +37,9 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ReportService {
-
-    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
 
     private final PaymentRepository paymentRepository;
     private final ExpenseRepository expenseRepository;
@@ -63,20 +63,6 @@ public class ReportService {
     );
 
     private final Clock clock;
-
-    public ReportService(PaymentRepository paymentRepository,
-                        ExpenseRepository expenseRepository,
-                        PropertyRepository propertyRepository,
-                        ContractRepository contractRepository,
-                        PropertyMapper propertyMapper,
-                        Clock clock) {
-        this.paymentRepository = paymentRepository;
-        this.expenseRepository = expenseRepository;
-        this.propertyRepository = propertyRepository;
-        this.contractRepository = contractRepository;
-        this.propertyMapper = propertyMapper;
-        this.clock = clock;
-    }
 
     @Transactional(readOnly = true)
     public FinancialOverviewResponse getFinancialOverview(
@@ -150,7 +136,9 @@ public class ReportService {
         List<PropertyFinancialSummary> incomeByPropertyList = allPropertyIds.stream()
                 .map(propId -> {
                     Property prop = propertiesById.get(propId);
-                    if (prop == null) return null;
+                    if (prop == null) {
+                        return null;
+                    }
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     return new PropertyFinancialSummary(
                             propertyMapper.toSummary(prop),
@@ -166,7 +154,9 @@ public class ReportService {
         List<PropertyFinancialSummary> expensesByPropertyList = allPropertyIds.stream()
                 .map(propId -> {
                     Property prop = propertiesById.get(propId);
-                    if (prop == null) return null;
+                    if (prop == null) {
+                        return null;
+                    }
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);
@@ -316,7 +306,9 @@ public class ReportService {
         List<PropertyComparisonResponse.PropertyData> propertyData = allPropertyIds.stream()
                 .map(propId -> {
                     Property prop = propertiesById.get(propId);
-                    if (prop == null) return null;
+                    if (prop == null) {
+                        return null;
+                    }
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);
@@ -445,7 +437,9 @@ public class ReportService {
         List<PropertyFinancialSummary> properties = allPropertyIds.stream()
                 .map(propId -> {
                     Property prop = propertiesById.get(propId);
-                    if (prop == null) return null;
+                    if (prop == null) {
+                        return null;
+                    }
                     BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
                     BigDecimal netProfit = income.subtract(expense);

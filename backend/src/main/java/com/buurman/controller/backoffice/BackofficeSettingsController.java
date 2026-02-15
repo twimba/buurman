@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +23,11 @@ import java.util.Map;
 @RequestMapping("/backoffice/settings")
 @Tag(name = "Backoffice - Settings", description = "Platform settings management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeSettingsController {
 
     private final PhoneNumberPolicyService policyService;
 
-    public BackofficeSettingsController(PhoneNumberPolicyService policyService) {
-        this.policyService = policyService;
-    }
 
     @Operation(summary = "Get phone number policy", description = "Get the current phone number policy configuration")
     @GetMapping("/phone-policy")

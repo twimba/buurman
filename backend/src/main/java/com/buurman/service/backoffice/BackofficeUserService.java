@@ -8,11 +8,11 @@ import com.buurman.repository.UserRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.KeycloakService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
 
 import static org.jooq.impl.DSL.count;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,24 +27,14 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeUserService {
-
-    private static final Logger log = LoggerFactory.getLogger(BackofficeUserService.class);
 
     private final UserRepository userRepository;
     private final KeycloakService keycloakService;
     private final DSLContext dsl;
     private final Clock clock;
-
-    public BackofficeUserService(UserRepository userRepository,
-                                 KeycloakService keycloakService,
-                                 DSLContext dsl,
-                                 Clock clock) {
-        this.userRepository = userRepository;
-        this.keycloakService = keycloakService;
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     @Transactional(readOnly = true)
     public PageResponse<BackofficeUserResponse> listUsers(PageRequest pageRequest, String search) {

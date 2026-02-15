@@ -14,7 +14,9 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.config.models.AppProperties;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newCalendarFeedId;
+import static com.buurman.util.UlidGenerator.newToken;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +29,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.CAL;
+
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 @Service
+@RequiredArgsConstructor
 public class CalendarFeedService {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -43,20 +46,6 @@ public class CalendarFeedService {
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
     private final AppProperties appProperties;
-
-    public CalendarFeedService(CalendarFeedRepository calendarFeedRepository,
-                               PaymentRepository paymentRepository,
-                               ContractRepository contractRepository,
-                               PropertyRepository propertyRepository,
-                               TenantRepository tenantRepository,
-                               AppProperties appProperties) {
-        this.calendarFeedRepository = calendarFeedRepository;
-        this.paymentRepository = paymentRepository;
-        this.contractRepository = contractRepository;
-        this.propertyRepository = propertyRepository;
-        this.tenantRepository = tenantRepository;
-        this.appProperties = appProperties;
-    }
 
     @PreAuthorize("hasRole('TEAM_ADMIN')")
     public List<CalendarFeedResponse> getUserFeeds(UserPrincipal principal) {
@@ -112,10 +101,10 @@ public class CalendarFeedService {
         }
 
         CalendarFeed feed = new CalendarFeed();
-        feed.setIdentifier(UlidGenerator.generate(CAL).value());
+        feed.setIdentifier(newCalendarFeedId().value());
         feed.setTeamId(principal.getTeamId());
         feed.setUserId(principal.getUserId());
-        feed.setFeedToken(UlidGenerator.generate().value() + UlidGenerator.generate().value());
+        feed.setFeedToken(newToken().value() + newToken().value());
         feed.setFeedType(request.feedType());
         feed.setContractId(contractId);
         feed.setPropertyId(propertyId);
@@ -136,7 +125,7 @@ public class CalendarFeedService {
 
         verifyOwnership(feed, principal);
 
-        feed.setFeedToken(UlidGenerator.generate().value() + UlidGenerator.generate().value());
+        feed.setFeedToken(newToken().value() + newToken().value());
         feed.setUpdatedBy(principal.getUserId());
         feed.setUpdatedAt(null); // let repository set current time
 
@@ -397,7 +386,9 @@ public class CalendarFeedService {
                     label.append(property.getStreet());
                 }
                 if (tenant != null) {
-                    if (label.length() > 0) label.append(" - ");
+                    if (label.length() > 0) {
+                        label.append(" - ");
+                    }
                     label.append(tenant.getFirstName()).append(" ").append(tenant.getLastName());
                 }
                 entityLabel = label.length() > 0 ? label.toString() : contract.getIdentifier();
@@ -454,7 +445,9 @@ public class CalendarFeedService {
     }
 
     private static String escapeText(String text) {
-        if (text == null) return "";
+        if (text == null) {
+            return "";
+        }
         return text.replace("\\", "\\\\")
                 .replace(";", "\\;")
                 .replace(",", "\\,");

@@ -7,6 +7,7 @@ import com.buurman.service.RegistrationInvitationService;
 import com.buurman.util.FeatureFlags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @Tag(name = "Registration", description = "Public registration endpoints")
+@RequiredArgsConstructor
 public class RegistrationInvitationController {
 
     private final RegistrationInvitationService invitationService;
     private final FeatureFlagService featureFlagService;
 
-    public RegistrationInvitationController(RegistrationInvitationService invitationService,
-                                             FeatureFlagService featureFlagService) {
-        this.invitationService = invitationService;
-        this.featureFlagService = featureFlagService;
-    }
 
     @PostMapping("/registration-invitations/validate")
     @Operation(summary = "Validate a registration invitation code")

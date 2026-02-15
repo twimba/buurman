@@ -10,6 +10,7 @@ import com.buurman.dto.response.UserPreferencesResponse;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +22,11 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@RequiredArgsConstructor
 public class UserPreferencesService {
 
     private final UserPreferencesRepository preferencesRepository;
     private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
-
-    public UserPreferencesService(UserPreferencesRepository preferencesRepository,
-                                  UserNotificationTypePreferenceRepository notifTypePrefRepository) {
-        this.preferencesRepository = preferencesRepository;
-        this.notifTypePrefRepository = notifTypePrefRepository;
-    }
 
     public UserPreferencesResponse getPreferences(UserPrincipal principal) {
         UserPreferences prefs = preferencesRepository.findByUserId(principal.getUserId())

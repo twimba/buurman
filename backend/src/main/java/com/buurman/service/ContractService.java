@@ -28,7 +28,7 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newContractId;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.DRAFT;
@@ -38,10 +38,10 @@ import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
-import static com.buurman.util.EntityPrefix.CON;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,9 +55,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ContractService {
-
-    private static final Logger log = LoggerFactory.getLogger(ContractService.class);
 
     private final ContractRepository contractRepository;
     private final PropertyRepository propertyRepository;
@@ -73,37 +73,6 @@ public class ContractService {
     private final NotificationService notificationService;
     private final AppProperties appProperties;
     private final Clock clock;
-
-    public ContractService(
-            ContractRepository contractRepository,
-            PropertyRepository propertyRepository,
-            TenantRepository tenantRepository,
-            DocumentRepository documentRepository,
-            ContractMapper contractMapper,
-            PropertyMapper propertyMapper,
-            TenantMapper tenantMapper,
-            AuditService auditService,
-            DocumentService documentService,
-            PaymentSchedulingService paymentSchedulingService,
-            MetricsService metricsService,
-            NotificationService notificationService,
-            AppProperties appProperties,
-            Clock clock) {
-        this.contractRepository = contractRepository;
-        this.propertyRepository = propertyRepository;
-        this.tenantRepository = tenantRepository;
-        this.documentRepository = documentRepository;
-        this.contractMapper = contractMapper;
-        this.propertyMapper = propertyMapper;
-        this.tenantMapper = tenantMapper;
-        this.auditService = auditService;
-        this.documentService = documentService;
-        this.paymentSchedulingService = paymentSchedulingService;
-        this.metricsService = metricsService;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.clock = clock;
-    }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
@@ -138,7 +107,7 @@ public class ContractService {
         Contract contract = contractMapper.toEntity(request);
         contract.setPropertyId(property.getId());
         contract.setTenantId(tenant.getId());
-        contract.setIdentifier(UlidGenerator.generate(CON).value());
+        contract.setIdentifier(newContractId().value());
         contract.setTeamId(teamId);
         contract.setStatus(DRAFT);
         contract.setCreatedBy(principal.getUserId());
@@ -594,7 +563,7 @@ public class ContractService {
         // Create new contract with same data
         Contract newContract = new Contract(
                 null, // New ID will be generated
-                UlidGenerator.generate(CON).value(), // New identifier
+                newContractId().value(), // New identifier
                 teamId,
                 sourceContract.getPropertyId(),
                 sourceContract.getTenantId(),
@@ -745,8 +714,12 @@ public class ContractService {
     }
 
     private static boolean bigDecimalEquals(java.math.BigDecimal a, java.math.BigDecimal b) {
-        if (a == null && b == null) return true;
-        if (a == null || b == null) return false;
+        if (a == null && b == null) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
         return a.compareTo(b) == 0;
     }
 

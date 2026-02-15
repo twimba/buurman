@@ -5,17 +5,16 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @DisallowConcurrentExecution
+@RequiredArgsConstructor
 public class ContractExpiryCheckJob implements Job {
 
     private final NotificationSchedulerService notificationSchedulerService;
 
-    public ContractExpiryCheckJob(NotificationSchedulerService notificationSchedulerService) {
-        this.notificationSchedulerService = notificationSchedulerService;
-    }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

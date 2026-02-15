@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/backoffice/buurmies")
 @Tag(name = "Backoffice - Buurmies", description = "Keycloak user management for buurman realm")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeBuurmyController {
 
     private final BackofficeBuurmyService buurmyService;
 
-    public BackofficeBuurmyController(BackofficeBuurmyService buurmyService) {
-        this.buurmyService = buurmyService;
-    }
 
     @Operation(summary = "List buurmies", description = "List Keycloak users with search and pagination")
     @GetMapping

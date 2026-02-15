@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.quartz.SchedulerException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +20,11 @@ import java.util.List;
 @RequestMapping("/backoffice/scheduler")
 @Tag(name = "Backoffice - Scheduler", description = "Job and scheduler management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeSchedulerController {
 
     private final BackofficeSchedulerService schedulerService;
 
-    public BackofficeSchedulerController(BackofficeSchedulerService schedulerService) {
-        this.schedulerService = schedulerService;
-    }
 
     @Operation(summary = "List all jobs", description = "Get all configured Quartz jobs with trigger details")
     @GetMapping("/jobs")

@@ -14,6 +14,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.opencsv.CSVWriter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -30,6 +31,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@RequiredArgsConstructor
 public class ExportService {
 
     private final PaymentRepository paymentRepository;
@@ -43,32 +45,6 @@ public class ExportService {
     private final TenantAddressRepository tenantAddressRepository;
     private final MetricsService metricsService;
     private final Clock clock;
-
-    public ExportService(
-            PaymentRepository paymentRepository,
-            ExpenseRepository expenseRepository,
-            PropertyRepository propertyRepository,
-            ContractRepository contractRepository,
-            TenantRepository tenantRepository,
-            PropertyAmenityRepository propertyAmenityRepository,
-            PropertyOutdoorAreaRepository propertyOutdoorAreaRepository,
-            AmenityRepository amenityRepository,
-            TenantAddressRepository tenantAddressRepository,
-            MetricsService metricsService,
-            Clock clock
-    ) {
-        this.paymentRepository = paymentRepository;
-        this.expenseRepository = expenseRepository;
-        this.propertyRepository = propertyRepository;
-        this.contractRepository = contractRepository;
-        this.tenantRepository = tenantRepository;
-        this.propertyAmenityRepository = propertyAmenityRepository;
-        this.propertyOutdoorAreaRepository = propertyOutdoorAreaRepository;
-        this.amenityRepository = amenityRepository;
-        this.tenantAddressRepository = tenantAddressRepository;
-        this.metricsService = metricsService;
-        this.clock = clock;
-    }
 
     public byte[] generateTransactionHistoryCSV(LocalDate startDate, LocalDate endDate, UUID teamId) {
         Instant start = clock.instant();
@@ -1183,7 +1159,9 @@ public class ExportService {
             Map<Integer, BigDecimal[]> yearPayments = new TreeMap<>(Comparator.reverseOrder());
             for (Payment payment : allPayments) {
                 LocalDate dateRef = payment.getPaymentDate() != null ? payment.getPaymentDate() : payment.getDueDate();
-                if (dateRef == null) continue;
+                if (dateRef == null) {
+                    continue;
+                }
                 int year = dateRef.getYear();
                 yearPayments.computeIfAbsent(year, k -> new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO});
                 BigDecimal[] amounts = yearPayments.get(year);
@@ -1214,9 +1192,15 @@ public class ExportService {
                     .sorted((a, b) -> {
                         LocalDate da = a.getDueDate() != null ? a.getDueDate() : a.getPaymentDate();
                         LocalDate db = b.getDueDate() != null ? b.getDueDate() : b.getPaymentDate();
-                        if (da == null && db == null) return 0;
-                        if (da == null) return 1;
-                        if (db == null) return -1;
+                        if (da == null && db == null) {
+                            return 0;
+                        }
+                        if (da == null) {
+                            return 1;
+                        }
+                        if (db == null) {
+                            return -1;
+                        }
                         return db.compareTo(da);
                     })
                     .limit(50)
@@ -1232,9 +1216,13 @@ public class ExportService {
                 html.append("<td>").append(payment.getCurrency()).append(" ").append(String.format("%.2f", payment.getAmount())).append("</td>");
                 html.append("<td>").append(payment.getPaymentDate() != null ? payment.getPaymentDate().format(shortDateFormatter) : "-").append("</td>");
                 String statusStyle = "";
-                if (payment.getStatus() == PAID) statusStyle = "color: #059669; font-weight: 600;";
-                else if (payment.getStatus() == OVERDUE) statusStyle = "color: #dc2626; font-weight: 600;";
-                else if (payment.getStatus() == PENDING) statusStyle = "color: #d97706; font-weight: 600;";
+                if (payment.getStatus() == PAID) {
+                    statusStyle = "color: #059669; font-weight: 600;";
+                } else if (payment.getStatus() == OVERDUE) {
+                    statusStyle = "color: #dc2626; font-weight: 600;";
+                } else if (payment.getStatus() == PENDING) {
+                    statusStyle = "color: #d97706; font-weight: 600;";
+                }
                 html.append("<td style='").append(statusStyle).append("'>").append(payment.getStatus() != null ? formatEnumValue(payment.getStatus().name()) : "-").append("</td>");
                 html.append("</tr>");
             }
@@ -1265,7 +1253,9 @@ public class ExportService {
     }
 
     private String escapeHtml(String text) {
-        if (text == null) return "";
+        if (text == null) {
+            return "";
+        }
         return text.replace("&", "&amp;")
                    .replace("<", "&lt;")
                    .replace(">", "&gt;")
@@ -1274,14 +1264,18 @@ public class ExportService {
     }
 
     private String formatEnumValue(String value) {
-        if (value == null) return "";
+        if (value == null) {
+            return "";
+        }
         return Arrays.stream(value.split("_"))
                 .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
                 .collect(joining(" "));
     }
 
     private String getEnergyRatingColor(String rating) {
-        if (rating == null) return "#6b7280";
+        if (rating == null) {
+            return "#6b7280";
+        }
         return switch (rating) {
             case "A++" -> "#065f46";
             case "A+" -> "#047857";

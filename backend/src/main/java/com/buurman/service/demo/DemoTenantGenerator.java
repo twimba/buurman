@@ -1,10 +1,9 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,13 +13,13 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
-import static com.buurman.util.EntityPrefix.TAD;
-import static com.buurman.util.EntityPrefix.TEN;
+import static com.buurman.util.UlidGenerator.newTenantAddressId;
+import static com.buurman.util.UlidGenerator.newTenantId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoTenantGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoTenantGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
@@ -38,11 +37,6 @@ public class DemoTenantGenerator {
             "Amsterdam", "Rotterdam", "Den Haag", "Utrecht", "Eindhoven",
             "Tilburg", "Groningen", "Almere", "Breda", "Nijmegen"
     };
-
-    public DemoTenantGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
@@ -62,7 +56,7 @@ public class DemoTenantGenerator {
                         + "." + teamKey.replace("-", "") + i + "@example.com")
                         .replaceAll("[^a-z0-9.@]", "");
 
-                String tenantIdentifier = UlidGenerator.generate(TEN).value();
+                String tenantIdentifier = newTenantId().value();
                 dsl.insertInto(TENANTS)
                         .set(TENANTS.ID, tenantId)
                         .set(TENANTS.IDENTIFIER, tenantIdentifier)
@@ -87,7 +81,7 @@ public class DemoTenantGenerator {
 
                 dsl.insertInto(TENANT_ADDRESSES)
                         .set(TENANT_ADDRESSES.ID, UUID.randomUUID())
-                        .set(TENANT_ADDRESSES.IDENTIFIER, UlidGenerator.generate(TAD).value())
+                        .set(TENANT_ADDRESSES.IDENTIFIER, newTenantAddressId().value())
                         .set(TENANT_ADDRESSES.TENANT_ID, tenantId)
                         .set(TENANT_ADDRESSES.TEAM_ID, teamId)
                         .set(TENANT_ADDRESSES.STREET, faker.address().streetName() + " " + houseNum)

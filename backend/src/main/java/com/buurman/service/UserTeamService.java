@@ -12,6 +12,7 @@ import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserTeamService {
 
     private final UserRepository userRepository;
@@ -26,17 +28,6 @@ public class UserTeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final PhoneVerificationService phoneVerificationService;
     private final PhoneNumberPolicyService phoneNumberPolicyService;
-
-    public UserTeamService(UserRepository userRepository, TeamRepository teamRepository,
-                          TeamMemberRepository teamMemberRepository,
-                          PhoneVerificationService phoneVerificationService,
-                          PhoneNumberPolicyService phoneNumberPolicyService) {
-        this.userRepository = userRepository;
-        this.teamRepository = teamRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.phoneVerificationService = phoneVerificationService;
-        this.phoneNumberPolicyService = phoneNumberPolicyService;
-    }
 
     public UserProfileResponse getCurrentUserProfile(UserPrincipal principal) {
         User user = userRepository.findById(principal.getUserId())

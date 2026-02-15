@@ -11,6 +11,7 @@ import com.buurman.repository.AmenityRepository;
 import com.buurman.repository.PropertyAmenityRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,20 +25,12 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@RequiredArgsConstructor
 public class PropertyAmenityService {
 
     private final AmenityRepository amenityRepository;
     private final PropertyAmenityRepository propertyAmenityRepository;
     private final PropertyRepository propertyRepository;
-
-    public PropertyAmenityService(
-            AmenityRepository amenityRepository,
-            PropertyAmenityRepository propertyAmenityRepository,
-            PropertyRepository propertyRepository) {
-        this.amenityRepository = amenityRepository;
-        this.propertyAmenityRepository = propertyAmenityRepository;
-        this.propertyRepository = propertyRepository;
-    }
 
     public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped() {
         return amenityRepository.findAll().stream()
@@ -110,7 +103,9 @@ public class PropertyAmenityService {
         return links.stream()
                 .map(pa -> {
                     Amenity amenity = amenityMap.get(pa.getAmenityId());
-                    if (amenity == null) return null;
+                    if (amenity == null) {
+                        return null;
+                    }
                     return toPropertyAmenityResponse(amenity, pa);
                 })
                 .filter(r -> r != null)

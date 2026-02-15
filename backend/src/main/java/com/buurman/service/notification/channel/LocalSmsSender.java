@@ -7,8 +7,7 @@ import static com.buurman.domain.NotificationChannel.SMS;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +16,8 @@ import java.util.UUID;
 
 @Component
 @Profile("local")
+@Slf4j
 public class LocalSmsSender implements NotificationChannelSender {
-
-    private static final Logger log = LoggerFactory.getLogger(LocalSmsSender.class);
 
     @Override
     public String send(NotificationSendRequest request) throws NotificationSendException {

@@ -22,6 +22,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 @Service
+@RequiredArgsConstructor
 public class TeamService {
 
     private final TeamRepository teamRepository;
@@ -52,20 +54,6 @@ public class TeamService {
     private final NotificationService notificationService;
     private final AppProperties appProperties;
     private final Clock clock;
-
-    public TeamService(TeamRepository teamRepository, TeamMemberRepository teamMemberRepository,
-                      TeamInvitationRepository invitationRepository, UserRepository userRepository,
-                      TeamMapper teamMapper, NotificationService notificationService,
-                      AppProperties appProperties, Clock clock) {
-        this.teamRepository = teamRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.invitationRepository = invitationRepository;
-        this.userRepository = userRepository;
-        this.teamMapper = teamMapper;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.clock = clock;
-    }
 
     public TeamResponse getCurrentTeam(UserPrincipal principal) {
         Team team = teamRepository.findById(principal.getTeamId())
@@ -178,7 +166,9 @@ public class TeamService {
                 .filter(inv -> !memberTeamIds.contains(inv.getTeamId()))
                 .map(invitation -> {
                     Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
-                    if (team == null) return null;
+                    if (team == null) {
+                        return null;
+                    }
 
                     String inviterName = "Team Admin";
                     if (invitation.getInvitedBy() != null) {

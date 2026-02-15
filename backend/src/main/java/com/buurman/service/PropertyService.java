@@ -19,9 +19,9 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.UlidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.buurman.util.UlidGenerator.newPropertyId;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,12 +38,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.PRO;
+
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PropertyService {
-
-    private static final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     private final PropertyRepository propertyRepository;
     private final PropertyMapper propertyMapper;
@@ -59,40 +59,11 @@ public class PropertyService {
     private final AppProperties appProperties;
     private final GeocodingService geocodingService;
 
-    public PropertyService(
-            PropertyRepository propertyRepository,
-            PropertyMapper propertyMapper,
-            AuditService auditService,
-            DocumentService documentService,
-            PhotoService photoService,
-            PhotoRepository photoRepository,
-            S3StorageService s3StorageService,
-            PropertyOutdoorAreaRepository outdoorAreaRepository,
-            PropertyAmenityService propertyAmenityService,
-            MetricsService metricsService,
-            NotificationService notificationService,
-            AppProperties appProperties,
-            GeocodingService geocodingService) {
-        this.propertyRepository = propertyRepository;
-        this.propertyMapper = propertyMapper;
-        this.auditService = auditService;
-        this.documentService = documentService;
-        this.photoService = photoService;
-        this.photoRepository = photoRepository;
-        this.s3StorageService = s3StorageService;
-        this.outdoorAreaRepository = outdoorAreaRepository;
-        this.propertyAmenityService = propertyAmenityService;
-        this.metricsService = metricsService;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.geocodingService = geocodingService;
-    }
-
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
         Property property = propertyMapper.toEntity(request);
-        property.setIdentifier(UlidGenerator.generate(PRO).value());
+        property.setIdentifier(newPropertyId().value());
         property.setTeamId(principal.getTeamId());
         property.setCreatedBy(principal.getUserId());
         property.setUpdatedBy(principal.getUserId());

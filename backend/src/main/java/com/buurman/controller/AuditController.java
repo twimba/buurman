@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/audit-logs")
 @Tag(name = "Audit Logs", description = "Activity log management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class AuditController {
 
     private final AuditService auditService;
-
-    public AuditController(AuditService auditService) {
-        this.auditService = auditService;
-    }
 
     @Operation(summary = "Get all audit logs", description = "Get all activity logs for the team with optional filtering and pagination")
     @GetMapping

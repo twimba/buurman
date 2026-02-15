@@ -7,6 +7,7 @@ import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
 import org.jooq.Record;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,17 +27,12 @@ import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
     private final AuditLogRepository auditLogRepository;
     private final PropertyRepository propertyRepository;
     private final ContractRepository contractRepository;
-
-    public DashboardService(AuditLogRepository auditLogRepository, PropertyRepository propertyRepository, ContractRepository contractRepository) {
-        this.auditLogRepository = auditLogRepository;
-        this.propertyRepository = propertyRepository;
-        this.contractRepository = contractRepository;
-    }
 
     public DashboardStatsResponse getDashboardStats(UUID teamId) {
         List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);

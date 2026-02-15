@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/backoffice/teams")
 @Tag(name = "Backoffice - Teams", description = "Platform-wide team management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeTeamController {
 
     private final BackofficeTeamService backofficeTeamService;
 
-    public BackofficeTeamController(BackofficeTeamService backofficeTeamService) {
-        this.backofficeTeamService = backofficeTeamService;
-    }
 
     @Operation(summary = "List teams", description = "Get all teams with optional name search and pagination")
     @GetMapping

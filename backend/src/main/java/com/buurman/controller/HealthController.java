@@ -6,6 +6,7 @@ import com.buurman.dto.response.InfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.flywaydb.core.Flyway;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("")
 @Tag(name = "Health", description = "Health and info endpoints")
+@RequiredArgsConstructor
 public class HealthController {
 
     private final AppProperties appProperties;
@@ -26,15 +28,6 @@ public class HealthController {
     private final Optional<Flyway> flyway;
     private final Clock clock;
 
-    public HealthController(AppProperties appProperties,
-                            Environment environment,
-                            Optional<Flyway> flyway,
-                            Clock clock) {
-        this.appProperties = appProperties;
-        this.environment = environment;
-        this.flyway = flyway;
-        this.clock = clock;
-    }
 
     @Operation(summary = "Health check", description = "Returns the health status of the application")
     @GetMapping("/health")

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +21,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/properties/{propertyIdentifier}/outdoor-areas")
 @Tag(name = "Property Outdoor Areas", description = "Manage outdoor areas for properties")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class PropertyOutdoorAreaController {
 
     private final PropertyOutdoorAreaService outdoorAreaService;
 
-    public PropertyOutdoorAreaController(PropertyOutdoorAreaService outdoorAreaService) {
-        this.outdoorAreaService = outdoorAreaService;
-    }
 
     @Operation(summary = "List outdoor areas", description = "Get all outdoor areas for a property")
     @GetMapping

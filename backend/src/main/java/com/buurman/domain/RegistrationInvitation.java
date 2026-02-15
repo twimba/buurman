@@ -22,16 +22,28 @@ public class RegistrationInvitation {
     private String createdBy;
 
     public boolean isValid() {
-        if (revokedAt != null) return false;
-        if (expiresAt != null && expiresAt.isBefore(Instant.now())) return false;
-        if (maxUsages != null && usageCount >= maxUsages) return false;
+        if (revokedAt != null) {
+            return false;
+        }
+        if (expiresAt != null && expiresAt.isBefore(Instant.now())) {
+            return false;
+        }
+        if (maxUsages != null && usageCount >= maxUsages) {
+            return false;
+        }
         return true;
     }
 
     public String getStatus() {
-        if (revokedAt != null) return "REVOKED";
-        if (expiresAt != null && expiresAt.isBefore(Instant.now())) return "EXPIRED";
-        if (maxUsages != null && usageCount >= maxUsages) return "EXHAUSTED";
+        if (revokedAt != null) {
+            return "REVOKED";
+        }
+        if (expiresAt != null && expiresAt.isBefore(Instant.now())) {
+            return "EXPIRED";
+        }
+        if (maxUsages != null && usageCount >= maxUsages) {
+            return "EXHAUSTED";
+        }
         return "ACTIVE";
     }
 }

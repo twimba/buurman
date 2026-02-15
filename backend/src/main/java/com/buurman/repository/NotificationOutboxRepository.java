@@ -4,6 +4,7 @@ import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.OutboxStatus;
 import com.buurman.mapper.NotificationOutboxRecordMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Repository;
@@ -19,17 +20,12 @@ import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class NotificationOutboxRepository {
 
     private final DSLContext dsl;
     private final NotificationOutboxRecordMapper mapper;
     private final Clock clock;
-
-    public NotificationOutboxRepository(DSLContext dsl, NotificationOutboxRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public NotificationOutbox save(NotificationOutbox outbox) {
         LocalDateTime now = LocalDateTime.now(clock);

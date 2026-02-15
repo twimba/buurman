@@ -9,8 +9,8 @@ import com.buurman.mapper.TenantAddressMapper;
 import com.buurman.repository.TenantAddressRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class TenantAddressService {
-
-    private static final Logger log = LoggerFactory.getLogger(TenantAddressService.class);
 
     private final TenantAddressRepository addressRepository;
     private final TenantRepository tenantRepository;
@@ -33,21 +33,6 @@ public class TenantAddressService {
     private final AuditService auditService;
     private final GeocodingService geocodingService;
     private final Clock clock;
-
-    public TenantAddressService(
-            TenantAddressRepository addressRepository,
-            TenantRepository tenantRepository,
-            TenantAddressMapper addressMapper,
-            AuditService auditService,
-            GeocodingService geocodingService,
-            Clock clock) {
-        this.addressRepository = addressRepository;
-        this.tenantRepository = tenantRepository;
-        this.addressMapper = addressMapper;
-        this.auditService = auditService;
-        this.geocodingService = geocodingService;
-        this.clock = clock;
-    }
 
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")

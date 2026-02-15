@@ -6,6 +6,7 @@ import com.buurman.domain.User;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,7 @@ import java.time.Clock;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private final UserRepository userRepository;
@@ -23,15 +25,6 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     private final TeamRepository teamRepository;
     private final Clock clock;
 
-    public JwtAuthenticationConverter(UserRepository userRepository,
-                                     TeamMemberRepository teamMemberRepository,
-                                     TeamRepository teamRepository,
-                                     Clock clock) {
-        this.userRepository = userRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.teamRepository = teamRepository;
-        this.clock = clock;
-    }
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {

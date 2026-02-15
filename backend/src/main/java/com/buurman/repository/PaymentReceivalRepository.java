@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PaymentReceival;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class PaymentReceivalRepository {
 
     private static final Table<?> TABLE = table("payment_receivals");
@@ -41,11 +43,6 @@ public class PaymentReceivalRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public PaymentReceivalRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public List<PaymentReceival> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
         return dsl.selectFrom(TABLE)
@@ -172,14 +169,22 @@ public class PaymentReceivalRepository {
     }
 
     private static LocalDate toLocalDate(Object val) {
-        if (val instanceof LocalDate ld) return ld;
-        if (val instanceof java.sql.Date sd) return sd.toLocalDate();
+        if (val instanceof LocalDate ld) {
+            return ld;
+        }
+        if (val instanceof java.sql.Date sd) {
+            return sd.toLocalDate();
+        }
         return null;
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
-        if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
+        if (val instanceof LocalDateTime ldt) {
+            return ldt.toInstant(UTC);
+        }
+        if (val instanceof java.sql.Timestamp ts) {
+            return ts.toInstant();
+        }
         return null;
     }
 }

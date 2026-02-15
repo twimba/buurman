@@ -8,6 +8,7 @@ import com.buurman.dto.response.NotificationStatsResponse;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Record2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -22,19 +23,12 @@ import java.util.Map;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationCenterService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final DeliveryStatusLookupService deliveryStatusLookupService;
-
-    public NotificationCenterService(NotificationRepository notificationRepository,
-                                      NotificationService notificationService,
-                                      DeliveryStatusLookupService deliveryStatusLookupService) {
-        this.notificationRepository = notificationRepository;
-        this.notificationService = notificationService;
-        this.deliveryStatusLookupService = deliveryStatusLookupService;
-    }
 
     @PreAuthorize("hasRole('TEAM_ADMIN')")
     public PaginatedResult<NotificationResponse> getNotifications(

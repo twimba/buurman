@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,17 +26,12 @@ import java.util.UUID;
 @RequestMapping("/reports")
 @Tag(name = "Reports", description = "Financial reporting and analytics")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
     private final ExportService exportService;
     private final FeatureFlagService featureFlagService;
-
-    public ReportController(ReportService reportService, ExportService exportService, FeatureFlagService featureFlagService) {
-        this.reportService = reportService;
-        this.exportService = exportService;
-        this.featureFlagService = featureFlagService;
-    }
 
     @ModelAttribute
     private void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {

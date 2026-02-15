@@ -1,7 +1,8 @@
 package com.buurman.repository;
 
 import com.buurman.domain.TenantAddress;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newTenantAddressId;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -13,19 +14,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
-import static com.buurman.util.EntityPrefix.TAD;
+
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class TenantAddressRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public TenantAddressRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public TenantAddress save(TenantAddress address) {
         LocalDateTime now = LocalDateTime.now(clock);
@@ -33,7 +30,7 @@ public class TenantAddressRepository {
         if (address.getId() == null) {
             // Insert
             UUID id = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(TAD).value();
+            String identifier = newTenantAddressId().value();
             LocalDateTime createdAt = address.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(address.getCreatedAt(), UTC)
                 : now;

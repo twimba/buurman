@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.UserPreferences;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,11 @@ import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class UserPreferencesRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public UserPreferencesRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public Optional<UserPreferences> findByUserId(UUID userId) {
         return dsl.selectFrom(USER_PREFERENCES)

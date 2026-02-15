@@ -3,8 +3,7 @@ package com.buurman.service;
 import com.buurman.config.models.GoogleMapsProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,9 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class GeocodingService {
-
-    private static final Logger log = LoggerFactory.getLogger(GeocodingService.class);
     private static final String GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json";
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
 

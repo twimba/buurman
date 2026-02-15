@@ -8,11 +8,10 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.select;
-import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
@@ -26,9 +25,9 @@ import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 
 @Service
+@Slf4j
 public class DatabaseMetricsService {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseMetricsService.class);
     private static final String PREFIX = "buurman.";
 
     private final DSLContext dsl;

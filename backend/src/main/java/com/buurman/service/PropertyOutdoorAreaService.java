@@ -7,27 +7,22 @@ import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.buurman.util.EntityPrefix.POA;
+
 
 @Service
+@RequiredArgsConstructor
 public class PropertyOutdoorAreaService {
 
     private final PropertyOutdoorAreaRepository outdoorAreaRepository;
     private final PropertyRepository propertyRepository;
-
-    public PropertyOutdoorAreaService(
-            PropertyOutdoorAreaRepository outdoorAreaRepository,
-            PropertyRepository propertyRepository) {
-        this.outdoorAreaRepository = outdoorAreaRepository;
-        this.propertyRepository = propertyRepository;
-    }
 
     public List<PropertyOutdoorAreaResponse> getOutdoorAreas(String propertyIdentifier, UserPrincipal principal) {
         Property property = resolveProperty(propertyIdentifier, principal);
@@ -47,7 +42,7 @@ public class PropertyOutdoorAreaService {
         Property property = resolveProperty(propertyIdentifier, principal);
 
         PropertyOutdoorArea area = new PropertyOutdoorArea();
-        area.setIdentifier(UlidGenerator.generate(POA).value());
+        area.setIdentifier(newPropertyOutdoorAreaId().value());
         area.setPropertyId(property.getId());
         area.setTeamId(principal.getTeamId());
         area.setType(request.type());

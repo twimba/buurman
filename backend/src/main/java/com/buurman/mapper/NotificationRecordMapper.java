@@ -7,6 +7,7 @@ import com.buurman.domain.NotificationType;
 import com.buurman.jooq.generated.tables.records.NotificationsRecord;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneOffset;
@@ -15,13 +16,11 @@ import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 
 @Component
+@RequiredArgsConstructor
 public class NotificationRecordMapper {
 
     private final ObjectMapper objectMapper;
 
-    public NotificationRecordMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     public Notification toDomain(NotificationsRecord record) {
         if (record == null) {

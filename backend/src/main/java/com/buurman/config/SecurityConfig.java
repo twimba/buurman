@@ -36,7 +36,6 @@ public class SecurityConfig {
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
     private final BackofficeJwtAuthenticationConverter backofficeJwtAuthenticationConverter;
     private final MdcFilter mdcFilter;
-    private final DemoApiKeyFilter demoApiKeyFilter;
     private final EmailVerificationFilter emailVerificationFilter;
     private final RateLimitFilter rateLimitFilter;
     private final AppProperties appProperties;
@@ -46,7 +45,6 @@ public class SecurityConfig {
     public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter,
                          BackofficeJwtAuthenticationConverter backofficeJwtAuthenticationConverter,
                          MdcFilter mdcFilter,
-                         DemoApiKeyFilter demoApiKeyFilter,
                          EmailVerificationFilter emailVerificationFilter,
                          RateLimitFilter rateLimitFilter,
                          AppProperties appProperties,
@@ -55,7 +53,6 @@ public class SecurityConfig {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
         this.backofficeJwtAuthenticationConverter = backofficeJwtAuthenticationConverter;
         this.mdcFilter = mdcFilter;
-        this.demoApiKeyFilter = demoApiKeyFilter;
         this.emailVerificationFilter = emailVerificationFilter;
         this.rateLimitFilter = rateLimitFilter;
         this.appProperties = appProperties;
@@ -104,7 +101,6 @@ public class SecurityConfig {
                 .requestMatchers(GET, "/registration/config").permitAll()
                 .requestMatchers(GET, "/invitations/*").permitAll()
                 .requestMatchers(GET, "/calendar/ical/*").permitAll()
-                .requestMatchers("/admin/demo-data/**").permitAll()
                 .requestMatchers("/webhooks/**").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
@@ -114,7 +110,6 @@ public class SecurityConfig {
             )
             .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class)
             .addFilterAfter(emailVerificationFilter, MdcFilter.class)
-            .addFilterBefore(demoApiKeyFilter, BearerTokenAuthenticationFilter.class)
             .addFilterBefore(rateLimitFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
@@ -125,7 +120,7 @@ public class SecurityConfig {
         return buildCorsSource(
                 appProperties.cors().allowedOrigins(),
                 "/**",
-                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With", "X-Demo-Api-Key"));
+                Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
     }
 
     private CorsConfigurationSource backofficeCorsConfigurationSource() {

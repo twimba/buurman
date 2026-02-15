@@ -3,9 +3,9 @@ package com.buurman.service.demo;
 import com.buurman.config.models.DemoDataProperties;
 import com.buurman.dto.response.DemoDataResponse;
 import com.buurman.service.S3StorageService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +44,9 @@ import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class DemoDataService {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoDataService.class);
 
     private final DSLContext dsl;
     private final DemoDataProperties properties;
@@ -66,37 +66,6 @@ public class DemoDataService {
     private final DemoAuditLogGenerator auditLogGenerator;
     private final S3StorageService s3StorageService;
     private final Clock clock;
-
-    private volatile Instant lastGeneratedAt;
-
-    public DemoDataService(DSLContext dsl, DemoDataProperties properties,
-                          DemoKeycloakSetup keycloakSetup, DemoTeamGenerator teamGenerator,
-                          DemoUserGenerator userGenerator, DemoTeamMemberGenerator teamMemberGenerator,
-                          DemoPropertyGenerator propertyGenerator, DemoTenantGenerator tenantGenerator,
-                          DemoContractGenerator contractGenerator, DemoPaymentGenerator paymentGenerator,
-                          DemoExpenseGenerator expenseGenerator, DemoPaymentInstructionGenerator paymentInstructionGenerator,
-                          DemoPhotoGenerator photoGenerator, DemoNotificationGenerator notificationGenerator,
-                          DemoDocumentGenerator documentGenerator, DemoAuditLogGenerator auditLogGenerator,
-                          S3StorageService s3StorageService, Clock clock) {
-        this.dsl = dsl;
-        this.properties = properties;
-        this.keycloakSetup = keycloakSetup;
-        this.teamGenerator = teamGenerator;
-        this.userGenerator = userGenerator;
-        this.teamMemberGenerator = teamMemberGenerator;
-        this.propertyGenerator = propertyGenerator;
-        this.tenantGenerator = tenantGenerator;
-        this.contractGenerator = contractGenerator;
-        this.paymentGenerator = paymentGenerator;
-        this.expenseGenerator = expenseGenerator;
-        this.paymentInstructionGenerator = paymentInstructionGenerator;
-        this.photoGenerator = photoGenerator;
-        this.notificationGenerator = notificationGenerator;
-        this.documentGenerator = documentGenerator;
-        this.auditLogGenerator = auditLogGenerator;
-        this.s3StorageService = s3StorageService;
-        this.clock = clock;
-    }
 
     public DemoDataResponse generate() {
         long startTime = clock.millis();
@@ -129,7 +98,6 @@ public class DemoDataService {
         keycloakSetup.logoutDemoUser();
 
         long durationMs = clock.millis() - startTime;
-        lastGeneratedAt = clock.instant();
 
         log.info("Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {} contracts, {} payments, {} expenses, {} notifications, {} documents",
                 durationMs, ctx.getTeamsCreated(), ctx.getUsersCreated(), ctx.getPropertiesCreated(),
@@ -427,10 +395,6 @@ public class DemoDataService {
         }
         log.info("Starting scheduled demo data regeneration");
         generate();
-    }
-
-    public Instant getLastGeneratedAt() {
-        return lastGeneratedAt;
     }
 
     public boolean isEnabled() {

@@ -5,6 +5,7 @@ import com.buurman.service.FeatureFlagService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,13 +13,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RestController
+@RequiredArgsConstructor
 public class FeatureFlagController {
 
     private final FeatureFlagService featureFlagService;
-
-    public FeatureFlagController(FeatureFlagService featureFlagService) {
-        this.featureFlagService = featureFlagService;
-    }
 
     @GetMapping("/feature-flags")
     public ResponseEntity<Map<String, Object>> getFeatureFlags(@AuthenticationPrincipal UserPrincipal principal) {

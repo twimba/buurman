@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,17 +34,13 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/expenses")
 @Tag(name = "Expenses", description = "Property expense tracking and management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class ExpenseController {
 
     private final ExpenseService expenseService;
     private final DocumentService documentService;
     private final AuditService auditService;
 
-    public ExpenseController(ExpenseService expenseService, DocumentService documentService, AuditService auditService) {
-        this.expenseService = expenseService;
-        this.documentService = documentService;
-        this.auditService = auditService;
-    }
 
     @Operation(summary = "Create expense", description = "Record a new property expense (Admin/Editor)")
     @PostMapping

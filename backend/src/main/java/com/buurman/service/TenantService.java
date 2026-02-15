@@ -30,9 +30,9 @@ import com.buurman.repository.TenantAddressRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.UlidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.buurman.util.UlidGenerator.newTenantId;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,12 +45,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.TEN;
+
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class TenantService {
-
-    private static final Logger log = LoggerFactory.getLogger(TenantService.class);
 
     private final TenantRepository tenantRepository;
     private final PropertyRepository propertyRepository;
@@ -68,39 +68,6 @@ public class TenantService {
     private final MetricsService metricsService;
     private final Clock clock;
 
-    public TenantService(
-            TenantRepository tenantRepository,
-            PropertyRepository propertyRepository,
-            PropertyTenantHistoryRepository historyRepository,
-            TenantMapper tenantMapper,
-            AuditService auditService,
-            UserRepository userRepository,
-            DocumentService documentService,
-            PhotoService photoService,
-            PhotoRepository photoRepository,
-            S3StorageService s3StorageService,
-            ContractRepository contractRepository,
-            TenantAddressService addressService,
-            TenantAddressRepository addressRepository,
-            MetricsService metricsService,
-            Clock clock) {
-        this.tenantRepository = tenantRepository;
-        this.propertyRepository = propertyRepository;
-        this.historyRepository = historyRepository;
-        this.tenantMapper = tenantMapper;
-        this.auditService = auditService;
-        this.userRepository = userRepository;
-        this.documentService = documentService;
-        this.photoService = photoService;
-        this.photoRepository = photoRepository;
-        this.s3StorageService = s3StorageService;
-        this.contractRepository = contractRepository;
-        this.addressService = addressService;
-        this.addressRepository = addressRepository;
-        this.metricsService = metricsService;
-        this.clock = clock;
-    }
-
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
         tenantRepository.findByEmailAndTeamId(request.email(), principal.getTeamId())
@@ -109,7 +76,7 @@ public class TenantService {
                 });
 
         Tenant tenant = tenantMapper.toEntity(request);
-        tenant.setIdentifier(UlidGenerator.generate(TEN).value());
+        tenant.setIdentifier(newTenantId().value());
         tenant.setTeamId(principal.getTeamId());
         tenant.setCreatedBy(principal.getUserId());
         tenant.setUpdatedBy(principal.getUserId());

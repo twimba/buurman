@@ -11,8 +11,7 @@ import com.buurman.config.models.TwilioProperties;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +20,8 @@ import java.util.Map;
 
 @Component
 @Profile("!local")
+@Slf4j
 public class TwilioSmsSender implements NotificationChannelSender {
-
-    private static final Logger log = LoggerFactory.getLogger(TwilioSmsSender.class);
 
     private final String fromNumber;
     private final String messagingServiceSid;

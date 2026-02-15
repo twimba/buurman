@@ -10,8 +10,8 @@ import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.security.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,28 +26,15 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ContractPaymentInstructionService {
-
-    private static final Logger log = LoggerFactory.getLogger(ContractPaymentInstructionService.class);
 
     private final ContractPaymentInstructionRepository cpiRepository;
     private final ContractRepository contractRepository;
     private final PaymentInstructionRepository piRepository;
     private final AuditService auditService;
     private final Clock clock;
-
-    public ContractPaymentInstructionService(
-            ContractPaymentInstructionRepository cpiRepository,
-            ContractRepository contractRepository,
-            PaymentInstructionRepository piRepository,
-            AuditService auditService,
-            Clock clock) {
-        this.cpiRepository = cpiRepository;
-        this.contractRepository = contractRepository;
-        this.piRepository = piRepository;
-        this.auditService = auditService;
-        this.clock = clock;
-    }
 
     public List<ContractPaymentInstructionResponse> getHistory(String contractIdentifier, UserPrincipal principal) {
         Contract contract = resolveContract(contractIdentifier, principal);

@@ -5,6 +5,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.PropertyRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -26,17 +27,12 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class PropertyRepository {
 
     private final DSLContext dsl;
     private final PropertyRecordMapper mapper;
     private final Clock clock;
-
-    public PropertyRepository(DSLContext dsl, PropertyRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<Property> findByIdentifierAndTeamId(String identifier, UUID teamId) {
         return dsl.selectFrom(PROPERTIES)

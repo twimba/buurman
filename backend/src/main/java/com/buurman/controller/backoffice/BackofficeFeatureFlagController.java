@@ -16,6 +16,7 @@ import com.buurman.service.FlagsmithAdminService.SegmentOverrideState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RequestMapping("/backoffice/feature-flags")
 @Tag(name = "Backoffice - Feature Flags", description = "Feature flag management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeFeatureFlagController {
 
     private final FeatureFlagService featureFlagService;
@@ -37,17 +39,6 @@ public class BackofficeFeatureFlagController {
     private final TeamMemberRepository teamMemberRepository;
     private final TeamRepository teamRepository;
 
-    public BackofficeFeatureFlagController(FeatureFlagService featureFlagService,
-                                           FlagsmithAdminService flagsmithAdminService,
-                                           UserRepository userRepository,
-                                           TeamMemberRepository teamMemberRepository,
-                                           TeamRepository teamRepository) {
-        this.featureFlagService = featureFlagService;
-        this.flagsmithAdminService = flagsmithAdminService;
-        this.userRepository = userRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.teamRepository = teamRepository;
-    }
 
     // --- Records ---
 
@@ -95,7 +86,9 @@ public class BackofficeFeatureFlagController {
 
         for (TeamMember membership : memberships) {
             Team team = teamRepository.findById(membership.getTeamId()).orElse(null);
-            if (team == null) continue;
+            if (team == null) {
+                continue;
+            }
 
             String identity = FlagsmithAdminService.buildIdentity(team.getIdentifier(), user.getIdentifier());
 
@@ -273,7 +266,9 @@ public class BackofficeFeatureFlagController {
     // --- Internal ---
 
     private UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
-        if (memberships.isEmpty()) return null;
+        if (memberships.isEmpty()) {
+            return null;
+        }
 
         UUID activeTeamId = user.getActiveTeamId();
         if (activeTeamId != null && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamId))) {

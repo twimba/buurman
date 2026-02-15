@@ -1,14 +1,15 @@
 package com.buurman.repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newContractPaymentInstructionId;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
-import static com.buurman.util.EntityPrefix.CPI;
+
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class ContractPaymentInstructionRepository {
 
     private static final Table<?> TABLE = table("contract_payment_instructions");
@@ -53,16 +55,11 @@ public class ContractPaymentInstructionRepository {
     private final DSLContext dsl;
     private final Clock clock;
 
-    public ContractPaymentInstructionRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public ContractPaymentInstruction save(ContractPaymentInstruction cpi) {
         LocalDateTime now = LocalDateTime.now(clock);
 
         UUID id = UUID.randomUUID();
-        String identifier = UlidGenerator.generate(CPI).value();
+        String identifier = newContractPaymentInstructionId().value();
         LocalDateTime createdAt = cpi.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC)
                 : now;
@@ -194,14 +191,22 @@ public class ContractPaymentInstructionRepository {
     }
 
     private static LocalDate toLocalDate(Object val) {
-        if (val instanceof LocalDate ld) return ld;
-        if (val instanceof java.sql.Date sd) return sd.toLocalDate();
+        if (val instanceof LocalDate ld) {
+            return ld;
+        }
+        if (val instanceof java.sql.Date sd) {
+            return sd.toLocalDate();
+        }
         return null;
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
-        if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
+        if (val instanceof LocalDateTime ldt) {
+            return ldt.toInstant(UTC);
+        }
+        if (val instanceof java.sql.Timestamp ts) {
+            return ts.toInstant();
+        }
         return null;
     }
 }

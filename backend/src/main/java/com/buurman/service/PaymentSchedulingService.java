@@ -9,9 +9,9 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
-import com.buurman.util.UlidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.buurman.util.UlidGenerator.newPaymentId;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,30 +26,18 @@ import java.util.UUID;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.Constants.SYSTEM_USER_ID;
-import static com.buurman.util.EntityPrefix.PAY;
+
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PaymentSchedulingService {
-
-    private static final Logger log = LoggerFactory.getLogger(PaymentSchedulingService.class);
 
     private final ContractRepository contractRepository;
     private final PaymentRepository paymentRepository;
     private final TeamRepository teamRepository;
     private final AuditService auditService;
     private final Clock clock;
-
-    public PaymentSchedulingService(ContractRepository contractRepository,
-                                   PaymentRepository paymentRepository,
-                                   TeamRepository teamRepository,
-                                   AuditService auditService,
-                                   Clock clock) {
-        this.contractRepository = contractRepository;
-        this.paymentRepository = paymentRepository;
-        this.teamRepository = teamRepository;
-        this.auditService = auditService;
-        this.clock = clock;
-    }
 
     /**
      * Scheduled job that generates future payments for all teams with auto-generation enabled.
@@ -155,7 +143,7 @@ public class PaymentSchedulingService {
 
             try {
                 Payment payment = new Payment();
-                payment.setIdentifier(UlidGenerator.generate(PAY).value());
+                payment.setIdentifier(newPaymentId().value());
                 payment.setTeamId(teamId);
                 payment.setContractId(contractId);
                 payment.setAmount(contract.getRentAmount());

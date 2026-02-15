@@ -13,17 +13,17 @@ import static com.buurman.domain.NotificationStatus.REJECTED;
 import static com.buurman.domain.NotificationStatus.SENT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class WebhookService {
-
-    private static final Logger log = LoggerFactory.getLogger(WebhookService.class);
 
     private static final Map<NotificationStatus, Integer> STATUS_RANK = Map.of(
             PENDING, 0,
@@ -38,11 +38,6 @@ public class WebhookService {
     private final NotificationRepository notificationRepository;
     private final ObjectMapper objectMapper;
 
-    public WebhookService(NotificationRepository notificationRepository, ObjectMapper objectMapper) {
-        this.notificationRepository = notificationRepository;
-        this.objectMapper = objectMapper;
-    }
-
     public void processSendGridEvents(String rawPayload) {
         try {
             List<Map<String, Object>> events = objectMapper.readValue(
@@ -52,7 +47,9 @@ public class WebhookService {
                 String sgMessageId = (String) event.get("sg_message_id");
                 String eventType = (String) event.get("event");
 
-                if (sgMessageId == null || eventType == null) continue;
+                if (sgMessageId == null || eventType == null) {
+                    continue;
+                }
 
                 // SendGrid message IDs may have a filter suffix
                 String messageId = sgMessageId.contains(".")

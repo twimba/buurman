@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flagsmith.FlagsmithClient;
 import com.flagsmith.models.DefaultFlag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,17 +18,14 @@ import java.time.Duration;
 import java.util.Optional;
 
 @Configuration
+@Slf4j
+@RequiredArgsConstructor
 public class FlagsmithConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(FlagsmithConfig.class);
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
     private static final String SERVER_KEY_NAME = "Backend";
 
     private final FlagsmithProperties properties;
-
-    public FlagsmithConfig(FlagsmithProperties properties) {
-        this.properties = properties;
-    }
 
     @Bean
     public FlagsmithClient flagsmithClient() {
@@ -191,8 +188,12 @@ public class FlagsmithConfig {
         }
 
         private static JsonNode asArray(JsonNode node) {
-            if (node.isArray()) return node;
-            if (node.has("results")) return node.get("results");
+            if (node.isArray()) {
+                return node;
+            }
+            if (node.has("results")) {
+                return node.get("results");
+            }
             throw new IllegalStateException("unexpected response format");
         }
 

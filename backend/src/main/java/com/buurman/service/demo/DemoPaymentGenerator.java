@@ -1,10 +1,9 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -16,22 +15,17 @@ import java.util.*;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
-import static com.buurman.util.EntityPrefix.PAY;
-import static com.buurman.util.EntityPrefix.PRE;
+import static com.buurman.util.UlidGenerator.newPaymentId;
+import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoPaymentGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoPaymentGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
     private final Random random = new Random(42);
-
-    public DemoPaymentGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
@@ -43,7 +37,9 @@ public class DemoPaymentGenerator {
             UUID createdBy = ctx.getAdminUserForTeam(teamKey);
             List<UUID> contractIds = ctx.getContractIdsByTeam().get(teamId);
 
-            if (contractIds == null) continue;
+            if (contractIds == null) {
+                continue;
+            }
 
             int teamPayments = 0;
 
@@ -53,10 +49,14 @@ public class DemoPaymentGenerator {
                         .where(CONTRACTS.ID.eq(contractId))
                         .fetchOne();
 
-                if (contract == null) continue;
+                if (contract == null) {
+                    continue;
+                }
 
                 String status = contract.get(CONTRACTS.STATUS);
-                if ("DRAFT".equals(status)) continue; // No payments for drafts
+                if ("DRAFT".equals(status)) {
+                    continue; // No payments for drafts
+                }
 
                 LocalDate startDate = contract.get(CONTRACTS.START_DATE);
                 BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
@@ -65,7 +65,9 @@ public class DemoPaymentGenerator {
                 LocalDate paymentEndDate;
                 if ("EXPIRED".equals(status) || "TERMINATED".equals(status)) {
                     paymentEndDate = contract.get(CONTRACTS.END_DATE);
-                    if (paymentEndDate == null) paymentEndDate = today;
+                    if (paymentEndDate == null) {
+                        paymentEndDate = today;
+                    }
                 } else {
                     // ACTIVE: generate payments up to 3 months in the future
                     paymentEndDate = today.plusMonths(3);
@@ -120,7 +122,7 @@ public class DemoPaymentGenerator {
 
                     dsl.insertInto(PAYMENTS)
                             .set(PAYMENTS.ID, paymentId)
-                            .set(PAYMENTS.IDENTIFIER, UlidGenerator.generate(PAY).value())
+                            .set(PAYMENTS.IDENTIFIER, newPaymentId().value())
                             .set(PAYMENTS.TEAM_ID, teamId)
                             .set(PAYMENTS.CONTRACT_ID, contractId)
                             .set(PAYMENTS.AMOUNT, rentAmount)
@@ -143,7 +145,7 @@ public class DemoPaymentGenerator {
                     if ("PAID".equals(paymentStatus)) {
                         dsl.insertInto(PAYMENT_RECEIVALS)
                                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(PRE).value())
+                                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId().value())
                                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                                 .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
@@ -157,7 +159,7 @@ public class DemoPaymentGenerator {
                         BigDecimal partialAmount = rentAmount.multiply(BigDecimal.valueOf(0.6));
                         dsl.insertInto(PAYMENT_RECEIVALS)
                                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                                .set(PAYMENT_RECEIVALS.IDENTIFIER, UlidGenerator.generate(PRE).value())
+                                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId().value())
                                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)

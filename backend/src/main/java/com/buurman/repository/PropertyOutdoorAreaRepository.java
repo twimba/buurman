@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PropertyOutdoorArea;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +17,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class PropertyOutdoorAreaRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public PropertyOutdoorAreaRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public List<PropertyOutdoorArea> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
         return dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)

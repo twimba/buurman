@@ -9,6 +9,7 @@ import com.buurman.service.backoffice.BackofficeNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,11 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 @RequestMapping("/backoffice/notifications")
 @Tag(name = "Backoffice - Notifications", description = "Platform-wide notification management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeNotificationController {
 
     private final BackofficeNotificationService backofficeNotificationService;
 
-    public BackofficeNotificationController(BackofficeNotificationService backofficeNotificationService) {
-        this.backofficeNotificationService = backofficeNotificationService;
-    }
 
     @Operation(summary = "List notifications", description = "Get all notifications with filtering and pagination")
     @GetMapping

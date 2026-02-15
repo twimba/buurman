@@ -4,8 +4,7 @@ import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -26,9 +25,8 @@ import java.util.Optional;
  * the Flagsmith Java SDK via {@link FeatureFlagService}.
  */
 @Service
+@Slf4j
 public class FlagsmithAdminService {
-
-    private static final Logger log = LoggerFactory.getLogger(FlagsmithAdminService.class);
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration TOKEN_TTL = Duration.ofMinutes(30);
 
@@ -216,16 +214,24 @@ public class FlagsmithAdminService {
     private JsonNode findFeatureStateInEnvDocument(long featureStateId) {
         JsonNode doc = getEnvironmentDocument();
         JsonNode project = doc.get("project");
-        if (project == null) return null;
+        if (project == null) {
+            return null;
+        }
         JsonNode segments = project.get("segments");
-        if (segments == null) return null;
+        if (segments == null) {
+            return null;
+        }
         for (JsonNode segment : segments) {
             JsonNode featureStates = segment.get("feature_states");
-            if (featureStates == null) continue;
+            if (featureStates == null) {
+                continue;
+            }
             for (JsonNode fs : featureStates) {
                 long id = fs.has("django_id") && !fs.get("django_id").isNull()
                         ? fs.get("django_id").asLong() : fs.get("id").asLong();
-                if (id == featureStateId) return fs;
+                if (id == featureStateId) {
+                    return fs;
+                }
             }
         }
         return null;
@@ -237,16 +243,24 @@ public class FlagsmithAdminService {
     private long findSegmentIdForFeatureState(long featureStateId) {
         JsonNode doc = getEnvironmentDocument();
         JsonNode project = doc.get("project");
-        if (project == null) throw new IllegalStateException("No project in env document");
+        if (project == null) {
+            throw new IllegalStateException("No project in env document");
+        }
         JsonNode segments = project.get("segments");
-        if (segments == null) throw new IllegalStateException("No segments in env document");
+        if (segments == null) {
+            throw new IllegalStateException("No segments in env document");
+        }
         for (JsonNode segment : segments) {
             JsonNode featureStates = segment.get("feature_states");
-            if (featureStates == null) continue;
+            if (featureStates == null) {
+                continue;
+            }
             for (JsonNode fs : featureStates) {
                 long id = fs.has("django_id") && !fs.get("django_id").isNull()
                         ? fs.get("django_id").asLong() : fs.get("id").asLong();
-                if (id == featureStateId) return segment.get("id").asLong();
+                if (id == featureStateId) {
+                    return segment.get("id").asLong();
+                }
             }
         }
         throw new IllegalStateException("Feature state %d not found in any segment".formatted(featureStateId));
@@ -364,9 +378,13 @@ public class FlagsmithAdminService {
 
         JsonNode doc = getEnvironmentDocument();
         JsonNode project = doc.get("project");
-        if (project == null) return List.of();
+        if (project == null) {
+            return List.of();
+        }
         JsonNode segments = project.get("segments");
-        if (segments == null || !segments.isArray()) return List.of();
+        if (segments == null || !segments.isArray()) {
+            return List.of();
+        }
 
         // Fetch segment descriptions (env doc doesn't include them)
         Map<Long, String> segmentDescriptions = new HashMap<>();
@@ -445,14 +463,22 @@ public class FlagsmithAdminService {
         ensureDiscovered();
         JsonNode doc = getEnvironmentDocument();
         JsonNode project = doc.get("project");
-        if (project == null) return Optional.empty();
+        if (project == null) {
+            return Optional.empty();
+        }
         JsonNode segments = project.get("segments");
-        if (segments == null) return Optional.empty();
+        if (segments == null) {
+            return Optional.empty();
+        }
 
         for (JsonNode segment : segments) {
-            if (segment.get("id").asLong() != segmentId) continue;
+            if (segment.get("id").asLong() != segmentId) {
+                continue;
+            }
             JsonNode featureStates = segment.get("feature_states");
-            if (featureStates == null) continue;
+            if (featureStates == null) {
+                continue;
+            }
             for (JsonNode fs : featureStates) {
                 JsonNode feature = fs.get("feature");
                 if (feature.get("id").asLong() == featureId) {
@@ -684,7 +710,9 @@ public class FlagsmithAdminService {
 
     private void checkStatus(HttpResponse<String> resp, String method, String path) {
         int status = resp.statusCode();
-        if (status >= 200 && status < 300) return;
+        if (status >= 200 && status < 300) {
+            return;
+        }
         if (status == 401) {
             // Token expired — clear cached token so next call re-authenticates
             this.adminToken = null;
@@ -722,13 +750,17 @@ public class FlagsmithAdminService {
     /** Handles both flat integer and nested object forms of the feature field. */
     private long resolveFeatureId(JsonNode fs) {
         JsonNode featureNode = fs.get("feature");
-        if (featureNode == null) throw new IllegalStateException("Missing 'feature' field in feature state");
+        if (featureNode == null) {
+            throw new IllegalStateException("Missing 'feature' field in feature state");
+        }
         return featureNode.isObject() ? featureNode.get("id").asLong() : featureNode.asLong();
     }
 
     private Object extractValue(JsonNode fs) {
         JsonNode val = fs.get("feature_state_value");
-        if (val == null || val.isNull()) return null;
+        if (val == null || val.isNull()) {
+            return null;
+        }
         // The top-level /features/featurestates/ endpoint returns feature_state_value
         // as a nested dict: {"type": "unicode", "string_value": "...", ...}
         if (val.isObject()) {
@@ -745,9 +777,15 @@ public class FlagsmithAdminService {
             }
             return null;
         }
-        if (val.isTextual()) return val.asText();
-        if (val.isNumber()) return val.numberValue();
-        if (val.isBoolean()) return val.booleanValue();
+        if (val.isTextual()) {
+            return val.asText();
+        }
+        if (val.isNumber()) {
+            return val.numberValue();
+        }
+        if (val.isBoolean()) {
+            return val.booleanValue();
+        }
         return val.asText();
     }
 
@@ -757,8 +795,12 @@ public class FlagsmithAdminService {
     }
 
     private static JsonNode asArray(JsonNode node) {
-        if (node.isArray()) return node;
-        if (node.has("results")) return node.get("results");
+        if (node.isArray()) {
+            return node;
+        }
+        if (node.has("results")) {
+            return node.get("results");
+        }
         throw new IllegalStateException("Unexpected Flagsmith response format");
     }
 

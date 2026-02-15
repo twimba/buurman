@@ -5,8 +5,7 @@ import com.buurman.repository.DocumentRepository;
 import com.buurman.service.S3StorageService;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -20,9 +19,9 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 
 @Component
+@Slf4j
 public class DemoDocumentGenerator {
 
-    private static final Logger log = LoggerFactory.getLogger(DemoDocumentGenerator.class);
     private static final String RESOURCE_PATH = "classpath:demo/documents/";
 
     private final DSLContext dsl;
@@ -115,7 +114,9 @@ public class DemoDocumentGenerator {
             // Contract documents (2-3 per active contract, 1 for DRAFT)
             for (UUID contractId : contractIds) {
                 Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
-                if (contract == null) continue;
+                if (contract == null) {
+                    continue;
+                }
 
                 String status = contract.get(CONTRACTS.STATUS);
                 if ("DRAFT".equals(status)) {
@@ -142,7 +143,9 @@ public class DemoDocumentGenerator {
                     .fetch();
 
             for (var expense : expenseRecords) {
-                if (random.nextBoolean()) continue;
+                if (random.nextBoolean()) {
+                    continue;
+                }
 
                 UUID expenseId = expense.get(EXPENSES.ID);
                 ctx.putIdentifier(expenseId, expense.get(EXPENSES.IDENTIFIER));

@@ -10,8 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.JSONB;
 import org.jooq.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -31,22 +31,14 @@ import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AuditService {
-
-    private static final Logger log = LoggerFactory.getLogger(AuditService.class);
 
     private final AuditLogRepository auditLogRepository;
     private final ObjectMapper objectMapper;
     private final MetricsService metricsService;
     private final Clock clock;
-
-    public AuditService(AuditLogRepository auditLogRepository, ObjectMapper objectMapper,
-                        MetricsService metricsService, Clock clock) {
-        this.auditLogRepository = auditLogRepository;
-        this.objectMapper = objectMapper;
-        this.metricsService = metricsService;
-        this.clock = clock;
-    }
 
     public void logCreate(UUID teamId, String entityType, UUID entityId, UUID userId, Object entity) {
         try {
@@ -150,8 +142,12 @@ public class AuditService {
     }
 
     private boolean valuesEqual(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null || b == null) return false;
+        if (a == b) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
         if (a instanceof java.math.BigDecimal && b instanceof java.math.BigDecimal) {
             return ((java.math.BigDecimal) a).compareTo((java.math.BigDecimal) b) == 0;
         }

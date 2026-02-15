@@ -14,8 +14,8 @@ import com.buurman.repository.UserRepository;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +32,9 @@ import java.util.UUID;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class NotificationSchedulerService {
-
-    private static final Logger log = LoggerFactory.getLogger(NotificationSchedulerService.class);
 
     private final ContractRepository contractRepository;
     private final PaymentRepository paymentRepository;
@@ -45,26 +45,6 @@ public class NotificationSchedulerService {
     private final NotificationService notificationService;
     private final AppProperties appProperties;
     private final Clock clock;
-
-    public NotificationSchedulerService(ContractRepository contractRepository,
-                                        PaymentRepository paymentRepository,
-                                        PropertyRepository propertyRepository,
-                                        TeamRepository teamRepository,
-                                        TeamMemberRepository teamMemberRepository,
-                                        UserRepository userRepository,
-                                        NotificationService notificationService,
-                                        AppProperties appProperties,
-                                        Clock clock) {
-        this.contractRepository = contractRepository;
-        this.paymentRepository = paymentRepository;
-        this.propertyRepository = propertyRepository;
-        this.teamRepository = teamRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.userRepository = userRepository;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.clock = clock;
-    }
 
     @Transactional(readOnly = true)
     public void checkContractExpiry() {
@@ -127,7 +107,9 @@ public class NotificationSchedulerService {
                 for (Payment payment : overduePayments) {
                     Contract contract = contractRepository.findByIdAndTeamId(payment.getContractId(), team.getId())
                             .orElse(null);
-                    if (contract == null) continue;
+                    if (contract == null) {
+                        continue;
+                    }
 
                     String propertyName = getPropertyName(contract.getPropertyId(), team.getId());
 

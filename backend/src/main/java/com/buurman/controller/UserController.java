@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,19 +28,13 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/users")
 @Tag(name = "Users", description = "User team management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserTeamService userTeamService;
     private final PhoneVerificationService phoneVerificationService;
     private final PhoneNumberPolicyService phoneNumberPolicyService;
 
-    public UserController(UserTeamService userTeamService,
-                          PhoneVerificationService phoneVerificationService,
-                          PhoneNumberPolicyService phoneNumberPolicyService) {
-        this.userTeamService = userTeamService;
-        this.phoneVerificationService = phoneVerificationService;
-        this.phoneNumberPolicyService = phoneNumberPolicyService;
-    }
 
     @Operation(summary = "Get current user profile", description = "Get the current user's profile information")
     @GetMapping("/me")

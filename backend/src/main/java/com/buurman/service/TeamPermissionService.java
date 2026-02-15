@@ -6,19 +6,17 @@ import com.buurman.exception.InsufficientPermissionsException;
 import com.buurman.exception.TeamMembershipNotFoundException;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class TeamPermissionService {
 
     private final TeamMemberRepository teamMemberRepository;
-
-    public TeamPermissionService(TeamMemberRepository teamMemberRepository) {
-        this.teamMemberRepository = teamMemberRepository;
-    }
 
     /**
      * Check if user has at least one of the specified roles in the given team.

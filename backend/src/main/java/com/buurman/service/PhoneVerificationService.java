@@ -8,8 +8,8 @@ import com.buurman.repository.PhoneVerificationCodeRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,10 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PhoneVerificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(PhoneVerificationService.class);
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final PhoneVerificationCodeRepository verificationCodeRepository;
@@ -34,18 +35,6 @@ public class PhoneVerificationService {
     private final NotificationService notificationService;
     private final PhoneNumberPolicyService phoneNumberPolicyService;
     private final Clock clock;
-
-    public PhoneVerificationService(PhoneVerificationCodeRepository verificationCodeRepository,
-                                    UserRepository userRepository,
-                                    NotificationService notificationService,
-                                    PhoneNumberPolicyService phoneNumberPolicyService,
-                                    Clock clock) {
-        this.verificationCodeRepository = verificationCodeRepository;
-        this.userRepository = userRepository;
-        this.notificationService = notificationService;
-        this.phoneNumberPolicyService = phoneNumberPolicyService;
-        this.clock = clock;
-    }
 
     @Transactional
     public void sendVerificationCode(UUID userId) {

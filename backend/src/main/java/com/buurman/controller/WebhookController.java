@@ -8,8 +8,8 @@ import com.twilio.security.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +24,9 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RestController
 @RequestMapping("/webhooks")
 @Tag(name = "Webhooks", description = "Provider status callbacks")
+@Slf4j
+@RequiredArgsConstructor
 public class WebhookController {
-
-    private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     static {
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
@@ -37,14 +37,6 @@ public class WebhookController {
     private final WebhookService webhookService;
     private final TwilioProperties twilioProperties;
     private final SendGridProperties sendGridProperties;
-
-    public WebhookController(WebhookService webhookService,
-                             TwilioProperties twilioProperties,
-                             SendGridProperties sendGridProperties) {
-        this.webhookService = webhookService;
-        this.twilioProperties = twilioProperties;
-        this.sendGridProperties = sendGridProperties;
-    }
 
     @Operation(summary = "SendGrid event webhook", description = "Receives delivery status events from SendGrid")
     @PostMapping("/sendgrid/events")

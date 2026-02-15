@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/contracts")
 @Tag(name = "Contracts", description = "Rental agreement management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class ContractController {
 
     private final ContractService contractService;
@@ -43,13 +45,6 @@ public class ContractController {
     private final AuditService auditService;
     private final PaymentSchedulingService paymentSchedulingService;
 
-    public ContractController(ContractService contractService, DocumentService documentService,
-                             AuditService auditService, PaymentSchedulingService paymentSchedulingService) {
-        this.contractService = contractService;
-        this.documentService = documentService;
-        this.auditService = auditService;
-        this.paymentSchedulingService = paymentSchedulingService;
-    }
 
     @Operation(summary = "Create contract", description = "Create a new rental agreement (Admin/Editor)")
     @PostMapping

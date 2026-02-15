@@ -3,7 +3,8 @@ package com.buurman.repository;
 import com.buurman.domain.RegistrationInvitation;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.util.PaginationHelper;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newRegistrationInvitationId;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -16,24 +17,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.REGISTRATION_INVITATIONS;
-import static com.buurman.util.EntityPrefix.RIN;
+
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class RegistrationInvitationRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
 
-    public RegistrationInvitationRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public RegistrationInvitation save(RegistrationInvitation invitation) {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
-        String identifier = UlidGenerator.generate(RIN).value();
+        String identifier = newRegistrationInvitationId().value();
 
         dsl.insertInto(REGISTRATION_INVITATIONS)
                 .set(REGISTRATION_INVITATIONS.ID, id)

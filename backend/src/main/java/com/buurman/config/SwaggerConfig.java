@@ -28,12 +28,7 @@ public class SwaggerConfig {
                         .addSecuritySchemes("bearer-jwt", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
-                                .bearerFormat("JWT"))
-                        .addSecuritySchemes("demo-api-key", new SecurityScheme()
-                                .type(SecurityScheme.Type.APIKEY)
-                                .in(SecurityScheme.In.HEADER)
-                                .name("X-Demo-Api-Key")
-                                .description("API key for demo data endpoints")));
+                                .bearerFormat("JWT")));
     }
 
     @Bean

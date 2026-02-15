@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/payment-instructions")
 @Tag(name = "Payment Instructions", description = "Team-level payment instruction templates")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class PaymentInstructionController {
 
     private final PaymentInstructionService paymentInstructionService;
 
-    public PaymentInstructionController(PaymentInstructionService paymentInstructionService) {
-        this.paymentInstructionService = paymentInstructionService;
-    }
 
     @Operation(summary = "List payment instructions", description = "Get all payment instruction templates for the team")
     @GetMapping

@@ -6,6 +6,7 @@ import com.buurman.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,11 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/invitations")
 @Tag(name = "Invitations", description = "Team invitation management")
+@RequiredArgsConstructor
 public class InvitationController {
 
     private final TeamService teamService;
 
-    public InvitationController(TeamService teamService) {
-        this.teamService = teamService;
-    }
 
     @Operation(summary = "Get pending invitations", description = "Get all pending invitations for the authenticated user",
                security = @SecurityRequirement(name = "bearer-jwt"))

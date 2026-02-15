@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +21,10 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class AmenityController {
 
     private final PropertyAmenityService propertyAmenityService;
-
-    public AmenityController(PropertyAmenityService propertyAmenityService) {
-        this.propertyAmenityService = propertyAmenityService;
-    }
 
     @Tag(name = "Amenities", description = "Reference amenity data")
     @Operation(summary = "List all amenities grouped by category", description = "Get all available amenities grouped by category")

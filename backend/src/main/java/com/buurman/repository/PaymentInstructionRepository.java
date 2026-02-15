@@ -1,14 +1,15 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PaymentInstruction;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newPaymentInstructionId;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
-import static com.buurman.util.EntityPrefix.PIN;
+
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class PaymentInstructionRepository {
 
     private static final Table<?> TABLE = table("payment_instructions");
@@ -47,17 +49,12 @@ public class PaymentInstructionRepository {
     private final DSLContext dsl;
     private final Clock clock;
 
-    public PaymentInstructionRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public PaymentInstruction save(PaymentInstruction pi) {
         LocalDateTime now = LocalDateTime.now(clock);
 
         if (pi.getId() == null) {
             UUID id = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(PIN).value();
+            String identifier = newPaymentInstructionId().value();
             LocalDateTime createdAt = pi.getCreatedAt() != null
                     ? LocalDateTime.ofInstant(pi.getCreatedAt(), UTC)
                     : now;
@@ -201,8 +198,12 @@ public class PaymentInstructionRepository {
     }
 
     private static Instant toInstant(Object val) {
-        if (val instanceof LocalDateTime ldt) return ldt.toInstant(UTC);
-        if (val instanceof java.sql.Timestamp ts) return ts.toInstant();
+        if (val instanceof LocalDateTime ldt) {
+            return ldt.toInstant(UTC);
+        }
+        if (val instanceof java.sql.Timestamp ts) {
+            return ts.toInstant();
+        }
         return null;
     }
 }

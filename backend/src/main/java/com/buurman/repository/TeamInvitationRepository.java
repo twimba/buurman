@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import com.buurman.domain.TeamInvitation;
 import com.buurman.mapper.TeamInvitationRecordMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -16,17 +17,12 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
 
 @Repository
+@RequiredArgsConstructor
 public class TeamInvitationRepository {
 
     private final DSLContext dsl;
     private final TeamInvitationRecordMapper mapper;
     private final Clock clock;
-
-    public TeamInvitationRepository(DSLContext dsl, TeamInvitationRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public TeamInvitation save(TeamInvitation invitation) {
         LocalDateTime now = LocalDateTime.now(clock);

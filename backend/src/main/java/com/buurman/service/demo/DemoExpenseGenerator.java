@@ -1,10 +1,9 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,12 +13,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
-import static com.buurman.util.EntityPrefix.EXP;
+import static com.buurman.util.UlidGenerator.newExpenseId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoExpenseGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoExpenseGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
@@ -46,11 +45,6 @@ public class DemoExpenseGenerator {
 
     private record ExpenseTemplate(String description, int minAmount, int maxAmount) {}
 
-    public DemoExpenseGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDate today = LocalDate.now(clock);
@@ -61,7 +55,9 @@ public class DemoExpenseGenerator {
             UUID createdBy = ctx.getAdminUserForTeam(teamKey);
             List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
 
-            if (propertyIds == null) continue;
+            if (propertyIds == null) {
+                continue;
+            }
 
             int teamExpenses = 0;
 
@@ -94,7 +90,7 @@ public class DemoExpenseGenerator {
 
                     dsl.insertInto(EXPENSES)
                             .set(EXPENSES.ID, UUID.randomUUID())
-                            .set(EXPENSES.IDENTIFIER, UlidGenerator.generate(EXP).value())
+                            .set(EXPENSES.IDENTIFIER, newExpenseId().value())
                             .set(EXPENSES.TEAM_ID, teamId)
                             .set(EXPENSES.PROPERTY_ID, propertyId)
                             .set(EXPENSES.CATEGORY, category)

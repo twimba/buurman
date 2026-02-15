@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,13 +35,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/tenants")
 @Tag(name = "Tenants", description = "Tenant management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class TenantController {
 
     private final TenantService tenantService;
 
-    public TenantController(TenantService tenantService) {
-        this.tenantService = tenantService;
-    }
 
     @Operation(summary = "Create tenant", description = "Create a new tenant (Admin/Editor)")
     @PostMapping

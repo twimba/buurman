@@ -5,17 +5,16 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @DisallowConcurrentExecution
+@RequiredArgsConstructor
 public class DatabaseMetricsRefreshJob implements Job {
 
     private final DatabaseMetricsService databaseMetricsService;
 
-    public DatabaseMetricsRefreshJob(DatabaseMetricsService databaseMetricsService) {
-        this.databaseMetricsService = databaseMetricsService;
-    }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

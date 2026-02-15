@@ -10,8 +10,7 @@ import com.buurman.service.notification.RenderedContent;
 import com.buurman.config.models.AppProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,9 +23,8 @@ import java.util.UUID;
 
 @Component
 @Profile("local")
+@Slf4j
 public class LocalEmailSender implements NotificationChannelSender {
-
-    private static final Logger log = LoggerFactory.getLogger(LocalEmailSender.class);
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
@@ -103,7 +101,9 @@ public class LocalEmailSender implements NotificationChannelSender {
     }
 
     private String getVar(Map<String, Object> variables, String key, String defaultValue) {
-        if (variables == null) return defaultValue;
+        if (variables == null) {
+            return defaultValue;
+        }
         Object val = variables.get(key);
         return val != null ? val.toString() : defaultValue;
     }

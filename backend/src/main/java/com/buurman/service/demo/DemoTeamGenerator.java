@@ -1,10 +1,9 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -13,12 +12,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.TEAMS;
-import static com.buurman.util.EntityPrefix.TEA;
+import static com.buurman.util.UlidGenerator.newTeamId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoTeamGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoTeamGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
@@ -30,17 +29,12 @@ public class DemoTeamGenerator {
             "team-beta", "Team Beta Rentals"
     );
 
-    public DemoTeamGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
 
         for (var entry : TEAMS_MAP.entrySet()) {
             UUID teamId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(TEA).value();
+            String identifier = newTeamId().value();
 
             String settingsJson = """
                     {"demoData": true, "autoPaymentGeneration": {"enabled": true, "daysBefore": 30}}

@@ -23,9 +23,9 @@ import com.buurman.domain.NotificationType;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.UlidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.buurman.util.UlidGenerator.newExpenseId;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +37,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.EXP;
+
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class ExpenseService {
-
-    private static final Logger log = LoggerFactory.getLogger(ExpenseService.class);
 
     private final ExpenseRepository expenseRepository;
     private final PropertyRepository propertyRepository;
@@ -57,33 +57,6 @@ public class ExpenseService {
     private final AppProperties appProperties;
     private final Clock clock;
 
-    public ExpenseService(
-            ExpenseRepository expenseRepository,
-            PropertyRepository propertyRepository,
-            DocumentRepository documentRepository,
-            ExpenseMapper expenseMapper,
-            PropertyMapper propertyMapper,
-            AuditService auditService,
-            DocumentService documentService,
-            com.buurman.mapper.DocumentMapper documentMapper,
-            MetricsService metricsService,
-            NotificationService notificationService,
-            AppProperties appProperties,
-            Clock clock) {
-        this.expenseRepository = expenseRepository;
-        this.propertyRepository = propertyRepository;
-        this.documentRepository = documentRepository;
-        this.expenseMapper = expenseMapper;
-        this.propertyMapper = propertyMapper;
-        this.auditService = auditService;
-        this.documentService = documentService;
-        this.documentMapper = documentMapper;
-        this.metricsService = metricsService;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.clock = clock;
-    }
-
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public ExpenseResponse createExpense(CreateExpenseRequest request, UserPrincipal principal) {
@@ -93,7 +66,7 @@ public class ExpenseService {
 
         Expense expense = expenseMapper.toEntity(request);
         expense.setPropertyId(property.getId());
-        expense.setIdentifier(UlidGenerator.generate(EXP).value());
+        expense.setIdentifier(newExpenseId().value());
         expense.setTeamId(principal.getTeamId());
         expense.setCreatedBy(principal.getUserId());
         expense.setUpdatedBy(principal.getUserId());

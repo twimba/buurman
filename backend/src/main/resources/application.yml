@@ -79,7 +79,6 @@ spring.mail:
 buurman:
   demo:
     enabled: ${DEMO_DATA_ENABLED:true}
-    api-key: ${DEMO_DATA_API_KEY:demo-secret-key}
     cron: "23 1 * * * ?"
 
 # Google Maps Configuration

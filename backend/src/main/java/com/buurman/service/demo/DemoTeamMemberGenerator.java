@@ -1,8 +1,8 @@
 package com.buurman.service.demo;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -12,17 +12,12 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoTeamMemberGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoTeamMemberGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public DemoTeamMemberGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);

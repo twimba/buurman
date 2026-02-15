@@ -7,8 +7,8 @@ import com.buurman.util.CountryGroups;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,18 +17,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PhoneNumberPolicyService {
 
-    private static final Logger log = LoggerFactory.getLogger(PhoneNumberPolicyService.class);
     private static final PhoneNumberUtil PHONE_UTIL = PhoneNumberUtil.getInstance();
 
     private final PhoneNumberPolicyRepository policyRepository;
 
     private volatile PhoneNumberPolicy cachedPolicy;
-
-    public PhoneNumberPolicyService(PhoneNumberPolicyRepository policyRepository) {
-        this.policyRepository = policyRepository;
-    }
 
     public PhoneNumberPolicy getPolicy() {
         PhoneNumberPolicy policy = cachedPolicy;
@@ -98,7 +95,9 @@ public class PhoneNumberPolicyService {
     }
 
     private String humanReadableType(String type) {
-        if (type == null) return "unknown";
+        if (type == null) {
+            return "unknown";
+        }
         return switch (type) {
             case "FIXED_LINE" -> "fixed line";
             case "MOBILE" -> "mobile";

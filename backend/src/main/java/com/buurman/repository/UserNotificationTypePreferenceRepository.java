@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.UserNotificationTypePreference;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -17,15 +18,11 @@ import static com.buurman.jooq.generated.Tables.USER_NOTIFICATION_TYPE_PREFERENC
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class UserNotificationTypePreferenceRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public UserNotificationTypePreferenceRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public List<UserNotificationTypePreference> findByUserId(UUID userId) {
         return dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)

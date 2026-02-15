@@ -15,8 +15,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
@@ -27,9 +26,8 @@ import java.util.Map;
 
 @Component
 @Profile("!local")
+@Slf4j
 public class SendGridEmailSender implements NotificationChannelSender {
-
-    private static final Logger log = LoggerFactory.getLogger(SendGridEmailSender.class);
 
     private final SendGrid sendGrid;
     private final TemplateEngine templateEngine;
@@ -111,7 +109,9 @@ public class SendGridEmailSender implements NotificationChannelSender {
     }
 
     private String getVar(Map<String, Object> variables, String key, String defaultValue) {
-        if (variables == null) return defaultValue;
+        if (variables == null) {
+            return defaultValue;
+        }
         Object val = variables.get(key);
         return val != null ? val.toString() : defaultValue;
     }

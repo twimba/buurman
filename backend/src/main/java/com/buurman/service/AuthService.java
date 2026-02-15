@@ -20,9 +20,8 @@ import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.exception.BadRequestException;
 import com.buurman.util.FeatureFlags;
-import com.buurman.util.UlidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.buurman.util.UlidGenerator.newTeamId;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,14 +31,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.TEA;
+
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
+@Slf4j
 public class AuthService {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private static final int VERIFICATION_CODE_EXPIRY_MINUTES = 15;
     private static final int MAX_RESEND_PER_HOUR = 5;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -124,7 +123,7 @@ public class AuthService {
 
             // Create team
             Team team = new Team();
-            team.setIdentifier(UlidGenerator.generate(TEA).value());
+            team.setIdentifier(newTeamId().value());
             team.setName(teamName);
             team.setCreatedAt(clock.instant());
             team.setUpdatedAt(clock.instant());

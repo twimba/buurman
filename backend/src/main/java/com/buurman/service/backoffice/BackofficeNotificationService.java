@@ -11,9 +11,9 @@ import com.buurman.repository.TeamRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +24,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeNotificationService {
-
-    private static final Logger log = LoggerFactory.getLogger(BackofficeNotificationService.class);
 
     private final NotificationRepository notificationRepository;
     private final TeamRepository teamRepository;
     private final NotificationService notificationService;
-
-    public BackofficeNotificationService(NotificationRepository notificationRepository,
-                                          TeamRepository teamRepository,
-                                          NotificationService notificationService) {
-        this.notificationRepository = notificationRepository;
-        this.teamRepository = teamRepository;
-        this.notificationService = notificationService;
-    }
 
     @Transactional(readOnly = true)
     public PageResponse<BackofficeNotificationResponse> listNotifications(

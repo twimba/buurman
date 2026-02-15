@@ -10,8 +10,7 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +30,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
+@Slf4j
 public class DocumentService {
-
-    private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
 
     private final DocumentRepository documentRepository;
     private final S3StorageService s3StorageService;

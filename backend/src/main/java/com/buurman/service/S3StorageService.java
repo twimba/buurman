@@ -2,8 +2,7 @@ package com.buurman.service;
 
 import com.buurman.config.models.AwsS3Properties;
 import com.buurman.exception.ExternalServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -27,9 +26,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class S3StorageService {
 
-    private static final Logger log = LoggerFactory.getLogger(S3StorageService.class);
     private static final Duration PRESIGNED_URL_DURATION = Duration.ofMinutes(15);
 
     private final S3Client s3Client;

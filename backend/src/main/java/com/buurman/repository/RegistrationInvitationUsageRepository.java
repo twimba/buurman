@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.RegistrationInvitationUsage;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -14,15 +15,11 @@ import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class RegistrationInvitationUsageRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public RegistrationInvitationUsageRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void save(UUID invitationId, UUID userId) {
         LocalDateTime now = LocalDateTime.now(clock);

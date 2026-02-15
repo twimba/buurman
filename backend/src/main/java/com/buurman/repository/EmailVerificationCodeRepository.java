@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.EmailVerificationCode;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,11 @@ import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class EmailVerificationCodeRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public EmailVerificationCodeRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void save(EmailVerificationCode code) {
         LocalDateTime now = LocalDateTime.now(clock);

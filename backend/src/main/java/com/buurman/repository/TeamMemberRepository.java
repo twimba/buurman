@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import com.buurman.domain.TeamMember;
 import com.buurman.mapper.TeamMemberRecordMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -16,17 +17,12 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 
 @Repository
+@RequiredArgsConstructor
 public class TeamMemberRepository {
 
     private final DSLContext dsl;
     private final TeamMemberRecordMapper mapper;
     private final Clock clock;
-
-    public TeamMemberRepository(DSLContext dsl, TeamMemberRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<TeamMember> findByIdAndTeamId(UUID id, UUID teamId) {
         return dsl.selectFrom(TEAM_MEMBERS)

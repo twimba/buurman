@@ -1,8 +1,8 @@
 package com.buurman.db;
 
 import org.flywaydb.core.Flyway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -14,15 +14,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnBean(Flyway.class)
+@Slf4j
+@RequiredArgsConstructor
 public class FlywayMigrationLogger implements ApplicationListener<ApplicationReadyEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(FlywayMigrationLogger.class);
-
     private final Flyway flyway;
-
-    public FlywayMigrationLogger(Flyway flyway) {
-        this.flyway = flyway;
-    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -30,16 +26,16 @@ public class FlywayMigrationLogger implements ApplicationListener<ApplicationRea
         var current = info.current();
 
         if (current != null) {
-            logger.info("=".repeat(80));
-            logger.info("Database Migration Status:");
-            logger.info("  Current version: {}", current.getVersion());
-            logger.info("  Description: {}", current.getDescription());
-            logger.info("  Applied at: {}", current.getInstalledOn());
-            logger.info("  Total migrations applied: {}", info.applied().length);
-            logger.info("  Pending migrations: {}", info.pending().length);
-            logger.info("=".repeat(80));
+            log.info("=".repeat(80));
+            log.info("Database Migration Status:");
+            log.info("  Current version: {}", current.getVersion());
+            log.info("  Description: {}", current.getDescription());
+            log.info("  Applied at: {}", current.getInstalledOn());
+            log.info("  Total migrations applied: {}", info.applied().length);
+            log.info("  Pending migrations: {}", info.pending().length);
+            log.info("=".repeat(80));
         } else {
-            logger.warn("No Flyway migrations have been applied yet!");
+            log.warn("No Flyway migrations have been applied yet!");
         }
     }
 }

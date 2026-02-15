@@ -3,6 +3,7 @@ package com.buurman.repository;
 import com.buurman.domain.PhoneNumberPolicy;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@RequiredArgsConstructor
 public class PhoneNumberPolicyRepository {
 
     private final DSLContext dsl;
@@ -32,12 +34,6 @@ public class PhoneNumberPolicyRepository {
     private static final org.jooq.Field<Integer> VERIFICATION_CODE_EXPIRY_MINUTES = field("verification_code_expiry_minutes", Integer.class);
     private static final org.jooq.Field<Timestamp> UPDATED_AT = field("updated_at", Timestamp.class);
     private static final org.jooq.Field<String> UPDATED_BY = field("updated_by", String.class);
-
-    public PhoneNumberPolicyRepository(DSLContext dsl, ObjectMapper objectMapper, Clock clock) {
-        this.dsl = dsl;
-        this.objectMapper = objectMapper;
-        this.clock = clock;
-    }
 
     public Optional<PhoneNumberPolicy> findCurrent() {
         return dsl.select()
@@ -71,9 +67,13 @@ public class PhoneNumberPolicyRepository {
         policy.setId(record.get(ID));
         policy.setPolicyMatrix(fromJsonbMap(record.get(POLICY_MATRIX)));
         Integer maxCodes = record.get(MAX_CODES_PER_HOUR);
-        if (maxCodes != null) policy.setMaxCodesPerHour(maxCodes);
+        if (maxCodes != null) {
+            policy.setMaxCodesPerHour(maxCodes);
+        }
         Integer expiryMinutes = record.get(VERIFICATION_CODE_EXPIRY_MINUTES);
-        if (expiryMinutes != null) policy.setVerificationCodeExpiryMinutes(expiryMinutes);
+        if (expiryMinutes != null) {
+            policy.setVerificationCodeExpiryMinutes(expiryMinutes);
+        }
         Timestamp updatedAtTs = record.get(UPDATED_AT);
         if (updatedAtTs != null) {
             policy.setUpdatedAt(updatedAtTs.toInstant());
@@ -91,7 +91,9 @@ public class PhoneNumberPolicyRepository {
     }
 
     private Map<String, List<String>> fromJsonbMap(JSONB jsonb) {
-        if (jsonb == null) return Map.of();
+        if (jsonb == null) {
+            return Map.of();
+        }
         try {
             return objectMapper.readValue(jsonb.data(), new TypeReference<>() {});
         } catch (Exception e) {

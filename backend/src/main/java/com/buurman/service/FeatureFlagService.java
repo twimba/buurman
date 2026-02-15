@@ -3,8 +3,7 @@ package com.buurman.service;
 import com.buurman.security.UserPrincipal;
 import com.flagsmith.FlagsmithClient;
 import com.flagsmith.models.Flags;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,9 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class FeatureFlagService {
-
-    private static final Logger log = LoggerFactory.getLogger(FeatureFlagService.class);
 
     private final FlagsmithClient flagsmithClient;
 
@@ -81,7 +79,9 @@ public class FeatureFlagService {
      * Get remote config value for a flag (identity-aware).
      */
     public Object getValue(String flagKey, UserPrincipal principal) {
-        if (flagsmithClient == null) return null;
+        if (flagsmithClient == null) {
+            return null;
+        }
         try {
             Flags flags = flagsmithClient.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
             return flags.getFeatureValue(flagKey);
@@ -96,7 +96,9 @@ public class FeatureFlagService {
      */
     public Map<String, Object> getAllFlags(UserPrincipal principal) {
         Map<String, Object> result = new HashMap<>();
-        if (flagsmithClient == null) return result;
+        if (flagsmithClient == null) {
+            return result;
+        }
         try {
             Flags flags = flagsmithClient.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
             flags.getAllFlags().forEach(flag -> {
@@ -116,7 +118,9 @@ public class FeatureFlagService {
      */
     public Map<String, Object> getAllEnvironmentFlags() {
         Map<String, Object> result = new HashMap<>();
-        if (flagsmithClient == null) return result;
+        if (flagsmithClient == null) {
+            return result;
+        }
         try {
             Flags flags = flagsmithClient.getEnvironmentFlags();
             flags.getAllFlags().forEach(flag -> {
@@ -136,7 +140,9 @@ public class FeatureFlagService {
      */
     public Map<String, Object> getAllFlagsForIdentity(String identity, Map<String, Object> traits) {
         Map<String, Object> result = new HashMap<>();
-        if (flagsmithClient == null) return result;
+        if (flagsmithClient == null) {
+            return result;
+        }
         try {
             Flags flags = flagsmithClient.getIdentityFlags(identity, traits);
             flags.getAllFlags().forEach(flag -> {

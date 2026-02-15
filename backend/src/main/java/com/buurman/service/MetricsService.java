@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -11,15 +12,12 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 @Service
+@RequiredArgsConstructor
 public class MetricsService {
 
     private static final String PREFIX = "buurman.";
 
     private final MeterRegistry registry;
-
-    public MetricsService(MeterRegistry registry) {
-        this.registry = registry;
-    }
 
     public void incrementCounter(String name, String... tags) {
         Counter.builder(PREFIX + name)

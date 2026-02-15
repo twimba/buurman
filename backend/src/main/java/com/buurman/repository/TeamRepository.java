@@ -12,8 +12,8 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.TeamsRecord;
@@ -31,21 +31,14 @@ import static com.buurman.jooq.generated.Tables.TEAMS;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@Slf4j
+@RequiredArgsConstructor
 public class TeamRepository {
-
-    private static final Logger log = LoggerFactory.getLogger(TeamRepository.class);
 
     private final DSLContext dsl;
     private final TeamRecordMapper mapper;
     private final ObjectMapper objectMapper;
     private final Clock clock;
-
-    public TeamRepository(DSLContext dsl, TeamRecordMapper mapper, ObjectMapper objectMapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.objectMapper = objectMapper;
-        this.clock = clock;
-    }
 
     public Optional<Team> findById(UUID id) {
         return dsl.selectFrom(TEAMS)

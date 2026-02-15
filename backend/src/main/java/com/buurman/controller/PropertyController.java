@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +33,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/properties")
 @Tag(name = "Properties", description = "Property management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class PropertyController {
 
     private final PropertyService propertyService;
 
-    public PropertyController(PropertyService propertyService) {
-        this.propertyService = propertyService;
-    }
 
     @Operation(summary = "Create property", description = "Create a new property (Admin/Editor)")
     @PostMapping

@@ -14,6 +14,7 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +24,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/notifications")
 @Tag(name = "Notifications", description = "Notification center and management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class NotificationController {
 
     private final NotificationCenterService centerService;
 
-    public NotificationController(NotificationCenterService centerService) {
-        this.centerService = centerService;
-    }
 
     @Operation(summary = "List notifications", description = "Paginated list of all team notifications (Admin only)")
     @GetMapping

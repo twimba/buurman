@@ -6,8 +6,8 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -17,22 +17,15 @@ import static java.time.temporal.ChronoUnit.HOURS;
 
 @Component
 @DisallowConcurrentExecution
+@Slf4j
+@RequiredArgsConstructor
 public class VerificationCodeCleanupJob implements Job {
 
-    private static final Logger log = LoggerFactory.getLogger(VerificationCodeCleanupJob.class);
     private static final long RETENTION_HOURS = 48;
 
     private final EmailVerificationCodeRepository emailCodeRepository;
     private final PhoneVerificationCodeRepository phoneCodeRepository;
     private final Clock clock;
-
-    public VerificationCodeCleanupJob(EmailVerificationCodeRepository emailCodeRepository,
-                                       PhoneVerificationCodeRepository phoneCodeRepository,
-                                       Clock clock) {
-        this.emailCodeRepository = emailCodeRepository;
-        this.phoneCodeRepository = phoneCodeRepository;
-        this.clock = clock;
-    }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

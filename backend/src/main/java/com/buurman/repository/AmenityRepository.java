@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.Amenity;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -10,13 +11,10 @@ import java.util.Optional;
 import static com.buurman.jooq.generated.Tables.AMENITIES;
 
 @Repository
+@RequiredArgsConstructor
 public class AmenityRepository {
 
     private final DSLContext dsl;
-
-    public AmenityRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public List<Amenity> findAll() {
         return dsl.selectFrom(AMENITIES)

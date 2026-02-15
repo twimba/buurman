@@ -5,6 +5,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.ExpenseRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -30,17 +31,12 @@ import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
 @Repository
+@RequiredArgsConstructor
 public class ExpenseRepository {
 
     private final DSLContext dsl;
     private final ExpenseRecordMapper mapper;
     private final Clock clock;
-
-    public ExpenseRepository(DSLContext dsl, ExpenseRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<Expense> findByIdentifierAndTeamId(String identifier, UUID teamId) {
         return dsl.selectFrom(EXPENSES)

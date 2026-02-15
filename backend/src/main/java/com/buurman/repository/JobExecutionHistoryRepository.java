@@ -4,6 +4,7 @@ import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.JobExecutionHistoryResponse;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -25,6 +26,7 @@ import static java.time.ZoneOffset.UTC;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 @Repository
+@RequiredArgsConstructor
 public class JobExecutionHistoryRepository {
 
     private static final Table<Record> TABLE = DSL.table("job_execution_history");
@@ -41,10 +43,6 @@ public class JobExecutionHistoryRepository {
     private static final Field<String> NODE_ID = DSL.field("node_id", String.class);
 
     private final DSLContext dsl;
-
-    public JobExecutionHistoryRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public UUID insert(String jobName, String jobGroup, String triggerName, String triggerGroup,
                         Instant startedAt, String nodeId) {
@@ -116,7 +114,6 @@ public class JobExecutionHistoryRepository {
                 r.get(ERROR_MESSAGE),
                 r.get(NODE_ID)
         ));
-
 
 
         return PageResponse.of(items, pageRequest.page(), pageRequest.size(), total);

@@ -1,9 +1,8 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,13 +13,13 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
-import static com.buurman.util.EntityPrefix.POA;
-import static com.buurman.util.EntityPrefix.PRO;
+import static com.buurman.util.UlidGenerator.newPropertyId;
+import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoPropertyGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoPropertyGenerator.class);
 
     private final DSLContext dsl;
     private final Random random = new Random(42);
@@ -77,11 +76,6 @@ public class DemoPropertyGenerator {
 
     private final Clock clock;
 
-    public DemoPropertyGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
-
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
 
@@ -125,7 +119,7 @@ public class DemoPropertyGenerator {
                     default -> 75;
                 });
 
-                String propertyIdentifier = UlidGenerator.generate(PRO).value();
+                String propertyIdentifier = newPropertyId().value();
                 dsl.insertInto(PROPERTIES)
                         .set(PROPERTIES.ID, propertyId)
                         .set(PROPERTIES.IDENTIFIER, propertyIdentifier)
@@ -195,7 +189,7 @@ public class DemoPropertyGenerator {
                         if (usedTypes.add(outdoorType)) {
                             dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
                                     .set(PROPERTY_OUTDOOR_AREAS.ID, UUID.randomUUID())
-                                    .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, UlidGenerator.generate(POA).value())
+                                    .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, newPropertyOutdoorAreaId().value())
                                     .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, propertyId)
                                     .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, teamId)
                                     .set(PROPERTY_OUTDOOR_AREAS.TYPE, outdoorType)

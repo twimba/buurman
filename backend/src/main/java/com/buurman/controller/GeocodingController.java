@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/geocode")
 @Tag(name = "Geocoding", description = "Address geocoding")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class GeocodingController {
 
     private final GeocodingService geocodingService;
 
-    public GeocodingController(GeocodingService geocodingService) {
-        this.geocodingService = geocodingService;
-    }
 
     @Operation(summary = "Geocode address",
                description = "Convert an address to latitude/longitude coordinates")

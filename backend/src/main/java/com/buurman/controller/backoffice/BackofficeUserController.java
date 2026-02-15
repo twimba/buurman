@@ -9,6 +9,7 @@ import com.buurman.service.backoffice.BackofficeUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +19,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/backoffice/users")
 @Tag(name = "Backoffice - Users", description = "Platform-wide user management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeUserController {
 
     private final BackofficeUserService backofficeUserService;
 
-    public BackofficeUserController(BackofficeUserService backofficeUserService) {
-        this.backofficeUserService = backofficeUserService;
-    }
 
     @Operation(summary = "List users", description = "Get all users with optional search and pagination")
     @GetMapping

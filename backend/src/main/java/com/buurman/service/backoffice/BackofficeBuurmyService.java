@@ -10,8 +10,8 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.KeycloakService;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.UserSessionRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -20,15 +20,11 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeBuurmyService {
 
-    private static final Logger log = LoggerFactory.getLogger(BackofficeBuurmyService.class);
-
     private final KeycloakService keycloakService;
-
-    public BackofficeBuurmyService(KeycloakService keycloakService) {
-        this.keycloakService = keycloakService;
-    }
 
     public PageResponse<BuurmyResponse> listBuurmies(PageRequest pageRequest, String search) {
         int totalElements = keycloakService.countRealmUsers(search);

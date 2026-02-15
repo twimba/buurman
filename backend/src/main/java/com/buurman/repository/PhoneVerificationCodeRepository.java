@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PhoneVerificationCode;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,11 @@ import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class PhoneVerificationCodeRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public PhoneVerificationCodeRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void save(PhoneVerificationCode code) {
         LocalDateTime now = LocalDateTime.now(clock);

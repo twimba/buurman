@@ -6,6 +6,7 @@ import com.buurman.service.backoffice.BackofficeLoggerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +16,11 @@ import java.util.List;
 @RequestMapping("/backoffice/loggers")
 @Tag(name = "Backoffice - Loggers", description = "Runtime log level management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeLoggerController {
 
     private final BackofficeLoggerService loggerService;
 
-    public BackofficeLoggerController(BackofficeLoggerService loggerService) {
-        this.loggerService = loggerService;
-    }
 
     @Operation(summary = "List all loggers")
     @GetMapping

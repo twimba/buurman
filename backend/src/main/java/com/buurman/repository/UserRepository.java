@@ -6,7 +6,8 @@ import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newUserId;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -21,21 +22,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.USERS;
-import static com.buurman.util.EntityPrefix.USR;
+
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepository {
 
     private final DSLContext dsl;
     private final UserRecordMapper mapper;
     private final Clock clock;
-
-    public UserRepository(DSLContext dsl, UserRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<User> findByIdentifier(String identifier) {
         return dsl.selectFrom(USERS)
@@ -57,7 +53,7 @@ public class UserRepository {
         if (user.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(USR).value();
+            String identifier = newUserId().value();
             LocalDateTime createdAt = user.getCreatedAt() != null
                     ? LocalDateTime.ofInstant(user.getCreatedAt(), UTC)
                     : now;

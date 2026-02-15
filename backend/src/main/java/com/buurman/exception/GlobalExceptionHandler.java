@@ -26,6 +26,8 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.ProblemDetail.forStatus;
+import static org.springframework.http.ProblemDetail.forStatusAndDetail;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(NOT_FOUND, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(NOT_FOUND, ex.getMessage());
         problem.setTitle("Not Found");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -42,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     public ProblemDetail handleForbidden(ForbiddenException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(FORBIDDEN, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
         problem.setTitle("Forbidden");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -50,7 +52,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleException.class)
     public ProblemDetail handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(CONFLICT, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(CONFLICT, ex.getMessage());
         problem.setTitle("Conflict");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -58,7 +60,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequest(BadRequestException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(BAD_REQUEST, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
         problem.setTitle("Bad Request");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -67,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ExternalServiceException.class)
     public ProblemDetail handleExternalService(ExternalServiceException ex, HttpServletRequest request) {
         log.error("External service error: {}", ex.getMessage(), ex);
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(BAD_GATEWAY, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(BAD_GATEWAY, ex.getMessage());
         problem.setTitle("Bad Gateway");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -75,7 +77,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatus(BAD_REQUEST);
+        ProblemDetail problem = forStatus(BAD_REQUEST);
         problem.setTitle("Validation Failed");
         problem.setInstance(URI.create(request.getRequestURI()));
 
@@ -90,7 +92,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatus(BAD_REQUEST);
+        ProblemDetail problem = forStatus(BAD_REQUEST);
         problem.setTitle("Validation Failed");
         problem.setInstance(URI.create(request.getRequestURI()));
 
@@ -108,7 +110,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(BAD_REQUEST, "Malformed request body");
+        ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, "Malformed request body");
         problem.setTitle("Bad Request");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -116,7 +118,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(NOT_FOUND, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(NOT_FOUND, ex.getMessage());
         problem.setTitle("Not Found");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -124,7 +126,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(BAD_REQUEST, ex.getMessage());
+        ProblemDetail problem = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
         problem.setTitle("Bad Request");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -132,7 +134,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(FORBIDDEN, "Access denied");
+        ProblemDetail problem = forStatusAndDetail(FORBIDDEN, "Access denied");
         problem.setTitle("Forbidden");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
@@ -141,7 +143,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception", ex);
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+        ProblemDetail problem = forStatusAndDetail(INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         problem.setTitle("Internal Server Error");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;

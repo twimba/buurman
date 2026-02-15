@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PropertyAmenity;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +17,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class PropertyAmenityRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public PropertyAmenityRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public List<PropertyAmenity> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
         return dsl.selectFrom(PROPERTY_AMENITIES)

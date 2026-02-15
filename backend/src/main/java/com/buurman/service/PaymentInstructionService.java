@@ -7,8 +7,8 @@ import com.buurman.dto.response.PaymentInstructionResponse;
 import com.buurman.mapper.PaymentInstructionMapper;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.security.UserPrincipal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,25 +21,14 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PaymentInstructionService {
-
-    private static final Logger log = LoggerFactory.getLogger(PaymentInstructionService.class);
 
     private final PaymentInstructionRepository repository;
     private final PaymentInstructionMapper mapper;
     private final AuditService auditService;
     private final Clock clock;
-
-    public PaymentInstructionService(
-            PaymentInstructionRepository repository,
-            PaymentInstructionMapper mapper,
-            AuditService auditService,
-            Clock clock) {
-        this.repository = repository;
-        this.mapper = mapper;
-        this.auditService = auditService;
-        this.clock = clock;
-    }
 
     public List<PaymentInstructionResponse> getAll(UserPrincipal principal) {
         return repository.findAllByTeamId(principal.getTeamId()).stream()

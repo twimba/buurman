@@ -11,22 +11,18 @@ import static com.buurman.domain.NotificationStatus.QUEUED;
 import static com.buurman.domain.NotificationStatus.SENT;
 import com.buurman.service.notification.DeliveryStatusLookupService;
 import com.twilio.rest.api.v2010.account.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @Profile("!local")
+@Slf4j
+@RequiredArgsConstructor
 public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupService {
 
-    private static final Logger log = LoggerFactory.getLogger(TwilioDeliveryStatusLookupService.class);
-
     private final NotificationRepository notificationRepository;
-
-    public TwilioDeliveryStatusLookupService(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
 
     @Override
     public Notification refreshStatus(Notification notification) {

@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,13 +37,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/payments")
 @Tag(name = "Payments", description = "Rent payment tracking and management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final PaymentService paymentService;
 
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
 
     @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
     @PostMapping

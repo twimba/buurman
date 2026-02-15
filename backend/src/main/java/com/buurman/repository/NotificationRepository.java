@@ -6,9 +6,10 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.NotificationRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newNotificationId;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -16,7 +17,7 @@ import org.jooq.JSONB;
 import org.jooq.Record2;
 import org.springframework.stereotype.Repository;
 
-import static com.buurman.util.EntityPrefix.NTF;
+
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.*;
 
@@ -30,6 +31,7 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 
 @Repository
+@RequiredArgsConstructor
 public class NotificationRepository {
 
     private final DSLContext dsl;
@@ -37,17 +39,10 @@ public class NotificationRepository {
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public NotificationRepository(DSLContext dsl, NotificationRecordMapper mapper, ObjectMapper objectMapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.objectMapper = objectMapper;
-        this.clock = clock;
-    }
-
     public Notification save(Notification notification) {
         LocalDateTime now = LocalDateTime.now(clock);
         UUID id = UUID.randomUUID();
-        String identifier = UlidGenerator.generate(NTF).value();
+        String identifier = newNotificationId().value();
         LocalDateTime createdAt = notification.getCreatedAt() != null
                 ? LocalDateTime.ofInstant(notification.getCreatedAt(), UTC)
                 : now;

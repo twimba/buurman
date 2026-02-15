@@ -2,6 +2,7 @@ package com.buurman.repository;
 
 import com.buurman.domain.CalendarFeed;
 import com.buurman.mapper.CalendarFeedRecordMapper;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -17,17 +18,12 @@ import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class CalendarFeedRepository {
 
     private final DSLContext dsl;
     private final CalendarFeedRecordMapper mapper;
     private final Clock clock;
-
-    public CalendarFeedRepository(DSLContext dsl, CalendarFeedRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<CalendarFeed> findByFeedToken(String feedToken) {
         return dsl.selectFrom(CALENDAR_FEEDS)

@@ -16,8 +16,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -31,18 +31,12 @@ import static java.time.ZoneOffset.UTC;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeSchedulerService {
-
-    private static final Logger log = LoggerFactory.getLogger(BackofficeSchedulerService.class);
 
     private final Scheduler scheduler;
     private final JobExecutionHistoryRepository executionHistoryRepository;
-
-    public BackofficeSchedulerService(Scheduler scheduler,
-                                       JobExecutionHistoryRepository executionHistoryRepository) {
-        this.scheduler = scheduler;
-        this.executionHistoryRepository = executionHistoryRepository;
-    }
 
     public List<ScheduledJobResponse> listAllJobs() throws SchedulerException {
         List<ScheduledJobResponse> jobs = new ArrayList<>();
@@ -145,7 +139,9 @@ public class BackofficeSchedulerService {
     }
 
     private String formatDate(Date date) {
-        if (date == null) return null;
+        if (date == null) {
+            return null;
+        }
         return Instant.ofEpochMilli(date.getTime())
                 .atOffset(UTC)
                 .format(ISO_OFFSET_DATE_TIME);

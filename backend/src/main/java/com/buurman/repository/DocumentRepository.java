@@ -5,17 +5,18 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.DocumentRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 
-import static com.buurman.util.EntityPrefix.DOC;
+
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.jooq.generated.tables.records.DocumentsRecord;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newDocumentId;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -28,17 +29,12 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 
 @Repository
+@RequiredArgsConstructor
 public class DocumentRepository {
 
     private final DSLContext dsl;
     private final DocumentRecordMapper mapper;
     private final Clock clock;
-
-    public DocumentRepository(DSLContext dsl, DocumentRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<Document> findByIdentifierAndTeamId(String identifier, UUID teamId) {
         return dsl.selectFrom(DOCUMENTS)
@@ -87,7 +83,7 @@ public class DocumentRepository {
         if (document.getId() == null) {
             // INSERT
             UUID newId = UUID.randomUUID();
-            String identifier = UlidGenerator.generate(DOC).value();
+            String identifier = newDocumentId().value();
             LocalDateTime uploadedAt = document.getUploadedAt() != null
                     ? LocalDateTime.ofInstant(document.getUploadedAt(), UTC)
                     : now;

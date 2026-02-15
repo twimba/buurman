@@ -1,14 +1,12 @@
 package com.buurman.service.demo;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.util.UlidGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -26,13 +24,12 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
-import static com.buurman.util.EntityPrefix.NTF;
+import static com.buurman.util.UlidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
+@Slf4j
 public class DemoNotificationGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoNotificationGenerator.class);
 
     private final DSLContext dsl;
     private final TemplateEngine templateEngine;
@@ -74,7 +71,9 @@ public class DemoNotificationGenerator {
             for (var member : members) {
                 UUID userId = member.get(TEAM_MEMBERS.USER_ID);
                 Record user = dsl.selectFrom(USERS).where(USERS.ID.eq(userId)).fetchOne();
-                if (user == null) continue;
+                if (user == null) {
+                    continue;
+                }
 
                 String email = user.get(USERS.EMAIL);
                 String firstName = user.get(USERS.FIRST_NAME);
@@ -95,7 +94,9 @@ public class DemoNotificationGenerator {
             for (int i = 0; i < Math.min(propertyIds.size(), 3); i++) {
                 UUID propertyId = propertyIds.get(i);
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-                if (property == null) continue;
+                if (property == null) {
+                    continue;
+                }
 
                 String street = property.get(PROPERTIES.STREET);
                 String city = property.get(PROPERTIES.CITY);
@@ -122,14 +123,18 @@ public class DemoNotificationGenerator {
             // --- Contract created + status change notifications ---
             for (UUID contractId : contractIds) {
                 Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
-                if (contract == null) continue;
+                if (contract == null) {
+                    continue;
+                }
 
                 UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 String status = contract.get(CONTRACTS.STATUS);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-                if (tenant == null || property == null) continue;
+                if (tenant == null || property == null) {
+                    continue;
+                }
 
                 String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
                 String street = property.get(PROPERTIES.STREET);
@@ -181,13 +186,17 @@ public class DemoNotificationGenerator {
             for (UUID contractId : contractIds) {
                 List<UUID> paymentIds = ctx.getPaymentIdsByContract().getOrDefault(contractId, List.of());
                 Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
-                if (contract == null) continue;
+                if (contract == null) {
+                    continue;
+                }
 
                 UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-                if (tenant == null || property == null) continue;
+                if (tenant == null || property == null) {
+                    continue;
+                }
 
                 String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
                 String tenantEmail = tenant.get(TENANTS.EMAIL);
@@ -196,9 +205,13 @@ public class DemoNotificationGenerator {
 
                 int reminderCount = 0;
                 for (UUID paymentId : paymentIds) {
-                    if (reminderCount >= 2) break;
+                    if (reminderCount >= 2) {
+                        break;
+                    }
                     Record payment = dsl.selectFrom(PAYMENTS).where(PAYMENTS.ID.eq(paymentId)).fetchOne();
-                    if (payment == null) continue;
+                    if (payment == null) {
+                        continue;
+                    }
 
                     String paymentStatus = payment.get(PAYMENTS.STATUS);
                     if ("PENDING".equals(paymentStatus) || "OVERDUE".equals(paymentStatus)) {
@@ -237,24 +250,34 @@ public class DemoNotificationGenerator {
             // --- Payment paid notifications ---
             int paidCount = 0;
             for (UUID contractId : contractIds) {
-                if (paidCount >= 4) break;
+                if (paidCount >= 4) {
+                    break;
+                }
                 List<UUID> paymentIds = ctx.getPaymentIdsByContract().getOrDefault(contractId, List.of());
                 Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
-                if (contract == null) continue;
+                if (contract == null) {
+                    continue;
+                }
 
                 UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-                if (tenant == null || property == null) continue;
+                if (tenant == null || property == null) {
+                    continue;
+                }
 
                 String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
                 String propertyName = property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
 
                 for (UUID paymentId : paymentIds) {
-                    if (paidCount >= 4) break;
+                    if (paidCount >= 4) {
+                        break;
+                    }
                     Record payment = dsl.selectFrom(PAYMENTS).where(PAYMENTS.ID.eq(paymentId)).fetchOne();
-                    if (payment == null || !"PAID".equals(payment.get(PAYMENTS.STATUS))) continue;
+                    if (payment == null || !"PAID".equals(payment.get(PAYMENTS.STATUS))) {
+                        continue;
+                    }
 
                     String amount = "EUR " + payment.get(PAYMENTS.AMOUNT).toPlainString();
                     var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
@@ -281,16 +304,22 @@ public class DemoNotificationGenerator {
             // --- Contract expiry notifications (for contracts expiring soon) ---
             for (UUID contractId : contractIds) {
                 Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
-                if (contract == null || !"ACTIVE".equals(contract.get(CONTRACTS.STATUS))) continue;
+                if (contract == null || !"ACTIVE".equals(contract.get(CONTRACTS.STATUS))) {
+                    continue;
+                }
 
                 var endDate = contract.get(CONTRACTS.END_DATE);
-                if (endDate == null) continue;
+                if (endDate == null) {
+                    continue;
+                }
 
                 UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-                if (tenant == null || property == null) continue;
+                if (tenant == null || property == null) {
+                    continue;
+                }
 
                 String propertyName = property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
@@ -431,7 +460,9 @@ public class DemoNotificationGenerator {
     }
 
     private String getVar(Map<String, Object> variables, String key, String defaultValue) {
-        if (variables == null) return defaultValue;
+        if (variables == null) {
+            return defaultValue;
+        }
         Object val = variables.get(key);
         return val != null ? val.toString() : defaultValue;
     }
@@ -456,7 +487,7 @@ public class DemoNotificationGenerator {
 
         dsl.insertInto(NOTIFICATIONS)
                 .set(NOTIFICATIONS.ID, UUID.randomUUID())
-                .set(NOTIFICATIONS.IDENTIFIER, UlidGenerator.generate(NTF).value())
+                .set(NOTIFICATIONS.IDENTIFIER, newNotificationId().value())
                 .set(NOTIFICATIONS.TEAM_ID, teamId)
                 .set(NOTIFICATIONS.NOTIFICATION_TYPE, type)
                 .set(NOTIFICATIONS.CHANNEL, channel)

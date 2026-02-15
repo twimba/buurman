@@ -11,6 +11,7 @@ import com.buurman.service.DocumentService;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,13 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/documents")
 @Tag(name = "Documents", description = "Document management endpoints")
+@RequiredArgsConstructor
 public class DocumentController {
 
     private final DocumentService documentService;
 
-    public DocumentController(DocumentService documentService) {
-        this.documentService = documentService;
-    }
 
     @GetMapping
     @Operation(summary = "Search and list all documents", description = "Search across all documents with optional filters and pagination")

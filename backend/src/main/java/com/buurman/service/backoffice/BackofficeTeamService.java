@@ -19,8 +19,8 @@ import com.buurman.repository.UserRepository;
 import com.buurman.repository.backoffice.BackofficeTeamStatsRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,24 +32,14 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeTeamService {
-
-    private static final Logger log = LoggerFactory.getLogger(BackofficeTeamService.class);
 
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final BackofficeTeamStatsRepository statsRepository;
-
-    public BackofficeTeamService(TeamRepository teamRepository,
-                                 TeamMemberRepository teamMemberRepository,
-                                 UserRepository userRepository,
-                                 BackofficeTeamStatsRepository statsRepository) {
-        this.teamRepository = teamRepository;
-        this.teamMemberRepository = teamMemberRepository;
-        this.userRepository = userRepository;
-        this.statsRepository = statsRepository;
-    }
 
     @Transactional(readOnly = true)
     public PageResponse<BackofficeTeamResponse> listTeams(PageRequest pageRequest, String search) {

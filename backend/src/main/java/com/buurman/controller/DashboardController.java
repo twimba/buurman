@@ -7,6 +7,7 @@ import com.buurman.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,10 @@ import java.util.List;
 @RequestMapping("/dashboard")
 @Tag(name = "Dashboard", description = "Dashboard statistics and recent activities")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class DashboardController {
 
     private final DashboardService dashboardService;
-
-    public DashboardController(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
-    }
 
     @Operation(summary = "Get dashboard statistics", description = "Get overall statistics for the dashboard")
     @GetMapping("/stats")

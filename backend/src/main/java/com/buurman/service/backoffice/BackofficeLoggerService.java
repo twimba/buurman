@@ -1,8 +1,8 @@
 package com.buurman.service.backoffice;
 
 import com.buurman.dto.response.backoffice.LoggerConfigurationResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -11,15 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BackofficeLoggerService {
 
-    private static final Logger log = LoggerFactory.getLogger(BackofficeLoggerService.class);
-
     private final LoggingSystem loggingSystem;
-
-    public BackofficeLoggerService(LoggingSystem loggingSystem) {
-        this.loggingSystem = loggingSystem;
-    }
 
     public List<LoggerConfigurationResponse> listLoggers(String search) {
         return loggingSystem.getLoggerConfigurations().stream()

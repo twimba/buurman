@@ -1,6 +1,7 @@
 package com.buurman.repository.backoffice;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -19,13 +20,10 @@ import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
 @Repository
+@RequiredArgsConstructor
 public class BackofficeTeamStatsRepository {
 
     private final DSLContext dsl;
-
-    public BackofficeTeamStatsRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public DataCounts countEntitiesForTeam(UUID teamId) {
         long properties = dsl.selectCount().from(PROPERTIES)

@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import com.buurman.domain.PropertyTenantHistory;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,11 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class PropertyTenantHistoryRepository {
 
     private final DSLContext dsl;
     private final Clock clock;
-
-    public PropertyTenantHistoryRepository(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public List<PropertyTenantHistory> findByTenantId(UUID tenantId, UUID teamId) {
         return dsl.selectFrom(PROPERTY_TENANT_HISTORY)

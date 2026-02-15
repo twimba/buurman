@@ -7,8 +7,8 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -16,17 +16,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class ExecutionHistoryJobListener implements JobListener {
-
-    private static final Logger log = LoggerFactory.getLogger(ExecutionHistoryJobListener.class);
 
     private final JobExecutionHistoryRepository repository;
     private final Scheduler scheduler;
-
-    public ExecutionHistoryJobListener(JobExecutionHistoryRepository repository, Scheduler scheduler) {
-        this.repository = repository;
-        this.scheduler = scheduler;
-    }
 
     @PostConstruct
     public void register() throws SchedulerException {
@@ -65,7 +60,9 @@ public class ExecutionHistoryJobListener implements JobListener {
     @Override
     public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
         Object executionIdObj = context.get("executionId");
-        if (executionIdObj == null) return;
+        if (executionIdObj == null) {
+            return;
+        }
 
         UUID executionId = (UUID) executionIdObj;
         String status = exception == null ? "SUCCESS" : "FAILED";

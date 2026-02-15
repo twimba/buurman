@@ -42,7 +42,8 @@ import com.buurman.domain.Tenant;
 import com.buurman.config.models.AppProperties;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.UlidGenerator;
+import static com.buurman.util.UlidGenerator.newPaymentId;
+import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
@@ -51,8 +52,8 @@ import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,17 +71,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.buurman.util.EntityPrefix.PAY;
-import static com.buurman.util.EntityPrefix.PRE;
+
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class PaymentService {
-
-    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     private final PaymentRepository paymentRepository;
     private final PaymentReceivalRepository receivalRepository;
@@ -101,45 +101,6 @@ public class PaymentService {
     private final AppProperties appProperties;
     private final Clock clock;
 
-    public PaymentService(
-            PaymentRepository paymentRepository,
-            PaymentReceivalRepository receivalRepository,
-            ContractRepository contractRepository,
-            PropertyRepository propertyRepository,
-            TenantRepository tenantRepository,
-            DocumentRepository documentRepository,
-            PaymentMapper paymentMapper,
-            PaymentReceivalMapper receivalMapper,
-            ContractMapper contractMapper,
-            PropertyMapper propertyMapper,
-            TenantMapper tenantMapper,
-            AuditService auditService,
-            DocumentService documentService,
-            com.buurman.mapper.DocumentMapper documentMapper,
-            MetricsService metricsService,
-            NotificationService notificationService,
-            AppProperties appProperties,
-            Clock clock) {
-        this.paymentRepository = paymentRepository;
-        this.receivalRepository = receivalRepository;
-        this.contractRepository = contractRepository;
-        this.propertyRepository = propertyRepository;
-        this.tenantRepository = tenantRepository;
-        this.documentRepository = documentRepository;
-        this.paymentMapper = paymentMapper;
-        this.receivalMapper = receivalMapper;
-        this.contractMapper = contractMapper;
-        this.propertyMapper = propertyMapper;
-        this.tenantMapper = tenantMapper;
-        this.auditService = auditService;
-        this.documentService = documentService;
-        this.documentMapper = documentMapper;
-        this.metricsService = metricsService;
-        this.notificationService = notificationService;
-        this.appProperties = appProperties;
-        this.clock = clock;
-    }
-
     @Transactional
     @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
     public PaymentResponse createPayment(CreatePaymentRequest request, UserPrincipal principal) {
@@ -151,7 +112,7 @@ public class PaymentService {
 
         Payment payment = paymentMapper.toEntity(request);
         payment.setContractId(contract.getId());
-        payment.setIdentifier(UlidGenerator.generate(PAY).value());
+        payment.setIdentifier(newPaymentId().value());
         payment.setTeamId(teamId);
         payment.setStatus(PENDING);
         payment.setCreatedBy(principal.getUserId());
@@ -300,7 +261,7 @@ public class PaymentService {
 
         if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
             PaymentReceival receival = new PaymentReceival();
-            receival.setIdentifier(UlidGenerator.generate(PRE).value());
+            receival.setIdentifier(newPaymentReceivalId().value());
             receival.setTeamId(teamId);
             receival.setPaymentId(payment.getId());
             receival.setAmount(remainingBalance);
@@ -372,7 +333,7 @@ public class PaymentService {
         }
 
         PaymentReceival receival = new PaymentReceival();
-        receival.setIdentifier(UlidGenerator.generate(PRE).value());
+        receival.setIdentifier(newPaymentReceivalId().value());
         receival.setTeamId(teamId);
         receival.setPaymentId(paymentId);
         receival.setAmount(request.amount());
@@ -590,7 +551,7 @@ public class PaymentService {
             }
 
             Payment payment = new Payment();
-            payment.setIdentifier(UlidGenerator.generate(PAY).value());
+            payment.setIdentifier(newPaymentId().value());
             payment.setTeamId(teamId);
             payment.setContractId(contract.getId());
             payment.setAmount(contract.getRentAmount());
@@ -795,8 +756,12 @@ public class PaymentService {
             if (contract != null) {
                 com.buurman.domain.Property property = contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
                 com.buurman.domain.Tenant tenant = contract.getTenantId() != null ? tenantsById.get(contract.getTenantId()) : null;
-                if (property != null) propertySummary = propertyMapper.toSummary(property);
-                if (tenant != null) tenantSummary = tenantMapper.toSummary(tenant);
+                if (property != null) {
+                    propertySummary = propertyMapper.toSummary(property);
+                }
+                if (tenant != null) {
+                    tenantSummary = tenantMapper.toSummary(tenant);
+                }
             }
 
             List<com.buurman.domain.Document> paymentDocs = docsByPaymentId.getOrDefault(payment.getId(), List.of());

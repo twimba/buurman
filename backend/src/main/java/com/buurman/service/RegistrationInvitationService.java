@@ -21,8 +21,7 @@ import com.buurman.service.notification.NotificationSendRequest;
 import com.buurman.service.notification.RenderedContent;
 import com.buurman.util.HumanReadableIdGenerator;
 import com.buurman.util.PaginationHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +31,9 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class RegistrationInvitationService {
 
-    private static final Logger log = LoggerFactory.getLogger(RegistrationInvitationService.class);
 
     private final RegistrationInvitationRepository invitationRepository;
     private final RegistrationInvitationUsageRepository usageRepository;

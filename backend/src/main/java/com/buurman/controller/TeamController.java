@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +28,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/teams")
 @Tag(name = "Teams", description = "Team management")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class TeamController {
 
     private final TeamService teamService;
 
-    public TeamController(TeamService teamService) {
-        this.teamService = teamService;
-    }
 
     @Operation(summary = "Get current team", description = "Get current user's team details")
     @GetMapping("/current")

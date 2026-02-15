@@ -1,9 +1,8 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -13,22 +12,17 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_INSTRUCTIONS;
-import static com.buurman.util.EntityPrefix.CPI;
-import static com.buurman.util.EntityPrefix.PIN;
+import static com.buurman.util.UlidGenerator.newContractPaymentInstructionId;
+import static com.buurman.util.UlidGenerator.newPaymentInstructionId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoPaymentInstructionGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoPaymentInstructionGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
     private final Random random = new Random(42);
-
-    public DemoPaymentInstructionGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
@@ -43,7 +37,7 @@ public class DemoPaymentInstructionGenerator {
             UUID piBank = UUID.randomUUID();
             dsl.insertInto(PAYMENT_INSTRUCTIONS)
                     .set(PAYMENT_INSTRUCTIONS.ID, piBank)
-                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, UlidGenerator.generate(PIN).value())
+                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
                     .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
                     .set(PAYMENT_INSTRUCTIONS.NAME, "Primary Bank Account")
                     .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "Main bank account for rent collection")
@@ -65,7 +59,7 @@ public class DemoPaymentInstructionGenerator {
             UUID piDebit = UUID.randomUUID();
             dsl.insertInto(PAYMENT_INSTRUCTIONS)
                     .set(PAYMENT_INSTRUCTIONS.ID, piDebit)
-                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, UlidGenerator.generate(PIN).value())
+                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
                     .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
                     .set(PAYMENT_INSTRUCTIONS.NAME, "Direct Debit Account")
                     .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "SEPA direct debit for automatic rent collection")
@@ -87,7 +81,7 @@ public class DemoPaymentInstructionGenerator {
             UUID piPaypal = UUID.randomUUID();
             dsl.insertInto(PAYMENT_INSTRUCTIONS)
                     .set(PAYMENT_INSTRUCTIONS.ID, piPaypal)
-                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, UlidGenerator.generate(PIN).value())
+                    .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
                     .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
                     .set(PAYMENT_INSTRUCTIONS.NAME, "PayPal")
                     .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "PayPal for international tenants")
@@ -107,7 +101,9 @@ public class DemoPaymentInstructionGenerator {
 
             // Link contracts to payment instructions
             List<UUID> contractIds = ctx.getContractIdsByTeam().get(teamId);
-            if (contractIds == null || contractIds.isEmpty()) continue;
+            if (contractIds == null || contractIds.isEmpty()) {
+                continue;
+            }
 
             int linked = 0;
             for (int i = 0; i < contractIds.size(); i++) {
@@ -118,7 +114,7 @@ public class DemoPaymentInstructionGenerator {
                     // Custom payment instruction (every 3rd contract)
                     dsl.insertInto(CONTRACT_PAYMENT_INSTRUCTIONS)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
-                            .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, UlidGenerator.generate(CPI).value())
+                            .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, newContractPaymentInstructionId().value())
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.IS_CUSTOM, true)
@@ -138,7 +134,7 @@ public class DemoPaymentInstructionGenerator {
                     UUID piId = (i % 2 == 0) ? piBank : piDebit;
                     dsl.insertInto(CONTRACT_PAYMENT_INSTRUCTIONS)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
-                            .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, UlidGenerator.generate(CPI).value())
+                            .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, newContractPaymentInstructionId().value())
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
                             .set(CONTRACT_PAYMENT_INSTRUCTIONS.PAYMENT_INSTRUCTION_ID, piId)

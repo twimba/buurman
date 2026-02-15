@@ -3,6 +3,7 @@ package com.buurman.repository;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import org.jooq.Condition;
+import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.SortField;
@@ -20,13 +21,10 @@ import java.util.UUID;
 import static com.buurman.jooq.generated.Tables.*;
 
 @Repository
+@RequiredArgsConstructor
 public class AuditLogRepository {
 
     private final DSLContext dsl;
-
-    public AuditLogRepository(DSLContext dsl) {
-        this.dsl = dsl;
-    }
 
     public void insertAuditLog(UUID id, UUID teamId, String entityType, UUID entityId,
                                String action, JSONB changedFields, JSONB oldValues,

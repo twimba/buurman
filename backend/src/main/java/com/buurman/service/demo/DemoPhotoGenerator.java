@@ -3,8 +3,7 @@ package com.buurman.service.demo;
 import com.buurman.domain.Photo;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.service.S3StorageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -13,9 +12,9 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
+@Slf4j
 public class DemoPhotoGenerator {
 
-    private static final Logger log = LoggerFactory.getLogger(DemoPhotoGenerator.class);
     private static final String RESOURCE_BASE = "classpath:demo/photos/";
 
     private final PhotoRepository photoRepository;
@@ -44,7 +43,9 @@ public class DemoPhotoGenerator {
             UUID teamId = teamEntry.getValue();
             UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
             List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
-            if (propertyIds == null) continue;
+            if (propertyIds == null) {
+                continue;
+            }
 
             for (UUID propertyId : propertyIds) {
                 totalPhotos += generatePropertyPhotos(teamId, ctx.getIdentifier(teamId), propertyId, ctx.getIdentifier(propertyId), uploadedBy);
@@ -70,7 +71,9 @@ public class DemoPhotoGenerator {
         int count = 0;
         for (PhotoSlot slot : slots) {
             byte[] imageData = pickRandom(slot.category);
-            if (imageData == null) continue;
+            if (imageData == null) {
+                continue;
+            }
 
             try {
                 String fileName = slot.title.toLowerCase().replace(" ", "-") + ".jpg";

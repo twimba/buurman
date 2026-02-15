@@ -5,6 +5,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.mapper.ContractRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -29,17 +30,12 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static java.time.ZoneOffset.UTC;
 
 @Repository
+@RequiredArgsConstructor
 public class ContractRepository {
 
     private final DSLContext dsl;
     private final ContractRecordMapper mapper;
     private final Clock clock;
-
-    public ContractRepository(DSLContext dsl, ContractRecordMapper mapper, Clock clock) {
-        this.dsl = dsl;
-        this.mapper = mapper;
-        this.clock = clock;
-    }
 
     public Optional<Contract> findByIdentifierAndTeamId(String identifier, UUID teamId) {
         return dsl.selectFrom(CONTRACTS)

@@ -1,9 +1,8 @@
 package com.buurman.service.demo;
 
-import com.buurman.util.UlidGenerator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -14,23 +13,18 @@ import java.util.*;
 
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.util.EntityPrefix.CON;
+import static com.buurman.util.UlidGenerator.newContractId;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DemoContractGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(DemoContractGenerator.class);
 
     private final DSLContext dsl;
     private final Clock clock;
     private final Random random = new Random(42);
 
     private static final String[] CONTRACT_TYPES = {"FIXED_TERM", "INDEFINITE", "FURNISHED", "UNFURNISHED"};
-
-    public DemoContractGenerator(DSLContext dsl, Clock clock) {
-        this.dsl = dsl;
-        this.clock = clock;
-    }
 
     public void generate(DemoDataContext ctx) {
         LocalDateTime now = LocalDateTime.now(clock);
@@ -44,7 +38,9 @@ public class DemoContractGenerator {
             List<UUID> tenantIds = ctx.getTenantIdsByTeam().get(teamId);
             List<UUID> contractIds = new ArrayList<>();
 
-            if (propertyIds == null || tenantIds == null) continue;
+            if (propertyIds == null || tenantIds == null) {
+                continue;
+            }
 
             int contractCount = Math.min(propertyIds.size(), tenantIds.size());
 
@@ -113,7 +109,7 @@ public class DemoContractGenerator {
                 BigDecimal deposit = rentAmount.multiply(BigDecimal.valueOf(2));
                 BigDecimal securityDeposit = rentAmount;
 
-                String contractIdentifier = UlidGenerator.generate(CON).value();
+                String contractIdentifier = newContractId().value();
                 dsl.insertInto(CONTRACTS)
                         .set(CONTRACTS.ID, contractId)
                         .set(CONTRACTS.IDENTIFIER, contractIdentifier)

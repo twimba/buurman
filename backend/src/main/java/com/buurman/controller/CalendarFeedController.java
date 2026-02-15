@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,11 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RestController
 @RequestMapping("/calendar")
 @Tag(name = "Calendar Feeds", description = "iCalendar feed management and serving")
+@RequiredArgsConstructor
 public class CalendarFeedController {
 
     private final CalendarFeedService calendarFeedService;
 
-    public CalendarFeedController(CalendarFeedService calendarFeedService) {
-        this.calendarFeedService = calendarFeedService;
-    }
 
     @Operation(summary = "Get iCalendar feed", description = "Public endpoint serving iCal feed content")
     @GetMapping(value = "/ical/{feedToken}", produces = "text/calendar; charset=utf-8")

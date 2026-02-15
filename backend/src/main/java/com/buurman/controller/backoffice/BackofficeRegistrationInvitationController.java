@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,13 +25,11 @@ import java.util.Map;
 @RequestMapping("/backoffice/registration-invitations")
 @Tag(name = "Backoffice - Registration Invitations", description = "Manage registration invitation codes")
 @SecurityRequirement(name = "bearer-jwt")
+@RequiredArgsConstructor
 public class BackofficeRegistrationInvitationController {
 
     private final RegistrationInvitationService invitationService;
 
-    public BackofficeRegistrationInvitationController(RegistrationInvitationService invitationService) {
-        this.invitationService = invitationService;
-    }
 
     @GetMapping
     @Operation(summary = "List registration invitations")

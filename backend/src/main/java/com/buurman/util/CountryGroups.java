@@ -120,7 +120,9 @@ public final class CountryGroups {
     }
 
     public static void validateMatrix(Map<String, List<String>> matrix) {
-        if (matrix == null) return;
+        if (matrix == null) {
+            return;
+        }
         for (var entry : matrix.entrySet()) {
             if (!ALL_COUNTRY_CODES.contains(entry.getKey())) {
                 throw new IllegalArgumentException("Unknown country code: " + entry.getKey());

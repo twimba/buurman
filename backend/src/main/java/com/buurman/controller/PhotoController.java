@@ -11,6 +11,7 @@ import com.buurman.service.PhotoService;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,13 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/photos")
 @Tag(name = "Photos", description = "Photo management endpoints")
+@RequiredArgsConstructor
 public class PhotoController {
 
     private final PhotoService photoService;
 
-    public PhotoController(PhotoService photoService) {
-        this.photoService = photoService;
-    }
 
     @GetMapping
     @Operation(summary = "Search and list all photos", description = "Search across all photos with optional filters and pagination")
