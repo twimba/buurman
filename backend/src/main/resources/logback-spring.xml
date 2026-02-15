@@ -16,14 +16,18 @@
             <mdcFields>requestId,userId,teamId,userEmail</mdcFields>
             <mdcTypes>string,string,string,string</mdcTypes>
         </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="Logtail"/>
+        </root>
     </springProfile>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <springProfile name="prod">
-            <appender-ref ref="Logtail"/>
-        </springProfile>
-    </root>
+    <springProfile name="!prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
     <logger name="com.buurman" level="DEBUG"/>
     <logger name="org.springframework" level="INFO"/>
