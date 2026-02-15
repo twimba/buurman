@@ -27,6 +27,7 @@ import static com.buurman.jooq.generated.Tables.GENERATED_REPORTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
@@ -364,6 +365,11 @@ public class DemoDataService implements ApplicationRunner {
                 .fetch(USERS.ID);
 
         if (!demoUserIds.isEmpty()) {
+            deleted = dsl.deleteFrom(PHONE_VERIFICATION_CODES)
+                    .where(PHONE_VERIFICATION_CODES.USER_ID.in(demoUserIds))
+                    .execute();
+            log.debug("Deleted {} phone verification codes", deleted);
+
             deleted = dsl.deleteFrom(EMAIL_VERIFICATION_CODES)
                     .where(EMAIL_VERIFICATION_CODES.USER_ID.in(demoUserIds))
                     .execute();
