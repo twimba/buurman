@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Search,
   UserPlus,
@@ -8,8 +8,12 @@ import {
   UserPen,
   Trash2,
   MoreHorizontal,
+  ShieldCheck,
+  ShieldOff,
+  XCircle,
 } from "lucide-react";
 import { RefreshButton, Pagination, ConfirmDialog, Button } from "@buurman/ui";
+import { useAuth } from "../contexts/AuthContext";
 import { format } from "date-fns";
 import {
   useBuurmies,
@@ -18,10 +22,15 @@ import {
   useDeleteBuurmy,
   useForcePasswordUpdate,
   useForceProfileUpdate,
+  useVerifyBuurmy,
+  useUnverifyBuurmy,
+  useRemovePasswordReset,
+  useRemoveProfileReset,
 } from "../hooks/useBuurmies";
 import { usePagination } from "../hooks/usePagination";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { CreateBuurmyModal } from "../components/CreateBuurmyModal";
+import { SortableHeader } from "../components/SortableHeader";
 import type { Buurmy } from "../types";
 
 type ActionType =
@@ -29,7 +38,11 @@ type ActionType =
   | "enable"
   | "delete"
   | "forcePassword"
-  | "forceProfile";
+  | "forceProfile"
+  | "verify"
+  | "unverify"
+  | "removePasswordReset"
+  | "removeProfileReset";
 
 interface ActionTarget {
   buurmy: Buurmy;
@@ -67,17 +80,44 @@ const ACTION_CONFIG: Record<
     variant: "danger",
   },
   forcePassword: {
-    title: "Force Password Update",
+    title: "Reset Password",
     message: (email) =>
-      `This will send "${email}" an email requiring them to update their password on next login.`,
-    confirmLabel: "Force Update",
+      `"${email}" will be required to set a new password on their next login.`,
+    confirmLabel: "Reset Password",
     variant: "default",
   },
   forceProfile: {
-    title: "Force Profile Update",
+    title: "Reset Profile",
     message: (email) =>
-      `This will require "${email}" to update their profile on next login.`,
-    confirmLabel: "Force Update",
+      `"${email}" will be required to update their profile on their next login.`,
+    confirmLabel: "Reset Profile",
+    variant: "default",
+  },
+  verify: {
+    title: "Verify Email",
+    message: (email) => `Mark "${email}" as email-verified?`,
+    confirmLabel: "Verify",
+    variant: "default",
+  },
+  unverify: {
+    title: "Unverify Email",
+    message: (email) =>
+      `Mark "${email}" as email-unverified? They may need to re-verify.`,
+    confirmLabel: "Unverify",
+    variant: "danger",
+  },
+  removePasswordReset: {
+    title: "Remove Password Reset",
+    message: (email) =>
+      `Remove the password reset requirement for "${email}"? They will no longer be prompted to change their password on next login.`,
+    confirmLabel: "Remove",
+    variant: "default",
+  },
+  removeProfileReset: {
+    title: "Remove Profile Reset",
+    message: (email) =>
+      `Remove the profile update requirement for "${email}"? They will no longer be prompted to update their profile on next login.`,
+    confirmLabel: "Remove",
     variant: "default",
   },
 };
@@ -85,10 +125,27 @@ const ACTION_CONFIG: Record<
 const TH_CLASS =
   "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
 
+const ACTION_LABELS: Record<string, string> = {
+  UPDATE_PASSWORD: "Password Reset",
+  UPDATE_PROFILE: "Profile Update",
+  VERIFY_EMAIL: "Verify Email",
+  CONFIGURE_TOTP: "Configure OTP",
+  UPDATE_EMAIL: "Update Email",
+};
+
 export const BuurmiesPage = () => {
-  const { page, size, handlePageChange, handleSizeChange } = usePagination();
+  const { keycloak } = useAuth();
+  const currentUserId = keycloak.subject;
+  const {
+    page,
+    size,
+    sort,
+    direction,
+    handlePageChange,
+    handleSizeChange,
+    handleSortChange,
+  } = usePagination({ defaultSort: "email", defaultDirection: "asc" });
   const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
   const [actionTarget, setActionTarget] = useState<ActionTarget | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -96,7 +153,8 @@ export const BuurmiesPage = () => {
   const { data, isLoading, isFetching, error, refetch } = useBuurmies({
     page,
     size,
-    search: search || undefined,
+    sort,
+    direction,
   });
 
   const disableBuurmy = useDisableBuurmy();
@@ -104,12 +162,10 @@ export const BuurmiesPage = () => {
   const deleteBuurmy = useDeleteBuurmy();
   const forcePasswordUpdate = useForcePasswordUpdate();
   const forceProfileUpdate = useForceProfileUpdate();
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearch(searchInput);
-    handlePageChange(0);
-  };
+  const verifyBuurmy = useVerifyBuurmy();
+  const unverifyBuurmy = useUnverifyBuurmy();
+  const removePasswordReset = useRemovePasswordReset();
+  const removeProfileReset = useRemoveProfileReset();
 
   const handleAction = () => {
     if (!actionTarget) return;
@@ -120,6 +176,10 @@ export const BuurmiesPage = () => {
       delete: deleteBuurmy,
       forcePassword: forcePasswordUpdate,
       forceProfile: forceProfileUpdate,
+      verify: verifyBuurmy,
+      unverify: unverifyBuurmy,
+      removePasswordReset,
+      removeProfileReset,
     };
     mutationMap[action].mutate(buurmy.id, {
       onSuccess: () => setActionTarget(null),
@@ -131,7 +191,24 @@ export const BuurmiesPage = () => {
     enableBuurmy.isPending ||
     deleteBuurmy.isPending ||
     forcePasswordUpdate.isPending ||
-    forceProfileUpdate.isPending;
+    forceProfileUpdate.isPending ||
+    verifyBuurmy.isPending ||
+    unverifyBuurmy.isPending ||
+    removePasswordReset.isPending ||
+    removeProfileReset.isPending;
+
+  const allBuurmies = data?.content ?? [];
+  const buurmies = useMemo(() => {
+    if (!search.trim()) return allBuurmies;
+    const q = search.toLowerCase();
+    return allBuurmies.filter(
+      (b) =>
+        b.email?.toLowerCase().includes(q) ||
+        b.username?.toLowerCase().includes(q) ||
+        b.firstName?.toLowerCase().includes(q) ||
+        b.lastName?.toLowerCase().includes(q),
+    );
+  }, [allBuurmies, search]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading buurmies..." />;
@@ -146,8 +223,6 @@ export const BuurmiesPage = () => {
       </div>
     );
   }
-
-  const buurmies = data?.content ?? [];
 
   return (
     <div>
@@ -165,7 +240,7 @@ export const BuurmiesPage = () => {
             Buurmies
           </h1>
           <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-            Manage users registered in the Keycloak buurman realm.
+            Manage users registered in the Keycloak backoffice realm.
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -182,18 +257,16 @@ export const BuurmiesPage = () => {
       </div>
 
       {/* Search */}
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
-          <input
-            type="search"
-            placeholder="Search by email, username or name..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
-          />
-        </div>
-      </form>
+      <div className="mb-4 relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
+        <input
+          type="search"
+          placeholder="Search by email, username or name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+        />
+      </div>
 
       {/* Table */}
       <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
@@ -201,13 +274,44 @@ export const BuurmiesPage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className={TH_CLASS}>Email</th>
-                <th className={TH_CLASS}>Username</th>
-                <th className={TH_CLASS}>Name</th>
-                <th className={TH_CLASS}>Status</th>
+                <SortableHeader
+                  field="email"
+                  label="Email"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="username"
+                  label="Username"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="firstName"
+                  label="Name"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
+                <SortableHeader
+                  field="status"
+                  label="Status"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className={TH_CLASS}>Verified</th>
-                <th className={TH_CLASS}>Created</th>
+                <SortableHeader
+                  field="createdAt"
+                  label="Created"
+                  sort={sort}
+                  direction={direction}
+                  onSortChange={handleSortChange}
+                />
                 <th className={TH_CLASS}>Last Login</th>
+                <th className={TH_CLASS}>Required Actions</th>
                 <th className={`${TH_CLASS} text-right`}>Actions</th>
               </tr>
             </thead>
@@ -215,7 +319,7 @@ export const BuurmiesPage = () => {
               {buurmies.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
                   >
                     No buurmies found.
@@ -226,6 +330,7 @@ export const BuurmiesPage = () => {
                   <BuurmyRow
                     key={buurmy.id}
                     buurmy={buurmy}
+                    isSelf={buurmy.id === currentUserId}
                     openMenuId={openMenuId}
                     onToggleMenu={(id) =>
                       setOpenMenuId(openMenuId === id ? null : id)
@@ -284,6 +389,7 @@ export const BuurmiesPage = () => {
 
 interface BuurmyRowProps {
   buurmy: Buurmy;
+  isSelf: boolean;
   openMenuId: string | null;
   onToggleMenu: (id: string) => void;
   onAction: (action: ActionType) => void;
@@ -291,11 +397,32 @@ interface BuurmyRowProps {
 
 const BuurmyRow = ({
   buurmy,
+  isSelf,
   openMenuId,
   onToggleMenu,
   onAction,
 }: BuurmyRowProps) => {
   const isOpen = openMenuId === buurmy.id;
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(
+    null,
+  );
+
+  const handleToggle = (id: string) => {
+    if (openMenuId !== id) {
+      // Opening — snapshot the button position before toggling
+      const btn = document.querySelector<HTMLElement>(
+        `[data-menu-trigger="${id}"]`,
+      );
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        setMenuPos({
+          top: rect.bottom + 4,
+          right: window.innerWidth - rect.right,
+        });
+      }
+    }
+    onToggleMenu(id);
+  };
 
   return (
     <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors">
@@ -350,65 +477,117 @@ const BuurmyRow = ({
             : "Never"}
         </span>
       </td>
+      <td className="px-4 py-3">
+        <div className="flex flex-wrap gap-1">
+          {buurmy.requiredActions?.map((action) => (
+            <span
+              key={action}
+              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-orange-50 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:ring-orange-700"
+            >
+              {ACTION_LABELS[action] ?? action}
+            </span>
+          ))}
+        </div>
+      </td>
       <td className="px-4 py-3 text-right">
-        <div className="relative inline-block">
-          <button
-            onClick={() => onToggleMenu(buurmy.id)}
-            aria-label={`Actions for ${buurmy.email}`}
-            aria-expanded={isOpen}
-            aria-haspopup="menu"
-            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
+        <button
+          data-menu-trigger={buurmy.id}
+          onClick={() => handleToggle(buurmy.id)}
+          aria-label={`Actions for ${buurmy.email}`}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+          className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
 
-          {isOpen && (
-            <>
-              {/* Backdrop to close menu */}
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => onToggleMenu(buurmy.id)}
-              />
-              <div
-                role="menu"
-                className="absolute right-0 top-full mt-1 z-20 w-52 bg-white dark:bg-[#1a1d28] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-lg py-1"
-              >
-                {buurmy.enabled ? (
+        {isOpen && menuPos && (
+          <>
+            {/* Backdrop to close menu */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => onToggleMenu(buurmy.id)}
+            />
+            <div
+              role="menu"
+              style={{
+                position: "fixed",
+                top: menuPos.top,
+                right: menuPos.right,
+              }}
+              className="z-50 w-56 text-left bg-white dark:bg-[#1a1d28] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-lg py-1"
+            >
+              {!isSelf &&
+                (buurmy.enabled ? (
                   <MenuButton
-                    icon={<UserX className="h-4 w-4" />}
+                    icon={<UserX className="h-3.5 w-3.5" />}
                     label="Disable"
                     onClick={() => onAction("disable")}
                     variant="danger"
                   />
                 ) : (
                   <MenuButton
-                    icon={<UserCheck className="h-4 w-4" />}
+                    icon={<UserCheck className="h-3.5 w-3.5" />}
                     label="Enable"
                     onClick={() => onAction("enable")}
                     variant="success"
                   />
-                )}
+                ))}
+              <MenuButton
+                icon={<KeyRound className="h-3.5 w-3.5" />}
+                label="Reset Password"
+                onClick={() => onAction("forcePassword")}
+              />
+              <MenuButton
+                icon={<UserPen className="h-3.5 w-3.5" />}
+                label="Reset Profile"
+                onClick={() => onAction("forceProfile")}
+              />
+              {buurmy.requiredActions?.includes("UPDATE_PASSWORD") && (
                 <MenuButton
-                  icon={<KeyRound className="h-4 w-4" />}
-                  label="Force Password Update"
-                  onClick={() => onAction("forcePassword")}
+                  icon={<XCircle className="h-3.5 w-3.5" />}
+                  label="Clear Password Reset"
+                  onClick={() => onAction("removePasswordReset")}
+                  variant="success"
                 />
+              )}
+              {buurmy.requiredActions?.includes("UPDATE_PROFILE") && (
                 <MenuButton
-                  icon={<UserPen className="h-4 w-4" />}
-                  label="Force Profile Update"
-                  onClick={() => onAction("forceProfile")}
+                  icon={<XCircle className="h-3.5 w-3.5" />}
+                  label="Clear Profile Reset"
+                  onClick={() => onAction("removeProfileReset")}
+                  variant="success"
                 />
-                <div className="my-1 border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+              )}
+              {buurmy.emailVerified ? (
                 <MenuButton
-                  icon={<Trash2 className="h-4 w-4" />}
-                  label="Delete"
-                  onClick={() => onAction("delete")}
+                  icon={<ShieldOff className="h-3.5 w-3.5" />}
+                  label="Unverify Email"
+                  onClick={() => onAction("unverify")}
                   variant="danger"
                 />
-              </div>
-            </>
-          )}
-        </div>
+              ) : (
+                <MenuButton
+                  icon={<ShieldCheck className="h-3.5 w-3.5" />}
+                  label="Verify Email"
+                  onClick={() => onAction("verify")}
+                  variant="success"
+                />
+              )}
+              {!isSelf && (
+                <>
+                  <div className="my-1 border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                  <MenuButton
+                    icon={<Trash2 className="h-3.5 w-3.5" />}
+                    label="Delete"
+                    onClick={() => onAction("delete")}
+                    variant="danger"
+                  />
+                </>
+              )}
+            </div>
+          </>
+        )}
       </td>
     </tr>
   );
@@ -442,9 +621,11 @@ const MenuButton = ({
     <button
       role="menuitem"
       onClick={onClick}
-      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${colorClasses[variant]}`}
+      className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${colorClasses[variant]}`}
     >
-      {icon}
+      <span className="flex-shrink-0 w-4 flex items-center justify-center">
+        {icon}
+      </span>
       {label}
     </button>
   );

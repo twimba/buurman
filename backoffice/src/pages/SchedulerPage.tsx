@@ -168,10 +168,6 @@ const CronTooltip = ({ expression }: { expression: string }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
-  const description = describeCron(expression);
-  if (description === expression) return null;
-
-  const parts = expression.split(/\s+/);
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
@@ -181,6 +177,11 @@ const CronTooltip = ({ expression }: { expression: string }) => {
       left: rect.left + rect.width / 2 + window.scrollX,
     });
   }, []);
+
+  const description = describeCron(expression);
+  if (description === expression) return null;
+
+  const parts = expression.split(/\s+/);
 
   return (
     <span

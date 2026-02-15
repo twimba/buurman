@@ -67,15 +67,65 @@ export const useDeleteBuurmy = () => {
 };
 
 export const useForcePasswordUpdate = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (keycloakId: string) =>
       buurmiesApi.forcePasswordUpdate(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
   });
 };
 
 export const useForceProfileUpdate = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (keycloakId: string) =>
       buurmiesApi.forceProfileUpdate(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
+  });
+};
+
+export const useVerifyBuurmy = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (keycloakId: string) => buurmiesApi.verify(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
+  });
+};
+
+export const useUnverifyBuurmy = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (keycloakId: string) => buurmiesApi.unverify(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
+  });
+};
+
+export const useRemovePasswordReset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (keycloakId: string) =>
+      buurmiesApi.removePasswordReset(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
+  });
+};
+
+export const useRemoveProfileReset = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (keycloakId: string) =>
+      buurmiesApi.removeProfileReset(keycloakId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+    },
   });
 };

@@ -73,7 +73,6 @@ export const LoggersPage = () => {
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isRegex, setIsRegex] = useState(false);
-  const [regexError, setRegexError] = useState<string | null>(null);
   const [levelFilter, setLevelFilter] = useState<string>("ALL");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
@@ -82,16 +81,13 @@ export const LoggersPage = () => {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  useEffect(() => {
-    if (!isRegex || !debouncedSearch) {
-      setRegexError(null);
-      return;
-    }
+  const regexError = useMemo(() => {
+    if (!isRegex || !debouncedSearch) return null;
     try {
       new RegExp(debouncedSearch, "i");
-      setRegexError(null);
+      return null;
     } catch (e) {
-      setRegexError((e as Error).message);
+      return (e as Error).message;
     }
   }, [debouncedSearch, isRegex]);
 

@@ -160,6 +160,7 @@ export interface Buurmy {
   emailVerified: boolean;
   createdAt: string | null;
   lastLogin: string | null;
+  requiredActions: string[];
 }
 
 export interface CreateBuurmyRequest {

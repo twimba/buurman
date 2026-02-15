@@ -53,6 +53,7 @@ keycloak:
     username: ${KEYCLOAK_ADMIN:admin}
     password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
   realm: buurman
+  backoffice-realm: buurman-backoffice
 
 # AWS S3 Configuration
 aws:

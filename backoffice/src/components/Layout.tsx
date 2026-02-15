@@ -46,10 +46,13 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Teams", href: "/teams", icon: Users },
   { name: "Users", href: "/users", icon: UserCog },
-  { name: "Buurmies", href: "/buurmies", icon: Smile },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
+];
+
+const adminNavigation = [
+  { name: "Buurmies", href: "/buurmies", icon: Smile },
   { name: "Scheduler", href: "/scheduler", icon: Timer },
   { name: "Loggers", href: "/loggers", icon: ScrollText },
 ];
@@ -256,6 +259,34 @@ export const Layout = () => {
                 </li>
               ))}
             </ul>
+
+            {/* Administration Section */}
+            <div className="mt-6 pt-4 border-t border-[#cdd3e6] dark:border-[#1c2040]">
+              {!collapsed && (
+                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+                  Administration
+                </p>
+              )}
+              <ul className="space-y-1">
+                {adminNavigation.map((item) => (
+                  <li key={item.name}>
+                    <SidebarTooltip label={item.name} show={collapsed}>
+                      <NavLink
+                        to={item.href}
+                        className={({ isActive }) =>
+                          navLinkClass(isActive, collapsed)
+                        }
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!collapsed && (
+                          <span className="truncate">{item.name}</span>
+                        )}
+                      </NavLink>
+                    </SidebarTooltip>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {/* Tools Section */}
             <div className="mt-6 pt-4 border-t border-[#cdd3e6] dark:border-[#1c2040]">

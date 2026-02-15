@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "keycloak")
 public record KeycloakProperties(
         Admin admin,
-        String realm
+        String realm,
+        String backofficeRealm
 ) {
     public record Admin(
             String serverUrl,

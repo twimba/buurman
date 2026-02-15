@@ -26,7 +26,7 @@ export default function GeneratePaymentsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" />
       <div className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-4 text-[#1a1d2e] dark:text-[#eef0f6]">
           Generate Payments

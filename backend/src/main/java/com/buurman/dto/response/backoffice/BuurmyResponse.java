@@ -1,6 +1,7 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
+import java.util.List;
 
 public record BuurmyResponse(
     String id,
@@ -11,5 +12,6 @@ public record BuurmyResponse(
     boolean enabled,
     boolean emailVerified,
     Instant createdAt,
-    Instant lastLogin
+    Instant lastLogin,
+    List<String> requiredActions
 ) {}

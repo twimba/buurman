@@ -22,4 +22,11 @@ export const buurmiesApi = {
     client.post(`/buurmies/${keycloakId}/force-password-update`),
   forceProfileUpdate: (keycloakId: string) =>
     client.post(`/buurmies/${keycloakId}/force-profile-update`),
+  verify: (keycloakId: string) => client.post(`/buurmies/${keycloakId}/verify`),
+  unverify: (keycloakId: string) =>
+    client.post(`/buurmies/${keycloakId}/unverify`),
+  removePasswordReset: (keycloakId: string) =>
+    client.post(`/buurmies/${keycloakId}/remove-password-reset`),
+  removeProfileReset: (keycloakId: string) =>
+    client.post(`/buurmies/${keycloakId}/remove-profile-reset`),
 };

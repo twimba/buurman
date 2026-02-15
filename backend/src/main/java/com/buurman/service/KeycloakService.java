@@ -14,6 +14,7 @@ import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
@@ -23,11 +24,15 @@ public class KeycloakService {
 
     private final Keycloak keycloak;
     private final String realm;
+    private final String backofficeRealm;
 
     public KeycloakService(Keycloak keycloak, KeycloakProperties keycloakProperties) {
         this.keycloak = keycloak;
         this.realm = keycloakProperties.realm();
+        this.backofficeRealm = keycloakProperties.backofficeRealm();
     }
+
+    // --- App realm user management ---
 
     public String createUser(String email, String firstName, String lastName, String password) {
         RealmResource realmResource = keycloak.realm(realm);
@@ -67,33 +72,15 @@ public class KeycloakService {
     }
 
     public void deleteUser(String keycloakUserId) {
-        try {
-            keycloak.realm(realm).users().delete(keycloakUserId);
-        } catch (NotFoundException e) {
-            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
-        }
+        deleteUserInRealm(keycloakUserId, realm);
     }
 
     public void disableUser(String keycloakUserId) {
-        try {
-            RealmResource realmResource = keycloak.realm(realm);
-            UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
-            user.setEnabled(false);
-            realmResource.users().get(keycloakUserId).update(user);
-        } catch (NotFoundException e) {
-            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
-        }
+        setUserEnabled(keycloakUserId, realm, false);
     }
 
     public void enableUser(String keycloakUserId) {
-        try {
-            RealmResource realmResource = keycloak.realm(realm);
-            UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
-            user.setEnabled(true);
-            realmResource.users().get(keycloakUserId).update(user);
-        } catch (NotFoundException e) {
-            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
-        }
+        setUserEnabled(keycloakUserId, realm, true);
     }
 
     public void sendPasswordResetEmail(String keycloakUserId) {
@@ -104,10 +91,10 @@ public class KeycloakService {
         }
     }
 
-    // --- Buurmies (Keycloak realm user management) ---
+    // --- Backoffice realm user management (Buurmies) ---
 
     public List<UserRepresentation> listRealmUsers(String search, int first, int max) {
-        UsersResource usersResource = keycloak.realm(realm).users();
+        UsersResource usersResource = keycloak.realm(backofficeRealm).users();
         if (search != null && !search.isBlank()) {
             return usersResource.search(search, first, max);
         }
@@ -115,7 +102,7 @@ public class KeycloakService {
     }
 
     public int countRealmUsers(String search) {
-        UsersResource usersResource = keycloak.realm(realm).users();
+        UsersResource usersResource = keycloak.realm(backofficeRealm).users();
         if (search != null && !search.isBlank()) {
             return usersResource.count(search);
         }
@@ -124,7 +111,7 @@ public class KeycloakService {
 
     public UserRepresentation getRealmUser(String keycloakUserId) {
         try {
-            return keycloak.realm(realm).users().get(keycloakUserId).toRepresentation();
+            return keycloak.realm(backofficeRealm).users().get(keycloakUserId).toRepresentation();
         } catch (NotFoundException e) {
             throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
         }
@@ -132,15 +119,35 @@ public class KeycloakService {
 
     public List<UserSessionRepresentation> getUserSessions(String keycloakUserId) {
         try {
-            return keycloak.realm(realm).users().get(keycloakUserId).getUserSessions();
+            return keycloak.realm(backofficeRealm).users().get(keycloakUserId).getUserSessions();
         } catch (NotFoundException e) {
             return List.of();
         }
     }
 
-    public void executeUserActions(String keycloakUserId, List<String> actions) {
+    public void addRequiredUserAction(String keycloakUserId, String action) {
         try {
-            keycloak.realm(realm).users().get(keycloakUserId).executeActionsEmail(actions);
+            var userResource = keycloak.realm(backofficeRealm).users().get(keycloakUserId);
+            UserRepresentation user = userResource.toRepresentation();
+            List<String> actions = new ArrayList<>(user.getRequiredActions() != null ? user.getRequiredActions() : List.of());
+            if (!actions.contains(action)) {
+                actions.add(action);
+            }
+            user.setRequiredActions(actions);
+            userResource.update(user);
+        } catch (NotFoundException e) {
+            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
+        }
+    }
+
+    public void removeRequiredUserAction(String keycloakUserId, String action) {
+        try {
+            var userResource = keycloak.realm(backofficeRealm).users().get(keycloakUserId);
+            UserRepresentation user = userResource.toRepresentation();
+            List<String> actions = new ArrayList<>(user.getRequiredActions() != null ? user.getRequiredActions() : List.of());
+            actions.remove(action);
+            user.setRequiredActions(actions);
+            userResource.update(user);
         } catch (NotFoundException e) {
             throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
         }
@@ -148,7 +155,7 @@ public class KeycloakService {
 
     public String createRealmUser(String email, String username, String firstName, String lastName,
                                   String password, boolean temporary) {
-        UsersResource usersResource = keycloak.realm(realm).users();
+        UsersResource usersResource = keycloak.realm(backofficeRealm).users();
 
         UserRepresentation user = new UserRepresentation();
         user.setEmail(email);
@@ -184,9 +191,61 @@ public class KeycloakService {
         return userId;
     }
 
+    public void disableBackofficeUser(String keycloakUserId) {
+        setUserEnabled(keycloakUserId, backofficeRealm, false);
+    }
+
+    public void enableBackofficeUser(String keycloakUserId) {
+        setUserEnabled(keycloakUserId, backofficeRealm, true);
+    }
+
+    public void deleteBackofficeUser(String keycloakUserId) {
+        deleteUserInRealm(keycloakUserId, backofficeRealm);
+    }
+
+    public void verifyBackofficeUser(String keycloakUserId) {
+        setEmailVerified(keycloakUserId, backofficeRealm, true);
+    }
+
+    public void unverifyBackofficeUser(String keycloakUserId) {
+        setEmailVerified(keycloakUserId, backofficeRealm, false);
+    }
+
     public void logoutRealmUser(String keycloakUserId) {
         try {
-            keycloak.realm(realm).users().get(keycloakUserId).logout();
+            keycloak.realm(backofficeRealm).users().get(keycloakUserId).logout();
+        } catch (NotFoundException e) {
+            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
+        }
+    }
+
+    // --- Private helpers ---
+
+    private void setUserEnabled(String keycloakUserId, String targetRealm, boolean enabled) {
+        try {
+            RealmResource realmResource = keycloak.realm(targetRealm);
+            UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
+            user.setEnabled(enabled);
+            realmResource.users().get(keycloakUserId).update(user);
+        } catch (NotFoundException e) {
+            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
+        }
+    }
+
+    private void setEmailVerified(String keycloakUserId, String targetRealm, boolean verified) {
+        try {
+            RealmResource realmResource = keycloak.realm(targetRealm);
+            UserRepresentation user = realmResource.users().get(keycloakUserId).toRepresentation();
+            user.setEmailVerified(verified);
+            realmResource.users().get(keycloakUserId).update(user);
+        } catch (NotFoundException e) {
+            throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
+        }
+    }
+
+    private void deleteUserInRealm(String keycloakUserId, String targetRealm) {
+        try {
+            keycloak.realm(targetRealm).users().delete(keycloakUserId);
         } catch (NotFoundException e) {
             throw new com.buurman.exception.NotFoundException("Keycloak user not found: " + keycloakUserId);
         }

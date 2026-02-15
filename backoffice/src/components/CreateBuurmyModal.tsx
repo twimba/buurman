@@ -64,7 +64,7 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
     form.email && form.firstName && form.lastName && form.password.length >= 8;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 py-8">
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
 
@@ -73,7 +73,6 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
           aria-modal="true"
           aria-labelledby="create-buurmy-title"
           className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-lg"
-          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">

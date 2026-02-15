@@ -100,4 +100,40 @@ public class BackofficeBuurmyController {
             @AuthenticationPrincipal BackofficePrincipal principal) {
         buurmyService.forceProfileUpdate(keycloakId, principal);
     }
+
+    @Operation(summary = "Remove password reset", description = "Remove the UPDATE_PASSWORD required action from a user")
+    @PostMapping("/{keycloakId}/remove-password-reset")
+    @ResponseStatus(NO_CONTENT)
+    public void removePasswordReset(
+            @PathVariable String keycloakId,
+            @AuthenticationPrincipal BackofficePrincipal principal) {
+        buurmyService.removePasswordReset(keycloakId, principal);
+    }
+
+    @Operation(summary = "Remove profile reset", description = "Remove the UPDATE_PROFILE required action from a user")
+    @PostMapping("/{keycloakId}/remove-profile-reset")
+    @ResponseStatus(NO_CONTENT)
+    public void removeProfileReset(
+            @PathVariable String keycloakId,
+            @AuthenticationPrincipal BackofficePrincipal principal) {
+        buurmyService.removeProfileReset(keycloakId, principal);
+    }
+
+    @Operation(summary = "Verify email", description = "Mark a user's email as verified")
+    @PostMapping("/{keycloakId}/verify")
+    @ResponseStatus(NO_CONTENT)
+    public void verifyBuurmy(
+            @PathVariable String keycloakId,
+            @AuthenticationPrincipal BackofficePrincipal principal) {
+        buurmyService.verifyBuurmy(keycloakId, principal);
+    }
+
+    @Operation(summary = "Unverify email", description = "Mark a user's email as unverified")
+    @PostMapping("/{keycloakId}/unverify")
+    @ResponseStatus(NO_CONTENT)
+    public void unverifyBuurmy(
+            @PathVariable String keycloakId,
+            @AuthenticationPrincipal BackofficePrincipal principal) {
+        buurmyService.unverifyBuurmy(keycloakId, principal);
+    }
 }
