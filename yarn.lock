@@ -2205,6 +2205,7 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@vitejs/plugin-react": "npm:5.1.2"
     axios: "npm:1.13.4"
+    cronstrue: "npm:^3.12.0"
     date-fns: "npm:4.1.0"
     eslint: "npm:9.39.2"
     eslint-plugin-react: "npm:7.37.5"
@@ -2361,6 +2362,15 @@ __metadata:
   version: 1.0.6
   resolution: "crelt@npm:1.0.6"
   checksum: 10c0/e0fb76dff50c5eb47f2ea9b786c17f9425c66276025adee80876bdbf4a84ab72e899e56d3928431ab0cb057a105ef704df80fe5726ef0f7b1658f815521bdf09
+  languageName: node
+  linkType: hard
+
+"cronstrue@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "cronstrue@npm:3.12.0"
+  bin:
+    cronstrue: bin/cli.js
+  checksum: 10c0/f42009ac3e4d8b1190bc5cafcddba652ac9444cc60fb5ea6c0f02ad8ad825ec4644dca803c1931a82610154649ec95bbfa46186782760c9304df985b36b512d7
   languageName: node
   linkType: hard
 

@@ -43,6 +43,24 @@ export const useTriggerJob = () => {
   });
 };
 
+export const useRescheduleJob = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      jobName,
+      group,
+      cronExpression,
+    }: {
+      jobName: string;
+      group: string;
+      cronExpression: string;
+    }) => schedulerApi.rescheduleJob(jobName, group, cronExpression),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["scheduler-jobs"] });
+    },
+  });
+};
+
 interface HistoryParams {
   jobName?: string[];
   status?: string;

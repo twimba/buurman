@@ -1,6 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-import { Pause, Play, Zap, Timer, Clock, Check, ChevronDown } from "lucide-react";
+import {
+  Pause,
+  Play,
+  Zap,
+  Timer,
+  Clock,
+  Check,
+  ChevronDown,
+  Pencil,
+  Loader2,
+  X,
+  Info,
+} from "lucide-react";
 import { format } from "date-fns";
+import cronstrue from "cronstrue";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
 import {
@@ -8,6 +21,7 @@ import {
   usePauseJob,
   useResumeJob,
   useTriggerJob,
+  useRescheduleJob,
   useJobExecutionHistory,
 } from "../hooks/useScheduler";
 import { usePagination } from "../hooks/usePagination";
@@ -131,6 +145,27 @@ const formatFireTime = (iso: string | null): string => {
   }
 };
 
+const describeCron = (expr: string): string => {
+  try {
+    return cronstrue.toString(expr, { verbose: true });
+  } catch {
+    return expr;
+  }
+};
+
+const CronTooltip = ({ expression }: { expression: string }) => {
+  const description = describeCron(expression);
+  if (description === expression) return null;
+  return (
+    <span
+      className="inline-flex ml-1 cursor-help text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] transition-colors"
+      title={description}
+    >
+      <Info className="h-3.5 w-3.5" />
+    </span>
+  );
+};
+
 export const SchedulerPage = () => {
   const {
     data: jobs,
@@ -142,12 +177,20 @@ export const SchedulerPage = () => {
   const pauseJob = usePauseJob();
   const resumeJob = useResumeJob();
   const triggerJob = useTriggerJob();
+  const rescheduleJob = useRescheduleJob();
 
   const [confirmAction, setConfirmAction] = useState<{
     type: "pause" | "resume" | "trigger";
     jobName: string;
     group: string;
   } | null>(null);
+
+  const [editingJob, setEditingJob] = useState<{
+    jobName: string;
+    group: string;
+    currentExpression: string;
+  } | null>(null);
+  const [cronInput, setCronInput] = useState("");
 
   // Execution history
   const [selectedJobs, setSelectedJobs] = useState<string[] | null>(null);
@@ -394,8 +437,14 @@ export const SchedulerPage = () => {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
-                        {job.scheduleExpression ?? "-"}
+                      <span className="inline-flex items-center">
+                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
+                          {job.scheduleExpression ?? "-"}
+                        </span>
+                        {job.triggerType === "cron" &&
+                          job.scheduleExpression && (
+                            <CronTooltip expression={job.scheduleExpression} />
+                          )}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -460,6 +509,23 @@ export const SchedulerPage = () => {
                         >
                           <Zap className="h-4 w-4" />
                         </button>
+                        {job.triggerType === "cron" && (
+                          <button
+                            onClick={() => {
+                              setEditingJob({
+                                jobName: job.jobName,
+                                group: job.jobGroup,
+                                currentExpression:
+                                  job.scheduleExpression ?? "",
+                              });
+                              setCronInput(job.scheduleExpression ?? "");
+                            }}
+                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                            title="Edit schedule"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -670,6 +736,138 @@ export const SchedulerPage = () => {
           onConfirm={handleConfirmAction}
           onCancel={() => setConfirmAction(null)}
         />
+      )}
+
+      {/* Edit Schedule Modal */}
+      {editingJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between p-5 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <div>
+                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Edit Schedule
+                </h3>
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                  {editingJob.jobName}
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingJob(null)}
+                className="p-1.5 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                  Cron Expression
+                </label>
+                <input
+                  type="text"
+                  value={cronInput}
+                  onChange={(e) => setCronInput(e.target.value)}
+                  placeholder="0 0 * * * ?"
+                  className="w-full px-3 py-2.5 text-sm font-mono border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                />
+              </div>
+
+              {/* Cron Explanation Panel */}
+              <div className="rounded-lg bg-[#f8f9fc] dark:bg-[#0c0d14] border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2">
+                  Explanation
+                </div>
+                <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                  {cronInput.trim()
+                    ? describeCron(cronInput.trim())
+                    : "Enter a cron expression above"}
+                </p>
+                {editingJob.currentExpression !== cronInput.trim() &&
+                  cronInput.trim() && (
+                    <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-2">
+                      Current:{" "}
+                      <span className="font-mono">
+                        {editingJob.currentExpression}
+                      </span>{" "}
+                      ({describeCron(editingJob.currentExpression)})
+                    </p>
+                  )}
+              </div>
+
+              <div className="rounded-lg bg-[#f8f9fc] dark:bg-[#0c0d14] border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2">
+                  Quartz Cron Format
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center text-[11px]">
+                  {[
+                    "SEC",
+                    "MIN",
+                    "HOUR",
+                    "DAY",
+                    "MON",
+                    "DOW",
+                    "YEAR",
+                  ].map((f) => (
+                    <span
+                      key={f}
+                      className="font-mono text-[#6b7194] dark:text-[#8b90a8]"
+                    >
+                      {f}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center text-[11px] mt-1">
+                  {(cronInput.trim() || "* * * * * ? *")
+                    .split(/\s+/)
+                    .slice(0, 7)
+                    .map((part, i) => (
+                      <span
+                        key={i}
+                        className="font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6] bg-white dark:bg-[#1e2130] rounded px-1 py-0.5 border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                      >
+                        {part}
+                      </span>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <button
+                onClick={() => setEditingJob(null)}
+                className="px-4 py-2 text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  rescheduleJob.mutate(
+                    {
+                      jobName: editingJob.jobName,
+                      group: editingJob.group,
+                      cronExpression: cronInput.trim(),
+                    },
+                    { onSuccess: () => setEditingJob(null) },
+                  );
+                }}
+                disabled={
+                  rescheduleJob.isPending ||
+                  !cronInput.trim() ||
+                  cronInput.trim() === editingJob.currentExpression
+                }
+                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
+              >
+                {rescheduleJob.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Pencil className="h-4 w-4" />
+                )}
+                Save Schedule
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

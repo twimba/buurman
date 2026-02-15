@@ -24,6 +24,12 @@ export const schedulerApi = {
     client.post(`/scheduler/jobs/${jobName}/trigger`, null, {
       params: { group },
     }),
+  rescheduleJob: (jobName: string, group: string, cronExpression: string) =>
+    client.post(
+      `/scheduler/jobs/${jobName}/reschedule`,
+      { cronExpression },
+      { params: { group } },
+    ),
   history: (params?: HistoryParams) =>
     client.get<PageResponse<JobExecutionHistory>>("/scheduler/history", {
       params,

@@ -57,6 +57,17 @@ public class BackofficeSchedulerController {
         schedulerService.triggerJobNow(jobName, group);
     }
 
+    @Operation(summary = "Reschedule a cron job", description = "Update the cron expression for a job")
+    @PostMapping("/jobs/{jobName}/reschedule")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void rescheduleJob(@PathVariable String jobName,
+                               @RequestParam(defaultValue = "scheduling") String group,
+                               @RequestBody RescheduleRequest request) throws SchedulerException {
+        schedulerService.rescheduleJob(jobName, group, request.cronExpression());
+    }
+
+    public record RescheduleRequest(String cronExpression) {}
+
     @Operation(summary = "Get execution history", description = "Get paginated job execution history with optional filters")
     @GetMapping("/history")
     public PageResponse<JobExecutionHistoryResponse> getHistory(

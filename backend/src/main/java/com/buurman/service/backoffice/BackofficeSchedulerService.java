@@ -5,6 +5,7 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.JobExecutionHistoryResponse;
 import com.buurman.dto.response.backoffice.ScheduledJobResponse;
 import com.buurman.repository.JobExecutionHistoryRepository;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -12,6 +13,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +110,29 @@ public class BackofficeSchedulerService {
     public void triggerJobNow(String jobName, String group) throws SchedulerException {
         scheduler.triggerJob(JobKey.jobKey(jobName, group));
         log.info("Triggered job {}.{}", group, jobName);
+    }
+
+    public void rescheduleJob(String jobName, String group, String cronExpression) throws SchedulerException {
+        JobKey jobKey = JobKey.jobKey(jobName, group);
+        List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+
+        if (triggers.isEmpty()) {
+            throw new IllegalStateException("Job %s.%s has no triggers".formatted(group, jobName));
+        }
+
+        Trigger existingTrigger = triggers.getFirst();
+        if (!(existingTrigger instanceof CronTrigger)) {
+            throw new IllegalArgumentException("Job %s.%s is not a cron trigger — cannot reschedule with a cron expression".formatted(group, jobName));
+        }
+
+        Trigger newTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(existingTrigger.getKey())
+                .forJob(jobKey)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+                .build();
+
+        scheduler.rescheduleJob(existingTrigger.getKey(), newTrigger);
+        log.info("Rescheduled job {}.{} with cron '{}'", group, jobName, cronExpression);
     }
 
     public PageResponse<JobExecutionHistoryResponse> getExecutionHistory(PageRequest pageRequest,
