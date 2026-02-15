@@ -53,7 +53,7 @@ env:
 jobs:
   build-backend:
     name: Build & Publish Backend
-    if: inputs.build-backend != false
+    if: github.event_name != 'workflow_dispatch' || inputs.build-backend != false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -132,7 +132,7 @@ jobs:
 
   build-app:
     name: Build & Publish App
-    if: inputs.build-app != false
+    if: github.event_name != 'workflow_dispatch' || inputs.build-app != false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -191,7 +191,7 @@ jobs:
 
   build-backoffice:
     name: Build & Publish Backoffice
-    if: inputs.build-backoffice != false
+    if: github.event_name != 'workflow_dispatch' || inputs.build-backoffice != false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -250,7 +250,7 @@ jobs:
 
   build-keycloak:
     name: Build & Publish Keycloak
-    if: inputs.build-keycloak == true
+    if: github.event_name != 'workflow_dispatch' || inputs.build-keycloak == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -307,7 +307,7 @@ jobs:
 
   build-grafana:
     name: Build & Publish Grafana
-    if: inputs.build-grafana == true
+    if: github.event_name != 'workflow_dispatch' || inputs.build-grafana == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
