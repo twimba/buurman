@@ -102,7 +102,7 @@ public class DemoNotificationGenerator {
                 String propertyType = property.get(PROPERTIES.PROPERTY_TYPE);
 
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@buurman.io";
+                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
 
                 Map<String, Object> vars = Map.of(
                         "propertyName", propertyName,
@@ -136,7 +136,7 @@ public class DemoNotificationGenerator {
                 String propertyName = street + ", " + city;
 
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@buurman.io";
+                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
 
                 // Contract created notification
                 var startDate = contract.get(CONTRACTS.START_DATE);
@@ -258,7 +258,7 @@ public class DemoNotificationGenerator {
                     String amount = "EUR " + payment.get(PAYMENTS.AMOUNT).toPlainString();
                     var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
                     Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-                    String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@buurman.io";
+                    String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
 
                     Map<String, Object> vars = Map.of(
                             "propertyName", propertyName,
@@ -293,7 +293,7 @@ public class DemoNotificationGenerator {
 
                 String propertyName = property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@buurman.io";
+                String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
                 String adminName = admin != null ? admin.get(USERS.FIRST_NAME) : "Admin";
                 long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDate.now(clock), endDate);
 

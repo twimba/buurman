@@ -21,7 +21,7 @@ public final class DemoUsers {
     public record TeamRole(String role, boolean isOwner) {}
 
     public static final DemoUser DEMO_USER = new DemoUser(
-            "demo.user@buurman.io", "Demo", "User", "buurman",
+            "demo.user@demo.buurman.io", "Demo", "User", "buurman",
             Map.of(
                     "demo-team", new TeamRole("TEAM_ADMIN", true),
                     "team-alpha", new TeamRole("TEAM_EDITOR", false),
@@ -29,27 +29,27 @@ public final class DemoUsers {
             ));
 
     public static final DemoUser ADMIN_TEAM1 = new DemoUser(
-            "admin@team1.buurman.io", "John", "Smith", "admin@team1.buurman.io",
+            "admin@demo.buurman.io", "John", "Smith", "admin@demo.buurman.io",
             Map.of("team-alpha", new TeamRole("TEAM_ADMIN", true)));
 
     public static final DemoUser EDITOR_TEAM1 = new DemoUser(
-            "editor@team1.buurman.io", "Jane", "Doe", "editor@team1.buurman.io",
+            "editor@demo.buurman.io", "Jane", "Doe", "editor@demo.buurman.io",
             Map.of("team-alpha", new TeamRole("TEAM_EDITOR", false)));
 
     public static final DemoUser VIEWER_TEAM1 = new DemoUser(
-            "viewer@team1.buurman.io", "Bob", "Wilson", "viewer@team1.buurman.io",
+            "viewer@demo.buurman.io", "Bob", "Wilson", "viewer@demo.buurman.io",
             Map.of("team-alpha", new TeamRole("TEAM_VIEWER", false)));
 
     public static final DemoUser ADMIN_TEAM2 = new DemoUser(
-            "admin@team2.buurman.io", "Alice", "Johnson", "admin@team2.buurman.io",
+            "admin.team2@demo.buurman.io", "Alice", "Johnson", "admin.team2@demo.buurman.io",
             Map.of("team-beta", new TeamRole("TEAM_ADMIN", true)));
 
     public static final DemoUser EDITOR_TEAM2 = new DemoUser(
-            "editor@team2.buurman.io", "Charlie", "Brown", "editor@team2.buurman.io",
+            "editor.team2@demo.buurman.io", "Charlie", "Brown", "editor.team2@demo.buurman.io",
             Map.of("team-beta", new TeamRole("TEAM_EDITOR", false)));
 
     public static final DemoUser VIEWER_TEAM2 = new DemoUser(
-            "viewer@team2.buurman.io", "Diana", "Prince", "viewer@team2.buurman.io",
+            "viewer.team2@demo.buurman.io", "Diana", "Prince", "viewer.team2@demo.buurman.io",
             Map.of("team-beta", new TeamRole("TEAM_VIEWER", false)));
 
     public static final List<DemoUser> ALL_USERS = List.of(

@@ -91,7 +91,7 @@ public class DemoPaymentInstructionGenerator {
                     .set(PAYMENT_INSTRUCTIONS.NAME, "PayPal")
                     .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "PayPal for international tenants")
                     .set(PAYMENT_INSTRUCTIONS.PAYMENT_METHOD, "PAYPAL")
-                    .set(PAYMENT_INSTRUCTIONS.ACCOUNT_HOLDER_NAME, "payments@buurman.io")
+                    .set(PAYMENT_INSTRUCTIONS.ACCOUNT_HOLDER_NAME, "payments@demo.buurman.io")
                     .set(PAYMENT_INSTRUCTIONS.ADDITIONAL_DETAILS, "Please use 'Rent + Property Address' as payment note")
                     .set(PAYMENT_INSTRUCTIONS.IS_DEFAULT, false)
                     .set(PAYMENT_INSTRUCTIONS.CREATED_AT, now.minusDays(90))

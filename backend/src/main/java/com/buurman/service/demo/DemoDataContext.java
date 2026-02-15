@@ -151,9 +151,9 @@ public class DemoDataContext {
      */
     public UUID getAdminUserForTeam(String teamKey) {
         return switch (teamKey) {
-            case "demo-team" -> userIds.get("demo.user@buurman.io");
-            case "team-alpha" -> userIds.get("admin@team1.buurman.io");
-            case "team-beta" -> userIds.get("admin@team2.buurman.io");
+            case "demo-team" -> userIds.get("demo.user@demo.buurman.io");
+            case "team-alpha" -> userIds.get("admin@demo.buurman.io");
+            case "team-beta" -> userIds.get("admin.team2@demo.buurman.io");
             default -> userIds.values().iterator().next();
         };
     }
