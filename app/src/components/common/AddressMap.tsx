@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { MapPin } from 'lucide-react';
+import { env } from '../../config/env';
 
 interface AddressMapProps {
   street: string;
@@ -32,7 +33,7 @@ export const AddressMap = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
 
   useEffect(() => {
     // If coordinates are already provided, use them directly

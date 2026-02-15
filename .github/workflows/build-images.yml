@@ -130,11 +130,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
-          build-args: |
-            VITE_KEYCLOAK_URL=${{ vars.VITE_KEYCLOAK_URL }}
-            VITE_KEYCLOAK_REALM=${{ vars.VITE_KEYCLOAK_REALM }}
-            VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_KEYCLOAK_CLIENT_ID }}
-            VITE_GOOGLE_MAPS_API_KEY=${{ vars.VITE_GOOGLE_MAPS_API_KEY }}
 
       - name: Summary
         if: always()
@@ -193,10 +188,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
-          build-args: |
-            VITE_KEYCLOAK_URL=${{ vars.VITE_KEYCLOAK_URL }}
-            VITE_KEYCLOAK_REALM=${{ vars.VITE_BACKOFFICE_KEYCLOAK_REALM }}
-            VITE_KEYCLOAK_CLIENT_ID=${{ vars.VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID }}
 
       - name: Summary
         if: always()

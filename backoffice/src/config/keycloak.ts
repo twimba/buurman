@@ -1,10 +1,14 @@
 import Keycloak from "keycloak-js";
 
+// Runtime config (injected by docker-entrypoint.sh) with build-time fallback
+const cfg = (window as any).__CONFIG__ || {};
+const env = (key: string) => cfg[key] || import.meta.env[key] || "";
+
 // Create Keycloak instance with configuration
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM,
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+  url: env("VITE_KEYCLOAK_URL"),
+  realm: env("VITE_KEYCLOAK_REALM"),
+  clientId: env("VITE_KEYCLOAK_CLIENT_ID"),
 };
 
 // Singleton pattern to ensure only one Keycloak instance is created

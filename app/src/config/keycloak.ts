@@ -1,10 +1,12 @@
 import Keycloak from 'keycloak-js';
 
+import { env } from './env';
+
 // Create Keycloak instance with configuration
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM,
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+  url: env('VITE_KEYCLOAK_URL'),
+  realm: env('VITE_KEYCLOAK_REALM'),
+  clientId: env('VITE_KEYCLOAK_CLIENT_ID'),
 };
 
 // Singleton pattern to ensure only one Keycloak instance is created

@@ -1,14 +1,6 @@
 FROM node:24.13.0-alpine3.22 AS build
 WORKDIR /monorepo
 
-ARG VITE_KEYCLOAK_URL
-ARG VITE_KEYCLOAK_REALM
-ARG VITE_KEYCLOAK_CLIENT_ID
-
-ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
-ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
-ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
-
 RUN corepack enable
 
 # Copy workspace files
@@ -29,10 +21,13 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=build /monorepo/backoffice/dist .
 COPY backoffice/nginx.conf /etc/nginx/conf.d/default.conf
+COPY backoffice/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget -q -O /dev/null http://127.0.0.1:80 || exit 1
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
