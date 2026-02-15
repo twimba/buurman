@@ -6,9 +6,6 @@ import com.buurman.service.S3StorageService;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +44,7 @@ import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
 
 @Service
-public class DemoDataService implements ApplicationRunner {
+public class DemoDataService {
 
     private static final Logger log = LoggerFactory.getLogger(DemoDataService.class);
 
@@ -99,22 +96,6 @@ public class DemoDataService implements ApplicationRunner {
         this.auditLogGenerator = auditLogGenerator;
         this.s3StorageService = s3StorageService;
         this.clock = clock;
-    }
-
-    @Override
-    public void run(ApplicationArguments args) {
-        if (!properties.enabled()) {
-            log.info("Demo data loading is disabled");
-            return;
-        }
-
-        int userCount = dsl.fetchCount(USERS);
-        if (userCount == 0) {
-            log.info("Empty database detected, auto-loading demo data...");
-            generate();
-        } else {
-            log.info("Database already has {} users, skipping auto-load", userCount);
-        }
     }
 
     public DemoDataResponse generate() {

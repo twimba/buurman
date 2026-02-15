@@ -409,6 +409,29 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [[ "$BEFORE" =~ ^0+$ ]] || [[ -z "$BEFORE" ]]; then
+            LOG=$(git log --oneline -20)
+            RANGE="Last 20 commits"
+          else
+            LOG=$(git log --oneline "${BEFORE}..HEAD")
+            RANGE="${BEFORE::7}..${GITHUB_SHA::7}"
+          fi
+          {
+            echo "log<<CHANGELOG_EOF"
+            echo "$LOG"
+            echo "CHANGELOG_EOF"
+            echo "range=$RANGE"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Summary
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<EOF
@@ -425,6 +448,12 @@ jobs:
           | **Keycloak** | ${{ needs.build-keycloak.result == 'success' && '✅' || needs.build-keycloak.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.build-keycloak.result }} |
           | **Grafana** | ${{ needs.build-grafana.result == 'success' && '✅' || needs.build-grafana.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.build-grafana.result }} |
           | **Deploy** | ${{ needs.deploy.result == 'success' && '🚀' || needs.deploy.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.deploy.result }} |
+
+          ### Changes (${{ steps.changelog.outputs.range }})
+
+          \`\`\`
+          ${{ steps.changelog.outputs.log }}
+          \`\`\`
 
           ### How to pull
 
