@@ -1,4 +1,4 @@
-FROM node:24.13.0-alpine3.22 AS build
+FROM --platform=$BUILDPLATFORM node:24.13.0-alpine3.22 AS build
 WORKDIR /monorepo
 
 RUN corepack enable
