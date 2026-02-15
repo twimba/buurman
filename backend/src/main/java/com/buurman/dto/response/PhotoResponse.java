@@ -14,5 +14,6 @@ public record PhotoResponse(
         String notes,
         Boolean isMainPhoto,
         Instant uploadedAt,
-        String downloadUrl
+        String downloadUrl,
+        String thumbnailUrl
 ) {}

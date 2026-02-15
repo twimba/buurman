@@ -16,6 +16,7 @@ public interface TenantMapper {
 
     @Mapping(target = "currentProperty", ignore = true)
     @Mapping(target = "mainPhotoUrl", ignore = true)
+    @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
     TenantResponse toResponse(Tenant tenant);
 
     TenantSummary toSummary(Tenant tenant);

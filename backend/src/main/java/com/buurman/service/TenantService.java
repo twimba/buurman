@@ -383,6 +383,13 @@ public class TenantService {
                 .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
                 .orElse(null);
 
+        String mainPhotoThumbnailUrl = mainPhoto
+                .map(photo -> {
+                    String key = photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
+                    return s3StorageService.generatePresignedUrl(key).toString();
+                })
+                .orElse(null);
+
         PropertySummary propertySummary = null;
         if (tenant.getCurrentPropertyId() != null) {
             Property property = propertyRepository.findByIdAndTeamId(tenant.getCurrentPropertyId(), teamId)
@@ -429,6 +436,7 @@ public class TenantService {
                 response.idNumber(),
                 response.additionalInfo(),
                 mainPhotoUrl,
+                mainPhotoThumbnailUrl,
                 propertySummary,
                 response.createdAt(),
                 response.updatedAt()

@@ -450,8 +450,7 @@ export const DocumentList = ({
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  Upload{' '}
-                  {selectedFiles.length === 1 ? 'Document' : 'Documents'}
+                  Upload {selectedFiles.length === 1 ? 'Document' : 'Documents'}
                 </h3>
                 {selectedFiles.length > 1 && (
                   <span className="px-2 py-0.5 text-xs font-medium bg-[#5c7cfa]/10 text-[#5c7cfa] rounded-full">
@@ -541,8 +540,8 @@ export const DocumentList = ({
                 {uploadProgress ? (
                   <>
                     <LoadingSpinner />
-                    Uploading {uploadProgress.current} of{' '}
-                    {uploadProgress.total}...
+                    Uploading {uploadProgress.current} of {uploadProgress.total}
+                    ...
                   </>
                 ) : (
                   <>

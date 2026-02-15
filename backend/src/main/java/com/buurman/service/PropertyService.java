@@ -276,6 +276,13 @@ public class PropertyService {
                 .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
                 .orElse(null);
 
+        String mainPhotoThumbnailUrl = mainPhoto
+                .map(photo -> {
+                    String key = photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
+                    return s3StorageService.generatePresignedUrl(key).toString();
+                })
+                .orElse(null);
+
         List<PropertyOutdoorAreaResponse> outdoorAreas = includeNestedCollections
                 ? outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId)
                         .stream()
@@ -304,6 +311,7 @@ public class PropertyService {
                 response.propertyType(),
                 response.status(),
                 mainPhotoUrl,
+                mainPhotoThumbnailUrl,
                 // Construction & Structure
                 response.yearBuilt(),
                 response.yearLastRenovated(),

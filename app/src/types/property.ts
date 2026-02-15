@@ -195,6 +195,7 @@ export interface PropertyResponse {
   propertyType: string;
   status: string;
   mainPhotoUrl: string | null;
+  mainPhotoThumbnailUrl: string | null;
 
   // Construction & Structure
   yearBuilt: number | null;
@@ -350,6 +351,7 @@ export interface PhotoResponse {
   isMainPhoto: boolean;
   uploadedAt: string;
   downloadUrl: string | null;
+  thumbnailUrl: string | null;
 }
 
 export interface AuditLogEntry {

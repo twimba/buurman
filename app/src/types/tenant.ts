@@ -10,6 +10,7 @@ export interface TenantResponse {
   idNumber?: string;
   additionalInfo?: string;
   mainPhotoUrl?: string;
+  mainPhotoThumbnailUrl?: string;
   currentProperty?: PropertySummary;
   createdAt: string;
   updatedAt: string;

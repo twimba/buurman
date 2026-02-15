@@ -35,6 +35,7 @@ public class PhotoService {
 
     private final PhotoRepository photoRepository;
     private final S3StorageService s3StorageService;
+    private final ThumbnailService thumbnailService;
     private final PhotoMapper photoMapper;
     private final AuditService auditService;
     private final MetricsService metricsService;
@@ -44,12 +45,14 @@ public class PhotoService {
     public PhotoService(
             PhotoRepository photoRepository,
             S3StorageService s3StorageService,
+            ThumbnailService thumbnailService,
             PhotoMapper photoMapper,
             AuditService auditService,
             MetricsService metricsService,
             AppProperties appProperties) {
         this.photoRepository = photoRepository;
         this.s3StorageService = s3StorageService;
+        this.thumbnailService = thumbnailService;
         this.photoMapper = photoMapper;
         this.auditService = auditService;
         this.metricsService = metricsService;
@@ -100,6 +103,20 @@ public class PhotoService {
         // Upload to S3
         String fileKey = s3StorageService.uploadFile(file, principal.getTeamIdentifier(), entityType, entityIdentifier);
 
+        // Generate and upload thumbnail
+        String thumbnailFileKey = null;
+        try (InputStream thumbInput = file.getInputStream()) {
+            var thumbnailData = thumbnailService.generateThumbnail(thumbInput);
+            if (thumbnailData.isPresent()) {
+                thumbnailFileKey = s3StorageService.uploadFile(
+                        thumbnailData.get(), "image/jpeg",
+                        principal.getTeamIdentifier(), entityType, entityIdentifier,
+                        "thumb_" + file.getOriginalFilename());
+            }
+        } catch (IOException e) {
+            log.warn("Failed to generate thumbnail for {}: {}", file.getOriginalFilename(), e.getMessage());
+        }
+
         // Save photo metadata
         Photo photo = new Photo();
         photo.setTeamId(principal.getTeamId());
@@ -113,6 +130,7 @@ public class PhotoService {
         photo.setNotes(notes);
         photo.setIsMainPhoto(false);
         photo.setUploadedBy(principal.getUserId());
+        photo.setThumbnailFileKey(thumbnailFileKey);
 
         Photo savedPhoto = photoRepository.save(photo);
 
@@ -178,6 +196,9 @@ public class PhotoService {
 
         // Delete from S3
         s3StorageService.deleteFile(photo.getFileKey());
+        if (photo.getThumbnailFileKey() != null) {
+            s3StorageService.deleteFile(photo.getThumbnailFileKey());
+        }
 
         metricsService.incrementCounter("photo.delete.total",
                 "entity_type", photo.getEntityType());
@@ -287,6 +308,11 @@ public class PhotoService {
         PhotoResponse response = photoMapper.toResponse(photo);
         String downloadUrl = s3StorageService.generatePresignedUrl(photo.getFileKey()).toString();
 
+        String thumbnailUrl = null;
+        if (photo.getThumbnailFileKey() != null) {
+            thumbnailUrl = s3StorageService.generatePresignedUrl(photo.getThumbnailFileKey()).toString();
+        }
+
         return new PhotoResponse(
                 response.identifier(),
                 response.entityType(),
@@ -299,7 +325,8 @@ public class PhotoService {
                 response.notes(),
                 response.isMainPhoto(),
                 response.uploadedAt(),
-                downloadUrl
+                downloadUrl,
+                thumbnailUrl
         );
     }
 

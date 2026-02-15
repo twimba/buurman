@@ -9,6 +9,7 @@ import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.PaymentReminderCheckJob;
+import com.buurman.job.ThumbnailBackfillJob;
 import com.buurman.job.VerificationCodeCleanupJob;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -166,6 +167,29 @@ public class QuartzJobsConfig {
                 .forJob(verificationCodeCleanupJobDetail)
                 .withIdentity("verificationCodeCleanupTrigger", "system")
                 .withSchedule(CronScheduleBuilder.cronSchedule("0 0 3 * * ?"))
+                .build();
+    }
+
+    // ── Thumbnail Backfill ─────────────────────────────────────────────────
+
+    @Bean
+    @ConditionalOnProperty(name = "scheduling.thumbnail-backfill.enabled", havingValue = "true")
+    public JobDetail thumbnailBackfillJobDetail() {
+        return JobBuilder.newJob(ThumbnailBackfillJob.class)
+                .withIdentity("thumbnailBackfillJob", "system")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "scheduling.thumbnail-backfill.enabled", havingValue = "true")
+    public Trigger thumbnailBackfillTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob("thumbnailBackfillJob", "system")
+                .withIdentity("thumbnailBackfillTrigger", "system")
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                        .withIntervalInMinutes(5)
+                        .repeatForever())
                 .build();
     }
 

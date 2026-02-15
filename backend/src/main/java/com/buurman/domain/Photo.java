@@ -16,6 +16,7 @@ public class Photo {
     private String entityType;
     private UUID entityId;
     private String fileKey;
+    private String thumbnailFileKey;
     private String fileName;
     private Long fileSize;
     private String mimeType;

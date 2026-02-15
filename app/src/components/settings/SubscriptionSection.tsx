@@ -68,12 +68,7 @@ export const SubscriptionSection = () => {
       monthlyPrice: 0,
       properties: 1,
       teamMembers: 1,
-      features: [
-        '1 Property',
-        '1 Team Member',
-        'Reports',
-        'Community Support',
-      ],
+      features: ['1 Property', '1 Team Member', 'Reports', 'Community Support'],
       negativeFeatures: ['No Documents or Photos', 'No SMS Notifications'],
       badge: 'FREE FOREVER',
       badgeColor: 'green' as const,
@@ -166,12 +161,12 @@ export const SubscriptionSection = () => {
             Everything is free right now! 🎁
           </h2>
           <p className="mt-2 text-white/90 text-base max-w-2xl">
-            We're still building Buurman and this page is just a preview of
-            what's coming. For now, enjoy <strong>all features</strong> with
-            zero limits and zero cost. Go wild! 🏠✨
+            We&apos;re still building Buurman and this page is just a preview of
+            what&apos;s coming. For now, enjoy <strong>all features</strong>{' '}
+            with zero limits and zero cost. Go wild! 🏠✨
           </p>
           <p className="mt-3 text-sm text-white/70 italic">
-            We'll give you plenty of notice before billing goes live. No
+            We&apos;ll give you plenty of notice before billing goes live. No
             surprises, promise.
           </p>
         </div>
@@ -296,9 +291,7 @@ export const SubscriptionSection = () => {
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isAnnual
-                  ? 'bg-[#5c7cfa]'
-                  : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+                isAnnual ? 'bg-[#5c7cfa]' : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
               }`}
             >
               <span
@@ -381,11 +374,12 @@ export const SubscriptionSection = () => {
                       </li>
                     ))}
                     {plan.negativeFeatures?.map((feature, index) => (
-                      <li key={`neg-${index}`} className="flex items-start gap-2">
+                      <li
+                        key={`neg-${index}`}
+                        className="flex items-start gap-2"
+                      >
                         <XIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-red-500">
-                          {feature}
-                        </span>
+                        <span className="text-sm text-red-500">{feature}</span>
                       </li>
                     ))}
                   </ul>

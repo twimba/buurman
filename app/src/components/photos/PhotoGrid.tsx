@@ -207,9 +207,10 @@ export const PhotoGrid = ({
                   </div>
                 ) : (
                   <img
-                    src={photo.downloadUrl}
+                    src={photo.thumbnailUrl ?? photo.downloadUrl}
                     alt={photo.title ?? photo.fileName}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                     crossOrigin="anonymous"
                     onError={() => {
                       setImageErrors((prev) =>

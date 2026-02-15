@@ -15,6 +15,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface PropertyMapper {
 
     @Mapping(target = "mainPhotoUrl", ignore = true)
+    @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
     @Mapping(target = "outdoorAreas", ignore = true)
     @Mapping(target = "amenities", ignore = true)
     PropertyResponse toResponse(Property property);

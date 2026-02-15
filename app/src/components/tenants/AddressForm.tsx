@@ -83,7 +83,13 @@ export const AddressForm = ({
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.street, formData.city, formData.postalCode, formData.country, address]);
+  }, [
+    formData.street,
+    formData.city,
+    formData.postalCode,
+    formData.country,
+    address,
+  ]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -246,21 +252,19 @@ export const AddressForm = ({
       </div>
 
       {/* Location Preview */}
-      {formData.street &&
-        formData.city &&
-        formData.country && (
-          <div>
-            <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
-              Location Preview
-            </h4>
-            <AddressMap
-              street={formData.street}
-              city={formData.city}
-              latitude={formData.latitude}
-              longitude={formData.longitude}
-            />
-          </div>
-        )}
+      {formData.street && formData.city && formData.country && (
+        <div>
+          <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+            Location Preview
+          </h4>
+          <AddressMap
+            street={formData.street}
+            city={formData.city}
+            latitude={formData.latitude}
+            longitude={formData.longitude}
+          />
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3">

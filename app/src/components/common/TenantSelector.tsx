@@ -169,7 +169,7 @@ export const TenantSelector = ({
                 <Avatar
                   firstName={tenant.firstName}
                   lastName={tenant.lastName}
-                  photoUrl={tenant.mainPhotoUrl}
+                  photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
                   size="md"
                 />
                 <div className="min-w-0 flex-1">

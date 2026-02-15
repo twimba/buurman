@@ -165,11 +165,14 @@ export const PropertySelector = ({
                       : ''
                 }`}
               >
-                {property.mainPhotoUrl ? (
+                {(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl) ? (
                   <img
-                    src={property.mainPhotoUrl}
+                    src={
+                      (property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl)!
+                    }
                     alt={property.street}
                     className="w-10 h-10 rounded object-cover flex-shrink-0"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="w-10 h-10 rounded bg-[#e8ecf4] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">

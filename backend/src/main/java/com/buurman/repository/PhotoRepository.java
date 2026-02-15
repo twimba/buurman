@@ -103,6 +103,7 @@ public class PhotoRepository {
                     .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
                     .set(PHOTOS.UPLOADED_BY, photo.getUploadedBy())
                     .set(PHOTOS.UPLOADED_AT, uploadedAt)
+                    .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey())
                     .execute();
 
             photo.setId(newId);
@@ -114,6 +115,7 @@ public class PhotoRepository {
                     .set(PHOTOS.TITLE, photo.getTitle())
                     .set(PHOTOS.NOTES, photo.getNotes())
                     .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
+                    .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey())
                     .where(PHOTOS.ID.eq(photo.getId())
                             .and(PHOTOS.TEAM_ID.eq(photo.getTeamId())))
                     .execute();
@@ -162,6 +164,17 @@ public class PhotoRepository {
             "entityType", PHOTOS.ENTITY_TYPE
         );
         return PaginationHelper.paginate(dsl, PHOTOS, condition, sortableFields, PHOTOS.UPLOADED_AT, pageRequest, r -> mapper.toDomain((PhotosRecord) r));
+    }
+
+    public List<Photo> findWithoutThumbnail(int limit) {
+        return dsl.selectFrom(PHOTOS)
+                .where(PHOTOS.THUMBNAIL_FILE_KEY.isNull()
+                        .and(PHOTOS.DELETED_AT.isNull())
+                        .and(PHOTOS.MIME_TYPE.startsWith("image/")))
+                .orderBy(PHOTOS.UPLOADED_AT.asc())
+                .limit(limit)
+                .fetch()
+                .map(mapper::toDomain);
     }
 
     public List<Photo> findByEntityTypeAndEntityIdsAndTeamId(String entityType, Collection<UUID> entityIds, UUID teamId) {

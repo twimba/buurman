@@ -257,7 +257,7 @@ export const TenantDetailPage = () => {
             <Avatar
               firstName={tenant.firstName}
               lastName={tenant.lastName}
-              photoUrl={tenant.mainPhotoUrl}
+              photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
               size="xl"
             />
           }

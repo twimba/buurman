@@ -113,7 +113,7 @@ export const PropertyForm = ({
 
   useEffect(() => {
     // Only update if property identifier changed (editing a different property)
-     
+
     if (property && property.identifier !== propertyIdentifier) {
       setPropertyIdentifier(property.identifier);
       setFormData({
@@ -171,7 +171,6 @@ export const PropertyForm = ({
         accessibilityNotes: property.accessibilityNotes ?? null,
       });
     }
-     
   }, [property, propertyIdentifier]);
 
   // Debounce address changes for geocoding via backend (2 seconds)
@@ -211,7 +210,13 @@ export const PropertyForm = ({
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.street, formData.city, formData.postalCode, formData.country, property]);
+  }, [
+    formData.street,
+    formData.city,
+    formData.postalCode,
+    formData.country,
+    property,
+  ]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -338,21 +343,19 @@ export const PropertyForm = ({
         </div>
 
         {/* Location Preview */}
-        {formData.street &&
-          formData.city &&
-          formData.country && (
-            <div className="mt-6">
-              <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
-                Location Preview
-              </h4>
-              <PropertyMap
-                street={formData.street}
-                city={formData.city}
-                latitude={formData.latitude}
-                longitude={formData.longitude}
-              />
-            </div>
-          )}
+        {formData.street && formData.city && formData.country && (
+          <div className="mt-6">
+            <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+              Location Preview
+            </h4>
+            <PropertyMap
+              street={formData.street}
+              city={formData.city}
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+            />
+          </div>
+        )}
       </div>
 
       {/* Specifications Section */}

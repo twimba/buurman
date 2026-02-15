@@ -12,6 +12,7 @@ public record TenantResponse(
         String idNumber,
         String additionalInfo,
         String mainPhotoUrl,
+        String mainPhotoThumbnailUrl,
         PropertySummary currentProperty,
         Instant createdAt,
         Instant updatedAt

@@ -3,11 +3,13 @@ package com.buurman.service.demo;
 import com.buurman.domain.Photo;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.service.S3StorageService;
+import com.buurman.service.ThumbnailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -19,14 +21,17 @@ public class DemoPhotoGenerator {
 
     private final PhotoRepository photoRepository;
     private final S3StorageService s3StorageService;
+    private final ThumbnailService thumbnailService;
     private final Random random = new Random(42);
 
     /** Photo pool loaded once from classpath, keyed by room category. */
     private final Map<String, List<byte[]>> photoPool;
 
-    public DemoPhotoGenerator(PhotoRepository photoRepository, S3StorageService s3StorageService) {
+    public DemoPhotoGenerator(PhotoRepository photoRepository, S3StorageService s3StorageService,
+                              ThumbnailService thumbnailService) {
         this.photoRepository = photoRepository;
         this.s3StorageService = s3StorageService;
+        this.thumbnailService = thumbnailService;
         this.photoPool = loadPhotoPool();
     }
 
@@ -80,11 +85,21 @@ public class DemoPhotoGenerator {
                 String fileKey = s3StorageService.uploadFile(
                         imageData, "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier, fileName);
 
+                // Generate thumbnail
+                String thumbnailFileKey = null;
+                var thumbData = thumbnailService.generateThumbnail(new ByteArrayInputStream(imageData));
+                if (thumbData.isPresent()) {
+                    thumbnailFileKey = s3StorageService.uploadFile(
+                            thumbData.get(), "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier,
+                            "thumb_" + fileName);
+                }
+
                 Photo photo = new Photo();
                 photo.setTeamId(teamId);
                 photo.setEntityType("PROPERTY");
                 photo.setEntityId(propertyId);
                 photo.setFileKey(fileKey);
+                photo.setThumbnailFileKey(thumbnailFileKey);
                 photo.setFileName(fileName);
                 photo.setFileSize((long) imageData.length);
                 photo.setMimeType("image/jpeg");

@@ -20,7 +20,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
         <Avatar
           firstName={tenant.firstName}
           lastName={tenant.lastName}
-          photoUrl={tenant.mainPhotoUrl}
+          photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
           size="md"
         />
         <div>

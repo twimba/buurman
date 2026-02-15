@@ -148,6 +148,8 @@ scheduling:
   metrics:
     fixed-rate-ms: 600000
     initial-delay-ms: 60000
+  thumbnail-backfill:
+    enabled: true
 
 # Actuator Configuration
 management:

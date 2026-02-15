@@ -22,6 +22,7 @@ public record PropertyResponse(
         Property.PropertyType propertyType,
         Property.PropertyStatus status,
         String mainPhotoUrl,
+        String mainPhotoThumbnailUrl,
 
         // Construction & Structure
         Integer yearBuilt,

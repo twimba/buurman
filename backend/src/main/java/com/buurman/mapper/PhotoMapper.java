@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface PhotoMapper {
 
     @Mapping(target = "downloadUrl", ignore = true)
+    @Mapping(target = "thumbnailUrl", ignore = true)
     @Mapping(target = "entityIdentifier", ignore = true)
     PhotoResponse toResponse(Photo photo);
 }

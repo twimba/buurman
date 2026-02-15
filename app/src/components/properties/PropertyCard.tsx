@@ -34,9 +34,10 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
       <div className="relative bg-[#e8ecf4] dark:bg-[#1e2130] h-48 flex items-center justify-center overflow-hidden">
         {property.mainPhotoUrl ? (
           <img
-            src={property.mainPhotoUrl}
+            src={property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl}
             alt={property.street}
             className="w-full h-full object-cover"
+            loading="lazy"
           />
         ) : (
           <Home className="h-16 w-16 text-[#9ca0b8] dark:text-[#5c6180]" />

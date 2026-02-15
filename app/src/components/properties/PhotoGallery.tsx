@@ -325,8 +325,8 @@ export const PhotoGallery = ({
                 {uploadProgress ? (
                   <>
                     <LoadingSpinner />
-                    Uploading {uploadProgress.current} of{' '}
-                    {uploadProgress.total}...
+                    Uploading {uploadProgress.current} of {uploadProgress.total}
+                    ...
                   </>
                 ) : (
                   <>
