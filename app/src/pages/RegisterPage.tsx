@@ -9,6 +9,8 @@ import {
   FileText,
   TrendingUp,
   CheckCircle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
@@ -38,6 +40,8 @@ const RegisterPage: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -88,9 +92,9 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#f0f4ff] via-white to-[#f8f9fc]">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 p-12 flex-col justify-between text-white">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#364fc7] via-[#4c6ef5] to-[#5c7cfa] p-12 flex-col justify-between text-white">
         <div>
           <div className="flex items-center gap-4 mb-8">
             <img
@@ -98,63 +102,63 @@ const RegisterPage: React.FC = () => {
               alt="Buurman"
               className="h-20 w-20 rounded-xl shadow-2xl ring-4 ring-white ring-opacity-30"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-[#bac8ff] bg-clip-text text-transparent">
               Buurman
             </h1>
           </div>
-          <p className="text-xl text-blue-100 mb-12">
+          <p className="text-xl text-[#bac8ff] mb-12">
             Property management made simple for small landlords
           </p>
 
           {/* Features */}
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="bg-blue-500 bg-opacity-30 p-3 rounded-lg">
+              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
                 <Home className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Manage Properties
                 </h3>
-                <p className="text-blue-100">
+                <p className="text-[#bac8ff]">
                   Keep track of all your rental properties in one place
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-blue-500 bg-opacity-30 p-3 rounded-lg">
+              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
                 <Users className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Track Tenants</h3>
-                <p className="text-blue-100">
+                <p className="text-[#bac8ff]">
                   Manage tenant information and lease agreements
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-blue-500 bg-opacity-30 p-3 rounded-lg">
+              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
                 <FileText className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Handle Finances</h3>
-                <p className="text-blue-100">
+                <p className="text-[#bac8ff]">
                   Monitor payments, expenses, and financial reports
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-blue-500 bg-opacity-30 p-3 rounded-lg">
+              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Grow Your Business
                 </h3>
-                <p className="text-blue-100">
+                <p className="text-[#bac8ff]">
                   Scale your rental portfolio with confidence
                 </p>
               </div>
@@ -162,7 +166,7 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-sm text-blue-200">
+        <div className="text-sm text-[#91a7ff]">
           © 2026 Buurman. Simple property management.
         </div>
       </div>
@@ -177,7 +181,7 @@ const RegisterPage: React.FC = () => {
               alt="Buurman"
               className="h-24 w-24 rounded-xl shadow-2xl mb-4"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-[#5c7cfa] to-[#364fc7] bg-clip-text text-transparent">
               Buurman
             </h1>
             <p className="text-[#6b7194] dark:text-[#8b90a8] mt-2 text-center">
@@ -286,14 +290,28 @@ const RegisterPage: React.FC = () => {
                     <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
                       Password
                     </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                      placeholder="At least 8 characters"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 pr-11 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                        placeholder="At least 8 characters"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                        aria-label="Toggle password visibility"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-[1.125rem] w-[1.125rem]" />
+                        ) : (
+                          <Eye className="h-[1.125rem] w-[1.125rem]" />
+                        )}
+                      </button>
+                    </div>
                     {errors.password && (
                       <p className="text-red-600 text-xs mt-1">
                         {errors.password}
@@ -305,14 +323,28 @@ const RegisterPage: React.FC = () => {
                     <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
                       Confirm Password
                     </label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                      placeholder="Re-enter your password"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 pr-11 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                        placeholder="Re-enter your password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                        aria-label="Toggle password visibility"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-[1.125rem] w-[1.125rem]" />
+                        ) : (
+                          <Eye className="h-[1.125rem] w-[1.125rem]" />
+                        )}
+                      </button>
+                    </div>
                     {errors.confirmPassword && (
                       <p className="text-red-600 text-xs mt-1">
                         {errors.confirmPassword}

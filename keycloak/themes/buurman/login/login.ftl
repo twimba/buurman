@@ -29,10 +29,16 @@
                 <div class="kc-form-group">
                     <label for="password" class="kc-label">${msg("password")}</label>
 
-                    <input tabindex="2" id="password" class="kc-input" name="password" type="password" autocomplete="current-password"
-                           aria-invalid="<#if messagesPerField.existsError('username','password')>true</#if>"
-                           placeholder="Enter your password"
-                    />
+                    <div class="kc-password-wrapper">
+                        <input tabindex="2" id="password" class="kc-input" name="password" type="password" autocomplete="current-password"
+                               aria-invalid="<#if messagesPerField.existsError('username','password')>true</#if>"
+                               placeholder="Enter your password"
+                        />
+                        <button type="button" class="kc-password-toggle" tabindex="6" aria-label="Toggle password visibility" onclick="togglePasswordVisibility(this)">
+                            <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="m6.18 6.18a8.994 8.994 0 0 0-4.118 5.472 1 1 0 0 0 0 .696C3.627 16.126 7.51 19 12 19c1.827 0 3.52-.52 4.96-1.42"/><path d="m10 10 4 4"/><path d="M14.307 4.832A9.139 9.139 0 0 0 12 4.5C7.51 4.5 3.627 7.374 2.062 11.148"/><path d="M21.938 12.348a10.62 10.62 0 0 0-2.118-3.528"/><path d="M2 2l20 20"/><path d="M8.415 8.414a3 3 0 0 0 4.243 4.243"/></svg>
+                        </button>
+                    </div>
 
                     <#if usernameHidden?? && messagesPerField.existsError('username','password')>
                         <span class="kc-error-message" aria-live="polite">
@@ -74,6 +80,23 @@
         </#if>
         </div>
       </div>
+
+      <script>
+        function togglePasswordVisibility(btn) {
+            var input = btn.parentElement.querySelector('input');
+            var eyeOpen = btn.querySelector('.eye-open');
+            var eyeClosed = btn.querySelector('.eye-closed');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        }
+      </script>
 
     </#if>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, RotateCcw, ScrollText, Settings2 } from "lucide-react";
+import { Search, RotateCcw, ScrollText, Settings2, Regex } from "lucide-react";
 import { ConfirmDialog, RefreshButton } from "@buurman/ui";
 import {
   useLoggers,
@@ -72,6 +72,9 @@ export const LoggersPage = () => {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isRegex, setIsRegex] = useState(false);
+  const [regexError, setRegexError] = useState<string | null>(null);
+  const [levelFilter, setLevelFilter] = useState<string>("ALL");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   useEffect(() => {
@@ -79,12 +82,43 @@ export const LoggersPage = () => {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
+  useEffect(() => {
+    if (!isRegex || !debouncedSearch) {
+      setRegexError(null);
+      return;
+    }
+    try {
+      new RegExp(debouncedSearch, "i");
+      setRegexError(null);
+    } catch (e) {
+      setRegexError((e as Error).message);
+    }
+  }, [debouncedSearch, isRegex]);
+
   const filtered = useMemo(() => {
     if (!loggers) return [];
-    if (!debouncedSearch) return loggers;
-    const lower = debouncedSearch.toLowerCase();
-    return loggers.filter((l) => l.name.toLowerCase().includes(lower));
-  }, [loggers, debouncedSearch]);
+    let result = loggers;
+
+    if (levelFilter !== "ALL") {
+      result = result.filter((l) => l.effectiveLevel === levelFilter);
+    }
+
+    if (debouncedSearch) {
+      if (isRegex) {
+        try {
+          const re = new RegExp(debouncedSearch, "i");
+          result = result.filter((l) => re.test(l.name));
+        } catch {
+          // invalid regex — don't filter
+        }
+      } else {
+        const lower = debouncedSearch.toLowerCase();
+        result = result.filter((l) => l.name.toLowerCase().includes(lower));
+      }
+    }
+
+    return result;
+  }, [loggers, debouncedSearch, isRegex, levelFilter]);
 
   const configuredCount = useMemo(
     () => loggers?.filter((l) => l.configuredLevel !== null).length ?? 0,
@@ -156,20 +190,58 @@ export const LoggersPage = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
           <input
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Filter loggers by name..."
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#6b7194] dark:placeholder-[#8b90a8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+            placeholder={
+              isRegex
+                ? "Regex pattern (e.g. com\\.buurman\\..*Service)"
+                : "Filter loggers by name..."
+            }
+            className={`w-full pl-9 pr-3 py-2 text-sm rounded-lg border bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#6b7194] dark:placeholder-[#8b90a8] focus:outline-none focus:ring-2 transition-colors ${
+              regexError
+                ? "border-red-400 dark:border-red-600 focus:border-red-500 focus:ring-red-500/20"
+                : "border-[#e2e6f0] dark:border-[#2a2e3f] focus:border-[#5c7cfa] focus:ring-[#5c7cfa]/20"
+            }`}
           />
         </div>
-        {debouncedSearch && (
+        <button
+          onClick={() => setIsRegex((prev) => !prev)}
+          title={
+            isRegex ? "Switch to plain text search" : "Switch to regex search"
+          }
+          className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-colors ${
+            isRegex
+              ? "bg-[#5c7cfa] border-[#5c7cfa] text-white"
+              : "bg-white dark:bg-[#14161f] border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:border-[#5c7cfa] hover:text-[#5c7cfa]"
+          }`}
+        >
+          <Regex className="h-4 w-4" />
+        </button>
+        <select
+          value={levelFilter}
+          onChange={(e) => setLevelFilter(e.target.value)}
+          className={selectClass + " py-2"}
+        >
+          <option value="ALL">All Levels</option>
+          {LOG_LEVELS.map((level) => (
+            <option key={level} value={level}>
+              {level}
+            </option>
+          ))}
+        </select>
+        {(debouncedSearch || levelFilter !== "ALL") && (
           <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
             {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          </span>
+        )}
+        {regexError && (
+          <span className="text-xs text-red-500 dark:text-red-400">
+            Invalid regex
           </span>
         )}
         <div className="flex-1" />
@@ -208,7 +280,11 @@ export const LoggersPage = () => {
                       className="text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6]"
                       title={logger.name}
                     >
-                      {logger.name || <em className="text-[#6b7194] dark:text-[#8b90a8]">ROOT</em>}
+                      {logger.name || (
+                        <em className="text-[#6b7194] dark:text-[#8b90a8]">
+                          ROOT
+                        </em>
+                      )}
                     </span>
                   </td>
                   <td className="px-4 py-3">

@@ -596,8 +596,7 @@ export const SchedulerPage = () => {
                               setEditingJob({
                                 jobName: job.jobName,
                                 group: job.jobGroup,
-                                currentExpression:
-                                  job.scheduleExpression ?? "",
+                                currentExpression: job.scheduleExpression ?? "",
                               });
                               setCronInput(job.scheduleExpression ?? "");
                             }}
@@ -887,22 +886,16 @@ export const SchedulerPage = () => {
                   Quartz Cron Format
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px]">
-                  {[
-                    "SEC",
-                    "MIN",
-                    "HOUR",
-                    "DAY",
-                    "MON",
-                    "DOW",
-                    "YEAR",
-                  ].map((f) => (
-                    <span
-                      key={f}
-                      className="font-mono text-[#6b7194] dark:text-[#8b90a8]"
-                    >
-                      {f}
-                    </span>
-                  ))}
+                  {["SEC", "MIN", "HOUR", "DAY", "MON", "DOW", "YEAR"].map(
+                    (f) => (
+                      <span
+                        key={f}
+                        className="font-mono text-[#6b7194] dark:text-[#8b90a8]"
+                      >
+                        {f}
+                      </span>
+                    ),
+                  )}
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px] mt-1">
                   {(cronInput.trim() || "* * * * * ? *")
