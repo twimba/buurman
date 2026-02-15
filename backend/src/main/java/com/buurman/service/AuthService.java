@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import static com.buurman.util.EntityPrefix.TEA;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
 public class AuthService {
@@ -274,7 +275,7 @@ public class AuthService {
         EmailVerificationCode verificationCode = new EmailVerificationCode();
         verificationCode.setUserId(user.getId());
         verificationCode.setCode(code);
-        verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, ChronoUnit.MINUTES));
+        verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
         verificationCodeRepository.save(verificationCode);
 
         notificationService.send(SendNotificationRequest.builder()

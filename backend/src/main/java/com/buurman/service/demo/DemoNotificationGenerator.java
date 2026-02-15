@@ -27,6 +27,7 @@ import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.util.EntityPrefix.NTF;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
 public class DemoNotificationGenerator {
@@ -295,7 +296,7 @@ public class DemoNotificationGenerator {
                 Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
                 String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
                 String adminName = admin != null ? admin.get(USERS.FIRST_NAME) : "Admin";
-                long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDate.now(clock), endDate);
+                long daysUntilExpiry = DAYS.between(LocalDate.now(clock), endDate);
 
                 Map<String, Object> vars = Map.of(
                         "userName", adminName,

@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Service
 public class NotificationSchedulerService {
 
@@ -76,7 +78,7 @@ public class NotificationSchedulerService {
                         team.getId(), thirtyDaysFromNow);
 
                 for (Contract contract : expiringContracts) {
-                    int daysUntilExpiry = (int) ChronoUnit.DAYS.between(LocalDate.now(clock), contract.getEndDate());
+                    int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), contract.getEndDate());
 
                     if (daysUntilExpiry != 30 && daysUntilExpiry != 14 &&
                             daysUntilExpiry != 7 && daysUntilExpiry != 3 && daysUntilExpiry != 1) {

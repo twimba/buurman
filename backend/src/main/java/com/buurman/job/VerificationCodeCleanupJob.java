@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 @Component
 @DisallowConcurrentExecution
 public class VerificationCodeCleanupJob implements Job {
@@ -35,7 +37,7 @@ public class VerificationCodeCleanupJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            var cutoff = clock.instant().minus(RETENTION_HOURS, ChronoUnit.HOURS);
+            var cutoff = clock.instant().minus(RETENTION_HOURS, HOURS);
 
             int emailDeleted = emailCodeRepository.deleteExpiredAndUsed(cutoff);
             int phoneDeleted = phoneCodeRepository.deleteExpiredAndUsed(cutoff);

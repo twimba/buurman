@@ -28,6 +28,7 @@ import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
@@ -524,7 +525,7 @@ public class ReportService {
             LocalDate overlapEnd = contractEnd.isAfter(endDate) ? endDate : contractEnd;
 
             if (!overlapStart.isAfter(overlapEnd)) {
-                totalDays += ChronoUnit.DAYS.between(overlapStart, overlapEnd) + 1;
+                totalDays += DAYS.between(overlapStart, overlapEnd) + 1;
             }
         }
 
