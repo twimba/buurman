@@ -1,4 +1,4 @@
-name: Build Images
+name: Build & Deploy
 
 on:
   workflow_dispatch:
@@ -372,9 +372,44 @@ jobs:
 
           EOF
 
+  deploy:
+    name: Deploy to Dokploy
+    needs: [build-backend, build-app, build-backoffice, build-keycloak, build-grafana]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Backend
+        if: needs.build-backend.result == 'success'
+        run: curl -sSf -X POST "${{ secrets.DOKPLOY_WEBHOOK_BACKEND }}" --max-time 10 || echo "⚠️ Backend deploy webhook failed"
+
+      - name: Deploy App
+        if: needs.build-app.result == 'success'
+        run: curl -sSf -X POST "${{ secrets.DOKPLOY_WEBHOOK_APP }}" --max-time 10 || echo "⚠️ App deploy webhook failed"
+
+      - name: Deploy Backoffice
+        if: needs.build-backoffice.result == 'success'
+        run: curl -sSf -X POST "${{ secrets.DOKPLOY_WEBHOOK_BACKOFFICE }}" --max-time 10 || echo "⚠️ Backoffice deploy webhook failed"
+
+      - name: Deploy Keycloak
+        if: needs.build-keycloak.result == 'success'
+        run: curl -sSf -X POST "${{ secrets.DOKPLOY_WEBHOOK_KEYCLOAK }}" --max-time 10 || echo "⚠️ Keycloak deploy webhook failed"
+
+      - name: Deploy Grafana
+        if: needs.build-grafana.result == 'success'
+        run: curl -sSf -X POST "${{ secrets.DOKPLOY_WEBHOOK_GRAFANA }}" --max-time 10 || echo "⚠️ Grafana deploy webhook failed"
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Deploy
+
+          Dokploy webhooks triggered for all successfully built services.
+          EOF
+
   summary:
-    name: Build Summary
-    needs: [build-backend, build-app, build-backoffice, build-keycloak, build-prometheus, build-grafana]
+    name: Build & Deploy Summary
+    needs: [build-backend, build-app, build-backoffice, build-keycloak, build-prometheus, build-grafana, deploy]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -394,6 +429,7 @@ jobs:
           | **Keycloak** | ${{ needs.build-keycloak.result == 'success' && '✅' || '❌' }} ${{ needs.build-keycloak.result }} |
           | **Prometheus** | ${{ needs.build-prometheus.result == 'success' && '✅' || '❌' }} ${{ needs.build-prometheus.result }} |
           | **Grafana** | ${{ needs.build-grafana.result == 'success' && '✅' || '❌' }} ${{ needs.build-grafana.result }} |
+          | **Deploy** | ${{ needs.deploy.result == 'success' && '🚀' || '⏭️' }} ${{ needs.deploy.result }} |
 
           ### How to pull
 
