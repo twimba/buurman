@@ -260,6 +260,8 @@ services:
       - buurman-network
 
   grafana:
+    build:
+      context: ./grafana
     image: grafana/grafana:12.3.2
     container_name: buurman-grafana
     environment:
@@ -272,8 +274,6 @@ services:
       GF_SECURITY_CONTENT_SECURITY_POLICY: "true"
       GF_SECURITY_CONTENT_SECURITY_POLICY_TEMPLATE: "script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-ancestors https://backoffice.local.buurman.io;"
     volumes:
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
     labels:
       - "traefik.enable=true"

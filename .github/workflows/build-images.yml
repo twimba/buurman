@@ -260,9 +260,65 @@ jobs:
 
           EOF
 
+  build-grafana:
+    name: Build & Publish Grafana
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION=12.3.2
+          SHA=${GITHUB_SHA::7}
+          echo "tag=${VERSION}-${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./grafana
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:latest
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Grafana Image
+
+          | | |
+          |---|---|
+          | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana\` |
+          | **Tag** | \`${{ steps.version.outputs.tag }}\` |
+          | **Digest** | \`${{ steps.build.outputs.digest }}\` |
+
+          EOF
+
   summary:
     name: Build Summary
-    needs: [build-backend, build-app, build-backoffice, build-keycloak]
+    needs: [build-backend, build-app, build-backoffice, build-keycloak, build-grafana]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -280,6 +336,7 @@ jobs:
           | **App** | ${{ needs.build-app.result == 'success' && '✅' || '❌' }} ${{ needs.build-app.result }} |
           | **Backoffice** | ${{ needs.build-backoffice.result == 'success' && '✅' || '❌' }} ${{ needs.build-backoffice.result }} |
           | **Keycloak** | ${{ needs.build-keycloak.result == 'success' && '✅' || '❌' }} ${{ needs.build-keycloak.result }} |
+          | **Grafana** | ${{ needs.build-grafana.result == 'success' && '✅' || '❌' }} ${{ needs.build-grafana.result }} |
 
           ### How to pull
 
@@ -294,6 +351,7 @@ jobs:
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
           docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:latest
           \`\`\`
 
           EOF
