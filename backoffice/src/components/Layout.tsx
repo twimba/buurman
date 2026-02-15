@@ -62,10 +62,19 @@ type ToolItem = {
 const getTools = (): ToolItem[] => {
   const local = isLocalEnv();
   return [
-    { name: "Flagsmith", href: "/tools/flagsmith", icon: FlagsmithIcon },
+    local
+      ? { name: "Flagsmith", href: "/tools/flagsmith", icon: FlagsmithIcon }
+      : {
+          name: "Flagsmith",
+          href: "https://app.flagsmith.com/project/34353/environment/QjT99rGBHX7Q8FP8538yZb/features",
+          icon: FlagsmithIcon,
+          external: true,
+        },
     { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
     { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
-    { name: "Traefik", href: "/tools/traefik", icon: TraefikIcon },
+    ...(local
+      ? [{ name: "Traefik", href: "/tools/traefik", icon: TraefikIcon }]
+      : []),
     ...(local
       ? [{ name: "Mailpit", href: "/tools/mailpit", icon: MailpitIcon }]
       : [
