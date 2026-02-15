@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   CreditCard,
   Check,
+  X as XIcon,
   ArrowRight,
   Calendar,
   Zap,
@@ -25,19 +26,20 @@ export const SubscriptionSection = () => {
   const { formatDate } = useFormatDate();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isAnnual, setIsAnnual] = useState(true);
 
   // Mock data - will be replaced with actual subscription data
   const currentSubscription = {
     planName: 'Big',
-    planPrice: 2,
+    planPrice: 10,
     currency: 'EUR',
-    billingPeriod: 'month',
-    nextRenewal: '2026-03-01',
+    billingPeriod: 'year' as const,
+    nextRenewal: '2027-02-15',
     status: 'active',
-    propertiesLimit: 3,
+    propertiesLimit: 5,
     currentProperties: 2,
     teamMembersLimit: 5,
-    documentsLimit: 500,
+    documentsLimit: 1000,
   };
 
   const [paymentMethods] = useState<PaymentMethod[]>([
@@ -62,69 +64,81 @@ export const SubscriptionSection = () => {
     {
       id: 'free',
       name: 'Free',
-      price: 0,
-      priceLabel: '€0/forever',
+      annualPrice: 0,
+      monthlyPrice: 0,
       properties: 1,
       teamMembers: 1,
-      documents: 0,
       features: [
         '1 Property',
         '1 Team Member',
-        '0 Documents (coming soon)',
-        'Essential Features',
+        'Reports',
+        'Community Support',
       ],
-      badge: '🎁 FREE',
+      negativeFeatures: ['No Documents or Photos', 'No SMS Notifications'],
+      badge: 'FREE FOREVER',
+      badgeColor: 'green' as const,
     },
     {
       id: 'basic',
       name: 'Basic',
-      price: 1,
-      priceLabel: '€1/month',
+      annualPrice: 1,
+      monthlyPrice: 1.5,
+      annualTotal: 12,
       properties: 1,
       teamMembers: 1,
-      documents: 100,
       features: [
         '1 Property',
         '1 Team Member',
-        '100 Documents',
-        'All Core Features',
+        '200 Documents or Photos',
+        'Reports',
+        'Email Support',
       ],
+      negativeFeatures: ['No SMS Notifications'],
     },
     {
       id: 'big',
       name: 'Big',
-      price: 2,
-      priceLabel: '€2/month',
-      properties: 3,
+      annualPrice: 10,
+      monthlyPrice: 12.5,
+      annualTotal: 120,
+      properties: 5,
       teamMembers: 5,
-      documents: 500,
       features: [
-        '3 Properties',
+        '5 Properties',
         '5 Team Members',
-        '500 Documents',
-        'Priority Support',
-        'Advanced Reports',
+        '1,000 Documents or Photos',
+        'Reports',
+        'Export to Excel',
+        'SMS Notifications',
+        'Email Support',
       ],
       popular: true,
+      badge: 'Most Popular',
+      badgeColor: 'blue' as const,
     },
     {
       id: 'mega',
       name: 'Mega',
-      price: 10,
-      priceLabel: '€10/month',
-      properties: 15,
+      annualPrice: 50,
+      monthlyPrice: 62.5,
+      annualTotal: 600,
+      properties: -1,
       teamMembers: -1,
-      documents: 3000,
       features: [
-        '15 Properties',
+        'Unlimited Properties',
         'Unlimited Team Members',
-        '3,000 Documents',
-        'Priority Support',
+        '5,000 Documents or Photos',
         'Advanced Reports',
-        'Custom Features',
+        'Export to Excel',
+        'SMS Notifications',
+        'API Access',
+        'Email Support',
       ],
     },
   ];
+
+  const getPrice = (plan: (typeof plans)[number]) =>
+    isAnnual ? plan.annualPrice : plan.monthlyPrice;
 
   const handleUpgrade = (planId: string) => {
     setSelectedPlan(planId);
@@ -139,6 +153,30 @@ export const SubscriptionSection = () => {
 
   return (
     <div className="space-y-6">
+      {/* Early Access Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#5c7cfa] via-[#845ef7] to-[#e64980] p-6 text-white shadow-lg">
+        <div className="absolute -right-6 -top-6 text-8xl opacity-20 rotate-12 select-none">
+          🎉
+        </div>
+        <div className="absolute -left-4 -bottom-4 text-7xl opacity-15 -rotate-12 select-none">
+          🚀
+        </div>
+        <div className="relative">
+          <h2 className="text-2xl font-extrabold">
+            Everything is free right now! 🎁
+          </h2>
+          <p className="mt-2 text-white/90 text-base max-w-2xl">
+            We're still building Buurman and this page is just a preview of
+            what's coming. For now, enjoy <strong>all features</strong> with
+            zero limits and zero cost. Go wild! 🏠✨
+          </p>
+          <p className="mt-3 text-sm text-white/70 italic">
+            We'll give you plenty of notice before billing goes live. No
+            surprises, promise.
+          </p>
+        </div>
+      </div>
+
       {/* Current Plan Card */}
       <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
         <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
@@ -248,84 +286,139 @@ export const SubscriptionSection = () => {
         </div>
 
         <div className="p-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                className={`relative border-2 rounded-2xl p-6 transition-all hover:shadow-lg ${
-                  plan.id === 'free'
-                    ? 'border-green-500 bg-gradient-to-br from-white dark:from-[#14161f] to-green-50 dark:to-[#1e2130]'
-                    : plan.popular
-                      ? 'border-[#5c7cfa] shadow-lg bg-gradient-to-br from-white dark:from-[#14161f] to-blue-50 dark:to-[#1e2130]'
-                      : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9] dark:hover:border-[#c9cfd9] dark:border-[#3a3f54]'
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <span
+              className={`text-sm font-medium ${!isAnnual ? 'text-[#1a1d2e] dark:text-[#eef0f6]' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+            >
+              Monthly
+            </span>
+            <button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                isAnnual
+                  ? 'bg-[#5c7cfa]'
+                  : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isAnnual ? 'translate-x-6' : 'translate-x-1'
                 }`}
-              >
-                {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
-                      {plan.badge}
-                    </span>
-                  </div>
-                )}
-                {plan.popular && (
-                  <div className="absolute -top-3 right-6">
-                    <span className="px-3 py-1 bg-[#5c7cfa] text-white text-xs font-semibold rounded-full">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
+              />
+            </button>
+            <span
+              className={`text-sm font-medium ${isAnnual ? 'text-[#1a1d2e] dark:text-[#eef0f6]' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+            >
+              Annual
+            </span>
+            {isAnnual && (
+              <span className="px-2 py-0.5 text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+                Save 20%
+              </span>
+            )}
+          </div>
 
-                <h3 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {plan.name}
-                </h3>
-                <div className="mt-3">
-                  <span className="text-4xl font-black text-[#5c7cfa] dark:text-[#91a7ff]">
-                    €{plan.price}
-                  </span>
-                  <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                    /{plan.id === 'free' ? 'forever' : 'month'}
-                  </span>
-                </div>
-
-                <ul className="mt-6 space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => handleUpgrade(plan.id)}
-                  disabled={plan.name === currentSubscription.planName}
-                  className={`mt-6 w-full px-4 py-2 rounded-lg transition-all font-semibold flex items-center justify-center gap-2 ${
-                    plan.name === currentSubscription.planName
-                      ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed'
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {plans.map((plan) => {
+              const price = getPrice(plan);
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative border-2 rounded-2xl p-6 transition-all hover:shadow-lg ${
+                    plan.id === 'free'
+                      ? 'border-green-500 bg-gradient-to-br from-white dark:from-[#14161f] to-green-50 dark:to-[#1e2130]'
                       : plan.popular
-                        ? 'bg-[#5c7cfa] text-white hover:bg-[#4c6ef5] shadow-md hover:shadow-lg'
-                        : plan.id === 'free'
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-white dark:bg-[#14161f] border-2 border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                        ? 'border-[#5c7cfa] shadow-lg bg-gradient-to-br from-white dark:from-[#14161f] to-blue-50 dark:to-[#1e2130]'
+                        : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9]'
                   }`}
                 >
-                  {plan.name === currentSubscription.planName ? (
-                    'Current Plan'
-                  ) : (
-                    <>
-                      {plan.price === 0
-                        ? 'Downgrade to Free'
-                        : plan.price < currentSubscription.planPrice
-                          ? 'Downgrade'
-                          : 'Upgrade'}
-                      <ArrowRight className="h-4 w-4" />
-                    </>
+                  {plan.badge && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <span
+                        className={`px-3 py-1 text-white text-xs font-bold rounded-full whitespace-nowrap ${
+                          plan.badgeColor === 'green'
+                            ? 'bg-green-500'
+                            : 'bg-[#5c7cfa]'
+                        }`}
+                      >
+                        {plan.badge}
+                      </span>
+                    </div>
                   )}
-                </button>
-              </div>
-            ))}
+
+                  <h3 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {plan.name}
+                  </h3>
+                  <div className="mt-3">
+                    <span className="text-4xl font-black text-[#5c7cfa] dark:text-[#91a7ff]">
+                      €{price % 1 === 0 ? price : price.toFixed(2)}
+                    </span>
+                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                      {plan.id === 'free' ? ' /forever' : ' /month'}
+                    </span>
+                  </div>
+                  {plan.id !== 'free' && (
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      {isAnnual && plan.annualTotal
+                        ? `Billed annually at €${plan.annualTotal}`
+                        : 'Billed monthly, cancel anytime'}
+                    </p>
+                  )}
+                  {plan.id === 'free' && (
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      Perfect to get started
+                    </p>
+                  )}
+
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                    {plan.negativeFeatures?.map((feature, index) => (
+                      <li key={`neg-${index}`} className="flex items-start gap-2">
+                        <XIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-red-500">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleUpgrade(plan.id)}
+                    disabled={plan.name === currentSubscription.planName}
+                    className={`mt-6 w-full px-4 py-2 rounded-lg transition-all font-semibold flex items-center justify-center gap-2 ${
+                      plan.name === currentSubscription.planName
+                        ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed'
+                        : plan.popular
+                          ? 'bg-[#5c7cfa] text-white hover:bg-[#4c6ef5] shadow-md hover:shadow-lg'
+                          : plan.id === 'free'
+                            ? 'bg-green-600 text-white hover:bg-green-700'
+                            : 'bg-white dark:bg-[#14161f] border-2 border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                    }`}
+                  >
+                    {plan.name === currentSubscription.planName ? (
+                      'Current Plan'
+                    ) : (
+                      <>
+                        {price === 0
+                          ? 'Downgrade to Free'
+                          : price < currentSubscription.planPrice
+                            ? 'Downgrade'
+                            : 'Upgrade'}
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -422,9 +515,12 @@ export const SubscriptionSection = () => {
               </p>
               <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-sm text-blue-800 dark:text-blue-300">
-                  You&apos;ll be charged €
-                  {plans.find((p) => p.id === selectedPlan)?.price} starting
-                  from your next billing cycle.
+                  {(() => {
+                    const plan = plans.find((p) => p.id === selectedPlan);
+                    if (!plan) return null;
+                    const price = getPrice(plan);
+                    return `You'll be charged €${price % 1 === 0 ? price : price.toFixed(2)}/month${isAnnual && plan.annualTotal ? ` (€${plan.annualTotal} billed annually)` : ''} starting from your next billing cycle.`;
+                  })()}
                 </p>
               </div>
             </div>
