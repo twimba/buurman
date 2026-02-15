@@ -87,6 +87,18 @@ public class EmailVerificationCodeRepository {
         );
     }
 
+    public int deleteExpiredAndUsed(Instant before) {
+        LocalDateTime cutoff = LocalDateTime.ofInstant(before, UTC);
+
+        return dsl.deleteFrom(EMAIL_VERIFICATION_CODES)
+                .where(
+                        EMAIL_VERIFICATION_CODES.EXPIRES_AT.lt(cutoff)
+                        .or(EMAIL_VERIFICATION_CODES.USED_AT.isNotNull()
+                                .and(EMAIL_VERIFICATION_CODES.USED_AT.lt(cutoff)))
+                )
+                .execute();
+    }
+
     public void markUsed(UUID id) {
         LocalDateTime now = LocalDateTime.now(clock);
 

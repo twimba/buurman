@@ -100,6 +100,18 @@ public class PhoneVerificationCodeRepository {
                 .map(r -> r.get(PHONE_VERIFICATION_CODES.CREATED_AT).toInstant(UTC));
     }
 
+    public int deleteExpiredAndUsed(Instant before) {
+        LocalDateTime cutoff = LocalDateTime.ofInstant(before, UTC);
+
+        return dsl.deleteFrom(PHONE_VERIFICATION_CODES)
+                .where(
+                        PHONE_VERIFICATION_CODES.EXPIRES_AT.lt(cutoff)
+                        .or(PHONE_VERIFICATION_CODES.USED_AT.isNotNull()
+                                .and(PHONE_VERIFICATION_CODES.USED_AT.lt(cutoff)))
+                )
+                .execute();
+    }
+
     public void markUsed(UUID id) {
         LocalDateTime now = LocalDateTime.now(clock);
 

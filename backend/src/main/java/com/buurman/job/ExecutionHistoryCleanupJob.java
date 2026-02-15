@@ -29,9 +29,9 @@ public class ExecutionHistoryCleanupJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            int deleted = repository.deleteOlderThan(clock.instant().minus(15, ChronoUnit.DAYS));
+            int deleted = repository.deleteOlderThan(clock.instant().minus(48, ChronoUnit.HOURS));
             if (deleted > 0) {
-                log.info("Cleaned up {} job execution history entries older than 15 days", deleted);
+                log.info("Cleaned up {} job execution history entries older than 48 hours", deleted);
             }
         } catch (Exception e) {
             throw new JobExecutionException("Execution history cleanup failed", e);
