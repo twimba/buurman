@@ -15,6 +15,8 @@ import { FeatureFlagsPage } from "./pages/FeatureFlagsPage";
 import { SchedulerPage } from "./pages/SchedulerPage";
 import { LoggersPage } from "./pages/LoggersPage";
 import { BuurmiesPage } from "./pages/BuurmiesPage";
+import { RegistrationInvitationsPage } from "./pages/RegistrationInvitationsPage";
+import { RegistrationInvitationDetailPage } from "./pages/RegistrationInvitationDetailPage";
 
 function App() {
   return (
@@ -35,6 +37,14 @@ function App() {
                 element={<NotificationDetailPage />}
               />
               <Route path="/sms-policy" element={<SmsPolicyPage />} />
+              <Route
+                path="/registration-invitations"
+                element={<RegistrationInvitationsPage />}
+              />
+              <Route
+                path="/registration-invitations/:identifier"
+                element={<RegistrationInvitationDetailPage />}
+              />
               <Route path="/feature-flags" element={<FeatureFlagsPage />} />
               <Route path="/scheduler" element={<SchedulerPage />} />
               <Route path="/loggers" element={<LoggersPage />} />

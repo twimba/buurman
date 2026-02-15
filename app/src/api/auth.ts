@@ -6,6 +6,15 @@ export interface RegisterRequest {
   lastName: string;
   password: string;
   invitationToken?: string;
+  registrationInvitationCode?: string;
+}
+
+export interface RegistrationConfig {
+  invitationRequired: boolean;
+}
+
+export interface ValidateInvitationCodeResponse {
+  valid: boolean;
 }
 
 export interface UserResponse {
@@ -51,4 +60,18 @@ export const verifyEmail = async (code: string): Promise<UserResponse> => {
 
 export const resendVerificationCode = async (): Promise<void> => {
   await client.post('/auth/resend-verification');
+};
+
+export const getRegistrationConfig = async (): Promise<RegistrationConfig> => {
+  const response = await client.get('/registration/config');
+  return response.data;
+};
+
+export const validateInvitationCode = async (
+  code: string
+): Promise<ValidateInvitationCodeResponse> => {
+  const response = await client.post('/registration-invitations/validate', {
+    code,
+  });
+  return response.data;
 };

@@ -97,6 +97,7 @@ public class LocalEmailSender implements NotificationChannelSender {
             case "payment-paid" -> "Payment marked as paid for " + getVar(variables, "propertyName", "your property");
             case "payment-receival" -> "Payment receival registered for " + getVar(variables, "propertyName", "your property");
             case "expense-created" -> "New expense recorded for " + getVar(variables, "propertyName", "your property");
+            case "registration-invitation" -> "You're invited to join Buurman!";
             default -> "Notification from Buurman";
         };
     }

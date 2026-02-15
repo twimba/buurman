@@ -18,6 +18,8 @@ import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.exception.BadRequestException;
+import com.buurman.util.FeatureFlags;
 import com.buurman.util.UlidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,8 @@ public class AuthService {
     private final EmailVerificationCodeRepository verificationCodeRepository;
     private final UserMapper userMapper;
     private final NotificationService notificationService;
+    private final RegistrationInvitationService registrationInvitationService;
+    private final FeatureFlagService featureFlagService;
     private final MetricsService metricsService;
     private final Clock clock;
 
@@ -61,6 +65,8 @@ public class AuthService {
                       TeamInvitationRepository invitationRepository,
                       EmailVerificationCodeRepository verificationCodeRepository,
                       UserMapper userMapper, NotificationService notificationService,
+                      RegistrationInvitationService registrationInvitationService,
+                      FeatureFlagService featureFlagService,
                       MetricsService metricsService, Clock clock) {
         this.keycloakService = keycloakService;
         this.userRepository = userRepository;
@@ -70,12 +76,27 @@ public class AuthService {
         this.verificationCodeRepository = verificationCodeRepository;
         this.userMapper = userMapper;
         this.notificationService = notificationService;
+        this.registrationInvitationService = registrationInvitationService;
+        this.featureFlagService = featureFlagService;
         this.metricsService = metricsService;
         this.clock = clock;
     }
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
+        // Check if invitation code is required
+        boolean invitationRequired = featureFlagService.isEnabled(FeatureFlags.INVITATION_REQUIRED);
+        String registrationCode = request.registrationInvitationCode();
+
+        if (invitationRequired) {
+            if (registrationCode == null || registrationCode.isBlank()) {
+                throw new BadRequestException("Invitation code is required");
+            }
+            if (!registrationInvitationService.validateCode(registrationCode).valid()) {
+                throw new BadRequestException("Invalid or expired invitation code");
+            }
+        }
+
         // Validate email not already registered
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("Email already registered");
@@ -124,6 +145,11 @@ public class AuthService {
             member.setInvitedAt(clock.instant());
             member.setJoinedAt(clock.instant());
             teamMemberRepository.save(member);
+
+            // Record registration invitation usage atomically
+            if (invitationRequired && registrationCode != null && !registrationCode.isBlank()) {
+                registrationInvitationService.recordUsage(registrationCode, user.getId());
+            }
 
             // Send verification code email
             String code = generateVerificationCode();

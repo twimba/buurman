@@ -118,7 +118,8 @@ const InlineValueEditor = ({
     setEditing(true);
   };
 
-  const hasValue = value !== null && value !== undefined && String(value) !== "";
+  const hasValue =
+    value !== null && value !== undefined && String(value) !== "";
 
   const save = () => {
     setEditing(false);
@@ -955,10 +956,7 @@ const SegmentFlagTable = ({
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutatingFlag?: string | null;
 }) => {
-  const sortedNames = useMemo(
-    () => Object.keys(overrides).sort(),
-    [overrides],
-  );
+  const sortedNames = useMemo(() => Object.keys(overrides).sort(), [overrides]);
 
   if (sortedNames.length === 0) {
     return (
@@ -1163,7 +1161,8 @@ export const SegmentFeatureFlags = () => {
             Segment Overrides
           </h2>
           <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-            {segments?.length ?? 0} segment{(segments?.length ?? 0) !== 1 ? "s" : ""}
+            {segments?.length ?? 0} segment
+            {(segments?.length ?? 0) !== 1 ? "s" : ""}
           </span>
           {totalOverrides > 0 && (
             <span className="text-xs font-medium text-amber-600 dark:text-amber-400">

@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useRegister } from '../hooks/useAuthHooks';
+import {
+  useRegister,
+  useRegistrationConfig,
+  useValidateInvitationCode,
+} from '../hooks/useAuthHooks';
 import { useInvitation } from '../hooks/useTeamHooks';
 import {
   UserPlus,
@@ -15,14 +19,55 @@ import {
   Sparkles,
   ArrowRight,
   PartyPopper,
+  Ticket,
+  Loader2,
+  ShieldCheck,
+  XCircle,
 } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invitationToken = searchParams.get('invitation') || undefined;
+  const invitationCodeParam = searchParams.get('code') || '';
   const { data: invitation } = useInvitation(invitationToken);
   const registerMutation = useRegister();
+  const { data: registrationConfig } = useRegistrationConfig();
+  const validateCodeMutation = useValidateInvitationCode();
+
+  const invitationRequired = registrationConfig?.invitationRequired ?? false;
+
+  const [invitationCode, setInvitationCode] = useState(invitationCodeParam);
+  const [codeValidated, setCodeValidated] = useState(false);
+  const [codeError, setCodeError] = useState('');
+
+  const handleValidateCode = async (code: string) => {
+    if (!code.trim()) return;
+    setCodeError('');
+    try {
+      const result = await validateCodeMutation.mutateAsync(code.trim());
+      if (result.valid) {
+        setCodeValidated(true);
+        setCodeError('');
+      } else {
+        setCodeValidated(false);
+        setCodeError('Invalid or expired invitation code');
+      }
+    } catch {
+      setCodeValidated(false);
+      setCodeError('Could not validate code. Please try again.');
+    }
+  };
+
+  // Auto-validate code from URL param
+  const autoValidated = useRef(false);
+  useEffect(() => {
+    if (invitationCodeParam && invitationRequired && !autoValidated.current) {
+      autoValidated.current = true;
+      handleValidateCode(invitationCodeParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invitationCodeParam, invitationRequired]);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -110,6 +155,9 @@ const RegisterPage: React.FC = () => {
         lastName: formData.lastName,
         password: formData.password,
         invitationToken,
+        registrationInvitationCode: invitationRequired
+          ? invitationCode.trim()
+          : undefined,
       });
       // Clear pending invitation since it was auto-accepted during registration
       if (invitationToken) {
@@ -269,224 +317,320 @@ const RegisterPage: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                        placeholder="John"
-                      />
-                      {errors.firstName && (
-                        <p className="text-red-600 text-xs mt-1">
-                          {errors.firstName}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
-                        placeholder="Doe"
-                      />
-                      {errors.lastName && (
-                        <p className="text-red-600 text-xs mt-1">
-                          {errors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      readOnly={!!invitationToken && !!invitation?.email}
-                      className={`w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${invitationToken && invitation?.email ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] cursor-not-allowed' : ''}`}
-                      placeholder="john.doe@example.com"
-                    />
-                    {invitationToken && invitation?.email && (
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                        Email is pre-filled from your invitation
-                      </p>
-                    )}
-                    {errors.email && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
-                          formData.password.length > 0 && allRulesMet
-                            ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
-                            : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
-                        }`}
-                        placeholder="Create a strong password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
-                        aria-label="Toggle password visibility"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-[1.125rem] w-[1.125rem]" />
-                        ) : (
-                          <Eye className="h-[1.125rem] w-[1.125rem]" />
-                        )}
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {errors.password}
-                      </p>
-                    )}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
-                      {passwordRules.map((rule) => (
-                        <div
-                          key={rule.key}
-                          className="flex items-center gap-1.5"
-                        >
-                          {rule.met ? (
-                            <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                          ) : (
-                            <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
-                          )}
-                          <span
-                            className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
-                          >
-                            {rule.label}
+                  {/* Invitation Code Gate */}
+                  {invitationRequired && (
+                    <div
+                      className={`rounded-xl border-2 p-4 transition-all duration-300 ${
+                        codeValidated
+                          ? 'border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/20'
+                          : 'border-[#c3cbf9] bg-[#f0f4ff]/50 dark:border-[#3a3f54] dark:bg-[#1e2130]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <Ticket className="h-4 w-4 text-[#5c7cfa]" />
+                        <span className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db]">
+                          Invitation Code
+                        </span>
+                        {codeValidated && (
+                          <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                            <ShieldCheck className="h-3.5 w-3.5" />
+                            Verified
                           </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
-                          passwordsMatch
-                            ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
-                            : passwordsMismatch
-                              ? 'border-red-300 dark:border-red-700 focus:border-red-400'
-                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
-                        }`}
-                        placeholder="Re-enter your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword((prev) => !prev)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
-                        aria-label="Toggle password visibility"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-[1.125rem] w-[1.125rem]" />
-                        ) : (
-                          <Eye className="h-[1.125rem] w-[1.125rem]" />
-                        )}
-                      </button>
-                    </div>
-                    {formData.confirmPassword.length > 0 && (
-                      <div className="flex items-center gap-1.5 mt-1.5">
-                        {passwordsMatch ? (
-                          <>
-                            <Check className="h-3.5 w-3.5 text-emerald-500" />
-                            <span className="text-xs text-emerald-600 dark:text-emerald-400">
-                              Passwords match
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <Circle className="h-3.5 w-3.5 text-red-400" />
-                            <span className="text-xs text-red-500 dark:text-red-400">
-                              Passwords do not match
-                            </span>
-                          </>
                         )}
                       </div>
-                    )}
-                    {errors.confirmPassword &&
-                      !formData.confirmPassword.length && (
-                        <p className="text-red-600 text-xs mt-1">
-                          {errors.confirmPassword}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={invitationCode}
+                          onChange={(e) => {
+                            setInvitationCode(e.target.value);
+                            setCodeValidated(false);
+                            setCodeError('');
+                          }}
+                          disabled={codeValidated}
+                          className={`flex-1 border rounded-lg px-4 py-2.5 text-sm transition-colors ${
+                            codeValidated
+                              ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20'
+                          }`}
+                          placeholder="e.g. snowy-cat"
+                        />
+                        {!codeValidated && (
+                          <button
+                            type="button"
+                            onClick={() => handleValidateCode(invitationCode)}
+                            disabled={
+                              !invitationCode.trim() ||
+                              validateCodeMutation.isPending
+                            }
+                            className="px-4 py-2.5 bg-[#5c7cfa] text-white text-sm font-medium rounded-lg hover:bg-[#4c6ef5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shrink-0"
+                          >
+                            {validateCodeMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              'Verify'
+                            )}
+                          </button>
+                        )}
+                        {codeValidated && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCodeValidated(false);
+                              setInvitationCode('');
+                              setCodeError('');
+                            }}
+                            className="px-3 py-2.5 text-[#6b7194] hover:text-[#3d4463] text-sm rounded-lg hover:bg-white/50 transition-colors shrink-0"
+                          >
+                            Change
+                          </button>
+                        )}
+                      </div>
+                      {codeError && (
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                          <span className="text-xs text-red-600 dark:text-red-400">
+                            {codeError}
+                          </span>
+                        </div>
+                      )}
+                      {!codeValidated && !codeError && (
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                          Enter the invitation code you received to continue
                         </p>
                       )}
-                  </div>
-
-                  {errors.submit && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <p className="text-red-600 text-sm">
-                        {errors.submit}
-                        {errors.submit
-                          .toLowerCase()
-                          .includes('email already registered') && (
-                          <>
-                            {' '}
-                            <a
-                              href="/login"
-                              className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
-                            >
-                              Go to login
-                            </a>
-                          </>
-                        )}
-                      </p>
                     </div>
                   )}
 
-                  <button
-                    type="submit"
-                    disabled={
-                      registerMutation.isPending ||
-                      !allRulesMet ||
-                      !passwordsMatch
+                  <div
+                    className={
+                      invitationRequired && !codeValidated
+                        ? 'opacity-40 pointer-events-none select-none'
+                        : ''
                     }
-                    className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                   >
-                    <UserPlus className="h-5 w-5" />
-                    {registerMutation.isPending
-                      ? 'Creating account...'
-                      : 'Get started for free'}
-                    {!registerMutation.isPending && (
-                      <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 group-disabled:hidden" />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                          placeholder="John"
+                        />
+                        {errors.firstName && (
+                          <p className="text-red-600 text-xs mt-1">
+                            {errors.firstName}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                          placeholder="Doe"
+                        />
+                        {errors.lastName && (
+                          <p className="text-red-600 text-xs mt-1">
+                            {errors.lastName}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        readOnly={!!invitationToken && !!invitation?.email}
+                        className={`w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${invitationToken && invitation?.email ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] cursor-not-allowed' : ''}`}
+                        placeholder="john.doe@example.com"
+                      />
+                      {invitationToken && invitation?.email && (
+                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          Email is pre-filled from your invitation
+                        </p>
+                      )}
+                      {errors.email && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                            formData.password.length > 0 && allRulesMet
+                              ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
+                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                          }`}
+                          placeholder="Create a strong password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-[1.125rem] w-[1.125rem]" />
+                          ) : (
+                            <Eye className="h-[1.125rem] w-[1.125rem]" />
+                          )}
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.password}
+                        </p>
+                      )}
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                        {passwordRules.map((rule) => (
+                          <div
+                            key={rule.key}
+                            className="flex items-center gap-1.5"
+                          >
+                            {rule.met ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
+                            )}
+                            <span
+                              className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+                            >
+                              {rule.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                            passwordsMatch
+                              ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
+                              : passwordsMismatch
+                                ? 'border-red-300 dark:border-red-700 focus:border-red-400'
+                                : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                          }`}
+                          placeholder="Re-enter your password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword((prev) => !prev)
+                          }
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                          aria-label="Toggle password visibility"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-[1.125rem] w-[1.125rem]" />
+                          ) : (
+                            <Eye className="h-[1.125rem] w-[1.125rem]" />
+                          )}
+                        </button>
+                      </div>
+                      {formData.confirmPassword.length > 0 && (
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          {passwordsMatch ? (
+                            <>
+                              <Check className="h-3.5 w-3.5 text-emerald-500" />
+                              <span className="text-xs text-emerald-600 dark:text-emerald-400">
+                                Passwords match
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <Circle className="h-3.5 w-3.5 text-red-400" />
+                              <span className="text-xs text-red-500 dark:text-red-400">
+                                Passwords do not match
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {errors.confirmPassword &&
+                        !formData.confirmPassword.length && (
+                          <p className="text-red-600 text-xs mt-1">
+                            {errors.confirmPassword}
+                          </p>
+                        )}
+                    </div>
+
+                    {errors.submit && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p className="text-red-600 text-sm">
+                          {errors.submit}
+                          {errors.submit
+                            .toLowerCase()
+                            .includes('email already registered') && (
+                            <>
+                              {' '}
+                              <a
+                                href="/login"
+                                className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
+                              >
+                                Go to login
+                              </a>
+                            </>
+                          )}
+                        </p>
+                      </div>
                     )}
-                  </button>
+
+                    <button
+                      type="submit"
+                      disabled={
+                        registerMutation.isPending ||
+                        !allRulesMet ||
+                        !passwordsMatch ||
+                        (invitationRequired && !codeValidated)
+                      }
+                      className="group w-full mt-3 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
+                    >
+                      <UserPlus className="h-5 w-5" />
+                      {registerMutation.isPending
+                        ? 'Creating account...'
+                        : 'Get started for free'}
+                      {!registerMutation.isPending && (
+                        <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 group-disabled:hidden" />
+                      )}
+                    </button>
+                  </div>
                 </form>
 
                 <div className="mt-6 relative">

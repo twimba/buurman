@@ -9,4 +9,5 @@ public final class FeatureFlags {
     private FeatureFlags() {}
 
     public static final String REPORTS = "reports";
+    public static final String INVITATION_REQUIRED = "invitation_required";
 }

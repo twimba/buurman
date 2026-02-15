@@ -34,6 +34,7 @@ public class SecurityConfig {
     private final MdcFilter mdcFilter;
     private final DemoApiKeyFilter demoApiKeyFilter;
     private final EmailVerificationFilter emailVerificationFilter;
+    private final RateLimitFilter rateLimitFilter;
     private final AppProperties appProperties;
     private final String backofficeJwkSetUri;
     private final String backofficeIssuerUri;
@@ -43,6 +44,7 @@ public class SecurityConfig {
                          MdcFilter mdcFilter,
                          DemoApiKeyFilter demoApiKeyFilter,
                          EmailVerificationFilter emailVerificationFilter,
+                         RateLimitFilter rateLimitFilter,
                          AppProperties appProperties,
                          @Value("${spring.security.oauth2.resourceserver.jwt.backoffice.jwk-set-uri:}") String backofficeJwkSetUri,
                          @Value("${spring.security.oauth2.resourceserver.jwt.backoffice.issuer-uri:}") String backofficeIssuerUri) {
@@ -51,6 +53,7 @@ public class SecurityConfig {
         this.mdcFilter = mdcFilter;
         this.demoApiKeyFilter = demoApiKeyFilter;
         this.emailVerificationFilter = emailVerificationFilter;
+        this.rateLimitFilter = rateLimitFilter;
         this.appProperties = appProperties;
         this.backofficeJwkSetUri = backofficeJwkSetUri;
         this.backofficeIssuerUri = backofficeIssuerUri;
@@ -93,6 +96,8 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/registration-invitations/validate").permitAll()
+                .requestMatchers(HttpMethod.GET, "/registration/config").permitAll()
                 .requestMatchers(HttpMethod.GET, "/invitations/*").permitAll()
                 .requestMatchers(HttpMethod.GET, "/calendar/ical/*").permitAll()
                 .requestMatchers("/admin/demo-data/**").permitAll()
@@ -105,7 +110,8 @@ public class SecurityConfig {
             )
             .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class)
             .addFilterAfter(emailVerificationFilter, MdcFilter.class)
-            .addFilterBefore(demoApiKeyFilter, BearerTokenAuthenticationFilter.class);
+            .addFilterBefore(demoApiKeyFilter, BearerTokenAuthenticationFilter.class)
+            .addFilterBefore(rateLimitFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
     }

@@ -58,3 +58,17 @@ export const useResendVerification = () => {
     },
   });
 };
+
+export const useRegistrationConfig = () => {
+  return useQuery({
+    queryKey: ['registrationConfig'],
+    queryFn: authApi.getRegistrationConfig,
+    staleTime: 30_000,
+  });
+};
+
+export const useValidateInvitationCode = () => {
+  return useMutation({
+    mutationFn: authApi.validateInvitationCode,
+  });
+};

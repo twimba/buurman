@@ -640,7 +640,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
-            align-items: start;
+            align-items: stretch;
         }
 
         .pricing-card {
@@ -650,6 +650,8 @@
             border: 2px solid var(--border);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .pricing-card:hover {
             transform: translateY(-6px);
@@ -711,6 +713,7 @@
         .pricing-features {
             list-style: none;
             margin: 0 0 2rem;
+            flex: 1;
         }
         .pricing-features li {
             display: flex;
@@ -737,6 +740,11 @@
 
         .pricing-cta { width: 100%; }
 
+        .tooltip-wrap:hover .tooltip-bubble {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
         .btn-success {
             background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
             color: white;
@@ -747,13 +755,129 @@
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
-        .pricing-note {
-            text-align: center;
-            margin-top: 3rem;
-            font-size: 1rem;
-            color: var(--text-secondary);
+        /* Billing toggle */
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
         }
-        .pricing-note strong { color: var(--primary); }
+        .pricing-toggle-label {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.25s;
+        }
+        .pricing-toggle-label--active {
+            color: var(--text);
+        }
+        .pricing-save-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+            color: white;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9px;
+            margin-left: 6px;
+            letter-spacing: 0.02em;
+        }
+        .pricing-toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: var(--border);
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.25s;
+            padding: 0;
+        }
+        .pricing-toggle-switch.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        .pricing-toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pricing-toggle-switch.active .pricing-toggle-knob {
+            transform: translateX(24px);
+        }
+
+        .pricing-note {
+            margin-top: 3rem;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2rem 2.5rem;
+            display: flex;
+            gap: 2.5rem;
+            align-items: flex-start;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+        .pricing-note-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            flex: 1;
+        }
+        .pricing-note-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pricing-note-icon--free {
+            background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+        }
+        .pricing-note-icon--refund {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+        }
+        .pricing-note-text {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .pricing-note-text strong {
+            display: block;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            margin-bottom: 2px;
+        }
+        .pricing-note-divider {
+            width: 1px;
+            align-self: stretch;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        @media (max-width: 640px) {
+            .pricing-note {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            .pricing-note-divider {
+                width: 100%;
+                height: 1px;
+            }
+        }
 
         @media (max-width: 1024px) {
             .pricing-grid { grid-template-columns: repeat(2, 1fr); }
@@ -923,6 +1047,8 @@
             <nav class="nav">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="https://app.buurman.io/login" class="nav-link">Sign In</a>
+                <a href="https://app.buurman.io/register" class="btn btn-primary" style="margin-left: 0.5rem;">Get Started</a>
             </nav>
 
             <button class="menu-toggle" onclick="document.getElementById('header').classList.toggle('menu-open')" aria-label="Toggle menu">
@@ -942,7 +1068,7 @@
             <div class="hero-text">
                 <div class="hero-badge">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l2.12 4.3 4.74.69-3.43 3.34.81 4.72L8 11.77l-4.24 2.23.81-4.72L1.14 5.94l4.74-.69L8 1z" fill="var(--accent)"/></svg>
-                    Early Access — Opening Soon
+                    Now Open — Start for Free
                 </div>
                 <h1>
                     Property Management<br>
@@ -952,10 +1078,10 @@
                     The all-in-one platform for small landlords. Manage properties, tenants, and finances from a single, intuitive dashboard. No credit card needed.
                 </p>
                 <div class="hero-buttons">
-                    <span class="btn btn-disabled btn-lg">Coming Soon</span>
+                    <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg">Get Started Free</a>
                     <a href="#pricing" class="btn btn-secondary btn-lg">View Pricing</a>
                 </div>
-                <p class="hero-note">We're in early access. Drop us a line at <a href="mailto:hello@buurman.io" style="color: var(--primary); text-decoration: underline;">hello@buurman.io</a> to get in!</p>
+                <p class="hero-note">Free forever plan available. No credit card required.</p>
             </div>
 
             <div class="hero-visual">
@@ -1283,7 +1409,7 @@
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
                 </div>
                 <h3>Secure &amp; Private</h3>
-                <p>Your data is encrypted and backed up automatically. Multi-tenant architecture ensures complete data isolation.</p>
+                <p>Security is a top priority. Your data belongs to you — export or delete it anytime, no questions asked.</p>
                 <div class="feature-illustration">
                     <svg viewBox="0 0 360 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="360" height="200" rx="8" fill="#f1f3f9"/>
@@ -1327,75 +1453,106 @@
             <p>Start free, upgrade when you need more. No hidden fees, no surprises.</p>
         </div>
 
+        <div class="pricing-toggle reveal">
+            <span class="pricing-toggle-label" id="label-monthly">Monthly</span>
+            <button class="pricing-toggle-switch active" id="billing-toggle" onclick="toggleBilling()" aria-label="Toggle billing period">
+                <span class="pricing-toggle-knob"></span>
+            </button>
+            <span class="pricing-toggle-label pricing-toggle-label--active" id="label-annual">Annual <span class="pricing-save-badge">Save 20%</span></span>
+        </div>
+
         <div class="pricing-grid">
             <!-- Free -->
             <div class="pricing-card free-tier reveal">
                 <div class="pricing-badge badge-green">FREE FOREVER</div>
                 <h3>Free</h3>
-                <div class="pricing-price">&euro;0 <span class="period">/forever</span></div>
-                <p class="pricing-subtitle">Perfect to get started</p>
+                <div class="pricing-price" data-annual="0" data-monthly="0">&euro;0 <span class="period">/month</span></div>
+                <p class="pricing-subtitle pricing-billed">Perfect to get started</p>
                 <ul class="pricing-features">
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
-                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
-                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Basic Reports</li>
+                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member <span style="display:inline-flex;align-items:center;gap:3px;margin-left:4px;background:linear-gradient(135deg,#fcc419,#f59f00);color:#fff;font-size:0.6875rem;font-weight:700;padding:1px 7px;border-radius:9px;letter-spacing:0.02em;white-space:nowrap;">that's you!</span></li>
+                    <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-green"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Community Support</li>
+                    <li style="color: #e03131;"><span class="check-icon" style="background: rgba(224, 49, 49, 0.1); color: #e03131;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>No Documents or Photos</li>
+                    <li style="color: #e03131;"><span class="check-icon" style="background: rgba(224, 49, 49, 0.1); color: #e03131;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>No SMS Notifications</li>
                 </ul>
-                <span class="btn btn-disabled btn-lg pricing-cta">Coming Soon</span>
+                <a href="https://app.buurman.io/register" class="btn btn-success btn-lg pricing-cta">Start Free</a>
             </div>
 
             <!-- Basic -->
             <div class="pricing-card reveal">
                 <h3>Basic</h3>
-                <div class="pricing-price">&euro;1 <span class="period">/month</span></div>
-                <p class="pricing-subtitle">For your first rental</p>
+                <div class="pricing-price" data-annual="1" data-monthly="1.50">&euro;1 <span class="period">/month</span></div>
+                <p class="pricing-subtitle pricing-billed">Billed annually at &euro;12</p>
                 <ul class="pricing-features">
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Property</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1 Team Member</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>100 Documents</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Basic Reports</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>200 Documents or Photos</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Email Support</li>
+                    <li style="color: #e03131;"><span class="check-icon" style="background: rgba(224, 49, 49, 0.1); color: #e03131;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>No SMS Notifications</li>
                 </ul>
-                <span class="btn btn-disabled btn-lg pricing-cta">Coming Soon</span>
+                <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg pricing-cta">Get Started</a>
             </div>
 
             <!-- Big (Featured) -->
             <div class="pricing-card featured reveal">
                 <div class="pricing-badge badge-blue">Most Popular</div>
                 <h3>Big</h3>
-                <div class="pricing-price">&euro;2 <span class="period">/month</span></div>
-                <p class="pricing-subtitle">Great for small portfolios</p>
+                <div class="pricing-price" data-annual="10" data-monthly="12.50">&euro;10 <span class="period">/month</span></div>
+                <p class="pricing-subtitle pricing-billed">Billed annually at &euro;120</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>3 Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Properties</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5 Team Members</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>500 Documents</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Advanced Reports</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Priority Email Support</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>1,000 Documents or Photos</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Reports</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Excel</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>SMS Notifications <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:0.625rem;font-weight:700;cursor:help;">?</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#eef0f6;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Subject to fair usage policy<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Email Support</li>
                 </ul>
-                <span class="btn btn-disabled btn-lg pricing-cta">Coming Soon</span>
+                <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg pricing-cta">Get Started</a>
             </div>
 
             <!-- Mega -->
             <div class="pricing-card reveal">
                 <h3>Mega</h3>
-                <div class="pricing-price">&euro;10 <span class="period">/month</span></div>
-                <p class="pricing-subtitle">For growing landlords</p>
+                <div class="pricing-price" data-annual="50" data-monthly="62.50">&euro;50 <span class="period">/month</span></div>
+                <p class="pricing-subtitle pricing-billed">Billed annually at &euro;600</p>
                 <ul class="pricing-features">
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>15 Properties</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Properties</li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Unlimited Team Members</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>3,000 Documents</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Premium Reports</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Priority Support</li>
-                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Custom Branding</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>5,000 Documents or Photos</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Advanced Reports <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:0.625rem;font-weight:700;cursor:help;">&#9733;</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#eef0f6;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Coming soon<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Export to Excel</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>SMS Notifications <span class="tooltip-wrap" style="position:relative;display:inline-flex;align-items:center;margin-left:2px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:0.625rem;font-weight:700;cursor:help;">?</span><span class="tooltip-bubble" style="visibility:hidden;opacity:0;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg-dark);color:#eef0f6;font-size:0.75rem;font-weight:500;padding:0.5rem 0.75rem;border-radius:8px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);pointer-events:none;transition:opacity 0.2s,visibility 0.2s;z-index:10;">Subject to fair usage policy<span style="position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg-dark);"></span></span></span></li>
                     <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>API Access</li>
+                    <li><span class="check-icon check-blue"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Email Support</li>
                 </ul>
-                <span class="btn btn-disabled btn-lg pricing-cta">Coming Soon</span>
+                <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg pricing-cta">Get Started</a>
             </div>
         </div>
 
-        <p class="pricing-note reveal">
-            <strong>Opening soon!</strong> Want early access? Reach out at <a href="mailto:hello@buurman.io" style="color: var(--primary); text-decoration: underline;">hello@buurman.io</a>
-        </p>
+        <div class="pricing-note reveal">
+            <div class="pricing-note-item">
+                <div class="pricing-note-icon pricing-note-icon--free">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                </div>
+                <div class="pricing-note-text">
+                    <strong>No credit card required</strong>
+                    Start with a free trial on any plan. Upgrade when you're ready.
+                </div>
+            </div>
+            <div class="pricing-note-divider"></div>
+            <div class="pricing-note-item">
+                <div class="pricing-note-icon pricing-note-icon--refund">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                </div>
+                <div class="pricing-note-text">
+                    <strong>Not loving it? Money back</strong>
+                    Full refund, no hard feelings. We'll even hold the door. <a href="/refund.html" style="color: var(--primary); text-decoration: underline;">Refund policy</a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -1404,10 +1561,10 @@
     <div class="cta-orb cta-orb-1"></div>
     <div class="cta-orb cta-orb-2"></div>
     <div class="cta-content">
-        <h2>We're Almost Ready For You</h2>
-        <p>We're onboarding our first landlords and opening up soon. Drop us a line to get early access — we'd love to have you on board.</p>
+        <h2>Ready to Simplify Your Rentals?</h2>
+        <p>Join landlords who manage their properties smarter. Create your free account in under a minute.</p>
         <div class="cta-buttons">
-            <span class="btn btn-disabled btn-lg">Coming Soon</span>
+            <a href="https://app.buurman.io/register" class="btn btn-primary btn-lg">Get Started Free</a>
             <a href="mailto:hello@buurman.io" class="btn btn-secondary btn-lg">Contact Us</a>
         </div>
     </div>
@@ -1478,6 +1635,40 @@
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
         els.forEach(function (el) { observer.observe(el); });
     });
+
+    var isAnnual = true;
+    function toggleBilling() {
+        isAnnual = !isAnnual;
+        var toggle = document.getElementById('billing-toggle');
+        var labelMonthly = document.getElementById('label-monthly');
+        var labelAnnual = document.getElementById('label-annual');
+
+        toggle.classList.toggle('active', isAnnual);
+        labelAnnual.classList.toggle('pricing-toggle-label--active', isAnnual);
+        labelMonthly.classList.toggle('pricing-toggle-label--active', !isAnnual);
+
+        var prices = document.querySelectorAll('.pricing-price[data-annual]');
+        var billedLabels = document.querySelectorAll('.pricing-billed');
+        var annualTotals = { '1': '12', '10': '120', '50': '600' };
+
+        prices.forEach(function (el, i) {
+            var val = isAnnual ? el.dataset.annual : el.dataset.monthly;
+            var formatted = parseFloat(val) % 1 === 0 ? parseInt(val) : parseFloat(val).toFixed(2);
+            el.innerHTML = '&euro;' + formatted + ' <span class="period">/month</span>';
+        });
+
+        billedLabels.forEach(function (el, i) {
+            var priceEl = el.previousElementSibling;
+            var annualVal = priceEl.dataset.annual;
+            if (annualVal === '0') {
+                el.textContent = 'Perfect to get started';
+            } else if (isAnnual) {
+                el.innerHTML = 'Billed annually at &euro;' + annualTotals[annualVal];
+            } else {
+                el.textContent = 'Billed monthly, cancel anytime';
+            }
+        });
+    }
 </script>
 
 </body>

@@ -13,6 +13,7 @@ import {
   Bell,
   MessageSquare,
   Flag,
+  Ticket,
   Timer,
   ScrollText,
   LogOut,
@@ -48,6 +49,7 @@ const navigation = [
   { name: "Users", href: "/users", icon: UserCog },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
+  { name: "Invitations", href: "/registration-invitations", icon: Ticket },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
 ];
 

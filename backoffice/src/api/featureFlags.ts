@@ -68,8 +68,7 @@ export const featureFlagsApi = {
       `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`,
     ),
 
-  getSegments: () =>
-    client.get<SegmentEvaluation[]>("/feature-flags/segments"),
+  getSegments: () => client.get<SegmentEvaluation[]>("/feature-flags/segments"),
 
   upsertSegmentOverride: (
     segmentId: number,
