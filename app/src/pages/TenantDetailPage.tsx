@@ -31,8 +31,6 @@ import {
 } from '@/types/contract';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
-import { useFeatureFlags } from '@/context/FeatureFlagContext';
-import { FeatureFlags } from '@/constants/featureFlags';
 import {
   Edit,
   Trash2,
@@ -79,7 +77,6 @@ export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { isEnabled } = useFeatureFlags();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'addresses' | 'contracts' | 'history'
   >('info');
@@ -299,35 +296,33 @@ export const TenantDetailPage = () => {
           }
           actions={
             <>
-              {isEnabled(FeatureFlags.REPORTS) && (
-                <Button
-                  variant="primary"
-                  leftIcon={<Download />}
-                  onClick={async () => {
-                    try {
-                      const response = await client.get(
-                        `/reports/export/tenant/${id}/report`,
-                        { responseType: 'blob' }
-                      );
-                      const blob = new Blob([response.data], {
-                        type: 'application/pdf',
-                      });
-                      const url = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = 'tenant-report.pdf';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      window.URL.revokeObjectURL(url);
-                    } catch (error) {
-                      console.error('Failed to download report:', error);
-                    }
-                  }}
-                >
-                  Report
-                </Button>
-              )}
+              <Button
+                variant="primary"
+                leftIcon={<Download />}
+                onClick={async () => {
+                  try {
+                    const response = await client.get(
+                      `/booklets/tenant/${id}`,
+                      { responseType: 'blob' }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'tenant-booklet.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download booklet:', error);
+                  }
+                }}
+              >
+                Booklet
+              </Button>
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.TENANT_PAYMENTS}

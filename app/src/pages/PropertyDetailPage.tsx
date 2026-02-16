@@ -27,8 +27,6 @@ import { PropertyMap } from '@/components/properties/PropertyMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
-import { useFeatureFlags } from '@/context/FeatureFlagContext';
-import { FeatureFlags } from '@/constants/featureFlags';
 import client from '@/api/client';
 import {
   Edit,
@@ -73,7 +71,6 @@ export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { isEnabled } = useFeatureFlags();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
@@ -408,38 +405,36 @@ export const PropertyDetailPage = () => {
           }
           actions={
             <>
-              {isEnabled(FeatureFlags.REPORTS) && (
-                <Button
-                  variant="primary"
-                  leftIcon={<Download />}
-                  onClick={async () => {
-                    try {
-                      const response = await client.get(
-                        `/reports/export/property/${id}/brochure`,
-                        {
-                          responseType: 'blob',
-                        }
-                      );
-                      const blob = new Blob([response.data], {
-                        type: 'application/pdf',
-                      });
-                      const url = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = 'property-brochure.pdf';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      window.URL.revokeObjectURL(url);
-                    } catch (error) {
-                      console.error('Failed to download brochure:', error);
-                      alert('Failed to download brochure. Please try again.');
-                    }
-                  }}
-                >
-                  Brochure
-                </Button>
-              )}
+              <Button
+                variant="primary"
+                leftIcon={<Download />}
+                onClick={async () => {
+                  try {
+                    const response = await client.get(
+                      `/booklets/property/${id}`,
+                      {
+                        responseType: 'blob',
+                      }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'property-booklet.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download booklet:', error);
+                    alert('Failed to download booklet. Please try again.');
+                  }
+                }}
+              >
+                Booklet
+              </Button>
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.PROPERTY_PAYMENTS}

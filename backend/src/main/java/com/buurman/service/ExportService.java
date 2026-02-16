@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
+import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAmenity;
 import com.buurman.domain.PropertyOutdoorArea;
@@ -53,6 +56,7 @@ import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
+import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyAmenityRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
@@ -84,6 +88,8 @@ public class ExportService {
   private final PaymentReceivalRepository paymentReceivalRepository;
   private final ContractPaymentInstructionRepository contractPaymentInstructionRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
+  private final PhotoRepository photoRepository;
+  private final S3StorageService s3StorageService;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -214,12 +220,13 @@ public class ExportService {
       // Get expenses for this property
       List<Expense> expenses = expenseRepository.findByPropertyId(propertyId, teamId);
 
-      // Get outdoor areas, amenities
+      // Get outdoor areas, amenities, photos
       List<PropertyOutdoorArea> outdoorAreas =
           propertyOutdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
       List<PropertyAmenity> propertyAmenities =
           propertyAmenityRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
       List<Amenity> allAmenities = amenityRepository.findAll();
+      List<Photo> photos = photoRepository.findByEntityAndTeamId("PROPERTY", propertyId, teamId);
 
       // Calculate financial summary by year
       Map<Integer, FinancialYearSummary> yearSummaries = calculateYearSummaries(payments, expenses);
@@ -234,7 +241,8 @@ public class ExportService {
               teamId,
               outdoorAreas,
               propertyAmenities,
-              allAmenities);
+              allAmenities,
+              photos);
 
       byte[] result = convertHTMLToPDF(html);
       metricsService.recordTimer(
@@ -366,7 +374,18 @@ public class ExportService {
         }
       }
 
-      String html = buildTenantReportHTML(tenant, addresses, contracts, allPayments, propertyMap);
+      // Resolve contract party roles for the tenant
+      Map<UUID, ContractPartyRole> contractRoles = new HashMap<>();
+      for (Contract contract : contracts) {
+        contractPartyService.getPartiesForContract(contract.getId(), teamId).stream()
+            .filter(p -> p.getTenantId().equals(tenant.getId()))
+            .findFirst()
+            .ifPresent(p -> contractRoles.put(contract.getId(), p.getRole()));
+      }
+
+      String html =
+          buildTenantReportHTML(
+              tenant, addresses, contracts, allPayments, propertyMap, contractRoles);
 
       byte[] result = convertHTMLToPDF(html);
       metricsService.recordTimer(
@@ -600,261 +619,182 @@ public class ExportService {
       UUID teamId,
       List<PropertyOutdoorArea> outdoorAreas,
       List<PropertyAmenity> propertyAmenities,
-      List<Amenity> allAmenities) {
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+      List<Amenity> allAmenities,
+      List<Photo> photos) {
+    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
+    String generatedDate = LocalDate.now(clock).format(dateFmt);
     Map<UUID, Amenity> amenityMap = allAmenities.stream().collect(toMap(Amenity::getId, a -> a));
 
-    StringBuilder html = new StringBuilder();
-    html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
-    html.append("<style>");
-
-    // Global styles - magazine feel
-    html.append(
-        "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;"
-            + " color: #1a202c; }");
-
-    // Cover page
-    html.append(
-        ".cover { background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #2c7a7b 100%); ");
-    html.append(
-        "color: white; padding: 120px 50px 80px 50px; text-align: center; page-break-after: always;"
-            + " min-height: 700px; }");
-    html.append(
-        ".cover-subtitle { font-size: 14px; letter-spacing: 6px; text-transform: uppercase; color:"
-            + " #bee3f8; margin-bottom: 60px; }");
-    html.append(
-        ".cover h1 { font-size: 44px; margin: 0 0 12px 0; font-weight: 700; letter-spacing: 1px;"
-            + " }");
-    html.append(
-        ".cover-location { font-size: 20px; color: #e2e8f0; margin: 8px 0 0 0; font-weight: 300;"
-            + " }");
-    html.append(
-        ".cover-divider { width: 80px; height: 2px; background-color: #63b3ed; margin: 40px auto;"
-            + " }");
-    html.append(
-        ".cover-date { font-size: 13px; color: #a0aec0; margin-top: 40px; letter-spacing: 2px; }");
-    html.append(
-        ".cover-id { font-size: 11px; color: #718096; margin-top: 8px; letter-spacing: 1px; }");
-
-    // Section pages
-    html.append(".page { padding: 45px 50px; page-break-before: always; }");
-    html.append(".page-first { padding: 45px 50px; }");
-    html.append(
-        ".section-title { font-size: 26px; font-weight: 700; color: #1a365d; margin: 0 0 25px 0; ");
-    html.append("padding-left: 16px; border-left: 4px solid #2b6cb0; }");
-    html.append(
-        ".section-subtitle { font-size: 18px; font-weight: 600; color: #2d3748; margin: 28px 0 14px"
-            + " 0; }");
-
-    // Property detail grid (using tables for iText)
-    html.append(".detail-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }");
-    html.append(".detail-table td { padding: 10px 14px; vertical-align: top; }");
-    html.append(
-        ".detail-label { font-size: 10px; font-weight: 600; text-transform: uppercase;"
-            + " letter-spacing: 1.2px; color: #718096; margin: 0 0 3px 0; }");
-    html.append(".detail-value { font-size: 16px; color: #1a202c; font-weight: 500; margin: 0; }");
-    html.append(
-        ".detail-cell { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px;"
-            + " padding: 12px 14px; }");
-
-    // Energy badge
-    html.append(
-        ".energy-badge { display: inline-block; padding: 8px 20px; border-radius: 6px; color:"
-            + " white; ");
-    html.append("font-size: 22px; font-weight: 700; letter-spacing: 1px; }");
-
-    // Cards
-    html.append(
-        ".card { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding:"
-            + " 16px 18px; margin-bottom: 10px; }");
-
-    // Amenity tags
-    html.append(
-        ".tag { display: inline-block; background-color: #ebf4ff; border: 1px solid #bee3f8; ");
-    html.append(
-        "color: #2b6cb0; padding: 5px 12px; border-radius: 14px; font-size: 12px; font-weight: 500;"
-            + " margin: 3px 4px; }");
-
-    // Category header
-    html.append(
-        ".category-header { font-size: 13px; font-weight: 600; text-transform: uppercase;"
-            + " letter-spacing: 1.5px; ");
-    html.append(
-        "color: #4a5568; margin: 20px 0 8px 0; padding-bottom: 6px; border-bottom: 1px solid"
-            + " #e2e8f0; }");
-
-    // Checkmark list
-    html.append(".check-item { padding: 6px 0; font-size: 14px; color: #2d3748; }");
-    html.append(".check-icon { color: #38a169; font-weight: bold; margin-right: 8px; }");
-    html.append(".cross-icon { color: #a0aec0; font-weight: bold; margin-right: 8px; }");
-
-    // Outdoor area card
-    html.append(
-        ".outdoor-card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 18px;"
-            + " margin-bottom: 8px; ");
-    html.append("background-color: #f0fff4; }");
-    html.append(".outdoor-type { font-size: 16px; font-weight: 600; color: #276749; }");
-    html.append(".outdoor-area { font-size: 14px; color: #4a5568; margin-top: 2px; }");
-
-    // Financial section
-    html.append(
-        ".financial-year { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius:"
-            + " 6px; padding: 20px; margin: 15px 0; }");
-    html.append(".financial-year h3 { margin: 0 0 15px 0; color: #1a365d; font-size: 18px; }");
-    html.append(".metrics-table { width: 100%; border-collapse: collapse; }");
-    html.append(".metrics-table td { text-align: center; padding: 10px; }");
-    html.append(
-        ".metric-label { font-size: 10px; color: #718096; text-transform: uppercase;"
-            + " letter-spacing: 1px; }");
-    html.append(".metric-value { font-size: 22px; font-weight: 700; margin-top: 4px; }");
-    html.append(".metric-income { color: #059669; }");
-    html.append(".metric-expense { color: #dc2626; }");
-    html.append(".metric-profit { color: #2b6cb0; }");
-
-    // Contracts table
-    html.append("table.data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }");
-    html.append(
-        "table.data-table th { background-color: #1a365d; color: white; padding: 10px 12px;"
-            + " text-align: left; font-size: 11px; ");
-    html.append("text-transform: uppercase; letter-spacing: 0.5px; }");
-    html.append(
-        "table.data-table td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size:"
-            + " 13px; }");
-    html.append("table.data-table tr:nth-child(even) td { background-color: #f7fafc; }");
-
-    // Notes box
-    html.append(
-        ".notes-box { background-color: #fffff0; border: 1px solid #fefcbf; border-radius: 4px;"
-            + " padding: 12px 16px; ");
-    html.append("font-size: 13px; color: #744210; margin-top: 8px; }");
-
-    // Footer
-    html.append(
-        ".footer { text-align: center; color: #a0aec0; font-size: 11px; padding: 30px 0 20px 0;"
-            + " letter-spacing: 1px; }");
-
-    html.append("</style></head><body>");
-
-    // ========== COVER PAGE ==========
-    html.append("<div class='cover'>");
-    html.append("<div class='cover-subtitle'>Property Portfolio</div>");
-    html.append("<h1>").append(escapeHtml(property.getStreet())).append("</h1>");
-    html.append("<p class='cover-location'>").append(escapeHtml(property.getCity()));
+    // Build location string
+    StringBuilder location = new StringBuilder();
+    location.append(escapeHtml(property.getCity()));
     if (property.getPostalCode() != null) {
-      html.append(" &middot; ").append(escapeHtml(property.getPostalCode()));
+      location.append(", ").append(escapeHtml(property.getPostalCode()));
     }
     if (property.getCountry() != null) {
-      html.append(" &middot; ").append(escapeHtml(property.getCountry()));
+      location.append(", ").append(escapeHtml(property.getCountry()));
     }
-    html.append("</p>");
-    html.append("<div class='cover-divider'></div>");
-    html.append("<p class='cover-date'>")
-        .append(LocalDate.now(clock).format(dateFormatter).toUpperCase())
-        .append("</p>");
-    html.append("<p class='cover-id'>REF #").append(property.getIdentifier()).append("</p>");
+
+    StringBuilder html = new StringBuilder(8192);
+    html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
+    html.append("<style>");
+    appendPropertyBrochureCSS(html);
+    html.append("</style></head><body>");
+
+    // Running footer (placed into @page @bottom-center via CSS position:running)
+    html.append("<div class='running-footer'>");
+    html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
+    html.append("<td style='text-align:left;font-size:9px;color:#a0aec0;width:33%;'>")
+        .append(generatedDate)
+        .append("</td>");
+    html.append(
+        "<td style='text-align:center;font-size:9px;color:#a0aec0;width:34%;'>Confidential &mdash;"
+            + " Buurman Property Management</td>");
+    html.append("<td style='text-align:right;font-size:9px;color:#a0aec0;width:33%;'></td>");
+    html.append("</tr></table></div>");
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 1 — COVER
+    // ═══════════════════════════════════════════════════════════════
+    html.append("<div class='cover'>");
+    html.append("<div class='cover-header'>");
+    html.append("<div class='cover-title'>PROPERTY REPORT</div>");
+    html.append("<div class='cover-subtitle'>")
+        .append(escapeHtml(property.getStreet()))
+        .append("</div>");
+    html.append("<div class='cover-date'>Generated ").append(generatedDate).append("</div>");
     html.append("</div>");
 
-    // ========== PAGE 2: PROPERTY OVERVIEW ==========
-    html.append("<div class='page'>");
-    html.append("<h2 class='section-title'>Property Overview</h2>");
+    // Status badge
+    String statusStr = property.getStatus() != null ? property.getStatus().name() : "VACANT";
+    html.append("<div style='text-align:center;margin:30px 0;'>");
+    html.append("<span class='status-badge status-").append(statusStr.toLowerCase()).append("'>");
+    html.append(formatEnumValue(statusStr));
+    html.append("</span></div>");
 
-    html.append("<table class='detail-table'><tbody>");
-
-    // Row 1: Type + Status
+    // Summary grid
+    html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendDetailCell(
+    appendCoverCell(
         html,
         "Property Type",
         formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : null));
-    appendDetailCell(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Location", location.toString());
+    html.append("</tr><tr>");
+    String bedBath =
+        (property.getBedrooms() != null ? property.getBedrooms() + " bed" : "—")
+            + " / "
+            + (property.getBathrooms() != null ? property.getBathrooms() + " bath" : "—");
+    appendCoverCell(html, "Bedrooms / Bathrooms", bedBath);
+    String area = "—";
+    if (property.getAreaValue() != null) {
+      String unit = property.getAreaUnit() != null ? property.getAreaUnit() : "sqm";
+      area = property.getAreaValue() + " " + unit;
+    }
+    appendCoverCell(html, "Total Area", area);
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        "Year Built",
+        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
+    appendCoverCell(html, "Reference", property.getIdentifier());
+    html.append("</tr>");
+    html.append("</table>");
+
+    html.append(
+        "<div class='cover-footer'>Confidential &mdash; Generated by Buurman Property"
+            + " Management</div>");
+    html.append("</div>");
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 2 — PROPERTY OVERVIEW
+    // ═══════════════════════════════════════════════════════════════
+    html.append("<div class='page'>");
+    html.append("<div class='page-header'>Property Overview</div>");
+
+    html.append("<h2 class='section-title'>Property Details</h2>");
+    html.append("<table class='detail-grid'>");
+    html.append("<tr>");
+    appendField(
+        html,
+        "Property Type",
+        formatEnumValue(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendField(
         html,
         "Status",
-        formatEnumValue(property.getStatus() != null ? property.getStatus().name() : null));
+        formatEnumValue(property.getStatus() != null ? property.getStatus().name() : ""));
+    html.append("</tr><tr>");
+    appendField(
+        html, "Bedrooms", property.getBedrooms() != null ? property.getBedrooms().toString() : "—");
+    appendField(
+        html,
+        "Bathrooms",
+        property.getBathrooms() != null ? property.getBathrooms().toString() : "—");
+    html.append("</tr><tr>");
+    appendField(html, "Total Area", area);
+    appendField(
+        html,
+        "Number of Floors",
+        property.getNumberOfFloors() != null ? property.getNumberOfFloors().toString() : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Year Built",
+        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
+    appendField(
+        html,
+        "Last Renovated",
+        property.getYearLastRenovated() != null ? property.getYearLastRenovated().toString() : "—");
     html.append("</tr>");
+    html.append("</table>");
 
-    // Row 2: Bedrooms + Bathrooms
-    if (property.getBedrooms() != null || property.getBathrooms() != null) {
-      html.append("<tr>");
-      appendDetailCell(
-          html,
-          "Bedrooms",
-          property.getBedrooms() != null ? property.getBedrooms().toString() : null);
-      appendDetailCell(
-          html,
-          "Bathrooms",
-          property.getBathrooms() != null ? property.getBathrooms().toString() : null);
-      html.append("</tr>");
-    }
+    // Construction section
+    boolean hasConstruction =
+        property.getConstructionType() != null
+            || property.getFoundationType() != null
+            || property.getRoofType() != null
+            || property.getWindowType() != null
+            || property.getWallConstruction() != null
+            || property.getFlooringType() != null;
 
-    // Row 3: Area + Floors
-    if (property.getAreaValue() != null || property.getNumberOfFloors() != null) {
-      html.append("<tr>");
-      String areaText = null;
-      if (property.getAreaValue() != null) {
-        String unit = property.getAreaUnit() != null ? property.getAreaUnit() : "sqm";
-        areaText = property.getAreaValue() + " " + unit;
+    if (hasConstruction) {
+      html.append("<h2 class='section-title'>Construction</h2>");
+      html.append("<table class='detail-grid'>");
+      if (property.getConstructionType() != null || property.getFoundationType() != null) {
+        html.append("<tr>");
+        appendField(html, "Construction Type", formatEnumValue(property.getConstructionType()));
+        appendField(html, "Foundation", formatEnumValue(property.getFoundationType()));
+        html.append("</tr>");
       }
-      appendDetailCell(html, "Total Area", areaText);
-      appendDetailCell(
-          html,
-          "Number of Floors",
-          property.getNumberOfFloors() != null ? property.getNumberOfFloors().toString() : null);
-      html.append("</tr>");
+      if (property.getRoofType() != null || property.getWindowType() != null) {
+        html.append("<tr>");
+        appendField(html, "Roof Type", formatEnumValue(property.getRoofType()));
+        appendField(html, "Window Type", formatEnumValue(property.getWindowType()));
+        html.append("</tr>");
+      }
+      if (property.getWallConstruction() != null || property.getFlooringType() != null) {
+        html.append("<tr>");
+        appendField(html, "Wall Construction", formatEnumValue(property.getWallConstruction()));
+        appendField(html, "Flooring", formatEnumValue(property.getFlooringType()));
+        html.append("</tr>");
+      }
+      html.append("</table>");
     }
-
-    // Row 4: Year Built + Last Renovated
-    if (property.getYearBuilt() != null || property.getYearLastRenovated() != null) {
-      html.append("<tr>");
-      appendDetailCell(
-          html,
-          "Year Built",
-          property.getYearBuilt() != null ? property.getYearBuilt().toString() : null);
-      appendDetailCell(
-          html,
-          "Last Renovated",
-          property.getYearLastRenovated() != null
-              ? property.getYearLastRenovated().toString()
-              : null);
-      html.append("</tr>");
-    }
-
-    // Row 5: Construction + Foundation
-    if (property.getConstructionType() != null || property.getFoundationType() != null) {
-      html.append("<tr>");
-      appendDetailCell(html, "Construction Type", formatEnumValue(property.getConstructionType()));
-      appendDetailCell(html, "Foundation", formatEnumValue(property.getFoundationType()));
-      html.append("</tr>");
-    }
-
-    // Row 6: Roof + Windows
-    if (property.getRoofType() != null || property.getWindowType() != null) {
-      html.append("<tr>");
-      appendDetailCell(html, "Roof Type", formatEnumValue(property.getRoofType()));
-      appendDetailCell(html, "Window Type", formatEnumValue(property.getWindowType()));
-      html.append("</tr>");
-    }
-
-    // Row 7: Wall + Flooring
-    if (property.getWallConstruction() != null || property.getFlooringType() != null) {
-      html.append("<tr>");
-      appendDetailCell(html, "Wall Construction", formatEnumValue(property.getWallConstruction()));
-      appendDetailCell(html, "Flooring", formatEnumValue(property.getFlooringType()));
-      html.append("</tr>");
-    }
-
-    html.append("</tbody></table>");
 
     // Structural notes
     if (property.getStructuralNotes() != null && !property.getStructuralNotes().isBlank()) {
-      html.append("<div class='notes-box'><strong>Structural Notes:</strong> ")
-          .append(property.getStructuralNotes())
+      html.append("<div class='text-block'><strong>Structural Notes:</strong> ")
+          .append(sanitizeRichText(property.getStructuralNotes()))
           .append("</div>");
     }
 
     html.append("</div>");
 
-    // ========== PAGE 3: BUILDING SPECIFICATIONS ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 3 — BUILDING SPECIFICATIONS
+    // ═══════════════════════════════════════════════════════════════
     boolean hasEnergyData =
         property.getEnergyEfficiencyRating() != null
             || property.getHeatingType() != null
@@ -873,137 +813,137 @@ public class ExportService {
 
     if (hasEnergyData || hasUtilitiesData || hasParkingData) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Building Specifications</h2>");
+      html.append("<div class='page-header'>Building Specifications</div>");
 
       // Energy & Climate
       if (hasEnergyData) {
-        html.append("<h3 class='section-subtitle'>Energy &amp; Climate</h3>");
+        html.append("<h2 class='section-title'>Energy &amp; Climate</h2>");
 
-        // Energy rating badge
         if (property.getEnergyEfficiencyRating() != null) {
           String ratingColor = getEnergyRatingColor(property.getEnergyEfficiencyRating());
           html.append("<div style='margin-bottom: 16px;'>");
-          html.append("<span class='energy-badge' style='background-color: ")
-              .append(ratingColor)
-              .append(";'>");
-          html.append(escapeHtml(property.getEnergyEfficiencyRating()));
-          html.append("</span>");
           html.append(
-              "<span style='margin-left: 12px; font-size: 13px; color: #718096;'>Energy Efficiency"
+                  "<span style='display:inline-block;padding:8px"
+                      + " 20px;border-radius:6px;color:white;"
+                      + "font-size:22px;font-weight:700;letter-spacing:1px;background-color:")
+              .append(ratingColor)
+              .append(";'>")
+              .append(escapeHtml(property.getEnergyEfficiencyRating()))
+              .append("</span>");
+          html.append(
+              "<span style='margin-left:12px;font-size:13px;color:#718096;'>Energy Efficiency"
                   + " Rating</span>");
           html.append("</div>");
         }
 
-        html.append("<table class='detail-table'><tbody>");
+        html.append("<table class='detail-grid'>");
         if (property.getHeatingType() != null || property.getCoolingType() != null) {
           html.append("<tr>");
-          appendDetailCell(html, "Heating System", formatEnumValue(property.getHeatingType()));
-          appendDetailCell(html, "Cooling System", formatEnumValue(property.getCoolingType()));
+          appendField(html, "Heating System", formatEnumValue(property.getHeatingType()));
+          appendField(html, "Cooling System", formatEnumValue(property.getCoolingType()));
           html.append("</tr>");
         }
         if (property.getHotWaterSystem() != null
             || property.getEnergyCertificateExpiryDate() != null) {
           html.append("<tr>");
-          appendDetailCell(html, "Hot Water System", formatEnumValue(property.getHotWaterSystem()));
-          appendDetailCell(
+          appendField(html, "Hot Water System", formatEnumValue(property.getHotWaterSystem()));
+          appendField(
               html,
               "Certificate Expiry",
               property.getEnergyCertificateExpiryDate() != null
                   ? property
                       .getEnergyCertificateExpiryDate()
                       .format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-                  : null);
+                  : "—");
           html.append("</tr>");
         }
-        html.append("</tbody></table>");
+        html.append("</table>");
 
         if (property.getInsulationNotes() != null && !property.getInsulationNotes().isBlank()) {
-          html.append("<div class='notes-box'><strong>Insulation Notes:</strong> ")
-              .append(property.getInsulationNotes())
+          html.append("<div class='text-block'><strong>Insulation Notes:</strong> ")
+              .append(sanitizeRichText(property.getInsulationNotes()))
               .append("</div>");
         }
       }
 
       // Utilities & Infrastructure
       if (hasUtilitiesData) {
-        html.append("<h3 class='section-subtitle'>Utilities &amp; Infrastructure</h3>");
-        html.append("<table class='detail-table'><tbody>");
+        html.append("<h2 class='section-title'>Utilities &amp; Infrastructure</h2>");
+        html.append("<table class='detail-grid'>");
 
         if (property.getElectricityConnectionType() != null
             || property.getElectricityCapacityAmps() != null) {
           html.append("<tr>");
-          appendDetailCell(
+          appendField(
               html, "Electricity", formatEnumValue(property.getElectricityConnectionType()));
-          appendDetailCell(
+          appendField(
               html,
               "Capacity",
               property.getElectricityCapacityAmps() != null
                   ? property.getElectricityCapacityAmps() + " Amps"
-                  : null);
+                  : "—");
           html.append("</tr>");
         }
-        if (property.getWaterConnectionType() != null
-            || isTrue(property.getHasGasConnection())
-            || Boolean.FALSE.equals(property.getHasGasConnection())) {
+        if (property.getWaterConnectionType() != null || property.getHasGasConnection() != null) {
           html.append("<tr>");
-          appendDetailCell(html, "Water", formatEnumValue(property.getWaterConnectionType()));
+          appendField(html, "Water", formatEnumValue(property.getWaterConnectionType()));
           String gasText =
               property.getHasGasConnection() != null
                   ? (isTrue(property.getHasGasConnection()) ? "Connected" : "Not Connected")
-                  : null;
-          appendDetailCell(html, "Gas Connection", gasText);
+                  : "—";
+          appendField(html, "Gas Connection", gasText);
           html.append("</tr>");
         }
         if (property.getSewageType() != null || property.getInternetConnectionType() != null) {
           html.append("<tr>");
-          appendDetailCell(html, "Sewage", formatEnumValue(property.getSewageType()));
-          appendDetailCell(html, "Internet", formatEnumValue(property.getInternetConnectionType()));
+          appendField(html, "Sewage", formatEnumValue(property.getSewageType()));
+          appendField(html, "Internet", formatEnumValue(property.getInternetConnectionType()));
           html.append("</tr>");
         }
         if (property.getInternetMaxSpeedMbps() != null || property.getInternetStatus() != null) {
           html.append("<tr>");
-          appendDetailCell(
+          appendField(
               html,
               "Max Speed",
               property.getInternetMaxSpeedMbps() != null
                   ? property.getInternetMaxSpeedMbps() + " Mbps"
-                  : null);
-          appendDetailCell(html, "Internet Status", formatEnumValue(property.getInternetStatus()));
+                  : "—");
+          appendField(html, "Internet Status", formatEnumValue(property.getInternetStatus()));
           html.append("</tr>");
         }
-        html.append("</tbody></table>");
+        html.append("</table>");
       }
 
       // Parking
       if (hasParkingData) {
-        html.append("<h3 class='section-subtitle'>Parking</h3>");
-        html.append("<table class='detail-table'><tbody>");
+        html.append("<h2 class='section-title'>Parking</h2>");
+        html.append("<table class='detail-grid'>");
         html.append("<tr>");
-        appendDetailCell(html, "Parking Type", formatEnumValue(property.getParkingType()));
-        appendDetailCell(
+        appendField(html, "Parking Type", formatEnumValue(property.getParkingType()));
+        appendField(
             html,
             "Parking Spaces",
-            property.getParkingSpaces() != null ? property.getParkingSpaces().toString() : null);
+            property.getParkingSpaces() != null ? property.getParkingSpaces().toString() : "—");
         html.append("</tr>");
-        html.append("</tbody></table>");
+        html.append("</table>");
       }
 
       html.append("</div>");
     }
 
-    // ========== PAGE 4: FEATURES & OUTDOOR SPACES ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 4 — FEATURES & OUTDOOR SPACES
+    // ═══════════════════════════════════════════════════════════════
     boolean hasAmenities = !propertyAmenities.isEmpty();
     boolean hasOutdoorAreas = !outdoorAreas.isEmpty();
 
     if (hasAmenities || hasOutdoorAreas) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Features &amp; Outdoor Spaces</h2>");
+      html.append("<div class='page-header'>Features &amp; Outdoor Spaces</div>");
 
-      // Amenities grouped by category
       if (hasAmenities) {
-        html.append("<h3 class='section-subtitle'>Amenities</h3>");
+        html.append("<h2 class='section-title'>Amenities</h2>");
 
-        // Group amenities by category
         Map<String, List<Amenity>> grouped = new LinkedHashMap<>();
         for (PropertyAmenity pa : propertyAmenities) {
           Amenity amenity = amenityMap.get(pa.getAmenityId());
@@ -1014,12 +954,19 @@ public class ExportService {
         }
 
         for (Map.Entry<String, List<Amenity>> entry : grouped.entrySet()) {
-          html.append("<div class='category-header'>")
+          html.append(
+                  "<div style='font-size:11px;font-weight:600;text-transform:uppercase;"
+                      + "letter-spacing:1.2px;color:#4a5568;margin:16px 0 6px 0;padding-bottom:4px;"
+                      + "border-bottom:1px solid #e2e8f0;'>")
               .append(escapeHtml(formatEnumValue(entry.getKey())))
               .append("</div>");
-          html.append("<div style='margin-bottom: 12px;'>");
+          html.append("<div style='margin-bottom:10px;'>");
           for (Amenity amenity : entry.getValue()) {
-            html.append("<span class='tag'>")
+            html.append(
+                    "<span style='display:inline-block;background-color:#ebf4ff;border:1px solid"
+                        + " #bee3f8;color:#2b6cb0;padding:4px"
+                        + " 10px;border-radius:12px;font-size:11px;font-weight:500;margin:2px"
+                        + " 3px;'>")
                 .append(escapeHtml(amenity.getName()))
                 .append("</span>");
           }
@@ -1027,18 +974,19 @@ public class ExportService {
         }
       }
 
-      // Outdoor Areas
       if (hasOutdoorAreas) {
-        html.append("<h3 class='section-subtitle'>Outdoor Spaces</h3>");
-        for (PropertyOutdoorArea area : outdoorAreas) {
-          html.append("<div class='outdoor-card'>");
-          html.append("<div class='outdoor-type'>")
-              .append(escapeHtml(formatEnumValue(area.getType())))
+        html.append("<h2 class='section-title'>Outdoor Spaces</h2>");
+        for (PropertyOutdoorArea oa : outdoorAreas) {
+          html.append(
+              "<div style='border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;"
+                  + "margin-bottom:8px;background-color:#f0fff4;'>");
+          html.append("<div style='font-size:15px;font-weight:600;color:#276749;'>")
+              .append(escapeHtml(formatEnumValue(oa.getType())))
               .append("</div>");
-          if (area.getAreaValue() != null) {
-            String unit = area.getAreaUnit() != null ? area.getAreaUnit() : "sqm";
-            html.append("<div class='outdoor-area'>")
-                .append(area.getAreaValue())
+          if (oa.getAreaValue() != null) {
+            String unit = oa.getAreaUnit() != null ? oa.getAreaUnit() : "sqm";
+            html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
+                .append(oa.getAreaValue())
                 .append(" ")
                 .append(unit)
                 .append("</div>");
@@ -1050,7 +998,9 @@ public class ExportService {
       html.append("</div>");
     }
 
-    // ========== PAGE 5: SAFETY & ACCESSIBILITY ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 5 — SAFETY & ACCESSIBILITY
+    // ═══════════════════════════════════════════════════════════════
     boolean hasSafetyData =
         isTrue(property.getHasSmokeDetectors())
             || isTrue(property.getHasCoDetectors())
@@ -1070,11 +1020,13 @@ public class ExportService {
 
     if (hasSafetyData || hasAccessibilityData) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Safety &amp; Accessibility</h2>");
+      html.append("<div class='page-header'>Safety &amp; Accessibility</div>");
 
       if (hasSafetyData) {
-        html.append("<h3 class='section-subtitle'>Safety &amp; Security</h3>");
-        html.append("<div class='card'>");
+        html.append("<h2 class='section-title'>Safety &amp; Security</h2>");
+        html.append(
+            "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+                + "padding:16px 18px;margin-bottom:10px;'>");
         appendCheckItem(html, "Smoke Detectors", property.getHasSmokeDetectors());
         appendCheckItem(html, "CO Detectors", property.getHasCoDetectors());
         appendCheckItem(html, "Fire Extinguisher", property.getHasFireExtinguisher());
@@ -1085,15 +1037,17 @@ public class ExportService {
         html.append("</div>");
 
         if (property.getSafetyNotes() != null && !property.getSafetyNotes().isBlank()) {
-          html.append("<div class='notes-box'><strong>Safety Notes:</strong> ")
-              .append(property.getSafetyNotes())
+          html.append("<div class='text-block'><strong>Safety Notes:</strong> ")
+              .append(sanitizeRichText(property.getSafetyNotes()))
               .append("</div>");
         }
       }
 
       if (hasAccessibilityData) {
-        html.append("<h3 class='section-subtitle'>Accessibility</h3>");
-        html.append("<div class='card'>");
+        html.append("<h2 class='section-title'>Accessibility</h2>");
+        html.append(
+            "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+                + "padding:16px 18px;margin-bottom:10px;'>");
         appendCheckItem(html, "Wheelchair Accessible", property.getIsWheelchairAccessible());
         appendCheckItem(html, "Elevator", property.getHasElevator());
         appendCheckItem(html, "Step-Free Entrance", property.getHasStepFreeEntrance());
@@ -1102,8 +1056,8 @@ public class ExportService {
 
         if (property.getAccessibilityNotes() != null
             && !property.getAccessibilityNotes().isBlank()) {
-          html.append("<div class='notes-box'><strong>Accessibility Notes:</strong> ")
-              .append(property.getAccessibilityNotes())
+          html.append("<div class='text-block'><strong>Accessibility Notes:</strong> ")
+              .append(sanitizeRichText(property.getAccessibilityNotes()))
               .append("</div>");
         }
       }
@@ -1111,29 +1065,106 @@ public class ExportService {
       html.append("</div>");
     }
 
-    // ========== FINANCIAL OVERVIEW ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 6 — PHOTO GALLERY
+    // ═══════════════════════════════════════════════════════════════
+    if (!photos.isEmpty()) {
+      // Pre-load photo data URIs
+      List<String[]> photoEntries = new ArrayList<>();
+      for (Photo photo : photos) {
+        String dataUri = photoToBase64DataUri(photo);
+        if (dataUri != null) {
+          String label = photo.getTitle() != null ? photo.getTitle() : photo.getFileName();
+          photoEntries.add(
+              new String[] {dataUri, label, isTrue(photo.getIsMainPhoto()) ? "1" : "0"});
+        }
+      }
+
+      if (!photoEntries.isEmpty()) {
+        html.append("<div class='page'>");
+        html.append("<div class='page-header'>Photo Gallery</div>");
+        html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
+            .append(photoEntries.size())
+            .append(" photo")
+            .append(photoEntries.size() != 1 ? "s" : "")
+            .append("</p>");
+
+        html.append("<table style='width:100%;border-collapse:collapse;'>");
+        for (int i = 0; i < photoEntries.size(); i++) {
+          if (i % 3 == 0) {
+            html.append("<tr>");
+          }
+          String[] entry = photoEntries.get(i);
+          boolean isMain = "1".equals(entry[2]);
+
+          html.append("<td style='width:33%;padding:6px;vertical-align:top;'>");
+          html.append(
+              "<div style='border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;"
+                  + "background-color:#f7fafc;'>");
+          html.append("<img src='")
+              .append(entry[0])
+              .append("' style='width:100%;height:140px;object-fit:cover;display:block;'/>");
+          html.append("<div style='padding:6px 8px;font-size:11px;color:#2d3748;'>");
+          if (isMain) {
+            html.append(
+                "<span"
+                    + " style='display:inline-block;background-color:#ebf8ff;color:#2b6cb0;padding:1px"
+                    + " 6px;border-radius:3px;font-size:9px;font-weight:600;"
+                    + "text-transform:uppercase;letter-spacing:0.5px;margin-right:4px;'>Main</span>");
+          }
+          html.append(escapeHtml(entry[1]));
+          html.append("</div></div></td>");
+
+          if (i % 3 == 2 || i == photoEntries.size() - 1) {
+            // Fill remaining cells in last row
+            if (i == photoEntries.size() - 1) {
+              for (int pad = (i % 3) + 1; pad < 3; pad++) {
+                html.append("<td style='width:33%;'></td>");
+              }
+            }
+            html.append("</tr>");
+          }
+        }
+        html.append("</table>");
+        html.append("</div>");
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 7 — FINANCIAL OVERVIEW
+    // ═══════════════════════════════════════════════════════════════
     if (!yearSummaries.isEmpty()) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Financial Overview</h2>");
+      html.append("<div class='page-header'>Financial Overview</div>");
 
       for (Map.Entry<Integer, FinancialYearSummary> entry : yearSummaries.entrySet()) {
         FinancialYearSummary summary = entry.getValue();
-        html.append("<div class='financial-year'>");
-        html.append("<h3>Year ").append(entry.getKey()).append("</h3>");
-        html.append("<table class='metrics-table'><tr>");
         html.append(
-                "<td><div class='metric-label'>Income</div><div class='metric-value"
-                    + " metric-income'>EUR ")
+            "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+                + "padding:20px;margin:15px 0;'>");
+        html.append("<h3 style='margin:0 0 15px 0;color:#1a365d;font-size:18px;'>Year ")
+            .append(entry.getKey())
+            .append("</h3>");
+        html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
+        html.append(
+                "<td style='text-align:center;padding:10px;'><div"
+                    + " style='font-size:10px;color:#718096;text-transform:uppercase;"
+                    + "letter-spacing:1px;'>Income</div><div"
+                    + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>EUR ")
             .append(String.format("%.2f", summary.income))
             .append("</div></td>");
         html.append(
-                "<td><div class='metric-label'>Expenses</div><div class='metric-value"
-                    + " metric-expense'>EUR ")
+                "<td style='text-align:center;padding:10px;'><div"
+                    + " style='font-size:10px;color:#718096;text-transform:uppercase;"
+                    + "letter-spacing:1px;'>Expenses</div><div"
+                    + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>EUR ")
             .append(String.format("%.2f", summary.expenses))
             .append("</div></td>");
         html.append(
-                "<td><div class='metric-label'>Net Profit</div><div class='metric-value"
-                    + " metric-profit'>EUR ")
+                "<td style='text-align:center;padding:10px;'><div"
+                    + " style='font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;'>Net"
+                    + " Profit</div><div"
+                    + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>EUR ")
             .append(String.format("%.2f", summary.getNetProfit()))
             .append("</div></td>");
         html.append("</tr></table>");
@@ -1143,18 +1174,21 @@ public class ExportService {
       html.append("</div>");
     }
 
-    // ========== CONTRACTS ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 8 — CONTRACTS
+    // ═══════════════════════════════════════════════════════════════
     if (!contracts.isEmpty()) {
       List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
       Map<UUID, Tenant> primaryTenants =
           contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Contracts</h2>");
-      html.append("<p style='font-size: 13px; color: #718096; margin-bottom: 12px;'>")
+      html.append("<div class='page-header'>Contracts</div>");
+      html.append("<p style='font-size:13px;color:#718096;margin-bottom:12px;'>")
           .append(contracts.size())
           .append(" contract(s) on record</p>");
-      html.append("<table class='data-table'><thead><tr>");
+
+      html.append("<table class='payment-table'><thead><tr>");
       html.append(
           "<th>Contract ID</th><th>Tenant</th><th>Start Date</th><th>End"
               + " Date</th><th>Rent</th><th>Status</th>");
@@ -1193,7 +1227,6 @@ public class ExportService {
       html.append("</div>");
     }
 
-    html.append("<div class='footer'>Generated by Buurman Property Management</div>");
     html.append("</body></html>");
 
     return html.toString();
@@ -1967,6 +2000,215 @@ public class ExportService {
     css.append(".pay-cancelled { background-color: #f9fafb; color: #6b7280; }");
   }
 
+  private void appendPropertyBrochureCSS(StringBuilder css) {
+    // Page margins + running footer + page numbers (same as contract report)
+    css.append("@page { margin: 40px 50px 70px 50px; ");
+    css.append("@bottom-center { content: element(running-footer); } ");
+    css.append(
+        "@bottom-right { content: 'Page ' counter(page) ' of ' counter(pages); font-size: 9px;"
+            + " color: #a0aec0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; } }");
+    css.append(
+        "@page:first { margin: 0; @bottom-center { content: none; } @bottom-right { content: none;"
+            + " } }");
+    css.append(
+        ".running-footer { position: running(running-footer); width: 100%; border-top: 1px solid"
+            + " #e2e8f0; padding-top: 8px; font-size: 9px; color: #a0aec0; }");
+    css.append(
+        "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;"
+            + " color: #1a202c; font-size: 13px; line-height: 1.5; }");
+
+    // Cover page (same as contract report)
+    css.append(
+        ".cover { page-break-after: always; padding: 0; height: 100vh; display: flex;"
+            + " flex-direction: column; justify-content: center; align-items: center; }");
+    css.append(".cover-header { text-align: center; margin-bottom: 40px; }");
+    css.append(
+        ".cover-title { font-size: 44px; font-weight: 700; color: #1a365d; letter-spacing: 3px;"
+            + " margin-bottom: 12px; }");
+    css.append(
+        ".cover-subtitle { font-size: 16px; color: #718096; letter-spacing: 2px; margin-bottom:"
+            + " 6px; }");
+    css.append(".cover-date { font-size: 12px; color: #a0aec0; }");
+    css.append(
+        ".cover-summary { width: 80%; max-width: 520px; border-collapse: collapse; margin-top:"
+            + " 20px; }");
+    css.append(".cover-summary td { padding: 14px 20px; }");
+    css.append(
+        ".cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color:"
+            + " #718096; font-weight: 600; margin-bottom: 4px; }");
+    css.append(".cs-value { font-size: 15px; color: #1a202c; font-weight: 500; }");
+    css.append(
+        ".cover-footer { position: absolute; bottom: 40px; text-align: center; font-size: 10px;"
+            + " color: #a0aec0; width: 100%; }");
+
+    // Status badges
+    css.append(
+        ".status-badge { display: inline-block; padding: 8px 28px; border-radius: 20px; font-size:"
+            + " 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }");
+    css.append(
+        ".status-vacant { background-color: #f0fdf4; color: #166534; border: 2px solid #bbf7d0; }");
+    css.append(
+        ".status-occupied { background-color: #eff6ff; color: #1e40af; border: 2px solid #bfdbfe;"
+            + " }");
+    css.append(
+        ".status-maintenance { background-color: #fefce8; color: #854d0e; border: 2px solid"
+            + " #fef08a; }");
+    css.append(
+        ".status-unavailable { background-color: #f9fafb; color: #374151; border: 2px solid"
+            + " #e5e7eb; }");
+
+    // Content pages
+    css.append(".page { page-break-before: always; }");
+    css.append(
+        ".page-header { border-bottom: 2px solid #1a365d; padding-bottom: 10px; margin-bottom:"
+            + " 30px; font-size: 20px; font-weight: 700; color: #1a365d; }");
+
+    // Section titles
+    css.append(
+        ".section-title { font-size: 16px; font-weight: 700; color: #1a365d; margin: 28px 0 14px 0;"
+            + " padding-left: 12px; border-left: 4px solid #2b6cb0; }");
+
+    // Detail grid (2-column) — same as contract report
+    css.append(".detail-grid { width: 100%; border-collapse: collapse; }");
+    css.append(".detail-grid td { padding: 10px 16px; vertical-align: top; width: 50%; }");
+    css.append(
+        ".fg-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color:"
+            + " #718096; font-weight: 600; margin-bottom: 3px; }");
+    css.append(".fg-value { font-size: 14px; color: #1a202c; }");
+
+    // Text blocks
+    css.append(
+        ".text-block { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px;"
+            + " padding: 16px; font-size: 13px; color: #2d3748; line-height: 1.6; margin-top: 8px;"
+            + " }");
+
+    // Check items
+    css.append(".check-item { padding: 6px 0; font-size: 13px; color: #2d3748; }");
+    css.append(".check-icon { color: #38a169; font-weight: bold; margin-right: 8px; }");
+
+    // Payment/data table (reused for contracts table)
+    css.append(".payment-table { width: 100%; border-collapse: collapse; margin-top: 10px; }");
+    css.append(
+        ".payment-table thead th { background-color: #edf2f7; padding: 10px 12px; text-align: left;"
+            + " font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568;"
+            + " font-weight: 700; border-bottom: 2px solid #cbd5e0; }");
+    css.append(
+        ".payment-table tbody td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size:"
+            + " 13px; }");
+    css.append(".payment-table tbody tr:nth-child(even) { background-color: #f7fafc; }");
+  }
+
+  private void appendTenantBookletCSS(StringBuilder css) {
+    // Page margins + running footer + page numbers (same as contract report)
+    css.append("@page { margin: 40px 50px 70px 50px; ");
+    css.append("@bottom-center { content: element(running-footer); } ");
+    css.append(
+        "@bottom-right { content: 'Page ' counter(page) ' of ' counter(pages); font-size: 9px;"
+            + " color: #a0aec0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; } }");
+    css.append(
+        "@page:first { margin: 0; @bottom-center { content: none; } @bottom-right { content: none;"
+            + " } }");
+    css.append(
+        ".running-footer { position: running(running-footer); width: 100%; border-top: 1px solid"
+            + " #e2e8f0; padding-top: 8px; font-size: 9px; color: #a0aec0; }");
+    css.append(
+        "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;"
+            + " color: #1a202c; font-size: 13px; line-height: 1.5; }");
+
+    // Cover page
+    css.append(
+        ".cover { page-break-after: always; padding: 0; height: 100vh; display: flex;"
+            + " flex-direction: column; justify-content: center; align-items: center; }");
+    css.append(".cover-header { text-align: center; margin-bottom: 40px; }");
+    css.append(
+        ".cover-title { font-size: 44px; font-weight: 700; color: #1a365d; letter-spacing: 3px;"
+            + " margin-bottom: 12px; }");
+    css.append(
+        ".cover-subtitle { font-size: 16px; color: #718096; letter-spacing: 2px; margin-bottom:"
+            + " 6px; }");
+    css.append(".cover-date { font-size: 12px; color: #a0aec0; }");
+    css.append(
+        ".cover-summary { width: 80%; max-width: 520px; border-collapse: collapse; margin-top:"
+            + " 20px; }");
+    css.append(".cover-summary td { padding: 14px 20px; }");
+    css.append(
+        ".cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color:"
+            + " #718096; font-weight: 600; margin-bottom: 4px; }");
+    css.append(".cs-value { font-size: 15px; color: #1a202c; font-weight: 500; }");
+    css.append(
+        ".cover-footer { position: absolute; bottom: 40px; text-align: center; font-size: 10px;"
+            + " color: #a0aec0; width: 100%; }");
+
+    // Content pages
+    css.append(".page { page-break-before: always; }");
+    css.append(
+        ".page-header { border-bottom: 2px solid #1a365d; padding-bottom: 10px; margin-bottom:"
+            + " 30px; font-size: 20px; font-weight: 700; color: #1a365d; }");
+
+    // Section titles
+    css.append(
+        ".section-title { font-size: 16px; font-weight: 700; color: #1a365d; margin: 28px 0 14px 0;"
+            + " padding-left: 12px; border-left: 4px solid #2b6cb0; }");
+
+    // Detail grid
+    css.append(".detail-grid { width: 100%; border-collapse: collapse; }");
+    css.append(".detail-grid td { padding: 10px 16px; vertical-align: top; width: 50%; }");
+    css.append(
+        ".fg-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color:"
+            + " #718096; font-weight: 600; margin-bottom: 3px; }");
+    css.append(".fg-value { font-size: 14px; color: #1a202c; }");
+
+    // Text blocks
+    css.append(
+        ".text-block { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px;"
+            + " padding: 16px; font-size: 13px; color: #2d3748; line-height: 1.6; margin-top: 8px;"
+            + " }");
+
+    // Summary cards
+    css.append(".summary-grid { width: 100%; border-collapse: separate; border-spacing: 10px 0; }");
+    css.append(
+        ".summary-grid td { border-radius: 8px; padding: 16px; text-align: center; vertical-align:"
+            + " top; width: 25%; }");
+    css.append(
+        ".sc-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight:"
+            + " 600; margin-bottom: 6px; }");
+    css.append(".sc-amount { font-size: 20px; font-weight: 700; margin-bottom: 2px; }");
+    css.append(".sc-count { font-size: 11px; }");
+
+    // Payment table
+    css.append(".payment-table { width: 100%; border-collapse: collapse; margin-top: 10px; }");
+    css.append(
+        ".payment-table thead th { background-color: #edf2f7; padding: 10px 12px; text-align: left;"
+            + " font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568;"
+            + " font-weight: 700; border-bottom: 2px solid #cbd5e0; }");
+    css.append(
+        ".payment-table tbody td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size:"
+            + " 13px; }");
+    css.append(".payment-table tbody tr:nth-child(even) { background-color: #f7fafc; }");
+
+    // Payment status badges
+    css.append(
+        ".pay-status { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size:"
+            + " 11px; font-weight: 600; letter-spacing: 0.3px; }");
+    css.append(".pay-paid { background-color: #f0fdf4; color: #166534; }");
+    css.append(".pay-pending { background-color: #fefce8; color: #854d0e; }");
+    css.append(".pay-partially_paid { background-color: #fefce8; color: #854d0e; }");
+    css.append(".pay-overdue { background-color: #fef2f2; color: #991b1b; }");
+    css.append(".pay-cancelled { background-color: #f9fafb; color: #6b7280; }");
+  }
+
+  private String photoToBase64DataUri(Photo photo) {
+    String fileKey =
+        photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
+    try (InputStream is = s3StorageService.downloadFile(fileKey)) {
+      byte[] bytes = is.readAllBytes();
+      String mime = photo.getMimeType() != null ? photo.getMimeType() : "image/jpeg";
+      return "data:" + mime + ";base64," + Base64.getEncoder().encodeToString(bytes);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   private void appendCoverCell(StringBuilder html, String label, String value) {
     html.append("<td><div class='cs-label'>").append(escapeHtml(label)).append("</div>");
     html.append("<div class='cs-value'>").append(value).append("</div></td>");
@@ -1985,6 +2227,24 @@ public class ExportService {
       String bgColor,
       String accentColor,
       String textColor) {
+    appendSummaryCard(
+        html,
+        label,
+        amount,
+        count + (count == 1 ? " payment" : " payments"),
+        bgColor,
+        accentColor,
+        textColor);
+  }
+
+  private void appendSummaryCard(
+      StringBuilder html,
+      String label,
+      String amount,
+      String subtitle,
+      String bgColor,
+      String accentColor,
+      String textColor) {
     html.append("<td style='background-color:").append(bgColor).append(";'>");
     html.append("<div class='sc-label' style='color:")
         .append(accentColor)
@@ -1996,12 +2256,13 @@ public class ExportService {
         .append(";'>")
         .append(amount)
         .append("</div>");
-    html.append("<div class='sc-count' style='color:")
-        .append(accentColor)
-        .append(";'>")
-        .append(count)
-        .append(count == 1 ? " payment" : " payments")
-        .append("</div>");
+    if (subtitle != null && !subtitle.isBlank()) {
+      html.append("<div class='sc-count' style='color:")
+          .append(accentColor)
+          .append(";'>")
+          .append(subtitle)
+          .append("</div>");
+    }
     html.append("</td>");
   }
 
@@ -2036,9 +2297,15 @@ public class ExportService {
       List<TenantAddress> addresses,
       List<Contract> contracts,
       List<Payment> allPayments,
-      Map<UUID, Property> propertyMap) {
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
-    DateTimeFormatter shortDateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
+      Map<UUID, Property> propertyMap,
+      Map<UUID, ContractPartyRole> contractRoles) {
+    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
+    DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
+    String generatedDate = LocalDate.now(clock).format(dateFmt);
+
+    String fullName =
+        escapeHtml(tenant.getFirstName())
+            + (tenant.getLastName() != null ? " " + escapeHtml(tenant.getLastName()) : "");
 
     BigDecimal totalPaid =
         allPayments.stream()
@@ -2055,280 +2322,284 @@ public class ExportService {
             .filter(c -> c.getStatus() != null && c.getStatus().name().equals("ACTIVE"))
             .count();
 
-    StringBuilder html = new StringBuilder();
+    // Resolve current property
+    String currentPropertyName = "—";
+    if (tenant.getCurrentPropertyId() != null) {
+      Property current = propertyMap.get(tenant.getCurrentPropertyId());
+      if (current != null) {
+        currentPropertyName =
+            escapeHtml(current.getStreet()) + ", " + escapeHtml(current.getCity());
+      }
+    }
+
+    StringBuilder html = new StringBuilder(8192);
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
     html.append("<style>");
-
-    // Global styles
-    html.append(
-        "body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;"
-            + " color: #1a202c; }");
-
-    // Cover
-    html.append(
-        ".cover { background: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #718096 100%); ");
-    html.append(
-        "color: white; padding: 120px 50px 80px 50px; text-align: center; page-break-after: always;"
-            + " min-height: 700px; }");
-    html.append(
-        ".cover-subtitle { font-size: 14px; letter-spacing: 6px; text-transform: uppercase; color:"
-            + " #e2e8f0; margin-bottom: 60px; }");
-    html.append(
-        ".cover h1 { font-size: 44px; margin: 0 0 12px 0; font-weight: 700; letter-spacing: 1px;"
-            + " }");
-    html.append(".cover-detail { font-size: 16px; color: #cbd5e0; margin: 6px 0; }");
-    html.append(
-        ".cover-divider { width: 80px; height: 2px; background-color: #a0aec0; margin: 40px auto;"
-            + " }");
-    html.append(
-        ".cover-date { font-size: 13px; color: #a0aec0; margin-top: 40px; letter-spacing: 2px; }");
-    html.append(
-        ".cover-id { font-size: 11px; color: #718096; margin-top: 8px; letter-spacing: 1px; }");
-
-    // Pages
-    html.append(".page { padding: 45px 50px; page-break-before: always; }");
-    html.append(
-        ".section-title { font-size: 26px; font-weight: 700; color: #2d3748; margin: 0 0 25px 0; ");
-    html.append("padding-left: 16px; border-left: 4px solid #4a5568; }");
-    html.append(
-        ".section-subtitle { font-size: 18px; font-weight: 600; color: #2d3748; margin: 28px 0 14px"
-            + " 0; }");
-
-    // Detail table
-    html.append(".detail-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }");
-    html.append(".detail-table td { padding: 10px 14px; vertical-align: top; }");
-    html.append(
-        ".detail-label { font-size: 10px; font-weight: 600; text-transform: uppercase;"
-            + " letter-spacing: 1.2px; color: #718096; margin: 0 0 3px 0; }");
-    html.append(".detail-value { font-size: 16px; color: #1a202c; font-weight: 500; margin: 0; }");
-    html.append(
-        ".detail-cell { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px;"
-            + " padding: 12px 14px; }");
-
-    // Summary cards
-    html.append(".summary-table { width: 100%; border-collapse: collapse; margin: 20px 0; }");
-    html.append(".summary-table td { padding: 10px; text-align: center; }");
-    html.append(".summary-card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; }");
-    html.append(
-        ".summary-label { font-size: 10px; color: #718096; text-transform: uppercase;"
-            + " letter-spacing: 1px; }");
-    html.append(".summary-value { font-size: 24px; font-weight: 700; margin-top: 4px; }");
-
-    // Address card
-    html.append(
-        ".address-card { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px;"
-            + " padding: 16px 18px; margin-bottom: 10px; }");
-    html.append(
-        ".address-type { font-size: 11px; font-weight: 600; text-transform: uppercase;"
-            + " letter-spacing: 1px; color: #4a5568; margin-bottom: 6px; }");
-    html.append(".address-line { font-size: 14px; color: #1a202c; margin: 2px 0; }");
-    html.append(
-        ".address-status { display: inline-block; font-size: 10px; font-weight: 600;"
-            + " text-transform: uppercase; letter-spacing: 0.5px; ");
-    html.append("padding: 2px 8px; border-radius: 10px; margin-top: 6px; }");
-    html.append(".status-active { background-color: #c6f6d5; color: #276749; }");
-    html.append(".status-inactive { background-color: #e2e8f0; color: #4a5568; }");
-
-    // Data table
-    html.append("table.data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }");
-    html.append(
-        "table.data-table th { background-color: #2d3748; color: white; padding: 10px 12px;"
-            + " text-align: left; font-size: 11px; ");
-    html.append("text-transform: uppercase; letter-spacing: 0.5px; }");
-    html.append(
-        "table.data-table td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size:"
-            + " 13px; }");
-    html.append("table.data-table tr:nth-child(even) td { background-color: #f7fafc; }");
-
-    // Notes
-    html.append(
-        ".notes-box { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 4px;"
-            + " padding: 12px 16px; ");
-    html.append("font-size: 13px; color: #2d3748; margin-top: 16px; }");
-
-    // Footer
-    html.append(
-        ".footer { text-align: center; color: #a0aec0; font-size: 11px; padding: 30px 0 20px 0;"
-            + " letter-spacing: 1px; }");
-
+    appendTenantBookletCSS(html);
     html.append("</style></head><body>");
 
-    // ========== COVER PAGE ==========
+    // Running footer
+    html.append("<div class='running-footer'>");
+    html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
+    html.append("<td style='text-align:left;font-size:9px;color:#a0aec0;width:33%;'>")
+        .append(generatedDate)
+        .append("</td>");
+    html.append(
+        "<td style='text-align:center;font-size:9px;color:#a0aec0;width:34%;'>Confidential &mdash;"
+            + " Buurman Property Management</td>");
+    html.append("<td style='text-align:right;font-size:9px;color:#a0aec0;width:33%;'></td>");
+    html.append("</tr></table></div>");
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 1 — COVER
+    // ═══════════════════════════════════════════════════════════════
     html.append("<div class='cover'>");
-    html.append("<div class='cover-subtitle'>Tenant Report</div>");
-    String fullName =
-        escapeHtml(tenant.getFirstName())
-            + (tenant.getLastName() != null ? " " + escapeHtml(tenant.getLastName()) : "");
-    html.append("<h1>").append(fullName).append("</h1>");
-    if (tenant.getEmail() != null) {
-      html.append("<p class='cover-detail'>").append(escapeHtml(tenant.getEmail())).append("</p>");
-    }
-    if (tenant.getPhone() != null) {
-      html.append("<p class='cover-detail'>").append(escapeHtml(tenant.getPhone())).append("</p>");
-    }
-    html.append("<div class='cover-divider'></div>");
-    html.append("<p class='cover-date'>")
-        .append(LocalDate.now(clock).format(dateFormatter).toUpperCase())
-        .append("</p>");
-    html.append("<p class='cover-id'>REF #").append(tenant.getIdentifier()).append("</p>");
+    html.append("<div class='cover-header'>");
+    html.append("<div class='cover-title'>TENANT BOOKLET</div>");
+    html.append("<div class='cover-subtitle'>").append(fullName).append("</div>");
+    html.append("<div class='cover-date'>Generated ").append(generatedDate).append("</div>");
     html.append("</div>");
 
-    // ========== PAGE 2: TENANT PROFILE ==========
-    html.append("<div class='page'>");
-    html.append("<h2 class='section-title'>Tenant Profile</h2>");
-
-    html.append("<table class='detail-table'><tbody>");
+    // Summary grid
+    html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendDetailCell(html, "Full Name", fullName);
-    appendDetailCell(html, "Email", tenant.getEmail());
+    appendCoverCell(html, "Email", tenant.getEmail() != null ? escapeHtml(tenant.getEmail()) : "—");
+    appendCoverCell(html, "Phone", tenant.getPhone() != null ? escapeHtml(tenant.getPhone()) : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
+    appendCoverCell(html, "Total Contracts", String.valueOf(contracts.size()));
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Current Property", currentPropertyName);
+    appendCoverCell(html, "Reference", tenant.getIdentifier());
     html.append("</tr>");
+    html.append("</table>");
+
+    html.append(
+        "<div class='cover-footer'>Confidential &mdash; Generated by Buurman Property"
+            + " Management</div>");
+    html.append("</div>");
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 2 — TENANT PROFILE
+    // ═══════════════════════════════════════════════════════════════
+    html.append("<div class='page'>");
+    html.append("<div class='page-header'>Tenant Profile</div>");
+
+    html.append("<h2 class='section-title'>Personal Information</h2>");
+    html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendDetailCell(html, "Phone", tenant.getPhone());
-    appendDetailCell(html, "Tenant ID", "#" + tenant.getIdentifier());
+    appendField(html, "Full Name", fullName);
+    appendField(html, "Email", tenant.getEmail());
+    html.append("</tr><tr>");
+    appendField(html, "Phone", tenant.getPhone());
+    appendField(html, "Reference", "#" + tenant.getIdentifier());
     html.append("</tr>");
     if (tenant.getTaxNumber() != null || tenant.getIdNumber() != null) {
       html.append("<tr>");
-      appendDetailCell(html, "Tax Number", tenant.getTaxNumber());
-      appendDetailCell(html, "ID Number", tenant.getIdNumber());
+      appendField(html, "Tax Number", tenant.getTaxNumber());
+      appendField(html, "Government ID", tenant.getIdNumber());
       html.append("</tr>");
     }
-    html.append("</tbody></table>");
+    html.append("<tr>");
+    appendField(html, "Current Property", currentPropertyName);
+    appendField(html, "", null);
+    html.append("</tr>");
+    html.append("</table>");
 
-    // Additional info (rich text)
+    // Additional info
     if (tenant.getAdditionalInfo() != null && !tenant.getAdditionalInfo().isBlank()) {
-      html.append("<div class='notes-box'><strong>Additional Information:</strong><br/>")
-          .append(tenant.getAdditionalInfo())
+      html.append("<div class='text-block'><strong>Additional Information</strong><br/>")
+          .append(sanitizeRichText(tenant.getAdditionalInfo()))
           .append("</div>");
     }
 
-    // Summary cards
-    html.append("<h3 class='section-subtitle'>Overview</h3>");
-    html.append("<table class='summary-table'><tr>");
-    html.append(
-            "<td><div class='summary-card'><div class='summary-label'>Total Contracts</div><div"
-                + " class='summary-value'>")
-        .append(contracts.size())
-        .append("</div></div></td>");
-    html.append(
-            "<td><div class='summary-card'><div class='summary-label'>Active Contracts</div><div"
-                + " class='summary-value' style='color: #059669;'>")
-        .append(activeContracts)
-        .append("</div></div></td>");
-    html.append(
-            "<td><div class='summary-card'><div class='summary-label'>Total Paid</div><div"
-                + " class='summary-value' style='color: #059669;'>EUR ")
-        .append(String.format("%.2f", totalPaid))
-        .append("</div></div></td>");
-    html.append(
-            "<td><div class='summary-card'><div class='summary-label'>Outstanding</div><div"
-                + " class='summary-value' style='color: ")
-        .append(totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#dc2626" : "#059669")
-        .append(";'>EUR ")
-        .append(String.format("%.2f", totalPending))
-        .append("</div></div></td>");
+    // Overview summary cards
+    html.append("<h2 class='section-title'>Financial Summary</h2>");
+    html.append("<table class='summary-grid'><tr>");
+    appendSummaryCard(
+        html, "Total Paid", "EUR " + fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
+    appendSummaryCard(
+        html,
+        "Outstanding",
+        "EUR " + fmt(totalPending),
+        null,
+        totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#fef2f2" : "#f0fdf4",
+        totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#991b1b" : "#166534",
+        totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#dc2626" : "#059669");
+    appendSummaryCard(
+        html,
+        "Active Contracts",
+        String.valueOf(activeContracts),
+        null,
+        "#eff6ff",
+        "#1e40af",
+        "#2b6cb0");
+    appendSummaryCard(
+        html,
+        "Total Contracts",
+        String.valueOf(contracts.size()),
+        null,
+        "#f9fafb",
+        "#374151",
+        "#1a202c");
     html.append("</tr></table>");
 
     html.append("</div>");
 
-    // ========== PAGE 3: ADDRESSES ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 3 — ADDRESSES
+    // ═══════════════════════════════════════════════════════════════
     if (!addresses.isEmpty()) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Addresses</h2>");
+      html.append("<div class='page-header'>Addresses</div>");
+      html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
+          .append(addresses.size())
+          .append(" address(es) on file</p>");
 
       for (TenantAddress addr : addresses) {
-        html.append("<div class='address-card'>");
         String type =
             addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : "Other";
-        html.append("<div class='address-type'>").append(escapeHtml(type)).append("</div>");
-        html.append("<div class='address-line'>")
+        boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
+        String borderColor = isActive ? "#2b6cb0" : "#a0aec0";
+
+        html.append(
+                "<div style='background-color:#fff;border:1px solid #e2e8f0;border-left:3px solid ")
+            .append(borderColor)
+            .append(";border-radius:6px;padding:16px 20px;margin-bottom:12px;'>");
+
+        // Type badge + status
+        html.append(
+                "<span"
+                    + " style='display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;padding:2px"
+                    + " 10px;"
+                    + "border-radius:3px;margin-bottom:6px;color:#2b6cb0;background-color:#eff6ff;'>")
+            .append(escapeHtml(type))
+            .append("</span>");
+        if (isActive) {
+          html.append(
+              "<span style='display:inline-block;font-size:10px;font-weight:600;"
+                  + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
+                  + "border-radius:3px;margin-left:8px;color:#166534;background-color:#f0fdf4;'>"
+                  + "Active</span>");
+        }
+
+        // Address lines
+        html.append("<div style='font-size:15px;font-weight:600;color:#1a202c;margin-top:8px;'>")
             .append(escapeHtml(addr.getStreet()))
             .append("</div>");
-        html.append("<div class='address-line'>").append(escapeHtml(addr.getCity()));
+        html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
+            .append(escapeHtml(addr.getCity()));
         if (addr.getPostalCode() != null) {
           html.append(", ").append(escapeHtml(addr.getPostalCode()));
         }
         html.append("</div>");
         if (addr.getCountry() != null) {
-          html.append("<div class='address-line'>")
+          html.append("<div style='font-size:13px;color:#4a5568;'>")
               .append(escapeHtml(addr.getCountry()))
               .append("</div>");
         }
-        String statusClass =
-            addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE")
-                ? "status-active"
-                : "status-inactive";
-        String statusLabel =
-            addr.getStatus() != null ? formatEnumValue(addr.getStatus().name()) : "Unknown";
-        html.append("<span class='address-status ")
-            .append(statusClass)
-            .append("'>")
-            .append(statusLabel)
-            .append("</span>");
         html.append("</div>");
       }
 
       html.append("</div>");
     }
 
-    // ========== PAGE 4: CONTRACTS ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 4 — RENTAL HISTORY (CONTRACTS)
+    // ═══════════════════════════════════════════════════════════════
     if (!contracts.isEmpty()) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Rental History</h2>");
-      html.append("<p style='font-size: 13px; color: #718096; margin-bottom: 12px;'>")
+      html.append("<div class='page-header'>Rental History</div>");
+      html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
           .append(contracts.size())
           .append(" contract(s) on record</p>");
-
-      html.append("<table class='data-table'><thead><tr>");
-      html.append(
-          "<th>Contract</th><th>Property</th><th>Type</th><th>Start</th><th>End</th><th>Rent</th><th>Status</th>");
-      html.append("</tr></thead><tbody>");
 
       for (Contract contract : contracts) {
         Property property = propertyMap.get(contract.getPropertyId());
         String propertyName =
-            property != null ? property.getStreet() + ", " + property.getCity() : "Unknown";
+            property != null
+                ? escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity())
+                : "Unknown";
+        ContractPartyRole role = contractRoles.get(contract.getId());
+        String roleLabel = role != null ? formatEnumValue(role.name()) : "—";
+        String statusName = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
+        boolean isActive = statusName.equals("ACTIVE");
+        String borderColor = isActive ? "#2b6cb0" : "#a0aec0";
 
-        html.append("<tr>");
-        html.append("<td>#").append(contract.getIdentifier()).append("</td>");
-        html.append("<td>").append(escapeHtml(propertyName)).append("</td>");
-        html.append("<td>")
-            .append(
-                contract.getContractType() != null
-                    ? formatEnumValue(contract.getContractType().name())
-                    : "-")
-            .append("</td>");
-        html.append("<td>")
-            .append(
-                contract.getStartDate() != null
-                    ? contract.getStartDate().format(shortDateFormatter)
-                    : "-")
-            .append("</td>");
-        html.append("<td>")
-            .append(
-                contract.getEndDate() != null
-                    ? contract.getEndDate().format(shortDateFormatter)
-                    : "Ongoing")
-            .append("</td>");
-        html.append("<td>")
-            .append(contract.getCurrency())
-            .append(" ")
-            .append(String.format("%.2f", contract.getRentAmount()))
-            .append("</td>");
-        html.append("<td>")
-            .append(
-                contract.getStatus() != null ? formatEnumValue(contract.getStatus().name()) : "-")
-            .append("</td>");
-        html.append("</tr>");
+        html.append(
+                "<div style='background-color:#fff;border:1px solid #e2e8f0;border-left:3px solid ")
+            .append(borderColor)
+            .append(";border-radius:6px;padding:20px 24px;margin-bottom:14px;'>");
+
+        // Role badge + status badge
+        html.append(
+                "<span style='display:inline-block;font-size:10px;font-weight:600;"
+                    + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
+                    + "border-radius:3px;color:#2b6cb0;background-color:#eff6ff;'>")
+            .append(roleLabel)
+            .append("</span>");
+
+        String statusBg = isActive ? "#f0fdf4" : "#f9fafb";
+        String statusColor = isActive ? "#166534" : "#374151";
+        html.append(
+                "<span style='display:inline-block;font-size:10px;font-weight:600;"
+                    + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
+                    + "border-radius:3px;margin-left:8px;color:")
+            .append(statusColor)
+            .append(";background-color:")
+            .append(statusBg)
+            .append(";'>")
+            .append(formatEnumValue(statusName))
+            .append("</span>");
+
+        // Property name
+        html.append(
+                "<div style='font-size:17px;font-weight:700;color:#1a202c;margin-top:10px;"
+                    + "margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #edf2f7;'>")
+            .append(propertyName)
+            .append("</div>");
+
+        // Contract details grid
+        html.append("<table class='detail-grid'><tr>");
+        appendField(html, "Contract ID", "#" + contract.getIdentifier());
+        appendField(
+            html,
+            "Type",
+            contract.getContractType() != null
+                ? formatEnumValue(contract.getContractType().name())
+                : "—");
+        html.append("</tr><tr>");
+        appendField(
+            html,
+            "Start Date",
+            contract.getStartDate() != null ? contract.getStartDate().format(shortFmt) : "—");
+        appendField(
+            html,
+            "End Date",
+            contract.getEndDate() != null ? contract.getEndDate().format(shortFmt) : "Ongoing");
+        html.append("</tr><tr>");
+        appendField(
+            html, "Rent Amount", contract.getCurrency() + " " + fmt(contract.getRentAmount()));
+        appendField(
+            html,
+            "Payment Frequency",
+            contract.getPaymentFrequency() != null
+                ? formatEnumValue(contract.getPaymentFrequency().name())
+                : "—");
+        html.append("</tr></table>");
+
+        html.append("</div>");
       }
 
-      html.append("</tbody></table>");
       html.append("</div>");
     }
 
-    // ========== PAGE 5: PAYMENT HISTORY ==========
+    // ═══════════════════════════════════════════════════════════════
+    // PAGE 5 — PAYMENT HISTORY
+    // ═══════════════════════════════════════════════════════════════
     if (!allPayments.isEmpty()) {
       html.append("<div class='page'>");
-      html.append("<h2 class='section-title'>Payment History</h2>");
+      html.append("<div class='page-header'>Payment History</div>");
 
       // Payment summary by year
       Map<Integer, BigDecimal[]> yearPayments = new TreeMap<>(Comparator.reverseOrder());
@@ -2350,27 +2621,32 @@ public class ExportService {
       }
 
       if (!yearPayments.isEmpty()) {
-        html.append("<table class='summary-table'><tr>");
+        html.append("<table class='summary-grid'><tr>");
         for (Map.Entry<Integer, BigDecimal[]> entry : yearPayments.entrySet()) {
-          html.append("<td><div class='summary-card'>");
-          html.append("<div class='summary-label'>").append(entry.getKey()).append("</div>");
-          html.append("<div class='summary-value' style='color: #059669; font-size: 18px;'>EUR ")
+          html.append(
+              "<td style='background-color:#f7fafc;border-radius:8px;padding:16px;"
+                  + "text-align:center;vertical-align:top;'>");
+          html.append(
+                  "<div style='font-size:11px;text-transform:uppercase;letter-spacing:1px;"
+                      + "font-weight:600;color:#4a5568;margin-bottom:6px;'>")
+              .append(entry.getKey())
+              .append("</div>");
+          html.append("<div style='font-size:18px;font-weight:700;color:#059669;'>EUR ")
               .append(String.format("%.2f", entry.getValue()[0]))
               .append("</div>");
           if (entry.getValue()[1].compareTo(BigDecimal.ZERO) > 0) {
             html.append(
-                    "<div style='font-size: 12px; color: #dc2626; margin-top: 4px;'>Outstanding:"
-                        + " EUR ")
+                    "<div style='font-size:11px;color:#dc2626;margin-top:4px;'>Outstanding: EUR ")
                 .append(String.format("%.2f", entry.getValue()[1]))
                 .append("</div>");
           }
-          html.append("</div></td>");
+          html.append("</td>");
         }
         html.append("</tr></table>");
       }
 
       // Recent payments table (last 50)
-      html.append("<h3 class='section-subtitle'>Recent Payments</h3>");
+      html.append("<h2 class='section-title'>Recent Payments</h2>");
       List<Payment> sortedPayments =
           allPayments.stream()
               .sorted(
@@ -2391,42 +2667,40 @@ public class ExportService {
               .limit(50)
               .toList();
 
-      html.append("<table class='data-table'><thead><tr>");
+      html.append("<table class='payment-table'><thead><tr>");
       html.append("<th>Due Date</th><th>Amount</th><th>Payment Date</th><th>Status</th>");
       html.append("</tr></thead><tbody>");
 
       for (Payment payment : sortedPayments) {
         html.append("<tr>");
         html.append("<td>")
-            .append(
-                payment.getDueDate() != null
-                    ? payment.getDueDate().format(shortDateFormatter)
-                    : "-")
+            .append(payment.getDueDate() != null ? payment.getDueDate().format(shortFmt) : "—")
             .append("</td>");
-        html.append("<td>")
+        html.append("<td style='font-variant-numeric:tabular-nums;'>")
             .append(payment.getCurrency())
             .append(" ")
             .append(String.format("%.2f", payment.getAmount()))
             .append("</td>");
         html.append("<td>")
             .append(
-                payment.getPaymentDate() != null
-                    ? payment.getPaymentDate().format(shortDateFormatter)
-                    : "-")
+                payment.getPaymentDate() != null ? payment.getPaymentDate().format(shortFmt) : "—")
             .append("</td>");
-        String statusStyle = "";
-        if (payment.getStatus() == PAID) {
-          statusStyle = "color: #059669; font-weight: 600;";
-        } else if (payment.getStatus() == OVERDUE) {
-          statusStyle = "color: #dc2626; font-weight: 600;";
-        } else if (payment.getStatus() == PENDING) {
-          statusStyle = "color: #d97706; font-weight: 600;";
-        }
-        html.append("<td style='")
-            .append(statusStyle)
+
+        String payStatus = payment.getStatus() != null ? payment.getStatus().name() : "";
+        String payCssClass =
+            switch (payStatus) {
+              case "PAID" -> "pay-paid";
+              case "PENDING" -> "pay-pending";
+              case "OVERDUE" -> "pay-overdue";
+              case "PARTIALLY_PAID" -> "pay-partially_paid";
+              case "CANCELLED" -> "pay-cancelled";
+              default -> "";
+            };
+        html.append("<td><span class='pay-status ")
+            .append(payCssClass)
             .append("'>")
-            .append(payment.getStatus() != null ? formatEnumValue(payment.getStatus().name()) : "-")
-            .append("</td>");
+            .append(formatEnumValue(payStatus))
+            .append("</span></td>");
         html.append("</tr>");
       }
 
@@ -2434,7 +2708,6 @@ public class ExportService {
       html.append("</div>");
     }
 
-    html.append("<div class='footer'>Generated by Buurman Property Management</div>");
     html.append("</body></html>");
 
     return html.toString();

@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -158,52 +157,6 @@ public class ReportController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
-        .body(pdf);
-  }
-
-  @Operation(
-      summary = "Export property brochure to PDF",
-      description = "Download detailed property brochure as PDF")
-  @GetMapping("/export/property/{propertyIdentifier}/brochure")
-  public ResponseEntity<byte[]> exportPropertyBrochure(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf =
-        exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.getTeamId());
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-brochure.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
-        .body(pdf);
-  }
-
-  @Operation(
-      summary = "Export tenant report to PDF",
-      description = "Download detailed tenant report as PDF")
-  @GetMapping("/export/tenant/{tenantIdentifier}/report")
-  public ResponseEntity<byte[]> exportTenantReport(
-      @PathVariable String tenantIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.getTeamId());
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tenant-report.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
-        .body(pdf);
-  }
-
-  @Operation(
-      summary = "Export contract report to PDF",
-      description = "Download detailed contract report as PDF")
-  @GetMapping("/export/contract/{contractIdentifier}/report")
-  public ResponseEntity<byte[]> exportContractReport(
-      @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf = exportService.generateContractReportPDF(contractIdentifier, principal.getTeamId());
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contract-report.pdf")
         .contentType(MediaType.APPLICATION_PDF)
         .body(pdf);
   }

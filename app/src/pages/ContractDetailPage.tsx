@@ -25,8 +25,6 @@ import { ChangeContractStatusModal } from '@/components/contracts/ChangeContract
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
-import { useFeatureFlags } from '@/context/FeatureFlagContext';
-import { FeatureFlags } from '@/constants/featureFlags';
 import client from '@/api/client';
 import {
   Edit,
@@ -61,7 +59,6 @@ export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { isEnabled } = useFeatureFlags();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'payments' | 'documents' | 'history'
@@ -273,38 +270,36 @@ export const ContractDetailPage = () => {
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              {isEnabled(FeatureFlags.REPORTS) && (
-                <Button
-                  variant="secondary"
-                  leftIcon={<Download />}
-                  onClick={async () => {
-                    try {
-                      const response = await client.get(
-                        `/reports/export/contract/${id}/report`,
-                        {
-                          responseType: 'blob',
-                        }
-                      );
-                      const blob = new Blob([response.data], {
-                        type: 'application/pdf',
-                      });
-                      const url = window.URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = 'contract-report.pdf';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      window.URL.revokeObjectURL(url);
-                    } catch (error) {
-                      console.error('Failed to download report:', error);
-                      alert('Failed to download report. Please try again.');
-                    }
-                  }}
-                >
-                  Report
-                </Button>
-              )}
+              <Button
+                variant="secondary"
+                leftIcon={<Download />}
+                onClick={async () => {
+                  try {
+                    const response = await client.get(
+                      `/booklets/contract/${id}`,
+                      {
+                        responseType: 'blob',
+                      }
+                    );
+                    const blob = new Blob([response.data], {
+                      type: 'application/pdf',
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'contract-booklet.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error('Failed to download booklet:', error);
+                    alert('Failed to download booklet. Please try again.');
+                  }
+                }}
+              >
+                Booklet
+              </Button>
               {!canReopen && (
                 <Button
                   variant="primary"
