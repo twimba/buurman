@@ -8,29 +8,20 @@
 
 # Misc fixes
 
-```
-    Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(request.propertyIdentifier(), principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
-```
-These kind of constructions should be make use of a get method in the Repository
 
-Refactor de property brochure to include all the information and photos in the professional style of the contract report
+Refactor de tenant booklet to include all the information in the professional style of the contract report
+(pay atention to include the first page, footer, page number, generation date, etc)
 
-Refactor de tenant brochure to include all the information and photos in the professional style of the contract report
 
 Rework the tenant section to be less about tenants but be more of people that we interact with - make it more like a VERY small CRM or even digital Rolodex
 
-When creating a new tenant make the phone number and email optional.
+navigate in the photos and documents with left and right arrows in the ui and in the keyboard with the left/right keys
 
 Add page to the backoffice with build information of the app, backoffic and backend
 
 Add to the backoffice a page with informnation on the flyway migrations
 
-Update the website to have a call to action for the potential customer to try out the demo version.
-This should be a link to prepopulated login page with the demo.user@buurman.io username and buurman password.
-Make it so that is not too much in your face but again, jovial, quirky, like "as seen on tv" ... Something that will drive engagement!
+
 # Tenant Portal
   ## New application for tenants
   A new application - Tenant portal where tenants can:
