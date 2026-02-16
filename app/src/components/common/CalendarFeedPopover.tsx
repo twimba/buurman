@@ -11,6 +11,7 @@ import {
   CalendarFeedType,
   CreateCalendarFeedRequest,
 } from '../../types/calendarFeed';
+import { useTeam } from '../../context/TeamContext';
 
 interface CalendarFeedPopoverProps {
   feedType: CalendarFeedType;
@@ -23,6 +24,7 @@ export const CalendarFeedButton = ({
 }: CalendarFeedPopoverProps) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { canEditTeamSettings } = useTeam();
   const [showPopover, setShowPopover] = useState(false);
   const [copied, setCopied] = useState(false);
   const { data: feeds = [] } = useCalendarFeeds();
@@ -117,18 +119,20 @@ export const CalendarFeedButton = ({
             Add this URL to Google Calendar (Settings &gt; Add calendar &gt;
             From URL) or Apple Calendar (File &gt; New Calendar Subscription).
           </p>
-          <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <button
-              onClick={() => {
-                setShowPopover(false);
-                navigate('/settings');
-              }}
-              className="text-xs text-primary-500 dark:text-primary-300 hover:underline flex items-center gap-1"
-            >
-              <Link className="h-3 w-3" />
-              Manage all calendar feeds in Settings
-            </button>
-          </div>
+          {canEditTeamSettings && (
+            <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <button
+                onClick={() => {
+                  setShowPopover(false);
+                  navigate('/admin/calendar-feeds');
+                }}
+                className="text-xs text-primary-500 dark:text-primary-300 hover:underline flex items-center gap-1"
+              >
+                <Link className="h-3 w-3" />
+                Manage all calendar feeds in Settings
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
