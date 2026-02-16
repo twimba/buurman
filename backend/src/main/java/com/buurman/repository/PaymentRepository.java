@@ -26,6 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Payment;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.PaymentsRecord;
 import com.buurman.mapper.PaymentRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -53,12 +54,22 @@ public class PaymentRepository {
         .map(mapper::toDomain);
   }
 
+  public Payment getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Payment not found"));
+  }
+
   public Optional<Payment> findByIdAndTeamId(UUID id, UUID teamId) {
     return dsl.selectFrom(PAYMENTS)
         .where(
             PAYMENTS.ID.eq(id).and(PAYMENTS.TEAM_ID.eq(teamId)).and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Payment getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Payment not found"));
   }
 
   public List<Payment> findAllByTeamId(UUID teamId) {

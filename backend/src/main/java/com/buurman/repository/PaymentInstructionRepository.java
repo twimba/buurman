@@ -19,6 +19,7 @@ import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentInstruction;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -129,11 +130,21 @@ public class PaymentInstructionRepository {
         .map(this::toDomain);
   }
 
+  public PaymentInstruction getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Payment instruction not found"));
+  }
+
   public Optional<PaymentInstruction> findByIdAndTeamId(UUID id, UUID teamId) {
     return dsl.selectFrom(TABLE)
         .where(ID.eq(id).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public PaymentInstruction getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Payment instruction not found"));
   }
 
   public Optional<PaymentInstruction> findDefaultByTeamId(UUID teamId) {

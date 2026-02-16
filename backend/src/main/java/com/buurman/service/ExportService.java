@@ -46,7 +46,6 @@ import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
 import com.buurman.exception.ExternalServiceException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.AmenityRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRepository;
@@ -196,10 +195,7 @@ public class ExportService {
   public byte[] generatePropertyBrochurePDF(String propertyIdentifier, UUID teamId) {
     Instant start = clock.instant();
     try {
-      Property property =
-          propertyRepository
-              .findByIdentifierAndTeamId(propertyIdentifier, teamId)
-              .orElseThrow(() -> new NotFoundException("Property not found"));
+      Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
       UUID propertyId = property.getId();
 
@@ -270,15 +266,9 @@ public class ExportService {
   public byte[] generateContractReportPDF(String contractIdentifier, UUID teamId) {
     Instant start = clock.instant();
     try {
-      Contract contract =
-          contractRepository
-              .findByIdentifierAndTeamId(contractIdentifier, teamId)
-              .orElseThrow(() -> new NotFoundException("Contract not found"));
+      Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
-      Property property =
-          propertyRepository
-              .findByIdAndTeamId(contract.getPropertyId(), teamId)
-              .orElseThrow(() -> new NotFoundException("Property not found"));
+      Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
       List<ContractParty> parties =
           contractPartyService.getPartiesForContract(contract.getId(), teamId);
@@ -353,10 +343,7 @@ public class ExportService {
   public byte[] generateTenantReportPDF(String tenantIdentifier, UUID teamId) {
     Instant start = clock.instant();
     try {
-      Tenant tenant =
-          tenantRepository
-              .findByIdentifierAndTeamId(tenantIdentifier, teamId)
-              .orElseThrow(() -> new NotFoundException("Tenant not found"));
+      Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
       List<TenantAddress> addresses =
           tenantAddressRepository.findByTenantId(tenant.getId(), teamId);

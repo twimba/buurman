@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Property;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 import com.buurman.mapper.PropertyRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -55,6 +56,16 @@ public class PropertyRepository {
                 .and(PROPERTIES.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Property getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Property not found"));
+  }
+
+  public Property getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Property not found"));
   }
 
   public List<Property> findAllByTeamId(UUID teamId) {

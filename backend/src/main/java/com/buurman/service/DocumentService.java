@@ -150,9 +150,7 @@ public class DocumentService {
 
   public URL getDownloadUrl(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     metricsService.incrementCounter(
         "document.download.total", "entity_type", document.getEntityType());
@@ -163,9 +161,7 @@ public class DocumentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteDocument(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     // Soft delete in database
     documentRepository.softDeleteByIdAndTeamId(document.getId(), principal.getTeamId());
@@ -198,9 +194,7 @@ public class DocumentService {
   public DocumentResponse updateDocument(
       String identifier, UpdateDocumentRequest request, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     String oldTitle = document.getTitle();
     String oldNotes = document.getNotes();
@@ -283,9 +277,7 @@ public class DocumentService {
 
   public DocumentResponse getDocument(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return toResponseWithDownloadUrl(document);
   }
 

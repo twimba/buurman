@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Expense;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.ExpensesRecord;
 import com.buurman.mapper.ExpenseRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -49,6 +50,11 @@ public class ExpenseRepository {
                 .and(EXPENSES.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Expense getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Expense not found"));
   }
 
   public Optional<Expense> findByIdAndTeamId(UUID id, UUID teamId) {

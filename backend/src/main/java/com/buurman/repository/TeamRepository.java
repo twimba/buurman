@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamSettings;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.TeamsRecord;
 import com.buurman.mapper.TeamRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -41,6 +42,14 @@ public class TeamRepository {
 
   public Optional<Team> findById(UUID id) {
     return dsl.selectFrom(TEAMS).where(TEAMS.ID.eq(id)).fetchOptional().map(mapper::toDomain);
+  }
+
+  public Team getById(UUID id) {
+    return findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
+  }
+
+  public Team getByIdentifier(String identifier) {
+    return findByIdentifier(identifier).orElseThrow(() -> new NotFoundException("Team not found"));
   }
 
   public Team save(Team team) {
@@ -153,6 +162,11 @@ public class TeamRepository {
         .where(TEAMS.IDENTIFIER.eq(identifier).and(TEAMS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Team getByIdentifierForBackoffice(String identifier) {
+    return findByIdentifierForBackoffice(identifier)
+        .orElseThrow(() -> new NotFoundException("Team not found"));
   }
 
   public long countAll() {

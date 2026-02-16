@@ -86,9 +86,7 @@ public class ContractService {
 
     // Resolve property by identifier
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(request.propertyIdentifier(), teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+        propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
     // Check no active contract exists for property
     contractRepository
@@ -200,10 +198,7 @@ public class ContractService {
       String propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(propertyIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+    Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
     return toResponses(contracts, teamId);
@@ -213,10 +208,7 @@ public class ContractService {
       String tenantIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
     List<Contract> contracts = contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
     return toResponses(contracts, teamId);
@@ -230,9 +222,7 @@ public class ContractService {
 
   public ContractResponse getContract(String identifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return toResponse(contract, principal.getTeamId());
   }
 
@@ -242,10 +232,7 @@ public class ContractService {
       String identifier, UpdateContractRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Prevent updates to ACTIVE, TERMINATED, or EXPIRED contracts (except via status change)
     if (contract.getStatus() == ACTIVE) {
@@ -261,9 +248,7 @@ public class ContractService {
 
     // Resolve property by identifier
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(request.propertyIdentifier(), teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+        propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
     // Validate dates
     if (request.endDate() != null && request.endDate().isBefore(request.startDate())) {
@@ -386,10 +371,7 @@ public class ContractService {
   public void deleteContract(String identifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Prevent deletion of ACTIVE contracts
     if (contract.getStatus() == ACTIVE) {
@@ -411,10 +393,7 @@ public class ContractService {
       String identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     UUID contractId = contract.getId();
     Contract.ContractStatus oldStatus = contract.getStatus();
@@ -542,10 +521,7 @@ public class ContractService {
   public ContractResponse reopenContract(String identifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Only TERMINATED or EXPIRED contracts can be reopened
     if (contract.getStatus() != TERMINATED && contract.getStatus() != EXPIRED) {
@@ -646,10 +622,7 @@ public class ContractService {
   public ContractResponse duplicateContract(String identifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract sourceContract =
-        contractRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Create new contract with same data (without tenantId)
     Contract newContract =
@@ -711,52 +684,40 @@ public class ContractService {
       String notes,
       UserPrincipal principal) {
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
     return documentService.uploadDocument(
         file, "CONTRACT", contract.getId(), contract.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
     return documentService.getDocuments("CONTRACT", contract.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Document not found or access denied"));
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
     return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", contract.getId());
   }
 
   public Map<String, Object> generatePayments(
       String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
     int generated =
         paymentSchedulingService.generatePaymentsManually(
             contract.getId(), principal.getTeamId(), principal.getUserId(), request.count());
@@ -781,10 +742,7 @@ public class ContractService {
   }
 
   private ContractResponse toResponse(Contract contract, UUID teamId) {
-    Property property =
-        propertyRepository
-            .findByIdAndTeamId(contract.getPropertyId(), teamId)
-            .orElseThrow(() -> new IllegalStateException("Contract property not found"));
+    Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
     return toResponse(contract, property, teamId);
   }
 

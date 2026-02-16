@@ -174,18 +174,12 @@ public class PhotoService {
   }
 
   public PhotoResponse getPhoto(String identifier, UserPrincipal principal) {
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return toResponseWithDownloadUrl(photo);
   }
 
   public URL getDownloadUrl(String identifier, UserPrincipal principal) {
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     metricsService.incrementCounter("photo.download.total", "entity_type", photo.getEntityType());
 
@@ -194,10 +188,7 @@ public class PhotoService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deletePhoto(String identifier, UserPrincipal principal) {
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     // Soft delete in database
     photoRepository.softDeleteByIdAndTeamId(photo.getId(), principal.getTeamId());
@@ -232,10 +223,7 @@ public class PhotoService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse updatePhoto(
       String identifier, UpdatePhotoRequest request, UserPrincipal principal) {
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     String oldTitle = photo.getTitle();
     String oldNotes = photo.getNotes();
@@ -284,10 +272,7 @@ public class PhotoService {
   public PhotoResponse setMainPhoto(
       UUID photoId, String entityType, UUID entityId, UserPrincipal principal) {
     // Verify the photo exists and belongs to the team
-    Photo photo =
-        photoRepository
-            .findByIdAndTeamId(photoId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Photo photo = photoRepository.getByIdAndTeamId(photoId, principal.getTeamId());
 
     // Verify it belongs to the correct entity
     if (!entityType.equals(photo.getEntityType()) || !entityId.equals(photo.getEntityId())) {

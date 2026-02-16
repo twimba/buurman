@@ -57,10 +57,7 @@ public class BackofficeUserService {
 
   @Transactional(readOnly = true)
   public BackofficeUserResponse getUser(String identifier) {
-    User user =
-        userRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    User user = userRepository.getByIdentifierUnscoped(identifier);
 
     long teamCount =
         dsl.selectCount()
@@ -73,10 +70,7 @@ public class BackofficeUserService {
 
   @Transactional
   public void disableUser(String identifier, BackofficePrincipal principal) {
-    User user =
-        userRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    User user = userRepository.getByIdentifierUnscoped(identifier);
 
     LocalDateTime now = LocalDateTime.now(clock);
     userRepository.updateDisabledAt(user.getId(), now);
@@ -91,10 +85,7 @@ public class BackofficeUserService {
 
   @Transactional
   public void enableUser(String identifier, BackofficePrincipal principal) {
-    User user =
-        userRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    User user = userRepository.getByIdentifierUnscoped(identifier);
 
     userRepository.updateDisabledAt(user.getId(), null);
     keycloakService.enableUser(user.getKeycloakId());
@@ -108,10 +99,7 @@ public class BackofficeUserService {
 
   @Transactional
   public void resetPassword(String identifier, BackofficePrincipal principal) {
-    User user =
-        userRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    User user = userRepository.getByIdentifierUnscoped(identifier);
 
     keycloakService.sendPasswordResetEmail(user.getKeycloakId());
 

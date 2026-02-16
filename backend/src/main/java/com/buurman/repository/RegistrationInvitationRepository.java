@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.RegistrationInvitation;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.util.PaginationHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,16 @@ public class RegistrationInvitationRepository {
         .where(REGISTRATION_INVITATIONS.ID.eq(id))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public RegistrationInvitation getByIdentifier(String identifier) {
+    return findByIdentifier(identifier)
+        .orElseThrow(() -> new NotFoundException("Registration invitation not found"));
+  }
+
+  public RegistrationInvitation getById(UUID id) {
+    return findById(id)
+        .orElseThrow(() -> new NotFoundException("Registration invitation not found"));
   }
 
   public boolean existsByCode(String code) {

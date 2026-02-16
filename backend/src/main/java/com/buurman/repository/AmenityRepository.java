@@ -9,6 +9,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Amenity;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,11 @@ public class AmenityRepository {
         .where(AMENITIES.IDENTIFIER.eq(identifier))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public Amenity getByIdentifier(String identifier) {
+    return findByIdentifier(identifier)
+        .orElseThrow(() -> new NotFoundException("Amenity not found"));
   }
 
   public List<Amenity> findByCategory(String category) {

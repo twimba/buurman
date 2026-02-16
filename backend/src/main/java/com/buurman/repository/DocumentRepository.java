@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Document;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.DocumentsRecord;
 import com.buurman.mapper.DocumentRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -45,6 +46,11 @@ public class DocumentRepository {
                 .and(DOCUMENTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Document getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Document not found"));
   }
 
   public List<Document> findByIdentifiersAndTeamId(List<String> identifiers, UUID teamId) {

@@ -149,9 +149,7 @@ public class PropertyService {
 
   public PropertyResponse getProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return toResponseWithMainPhoto(property, principal.getTeamId(), true);
   }
@@ -162,9 +160,7 @@ public class PropertyService {
       String identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId(), true);
 
@@ -217,9 +213,7 @@ public class PropertyService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.getTeamId());
     log.info("Property deleted: {} for team {}", identifier, principal.getTeamId());
@@ -231,18 +225,14 @@ public class PropertyService {
   public DocumentResponse uploadDocument(
       String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return documentService.uploadDocument(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
@@ -257,26 +247,20 @@ public class PropertyService {
 
   public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return auditService.getEntityAuditLog(principal.getTeamId(), "PROPERTY", property.getId());
   }
 
   public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
       String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return photoService.uploadPhoto(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
@@ -284,13 +268,8 @@ public class PropertyService {
   public PhotoResponse setMainPhoto(
       String identifier, String photoIdentifier, UserPrincipal principal) {
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(photoIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.getTeamId());
     return photoService.setMainPhoto(photo.getId(), "PROPERTY", property.getId(), principal);
   }
 

@@ -13,7 +13,6 @@ import com.buurman.dto.request.UpdateUserProfileRequest;
 import com.buurman.dto.response.UserProfileResponse;
 import com.buurman.dto.response.UserTeamResponse;
 import com.buurman.exception.BusinessRuleException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
@@ -32,10 +31,7 @@ public class UserTeamService {
   private final PhoneNumberPolicyService phoneNumberPolicyService;
 
   public UserProfileResponse getCurrentUserProfile(UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     return toProfileResponse(user);
   }
@@ -43,10 +39,7 @@ public class UserTeamService {
   @Transactional
   public UserProfileResponse updateUserProfile(
       UpdateUserProfileRequest request, UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     String oldPhone = user.getPhone();
     String newPhone = request.phone();
@@ -87,20 +80,14 @@ public class UserTeamService {
   }
 
   public List<UserTeamResponse> getUserTeams(UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(principal.getUserId());
 
     return memberships.stream()
         .map(
             membership -> {
-              Team team =
-                  teamRepository
-                      .findById(membership.getTeamId())
-                      .orElseThrow(() -> new NotFoundException("Team not found"));
+              Team team = teamRepository.getById(membership.getTeamId());
               int memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
 
               return new UserTeamResponse(
@@ -118,18 +105,13 @@ public class UserTeamService {
 
   @Transactional
   public UserTeamResponse switchTeam(String teamIdentifier, UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is member of target team
     TeamMember membership =
-        teamMemberRepository
-            .findByUserIdAndTeamId(principal.getUserId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Not a member of this team"));
+        teamMemberRepository.getByUserIdAndTeamId(principal.getUserId(), team.getId());
 
     // Update active team
     userRepository.updateActiveTeamId(principal.getUserId(), team.getId());
@@ -149,18 +131,13 @@ public class UserTeamService {
 
   @Transactional
   public UserTeamResponse setDefaultTeam(String teamIdentifier, UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is member of target team
     TeamMember membership =
-        teamMemberRepository
-            .findByUserIdAndTeamId(principal.getUserId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Not a member of this team"));
+        teamMemberRepository.getByUserIdAndTeamId(principal.getUserId(), team.getId());
 
     // Update default team
     userRepository.updateDefaultTeamId(principal.getUserId(), team.getId());
@@ -184,9 +161,7 @@ public class UserTeamService {
 
     // Verify user is member of target team
     TeamMember membership =
-        teamMemberRepository
-            .findByUserIdAndTeamId(principal.getUserId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Not a member of this team"));
+        teamMemberRepository.getByUserIdAndTeamId(principal.getUserId(), team.getId());
 
     // Cannot leave if owner
     if (membership.isOwner()) {
@@ -197,10 +172,7 @@ public class UserTeamService {
     teamMemberRepository.softDeleteById(membership.getId());
 
     // If this was active or default team, update user
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     List<TeamMember> remainingMemberships =
         teamMemberRepository.findAllByUserId(principal.getUserId());
@@ -219,8 +191,6 @@ public class UserTeamService {
   }
 
   private Team resolveTeam(String teamIdentifier) {
-    return teamRepository
-        .findByIdentifier(teamIdentifier)
-        .orElseThrow(() -> new NotFoundException("Team not found"));
+    return teamRepository.getByIdentifier(teamIdentifier);
   }
 }

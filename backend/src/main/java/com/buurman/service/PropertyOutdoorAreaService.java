@@ -67,9 +67,7 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository
-            .findByIdentifierAndTeamId(areaIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Outdoor area not found"));
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
 
     area.setType(request.type());
     area.setAreaValue(request.areaValue());
@@ -90,17 +88,13 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository
-            .findByIdentifierAndTeamId(areaIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Outdoor area not found"));
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
 
     outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.getTeamId());
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
-    return propertyRepository
-        .findByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId())
-        .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
   }
 
   private PropertyOutdoorAreaResponse toResponse(PropertyOutdoorArea area) {

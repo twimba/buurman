@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -43,6 +44,14 @@ public class UserRepository {
 
   public Optional<User> findById(UUID id) {
     return dsl.selectFrom(USERS).where(USERS.ID.eq(id)).fetchOptional().map(mapper::toDomain);
+  }
+
+  public User getById(UUID id) {
+    return findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+  }
+
+  public User getByIdentifier(String identifier) {
+    return findByIdentifier(identifier).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
   public User save(User user) {
@@ -227,6 +236,11 @@ public class UserRepository {
         .and(USERS.DELETED_AT.isNull())
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public User getByIdentifierUnscoped(String identifier) {
+    return findByIdentifierUnscoped(identifier)
+        .orElseThrow(() -> new NotFoundException("User not found"));
   }
 
   public void updateDisabledAt(UUID userId, LocalDateTime disabledAt) {

@@ -38,10 +38,7 @@ public class PaymentInstructionService {
   }
 
   public PaymentInstructionResponse getByIdentifier(String identifier, UserPrincipal principal) {
-    PaymentInstruction pi =
-        repository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Payment instruction not found"));
+    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return mapper.toResponse(pi);
   }
 
@@ -74,10 +71,7 @@ public class PaymentInstructionService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentInstructionResponse update(
       String identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
-    PaymentInstruction pi =
-        repository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Payment instruction not found"));
+    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     // Store old values for audit
     String oldName = pi.getName();
@@ -123,10 +117,7 @@ public class PaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void delete(String identifier, UserPrincipal principal) {
-    PaymentInstruction pi =
-        repository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Payment instruction not found"));
+    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     repository.softDeleteByIdAndTeamId(pi.getId(), principal.getTeamId());
     log.info("Payment instruction deleted: {} in team {}", identifier, principal.getTeamId());

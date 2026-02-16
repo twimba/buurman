@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.CalendarFeed;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.CalendarFeedRecordMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,11 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public CalendarFeed getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Calendar feed not found"));
   }
 
   public Optional<CalendarFeed> findExistingFeed(

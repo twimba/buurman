@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import com.buurman.mapper.ContractRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -48,6 +49,11 @@ public class ContractRepository {
         .map(mapper::toDomain);
   }
 
+  public Contract getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract not found"));
+  }
+
   public Optional<Contract> findByIdAndTeamId(UUID id, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
@@ -58,6 +64,11 @@ public class ContractRepository {
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Contract getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract not found"));
   }
 
   public List<Contract> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

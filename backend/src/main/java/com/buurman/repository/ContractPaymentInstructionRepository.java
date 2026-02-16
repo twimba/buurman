@@ -20,6 +20,7 @@ import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -127,6 +128,16 @@ public class ContractPaymentInstructionRepository {
                 .and(DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public ContractPaymentInstruction getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract payment instruction not found"));
+  }
+
+  public ContractPaymentInstruction getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract payment instruction not found"));
   }
 
   public Optional<ContractPaymentInstruction> findByIdentifierAndTeamId(

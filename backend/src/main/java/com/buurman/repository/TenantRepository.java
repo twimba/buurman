@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Tenant;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.TenantsRecord;
 import com.buurman.mapper.TenantRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -51,6 +52,16 @@ public class TenantRepository {
         .where(TENANTS.ID.eq(id).and(TENANTS.TEAM_ID.eq(teamId)).and(TENANTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Tenant getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Tenant not found"));
+  }
+
+  public Tenant getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Tenant not found"));
   }
 
   public List<Tenant> findAllByTeamId(UUID teamId) {

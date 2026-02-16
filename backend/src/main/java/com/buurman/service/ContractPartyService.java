@@ -62,10 +62,7 @@ public class ContractPartyService {
       String contractIdentifier, AddContractPartyRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateContractEditable(contract);
 
@@ -124,17 +121,11 @@ public class ContractPartyService {
       String contractIdentifier, String partyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateContractEditable(contract);
 
-    ContractParty party =
-        contractPartyRepository
-            .findByIdentifierAndTeamId(partyIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Party not found or access denied"));
+    ContractParty party = contractPartyRepository.getByIdentifierAndTeamId(partyIdentifier, teamId);
 
     if (!party.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException("Party does not belong to this contract");
@@ -171,10 +162,7 @@ public class ContractPartyService {
       String contractIdentifier, ChangePrimaryTenantRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateContractEditable(contract);
 
@@ -183,9 +171,7 @@ public class ContractPartyService {
 
     // Find current primary tenant
     ContractParty currentPrimary =
-        contractPartyRepository
-            .findPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId)
-            .orElseThrow(() -> new IllegalStateException("Contract has no primary tenant"));
+        contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId);
 
     if (currentPrimary.getTenantId().equals(newTenant.getId())) {
       throw new IllegalArgumentException("This tenant is already the primary tenant");
@@ -307,12 +293,8 @@ public class ContractPartyService {
   /** Get the primary tenant for a contract. */
   public Tenant getPrimaryTenantForContract(UUID contractId, UUID teamId) {
     ContractParty primary =
-        contractPartyRepository
-            .findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
-            .orElseThrow(() -> new IllegalStateException("Contract has no primary tenant"));
-    return tenantRepository
-        .findByIdAndTeamId(primary.getTenantId(), teamId)
-        .orElseThrow(() -> new IllegalStateException("Primary tenant not found"));
+        contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contractId, teamId);
+    return tenantRepository.getByIdAndTeamId(primary.getTenantId(), teamId);
   }
 
   /** Get all parties for a contract. */
@@ -386,15 +368,11 @@ public class ContractPartyService {
   private Tenant resolveOrCreateTenant(
       String tenantIdentifier, CreateTenantRequest newTenant, UserPrincipal principal) {
     if (tenantIdentifier != null && !tenantIdentifier.isBlank()) {
-      return tenantRepository
-          .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-          .orElseThrow(() -> new IllegalArgumentException("Tenant not found: " + tenantIdentifier));
+      return tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     }
     if (newTenant != null) {
       TenantResponse created = tenantService.createTenant(newTenant, principal);
-      return tenantRepository
-          .findByIdentifierAndTeamId(created.identifier(), principal.getTeamId())
-          .orElseThrow(() -> new IllegalStateException("Failed to retrieve newly created tenant"));
+      return tenantRepository.getByIdentifierAndTeamId(created.identifier(), principal.getTeamId());
     }
     throw new IllegalArgumentException("Either tenantIdentifier or newTenant must be provided");
   }

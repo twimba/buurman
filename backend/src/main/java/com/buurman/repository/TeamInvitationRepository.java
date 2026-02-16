@@ -12,6 +12,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.TeamInvitation;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TeamInvitationRecordMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -88,6 +89,10 @@ public class TeamInvitationRepository {
         .where(TEAM_INVITATIONS.TOKEN.eq(token))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public TeamInvitation getByToken(String token) {
+    return findByToken(token).orElseThrow(() -> new NotFoundException("Invitation not found"));
   }
 
   public List<TeamInvitation> findByTeamIdAndAcceptedAtIsNull(UUID teamId) {

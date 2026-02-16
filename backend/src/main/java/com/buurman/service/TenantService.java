@@ -121,10 +121,7 @@ public class TenantService {
   }
 
   public TenantResponse getTenant(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return toResponse(tenant, principal.getTeamId());
   }
@@ -133,10 +130,7 @@ public class TenantService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse updateTenant(
       String identifier, UpdateTenantRequest request, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     if (!tenant.getEmail().equals(request.email())) {
       tenantRepository
@@ -173,10 +167,7 @@ public class TenantService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteTenant(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     if (tenant.getCurrentPropertyId() != null) {
       unlinkTenantInternal(tenant.getId(), principal);
@@ -193,15 +184,11 @@ public class TenantService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse linkTenantToProperty(
       String identifier, LinkTenantToPropertyRequest request, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(request.propertyIdentifier(), principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+        propertyRepository.getByIdentifierAndTeamId(
+            request.propertyIdentifier(), principal.getTeamId());
 
     if (tenant.getCurrentPropertyId() != null) {
       throw new IllegalArgumentException("Tenant is already linked to a property. Unlink first.");
@@ -248,10 +235,7 @@ public class TenantService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse unlinkTenantFromProperty(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     if (tenant.getCurrentPropertyId() == null) {
       throw new IllegalArgumentException("Tenant is not linked to any property");
@@ -293,10 +277,7 @@ public class TenantService {
 
   public List<PropertyTenantHistoryResponse> getTenantHistory(
       String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     List<PropertyTenantHistory> history =
         historyRepository.findByTenantId(tenant.getId(), principal.getTeamId());
@@ -304,28 +285,19 @@ public class TenantService {
   }
 
   public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return auditService.getEntityAuditLog(principal.getTeamId(), "TENANT", tenant.getId());
   }
 
   public DocumentResponse uploadDocument(
       String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return documentService.uploadDocument(
         file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return documentService.getDocuments("TENANT", tenant.getId(), principal);
   }
 
@@ -339,64 +311,44 @@ public class TenantService {
   }
 
   public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return photoService.getPhotos("TENANT", tenant.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
       String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
     return photoService.uploadPhoto(
         file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
   }
 
   public PhotoResponse setMainPhoto(
       String identifier, String photoIdentifier, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
-    Photo photo =
-        photoRepository
-            .findByIdentifierAndTeamId(photoIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Photo not found"));
+    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.getTeamId());
     return photoService.setMainPhoto(photo.getId(), "TENANT", tenant.getId(), principal);
   }
 
   public TenantAddressResponse createAddress(
       String tenantIdentifier, CreateTenantAddressRequest request, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     return addressService.createAddress(tenant.getId(), request, principal);
   }
 
   public List<TenantAddressResponse> getAddresses(
       String tenantIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     return addressService.getAddresses(tenant.getId(), principal);
   }
 
   public TenantAddressResponse getAddress(
       String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     TenantAddress address =
-        addressRepository
-            .findByIdentifierAndTeamId(addressIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found"));
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
     return addressService.getAddress(tenant.getId(), address.getId(), principal);
   }
 
@@ -406,26 +358,18 @@ public class TenantService {
       UpdateTenantAddressRequest request,
       UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     TenantAddress address =
-        addressRepository
-            .findByIdentifierAndTeamId(addressIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found"));
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
     return addressService.updateAddress(tenant.getId(), address.getId(), request, principal);
   }
 
   public void deleteAddress(
       String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository
-            .findByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
     TenantAddress address =
-        addressRepository
-            .findByIdentifierAndTeamId(addressIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found"));
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
     addressService.deleteAddress(tenant.getId(), address.getId(), principal);
   }
 
@@ -499,10 +443,7 @@ public class TenantService {
 
   private PropertyTenantHistoryResponse toHistoryResponse(
       PropertyTenantHistory history, UUID teamId) {
-    Property property =
-        propertyRepository
-            .findByIdAndTeamId(history.getPropertyId(), teamId)
-            .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+    Property property = propertyRepository.getByIdAndTeamId(history.getPropertyId(), teamId);
 
     PropertySummary propertySummary =
         new PropertySummary(
@@ -530,10 +471,7 @@ public class TenantService {
 
   /** Internal method for unlinking by UUID (used during delete). */
   private void unlinkTenantInternal(UUID tenantId, UserPrincipal principal) {
-    Tenant tenant =
-        tenantRepository
-            .findByIdAndTeamId(tenantId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
 
     if (tenant.getCurrentPropertyId() == null) {
       return;

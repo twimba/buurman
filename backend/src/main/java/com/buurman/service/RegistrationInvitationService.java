@@ -20,7 +20,6 @@ import com.buurman.dto.response.backoffice.RegistrationInvitationDetailResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.RegistrationInvitationRepository;
 import com.buurman.repository.RegistrationInvitationUsageRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -96,10 +95,7 @@ public class RegistrationInvitationService {
 
   @Transactional(readOnly = true)
   public RegistrationInvitationDetailResponse getByIdentifier(String identifier) {
-    RegistrationInvitation invitation =
-        invitationRepository
-            .findByIdentifier(identifier)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     List<RegistrationInvitationUsage> usages =
         usageRepository.findByInvitationId(invitation.getId());
@@ -109,10 +105,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public void revoke(String identifier, BackofficePrincipal principal) {
-    RegistrationInvitation invitation =
-        invitationRepository
-            .findByIdentifier(identifier)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (invitation.getRevokedAt() != null) {
       throw new BusinessRuleException("Invitation is already revoked");
@@ -163,10 +156,7 @@ public class RegistrationInvitationService {
   @Transactional
   public void sendInvitation(
       String identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
-    RegistrationInvitation invitation =
-        invitationRepository
-            .findByIdentifier(identifier)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (!invitation.isValid()) {
       throw new BusinessRuleException("Cannot send an invalid invitation");

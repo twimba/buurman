@@ -56,9 +56,7 @@ public class NotificationCenterService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationResponse getNotification(UserPrincipal principal, String identifier) {
     Notification notification =
-        notificationRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notificationRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return toResponse(notification);
   }
@@ -104,9 +102,7 @@ public class NotificationCenterService {
   public NotificationResponse refreshNotificationStatus(
       UserPrincipal principal, String identifier) {
     Notification notification =
-        notificationRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new RuntimeException("Notification not found"));
+        notificationRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     Notification updated = deliveryStatusLookupService.refreshStatus(notification);
     return toResponse(updated);

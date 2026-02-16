@@ -20,7 +20,6 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamSettings;
 import com.buurman.exception.BusinessRuleException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
@@ -86,10 +85,7 @@ public class PaymentSchedulingService {
 
   @Transactional
   public int generateFuturePaymentsForContract(UUID contractId, UUID teamId, UUID userId) {
-    Contract contract =
-        contractRepository
-            .findByIdAndTeamId(contractId, teamId)
-            .orElseThrow(() -> new NotFoundException("Contract not found"));
+    Contract contract = contractRepository.getByIdAndTeamId(contractId, teamId);
 
     if (contract.getStatus() != ACTIVE) {
       log.debug(
@@ -97,8 +93,7 @@ public class PaymentSchedulingService {
       return 0;
     }
 
-    Team team =
-        teamRepository.findById(teamId).orElseThrow(() -> new NotFoundException("Team not found"));
+    Team team = teamRepository.getById(teamId);
 
     TeamSettings settings = team.getSettings();
     if (settings == null || settings.getPayments() == null) {
@@ -118,10 +113,7 @@ public class PaymentSchedulingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public int generatePaymentsManually(UUID contractId, UUID teamId, UUID userId, int count) {
-    Contract contract =
-        contractRepository
-            .findByIdAndTeamId(contractId, teamId)
-            .orElseThrow(() -> new NotFoundException("Contract not found"));
+    Contract contract = contractRepository.getByIdAndTeamId(contractId, teamId);
 
     if (contract.getStatus() != ACTIVE) {
       throw new BusinessRuleException("Can only generate payments for ACTIVE contracts");

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.NotificationRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -92,6 +93,11 @@ public class NotificationRepository {
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Notification getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
   public Optional<Notification> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -273,6 +279,11 @@ public class NotificationRepository {
         .map(
             r ->
                 mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+  }
+
+  public Notification getByIdentifierUnscoped(String identifier) {
+    return findByIdentifierUnscoped(identifier)
+        .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
   public long countAll() {

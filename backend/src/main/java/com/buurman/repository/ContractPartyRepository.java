@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -91,6 +92,16 @@ public class ContractPartyRepository {
         .where(CONTRACT_ID.in(contractIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .orderBy(CONTRACT_ID.asc(), ROLE.asc(), CREATED_AT.asc())
         .fetch(this::toDomain);
+  }
+
+  public ContractParty getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract party not found"));
+  }
+
+  public ContractParty getPrimaryTenantByContractIdAndTeamId(UUID contractId, UUID teamId) {
+    return findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
+        .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
 
   public Optional<ContractParty> findByIdentifierAndTeamId(String identifier, UUID teamId) {

@@ -178,8 +178,7 @@ public class AuthService {
   }
 
   public UserResponse getCurrentUser(UUID userId) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     // Get active membership based on user's activeTeamId
     TeamMember member = getActiveMembership(user);
@@ -190,8 +189,7 @@ public class AuthService {
 
   @Transactional
   public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
@@ -240,8 +238,7 @@ public class AuthService {
 
   @Transactional
   public UserResponse verifyEmail(UUID userId, String code) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     if (user.getEmailVerifiedAt() != null) {
       throw new VerificationCodeException("Email is already verified");
@@ -276,8 +273,7 @@ public class AuthService {
 
   @Transactional
   public void resendVerificationCode(UUID userId) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     if (user.getEmailVerifiedAt() != null) {
       throw new VerificationCodeException("Email is already verified");

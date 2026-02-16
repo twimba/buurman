@@ -33,7 +33,6 @@ import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.ForbiddenException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.TeamInvitationRepository;
 import com.buurman.repository.TeamMemberRepository;
@@ -59,10 +58,7 @@ public class TeamService {
   private final Clock clock;
 
   public TeamResponse getCurrentTeam(UserPrincipal principal) {
-    Team team =
-        teamRepository
-            .findById(principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Team not found"));
+    Team team = teamRepository.getById(principal.getTeamId());
 
     long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
     return teamMapper.toResponse(team, memberCount);
@@ -151,16 +147,10 @@ public class TeamService {
   }
 
   public InvitationResponse getInvitation(String token) {
-    TeamInvitation invitation =
-        invitationRepository
-            .findByToken(token)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    TeamInvitation invitation = invitationRepository.getByToken(token);
 
     // Fetch team and inviter details for the response
-    Team team =
-        teamRepository
-            .findById(invitation.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Team not found"));
+    Team team = teamRepository.getById(invitation.getTeamId());
 
     String inviterName = "Team Admin";
     if (invitation.getInvitedBy() != null) {
@@ -179,10 +169,7 @@ public class TeamService {
   }
 
   public List<InvitationResponse> getPendingInvitationsForUser(UserPrincipal principal) {
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     List<TeamInvitation> pending = invitationRepository.findPendingByEmail(user.getEmail());
 
@@ -261,10 +248,7 @@ public class TeamService {
       throw new ForbiddenException("Access denied");
     }
 
-    TeamInvitation invitation =
-        invitationRepository
-            .findByToken(token)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    TeamInvitation invitation = invitationRepository.getByToken(token);
 
     if (!invitation.getTeamId().equals(team.getId())) {
       throw new BusinessRuleException("Invitation does not belong to this team");
@@ -312,10 +296,7 @@ public class TeamService {
 
   @Transactional
   public void acceptInvitation(String token, UserPrincipal principal) {
-    TeamInvitation invitation =
-        invitationRepository
-            .findByToken(token)
-            .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    TeamInvitation invitation = invitationRepository.getByToken(token);
 
     // Validate
     if (invitation.getAcceptedAt() != null) {
@@ -335,10 +316,7 @@ public class TeamService {
     }
 
     // Create team member
-    User user =
-        userRepository
-            .findById(principal.getUserId())
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User user = userRepository.getById(principal.getUserId());
 
     TeamMember member = new TeamMember();
     member.setTeamId(invitation.getTeamId());
@@ -394,15 +372,9 @@ public class TeamService {
     }
 
     // Resolve user by identifier
-    User targetUser =
-        userRepository
-            .findByIdentifier(userIdentifier)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User targetUser = userRepository.getByIdentifier(userIdentifier);
 
-    TeamMember member =
-        teamMemberRepository
-            .findByUserIdAndTeamId(targetUser.getId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Member not found"));
+    TeamMember member = teamMemberRepository.getByUserIdAndTeamId(targetUser.getId(), team.getId());
 
     // Cannot remove self
     if (member.getUserId().equals(principal.getUserId())) {
@@ -427,15 +399,9 @@ public class TeamService {
     }
 
     // Resolve user by identifier
-    User targetUser =
-        userRepository
-            .findByIdentifier(userIdentifier)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User targetUser = userRepository.getByIdentifier(userIdentifier);
 
-    TeamMember member =
-        teamMemberRepository
-            .findByUserIdAndTeamId(targetUser.getId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Member not found"));
+    TeamMember member = teamMemberRepository.getByUserIdAndTeamId(targetUser.getId(), team.getId());
 
     // Cannot change own role
     if (member.getUserId().equals(principal.getUserId())) {
@@ -551,10 +517,7 @@ public class TeamService {
     }
 
     // Resolve new owner by identifier
-    User newOwnerUser =
-        userRepository
-            .findByIdentifier(newOwnerIdentifier)
-            .orElseThrow(() -> new NotFoundException("User not found"));
+    User newOwnerUser = userRepository.getByIdentifier(newOwnerIdentifier);
 
     // Cannot transfer to self
     if (newOwnerUser.getId().equals(principal.getUserId())) {
@@ -563,15 +526,11 @@ public class TeamService {
 
     // Find new owner's membership
     TeamMember newOwnerMember =
-        teamMemberRepository
-            .findByUserIdAndTeamId(newOwnerUser.getId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("User is not a member of this team"));
+        teamMemberRepository.getByUserIdAndTeamId(newOwnerUser.getId(), team.getId());
 
     // Find current owner's membership
     TeamMember currentOwnerMember =
-        teamMemberRepository
-            .findByUserIdAndTeamId(principal.getUserId(), team.getId())
-            .orElseThrow(() -> new NotFoundException("Current owner membership not found"));
+        teamMemberRepository.getByUserIdAndTeamId(principal.getUserId(), team.getId());
 
     // Transfer ownership
     currentOwnerMember.setOwner(false);
@@ -590,9 +549,7 @@ public class TeamService {
   }
 
   private Team resolveTeam(String teamIdentifier) {
-    return teamRepository
-        .findByIdentifier(teamIdentifier)
-        .orElseThrow(() -> new NotFoundException("Team not found"));
+    return teamRepository.getByIdentifier(teamIdentifier);
   }
 
   private String formatRole(String role) {

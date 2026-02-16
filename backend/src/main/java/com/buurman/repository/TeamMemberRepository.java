@@ -12,6 +12,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.TeamMember;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TeamMemberRecordMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -97,6 +98,11 @@ public class TeamMemberRepository {
                 .and(TEAM_MEMBERS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public TeamMember getByUserIdAndTeamId(UUID userId, UUID teamId) {
+    return findByUserIdAndTeamId(userId, teamId)
+        .orElseThrow(() -> new NotFoundException("Team member not found"));
   }
 
   public Optional<TeamMember> findOwnerByTeamId(UUID teamId) {

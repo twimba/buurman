@@ -72,9 +72,8 @@ public class CalendarFeedService {
               "contractIdentifier is required for CONTRACT feed type");
         }
         Contract contract =
-            contractRepository
-                .findByIdentifierAndTeamId(request.contractIdentifier(), principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+            contractRepository.getByIdentifierAndTeamId(
+                request.contractIdentifier(), principal.getTeamId());
         contractId = contract.getId();
       }
       case PROPERTY_PAYMENTS -> {
@@ -83,9 +82,8 @@ public class CalendarFeedService {
               "propertyIdentifier is required for PROPERTY_PAYMENTS feed type");
         }
         Property property =
-            propertyRepository
-                .findByIdentifierAndTeamId(request.propertyIdentifier(), principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+            propertyRepository.getByIdentifierAndTeamId(
+                request.propertyIdentifier(), principal.getTeamId());
         propertyId = property.getId();
       }
       case TENANT_PAYMENTS -> {
@@ -94,9 +92,8 @@ public class CalendarFeedService {
               "tenantIdentifier is required for TENANT_PAYMENTS feed type");
         }
         Tenant tenant =
-            tenantRepository
-                .findByIdentifierAndTeamId(request.tenantIdentifier(), principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+            tenantRepository.getByIdentifierAndTeamId(
+                request.tenantIdentifier(), principal.getTeamId());
         tenantId = tenant.getId();
       }
       case ALL_PAYMENTS -> {
@@ -138,9 +135,7 @@ public class CalendarFeedService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public CalendarFeedResponse rotateFeedToken(String identifier, UserPrincipal principal) {
     CalendarFeed feed =
-        calendarFeedRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Calendar feed not found"));
+        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     verifyOwnership(feed, principal);
 
@@ -156,9 +151,7 @@ public class CalendarFeedService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteFeed(String identifier, UserPrincipal principal) {
     CalendarFeed feed =
-        calendarFeedRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Calendar feed not found"));
+        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     verifyOwnership(feed, principal);
 

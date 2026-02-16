@@ -63,9 +63,8 @@ public class ExpenseService {
   public ExpenseResponse createExpense(CreateExpenseRequest request, UserPrincipal principal) {
     // Resolve property by identifier
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(request.propertyIdentifier(), principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+        propertyRepository.getByIdentifierAndTeamId(
+            request.propertyIdentifier(), principal.getTeamId());
 
     Expense expense = expenseMapper.toEntity(request);
     expense.setPropertyId(property.getId());
@@ -126,10 +125,7 @@ public class ExpenseService {
 
   @Transactional(readOnly = true)
   public ExpenseResponse getExpense(String identifier, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return enrichExpenseResponse(expense, principal.getTeamId());
   }
@@ -191,9 +187,7 @@ public class ExpenseService {
       String propertyIdentifier, UserPrincipal principal) {
     // Resolve property identifier to UUID
     Property property =
-        propertyRepository
-            .findByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+        propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
 
     List<Expense> expenses =
         expenseRepository.findByPropertyId(property.getId(), principal.getTeamId());
@@ -217,10 +211,7 @@ public class ExpenseService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ExpenseResponse updateExpense(
       String identifier, UpdateExpenseRequest request, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     ExpenseResponse oldState = enrichExpenseResponse(expense, principal.getTeamId());
 
@@ -249,10 +240,7 @@ public class ExpenseService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteExpense(String identifier, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     expenseRepository.softDeleteByIdAndTeamId(expense.getId(), principal.getTeamId());
 
@@ -265,30 +253,21 @@ public class ExpenseService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadExpenseDocument(
       String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return documentService.uploadDocument(
         file, "EXPENSE", expense.getId(), expense.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getExpenseDocuments(String identifier, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return documentService.getDocuments("EXPENSE", expense.getId(), principal);
   }
 
   public List<RecentActivityResponse> getExpenseAuditLog(
       String identifier, UserPrincipal principal) {
-    Expense expense =
-        expenseRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Expense not found or access denied"));
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return auditService.getEntityAuditLog(principal.getTeamId(), "EXPENSE", expense.getId());
   }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Photo;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.PhotosRecord;
 import com.buurman.mapper.PhotoRecordMapper;
 import com.buurman.util.PaginationHelper;
@@ -47,6 +48,11 @@ public class PhotoRepository {
         .map(mapper::toDomain);
   }
 
+  public Photo getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Photo not found"));
+  }
+
   public List<Photo> findByIdentifiersAndTeamId(List<String> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
@@ -67,6 +73,11 @@ public class PhotoRepository {
         .where(PHOTOS.ID.eq(id).and(PHOTOS.TEAM_ID.eq(teamId)).and(PHOTOS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
+  }
+
+  public Photo getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Photo not found"));
   }
 
   public List<Photo> findByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {

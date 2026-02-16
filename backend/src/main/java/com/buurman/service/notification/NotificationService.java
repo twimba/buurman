@@ -23,7 +23,6 @@ import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
 import com.buurman.exception.ExternalServiceException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
@@ -172,9 +171,7 @@ public class NotificationService {
   @Transactional
   public Notification resend(UUID teamId, String notificationIdentifier, UUID userId) {
     Notification original =
-        notificationRepository
-            .findByIdentifierAndTeamId(notificationIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Notification not found"));
+        notificationRepository.getByIdentifierAndTeamId(notificationIdentifier, teamId);
 
     NotificationChannelSender sender = channelSenders.get(original.getChannel());
     if (sender == null) {

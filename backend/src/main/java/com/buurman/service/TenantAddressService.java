@@ -40,10 +40,7 @@ public class TenantAddressService {
   public TenantAddressResponse createAddress(
       UUID tenantId, CreateTenantAddressRequest request, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    Tenant tenant =
-        tenantRepository
-            .findByIdAndTeamId(tenantId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
+    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
 
     // Check for unique ACTIVE CURRENT address constraint
     if (request.addressType() == TenantAddress.AddressType.CURRENT
@@ -110,9 +107,7 @@ public class TenantAddressService {
 
   public List<TenantAddressResponse> getAddresses(UUID tenantId, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    tenantRepository
-        .findByIdAndTeamId(tenantId, principal.getTeamId())
-        .orElseThrow(() -> new IllegalArgumentException("Tenant not found or access denied"));
+    tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
 
     List<TenantAddress> addresses =
         addressRepository.findByTenantId(tenantId, principal.getTeamId());
@@ -120,10 +115,7 @@ public class TenantAddressService {
   }
 
   public TenantAddressResponse getAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address =
-        addressRepository
-            .findByIdAndTeamId(addressId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
@@ -134,10 +126,7 @@ public class TenantAddressService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantAddressResponse updateAddress(
       UUID tenantId, UUID addressId, UpdateTenantAddressRequest request, UserPrincipal principal) {
-    TenantAddress address =
-        addressRepository
-            .findByIdAndTeamId(addressId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
@@ -264,10 +253,7 @@ public class TenantAddressService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address =
-        addressRepository
-            .findByIdAndTeamId(addressId, principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Address not found or access denied"));
+    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }

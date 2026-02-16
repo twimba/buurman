@@ -56,7 +56,6 @@ import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantSummary;
 import com.buurman.exception.BusinessRuleException;
-import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
@@ -108,9 +107,7 @@ public class PaymentService {
 
     // Resolve contract by identifier
     Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(request.contractIdentifier(), teamId)
-            .orElseThrow(() -> new NotFoundException("Contract not found or access denied"));
+        contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
@@ -151,10 +148,7 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return enrichPaymentResponse(payment, principal.getTeamId());
   }
@@ -213,10 +207,7 @@ public class PaymentService {
       String contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Contract contract =
-        contractRepository
-            .findByIdentifierAndTeamId(contractIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Contract not found or access denied"));
+    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
@@ -239,10 +230,7 @@ public class PaymentService {
       String identifier, UpdatePaymentRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -274,10 +262,7 @@ public class PaymentService {
       String identifier, MarkPaidRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     if (payment.getStatus() == PAID) {
       throw new BusinessRuleException("Payment is already marked as paid");
@@ -352,10 +337,7 @@ public class PaymentService {
       String paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
     UUID paymentId = payment.getId();
 
@@ -426,10 +408,7 @@ public class PaymentService {
       String paymentIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
     return receivalRepository.findByPaymentIdAndTeamId(payment.getId(), teamId).stream()
         .map(receivalMapper::toResponse)
@@ -445,17 +424,13 @@ public class PaymentService {
       UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
     UUID paymentId = payment.getId();
 
     PaymentReceival receival =
-        receivalRepository
-            .findByIdentifierAndPaymentIdAndTeamId(receivalIdentifier, paymentId, teamId)
-            .orElseThrow(() -> new NotFoundException("Receival not found or access denied"));
+        receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
+            receivalIdentifier, paymentId, teamId);
 
     // Validate new amount: total received minus old amount plus new amount must not exceed payment
     // amount
@@ -507,17 +482,13 @@ public class PaymentService {
       String paymentIdentifier, String receivalIdentifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
     UUID paymentId = payment.getId();
 
     PaymentReceival receival =
-        receivalRepository
-            .findByIdentifierAndPaymentIdAndTeamId(receivalIdentifier, paymentId, teamId)
-            .orElseThrow(() -> new NotFoundException("Receival not found or access denied"));
+        receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
+            receivalIdentifier, paymentId, teamId);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -589,10 +560,7 @@ public class PaymentService {
   public void deletePayment(String identifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(identifier, teamId)
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     if (payment.getStatus() == PAID) {
       throw new BusinessRuleException("Cannot delete a paid payment. Please cancel it instead.");
@@ -684,43 +652,33 @@ public class PaymentService {
       String notes,
       UserPrincipal principal) {
     Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
     return documentService.uploadDocument(
         file, "PAYMENT", payment.getId(), payment.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
     return documentService.getDocuments("PAYMENT", payment.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Document not found or access denied"));
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository
-            .findByIdentifierAndTeamId(documentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Document not found or access denied"));
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository
-            .findByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId())
-            .orElseThrow(() -> new NotFoundException("Payment not found or access denied"));
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
     return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", payment.getId());
   }
 

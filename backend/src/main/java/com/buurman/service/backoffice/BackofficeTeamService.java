@@ -54,10 +54,7 @@ public class BackofficeTeamService {
 
   @Transactional(readOnly = true)
   public BackofficeTeamDetailResponse getTeam(String identifier) {
-    Team team =
-        teamRepository
-            .findByIdentifierForBackoffice(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+    Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     // Members + batch user lookup
     List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
@@ -121,10 +118,7 @@ public class BackofficeTeamService {
   @Transactional
   public BackofficeTeamResponse updateTeamName(
       String identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
-    Team team =
-        teamRepository
-            .findByIdentifierForBackoffice(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+    Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     team.setName(request.name());
     teamRepository.save(team);
@@ -139,10 +133,7 @@ public class BackofficeTeamService {
 
   @Transactional
   public void deleteTeam(String identifier, BackofficePrincipal principal) {
-    Team team =
-        teamRepository
-            .findByIdentifierForBackoffice(identifier)
-            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+    Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     teamRepository.softDeleteById(team.getId());
     log.info(

@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyAmenity;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +49,12 @@ public class PropertyAmenityRepository {
                 .and(PROPERTY_AMENITIES.DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public PropertyAmenity getByPropertyIdAndAmenityIdAndTeamId(
+      UUID propertyId, UUID amenityId, UUID teamId) {
+    return findByPropertyIdAndAmenityIdAndTeamId(propertyId, amenityId, teamId)
+        .orElseThrow(() -> new NotFoundException("Property amenity not found"));
   }
 
   public PropertyAmenity save(PropertyAmenity pa) {

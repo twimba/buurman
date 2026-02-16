@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.TenantAddress;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -128,6 +129,16 @@ public class TenantAddressRepository {
                 .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
                 .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
         .fetchOptionalInto(TenantAddress.class);
+  }
+
+  public TenantAddress getByIdentifierAndTeamId(String identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Tenant address not found"));
+  }
+
+  public TenantAddress getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Tenant address not found"));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

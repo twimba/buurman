@@ -15,7 +15,6 @@ import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
-import com.buurman.exception.NotFoundException;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.BackofficePrincipal;
@@ -67,20 +66,14 @@ public class BackofficeNotificationService {
 
   @Transactional(readOnly = true)
   public BackofficeNotificationResponse getNotification(String identifier) {
-    Notification notification =
-        notificationRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new NotFoundException("Notification not found"));
+    Notification notification = notificationRepository.getByIdentifierUnscoped(identifier);
     return toResponse(notification);
   }
 
   @Transactional
   public BackofficeNotificationResponse resendNotification(
       String identifier, BackofficePrincipal principal) {
-    Notification original =
-        notificationRepository
-            .findByIdentifierUnscoped(identifier)
-            .orElseThrow(() -> new NotFoundException("Notification not found"));
+    Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
         notificationService.resend(original.getTeamId(), original.getIdentifier(), null);

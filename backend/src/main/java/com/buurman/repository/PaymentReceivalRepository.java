@@ -23,6 +23,7 @@ import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentReceival;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -77,6 +78,12 @@ public class PaymentReceivalRepository {
                 .and(DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
+  }
+
+  public PaymentReceival getByIdentifierAndPaymentIdAndTeamId(
+      String identifier, UUID paymentId, UUID teamId) {
+    return findByIdentifierAndPaymentIdAndTeamId(identifier, paymentId, teamId)
+        .orElseThrow(() -> new NotFoundException("Payment receival not found"));
   }
 
   public Optional<PaymentReceival> findByIdAndTeamId(UUID id, UUID teamId) {

@@ -52,13 +52,7 @@ public class PropertyAmenityService {
       String propertyIdentifier, PropertyAmenityRequest request, UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
-    Amenity amenity =
-        amenityRepository
-            .findByIdentifier(request.amenityIdentifier())
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Amenity not found: " + request.amenityIdentifier()));
+    Amenity amenity = amenityRepository.getByIdentifier(request.amenityIdentifier());
 
     propertyAmenityRepository
         .findByPropertyIdAndAmenityIdAndTeamId(
@@ -87,17 +81,11 @@ public class PropertyAmenityService {
       String propertyIdentifier, String amenityIdentifier, UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
-    Amenity amenity =
-        amenityRepository
-            .findByIdentifier(amenityIdentifier)
-            .orElseThrow(
-                () -> new IllegalArgumentException("Amenity not found: " + amenityIdentifier));
+    Amenity amenity = amenityRepository.getByIdentifier(amenityIdentifier);
 
     PropertyAmenity pa =
-        propertyAmenityRepository
-            .findByPropertyIdAndAmenityIdAndTeamId(
-                property.getId(), amenity.getId(), principal.getTeamId())
-            .orElseThrow(() -> new IllegalArgumentException("Amenity not linked to this property"));
+        propertyAmenityRepository.getByPropertyIdAndAmenityIdAndTeamId(
+            property.getId(), amenity.getId(), principal.getTeamId());
 
     propertyAmenityRepository.softDeleteByIdAndTeamId(pa.getId(), principal.getTeamId());
   }
@@ -135,8 +123,6 @@ public class PropertyAmenityService {
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
-    return propertyRepository
-        .findByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId())
-        .orElseThrow(() -> new IllegalArgumentException("Property not found"));
+    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
   }
 }

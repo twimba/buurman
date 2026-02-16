@@ -39,8 +39,7 @@ public class PhoneVerificationService {
 
   @Transactional
   public void sendVerificationCode(UUID userId) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     if (user.getPhone() == null || user.getPhone().isBlank()) {
       throw new VerificationCodeException("No phone number to verify");
@@ -79,8 +78,7 @@ public class PhoneVerificationService {
 
   @Transactional
   public UserProfileResponse verifyPhone(UUID userId, String code) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     if (user.getPhone() == null || user.getPhone().isBlank()) {
       throw new VerificationCodeException("No phone number to verify");
@@ -117,8 +115,7 @@ public class PhoneVerificationService {
 
   @Transactional
   public UserProfileResponse cancelVerification(UUID userId) {
-    User user =
-        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    User user = userRepository.getById(userId);
 
     if (user.getPhone() == null || user.getPhone().isBlank()) {
       throw new VerificationCodeException("No phone number to cancel verification for");

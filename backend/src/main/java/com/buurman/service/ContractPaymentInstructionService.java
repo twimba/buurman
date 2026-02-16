@@ -157,10 +157,7 @@ public class ContractPaymentInstructionService {
     validateEffectiveFrom(request.effectiveFrom(), contract);
 
     ContractPaymentInstruction existing =
-        cpiRepository
-            .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
-            .orElseThrow(
-                () -> new IllegalArgumentException("Contract payment instruction not found"));
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
 
     if (!existing.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -193,11 +190,8 @@ public class ContractPaymentInstructionService {
     if (request.paymentInstructionIdentifier() != null
         && !Boolean.TRUE.equals(request.isCustom())) {
       PaymentInstruction template =
-          piRepository
-              .findByIdentifierAndTeamId(
-                  request.paymentInstructionIdentifier(), principal.getTeamId())
-              .orElseThrow(
-                  () -> new IllegalArgumentException("Payment instruction template not found"));
+          piRepository.getByIdentifierAndTeamId(
+              request.paymentInstructionIdentifier(), principal.getTeamId());
       cpi.setPaymentInstructionId(template.getId());
       cpi.setIsCustom(false);
     } else {
@@ -238,10 +232,7 @@ public class ContractPaymentInstructionService {
       String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
-        cpiRepository
-            .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
-            .orElseThrow(
-                () -> new IllegalArgumentException("Contract payment instruction not found"));
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
 
     if (!cpi.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -271,9 +262,7 @@ public class ContractPaymentInstructionService {
   }
 
   private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
-    return contractRepository
-        .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-        .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+    return contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
   }
 
   private void validateEffectiveFrom(LocalDate effectiveFrom, Contract contract) {
@@ -308,11 +297,8 @@ public class ContractPaymentInstructionService {
     if (request.paymentInstructionIdentifier() != null
         && !Boolean.TRUE.equals(request.isCustom())) {
       PaymentInstruction template =
-          piRepository
-              .findByIdentifierAndTeamId(
-                  request.paymentInstructionIdentifier(), principal.getTeamId())
-              .orElseThrow(
-                  () -> new IllegalArgumentException("Payment instruction template not found"));
+          piRepository.getByIdentifierAndTeamId(
+              request.paymentInstructionIdentifier(), principal.getTeamId());
       cpi.setPaymentInstructionId(template.getId());
       cpi.setIsCustom(false);
     } else {
