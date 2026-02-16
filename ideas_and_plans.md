@@ -24,7 +24,9 @@ Rework the tenant section to be less about tenants but be more of people that we
 
 When creating a new tenant make the phone number and email optional.
 
-In the contract edit form the contract party selector and the role (Guarantor, primary, etc) is missaligned!
+Add page to the backoffice with build information of the app, backoffic and backend
+
+Add to the backoffice a page with informnation on the flyway migrations
 
 Update the website to have a call to action for the potential customer to try out the demo version.
 This should be a link to prepopulated login page with the demo.user@buurman.io username and buurman password.

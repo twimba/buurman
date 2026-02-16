@@ -54,8 +54,8 @@ export const TenantForm = ({
     if (!formData.firstName.trim())
       newErrors.firstName = 'First name is required';
     if (
-      formData.email.trim() &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      formData.email?.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email!)
     ) {
       newErrors.email = 'Email must be valid';
     }
@@ -75,8 +75,8 @@ export const TenantForm = ({
     try {
       await onSubmit({
         ...formData,
-        email: formData.email.trim() || null,
-        phone: formData.phone?.trim() || null,
+        email: formData.email?.trim() || undefined,
+        phone: formData.phone?.trim() || undefined,
       });
       navigate(tenant ? `/tenants/${tenant.identifier}` : '/tenants');
     } catch (error) {

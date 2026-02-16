@@ -55,8 +55,8 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
-      KC_DB_USERNAME: ${DB_KEYCLOAK_USERNAME:-keycloak}
-      KC_DB_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${DB_KEYCLOAK_USERNAME:-keycloak}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${DB_KEYCLOAK_PASSWORD:-keycloak}
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY_HEADERS: xforwarded

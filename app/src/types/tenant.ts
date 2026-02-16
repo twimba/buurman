@@ -10,7 +10,7 @@ export interface TenantResponse {
   identifier: string;
   firstName: string;
   lastName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
@@ -26,14 +26,14 @@ export interface TenantSummary {
   identifier: string;
   firstName: string;
   lastName?: string;
-  email: string;
+  email?: string;
   phone?: string;
 }
 
 export interface CreateTenantRequest {
   firstName: string;
   lastName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
@@ -43,7 +43,7 @@ export interface CreateTenantRequest {
 export interface UpdateTenantRequest {
   firstName: string;
   lastName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
