@@ -4,6 +4,8 @@ export enum PaymentMethod {
   CASH = 'CASH',
   CHECK = 'CHECK',
   DIRECT_DEBIT = 'DIRECT_DEBIT',
+  IDEAL_WERO = 'IDEAL_WERO',
+  ZELLE = 'ZELLE',
   OTHER = 'OTHER',
 }
 
@@ -13,6 +15,8 @@ export const PaymentMethodLabels: Record<PaymentMethod, string> = {
   [PaymentMethod.CASH]: 'Cash',
   [PaymentMethod.CHECK]: 'Check',
   [PaymentMethod.DIRECT_DEBIT]: 'Direct Debit',
+  [PaymentMethod.IDEAL_WERO]: 'iDEAL / Wero',
+  [PaymentMethod.ZELLE]: 'Zelle',
   [PaymentMethod.OTHER]: 'Other',
 };
 

@@ -100,7 +100,9 @@ export const PaymentInstructionsSection = () => {
 
   const showBankFields =
     formData.paymentMethod === PaymentMethod.BANK_TRANSFER ||
-    formData.paymentMethod === PaymentMethod.DIRECT_DEBIT;
+    formData.paymentMethod === PaymentMethod.DIRECT_DEBIT ||
+    formData.paymentMethod === PaymentMethod.IDEAL_WERO ||
+    formData.paymentMethod === PaymentMethod.ZELLE;
 
   if (isLoading) {
     return (
@@ -247,7 +249,7 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                      BIC/SWIFT
+                      BIC / SWIFT
                     </label>
                     <input
                       type="text"
@@ -256,6 +258,38 @@ export const PaymentInstructionsSection = () => {
                         setFormData({ ...formData, bicSwift: e.target.value })
                       }
                       maxLength={11}
+                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      Account Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.accountNumber}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          accountNumber: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      Routing Number
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.routingNumber}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          routingNumber: e.target.value,
+                        })
+                      }
                       className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
                     />
                   </div>
@@ -349,7 +383,9 @@ export const PaymentInstructionsSection = () => {
                 <div className="flex items-start gap-3">
                   <div className="p-2 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130]">
                     {pi.paymentMethod === 'BANK_TRANSFER' ||
-                    pi.paymentMethod === 'DIRECT_DEBIT' ? (
+                    pi.paymentMethod === 'DIRECT_DEBIT' ||
+                    pi.paymentMethod === 'IDEAL_WERO' ||
+                    pi.paymentMethod === 'ZELLE' ? (
                       <Building className="h-5 w-5 text-primary-500 dark:text-primary-300" />
                     ) : (
                       <CreditCard className="h-5 w-5 text-primary-500 dark:text-primary-300" />
@@ -381,6 +417,12 @@ export const PaymentInstructionsSection = () => {
                     {pi.iban && (
                       <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
                         IBAN: {pi.iban.replace(/(.{4})/g, '$1 ').trim()}
+                      </p>
+                    )}
+                    {pi.accountNumber && (
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
+                        Account: {pi.accountNumber}
+                        {pi.routingNumber && ` / Routing: ${pi.routingNumber}`}
                       </p>
                     )}
                     {pi.accountHolderName && (
@@ -449,7 +491,9 @@ const PaymentInstructionEditForm = ({
 
   const showBankFields =
     formData.paymentMethod === PaymentMethod.BANK_TRANSFER ||
-    formData.paymentMethod === PaymentMethod.DIRECT_DEBIT;
+    formData.paymentMethod === PaymentMethod.DIRECT_DEBIT ||
+    formData.paymentMethod === PaymentMethod.IDEAL_WERO ||
+    formData.paymentMethod === PaymentMethod.ZELLE;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -551,7 +595,7 @@ const PaymentInstructionEditForm = ({
           </div>
           <div>
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              BIC/SWIFT
+              BIC / SWIFT
             </label>
             <input
               type="text"
@@ -560,6 +604,38 @@ const PaymentInstructionEditForm = ({
                 setFormData({ ...formData, bicSwift: e.target.value })
               }
               maxLength={11}
+              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Account Number
+            </label>
+            <input
+              type="text"
+              value={formData.accountNumber || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  accountNumber: e.target.value,
+                })
+              }
+              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Routing Number
+            </label>
+            <input
+              type="text"
+              value={formData.routingNumber || ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  routingNumber: e.target.value,
+                })
+              }
               className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
             />
           </div>

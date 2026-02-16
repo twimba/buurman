@@ -29,15 +29,38 @@ import {
 } from '../../types/paymentInstruction';
 import { useTeam } from '../../context/TeamContext';
 import { useFormatDate } from '../../hooks/useFormatDate';
+import { ContractStatus } from '../../types/contract';
 
 interface Props {
   contractIdentifier: string;
   readOnly?: boolean;
+  contractStatus?: ContractStatus;
+  contractStartDate?: string;
+  contractSignedDate?: string;
 }
+
+const computeMinEffectiveDate = (
+  contractStatus?: ContractStatus,
+  contractStartDate?: string,
+  contractSignedDate?: string
+): string => {
+  const today = new Date().toISOString().split('T')[0];
+  if (contractStatus === ContractStatus.DRAFT) {
+    const candidates = [today];
+    if (contractStartDate) candidates.push(contractStartDate);
+    if (contractSignedDate) candidates.push(contractSignedDate);
+    candidates.sort();
+    return candidates[0];
+  }
+  return today;
+};
 
 export const ContractPaymentInstructionSection = ({
   contractIdentifier,
   readOnly = false,
+  contractStatus,
+  contractStartDate,
+  contractSignedDate,
 }: Props) => {
   const { canEditData } = useTeam();
   const canModify = canEditData && !readOnly;
@@ -59,9 +82,12 @@ export const ContractPaymentInstructionSection = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [useTemplate, setUseTemplate] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [effectiveFrom, setEffectiveFrom] = useState(
-    new Date().toISOString().split('T')[0]
+  const minEffectiveDate = computeMinEffectiveDate(
+    contractStatus,
+    contractStartDate,
+    contractSignedDate
   );
+  const [effectiveFrom, setEffectiveFrom] = useState(minEffectiveDate);
   const [notes, setNotes] = useState('');
 
   // Custom fields
@@ -73,6 +99,8 @@ export const ContractPaymentInstructionSection = ({
   const [customAccountHolderName, setCustomAccountHolderName] = useState('');
   const [customIban, setCustomIban] = useState('');
   const [customBicSwift, setCustomBicSwift] = useState('');
+  const [customAccountNumber, setCustomAccountNumber] = useState('');
+  const [customRoutingNumber, setCustomRoutingNumber] = useState('');
   const [customPaymentReference, setCustomPaymentReference] = useState('');
 
   const resetForm = () => {
@@ -80,7 +108,7 @@ export const ContractPaymentInstructionSection = ({
     setEditingId(null);
     setUseTemplate(true);
     setSelectedTemplate('');
-    setEffectiveFrom(new Date().toISOString().split('T')[0]);
+    setEffectiveFrom(minEffectiveDate);
     setNotes('');
     setCustomName('');
     setCustomDescription('');
@@ -89,6 +117,8 @@ export const ContractPaymentInstructionSection = ({
     setCustomAccountHolderName('');
     setCustomIban('');
     setCustomBicSwift('');
+    setCustomAccountNumber('');
+    setCustomRoutingNumber('');
     setCustomPaymentReference('');
   };
 
@@ -108,6 +138,8 @@ export const ContractPaymentInstructionSection = ({
             customAccountHolderName: customAccountHolderName || undefined,
             customIban: customIban || undefined,
             customBicSwift: customBicSwift || undefined,
+            customAccountNumber: customAccountNumber || undefined,
+            customRoutingNumber: customRoutingNumber || undefined,
             customPaymentReference: customPaymentReference || undefined,
           }),
     };
@@ -170,7 +202,9 @@ export const ContractPaymentInstructionSection = ({
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130]">
               {current.paymentMethod === 'BANK_TRANSFER' ||
-              current.paymentMethod === 'DIRECT_DEBIT' ? (
+              current.paymentMethod === 'DIRECT_DEBIT' ||
+              current.paymentMethod === 'IDEAL_WERO' ||
+              current.paymentMethod === 'ZELLE' ? (
                 <Building className="h-5 w-5 text-primary-500 dark:text-primary-300" />
               ) : (
                 <CreditCard className="h-5 w-5 text-primary-500 dark:text-primary-300" />
@@ -205,6 +239,13 @@ export const ContractPaymentInstructionSection = ({
               {current.iban && (
                 <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
                   IBAN: {current.iban.replace(/(.{4})/g, '$1 ').trim()}
+                </p>
+              )}
+              {current.accountNumber && (
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
+                  Account: {current.accountNumber}
+                  {current.routingNumber &&
+                    ` / Routing: ${current.routingNumber}`}
                 </p>
               )}
               {current.accountHolderName && (
@@ -260,7 +301,15 @@ export const ContractPaymentInstructionSection = ({
                 entry={entry}
                 isCurrent={index === 0 && !entry.effectiveTo}
                 formatDate={formatDate}
-                canDelete={canModify && !!entry.effectiveTo}
+                canDelete={
+                  canModify &&
+                  !!entry.effectiveTo &&
+                  !(
+                    contractStatus !== ContractStatus.DRAFT &&
+                    entry.effectiveFrom <
+                      new Date().toISOString().split('T')[0]
+                  )
+                }
                 onDelete={() => {
                   deleteMutation.mutate(entry.identifier);
                 }}
@@ -391,7 +440,9 @@ export const ContractPaymentInstructionSection = ({
                   />
                 </div>
                 {(customPaymentMethod === 'BANK_TRANSFER' ||
-                  customPaymentMethod === 'DIRECT_DEBIT') && (
+                  customPaymentMethod === 'DIRECT_DEBIT' ||
+                  customPaymentMethod === 'IDEAL_WERO' ||
+                  customPaymentMethod === 'ZELLE') && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
@@ -431,13 +482,39 @@ export const ContractPaymentInstructionSection = ({
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                        BIC/SWIFT
+                        BIC / SWIFT
                       </label>
                       <input
                         type="text"
                         value={customBicSwift}
                         onChange={(e) => setCustomBicSwift(e.target.value)}
                         maxLength={11}
+                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                        Account Number
+                      </label>
+                      <input
+                        type="text"
+                        value={customAccountNumber}
+                        onChange={(e) =>
+                          setCustomAccountNumber(e.target.value)
+                        }
+                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                        Routing Number
+                      </label>
+                      <input
+                        type="text"
+                        value={customRoutingNumber}
+                        onChange={(e) =>
+                          setCustomRoutingNumber(e.target.value)
+                        }
                         className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
                       />
                     </div>
@@ -464,6 +541,7 @@ export const ContractPaymentInstructionSection = ({
               <input
                 type="date"
                 required
+                min={minEffectiveDate}
                 value={effectiveFrom}
                 onChange={(e) => setEffectiveFrom(e.target.value)}
                 className="w-full md:w-1/2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"

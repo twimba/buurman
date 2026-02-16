@@ -1630,7 +1630,7 @@ public class ExportService {
         }
         if (piMethod != null && !piMethod.isBlank()) {
           html.append("<span class='pi-method'>")
-              .append(formatEnumValue(piMethod))
+              .append(formatPaymentMethod(piMethod))
               .append("</span>");
         }
         if (isCurrent) {
@@ -2488,6 +2488,24 @@ public class ExportService {
         .replaceAll("(?i)<link[^>]*>", "")
         .replaceAll("(?i)\\s+on\\w+\\s*=\\s*\"[^\"]*\"", "")
         .replaceAll("(?i)\\s+on\\w+\\s*=\\s*'[^']*'", "");
+  }
+
+  private static final Map<String, String> PAYMENT_METHOD_LABELS =
+      Map.of(
+          "BANK_TRANSFER", "Bank Transfer",
+          "PAYPAL", "PayPal",
+          "CASH", "Cash",
+          "CHECK", "Check",
+          "DIRECT_DEBIT", "Direct Debit",
+          "IDEAL_WERO", "iDEAL / Wero",
+          "ZELLE", "Zelle",
+          "OTHER", "Other");
+
+  private String formatPaymentMethod(String value) {
+    if (value == null) {
+      return "";
+    }
+    return PAYMENT_METHOD_LABELS.getOrDefault(value, formatEnumValue(value));
   }
 
   private String formatEnumValue(String value) {

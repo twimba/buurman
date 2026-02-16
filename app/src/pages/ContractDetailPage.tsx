@@ -581,7 +581,9 @@ export const ContractDetailPage = () => {
             {/* Payment Instructions */}
             <ContractPaymentInstructionSection
               contractIdentifier={id!}
-              readOnly={isLocked}
+              contractStatus={contract.status}
+              contractStartDate={contract.startDate}
+              contractSignedDate={contract.signedDate}
             />
 
             {/* Additional Terms */}

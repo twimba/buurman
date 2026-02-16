@@ -16,6 +16,8 @@ public class PaymentInstruction {
     CASH,
     CHECK,
     DIRECT_DEBIT,
+    IDEAL_WERO,
+    ZELLE,
     OTHER
   }
 

@@ -159,6 +159,17 @@ public class GlobalExceptionHandler {
     return problem;
   }
 
+  @ExceptionHandler(org.jooq.exception.IntegrityConstraintViolationException.class)
+  public ProblemDetail handleJooqIntegrityConstraint(
+      org.jooq.exception.IntegrityConstraintViolationException ex, HttpServletRequest request) {
+    log.warn("JOOQ integrity constraint violation: {}", ex.getMessage());
+    String message = extractJooqConstraintMessage(ex);
+    ProblemDetail problem = forStatusAndDetail(CONFLICT, message);
+    problem.setTitle("Conflict");
+    problem.setInstance(URI.create(request.getRequestURI()));
+    return problem;
+  }
+
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
     log.error("Unhandled exception", ex);
@@ -167,6 +178,23 @@ public class GlobalExceptionHandler {
     problem.setTitle("Internal Server Error");
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;
+  }
+
+  private String extractJooqConstraintMessage(
+      org.jooq.exception.IntegrityConstraintViolationException ex) {
+    String msg = ex.getMessage();
+    if (msg == null) return "A data conflict occurred";
+    String lower = msg.toLowerCase();
+    if (lower.contains("chk_cpi_dates")) {
+      return "The effective date range conflicts with an existing payment instruction";
+    }
+    if (lower.contains("chk_cpi_custom_method") || lower.contains("chk_pi_payment_method")) {
+      return "The selected payment method is not supported";
+    }
+    if (lower.contains("duplicate key") || lower.contains("unique constraint")) {
+      return "A record with this information already exists";
+    }
+    return "A data conflict occurred";
   }
 
   private String extractDataIntegrityMessage(DataIntegrityViolationException ex) {

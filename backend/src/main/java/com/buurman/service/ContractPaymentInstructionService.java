@@ -4,9 +4,11 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -98,21 +100,31 @@ public class ContractPaymentInstructionService {
       UserPrincipal principal) {
 
     Contract contract = resolveContract(contractIdentifier, principal);
+    validateEffectiveFrom(request.effectiveFrom(), contract);
 
-    // Auto-close current entry if one exists
+    // Auto-close or replace current entry if one exists
     cpiRepository
         .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
         .ifPresent(
             current -> {
-              cpiRepository.setEffectiveTo(
-                  current.getId(),
-                  principal.getTeamId(),
-                  request.effectiveFrom().minusDays(1),
-                  principal.getUserId());
-              log.info(
-                  "Closed previous payment instruction {} for contract {}",
-                  current.getIdentifier(),
-                  contractIdentifier);
+              if (!current.getEffectiveFrom().isBefore(request.effectiveFrom())) {
+                // Current entry hasn't started yet or starts same day — replace it
+                cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.getTeamId());
+                log.info(
+                    "Replaced future payment instruction {} for contract {}",
+                    current.getIdentifier(),
+                    contractIdentifier);
+              } else {
+                cpiRepository.setEffectiveTo(
+                    current.getId(),
+                    principal.getTeamId(),
+                    request.effectiveFrom().minusDays(1),
+                    principal.getUserId());
+                log.info(
+                    "Closed previous payment instruction {} for contract {}",
+                    current.getIdentifier(),
+                    contractIdentifier);
+              }
             });
 
     ContractPaymentInstruction cpi = buildFromRequest(request, contract, principal);
@@ -142,6 +154,8 @@ public class ContractPaymentInstructionService {
       UserPrincipal principal) {
 
     Contract contract = resolveContract(contractIdentifier, principal);
+    validateEffectiveFrom(request.effectiveFrom(), contract);
+
     ContractPaymentInstruction existing =
         cpiRepository
             .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
@@ -153,12 +167,17 @@ public class ContractPaymentInstructionService {
           "Payment instruction does not belong to the specified contract");
     }
 
-    // Close the existing entry
-    cpiRepository.setEffectiveTo(
-        existing.getId(),
-        principal.getTeamId(),
-        request.effectiveFrom().minusDays(1),
-        principal.getUserId());
+    // Close or replace the existing entry
+    if (!existing.getEffectiveFrom().isBefore(request.effectiveFrom())) {
+      // Existing entry hasn't started yet or starts same day — replace it
+      cpiRepository.softDeleteByIdAndTeamId(existing.getId(), principal.getTeamId());
+    } else {
+      cpiRepository.setEffectiveTo(
+          existing.getId(),
+          principal.getTeamId(),
+          request.effectiveFrom().minusDays(1),
+          principal.getUserId());
+    }
 
     // Create a new entry (append-only history)
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
@@ -229,6 +248,13 @@ public class ContractPaymentInstructionService {
           "Payment instruction does not belong to the specified contract");
     }
 
+    if (contract.getStatus() != Contract.ContractStatus.DRAFT
+        && cpi.getEffectiveFrom() != null
+        && cpi.getEffectiveFrom().isBefore(LocalDate.now(clock))) {
+      throw new IllegalArgumentException(
+          "Cannot delete a payment instruction that was already effective");
+    }
+
     cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.getTeamId());
     log.info(
         "Contract payment instruction deleted: {} for contract {} in team {}",
@@ -248,6 +274,22 @@ public class ContractPaymentInstructionService {
     return contractRepository
         .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
         .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+  }
+
+  private void validateEffectiveFrom(LocalDate effectiveFrom, Contract contract) {
+    LocalDate minDate;
+    if (contract.getStatus() == Contract.ContractStatus.DRAFT) {
+      minDate =
+          Stream.of(LocalDate.now(clock), contract.getStartDate(), contract.getSignedDate())
+              .filter(d -> d != null)
+              .min(LocalDate::compareTo)
+              .orElse(LocalDate.now(clock));
+    } else {
+      minDate = LocalDate.now(clock);
+    }
+    if (effectiveFrom.isBefore(minDate)) {
+      throw new IllegalArgumentException("Effective from date must not be before " + minDate);
+    }
   }
 
   private ContractPaymentInstruction buildFromRequest(

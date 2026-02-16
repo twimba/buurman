@@ -6,6 +6,24 @@
   QUEUE
 ------------------------
 
+# Misc fixes
+
+```
+    Property property =
+        propertyRepository
+            .findByIdentifierAndTeamId(request.propertyIdentifier(), principal.getTeamId())
+            .orElseThrow(() -> new IllegalArgumentException("Property not found or access denied"));
+```
+These kind of constructions should be make use of a get method in the Repository
+
+Refactor de property brochure to include all the information and photos in the professional style of the contract report
+
+Refactor de tenant brochure to include all the information and photos in the professional style of the contract report
+
+Rework the tenant section to be less about tenants but be more of people that we interact with - make it more like a VERY small CRM or even digital Rolodex
+
+In the tenants list the same way we show the property where they are associated with, also include/color code their role (ie: priamry, gurantor, etc, etc)
+
 # Tenant Portal
   ## New application for tenants
   A new application - Tenant portal where tenants can:
