@@ -180,8 +180,8 @@ const InlineTenantForm = ({
 function sanitizeTenant(data: CreateTenantRequest): CreateTenantRequest {
   return {
     ...data,
-    email: data.email?.trim() || null,
-    phone: data.phone?.trim() || null,
+    email: data.email?.trim() || undefined,
+    phone: data.phone?.trim() || undefined,
   };
 }
 
@@ -192,7 +192,7 @@ function validateInlineTenant(
 ): Record<string, string> {
   const errs: Record<string, string> = {};
   if (!data.firstName.trim()) errs[`${prefix}_firstName`] = 'Required';
-  if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
+  if (data.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email!))
     errs[`${prefix}_email`] = 'Invalid email';
   if (data.phone) {
     const phoneErr = validatePhoneE164(data.phone);
@@ -226,7 +226,9 @@ export const ContractForm = ({
   const [additionalParties, setAdditionalParties] = useState<PartyEntry[]>([]);
 
   const [formData, setFormData] = useState<
-    Omit<CreateContractRequest, 'parties'>
+    Omit<CreateContractRequest, 'parties' | 'rentAmount'> & {
+      rentAmount: number | '';
+    }
   >({
     propertyIdentifier:
       prefilledPropertyId || contract?.property.identifier || '',
