@@ -6,6 +6,7 @@ import java.net.URL;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,13 +75,15 @@ public class TenantService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
-    tenantRepository
-        .findByEmailAndTeamId(request.email(), principal.getTeamId())
-        .ifPresent(
-            existing -> {
-              throw new IllegalArgumentException(
-                  "Tenant with email " + request.email() + " already exists");
-            });
+    if (request.email() != null && !request.email().isBlank()) {
+      tenantRepository
+          .findByEmailAndTeamId(request.email(), principal.getTeamId())
+          .ifPresent(
+              existing -> {
+                throw new IllegalArgumentException(
+                    "Tenant with email " + request.email() + " already exists");
+              });
+    }
 
     Tenant tenant = tenantMapper.toEntity(request);
     tenant.setIdentifier(newTenantId().value());
@@ -132,7 +135,9 @@ public class TenantService {
       String identifier, UpdateTenantRequest request, UserPrincipal principal) {
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
-    if (!tenant.getEmail().equals(request.email())) {
+    if (request.email() != null
+        && !request.email().isBlank()
+        && !Objects.equals(tenant.getEmail(), request.email())) {
       tenantRepository
           .findByEmailAndTeamId(request.email(), principal.getTeamId())
           .ifPresent(
