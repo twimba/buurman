@@ -6,5 +6,4 @@ public record UserProfileResponse(
     String firstName,
     String lastName,
     String phone,
-    boolean phoneVerified
-) {}
+    boolean phoneVerified) {}

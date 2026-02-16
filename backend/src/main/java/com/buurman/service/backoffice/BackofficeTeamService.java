@@ -1,5 +1,15 @@
 package com.buurman.service.backoffice;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamSettings;
@@ -19,140 +29,147 @@ import com.buurman.repository.UserRepository;
 import com.buurman.repository.backoffice.BackofficeTeamStatsRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BackofficeTeamService {
 
-    private final TeamRepository teamRepository;
-    private final TeamMemberRepository teamMemberRepository;
-    private final UserRepository userRepository;
-    private final BackofficeTeamStatsRepository statsRepository;
+  private final TeamRepository teamRepository;
+  private final TeamMemberRepository teamMemberRepository;
+  private final UserRepository userRepository;
+  private final BackofficeTeamStatsRepository statsRepository;
 
-    @Transactional(readOnly = true)
-    public PageResponse<BackofficeTeamResponse> listTeams(PageRequest pageRequest, String search) {
-        PaginatedResult<Team> result = teamRepository.findAllPaginated(pageRequest, search);
-        List<BackofficeTeamResponse> responses = result.items().stream()
-                .map(this::toListResponse)
-                .toList();
-        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
-    }
+  @Transactional(readOnly = true)
+  public PageResponse<BackofficeTeamResponse> listTeams(PageRequest pageRequest, String search) {
+    PaginatedResult<Team> result = teamRepository.findAllPaginated(pageRequest, search);
+    List<BackofficeTeamResponse> responses =
+        result.items().stream().map(this::toListResponse).toList();
+    return PageResponse.of(
+        responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+  }
 
-    @Transactional(readOnly = true)
-    public BackofficeTeamDetailResponse getTeam(String identifier) {
-        Team team = teamRepository.findByIdentifierForBackoffice(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+  @Transactional(readOnly = true)
+  public BackofficeTeamDetailResponse getTeam(String identifier) {
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
 
-        // Members + batch user lookup
-        List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
-        List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
-        Map<UUID, User> usersById = userRepository.findByIds(userIds).stream()
-                .collect(toMap(User::getId, identity()));
+    // Members + batch user lookup
+    List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
+    List<UUID> userIds = members.stream().map(TeamMember::getUserId).toList();
+    Map<UUID, User> usersById =
+        userRepository.findByIds(userIds).stream().collect(toMap(User::getId, identity()));
 
-        List<MemberInfo> memberInfos = members.stream()
-                .map(m -> {
-                    User u = usersById.get(m.getUserId());
-                    return new MemberInfo(
-                            u != null ? u.getEmail() : null,
-                            u != null ? u.getFirstName() : null,
-                            u != null ? u.getLastName() : null,
-                            m.getRole(),
-                            m.isOwner(),
-                            m.getJoinedAt(),
-                            u != null && u.getDisabledAt() != null
-                    );
+    List<MemberInfo> memberInfos =
+        members.stream()
+            .map(
+                m -> {
+                  User u = usersById.get(m.getUserId());
+                  return new MemberInfo(
+                      u != null ? u.getEmail() : null,
+                      u != null ? u.getFirstName() : null,
+                      u != null ? u.getLastName() : null,
+                      m.getRole(),
+                      m.isOwner(),
+                      m.getJoinedAt(),
+                      u != null && u.getDisabledAt() != null);
                 })
-                .toList();
+            .toList();
 
-        // Data counts
-        DataCounts dataCounts = statsRepository.countEntitiesForTeam(team.getId());
+    // Data counts
+    DataCounts dataCounts = statsRepository.countEntitiesForTeam(team.getId());
 
-        // Financial snapshot
-        TeamSettings settings = team.getSettings() != null ? team.getSettings() : new TeamSettings();
-        String currency = settings.getRegional().getDefaultCurrency();
+    // Financial snapshot
+    TeamSettings settings = team.getSettings() != null ? team.getSettings() : new TeamSettings();
+    String currency = settings.getRegional().getDefaultCurrency();
 
-        FinancialSnapshot financialSnapshot = new FinancialSnapshot(
-                statsRepository.sumActiveRentForTeam(team.getId()),
-                currency,
-                statsRepository.propertyStatusDistribution(team.getId()),
-                statsRepository.contractStatusDistribution(team.getId()),
-                statsRepository.paymentStatusDistribution(team.getId())
-        );
+    FinancialSnapshot financialSnapshot =
+        new FinancialSnapshot(
+            statsRepository.sumActiveRentForTeam(team.getId()),
+            currency,
+            statsRepository.propertyStatusDistribution(team.getId()),
+            statsRepository.contractStatusDistribution(team.getId()),
+            statsRepository.paymentStatusDistribution(team.getId()));
 
-        // Settings
-        SettingsInfo settingsInfo = new SettingsInfo(
-                settings.getPayments().getPaymentsAheadCount(),
-                settings.getPayments().getAutoGenerationEnabled(),
-                settings.getRegional().getDefaultCurrency(),
-                settings.getRegional().getDefaultCountry(),
-                settings.getRegional().getTimezone(),
-                settings.getRegional().getDateFormat(),
-                settings.getRegional().getFiscalYearStartMonth()
-        );
+    // Settings
+    SettingsInfo settingsInfo =
+        new SettingsInfo(
+            settings.getPayments().getPaymentsAheadCount(),
+            settings.getPayments().getAutoGenerationEnabled(),
+            settings.getRegional().getDefaultCurrency(),
+            settings.getRegional().getDefaultCountry(),
+            settings.getRegional().getTimezone(),
+            settings.getRegional().getDateFormat(),
+            settings.getRegional().getFiscalYearStartMonth());
 
-        return new BackofficeTeamDetailResponse(
-                team.getIdentifier(),
-                team.getName(),
-                team.getCreatedAt(),
-                team.getUpdatedAt(),
-                memberInfos,
-                dataCounts,
-                financialSnapshot,
-                settingsInfo
-        );
-    }
+    return new BackofficeTeamDetailResponse(
+        team.getIdentifier(),
+        team.getName(),
+        team.getCreatedAt(),
+        team.getUpdatedAt(),
+        memberInfos,
+        dataCounts,
+        financialSnapshot,
+        settingsInfo);
+  }
 
-    @Transactional
-    public BackofficeTeamResponse updateTeamName(String identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
-        Team team = teamRepository.findByIdentifierForBackoffice(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+  @Transactional
+  public BackofficeTeamResponse updateTeamName(
+      String identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
 
-        team.setName(request.name());
-        teamRepository.save(team);
+    team.setName(request.name());
+    teamRepository.save(team);
 
-        log.info("Backoffice user {} updated team {} name to '{}'", principal.getEmail(), identifier, request.name());
-        return toListResponse(team);
-    }
+    log.info(
+        "Backoffice user {} updated team {} name to '{}'",
+        principal.getEmail(),
+        identifier,
+        request.name());
+    return toListResponse(team);
+  }
 
-    @Transactional
-    public void deleteTeam(String identifier, BackofficePrincipal principal) {
-        Team team = teamRepository.findByIdentifierForBackoffice(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+  @Transactional
+  public void deleteTeam(String identifier, BackofficePrincipal principal) {
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("Team not found"));
 
-        teamRepository.softDeleteById(team.getId());
-        log.info("Backoffice user {} soft-deleted team {} ({})", principal.getEmail(), identifier, team.getName());
-    }
+    teamRepository.softDeleteById(team.getId());
+    log.info(
+        "Backoffice user {} soft-deleted team {} ({})",
+        principal.getEmail(),
+        identifier,
+        team.getName());
+  }
 
-    private BackofficeTeamResponse toListResponse(Team team) {
-        List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
-        long memberCount = members.size();
+  private BackofficeTeamResponse toListResponse(Team team) {
+    List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
+    long memberCount = members.size();
 
-        String ownerEmail = members.stream()
-                .filter(TeamMember::isOwner)
-                .findFirst()
-                .flatMap(owner -> userRepository.findById(owner.getUserId()))
-                .map(User::getEmail)
-                .orElse(null);
+    String ownerEmail =
+        members.stream()
+            .filter(TeamMember::isOwner)
+            .findFirst()
+            .flatMap(owner -> userRepository.findById(owner.getUserId()))
+            .map(User::getEmail)
+            .orElse(null);
 
-        return new BackofficeTeamResponse(
-                team.getIdentifier(),
-                team.getName(),
-                memberCount,
-                ownerEmail,
-                team.getCreatedAt(),
-                team.getUpdatedAt()
-        );
-    }
+    return new BackofficeTeamResponse(
+        team.getIdentifier(),
+        team.getName(),
+        memberCount,
+        ownerEmail,
+        team.getCreatedAt(),
+        team.getUpdatedAt());
+  }
 }

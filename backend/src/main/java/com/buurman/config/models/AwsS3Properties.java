@@ -4,11 +4,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "aws.s3")
 public record AwsS3Properties(
-        String endpoint,
-        String region,
-        String accessKey,
-        String secretKey,
-        String bucketName,
-        String publicEndpoint,
-        boolean usePresignedUrls
-) {}
+    String endpoint,
+    String region,
+    String accessKey,
+    String secretKey,
+    String bucketName,
+    String publicEndpoint,
+    boolean usePresignedUrls) {}

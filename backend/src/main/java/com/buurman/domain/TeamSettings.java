@@ -1,6 +1,7 @@
 package com.buurman.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,25 +10,25 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamSettings {
 
-    private PaymentSettings payments = new PaymentSettings();
-    private RegionalSettings regional = new RegionalSettings();
+  private PaymentSettings payments = new PaymentSettings();
+  private RegionalSettings regional = new RegionalSettings();
 
-    @Data
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class PaymentSettings {
-        private Integer paymentsAheadCount = 3;
-        private Boolean autoGenerationEnabled = true;
-    }
+  @Data
+  @NoArgsConstructor
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class PaymentSettings {
+    private Integer paymentsAheadCount = 3;
+    private Boolean autoGenerationEnabled = true;
+  }
 
-    @Data
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class RegionalSettings {
-        private String defaultCurrency = "EUR";
-        private String defaultCountry = "Netherlands";
-        private String timezone = "Europe/Amsterdam";
-        private String dateFormat = "DD/MM/YYYY";
-        private String fiscalYearStartMonth = "01";
-    }
+  @Data
+  @NoArgsConstructor
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public static class RegionalSettings {
+    private String defaultCurrency = "EUR";
+    private String defaultCountry = "Netherlands";
+    private String timezone = "Europe/Amsterdam";
+    private String dateFormat = "DD/MM/YYYY";
+    private String fiscalYearStartMonth = "01";
+  }
 }

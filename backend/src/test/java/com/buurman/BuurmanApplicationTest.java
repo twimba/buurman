@@ -8,12 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class BuurmanApplicationTest {
 
-    @Test
-    void contextLoads() {
-        // Verifies the entire Spring application context starts successfully:
-        // - All beans are created and wired
-        // - @ConfigurationProperties are bound
-        // - Flyway migrations run against Testcontainers PostgreSQL
-        // - JOOQ DSLContext is configured
-    }
+  @Test
+  void contextLoads() {
+    // Verifies the entire Spring application context starts successfully:
+    // - All beans are created and wired
+    // - @ConfigurationProperties are bound
+    // - Flyway migrations run against Testcontainers PostgreSQL
+    // - JOOQ DSLContext is configured
+  }
 }

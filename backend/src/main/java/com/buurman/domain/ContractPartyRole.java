@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ContractPartyRole {
-    PRIMARY_TENANT("Primary tenant"),
-    GUARANTOR("Guarantor"),
-    COSIGNER("Co-signer"),
-    EXTRA_TENANT("Additional tenant");
+  PRIMARY_TENANT("Primary tenant"),
+  GUARANTOR("Guarantor"),
+  COSIGNER("Co-signer"),
+  EXTRA_TENANT("Additional tenant");
 
-    private final String displayName;
+  private final String displayName;
 }

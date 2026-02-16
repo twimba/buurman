@@ -1,14 +1,14 @@
 package com.buurman.service.notification;
 
-import com.buurman.domain.NotificationChannel;
-
 import java.util.Map;
+
+import com.buurman.domain.NotificationChannel;
 
 public interface NotificationChannelSender {
 
-    String send(NotificationSendRequest request) throws NotificationSendException;
+  String send(NotificationSendRequest request) throws NotificationSendException;
 
-    NotificationChannel getChannel();
+  NotificationChannel getChannel();
 
-    RenderedContent render(String templateName, Map<String, Object> variables);
+  RenderedContent render(String templateName, Map<String, Object> variables);
 }

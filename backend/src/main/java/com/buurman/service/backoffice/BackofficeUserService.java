@@ -1,5 +1,18 @@
 package com.buurman.service.backoffice;
 
+import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
+import static org.jooq.impl.DSL.count;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.jooq.DSLContext;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
@@ -8,111 +21,118 @@ import com.buurman.repository.UserRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.KeycloakService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
-
-import static org.jooq.impl.DSL.count;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BackofficeUserService {
 
-    private final UserRepository userRepository;
-    private final KeycloakService keycloakService;
-    private final DSLContext dsl;
-    private final Clock clock;
+  private final UserRepository userRepository;
+  private final KeycloakService keycloakService;
+  private final DSLContext dsl;
+  private final Clock clock;
 
-    @Transactional(readOnly = true)
-    public PageResponse<BackofficeUserResponse> listUsers(PageRequest pageRequest, String search) {
-        PaginatedResult<User> result = userRepository.findAllPaginated(pageRequest, search);
+  @Transactional(readOnly = true)
+  public PageResponse<BackofficeUserResponse> listUsers(PageRequest pageRequest, String search) {
+    PaginatedResult<User> result = userRepository.findAllPaginated(pageRequest, search);
 
-        Map<UUID, Integer> teamCountMap = dsl.select(TEAM_MEMBERS.USER_ID, count())
-                .from(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.DELETED_AT.isNull())
-                .groupBy(TEAM_MEMBERS.USER_ID)
-                .fetchMap(TEAM_MEMBERS.USER_ID, count());
+    Map<UUID, Integer> teamCountMap =
+        dsl.select(TEAM_MEMBERS.USER_ID, count())
+            .from(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.DELETED_AT.isNull())
+            .groupBy(TEAM_MEMBERS.USER_ID)
+            .fetchMap(TEAM_MEMBERS.USER_ID, count());
 
-        List<BackofficeUserResponse> responses = result.items().stream()
-                .map(user -> toResponse(user, teamCountMap.getOrDefault(user.getId(), 0)))
-                .toList();
+    List<BackofficeUserResponse> responses =
+        result.items().stream()
+            .map(user -> toResponse(user, teamCountMap.getOrDefault(user.getId(), 0)))
+            .toList();
 
-        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
-    }
+    return PageResponse.of(
+        responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+  }
 
-    @Transactional(readOnly = true)
-    public BackofficeUserResponse getUser(String identifier) {
-        User user = userRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+  @Transactional(readOnly = true)
+  public BackofficeUserResponse getUser(String identifier) {
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        long teamCount = dsl.selectCount()
-                .from(TEAM_MEMBERS)
-                .where(TEAM_MEMBERS.USER_ID.eq(user.getId())
-                        .and(TEAM_MEMBERS.DELETED_AT.isNull()))
-                .fetchOne(0, long.class);
+    long teamCount =
+        dsl.selectCount()
+            .from(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.USER_ID.eq(user.getId()).and(TEAM_MEMBERS.DELETED_AT.isNull()))
+            .fetchOne(0, long.class);
 
-        return toResponse(user, teamCount);
-    }
+    return toResponse(user, teamCount);
+  }
 
-    @Transactional
-    public void disableUser(String identifier, BackofficePrincipal principal) {
-        User user = userRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+  @Transactional
+  public void disableUser(String identifier, BackofficePrincipal principal) {
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        LocalDateTime now = LocalDateTime.now(clock);
-        userRepository.updateDisabledAt(user.getId(), now);
-        keycloakService.disableUser(user.getKeycloakId());
+    LocalDateTime now = LocalDateTime.now(clock);
+    userRepository.updateDisabledAt(user.getId(), now);
+    keycloakService.disableUser(user.getKeycloakId());
 
-        log.info("Backoffice user {} disabled user {} ({})", principal.getEmail(), identifier, user.getEmail());
-    }
+    log.info(
+        "Backoffice user {} disabled user {} ({})",
+        principal.getEmail(),
+        identifier,
+        user.getEmail());
+  }
 
-    @Transactional
-    public void enableUser(String identifier, BackofficePrincipal principal) {
-        User user = userRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+  @Transactional
+  public void enableUser(String identifier, BackofficePrincipal principal) {
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        userRepository.updateDisabledAt(user.getId(), null);
-        keycloakService.enableUser(user.getKeycloakId());
+    userRepository.updateDisabledAt(user.getId(), null);
+    keycloakService.enableUser(user.getKeycloakId());
 
-        log.info("Backoffice user {} enabled user {} ({})", principal.getEmail(), identifier, user.getEmail());
-    }
+    log.info(
+        "Backoffice user {} enabled user {} ({})",
+        principal.getEmail(),
+        identifier,
+        user.getEmail());
+  }
 
-    @Transactional
-    public void resetPassword(String identifier, BackofficePrincipal principal) {
-        User user = userRepository.findByIdentifierUnscoped(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+  @Transactional
+  public void resetPassword(String identifier, BackofficePrincipal principal) {
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(identifier)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        keycloakService.sendPasswordResetEmail(user.getKeycloakId());
+    keycloakService.sendPasswordResetEmail(user.getKeycloakId());
 
-        log.info("Backoffice user {} triggered password reset for user {} ({})",
-                principal.getEmail(), identifier, user.getEmail());
-    }
+    log.info(
+        "Backoffice user {} triggered password reset for user {} ({})",
+        principal.getEmail(),
+        identifier,
+        user.getEmail());
+  }
 
-    private BackofficeUserResponse toResponse(User user, long teamCount) {
-        return new BackofficeUserResponse(
-                user.getIdentifier(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPhone(),
-                user.getEmailVerifiedAt() != null,
-                user.getDisabledAt() != null,
-                teamCount,
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
-    }
+  private BackofficeUserResponse toResponse(User user, long teamCount) {
+    return new BackofficeUserResponse(
+        user.getIdentifier(),
+        user.getEmail(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getPhone(),
+        user.getEmailVerifiedAt() != null,
+        user.getDisabledAt() != null,
+        teamCount,
+        user.getCreatedAt(),
+        user.getUpdatedAt());
+  }
 }

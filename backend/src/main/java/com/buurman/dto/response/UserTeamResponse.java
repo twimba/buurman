@@ -10,5 +10,4 @@ public record UserTeamResponse(
     boolean isDefault,
     boolean isActive,
     int memberCount,
-    Instant joinedAt
-) {}
+    Instant joinedAt) {}

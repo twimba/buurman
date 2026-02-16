@@ -13,42 +13,37 @@ public record BackofficeTeamDetailResponse(
     List<MemberInfo> members,
     DataCounts dataCounts,
     FinancialSnapshot financialSnapshot,
-    SettingsInfo settings
-) {
-    public record MemberInfo(
-        String email,
-        String firstName,
-        String lastName,
-        String role,
-        boolean isOwner,
-        Instant joinedAt,
-        boolean disabled
-    ) {}
+    SettingsInfo settings) {
+  public record MemberInfo(
+      String email,
+      String firstName,
+      String lastName,
+      String role,
+      boolean isOwner,
+      Instant joinedAt,
+      boolean disabled) {}
 
-    public record DataCounts(
-        long properties,
-        long tenants,
-        long contracts,
-        long expenses,
-        long payments,
-        long documents
-    ) {}
+  public record DataCounts(
+      long properties,
+      long tenants,
+      long contracts,
+      long expenses,
+      long payments,
+      long documents) {}
 
-    public record FinancialSnapshot(
-        BigDecimal totalActiveRent,
-        String currency,
-        Map<String, Long> propertyStatusDistribution,
-        Map<String, Long> contractStatusDistribution,
-        Map<String, Long> paymentStatusDistribution
-    ) {}
+  public record FinancialSnapshot(
+      BigDecimal totalActiveRent,
+      String currency,
+      Map<String, Long> propertyStatusDistribution,
+      Map<String, Long> contractStatusDistribution,
+      Map<String, Long> paymentStatusDistribution) {}
 
-    public record SettingsInfo(
-        Integer paymentsAheadCount,
-        boolean autoGenerationEnabled,
-        String defaultCurrency,
-        String defaultCountry,
-        String timezone,
-        String dateFormat,
-        String fiscalYearStartMonth
-    ) {}
+  public record SettingsInfo(
+      Integer paymentsAheadCount,
+      boolean autoGenerationEnabled,
+      String defaultCurrency,
+      String defaultCountry,
+      String timezone,
+      String dateFormat,
+      String fiscalYearStartMonth) {}
 }

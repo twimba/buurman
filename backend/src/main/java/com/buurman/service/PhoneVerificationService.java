@@ -1,5 +1,17 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.PHONE_VERIFICATION_CODE;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+
+import java.security.SecureRandom;
+import java.time.Clock;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.buurman.domain.PhoneVerificationCode;
 import com.buurman.domain.User;
 import com.buurman.dto.response.UserProfileResponse;
@@ -8,157 +20,153 @@ import com.buurman.repository.PhoneVerificationCodeRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.SecureRandom;
-import java.time.Clock;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
-import java.util.UUID;
-
-import static com.buurman.domain.NotificationType.PHONE_VERIFICATION_CODE;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PhoneVerificationService {
 
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private final PhoneVerificationCodeRepository verificationCodeRepository;
-    private final UserRepository userRepository;
-    private final NotificationService notificationService;
-    private final PhoneNumberPolicyService phoneNumberPolicyService;
-    private final Clock clock;
+  private final PhoneVerificationCodeRepository verificationCodeRepository;
+  private final UserRepository userRepository;
+  private final NotificationService notificationService;
+  private final PhoneNumberPolicyService phoneNumberPolicyService;
+  private final Clock clock;
 
-    @Transactional
-    public void sendVerificationCode(UUID userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+  @Transactional
+  public void sendVerificationCode(UUID userId) {
+    User user =
+        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getPhone() == null || user.getPhone().isBlank()) {
-            throw new VerificationCodeException("No phone number to verify");
-        }
+    if (user.getPhone() == null || user.getPhone().isBlank()) {
+      throw new VerificationCodeException("No phone number to verify");
+    }
 
-        if (user.getPhoneVerifiedAt() != null) {
-            throw new VerificationCodeException("Phone is already verified");
-        }
+    if (user.getPhoneVerifiedAt() != null) {
+      throw new VerificationCodeException("Phone is already verified");
+    }
 
-        // Enforce minimum 60s between codes
-        verificationCodeRepository.findMostRecentCreatedAt(userId).ifPresent(lastSent -> {
-            long secondsSince = clock.instant().getEpochSecond() - lastSent.getEpochSecond();
-            if (secondsSince < 60) {
+    // Enforce minimum 60s between codes
+    verificationCodeRepository
+        .findMostRecentCreatedAt(userId)
+        .ifPresent(
+            lastSent -> {
+              long secondsSince = clock.instant().getEpochSecond() - lastSent.getEpochSecond();
+              if (secondsSince < 60) {
                 throw new VerificationCodeException(
-                    "Please wait " + (60 - secondsSince) + " seconds before requesting another code.");
-            }
-        });
+                    "Please wait "
+                        + (60 - secondsSince)
+                        + " seconds before requesting another code.");
+              }
+            });
 
-        int maxCodesPerHour = phoneNumberPolicyService.getPolicy().getMaxCodesPerHour();
-        int recentCount = verificationCodeRepository.countRecentByUserId(
-            userId, clock.instant().minus(1, HOURS));
-        if (recentCount >= maxCodesPerHour) {
-            throw new VerificationCodeException("Too many verification attempts. Please try again later.");
-        }
-
-        verificationCodeRepository.invalidateAllForUser(userId);
-        String code = generateVerificationCode();
-        createAndSendCode(user, code);
+    int maxCodesPerHour = phoneNumberPolicyService.getPolicy().getMaxCodesPerHour();
+    int recentCount =
+        verificationCodeRepository.countRecentByUserId(userId, clock.instant().minus(1, HOURS));
+    if (recentCount >= maxCodesPerHour) {
+      throw new VerificationCodeException(
+          "Too many verification attempts. Please try again later.");
     }
 
-    @Transactional
-    public UserProfileResponse verifyPhone(UUID userId, String code) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    verificationCodeRepository.invalidateAllForUser(userId);
+    String code = generateVerificationCode();
+    createAndSendCode(user, code);
+  }
 
-        if (user.getPhone() == null || user.getPhone().isBlank()) {
-            throw new VerificationCodeException("No phone number to verify");
-        }
+  @Transactional
+  public UserProfileResponse verifyPhone(UUID userId, String code) {
+    User user =
+        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getPhoneVerifiedAt() != null) {
-            throw new VerificationCodeException("Phone is already verified");
-        }
+    if (user.getPhone() == null || user.getPhone().isBlank()) {
+      throw new VerificationCodeException("No phone number to verify");
+    }
 
-        PhoneVerificationCode validCode = verificationCodeRepository
+    if (user.getPhoneVerifiedAt() != null) {
+      throw new VerificationCodeException("Phone is already verified");
+    }
+
+    PhoneVerificationCode validCode =
+        verificationCodeRepository
             .findValidCode(userId, code, user.getPhone())
-            .orElseThrow(() -> new VerificationCodeException("Invalid or expired verification code"));
+            .orElseThrow(
+                () -> new VerificationCodeException("Invalid or expired verification code"));
 
-        verificationCodeRepository.markUsed(validCode.getId());
-        userRepository.updatePhoneVerifiedAt(userId);
+    verificationCodeRepository.markUsed(validCode.getId());
+    userRepository.updatePhoneVerifiedAt(userId);
 
-        user.setPhoneVerifiedAt(clock.instant());
+    user.setPhoneVerifiedAt(clock.instant());
 
-        return new UserProfileResponse(
-            user.getIdentifier(),
-            user.getEmail(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getPhone(),
-            true
-        );
+    return new UserProfileResponse(
+        user.getIdentifier(),
+        user.getEmail(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getPhone(),
+        true);
+  }
+
+  @Transactional
+  public void resendVerificationCode(UUID userId) {
+    sendVerificationCode(userId);
+  }
+
+  @Transactional
+  public UserProfileResponse cancelVerification(UUID userId) {
+    User user =
+        userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (user.getPhone() == null || user.getPhone().isBlank()) {
+      throw new VerificationCodeException("No phone number to cancel verification for");
     }
 
-    @Transactional
-    public void resendVerificationCode(UUID userId) {
-        sendVerificationCode(userId);
-    }
+    verificationCodeRepository.invalidateAllForUser(userId);
+    userRepository.clearPhoneVerifiedAt(userId);
+    user.setPhoneVerifiedAt(null);
 
-    @Transactional
-    public UserProfileResponse cancelVerification(UUID userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    return new UserProfileResponse(
+        user.getIdentifier(),
+        user.getEmail(),
+        user.getFirstName(),
+        user.getLastName(),
+        user.getPhone(),
+        false);
+  }
 
-        if (user.getPhone() == null || user.getPhone().isBlank()) {
-            throw new VerificationCodeException("No phone number to cancel verification for");
-        }
+  private void createAndSendCode(User user, String code) {
+    int expiryMinutes = phoneNumberPolicyService.getPolicy().getVerificationCodeExpiryMinutes();
 
-        verificationCodeRepository.invalidateAllForUser(userId);
-        userRepository.clearPhoneVerifiedAt(userId);
-        user.setPhoneVerifiedAt(null);
+    PhoneVerificationCode verificationCode = new PhoneVerificationCode();
+    verificationCode.setUserId(user.getId());
+    verificationCode.setPhone(user.getPhone());
+    verificationCode.setCode(code);
+    verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
+    verificationCodeRepository.save(verificationCode);
 
-        return new UserProfileResponse(
-            user.getIdentifier(),
-            user.getEmail(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getPhone(),
-            false
-        );
-    }
+    SendNotificationRequest sendNotificationRequest =
+        SendNotificationRequest.builder()
+            .teamId(user.getActiveTeamId())
+            .notificationType(PHONE_VERIFICATION_CODE)
+            .recipientUserId(user.getId())
+            .recipientPhone(user.getPhone())
+            .templateName("phone-verification-code")
+            .templateVariables(
+                Map.of(
+                    "userName", user.getFirstName(),
+                    "verificationCode", code,
+                    "expiresMinutes", expiryMinutes))
+            .build();
 
-    private void createAndSendCode(User user, String code) {
-        int expiryMinutes = phoneNumberPolicyService.getPolicy().getVerificationCodeExpiryMinutes();
+    notificationService.send(sendNotificationRequest);
 
-        PhoneVerificationCode verificationCode = new PhoneVerificationCode();
-        verificationCode.setUserId(user.getId());
-        verificationCode.setPhone(user.getPhone());
-        verificationCode.setCode(code);
-        verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
-        verificationCodeRepository.save(verificationCode);
+    log.info("Phone verification code sent to user: {}", user.getIdentifier());
+  }
 
-        SendNotificationRequest sendNotificationRequest = SendNotificationRequest.builder()
-                .teamId(user.getActiveTeamId())
-                .notificationType(PHONE_VERIFICATION_CODE)
-                .recipientUserId(user.getId())
-                .recipientPhone(user.getPhone())
-                .templateName("phone-verification-code")
-                .templateVariables(Map.of(
-                        "userName", user.getFirstName(),
-                        "verificationCode", code,
-                        "expiresMinutes", expiryMinutes
-                ))
-                .build();
-
-        notificationService.send(sendNotificationRequest);
-
-        log.info("Phone verification code sent to user: {}", user.getIdentifier());
-    }
-
-    private String generateVerificationCode() {
-        return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
-    }
+  private String generateVerificationCode() {
+    return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+  }
 }

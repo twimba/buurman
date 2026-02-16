@@ -18,5 +18,4 @@ public record BackofficeNotificationResponse(
     String resentFromIdentifier,
     String resendReason,
     Instant createdAt,
-    Instant statusUpdatedAt
-) {}
+    Instant statusUpdatedAt) {}

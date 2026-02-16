@@ -8,5 +8,4 @@ public record BackofficeTeamResponse(
     long memberCount,
     String ownerEmail,
     Instant createdAt,
-    Instant updatedAt
-) {}
+    Instant updatedAt) {}

@@ -13,5 +13,4 @@ public record InvitationResponse(
     Instant expiresAt,
     String invitationUrl,
     boolean isExpired,
-    boolean isAccepted
-) {}
+    boolean isAccepted) {}

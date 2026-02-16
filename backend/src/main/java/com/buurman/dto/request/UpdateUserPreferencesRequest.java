@@ -9,5 +9,4 @@ public record UpdateUserPreferencesRequest(
     String dateFormat,
     String currencyFormat,
     Boolean emailNotifications,
-    Boolean smsNotifications
-) {}
+    Boolean smsNotifications) {}

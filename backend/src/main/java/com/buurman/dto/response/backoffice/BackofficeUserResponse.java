@@ -12,5 +12,4 @@ public record BackofficeUserResponse(
     boolean disabled,
     long teamCount,
     Instant createdAt,
-    Instant updatedAt
-) {}
+    Instant updatedAt) {}

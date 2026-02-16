@@ -9,5 +9,4 @@ public record TeamMemberResponse(
     String role,
     boolean isOwner,
     Instant joinedAt,
-    boolean isCurrentUser
-) {}
+    boolean isCurrentUser) {}

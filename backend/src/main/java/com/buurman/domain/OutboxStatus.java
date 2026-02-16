@@ -1,8 +1,8 @@
 package com.buurman.domain;
 
 public enum OutboxStatus {
-    PENDING,
-    PROCESSING,
-    SENT,
-    FAILED
+  PENDING,
+  PROCESSING,
+  SENT,
+  FAILED
 }

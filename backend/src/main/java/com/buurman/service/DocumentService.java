@@ -1,22 +1,5 @@
 package com.buurman.service;
 
-import com.buurman.domain.Document;
-import com.buurman.exception.ExternalServiceException;
-import com.buurman.dto.request.PageRequest;
-import com.buurman.dto.response.DocumentResponse;
-import com.buurman.dto.response.PageResponse;
-import com.buurman.mapper.DocumentMapper;
-import com.buurman.config.models.AppProperties;
-import com.buurman.repository.DocumentRepository;
-import com.buurman.security.UserPrincipal;
-import com.buurman.util.PaginationHelper.PaginatedResult;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.buurman.dto.request.UpdateDocumentRequest;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,311 +12,343 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Document;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.UpdateDocumentRequest;
+import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.PageResponse;
+import com.buurman.exception.ExternalServiceException;
+import com.buurman.mapper.DocumentMapper;
+import com.buurman.repository.DocumentRepository;
+import com.buurman.security.UserPrincipal;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Slf4j
 public class DocumentService {
 
-    private final DocumentRepository documentRepository;
-    private final S3StorageService s3StorageService;
-    private final DocumentMapper documentMapper;
-    private final AuditService auditService;
-    private final MetricsService metricsService;
-    private final long maxFileSize;
-    private final List<String> allowedMimeTypes;
+  private final DocumentRepository documentRepository;
+  private final S3StorageService s3StorageService;
+  private final DocumentMapper documentMapper;
+  private final AuditService auditService;
+  private final MetricsService metricsService;
+  private final long maxFileSize;
+  private final List<String> allowedMimeTypes;
 
-    public DocumentService(
-            DocumentRepository documentRepository,
-            S3StorageService s3StorageService,
-            DocumentMapper documentMapper,
-            AuditService auditService,
-            MetricsService metricsService,
-            AppProperties appProperties) {
-        this.documentRepository = documentRepository;
-        this.s3StorageService = s3StorageService;
-        this.documentMapper = documentMapper;
-        this.auditService = auditService;
-        this.metricsService = metricsService;
-        this.maxFileSize = appProperties.documents().maxFileSize();
-        this.allowedMimeTypes = appProperties.documents().allowedMimeTypes();
+  public DocumentService(
+      DocumentRepository documentRepository,
+      S3StorageService s3StorageService,
+      DocumentMapper documentMapper,
+      AuditService auditService,
+      MetricsService metricsService,
+      AppProperties appProperties) {
+    this.documentRepository = documentRepository;
+    this.s3StorageService = s3StorageService;
+    this.documentMapper = documentMapper;
+    this.auditService = auditService;
+    this.metricsService = metricsService;
+    this.maxFileSize = appProperties.documents().maxFileSize();
+    this.allowedMimeTypes = appProperties.documents().allowedMimeTypes();
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public DocumentResponse uploadDocument(
+      MultipartFile file,
+      String entityType,
+      UUID entityId,
+      String entityIdentifier,
+      String title,
+      String notes,
+      UserPrincipal principal) {
+
+    // Validate file size
+    if (file.getSize() > maxFileSize) {
+      throw new IllegalArgumentException(
+          "File size exceeds maximum allowed size of " + (maxFileSize / 1024 / 1024) + " MB");
     }
 
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public DocumentResponse uploadDocument(
-            MultipartFile file,
-            String entityType,
-            UUID entityId,
-            String entityIdentifier,
-            String title,
-            String notes,
-            UserPrincipal principal) {
-
-        // Validate file size
-        if (file.getSize() > maxFileSize) {
-            throw new IllegalArgumentException(
-                    "File size exceeds maximum allowed size of " + (maxFileSize / 1024 / 1024) + " MB");
-        }
-
-        // Validate MIME type from Content-Type header
-        String mimeType = file.getContentType();
-        if (mimeType == null || !allowedMimeTypes.contains(mimeType)) {
-            throw new IllegalArgumentException(
-                    "File type not allowed. Allowed types: " + String.join(", ", allowedMimeTypes));
-        }
-
-        // Validate MIME type from file content (magic bytes) to prevent spoofed Content-Type
-        try (BufferedInputStream bis = new BufferedInputStream(file.getInputStream())) {
-            String detectedType = URLConnection.guessContentTypeFromStream(bis);
-            if (detectedType != null && !allowedMimeTypes.contains(detectedType)) {
-                throw new IllegalArgumentException(
-                        "File content does not match an allowed type. Detected: " + detectedType);
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to read file content for validation");
-        }
-
-        // Upload to S3
-        String fileKey = s3StorageService.uploadFile(file, principal.getTeamIdentifier(), entityType, entityIdentifier);
-
-        // Save document metadata
-        Document document = new Document();
-        document.setTeamId(principal.getTeamId());
-        document.setEntityType(entityType);
-        document.setEntityId(entityId);
-        document.setFileKey(fileKey);
-        document.setFileName(file.getOriginalFilename());
-        document.setFileSize(file.getSize());
-        document.setMimeType(mimeType);
-        document.setTitle(title);
-        document.setNotes(notes);
-        document.setUploadedBy(principal.getUserId());
-
-        Document savedDocument = documentRepository.save(document);
-
-        metricsService.incrementCounter("document.upload.total",
-                "entity_type", entityType);
-        metricsService.incrementCounter("document.upload.bytes.total",
-                "entity_type", entityType);
-        metricsService.recordHistogram("document.upload.bytes", file.getSize(),
-                "entity_type", entityType);
-
-        log.info("Document uploaded: {} for entity {}/{}",
-                savedDocument.getIdentifier(), entityType, entityId);
-
-        // Log to audit trail for the parent entity
-        java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
-        changedFields.put("documentAdded", savedDocument.getFileName());
-        if (savedDocument.getTitle() != null && !savedDocument.getTitle().isEmpty()) {
-            changedFields.put("title", savedDocument.getTitle());
-        }
-        auditService.logUpdate(
-                principal.getTeamId(),
-                entityType.toUpperCase(),
-                entityId,
-                principal.getUserId(),
-                java.util.Map.of("documentCount", "unchanged"),
-                java.util.Map.of("documentCount", "increased"),
-                changedFields
-        );
-
-        return toResponseWithDownloadUrl(savedDocument);
+    // Validate MIME type from Content-Type header
+    String mimeType = file.getContentType();
+    if (mimeType == null || !allowedMimeTypes.contains(mimeType)) {
+      throw new IllegalArgumentException(
+          "File type not allowed. Allowed types: " + String.join(", ", allowedMimeTypes));
     }
 
-    public List<DocumentResponse> getDocuments(String entityType, UUID entityId, UserPrincipal principal) {
-        List<Document> documents = documentRepository.findByEntityAndTeamId(
-                entityType, entityId, principal.getTeamId());
-        return documents.stream()
-                .map(this::toResponseWithDownloadUrl)
-                .toList();
+    // Validate MIME type from file content (magic bytes) to prevent spoofed Content-Type
+    try (BufferedInputStream bis = new BufferedInputStream(file.getInputStream())) {
+      String detectedType = URLConnection.guessContentTypeFromStream(bis);
+      if (detectedType != null && !allowedMimeTypes.contains(detectedType)) {
+        throw new IllegalArgumentException(
+            "File content does not match an allowed type. Detected: " + detectedType);
+      }
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Unable to read file content for validation");
     }
 
-    public URL getDownloadUrl(String identifier, UserPrincipal principal) {
-        Document document = documentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+    // Upload to S3
+    String fileKey =
+        s3StorageService.uploadFile(
+            file, principal.getTeamIdentifier(), entityType, entityIdentifier);
 
-        metricsService.incrementCounter("document.download.total",
-                "entity_type", document.getEntityType());
+    // Save document metadata
+    Document document = new Document();
+    document.setTeamId(principal.getTeamId());
+    document.setEntityType(entityType);
+    document.setEntityId(entityId);
+    document.setFileKey(fileKey);
+    document.setFileName(file.getOriginalFilename());
+    document.setFileSize(file.getSize());
+    document.setMimeType(mimeType);
+    document.setTitle(title);
+    document.setNotes(notes);
+    document.setUploadedBy(principal.getUserId());
 
-        return s3StorageService.generatePresignedUrl(document.getFileKey());
+    Document savedDocument = documentRepository.save(document);
+
+    metricsService.incrementCounter("document.upload.total", "entity_type", entityType);
+    metricsService.incrementCounter("document.upload.bytes.total", "entity_type", entityType);
+    metricsService.recordHistogram(
+        "document.upload.bytes", file.getSize(), "entity_type", entityType);
+
+    log.info(
+        "Document uploaded: {} for entity {}/{}",
+        savedDocument.getIdentifier(),
+        entityType,
+        entityId);
+
+    // Log to audit trail for the parent entity
+    java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
+    changedFields.put("documentAdded", savedDocument.getFileName());
+    if (savedDocument.getTitle() != null && !savedDocument.getTitle().isEmpty()) {
+      changedFields.put("title", savedDocument.getTitle());
+    }
+    auditService.logUpdate(
+        principal.getTeamId(),
+        entityType.toUpperCase(),
+        entityId,
+        principal.getUserId(),
+        java.util.Map.of("documentCount", "unchanged"),
+        java.util.Map.of("documentCount", "increased"),
+        changedFields);
+
+    return toResponseWithDownloadUrl(savedDocument);
+  }
+
+  public List<DocumentResponse> getDocuments(
+      String entityType, UUID entityId, UserPrincipal principal) {
+    List<Document> documents =
+        documentRepository.findByEntityAndTeamId(entityType, entityId, principal.getTeamId());
+    return documents.stream().map(this::toResponseWithDownloadUrl).toList();
+  }
+
+  public URL getDownloadUrl(String identifier, UserPrincipal principal) {
+    Document document =
+        documentRepository
+            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
+            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+
+    metricsService.incrementCounter(
+        "document.download.total", "entity_type", document.getEntityType());
+
+    return s3StorageService.generatePresignedUrl(document.getFileKey());
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public void deleteDocument(String identifier, UserPrincipal principal) {
+    Document document =
+        documentRepository
+            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
+            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+
+    // Soft delete in database
+    documentRepository.softDeleteByIdAndTeamId(document.getId(), principal.getTeamId());
+
+    // Delete from S3
+    s3StorageService.deleteFile(document.getFileKey());
+
+    metricsService.incrementCounter(
+        "document.delete.total", "entity_type", document.getEntityType());
+
+    log.info("Document deleted: {}", document.getIdentifier());
+
+    // Log to audit trail for the parent entity
+    java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
+    changedFields.put("documentRemoved", document.getFileName());
+    if (document.getTitle() != null && !document.getTitle().isEmpty()) {
+      changedFields.put("title", document.getTitle());
+    }
+    auditService.logUpdate(
+        principal.getTeamId(),
+        document.getEntityType().toUpperCase(),
+        document.getEntityId(),
+        principal.getUserId(),
+        java.util.Map.of("documentCount", "unchanged"),
+        java.util.Map.of("documentCount", "decreased"),
+        changedFields);
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public DocumentResponse updateDocument(
+      String identifier, UpdateDocumentRequest request, UserPrincipal principal) {
+    Document document =
+        documentRepository
+            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
+            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+
+    String oldTitle = document.getTitle();
+    String oldNotes = document.getNotes();
+
+    document.setTitle(request.title());
+    document.setNotes(request.notes());
+
+    documentRepository.save(document);
+
+    // Build clean audit data comparing only title and notes
+    Map<String, Object> changedFields = new java.util.HashMap<>();
+    Map<String, Object> oldValues = new java.util.HashMap<>();
+    Map<String, Object> newValues = new java.util.HashMap<>();
+
+    if (!java.util.Objects.equals(oldTitle, request.title())) {
+      changedFields.put("title", request.title());
+      oldValues.put("title", oldTitle);
+      newValues.put("title", request.title());
+    }
+    if (!java.util.Objects.equals(oldNotes, request.notes())) {
+      changedFields.put("notes", request.notes());
+      oldValues.put("notes", oldNotes);
+      newValues.put("notes", request.notes());
     }
 
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public void deleteDocument(String identifier, UserPrincipal principal) {
-        Document document = documentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+    if (!changedFields.isEmpty()) {
+      // Add marker so the audit description identifies this as a document edit
+      changedFields.put("documentEdited", document.getFileName());
+      oldValues.put("fileName", document.getFileName());
+      newValues.put("fileName", document.getFileName());
 
-        // Soft delete in database
-        documentRepository.softDeleteByIdAndTeamId(document.getId(), principal.getTeamId());
-
-        // Delete from S3
-        s3StorageService.deleteFile(document.getFileKey());
-
-        metricsService.incrementCounter("document.delete.total",
-                "entity_type", document.getEntityType());
-
-        log.info("Document deleted: {}", document.getIdentifier());
-
-        // Log to audit trail for the parent entity
-        java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
-        changedFields.put("documentRemoved", document.getFileName());
-        if (document.getTitle() != null && !document.getTitle().isEmpty()) {
-            changedFields.put("title", document.getTitle());
-        }
-        auditService.logUpdate(
-                principal.getTeamId(),
-                document.getEntityType().toUpperCase(),
-                document.getEntityId(),
-                principal.getUserId(),
-                java.util.Map.of("documentCount", "unchanged"),
-                java.util.Map.of("documentCount", "decreased"),
-                changedFields
-        );
+      auditService.logUpdate(
+          principal.getTeamId(),
+          document.getEntityType().toUpperCase(),
+          document.getEntityId(),
+          principal.getUserId(),
+          oldValues,
+          newValues,
+          changedFields);
     }
 
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public DocumentResponse updateDocument(String identifier, UpdateDocumentRequest request, UserPrincipal principal) {
-        Document document = documentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+    return toResponseWithDownloadUrl(document);
+  }
 
-        String oldTitle = document.getTitle();
-        String oldNotes = document.getNotes();
+  private DocumentResponse toResponseWithDownloadUrl(Document document) {
+    DocumentResponse response = documentMapper.toResponse(document);
+    String downloadUrl = s3StorageService.generatePresignedUrl(document.getFileKey()).toString();
 
-        document.setTitle(request.title());
-        document.setNotes(request.notes());
+    return new DocumentResponse(
+        response.identifier(),
+        response.entityType(),
+        response.entityIdentifier(),
+        response.fileKey(),
+        response.fileName(),
+        response.fileSize(),
+        response.mimeType(),
+        response.title(),
+        response.notes(),
+        response.uploadedAt(),
+        downloadUrl);
+  }
 
-        documentRepository.save(document);
+  public PageResponse<DocumentResponse> searchDocumentsPaginated(
+      String search, String entityType, UserPrincipal principal, PageRequest pageRequest) {
+    PaginatedResult<Document> result =
+        documentRepository.findAllByTeamIdPaginated(
+            principal.getTeamId(), search, entityType, pageRequest);
+    List<DocumentResponse> responses =
+        result.items().stream().map(this::toResponseWithDownloadUrl).toList();
+    return PageResponse.of(
+        responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+  }
 
-        // Build clean audit data comparing only title and notes
-        Map<String, Object> changedFields = new java.util.HashMap<>();
-        Map<String, Object> oldValues = new java.util.HashMap<>();
-        Map<String, Object> newValues = new java.util.HashMap<>();
+  public List<DocumentResponse> searchDocuments(
+      String searchTerm, String entityType, UserPrincipal principal) {
+    List<Document> documents =
+        documentRepository.searchDocuments(searchTerm, entityType, principal.getTeamId());
+    return documents.stream().map(this::toResponseWithDownloadUrl).toList();
+  }
 
-        if (!java.util.Objects.equals(oldTitle, request.title())) {
-            changedFields.put("title", request.title());
-            oldValues.put("title", oldTitle);
-            newValues.put("title", request.title());
-        }
-        if (!java.util.Objects.equals(oldNotes, request.notes())) {
-            changedFields.put("notes", request.notes());
-            oldValues.put("notes", oldNotes);
-            newValues.put("notes", request.notes());
-        }
+  public DocumentResponse getDocument(String identifier, UserPrincipal principal) {
+    Document document =
+        documentRepository
+            .findByIdentifierAndTeamId(identifier, principal.getTeamId())
+            .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+    return toResponseWithDownloadUrl(document);
+  }
 
-        if (!changedFields.isEmpty()) {
-            // Add marker so the audit description identifies this as a document edit
-            changedFields.put("documentEdited", document.getFileName());
-            oldValues.put("fileName", document.getFileName());
-            newValues.put("fileName", document.getFileName());
-
-            auditService.logUpdate(
-                    principal.getTeamId(),
-                    document.getEntityType().toUpperCase(),
-                    document.getEntityId(),
-                    principal.getUserId(),
-                    oldValues,
-                    newValues,
-                    changedFields
-            );
-        }
-
-        return toResponseWithDownloadUrl(document);
+  public byte[] bulkDownload(List<String> documentIdentifiers, UserPrincipal principal) {
+    if (documentIdentifiers == null || documentIdentifiers.isEmpty()) {
+      throw new IllegalArgumentException("No documents selected for download");
     }
 
-    private DocumentResponse toResponseWithDownloadUrl(Document document) {
-        DocumentResponse response = documentMapper.toResponse(document);
-        String downloadUrl = s3StorageService.generatePresignedUrl(document.getFileKey()).toString();
+    // Fetch all documents by identifiers
+    List<Document> documents =
+        documentRepository.findByIdentifiersAndTeamId(documentIdentifiers, principal.getTeamId());
 
-        return new DocumentResponse(
-                response.identifier(),
-                response.entityType(),
-                response.entityIdentifier(),
-                response.fileKey(),
-                response.fileName(),
-                response.fileSize(),
-                response.mimeType(),
-                response.title(),
-                response.notes(),
-                response.uploadedAt(),
-                downloadUrl
-        );
+    if (documents.isEmpty()) {
+      throw new IllegalArgumentException("No documents found");
     }
 
-    public PageResponse<DocumentResponse> searchDocumentsPaginated(String search, String entityType, UserPrincipal principal, PageRequest pageRequest) {
-        PaginatedResult<Document> result = documentRepository.findAllByTeamIdPaginated(
-                principal.getTeamId(), search, entityType, pageRequest);
-        List<DocumentResponse> responses = result.items().stream()
-                .map(this::toResponseWithDownloadUrl)
-                .toList();
-        return PageResponse.of(responses, pageRequest.page(), pageRequest.size(), result.totalElements());
-    }
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos)) {
 
-    public List<DocumentResponse> searchDocuments(String searchTerm, String entityType, UserPrincipal principal) {
-        List<Document> documents = documentRepository.searchDocuments(searchTerm, entityType, principal.getTeamId());
-        return documents.stream()
-                .map(this::toResponseWithDownloadUrl)
-                .toList();
-    }
+      for (Document document : documents) {
+        try {
+          // Download file from S3
+          InputStream fileStream = s3StorageService.downloadFile(document.getFileKey());
 
-    public DocumentResponse getDocument(String identifier, UserPrincipal principal) {
-        Document document = documentRepository.findByIdentifierAndTeamId(identifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
-        return toResponseWithDownloadUrl(document);
-    }
+          // Create zip entry with unique filename
+          String fileName = sanitizeFilename(document.getFileName());
+          ZipEntry zipEntry = new ZipEntry(fileName);
+          zos.putNextEntry(zipEntry);
 
-    public byte[] bulkDownload(List<String> documentIdentifiers, UserPrincipal principal) {
-        if (documentIdentifiers == null || documentIdentifiers.isEmpty()) {
-            throw new IllegalArgumentException("No documents selected for download");
-        }
+          // Copy file to zip
+          byte[] buffer = new byte[1024];
+          int length;
+          while ((length = fileStream.read(buffer)) > 0) {
+            zos.write(buffer, 0, length);
+          }
 
-        // Fetch all documents by identifiers
-        List<Document> documents = documentRepository.findByIdentifiersAndTeamId(documentIdentifiers, principal.getTeamId());
+          zos.closeEntry();
+          fileStream.close();
 
-        if (documents.isEmpty()) {
-            throw new IllegalArgumentException("No documents found");
-        }
-
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             ZipOutputStream zos = new ZipOutputStream(baos)) {
-
-            for (Document document : documents) {
-                try {
-                    // Download file from S3
-                    InputStream fileStream = s3StorageService.downloadFile(document.getFileKey());
-
-                    // Create zip entry with unique filename
-                    String fileName = sanitizeFilename(document.getFileName());
-                    ZipEntry zipEntry = new ZipEntry(fileName);
-                    zos.putNextEntry(zipEntry);
-
-                    // Copy file to zip
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = fileStream.read(buffer)) > 0) {
-                        zos.write(buffer, 0, length);
-                    }
-
-                    zos.closeEntry();
-                    fileStream.close();
-
-                    log.debug("Added document to zip: {}", fileName);
-                } catch (Exception e) {
-                    log.error("Failed to add document {} to zip: {}", document.getIdentifier(), e.getMessage());
-                    // Continue with other documents even if one fails
-                }
-            }
-
-            zos.finish();
-            metricsService.incrementCounter("document.bulk.download.total");
-            log.info("Created zip archive with {} documents for team {}", documents.size(), principal.getTeamId());
-            return baos.toByteArray();
-
+          log.debug("Added document to zip: {}", fileName);
         } catch (Exception e) {
-            log.error("Failed to create zip archive: {}", e.getMessage());
-            throw new ExternalServiceException("Failed to create zip archive", e);
+          log.error(
+              "Failed to add document {} to zip: {}", document.getIdentifier(), e.getMessage());
+          // Continue with other documents even if one fails
         }
-    }
+      }
 
-    private String sanitizeFilename(String filename) {
-        // Remove any path separators and invalid characters
-        return filename.replaceAll("[/\\\\:*?\"<>|]", "_");
+      zos.finish();
+      metricsService.incrementCounter("document.bulk.download.total");
+      log.info(
+          "Created zip archive with {} documents for team {}",
+          documents.size(),
+          principal.getTeamId());
+      return baos.toByteArray();
+
+    } catch (Exception e) {
+      log.error("Failed to create zip archive: {}", e.getMessage());
+      throw new ExternalServiceException("Failed to create zip archive", e);
     }
+  }
+
+  private String sanitizeFilename(String filename) {
+    // Remove any path separators and invalid characters
+    return filename.replaceAll("[/\\\\:*?\"<>|]", "_");
+  }
 }

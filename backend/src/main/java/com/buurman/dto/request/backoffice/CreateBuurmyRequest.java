@@ -10,5 +10,4 @@ public record CreateBuurmyRequest(
     @NotBlank @Size(max = 100) String firstName,
     @NotBlank @Size(max = 100) String lastName,
     @NotBlank @Size(min = 8, max = 128) String password,
-    boolean temporaryPassword
-) {}
+    boolean temporaryPassword) {}

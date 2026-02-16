@@ -7,8 +7,8 @@ public record ExpenseStatsResponse(
     BigDecimal totalAmount,
     String currency,
     List<CategoryTotal> topCategories,
-    List<MonthlyTrend> monthlyTrend
-) {
-    public record CategoryTotal(String category, BigDecimal total, int count) {}
-    public record MonthlyTrend(String month, BigDecimal total) {}
+    List<MonthlyTrend> monthlyTrend) {
+  public record CategoryTotal(String category, BigDecimal total, int count) {}
+
+  public record MonthlyTrend(String month, BigDecimal total) {}
 }

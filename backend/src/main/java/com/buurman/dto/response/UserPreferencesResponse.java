@@ -7,5 +7,4 @@ public record UserPreferencesResponse(
     String dateFormat,
     String currencyFormat,
     boolean emailNotifications,
-    boolean smsNotifications
-) {}
+    boolean smsNotifications) {}

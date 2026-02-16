@@ -6,5 +6,4 @@ import jakarta.validation.constraints.Pattern;
 
 public record CreateInvitationRequest(
     @NotBlank @Email String email,
-    @NotBlank @Pattern(regexp = "TEAM_ADMIN|TEAM_EDITOR|TEAM_VIEWER") String role
-) {}
+    @NotBlank @Pattern(regexp = "TEAM_ADMIN|TEAM_EDITOR|TEAM_VIEWER") String role) {}

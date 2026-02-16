@@ -28,6 +28,8 @@
         <keycloak.version>26.0.8</keycloak.version>
         <aws-sdk.version>2.30.0</aws-sdk.version>
         <lombok.version>1.18.36</lombok.version>
+        <spotless.version>3.2.1</spotless.version>
+        <google-java-format.version>1.34.1</google-java-format.version>
     </properties>
 
     <dependencies>
@@ -395,6 +397,55 @@
                                 </generator>
                             </jooq>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Code Formatting -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat>
+                            <version>${google-java-format.version}</version>
+                            <style>GOOGLE</style>
+                            <reflowLongStrings>true</reflowLongStrings>
+                        </googleJavaFormat>
+                        <importOrder>
+                            <order>java|javax,org,com,</order>
+                        </importOrder>
+                        <removeUnusedImports/>
+                        <forbidWildcardImports/>
+                        <formatAnnotations/>
+                    </java>
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>src/main/resources/db/migration/**/*.sql</include>
+                            </includes>
+                            <prettier>
+                                <devDependencies>
+                                    <prettier>3.8.1</prettier>
+                                    <prettier-plugin-sql>0.19.2</prettier-plugin-sql>
+                                </devDependencies>
+                                <config>
+                                    <plugins>prettier-plugin-sql</plugins>
+                                    <language>postgresql</language>
+                                    <keywordCase>upper</keywordCase>
+                                    <dataTypeCase>upper</dataTypeCase>
+                                    <functionCase>lower</functionCase>
+                                    <tabWidth>4</tabWidth>
+                                </config>
+                            </prettier>
+                        </format>
+                    </formats>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

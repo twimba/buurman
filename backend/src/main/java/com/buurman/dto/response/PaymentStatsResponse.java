@@ -9,7 +9,6 @@ public record PaymentStatsResponse(
     int overdueCount,
     BigDecimal overdueAmount,
     String currency,
-    List<MonthlyTrend> monthlyTrend
-) {
-    public record MonthlyTrend(String month, BigDecimal total) {}
+    List<MonthlyTrend> monthlyTrend) {
+  public record MonthlyTrend(String month, BigDecimal total) {}
 }

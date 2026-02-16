@@ -13,5 +13,4 @@ public record BuurmyResponse(
     boolean emailVerified,
     Instant createdAt,
     Instant lastLogin,
-    List<String> requiredActions
-) {}
+    List<String> requiredActions) {}

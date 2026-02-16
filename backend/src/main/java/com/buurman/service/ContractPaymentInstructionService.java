@@ -1,5 +1,17 @@
 package com.buurman.service;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.PaymentInstruction;
@@ -10,314 +22,335 @@ import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.security.UserPrincipal;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ContractPaymentInstructionService {
 
-    private final ContractPaymentInstructionRepository cpiRepository;
-    private final ContractRepository contractRepository;
-    private final PaymentInstructionRepository piRepository;
-    private final AuditService auditService;
-    private final Clock clock;
+  private final ContractPaymentInstructionRepository cpiRepository;
+  private final ContractRepository contractRepository;
+  private final PaymentInstructionRepository piRepository;
+  private final AuditService auditService;
+  private final Clock clock;
 
-    public List<ContractPaymentInstructionResponse> getHistory(String contractIdentifier, UserPrincipal principal) {
-        Contract contract = resolveContract(contractIdentifier, principal);
-        List<ContractPaymentInstruction> history = cpiRepository
-                .findByContractIdAndTeamId(contract.getId(), principal.getTeamId());
+  public List<ContractPaymentInstructionResponse> getHistory(
+      String contractIdentifier, UserPrincipal principal) {
+    Contract contract = resolveContract(contractIdentifier, principal);
+    List<ContractPaymentInstruction> history =
+        cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.getTeamId());
 
-        // Batch-load templates to avoid N+1
-        List<UUID> templateIds = history.stream()
-                .filter(cpi -> !Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null)
-                .map(ContractPaymentInstruction::getPaymentInstructionId)
-                .distinct()
-                .toList();
+    // Batch-load templates to avoid N+1
+    List<UUID> templateIds =
+        history.stream()
+            .filter(
+                cpi ->
+                    !Boolean.TRUE.equals(cpi.getIsCustom())
+                        && cpi.getPaymentInstructionId() != null)
+            .map(ContractPaymentInstruction::getPaymentInstructionId)
+            .distinct()
+            .toList();
 
-        Map<UUID, PaymentInstruction> templateMap = templateIds.isEmpty()
-                ? Map.of()
-                : piRepository.findAllByTeamId(principal.getTeamId()).stream()
-                        .filter(pi -> templateIds.contains(pi.getId()))
-                        .collect(toMap(PaymentInstruction::getId, identity()));
+    Map<UUID, PaymentInstruction> templateMap =
+        templateIds.isEmpty()
+            ? Map.of()
+            : piRepository.findAllByTeamId(principal.getTeamId()).stream()
+                .filter(pi -> templateIds.contains(pi.getId()))
+                .collect(toMap(PaymentInstruction::getId, identity()));
 
-        return history.stream()
-                .map(cpi -> toResolvedResponse(cpi, templateMap))
-                .toList();
+    return history.stream().map(cpi -> toResolvedResponse(cpi, templateMap)).toList();
+  }
+
+  public ContractPaymentInstructionResponse getCurrent(
+      String contractIdentifier, UserPrincipal principal) {
+    Contract contract = resolveContract(contractIdentifier, principal);
+    return cpiRepository
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .map(
+            cpi -> {
+              Map<UUID, PaymentInstruction> templateMap = Map.of();
+              if (!Boolean.TRUE.equals(cpi.getIsCustom())
+                  && cpi.getPaymentInstructionId() != null) {
+                piRepository
+                    .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+                    .ifPresent(pi -> {});
+                PaymentInstruction template =
+                    piRepository
+                        .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+                        .orElse(null);
+                if (template != null) {
+                  templateMap = Map.of(template.getId(), template);
+                }
+              }
+              return toResolvedResponse(cpi, templateMap);
+            })
+        .orElse(null);
+  }
+
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public ContractPaymentInstructionResponse create(
+      String contractIdentifier,
+      CreateContractPaymentInstructionRequest request,
+      UserPrincipal principal) {
+
+    Contract contract = resolveContract(contractIdentifier, principal);
+
+    // Auto-close current entry if one exists
+    cpiRepository
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .ifPresent(
+            current -> {
+              cpiRepository.setEffectiveTo(
+                  current.getId(),
+                  principal.getTeamId(),
+                  request.effectiveFrom().minusDays(1),
+                  principal.getUserId());
+              log.info(
+                  "Closed previous payment instruction {} for contract {}",
+                  current.getIdentifier(),
+                  contractIdentifier);
+            });
+
+    ContractPaymentInstruction cpi = buildFromRequest(request, contract, principal);
+    ContractPaymentInstruction saved = cpiRepository.save(cpi);
+    log.info(
+        "Contract payment instruction created: {} for contract {} in team {}",
+        saved.getIdentifier(),
+        contractIdentifier,
+        principal.getTeamId());
+
+    auditService.logCreate(
+        principal.getTeamId(),
+        "CONTRACT_PAYMENT_INSTRUCTION",
+        saved.getId(),
+        principal.getUserId(),
+        saved);
+
+    return toResolvedResponse(saved, loadTemplateMap(saved, principal));
+  }
+
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public ContractPaymentInstructionResponse update(
+      String contractIdentifier,
+      String instructionIdentifier,
+      UpdateContractPaymentInstructionRequest request,
+      UserPrincipal principal) {
+
+    Contract contract = resolveContract(contractIdentifier, principal);
+    ContractPaymentInstruction existing =
+        cpiRepository
+            .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
+            .orElseThrow(
+                () -> new IllegalArgumentException("Contract payment instruction not found"));
+
+    if (!existing.getContractId().equals(contract.getId())) {
+      throw new IllegalArgumentException(
+          "Payment instruction does not belong to the specified contract");
     }
 
-    public ContractPaymentInstructionResponse getCurrent(String contractIdentifier, UserPrincipal principal) {
-        Contract contract = resolveContract(contractIdentifier, principal);
-        return cpiRepository.findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
-                .map(cpi -> {
-                    Map<UUID, PaymentInstruction> templateMap = Map.of();
-                    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
-                        piRepository.findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
-                                .ifPresent(pi -> {});
-                        PaymentInstruction template = piRepository.findByIdAndTeamId(
-                                cpi.getPaymentInstructionId(), principal.getTeamId()).orElse(null);
-                        if (template != null) {
-                            templateMap = Map.of(template.getId(), template);
-                        }
-                    }
-                    return toResolvedResponse(cpi, templateMap);
-                })
-                .orElse(null);
+    // Close the existing entry
+    cpiRepository.setEffectiveTo(
+        existing.getId(),
+        principal.getTeamId(),
+        request.effectiveFrom().minusDays(1),
+        principal.getUserId());
+
+    // Create a new entry (append-only history)
+    ContractPaymentInstruction cpi = new ContractPaymentInstruction();
+    cpi.setTeamId(principal.getTeamId());
+    cpi.setContractId(contract.getId());
+    cpi.setEffectiveFrom(request.effectiveFrom());
+    cpi.setNotes(request.notes());
+    cpi.setCreatedBy(principal.getUserId());
+    cpi.setUpdatedBy(principal.getUserId());
+    cpi.setCreatedAt(clock.instant());
+    cpi.setUpdatedAt(clock.instant());
+
+    if (request.paymentInstructionIdentifier() != null
+        && !Boolean.TRUE.equals(request.isCustom())) {
+      PaymentInstruction template =
+          piRepository
+              .findByIdentifierAndTeamId(
+                  request.paymentInstructionIdentifier(), principal.getTeamId())
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Payment instruction template not found"));
+      cpi.setPaymentInstructionId(template.getId());
+      cpi.setIsCustom(false);
+    } else {
+      cpi.setIsCustom(true);
+      cpi.setCustomName(request.customName());
+      cpi.setCustomDescription(request.customDescription());
+      cpi.setCustomPaymentMethod(request.customPaymentMethod());
+      cpi.setCustomBankName(request.customBankName());
+      cpi.setCustomAccountHolderName(request.customAccountHolderName());
+      cpi.setCustomIban(request.customIban());
+      cpi.setCustomBicSwift(request.customBicSwift());
+      cpi.setCustomAccountNumber(request.customAccountNumber());
+      cpi.setCustomRoutingNumber(request.customRoutingNumber());
+      cpi.setCustomPaymentReference(request.customPaymentReference());
+      cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
     }
 
-    @Transactional
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractPaymentInstructionResponse create(
-            String contractIdentifier,
-            CreateContractPaymentInstructionRequest request,
-            UserPrincipal principal) {
+    ContractPaymentInstruction saved = cpiRepository.save(cpi);
+    log.info(
+        "Contract payment instruction updated (new entry): {} for contract {} in team {}",
+        saved.getIdentifier(),
+        contractIdentifier,
+        principal.getTeamId());
 
-        Contract contract = resolveContract(contractIdentifier, principal);
+    auditService.logCreate(
+        principal.getTeamId(),
+        "CONTRACT_PAYMENT_INSTRUCTION",
+        saved.getId(),
+        principal.getUserId(),
+        saved);
 
-        // Auto-close current entry if one exists
-        cpiRepository.findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
-                .ifPresent(current -> {
-                    cpiRepository.setEffectiveTo(
-                            current.getId(),
-                            principal.getTeamId(),
-                            request.effectiveFrom().minusDays(1),
-                            principal.getUserId()
-                    );
-                    log.info("Closed previous payment instruction {} for contract {}",
-                            current.getIdentifier(), contractIdentifier);
-                });
+    return toResolvedResponse(saved, loadTemplateMap(saved, principal));
+  }
 
-        ContractPaymentInstruction cpi = buildFromRequest(request, contract, principal);
-        ContractPaymentInstruction saved = cpiRepository.save(cpi);
-        log.info("Contract payment instruction created: {} for contract {} in team {}",
-                saved.getIdentifier(), contractIdentifier, principal.getTeamId());
+  @Transactional
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public void delete(
+      String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
+    Contract contract = resolveContract(contractIdentifier, principal);
+    ContractPaymentInstruction cpi =
+        cpiRepository
+            .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
+            .orElseThrow(
+                () -> new IllegalArgumentException("Contract payment instruction not found"));
 
-        auditService.logCreate(
-                principal.getTeamId(),
-                "CONTRACT_PAYMENT_INSTRUCTION",
-                saved.getId(),
-                principal.getUserId(),
-                saved
-        );
-
-        return toResolvedResponse(saved, loadTemplateMap(saved, principal));
+    if (!cpi.getContractId().equals(contract.getId())) {
+      throw new IllegalArgumentException(
+          "Payment instruction does not belong to the specified contract");
     }
 
-    @Transactional
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public ContractPaymentInstructionResponse update(
-            String contractIdentifier,
-            String instructionIdentifier,
-            UpdateContractPaymentInstructionRequest request,
-            UserPrincipal principal) {
+    cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.getTeamId());
+    log.info(
+        "Contract payment instruction deleted: {} for contract {} in team {}",
+        instructionIdentifier,
+        contractIdentifier,
+        principal.getTeamId());
 
-        Contract contract = resolveContract(contractIdentifier, principal);
-        ContractPaymentInstruction existing = cpiRepository
-                .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Contract payment instruction not found"));
+    auditService.logDelete(
+        principal.getTeamId(),
+        "CONTRACT_PAYMENT_INSTRUCTION",
+        cpi.getId(),
+        principal.getUserId(),
+        cpi);
+  }
 
-        if (!existing.getContractId().equals(contract.getId())) {
-            throw new IllegalArgumentException("Payment instruction does not belong to the specified contract");
-        }
+  private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
+    return contractRepository
+        .findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
+        .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
+  }
 
-        // Close the existing entry
-        cpiRepository.setEffectiveTo(
-                existing.getId(),
-                principal.getTeamId(),
-                request.effectiveFrom().minusDays(1),
-                principal.getUserId()
-        );
+  private ContractPaymentInstruction buildFromRequest(
+      CreateContractPaymentInstructionRequest request, Contract contract, UserPrincipal principal) {
 
-        // Create a new entry (append-only history)
-        ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-        cpi.setTeamId(principal.getTeamId());
-        cpi.setContractId(contract.getId());
-        cpi.setEffectiveFrom(request.effectiveFrom());
-        cpi.setNotes(request.notes());
-        cpi.setCreatedBy(principal.getUserId());
-        cpi.setUpdatedBy(principal.getUserId());
-        cpi.setCreatedAt(clock.instant());
-        cpi.setUpdatedAt(clock.instant());
+    ContractPaymentInstruction cpi = new ContractPaymentInstruction();
+    cpi.setTeamId(principal.getTeamId());
+    cpi.setContractId(contract.getId());
+    cpi.setEffectiveFrom(request.effectiveFrom());
+    cpi.setNotes(request.notes());
+    cpi.setCreatedBy(principal.getUserId());
+    cpi.setUpdatedBy(principal.getUserId());
+    cpi.setCreatedAt(clock.instant());
+    cpi.setUpdatedAt(clock.instant());
 
-        if (request.paymentInstructionIdentifier() != null && !Boolean.TRUE.equals(request.isCustom())) {
-            PaymentInstruction template = piRepository.findByIdentifierAndTeamId(
-                    request.paymentInstructionIdentifier(), principal.getTeamId())
-                    .orElseThrow(() -> new IllegalArgumentException("Payment instruction template not found"));
-            cpi.setPaymentInstructionId(template.getId());
-            cpi.setIsCustom(false);
-        } else {
-            cpi.setIsCustom(true);
-            cpi.setCustomName(request.customName());
-            cpi.setCustomDescription(request.customDescription());
-            cpi.setCustomPaymentMethod(request.customPaymentMethod());
-            cpi.setCustomBankName(request.customBankName());
-            cpi.setCustomAccountHolderName(request.customAccountHolderName());
-            cpi.setCustomIban(request.customIban());
-            cpi.setCustomBicSwift(request.customBicSwift());
-            cpi.setCustomAccountNumber(request.customAccountNumber());
-            cpi.setCustomRoutingNumber(request.customRoutingNumber());
-            cpi.setCustomPaymentReference(request.customPaymentReference());
-            cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
-        }
-
-        ContractPaymentInstruction saved = cpiRepository.save(cpi);
-        log.info("Contract payment instruction updated (new entry): {} for contract {} in team {}",
-                saved.getIdentifier(), contractIdentifier, principal.getTeamId());
-
-        auditService.logCreate(
-                principal.getTeamId(),
-                "CONTRACT_PAYMENT_INSTRUCTION",
-                saved.getId(),
-                principal.getUserId(),
-                saved
-        );
-
-        return toResolvedResponse(saved, loadTemplateMap(saved, principal));
+    if (request.paymentInstructionIdentifier() != null
+        && !Boolean.TRUE.equals(request.isCustom())) {
+      PaymentInstruction template =
+          piRepository
+              .findByIdentifierAndTeamId(
+                  request.paymentInstructionIdentifier(), principal.getTeamId())
+              .orElseThrow(
+                  () -> new IllegalArgumentException("Payment instruction template not found"));
+      cpi.setPaymentInstructionId(template.getId());
+      cpi.setIsCustom(false);
+    } else {
+      cpi.setIsCustom(true);
+      cpi.setCustomName(request.customName());
+      cpi.setCustomDescription(request.customDescription());
+      cpi.setCustomPaymentMethod(request.customPaymentMethod());
+      cpi.setCustomBankName(request.customBankName());
+      cpi.setCustomAccountHolderName(request.customAccountHolderName());
+      cpi.setCustomIban(request.customIban());
+      cpi.setCustomBicSwift(request.customBicSwift());
+      cpi.setCustomAccountNumber(request.customAccountNumber());
+      cpi.setCustomRoutingNumber(request.customRoutingNumber());
+      cpi.setCustomPaymentReference(request.customPaymentReference());
+      cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
     }
 
-    @Transactional
-    @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-    public void delete(String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
-        Contract contract = resolveContract(contractIdentifier, principal);
-        ContractPaymentInstruction cpi = cpiRepository
-                .findByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Contract payment instruction not found"));
+    return cpi;
+  }
 
-        if (!cpi.getContractId().equals(contract.getId())) {
-            throw new IllegalArgumentException("Payment instruction does not belong to the specified contract");
-        }
-
-        cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.getTeamId());
-        log.info("Contract payment instruction deleted: {} for contract {} in team {}",
-                instructionIdentifier, contractIdentifier, principal.getTeamId());
-
-        auditService.logDelete(
-                principal.getTeamId(),
-                "CONTRACT_PAYMENT_INSTRUCTION",
-                cpi.getId(),
-                principal.getUserId(),
-                cpi
-        );
+  private Map<UUID, PaymentInstruction> loadTemplateMap(
+      ContractPaymentInstruction cpi, UserPrincipal principal) {
+    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+      return piRepository
+          .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+          .map(pi -> Map.of(pi.getId(), pi))
+          .orElse(Map.of());
     }
+    return Map.of();
+  }
 
-    private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
-        return contractRepository.findByIdentifierAndTeamId(contractIdentifier, principal.getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found or access denied"));
-    }
+  private ContractPaymentInstructionResponse toResolvedResponse(
+      ContractPaymentInstruction cpi, Map<UUID, PaymentInstruction> templateMap) {
 
-    private ContractPaymentInstruction buildFromRequest(
-            CreateContractPaymentInstructionRequest request,
-            Contract contract,
-            UserPrincipal principal) {
-
-        ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-        cpi.setTeamId(principal.getTeamId());
-        cpi.setContractId(contract.getId());
-        cpi.setEffectiveFrom(request.effectiveFrom());
-        cpi.setNotes(request.notes());
-        cpi.setCreatedBy(principal.getUserId());
-        cpi.setUpdatedBy(principal.getUserId());
-        cpi.setCreatedAt(clock.instant());
-        cpi.setUpdatedAt(clock.instant());
-
-        if (request.paymentInstructionIdentifier() != null && !Boolean.TRUE.equals(request.isCustom())) {
-            PaymentInstruction template = piRepository.findByIdentifierAndTeamId(
-                    request.paymentInstructionIdentifier(), principal.getTeamId())
-                    .orElseThrow(() -> new IllegalArgumentException("Payment instruction template not found"));
-            cpi.setPaymentInstructionId(template.getId());
-            cpi.setIsCustom(false);
-        } else {
-            cpi.setIsCustom(true);
-            cpi.setCustomName(request.customName());
-            cpi.setCustomDescription(request.customDescription());
-            cpi.setCustomPaymentMethod(request.customPaymentMethod());
-            cpi.setCustomBankName(request.customBankName());
-            cpi.setCustomAccountHolderName(request.customAccountHolderName());
-            cpi.setCustomIban(request.customIban());
-            cpi.setCustomBicSwift(request.customBicSwift());
-            cpi.setCustomAccountNumber(request.customAccountNumber());
-            cpi.setCustomRoutingNumber(request.customRoutingNumber());
-            cpi.setCustomPaymentReference(request.customPaymentReference());
-            cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
-        }
-
-        return cpi;
-    }
-
-    private Map<UUID, PaymentInstruction> loadTemplateMap(ContractPaymentInstruction cpi, UserPrincipal principal) {
-        if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
-            return piRepository.findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
-                    .map(pi -> Map.of(pi.getId(), pi))
-                    .orElse(Map.of());
-        }
-        return Map.of();
-    }
-
-    private ContractPaymentInstructionResponse toResolvedResponse(
-            ContractPaymentInstruction cpi,
-            Map<UUID, PaymentInstruction> templateMap) {
-
-        if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
-            PaymentInstruction template = templateMap.get(cpi.getPaymentInstructionId());
-            if (template != null) {
-                return new ContractPaymentInstructionResponse(
-                        cpi.getIdentifier(),
-                        template.getIdentifier(),
-                        false,
-                        template.getName(),
-                        template.getDescription(),
-                        template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null,
-                        template.getBankName(),
-                        template.getAccountHolderName(),
-                        template.getIban(),
-                        template.getBicSwift(),
-                        template.getAccountNumber(),
-                        template.getRoutingNumber(),
-                        template.getPaymentReference(),
-                        template.getAdditionalDetails(),
-                        cpi.getEffectiveFrom(),
-                        cpi.getEffectiveTo(),
-                        cpi.getNotes(),
-                        cpi.getCreatedAt(),
-                        cpi.getUpdatedAt()
-                );
-            }
-        }
-
-        // Custom or template not found
+    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+      PaymentInstruction template = templateMap.get(cpi.getPaymentInstructionId());
+      if (template != null) {
         return new ContractPaymentInstructionResponse(
-                cpi.getIdentifier(),
-                null,
-                true,
-                cpi.getCustomName(),
-                cpi.getCustomDescription(),
-                cpi.getCustomPaymentMethod(),
-                cpi.getCustomBankName(),
-                cpi.getCustomAccountHolderName(),
-                cpi.getCustomIban(),
-                cpi.getCustomBicSwift(),
-                cpi.getCustomAccountNumber(),
-                cpi.getCustomRoutingNumber(),
-                cpi.getCustomPaymentReference(),
-                cpi.getCustomAdditionalDetails(),
-                cpi.getEffectiveFrom(),
-                cpi.getEffectiveTo(),
-                cpi.getNotes(),
-                cpi.getCreatedAt(),
-                cpi.getUpdatedAt()
-        );
+            cpi.getIdentifier(),
+            template.getIdentifier(),
+            false,
+            template.getName(),
+            template.getDescription(),
+            template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null,
+            template.getBankName(),
+            template.getAccountHolderName(),
+            template.getIban(),
+            template.getBicSwift(),
+            template.getAccountNumber(),
+            template.getRoutingNumber(),
+            template.getPaymentReference(),
+            template.getAdditionalDetails(),
+            cpi.getEffectiveFrom(),
+            cpi.getEffectiveTo(),
+            cpi.getNotes(),
+            cpi.getCreatedAt(),
+            cpi.getUpdatedAt());
+      }
     }
+
+    // Custom or template not found
+    return new ContractPaymentInstructionResponse(
+        cpi.getIdentifier(),
+        null,
+        true,
+        cpi.getCustomName(),
+        cpi.getCustomDescription(),
+        cpi.getCustomPaymentMethod(),
+        cpi.getCustomBankName(),
+        cpi.getCustomAccountHolderName(),
+        cpi.getCustomIban(),
+        cpi.getCustomBicSwift(),
+        cpi.getCustomAccountNumber(),
+        cpi.getCustomRoutingNumber(),
+        cpi.getCustomPaymentReference(),
+        cpi.getCustomAdditionalDetails(),
+        cpi.getEffectiveFrom(),
+        cpi.getEffectiveTo(),
+        cpi.getNotes(),
+        cpi.getCreatedAt(),
+        cpi.getUpdatedAt());
+  }
 }

@@ -10,5 +10,4 @@ public record UserResponse(
     String lastName,
     String role,
     boolean emailVerified,
-    Instant createdAt
-) {}
+    Instant createdAt) {}

@@ -10,5 +10,4 @@ public record BackofficeDashboardResponse(
     long pendingNotifications,
     long failedNotifications,
     long deliveredNotifications,
-    Map<String, Long> notificationsByChannel
-) {}
+    Map<String, Long> notificationsByChannel) {}

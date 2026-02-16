@@ -1,102 +1,102 @@
 package com.buurman.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 public class Property {
 
-    private UUID id;
-    private String identifier;
-    private UUID teamId;
-    private String street;
-    private String city;
-    private String postalCode;
-    private String country;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
-    private Integer bedrooms;
-    private Integer bathrooms;
-    private BigDecimal areaValue;
-    private String areaUnit;
-    private PropertyType propertyType;
-    private PropertyStatus status;
+  private UUID id;
+  private String identifier;
+  private UUID teamId;
+  private String street;
+  private String city;
+  private String postalCode;
+  private String country;
+  private BigDecimal latitude;
+  private BigDecimal longitude;
+  private Integer bedrooms;
+  private Integer bathrooms;
+  private BigDecimal areaValue;
+  private String areaUnit;
+  private PropertyType propertyType;
+  private PropertyStatus status;
 
-    // Construction & Structure
-    private Integer yearBuilt;
-    private Integer yearLastRenovated;
-    private String constructionType;
-    private String foundationType;
-    private String roofType;
-    private String wallConstruction;
-    private String flooringType;
-    private String windowType;
-    private Integer numberOfFloors;
-    private String structuralNotes;
+  // Construction & Structure
+  private Integer yearBuilt;
+  private Integer yearLastRenovated;
+  private String constructionType;
+  private String foundationType;
+  private String roofType;
+  private String wallConstruction;
+  private String flooringType;
+  private String windowType;
+  private Integer numberOfFloors;
+  private String structuralNotes;
 
-    // Energy & Climate
-    private String energyEfficiencyRating;
-    private LocalDate energyCertificateExpiryDate;
-    private String heatingType;
-    private String coolingType;
-    private String hotWaterSystem;
-    private String insulationNotes;
+  // Energy & Climate
+  private String energyEfficiencyRating;
+  private LocalDate energyCertificateExpiryDate;
+  private String heatingType;
+  private String coolingType;
+  private String hotWaterSystem;
+  private String insulationNotes;
 
-    // Utilities & Connections
-    private String electricityConnectionType;
-    private Integer electricityCapacityAmps;
-    private String waterConnectionType;
-    private Boolean hasGasConnection;
-    private String sewageType;
-    private String internetConnectionType;
-    private Integer internetMaxSpeedMbps;
-    private String internetStatus;
+  // Utilities & Connections
+  private String electricityConnectionType;
+  private Integer electricityCapacityAmps;
+  private String waterConnectionType;
+  private Boolean hasGasConnection;
+  private String sewageType;
+  private String internetConnectionType;
+  private Integer internetMaxSpeedMbps;
+  private String internetStatus;
 
-    // Parking
-    private Integer parkingSpaces;
-    private String parkingType;
+  // Parking
+  private Integer parkingSpaces;
+  private String parkingType;
 
-    // Safety & Security
-    private Boolean hasSmokeDetectors;
-    private Boolean hasCoDetectors;
-    private Boolean hasFireExtinguisher;
-    private Boolean hasSprinklerSystem;
-    private Boolean hasAlarmSystem;
-    private Boolean hasSecurityCameras;
-    private Boolean hasSecureEntry;
-    private String safetyNotes;
+  // Safety & Security
+  private Boolean hasSmokeDetectors;
+  private Boolean hasCoDetectors;
+  private Boolean hasFireExtinguisher;
+  private Boolean hasSprinklerSystem;
+  private Boolean hasAlarmSystem;
+  private Boolean hasSecurityCameras;
+  private Boolean hasSecureEntry;
+  private String safetyNotes;
 
-    // Accessibility
-    private Boolean isWheelchairAccessible;
-    private Boolean hasElevator;
-    private Boolean hasStepFreeEntrance;
-    private Boolean hasAdaptedBathroom;
-    private String accessibilityNotes;
+  // Accessibility
+  private Boolean isWheelchairAccessible;
+  private Boolean hasElevator;
+  private Boolean hasStepFreeEntrance;
+  private Boolean hasAdaptedBathroom;
+  private String accessibilityNotes;
 
-    // Audit
-    private Instant createdAt;
-    private Instant updatedAt;
-    private UUID createdBy;
-    private UUID updatedBy;
-    private Instant deletedAt;
+  // Audit
+  private Instant createdAt;
+  private Instant updatedAt;
+  private UUID createdBy;
+  private UUID updatedBy;
+  private Instant deletedAt;
 
-    public enum PropertyType {
-        APARTMENT,
-        HOUSE,
-        STUDIO,
-        COMMERCIAL
-    }
+  public enum PropertyType {
+    APARTMENT,
+    HOUSE,
+    STUDIO,
+    COMMERCIAL
+  }
 
-    public enum PropertyStatus {
-        VACANT,
-        OCCUPIED,
-        MAINTENANCE,
-        UNAVAILABLE
-    }
+  public enum PropertyStatus {
+    VACANT,
+    OCCUPIED,
+    MAINTENANCE,
+    UNAVAILABLE
+  }
 }

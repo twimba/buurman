@@ -7,33 +7,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UpdateTeamSettingsRequest(
-    @Valid PaymentSettings payments,
-    @Valid RegionalSettings regional
-) {
-    public record PaymentSettings(
-        @NotNull(message = "Payments ahead count is required")
-        @Min(value = 1, message = "Payments ahead count must be at least 1")
-        @Max(value = 12, message = "Payments ahead count must not exceed 12")
-        Integer paymentsAheadCount,
+    @Valid PaymentSettings payments, @Valid RegionalSettings regional) {
+  public record PaymentSettings(
+      @NotNull(message = "Payments ahead count is required") @Min(value = 1, message = "Payments ahead count must be at least 1") @Max(value = 12, message = "Payments ahead count must not exceed 12") Integer paymentsAheadCount,
+      @NotNull(message = "Auto generation enabled flag is required") Boolean autoGenerationEnabled) {}
 
-        @NotNull(message = "Auto generation enabled flag is required")
-        Boolean autoGenerationEnabled
-    ) {}
-
-    public record RegionalSettings(
-        @Size(min = 3, max = 3, message = "Currency code must be 3 characters")
-        String defaultCurrency,
-
-        @Size(max = 100, message = "Country name must not exceed 100 characters")
-        String defaultCountry,
-
-        @Size(max = 50, message = "Timezone must not exceed 50 characters")
-        String timezone,
-
-        @Size(max = 20, message = "Date format must not exceed 20 characters")
-        String dateFormat,
-
-        @Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits")
-        String fiscalYearStartMonth
-    ) {}
+  public record RegionalSettings(
+      @Size(min = 3, max = 3, message = "Currency code must be 3 characters") String defaultCurrency,
+      @Size(max = 100, message = "Country name must not exceed 100 characters") String defaultCountry,
+      @Size(max = 50, message = "Timezone must not exceed 50 characters") String timezone,
+      @Size(max = 20, message = "Date format must not exceed 20 characters") String dateFormat,
+      @Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits") String fiscalYearStartMonth) {}
 }

@@ -9,5 +9,4 @@ public record BackofficePhoneNumberPolicyResponse(
     int maxCodesPerHour,
     int verificationCodeExpiryMinutes,
     Instant updatedAt,
-    String updatedBy
-) {}
+    String updatedBy) {}

@@ -10,5 +10,4 @@ public record RegisterRequest(
     @NotBlank String lastName,
     @NotBlank @Size(min = 8) String password,
     String invitationToken,
-    String registrationInvitationCode
-) {}
+    String registrationInvitationCode) {}
