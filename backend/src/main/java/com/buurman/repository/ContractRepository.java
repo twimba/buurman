@@ -86,11 +86,24 @@ public class ContractRepository {
                 .map(mapper::toDomain);
     }
 
-    public List<Contract> findByTenantId(UUID tenantId, UUID teamId) {
+    public List<Contract> findByTenantIdViaParties(UUID tenantId, UUID teamId) {
+        var CONTRACT_PARTIES = org.jooq.impl.DSL.table("contract_parties");
+        var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);
+        var CP_TENANT_ID = org.jooq.impl.DSL.field("contract_parties.tenant_id", UUID.class);
+        var CP_TEAM_ID = org.jooq.impl.DSL.field("contract_parties.team_id", UUID.class);
+        var CP_DELETED_AT = org.jooq.impl.DSL.field("contract_parties.deleted_at", LocalDateTime.class);
+
         return dsl.selectFrom(CONTRACTS)
-                .where(CONTRACTS.TENANT_ID.eq(tenantId)
-                        .and(CONTRACTS.TEAM_ID.eq(teamId))
-                        .and(CONTRACTS.DELETED_AT.isNull()))
+                .whereExists(
+                        dsl.selectOne()
+                                .from(CONTRACT_PARTIES)
+                                .where(CP_CONTRACT_ID.eq(CONTRACTS.ID)
+                                        .and(CP_TENANT_ID.eq(tenantId))
+                                        .and(CP_TEAM_ID.eq(teamId))
+                                        .and(CP_DELETED_AT.isNull()))
+                )
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull())
                 .orderBy(CONTRACTS.START_DATE.desc())
                 .fetch()
                 .map(mapper::toDomain);
@@ -134,7 +147,6 @@ public class ContractRepository {
                     .set(CONTRACTS.IDENTIFIER, contract.getIdentifier())
                     .set(CONTRACTS.TEAM_ID, contract.getTeamId())
                     .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
-                    .set(CONTRACTS.TENANT_ID, contract.getTenantId())
                     .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
                     .set(CONTRACTS.START_DATE, contract.getStartDate())
                     .set(CONTRACTS.END_DATE, contract.getEndDate())
@@ -169,7 +181,6 @@ public class ContractRepository {
 
             dsl.update(CONTRACTS)
                     .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
-                    .set(CONTRACTS.TENANT_ID, contract.getTenantId())
                     .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
                     .set(CONTRACTS.START_DATE, contract.getStartDate())
                     .set(CONTRACTS.END_DATE, contract.getEndDate())
@@ -208,7 +219,20 @@ public class ContractRepository {
             condition = condition.and(CONTRACTS.PROPERTY_ID.eq(propertyId));
         }
         if (tenantId != null) {
-            condition = condition.and(CONTRACTS.TENANT_ID.eq(tenantId));
+            var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);
+            var CP_TENANT_ID = org.jooq.impl.DSL.field("contract_parties.tenant_id", UUID.class);
+            var CP_TEAM_ID = org.jooq.impl.DSL.field("contract_parties.team_id", UUID.class);
+            var CP_DELETED_AT = org.jooq.impl.DSL.field("contract_parties.deleted_at", LocalDateTime.class);
+            condition = condition.and(
+                    org.jooq.impl.DSL.exists(
+                            dsl.selectOne()
+                                    .from(org.jooq.impl.DSL.table("contract_parties"))
+                                    .where(CP_CONTRACT_ID.eq(CONTRACTS.ID)
+                                            .and(CP_TENANT_ID.eq(tenantId))
+                                            .and(CP_TEAM_ID.eq(teamId))
+                                            .and(CP_DELETED_AT.isNull()))
+                    )
+            );
         }
         Map<String, Field<?>> sortableFields = Map.of(
             "createdAt", CONTRACTS.CREATED_AT,

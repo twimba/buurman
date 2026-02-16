@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public record ContractSummary(
         String identifier,
         PropertySummary property,
-        TenantSummary tenant,
+        TenantSummary primaryTenant,
         LocalDate startDate,
         LocalDate endDate,
         BigDecimal rentAmount,

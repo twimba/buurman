@@ -36,8 +36,12 @@ export const ContractSelector = ({
     (contract) =>
       contract.identifier.toLowerCase().includes(search.toLowerCase()) ||
       contract.property.street.toLowerCase().includes(search.toLowerCase()) ||
-      contract.tenant.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      contract.tenant.lastName?.toLowerCase().includes(search.toLowerCase())
+      contract.primaryTenant.firstName
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      contract.primaryTenant.lastName
+        ?.toLowerCase()
+        .includes(search.toLowerCase())
   );
 
   useEffect(() => {
@@ -176,8 +180,8 @@ export const ContractSelector = ({
                     {contract.property.street}, {contract.property.city}
                   </div>
                   <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                    {contract.tenant.firstName} {contract.tenant.lastName} •{' '}
-                    {contract.status}
+                    {contract.primaryTenant.firstName}{' '}
+                    {contract.primaryTenant.lastName} • {contract.status}
                   </div>
                 </div>
               </button>

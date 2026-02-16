@@ -7,6 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.SortField;
+
+import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.TEAMS;
+import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.USERS;
 import static org.jooq.impl.DSL.lower;
 import org.jooq.JSONB;
 import org.jooq.Record;
@@ -18,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.buurman.jooq.generated.Tables.*;
 
 @Repository
 @RequiredArgsConstructor

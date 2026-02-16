@@ -405,7 +405,7 @@ public class TenantService {
                 );
             }
         } else {
-            List<Contract> contracts = contractRepository.findByTenantId(tenant.getId(), teamId);
+            List<Contract> contracts = contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
             Optional<Contract> activeContract = contracts.stream()
                     .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
                     .findFirst();

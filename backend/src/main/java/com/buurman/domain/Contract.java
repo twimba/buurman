@@ -39,7 +39,6 @@ public class Contract {
     private String identifier;
     private UUID teamId;
     private UUID propertyId;
-    private UUID tenantId;
     private ContractType contractType;
     private LocalDate startDate;
     private LocalDate endDate;

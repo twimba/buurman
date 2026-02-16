@@ -9,6 +9,8 @@ import {
   CreateContractRequest,
   UpdateContractRequest,
   ChangeContractStatusRequest,
+  AddContractPartyRequest,
+  ChangePrimaryTenantRequest,
 } from '../types/contract';
 import { GetContractsParams } from '../api/contracts';
 import type { PageParams } from '@/types/common';
@@ -49,7 +51,7 @@ export const useCreateContract = () => {
         queryKey: ['tenants'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.tenant.identifier],
+        queryKey: ['tenant', newContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       showToast('Contract created successfully', 'success');
@@ -80,7 +82,7 @@ export const useUpdateContract = (id: string) => {
         queryKey: ['tenants'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.identifier],
+        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       // Contract changes may affect payment display
@@ -129,7 +131,7 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.identifier],
+        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
@@ -157,7 +159,7 @@ export const useReopenContract = (id: string) => {
         queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.tenant.identifier],
+        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       // Reopening cancels future payments
@@ -182,7 +184,7 @@ export const useDuplicateContract = () => {
         queryKey: ['property', newContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.tenant.identifier],
+        queryKey: ['tenant', newContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       showToast('Contract duplicated successfully', 'success');
@@ -282,6 +284,71 @@ export const useGenerateContractPayments = (contractId: string) => {
           'success'
         );
       }
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Contract Party hooks ---
+
+export const useAddContractParty = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: AddContractPartyRequest) =>
+      contractsApi.addContractParty(contractId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      showToast('Party added successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useRemoveContractParty = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (partyIdentifier: string) =>
+      contractsApi.removeContractParty(contractId, partyIdentifier),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      showToast('Party removed successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useChangePrimaryTenant = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: ChangePrimaryTenantRequest) =>
+      contractsApi.changePrimaryTenant(contractId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      showToast('Primary tenant changed successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

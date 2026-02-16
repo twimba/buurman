@@ -13,9 +13,6 @@ public record UpdateContractRequest(
         @NotNull(message = "Property identifier is required")
         String propertyIdentifier,
 
-        @NotNull(message = "Tenant identifier is required")
-        String tenantIdentifier,
-
         @NotNull(message = "Contract type is required")
         Contract.ContractType contractType,
 

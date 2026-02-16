@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -140,6 +141,16 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+        String message = extractDataIntegrityMessage(ex);
+        ProblemDetail problem = forStatusAndDetail(CONFLICT, message);
+        problem.setTitle("Conflict");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
         log.error("Unhandled exception", ex);
@@ -147,5 +158,25 @@ public class GlobalExceptionHandler {
         problem.setTitle("Internal Server Error");
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
+    }
+
+    private String extractDataIntegrityMessage(DataIntegrityViolationException ex) {
+        String cause = ex.getMostSpecificCause().getMessage();
+        if (cause == null) return "A data conflict occurred";
+
+        String lowerCause = cause.toLowerCase();
+        if (lowerCause.contains("uq_contract_parties_contract_tenant")) {
+            return "This tenant is already a party to this contract";
+        }
+        if (lowerCause.contains("uq_tenants_team_email")) {
+            return "A tenant with this email address already exists";
+        }
+        if (lowerCause.contains("duplicate key") || lowerCause.contains("unique constraint")) {
+            return "A record with this information already exists";
+        }
+        if (lowerCause.contains("foreign key") || lowerCause.contains("is not present in table")) {
+            return "This action cannot be completed because it references data that does not exist";
+        }
+        return "A data conflict occurred";
     }
 }

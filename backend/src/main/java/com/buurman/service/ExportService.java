@@ -5,9 +5,12 @@ import com.buurman.exception.ExternalServiceException;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.*;
 
+import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
 import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
+import com.buurman.domain.ContractPartyRole;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
@@ -39,10 +42,14 @@ public class ExportService {
     private final PropertyRepository propertyRepository;
     private final ContractRepository contractRepository;
     private final TenantRepository tenantRepository;
+    private final ContractPartyService contractPartyService;
     private final PropertyAmenityRepository propertyAmenityRepository;
     private final PropertyOutdoorAreaRepository propertyOutdoorAreaRepository;
     private final AmenityRepository amenityRepository;
     private final TenantAddressRepository tenantAddressRepository;
+    private final PaymentReceivalRepository paymentReceivalRepository;
+    private final ContractPaymentInstructionRepository contractPaymentInstructionRepository;
+    private final PaymentInstructionRepository paymentInstructionRepository;
     private final MetricsService metricsService;
     private final Clock clock;
 
@@ -189,12 +196,42 @@ public class ExportService {
             Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId)
                     .orElseThrow(() -> new NotFoundException("Property not found"));
 
-            Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId)
-                    .orElseThrow(() -> new NotFoundException("Tenant not found"));
+            List<ContractParty> parties = contractPartyService.getPartiesForContract(contract.getId(), teamId);
+            Set<UUID> tenantIds = new HashSet<>();
+            for (ContractParty party : parties) {
+                tenantIds.add(party.getTenantId());
+            }
+            Map<UUID, Tenant> tenantMap = tenantRepository.findByIdsAndTeamId(tenantIds, teamId)
+                    .stream().collect(toMap(Tenant::getId, t -> t));
 
             List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
 
-            String html = buildContractReportHTML(contract, property, tenant, payments);
+            // Batch-load receivals to compute received amounts and balances
+            Set<UUID> paymentIds = new HashSet<>();
+            for (Payment p : payments) paymentIds.add(p.getId());
+            List<PaymentReceival> allReceivals = paymentIds.isEmpty()
+                    ? List.of()
+                    : paymentReceivalRepository.findByPaymentIdsAndTeamId(paymentIds, teamId);
+            Map<UUID, BigDecimal> receivedByPayment = new HashMap<>();
+            for (PaymentReceival r : allReceivals) {
+                receivedByPayment.merge(r.getPaymentId(), r.getAmount(), BigDecimal::add);
+            }
+
+            // Load all payment instructions for this contract, batch-resolve templates
+            List<ContractPaymentInstruction> allCpis = contractPaymentInstructionRepository
+                    .findByContractIdAndTeamId(contract.getId(), teamId);
+            Set<UUID> piIds = new HashSet<>();
+            for (ContractPaymentInstruction cpi : allCpis) {
+                if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+                    piIds.add(cpi.getPaymentInstructionId());
+                }
+            }
+            Map<UUID, PaymentInstruction> piMap = piIds.isEmpty() ? Map.of()
+                    : paymentInstructionRepository.findAllByTeamId(teamId).stream()
+                        .filter(pi -> piIds.contains(pi.getId()))
+                        .collect(toMap(PaymentInstruction::getId, pi -> pi));
+
+            String html = buildContractReportHTML(contract, property, parties, tenantMap, payments, receivedByPayment, allCpis, piMap);
 
             byte[] result = convertHTMLToPDF(html);
             metricsService.recordTimer("export.generation.seconds",
@@ -222,7 +259,7 @@ public class ExportService {
                     .orElseThrow(() -> new NotFoundException("Tenant not found"));
 
             List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenant.getId(), teamId);
-            List<Contract> contracts = contractRepository.findByTenantId(tenant.getId(), teamId);
+            List<Contract> contracts = contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
 
             // Collect all payments across all contracts
             List<Payment> allPayments = new ArrayList<>();
@@ -824,6 +861,9 @@ public class ExportService {
 
         // ========== CONTRACTS ==========
         if (!contracts.isEmpty()) {
+            List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+            Map<UUID, Tenant> primaryTenants = contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
+
             html.append("<div class='page'>");
             html.append("<h2 class='section-title'>Contracts</h2>");
             html.append("<p style='font-size: 13px; color: #718096; margin-bottom: 12px;'>").append(contracts.size()).append(" contract(s) on record</p>");
@@ -832,7 +872,7 @@ public class ExportService {
             html.append("</tr></thead><tbody>");
 
             for (Contract contract : contracts) {
-                Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+                Tenant tenant = primaryTenants.get(contract.getId());
                 String tenantName = tenant != null ? tenant.getFirstName() + " " + (tenant.getLastName() != null ? tenant.getLastName() : "") : "Unknown";
 
                 html.append("<tr>");
@@ -855,106 +895,539 @@ public class ExportService {
         return html.toString();
     }
 
-    private String buildContractReportHTML(Contract contract, Property property, Tenant tenant, List<Payment> payments) {
-        BigDecimal totalPaid = payments.stream()
-                .filter(p -> p.getStatus() == PAID)
-                .map(Payment::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    private String buildContractReportHTML(Contract contract, Property property,
+                                          List<ContractParty> parties, Map<UUID, Tenant> tenantMap,
+                                          List<Payment> payments, Map<UUID, BigDecimal> receivedByPayment,
+                                          List<ContractPaymentInstruction> allCpis, Map<UUID, PaymentInstruction> piMap) {
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
+        String generatedDate = LocalDate.now(clock).format(dateFmt);
+        String ccy = contract.getCurrency() != null ? contract.getCurrency() : "EUR";
 
-        BigDecimal totalPending = payments.stream()
-                .filter(p -> p.getStatus() == PENDING)
-                .map(Payment::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // Find primary tenant
+        Tenant primaryTenant = parties.stream()
+                .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
+                .findFirst()
+                .map(p -> tenantMap.get(p.getTenantId()))
+                .orElse(null);
+        String primaryName = primaryTenant != null
+                ? escapeHtml(primaryTenant.getFirstName()) + " " + (primaryTenant.getLastName() != null ? escapeHtml(primaryTenant.getLastName()) : "")
+                : "—";
 
-        StringBuilder html = new StringBuilder();
+        // Payment aggregations
+        BigDecimal totalPaid = BigDecimal.ZERO;
+        BigDecimal totalPending = BigDecimal.ZERO;
+        BigDecimal totalOverdue = BigDecimal.ZERO;
+        BigDecimal totalCancelled = BigDecimal.ZERO;
+        long countPaid = 0, countPending = 0, countOverdue = 0, countCancelled = 0, countPartial = 0;
+        for (Payment p : payments) {
+            BigDecimal received = receivedByPayment.getOrDefault(p.getId(), BigDecimal.ZERO);
+            switch (p.getStatus()) {
+                case PAID -> { totalPaid = totalPaid.add(p.getAmount()); countPaid++; }
+                case PENDING -> { totalPending = totalPending.add(p.getAmount()); countPending++; }
+                case OVERDUE -> { totalOverdue = totalOverdue.add(p.getAmount()); countOverdue++; }
+                case CANCELLED -> { totalCancelled = totalCancelled.add(p.getAmount()); countCancelled++; }
+                case PARTIALLY_PAID -> {
+                    totalPaid = totalPaid.add(received);
+                    totalPending = totalPending.add(p.getAmount().subtract(received));
+                    countPartial++;
+                }
+            }
+        }
+
+        StringBuilder html = new StringBuilder(8192);
         html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/>");
         html.append("<style>");
-        html.append("body { font-family: Arial, sans-serif; margin: 40px; color: #333; }");
-        html.append("h1 { color: #1e40af; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }");
-        html.append("h2 { color: #1e40af; margin-top: 30px; }");
-        html.append(".info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }");
-        html.append(".info-card { background-color: #f9fafb; border-radius: 8px; padding: 20px; }");
-        html.append(".info-card h3 { margin: 0 0 15px 0; color: #1e40af; font-size: 16px; }");
-        html.append(".info-item { margin-bottom: 12px; }");
-        html.append(".info-label { font-weight: 600; color: #6b7280; font-size: 12px; text-transform: uppercase; }");
-        html.append(".info-value { font-size: 16px; margin-top: 3px; }");
-        html.append(".summary { display: flex; gap: 20px; margin: 20px 0; }");
-        html.append(".summary-card { flex: 1; padding: 15px; border-radius: 8px; }");
-        html.append(".paid { background-color: #d1fae5; border: 2px solid #10b981; }");
-        html.append(".pending { background-color: #fef3c7; border: 2px solid #f59e0b; }");
-        html.append(".summary-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #666; }");
-        html.append(".summary-card p { margin: 0; font-size: 24px; font-weight: bold; }");
-        html.append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
-        html.append("th { background-color: #f3f4f6; padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #d1d5db; }");
-        html.append("td { padding: 10px; border-bottom: 1px solid #e5e7eb; }");
-        html.append(".status-paid { background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }");
-        html.append(".status-pending { background-color: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }");
-        html.append(".footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #d1d5db; text-align: center; color: #6b7280; font-size: 12px; }");
+        appendContractReportCSS(html);
         html.append("</style></head><body>");
 
-        html.append("<h1>Contract Report</h1>");
-        html.append("<p style='color: #6b7280; font-size: 14px;'>Contract #").append(contract.getIdentifier()).append("</p>");
-        html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ").append(LocalDate.now(clock).format(DateTimeFormatter.ofPattern("MMM d, yyyy"))).append("</p>");
+        // Running footer (placed into @page @bottom-center via CSS position:running)
+        html.append("<div class='running-footer'>");
+        html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
+        html.append("<td style='text-align:left;font-size:9px;color:#a0aec0;width:33%;'>").append(generatedDate).append("</td>");
+        html.append("<td style='text-align:center;font-size:9px;color:#a0aec0;width:34%;'>Confidential &mdash; Buurman Property Management</td>");
+        html.append("<td style='text-align:right;font-size:9px;color:#a0aec0;width:33%;'></td>");
+        html.append("</tr></table></div>");
 
-        html.append("<div class='info-grid'>");
-
-        // Contract Details
-        html.append("<div class='info-card'><h3>Contract Details</h3>");
-        html.append("<div class='info-item'><div class='info-label'>Contract ID</div><div class='info-value'>#").append(contract.getIdentifier()).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Status</div><div class='info-value'>").append(contract.getStatus()).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Start Date</div><div class='info-value'>").append(contract.getStartDate()).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>End Date</div><div class='info-value'>").append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing").append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Rent Amount</div><div class='info-value'>").append(contract.getCurrency()).append(" ").append(String.format("%.2f", contract.getRentAmount())).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Deposit</div><div class='info-value'>").append(contract.getCurrency()).append(" ").append(String.format("%.2f", contract.getDepositAmount())).append("</div></div>");
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE 1 — COVER
+        // ═══════════════════════════════════════════════════════════════
+        html.append("<div class='cover'>");
+        html.append("<div class='cover-header'>");
+        html.append("<div class='cover-title'>CONTRACT REPORT</div>");
+        html.append("<div class='cover-subtitle'>").append(escapeHtml(contract.getIdentifier())).append("</div>");
+        html.append("<div class='cover-date'>Generated ").append(generatedDate).append("</div>");
         html.append("</div>");
 
-        // Property Details
-        html.append("<div class='info-card'><h3>Property</h3>");
-        html.append("<div class='info-item'><div class='info-label'>Address</div><div class='info-value'>").append(escapeHtml(property.getStreet())).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>City</div><div class='info-value'>").append(escapeHtml(property.getCity())).append(", ").append(escapeHtml(property.getPostalCode())).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Type</div><div class='info-value'>").append(property.getPropertyType()).append("</div></div>");
-        html.append("<div class='info-item'><div class='info-label'>Property ID</div><div class='info-value'>#").append(property.getIdentifier()).append("</div></div>");
+        // Status badge
+        String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
+        html.append("<div style='text-align:center;margin:30px 0;'>");
+        html.append("<span class='status-badge status-").append(statusStr.toLowerCase()).append("'>");
+        html.append(formatEnumValue(statusStr));
+        html.append("</span></div>");
+
+        // Summary grid
+        html.append("<table class='cover-summary'>");
+        html.append("<tr>");
+        appendCoverCell(html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
+        appendCoverCell(html, "Primary Tenant", primaryName);
+        html.append("</tr><tr>");
+        appendCoverCell(html, "Monthly Rent", ccy + " " + fmt(contract.getRentAmount()));
+        String period = formatDate(contract.getStartDate(), dateFmt) + " — "
+                + (contract.getEndDate() != null ? formatDate(contract.getEndDate(), dateFmt) : "Indefinite");
+        appendCoverCell(html, "Contract Period", period);
+        html.append("</tr><tr>");
+        appendCoverCell(html, "Contract Type", formatEnumValue(contract.getContractType() != null ? contract.getContractType().name() : ""));
+        appendCoverCell(html, "Payment Frequency", formatEnumValue(contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
+        html.append("</tr>");
+        html.append("</table>");
+
+        html.append("<div class='cover-footer'>Confidential &mdash; Generated by Buurman Property Management</div>");
         html.append("</div>");
 
-        // Tenant Details
-        html.append("<div class='info-card'><h3>Tenant</h3>");
-        html.append("<div class='info-item'><div class='info-label'>Name</div><div class='info-value'>").append(escapeHtml(tenant.getFirstName())).append(" ").append(tenant.getLastName() != null ? escapeHtml(tenant.getLastName()) : "").append("</div></div>");
-        if (tenant.getEmail() != null) {
-            html.append("<div class='info-item'><div class='info-label'>Email</div><div class='info-value'>").append(escapeHtml(tenant.getEmail())).append("</div></div>");
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE 2 — CONTRACT DETAILS + PROPERTY
+        // ═══════════════════════════════════════════════════════════════
+        html.append("<div class='page'>");
+        html.append("<div class='page-header'>Contract Details</div>");
+
+        html.append("<h2 class='section-title'>Contract Information</h2>");
+        html.append("<table class='detail-grid'>");
+        html.append("<tr>");
+        appendField(html, "Contract ID", contract.getIdentifier());
+        appendField(html, "Status", formatEnumValue(statusStr));
+        html.append("</tr><tr>");
+        appendField(html, "Contract Type", formatEnumValue(contract.getContractType() != null ? contract.getContractType().name() : ""));
+        appendField(html, "Signed Date", contract.getSignedDate() != null ? formatDate(contract.getSignedDate(), dateFmt) : "Not signed");
+        html.append("</tr><tr>");
+        appendField(html, "Start Date", formatDate(contract.getStartDate(), dateFmt));
+        appendField(html, "End Date", contract.getEndDate() != null ? formatDate(contract.getEndDate(), dateFmt) : "Indefinite");
+        html.append("</tr><tr>");
+        appendField(html, "Rent Amount", ccy + " " + fmt(contract.getRentAmount()));
+        appendField(html, "Deposit Amount", ccy + " " + fmt(contract.getDepositAmount()));
+        html.append("</tr><tr>");
+        appendField(html, "Security Deposit", ccy + " " + fmt(contract.getSecurityDeposit()));
+        appendField(html, "Currency", ccy);
+        html.append("</tr><tr>");
+        appendField(html, "Payment Frequency", formatEnumValue(contract.getPaymentFrequency() != null ? contract.getPaymentFrequency().name() : ""));
+        appendField(html, "Payment Due Day", contract.getPaymentDueDay() != null ? "Day " + contract.getPaymentDueDay() + " of month" : "—");
+        html.append("</tr><tr>");
+        appendField(html, "Auto-Renewal", contract.getAutoRenewal() != null && contract.getAutoRenewal() ? "Yes" : "No");
+        appendField(html, "Renewal Notice", contract.getRenewalNoticeDays() != null ? contract.getRenewalNoticeDays() + " days" : "—");
+        html.append("</tr><tr>");
+        appendField(html, "Termination Notice", contract.getTerminationNoticeDays() != null ? contract.getTerminationNoticeDays() + " days" : "—");
+        appendField(html, "Late Fee", contract.getLateFeePercentage() != null ? contract.getLateFeePercentage() + "%" : "—");
+        html.append("</tr>");
+        html.append("</table>");
+
+        // Terms & Conditions (rich text HTML from editor)
+        if (contract.getTermsAndConditions() != null && !contract.getTermsAndConditions().isBlank()) {
+            html.append("<h2 class='section-title'>Terms &amp; Conditions</h2>");
+            html.append("<div class='text-block'>").append(sanitizeRichText(contract.getTermsAndConditions())).append("</div>");
         }
-        if (tenant.getPhone() != null) {
-            html.append("<div class='info-item'><div class='info-label'>Phone</div><div class='info-value'>").append(escapeHtml(tenant.getPhone())).append("</div></div>");
-        }
-        html.append("<div class='info-item'><div class='info-label'>Tenant ID</div><div class='info-value'>#").append(tenant.getIdentifier()).append("</div></div>");
-        html.append("</div>");
 
-        html.append("</div>");
-
-        // Payment Summary
-        html.append("<h2>Payment Summary</h2>");
-        html.append("<div class='summary'>");
-        html.append("<div class='summary-card paid'><h4>Total Paid</h4><p>").append(contract.getCurrency()).append(" ").append(String.format("%.2f", totalPaid)).append("</p></div>");
-        html.append("<div class='summary-card pending'><h4>Total Pending</h4><p>").append(contract.getCurrency()).append(" ").append(String.format("%.2f", totalPending)).append("</p></div>");
-        html.append("</div>");
-
-        // Payments Table
-        html.append("<h2>Payments (").append(payments.size()).append(")</h2>");
-        html.append("<table><thead><tr><th>Due Date</th><th>Amount</th><th>Payment Date</th><th>Status</th></tr></thead><tbody>");
-
-        for (Payment payment : payments) {
-            html.append("<tr>");
-            html.append("<td>").append(payment.getDueDate()).append("</td>");
-            html.append("<td>").append(payment.getCurrency()).append(" ").append(String.format("%.2f", payment.getAmount())).append("</td>");
-            html.append("<td>").append(payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "-").append("</td>");
-            html.append("<td><span class='status-").append(payment.getStatus().name().toLowerCase()).append("'>").append(payment.getStatus()).append("</span></td>");
-            html.append("</tr>");
+        // Notes (rich text HTML from editor)
+        if (contract.getNotes() != null && !contract.getNotes().isBlank()) {
+            html.append("<h2 class='section-title'>Notes</h2>");
+            html.append("<div class='text-block'>").append(sanitizeRichText(contract.getNotes())).append("</div>");
         }
 
-        html.append("</tbody></table>");
-        html.append("<div class='footer'>Generated by Buurman Property Management</div>");
+        // Property section
+        html.append("<h2 class='section-title'>Property</h2>");
+        html.append("<table class='detail-grid'>");
+        html.append("<tr>");
+        appendField(html, "Address", escapeHtml(property.getStreet()));
+        appendField(html, "City", escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
+        html.append("</tr><tr>");
+        appendField(html, "Country", property.getCountry() != null ? escapeHtml(property.getCountry()) : "—");
+        appendField(html, "Property Type", formatEnumValue(property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+        html.append("</tr><tr>");
+        appendField(html, "Bedrooms", property.getBedrooms() != null ? String.valueOf(property.getBedrooms()) : "—");
+        appendField(html, "Bathrooms", property.getBathrooms() != null ? String.valueOf(property.getBathrooms()) : "—");
+        html.append("</tr><tr>");
+        String area = property.getAreaValue() != null
+                ? property.getAreaValue() + " " + (property.getAreaUnit() != null ? property.getAreaUnit() : "m²") : "—";
+        appendField(html, "Area", area);
+        appendField(html, "Property ID", property.getIdentifier());
+        html.append("</tr>");
+        html.append("</table>");
+
+        html.append("</div>");
+
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE 3 — CONTRACT PARTIES
+        // ═══════════════════════════════════════════════════════════════
+        html.append("<div class='page'>");
+        html.append("<div class='page-header'>Contract Parties</div>");
+
+        html.append("<h2 class='section-title'>Parties (").append(parties.size()).append(")</h2>");
+
+        // Sort: primary tenant first, then by role
+        List<ContractParty> sortedParties = new ArrayList<>(parties);
+        sortedParties.sort((a, b) -> {
+            if (a.getRole() == ContractPartyRole.PRIMARY_TENANT) return -1;
+            if (b.getRole() == ContractPartyRole.PRIMARY_TENANT) return 1;
+            return a.getRole().compareTo(b.getRole());
+        });
+
+        for (ContractParty party : sortedParties) {
+            Tenant t = tenantMap.get(party.getTenantId());
+            if (t == null) continue;
+            String roleColor = getPartyRoleColor(party.getRole());
+            String roleBg = getPartyRoleBgColor(party.getRole());
+
+            html.append("<div class='party-card' style='border-left-color:").append(roleColor).append(";'>");
+
+            // Role label
+            html.append("<div class='party-role' style='color:").append(roleColor).append(";background-color:").append(roleBg).append(";'>");
+            html.append(party.getRole().getDisplayName());
+            html.append("</div>");
+
+            // Name
+            html.append("<div class='party-name'>");
+            html.append(escapeHtml(t.getFirstName()));
+            if (t.getLastName() != null) html.append(" ").append(escapeHtml(t.getLastName()));
+            html.append("</div>");
+
+            // Contact details in a 2-column layout
+            html.append("<table class='party-details'>");
+            if (t.getEmail() != null) {
+                html.append("<tr><td class='pd-label'>Email</td><td class='pd-value'>").append(escapeHtml(t.getEmail())).append("</td>");
+                if (t.getPhone() != null) {
+                    html.append("<td class='pd-label'>Phone</td><td class='pd-value'>").append(escapeHtml(t.getPhone())).append("</td>");
+                } else {
+                    html.append("<td></td><td></td>");
+                }
+                html.append("</tr>");
+            } else if (t.getPhone() != null) {
+                html.append("<tr><td class='pd-label'>Phone</td><td class='pd-value'>").append(escapeHtml(t.getPhone())).append("</td><td></td><td></td></tr>");
+            }
+            boolean hasTax = t.getTaxNumber() != null && !t.getTaxNumber().isBlank();
+            boolean hasId = t.getIdNumber() != null && !t.getIdNumber().isBlank();
+            if (hasTax || hasId) {
+                html.append("<tr>");
+                if (hasTax) {
+                    html.append("<td class='pd-label'>Tax Number</td><td class='pd-value'>").append(escapeHtml(t.getTaxNumber())).append("</td>");
+                } else {
+                    html.append("<td></td><td></td>");
+                }
+                if (hasId) {
+                    html.append("<td class='pd-label'>ID Number</td><td class='pd-value'>").append(escapeHtml(t.getIdNumber())).append("</td>");
+                } else {
+                    html.append("<td></td><td></td>");
+                }
+                html.append("</tr>");
+            }
+            html.append("<tr><td class='pd-label'>Reference</td><td class='pd-value' style='color:#a0aec0;font-size:11px;'>").append(t.getIdentifier()).append("</td><td></td><td></td></tr>");
+            html.append("</table></div>");
+        }
+
+        html.append("</div>");
+
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE 4 — PAYMENT INSTRUCTIONS
+        // ═══════════════════════════════════════════════════════════════
+        if (!allCpis.isEmpty()) {
+            html.append("<div class='page'>");
+            html.append("<div class='page-header'>Payment Instructions</div>");
+
+            // Sort by effectiveFrom descending (most recent first)
+            List<ContractPaymentInstruction> sortedCpis = new ArrayList<>(allCpis);
+            sortedCpis.sort((a, b) -> {
+                LocalDate aDate = a.getEffectiveFrom();
+                LocalDate bDate = b.getEffectiveFrom();
+                if (aDate == null && bDate == null) return 0;
+                if (aDate == null) return 1;
+                if (bDate == null) return -1;
+                return bDate.compareTo(aDate);
+            });
+
+            for (ContractPaymentInstruction cpi : sortedCpis) {
+                boolean isCustom = Boolean.TRUE.equals(cpi.getIsCustom());
+                PaymentInstruction tpl = (!isCustom && cpi.getPaymentInstructionId() != null)
+                        ? piMap.get(cpi.getPaymentInstructionId()) : null;
+
+                String piName = isCustom ? cpi.getCustomName() : (tpl != null ? tpl.getName() : null);
+                String piMethod = isCustom ? cpi.getCustomPaymentMethod()
+                        : (tpl != null && tpl.getPaymentMethod() != null ? tpl.getPaymentMethod().name() : null);
+                String piBankName = isCustom ? cpi.getCustomBankName() : (tpl != null ? tpl.getBankName() : null);
+                String piAccountHolder = isCustom ? cpi.getCustomAccountHolderName() : (tpl != null ? tpl.getAccountHolderName() : null);
+                String piIban = isCustom ? cpi.getCustomIban() : (tpl != null ? tpl.getIban() : null);
+                String piBicSwift = isCustom ? cpi.getCustomBicSwift() : (tpl != null ? tpl.getBicSwift() : null);
+                String piAccountNumber = isCustom ? cpi.getCustomAccountNumber() : (tpl != null ? tpl.getAccountNumber() : null);
+                String piRoutingNumber = isCustom ? cpi.getCustomRoutingNumber() : (tpl != null ? tpl.getRoutingNumber() : null);
+                String piReference = isCustom ? cpi.getCustomPaymentReference() : (tpl != null ? tpl.getPaymentReference() : null);
+                String piDetails = isCustom ? cpi.getCustomAdditionalDetails() : (tpl != null ? tpl.getAdditionalDetails() : null);
+
+                // Current (no effectiveTo) gets a blue accent, expired gets gray
+                boolean isCurrent = cpi.getEffectiveTo() == null;
+                String accentColor = isCurrent ? "#2b6cb0" : "#a0aec0";
+
+                html.append("<div class='pi-card' style='border-left-color:").append(accentColor).append(";'>");
+
+                // Header: name, method badge, date range
+                html.append("<div class='pi-header'>");
+                if (piName != null && !piName.isBlank()) {
+                    html.append("<span class='pi-name'>").append(escapeHtml(piName)).append("</span>");
+                }
+                if (piMethod != null && !piMethod.isBlank()) {
+                    html.append("<span class='pi-method'>").append(formatEnumValue(piMethod)).append("</span>");
+                }
+                if (isCurrent) {
+                    html.append("<span class='pi-current'>Current</span>");
+                }
+                html.append("</div>");
+
+                // Effective period
+                String fromStr = cpi.getEffectiveFrom() != null ? formatDate(cpi.getEffectiveFrom(), dateFmt) : "—";
+                String toStr = cpi.getEffectiveTo() != null ? formatDate(cpi.getEffectiveTo(), dateFmt) : "Present";
+                html.append("<div class='pi-period'>").append(fromStr).append(" — ").append(toStr).append("</div>");
+
+                // Details grid
+                html.append("<table class='detail-grid'>");
+                boolean hasBank = piBankName != null && !piBankName.isBlank();
+                boolean hasHolder = piAccountHolder != null && !piAccountHolder.isBlank();
+                if (hasBank || hasHolder) {
+                    html.append("<tr>");
+                    appendField(html, "Bank Name", hasBank ? escapeHtml(piBankName) : null);
+                    appendField(html, "Account Holder", hasHolder ? escapeHtml(piAccountHolder) : null);
+                    html.append("</tr>");
+                }
+                boolean hasIban = piIban != null && !piIban.isBlank();
+                boolean hasBic = piBicSwift != null && !piBicSwift.isBlank();
+                if (hasIban || hasBic) {
+                    html.append("<tr>");
+                    appendField(html, "IBAN", hasIban ? escapeHtml(piIban) : null);
+                    appendField(html, "BIC / SWIFT", hasBic ? escapeHtml(piBicSwift) : null);
+                    html.append("</tr>");
+                }
+                boolean hasAccNum = piAccountNumber != null && !piAccountNumber.isBlank();
+                boolean hasRouting = piRoutingNumber != null && !piRoutingNumber.isBlank();
+                if (hasAccNum || hasRouting) {
+                    html.append("<tr>");
+                    appendField(html, "Account Number", hasAccNum ? escapeHtml(piAccountNumber) : null);
+                    appendField(html, "Routing Number", hasRouting ? escapeHtml(piRoutingNumber) : null);
+                    html.append("</tr>");
+                }
+                if (piReference != null && !piReference.isBlank()) {
+                    html.append("<tr>");
+                    appendField(html, "Payment Reference", escapeHtml(piReference));
+                    html.append("<td></td>");
+                    html.append("</tr>");
+                }
+                html.append("</table>");
+
+                if (piDetails != null && !piDetails.isBlank()) {
+                    html.append("<div class='pi-details'><span class='fg-label'>Additional Details</span><br/>");
+                    html.append("<span style='font-size:13px;color:#2d3748;'>").append(escapeHtml(piDetails)).append("</span></div>");
+                }
+                if (cpi.getNotes() != null && !cpi.getNotes().isBlank()) {
+                    html.append("<div class='pi-details'><span class='fg-label'>Notes</span><br/>");
+                    html.append("<span style='font-size:13px;color:#2d3748;'>").append(escapeHtml(cpi.getNotes())).append("</span></div>");
+                }
+
+                html.append("</div>");
+            }
+
+            html.append("</div>");
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // PAGE 5 — PAYMENT OVERVIEW
+        // ═══════════════════════════════════════════════════════════════
+        html.append("<div class='page'>");
+        html.append("<div class='page-header'>Payment Overview</div>");
+
+        // Summary cards
+        html.append("<h2 class='section-title'>Summary</h2>");
+        html.append("<table class='summary-grid'><tr>");
+        appendSummaryCard(html, "Paid", countPaid, ccy + " " + fmt(totalPaid), "#f0fdf4", "#16a34a", "#166534");
+        appendSummaryCard(html, "Pending", countPending, ccy + " " + fmt(totalPending), "#fefce8", "#ca8a04", "#854d0e");
+        appendSummaryCard(html, "Partial", countPartial, ccy + " " + fmt(
+                payments.stream().filter(p -> p.getStatus() == PARTIALLY_PAID).map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add)),
+                "#eff6ff", "#3b82f6", "#1e40af");
+        appendSummaryCard(html, "Overdue", countOverdue, ccy + " " + fmt(totalOverdue), "#fef2f2", "#dc2626", "#991b1b");
+        html.append("</tr></table>");
+
+        // Payments table
+        html.append("<h2 class='section-title'>Payment History (").append(payments.size()).append(")</h2>");
+
+        if (payments.isEmpty()) {
+            html.append("<p style='color:#718096;font-style:italic;'>No payments recorded for this contract.</p>");
+        } else {
+            // Sort by due date descending
+            List<Payment> sortedPayments = new ArrayList<>(payments);
+            sortedPayments.sort((a, b) -> b.getDueDate().compareTo(a.getDueDate()));
+
+            html.append("<table class='payment-table'>");
+            html.append("<thead><tr>");
+            html.append("<th>Due Date</th><th style='text-align:right'>Amount</th><th style='text-align:right'>Paid</th><th style='text-align:right'>Balance</th><th>Status</th><th>Payment Date</th>");
+            html.append("</tr></thead><tbody>");
+
+            for (Payment payment : sortedPayments) {
+                BigDecimal received = receivedByPayment.getOrDefault(payment.getId(), BigDecimal.ZERO);
+                BigDecimal balance = payment.getAmount().subtract(received);
+                html.append("<tr>");
+                html.append("<td>").append(formatDate(payment.getDueDate(), dateFmt)).append("</td>");
+                html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
+                    .append(payment.getCurrency()).append(" ").append(fmt(payment.getAmount())).append("</td>");
+                html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
+                    .append(received.compareTo(BigDecimal.ZERO) > 0 ? payment.getCurrency() + " " + fmt(received) : "—").append("</td>");
+                html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
+                    .append(balance.compareTo(BigDecimal.ZERO) > 0 && payment.getStatus() != PAID ? payment.getCurrency() + " " + fmt(balance) : "—").append("</td>");
+                html.append("<td>");
+                String payStatus = payment.getStatus().name();
+                html.append("<span class='pay-status pay-").append(payStatus.toLowerCase()).append("'>");
+                html.append(formatEnumValue(payStatus)).append("</span>");
+                html.append("</td>");
+                html.append("<td>").append(payment.getPaymentDate() != null ? formatDate(payment.getPaymentDate(), dateFmt) : "—").append("</td>");
+                html.append("</tr>");
+            }
+            html.append("</tbody></table>");
+        }
+
+        html.append("</div>");
+
         html.append("</body></html>");
-
         return html.toString();
+    }
+
+    private void appendContractReportCSS(StringBuilder css) {
+        // Page margins + running footer + page numbers
+        css.append("@page { margin: 40px 50px 70px 50px; ");
+        css.append("@bottom-center { content: element(running-footer); } ");
+        css.append("@bottom-right { content: 'Page ' counter(page) ' of ' counter(pages); font-size: 9px; color: #a0aec0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; } }");
+        css.append("@page:first { margin: 0; @bottom-center { content: none; } @bottom-right { content: none; } }");
+        css.append(".running-footer { position: running(running-footer); width: 100%; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 9px; color: #a0aec0; display: flex; justify-content: space-between; }");
+        css.append(".running-footer .rf-left { }");
+        css.append(".running-footer .rf-center { text-align: center; }");
+        css.append(".running-footer .rf-right { text-align: right; }");
+        css.append("body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #1a202c; font-size: 13px; line-height: 1.5; }");
+
+        // Cover page
+        css.append(".cover { page-break-after: always; padding: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }");
+        css.append(".cover-header { text-align: center; margin-bottom: 40px; }");
+        css.append(".cover-title { font-size: 44px; font-weight: 700; color: #1a365d; letter-spacing: 3px; margin-bottom: 12px; }");
+        css.append(".cover-subtitle { font-size: 16px; color: #718096; letter-spacing: 2px; margin-bottom: 6px; }");
+        css.append(".cover-date { font-size: 12px; color: #a0aec0; }");
+        css.append(".cover-summary { width: 80%; max-width: 520px; border-collapse: collapse; margin-top: 20px; }");
+        css.append(".cover-summary td { padding: 14px 20px; }");
+        css.append(".cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #718096; font-weight: 600; margin-bottom: 4px; }");
+        css.append(".cs-value { font-size: 15px; color: #1a202c; font-weight: 500; }");
+        css.append(".cover-footer { position: absolute; bottom: 40px; text-align: center; font-size: 10px; color: #a0aec0; width: 100%; }");
+
+        // Status badges (cover)
+        css.append(".status-badge { display: inline-block; padding: 8px 28px; border-radius: 20px; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }");
+        css.append(".status-active { background-color: #f0fdf4; color: #166534; border: 2px solid #bbf7d0; }");
+        css.append(".status-draft { background-color: #f9fafb; color: #374151; border: 2px solid #e5e7eb; }");
+        css.append(".status-expired { background-color: #fef2f2; color: #991b1b; border: 2px solid #fecaca; }");
+        css.append(".status-terminated { background-color: #fef2f2; color: #991b1b; border: 2px solid #fecaca; }");
+        css.append(".status-pending_signature { background-color: #fefce8; color: #854d0e; border: 2px solid #fef08a; }");
+
+        // Content pages (no extra padding — @page margins handle it)
+        css.append(".page { page-break-before: always; }");
+        css.append(".page-header { border-bottom: 2px solid #1a365d; padding-bottom: 10px; margin-bottom: 30px; font-size: 20px; font-weight: 700; color: #1a365d; }");
+
+        // Section titles
+        css.append(".section-title { font-size: 16px; font-weight: 700; color: #1a365d; margin: 28px 0 14px 0; padding-left: 12px; border-left: 4px solid #2b6cb0; }");
+
+        // Detail grid (2-column)
+        css.append(".detail-grid { width: 100%; border-collapse: collapse; }");
+        css.append(".detail-grid td { padding: 10px 16px; vertical-align: top; width: 50%; }");
+        css.append(".fg-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #718096; font-weight: 600; margin-bottom: 3px; }");
+        css.append(".fg-value { font-size: 14px; color: #1a202c; }");
+
+        // Text blocks (rich HTML content)
+        css.append(".text-block { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; font-size: 13px; color: #2d3748; line-height: 1.6; }");
+        css.append(".text-block p { margin: 0 0 8px 0; }");
+        css.append(".text-block ul, .text-block ol { margin: 4px 0; padding-left: 24px; }");
+        css.append(".text-block li { margin-bottom: 4px; }");
+        css.append(".text-block strong, .text-block b { font-weight: 600; }");
+        css.append(".text-block h1, .text-block h2, .text-block h3, .text-block h4 { color: #1a365d; margin: 12px 0 6px 0; }");
+
+        // Party cards
+        css.append(".party-card { background-color: #fff; border: 1px solid #e2e8f0; border-left: 3px solid; border-radius: 6px; padding: 20px 24px; margin-bottom: 14px; }");
+        css.append(".party-role { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; margin-bottom: 6px; }");
+        css.append(".party-name { font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #edf2f7; }");
+        css.append(".party-details { border-collapse: collapse; width: 100%; }");
+        css.append(".pd-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #a0aec0; font-weight: 600; padding: 4px 8px 4px 0; width: 90px; vertical-align: top; }");
+        css.append(".pd-value { font-size: 13px; color: #2d3748; padding: 4px 20px 4px 0; vertical-align: top; }");
+
+        // Payment instruction card
+        css.append(".pi-card { background-color: #f7fafc; border: 1px solid #e2e8f0; border-left: 3px solid #2b6cb0; border-radius: 6px; padding: 20px 24px; margin-bottom: 20px; }");
+        css.append(".pi-header { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #edf2f7; }");
+        css.append(".pi-name { font-size: 17px; font-weight: 700; color: #1a202c; margin-right: 12px; }");
+        css.append(".pi-method { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; color: #2b6cb0; background-color: #eff6ff; vertical-align: middle; }");
+        css.append(".pi-current { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; color: #166534; background-color: #f0fdf4; vertical-align: middle; margin-left: 8px; }");
+        css.append(".pi-period { font-size: 12px; color: #718096; margin-bottom: 12px; }");
+        css.append(".pi-details { margin-top: 10px; padding-top: 8px; border-top: 1px solid #edf2f7; }");
+
+        // Summary cards
+        css.append(".summary-grid { width: 100%; border-collapse: separate; border-spacing: 10px 0; }");
+        css.append(".summary-grid td { border-radius: 8px; padding: 16px; text-align: center; vertical-align: top; width: 25%; }");
+        css.append(".sc-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 6px; }");
+        css.append(".sc-amount { font-size: 20px; font-weight: 700; margin-bottom: 2px; }");
+        css.append(".sc-count { font-size: 11px; }");
+
+        // Payment table
+        css.append(".payment-table { width: 100%; border-collapse: collapse; margin-top: 10px; }");
+        css.append(".payment-table thead th { background-color: #edf2f7; padding: 10px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568; font-weight: 700; border-bottom: 2px solid #cbd5e0; }");
+        css.append(".payment-table tbody td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }");
+        css.append(".payment-table tbody tr:nth-child(even) { background-color: #f7fafc; }");
+
+        // Payment status badges
+        css.append(".pay-status { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }");
+        css.append(".pay-paid { background-color: #f0fdf4; color: #166534; }");
+        css.append(".pay-pending { background-color: #fefce8; color: #854d0e; }");
+        css.append(".pay-partially_paid { background-color: #fefce8; color: #854d0e; }");
+        css.append(".pay-overdue { background-color: #fef2f2; color: #991b1b; }");
+        css.append(".pay-cancelled { background-color: #f9fafb; color: #6b7280; }");
+    }
+
+    private void appendCoverCell(StringBuilder html, String label, String value) {
+        html.append("<td><div class='cs-label'>").append(escapeHtml(label)).append("</div>");
+        html.append("<div class='cs-value'>").append(value).append("</div></td>");
+    }
+
+    private void appendField(StringBuilder html, String label, String value) {
+        html.append("<td><div class='fg-label'>").append(escapeHtml(label)).append("</div>");
+        html.append("<div class='fg-value'>").append(value != null ? value : "—").append("</div></td>");
+    }
+
+    private void appendSummaryCard(StringBuilder html, String label, long count, String amount,
+                                   String bgColor, String accentColor, String textColor) {
+        html.append("<td style='background-color:").append(bgColor).append(";'>");
+        html.append("<div class='sc-label' style='color:").append(accentColor).append(";'>").append(label).append("</div>");
+        html.append("<div class='sc-amount' style='color:").append(textColor).append(";'>").append(amount).append("</div>");
+        html.append("<div class='sc-count' style='color:").append(accentColor).append(";'>").append(count).append(count == 1 ? " payment" : " payments").append("</div>");
+        html.append("</td>");
+    }
+
+    private String getPartyRoleColor(ContractPartyRole role) {
+        return switch (role) {
+            case PRIMARY_TENANT -> "#2b6cb0";
+            case GUARANTOR -> "#b45309";
+            case COSIGNER -> "#6d28d9";
+            case EXTRA_TENANT -> "#0f766e";
+        };
+    }
+
+    private String getPartyRoleBgColor(ContractPartyRole role) {
+        return switch (role) {
+            case PRIMARY_TENANT -> "#eff6ff";
+            case GUARANTOR -> "#fffbeb";
+            case COSIGNER -> "#f5f3ff";
+            case EXTRA_TENANT -> "#f0fdfa";
+        };
+    }
+
+
+
+    private String fmt(BigDecimal value) {
+        return value != null ? String.format("%,.2f", value) : "0.00";
+    }
+
+    private String formatDate(LocalDate date, DateTimeFormatter fmt) {
+        return date != null ? date.format(fmt) : "—";
     }
 
     private String buildTenantReportHTML(
@@ -1261,6 +1734,17 @@ public class ExportService {
                    .replace(">", "&gt;")
                    .replace("\"", "&quot;")
                    .replace("'", "&#39;");
+    }
+
+    private String sanitizeRichText(String html) {
+        if (html == null) return "";
+        return html.replaceAll("(?i)<script[^>]*>.*?</script>", "")
+                   .replaceAll("(?i)<iframe[^>]*>.*?</iframe>", "")
+                   .replaceAll("(?i)<object[^>]*>.*?</object>", "")
+                   .replaceAll("(?i)<embed[^>]*>", "")
+                   .replaceAll("(?i)<link[^>]*>", "")
+                   .replaceAll("(?i)\\s+on\\w+\\s*=\\s*\"[^\"]*\"", "")
+                   .replaceAll("(?i)\\s+on\\w+\\s*=\\s*'[^']*'", "");
     }
 
     private String formatEnumValue(String value) {

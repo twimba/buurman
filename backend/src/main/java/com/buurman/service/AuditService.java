@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import com.buurman.domain.AuditLog;
+import com.buurman.domain.ContractPartyRole;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -18,6 +19,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,6 +264,25 @@ public class AuditService {
             return String.format("%s edited document metadata: %s", userName, fileName);
         }
 
+        // Check for contract party operations
+        if (changedFields != null && changedFields.containsKey("partyAdded")) {
+            String tenantName = (String) changedFields.get("partyAdded");
+            String role = (String) changedFields.get("role");
+            return String.format("%s added %s as %s", userName, tenantName, formatRole(role));
+        }
+
+        if (changedFields != null && changedFields.containsKey("partyRemoved")) {
+            String tenantName = (String) changedFields.get("partyRemoved");
+            String role = (String) changedFields.get("role");
+            return String.format("%s removed %s (%s)", userName, tenantName, formatRole(role));
+        }
+
+        if (changedFields != null && changedFields.containsKey("primaryTenantChanged")) {
+            String newTenant = (String) changedFields.get("primaryTenantChanged");
+            String oldTenant = (String) changedFields.get("previousPrimaryTenant");
+            return String.format("%s changed primary tenant from %s to %s", userName, oldTenant, newTenant);
+        }
+
         // Check for receival operations
         if (changedFields != null && changedFields.containsKey("receivalRegistered")) {
             return String.format("%s registered a receival: %s", userName, changedFields.get("receivalRegistered"));
@@ -285,5 +306,13 @@ public class AuditService {
         };
 
         return String.format("%s %s this %s", userName, actionText, entityType.toLowerCase());
+    }
+
+    private String formatRole(String role) {
+        return Arrays.stream(ContractPartyRole.values())
+                .filter(r -> r.name().equals(role))
+                .findFirst()
+                .map(ContractPartyRole::getDisplayName)
+                .orElse("Unknown");
     }
 }

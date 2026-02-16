@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +46,7 @@ public class CalendarFeedService {
     private final ContractRepository contractRepository;
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
+    private final ContractPartyService contractPartyService;
     private final AppProperties appProperties;
 
     @PreAuthorize("hasRole('TEAM_ADMIN')")
@@ -184,7 +186,7 @@ public class CalendarFeedService {
             }
             case TENANT_PAYMENTS -> {
                 if (feed.getTenantId() != null) {
-                    List<Contract> tenContracts = contractRepository.findByTenantId(feed.getTenantId(), teamId);
+                    List<Contract> tenContracts = contractRepository.findByTenantIdViaParties(feed.getTenantId(), teamId);
                     milestoneContracts.addAll(tenContracts);
                     tenContracts.forEach(c -> contractIds.add(c.getId()));
                 }
@@ -201,11 +203,10 @@ public class CalendarFeedService {
         Map<UUID, Property> propertyMap = propertyRepository.findByIdsAndTeamId(propertyIds, teamId)
                 .stream().collect(toMap(Property::getId, identity()));
 
-        Set<UUID> tenantIds = contractMap.values().stream()
-                .map(Contract::getTenantId)
-                .collect(toSet());
-        Map<UUID, Tenant> tenantMap = tenantRepository.findByIdsAndTeamId(tenantIds, teamId)
-                .stream().collect(toMap(Tenant::getId, identity()));
+        Map<UUID, Tenant> primaryTenantByContract = contractPartyService.getPrimaryTenantsForContracts(contractMap.keySet(), teamId);
+        // Build tenantMap (tenantId → Tenant) for calendar name building
+        Map<UUID, Tenant> tenantMap = new HashMap<>();
+        primaryTenantByContract.values().forEach(t -> tenantMap.put(t.getId(), t));
 
         String calName = buildCalendarName(feed, teamId, propertyMap, tenantMap);
 
@@ -261,7 +262,7 @@ public class CalendarFeedService {
         for (Payment payment : payments) {
             Contract contract = contractMap.get(payment.getContractId());
             Property property = contract != null ? propertyMap.get(contract.getPropertyId()) : null;
-            Tenant tenant = contract != null ? tenantMap.get(contract.getTenantId()) : null;
+            Tenant tenant = contract != null ? primaryTenantByContract.get(contract.getId()) : null;
 
             String summary = buildSummary(property);
             String description = buildDescription(payment, contract, property, tenant);
@@ -293,7 +294,7 @@ public class CalendarFeedService {
                 yield result;
             }
             case TENANT_PAYMENTS -> {
-                List<Contract> contracts = contractRepository.findByTenantId(feed.getTenantId(), teamId);
+                List<Contract> contracts = contractRepository.findByTenantIdViaParties(feed.getTenantId(), teamId);
                 List<Payment> result = new ArrayList<>();
                 for (Contract c : contracts) {
                     result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -379,7 +380,7 @@ public class CalendarFeedService {
                 contractIdentifier = contract.getIdentifier();
 
                 Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-                Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+                Tenant tenant = contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
 
                 StringBuilder label = new StringBuilder();
                 if (property != null && property.getStreet() != null) {

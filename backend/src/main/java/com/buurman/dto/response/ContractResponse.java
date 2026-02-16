@@ -5,11 +5,13 @@ import com.buurman.domain.Contract;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 public record ContractResponse(
         String identifier,
         PropertySummary property,
-        TenantSummary tenant,
+        List<ContractPartyResponse> parties,
+        TenantSummary primaryTenant,
         Contract.ContractType contractType,
         LocalDate startDate,
         LocalDate endDate,

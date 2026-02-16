@@ -42,7 +42,8 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8]">
             <User className="h-4 w-4 flex-shrink-0" />
             <span className="text-sm">
-              {contract.tenant.firstName} {contract.tenant.lastName}
+              {contract.primaryTenant.firstName}{' '}
+              {contract.primaryTenant.lastName}
             </span>
           </div>
         </div>

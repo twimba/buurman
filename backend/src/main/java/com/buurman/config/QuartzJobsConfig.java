@@ -37,13 +37,11 @@ public class QuartzJobsConfig {
 
     @Bean
     public Trigger notificationOutboxTrigger(JobDetail notificationOutboxJobDetail,
-                                              NotificationOutboxProperties notificationOutboxProperties) {
+                                             @Value("${scheduling.notifications.outbox-push-cron}") String cron) {
         return TriggerBuilder.newTrigger()
                 .forJob(notificationOutboxJobDetail)
                 .withIdentity("notificationOutboxTrigger", "notification")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInMilliseconds(notificationOutboxProperties.pollIntervalMs())
-                        .repeatForever())
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                 .build();
     }
 
@@ -119,13 +117,11 @@ public class QuartzJobsConfig {
 
     @Bean
     public Trigger databaseMetricsRefreshTrigger(JobDetail databaseMetricsRefreshJobDetail,
-                                                  @Value("${scheduling.metrics.fixed-rate-ms}") long intervalMs) {
+                                                  @Value("${scheduling.metrics.metrics-push-cron}") String cron) {
         return TriggerBuilder.newTrigger()
                 .forJob(databaseMetricsRefreshJobDetail)
                 .withIdentity("databaseMetricsRefreshTrigger", "metrics")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInMilliseconds(intervalMs)
-                        .repeatForever())
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                 .build();
     }
 
@@ -170,28 +166,6 @@ public class QuartzJobsConfig {
                 .build();
     }
 
-    // ── Thumbnail Backfill ─────────────────────────────────────────────────
-
-    @Bean
-    @ConditionalOnProperty(name = "scheduling.thumbnail-backfill.enabled", havingValue = "true")
-    public JobDetail thumbnailBackfillJobDetail() {
-        return JobBuilder.newJob(ThumbnailBackfillJob.class)
-                .withIdentity("thumbnailBackfillJob", "system")
-                .storeDurably()
-                .build();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "scheduling.thumbnail-backfill.enabled", havingValue = "true")
-    public Trigger thumbnailBackfillTrigger() {
-        return TriggerBuilder.newTrigger()
-                .forJob("thumbnailBackfillJob", "system")
-                .withIdentity("thumbnailBackfillTrigger", "system")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                        .withIntervalInMinutes(5)
-                        .repeatForever())
-                .build();
-    }
 
     // ── Execution History Cleanup ───────────────────────────────────────────
 

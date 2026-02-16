@@ -9,11 +9,11 @@ import org.jooq.JSONB;
 import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.field;
 
 import java.sql.Timestamp;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

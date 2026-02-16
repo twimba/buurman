@@ -27,6 +27,8 @@ import { PropertyMap } from '@/components/properties/PropertyMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 import client from '@/api/client';
 import {
   Edit,
@@ -71,6 +73,7 @@ export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { isEnabled } = useFeatureFlags();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
@@ -154,7 +157,7 @@ export const PropertyDetailPage = () => {
       filtered = filtered.filter(
         (contract) =>
           contract.identifier.toLowerCase().includes(search) ||
-          `${contract.tenant.firstName} ${contract.tenant.lastName}`
+          `${contract.primaryTenant.firstName} ${contract.primaryTenant.lastName}`
             .toLowerCase()
             .includes(search) ||
           contract.contractType.toLowerCase().includes(search)
@@ -179,8 +182,8 @@ export const PropertyDetailPage = () => {
           bVal = b.status;
           break;
         case 'tenant':
-          aVal = `${a.tenant.firstName} ${a.tenant.lastName}`;
-          bVal = `${b.tenant.firstName} ${b.tenant.lastName}`;
+          aVal = `${a.primaryTenant.firstName} ${a.primaryTenant.lastName}`;
+          bVal = `${b.primaryTenant.firstName} ${b.primaryTenant.lastName}`;
           break;
         case 'contractType':
           aVal = a.contractType;
@@ -405,36 +408,38 @@ export const PropertyDetailPage = () => {
           }
           actions={
             <>
-              <Button
-                variant="primary"
-                leftIcon={<Download />}
-                onClick={async () => {
-                  try {
-                    const response = await client.get(
-                      `/reports/export/property/${id}/brochure`,
-                      {
-                        responseType: 'blob',
-                      }
-                    );
-                    const blob = new Blob([response.data], {
-                      type: 'application/pdf',
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'property-brochure.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                  } catch (error) {
-                    console.error('Failed to download brochure:', error);
-                    alert('Failed to download brochure. Please try again.');
-                  }
-                }}
-              >
-                Brochure
-              </Button>
+              {isEnabled(FeatureFlags.REPORTS) && (
+                <Button
+                  variant="primary"
+                  leftIcon={<Download />}
+                  onClick={async () => {
+                    try {
+                      const response = await client.get(
+                        `/reports/export/property/${id}/brochure`,
+                        {
+                          responseType: 'blob',
+                        }
+                      );
+                      const blob = new Blob([response.data], {
+                        type: 'application/pdf',
+                      });
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = 'property-brochure.pdf';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      window.URL.revokeObjectURL(url);
+                    } catch (error) {
+                      console.error('Failed to download brochure:', error);
+                      alert('Failed to download brochure. Please try again.');
+                    }
+                  }}
+                >
+                  Brochure
+                </Button>
+              )}
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.PROPERTY_PAYMENTS}
@@ -1446,8 +1451,8 @@ export const PropertyDetailPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                                {contract.tenant.firstName}{' '}
-                                {contract.tenant.lastName}
+                                {contract.primaryTenant.firstName}{' '}
+                                {contract.primaryTenant.lastName}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">

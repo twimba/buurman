@@ -1,5 +1,5 @@
 import { PropertySummary } from './property';
-import { TenantSummary } from './tenant';
+import { TenantSummary, CreateTenantRequest } from './tenant';
 
 export enum ContractType {
   FIXED_TERM = 'FIXED_TERM',
@@ -22,10 +22,48 @@ export enum ContractStatus {
   TERMINATED = 'TERMINATED',
 }
 
+export enum ContractPartyRole {
+  PRIMARY_TENANT = 'PRIMARY_TENANT',
+  GUARANTOR = 'GUARANTOR',
+  COSIGNER = 'COSIGNER',
+  EXTRA_TENANT = 'EXTRA_TENANT',
+}
+
+export const PARTY_ROLE_LABELS: Record<ContractPartyRole, string> = {
+  [ContractPartyRole.PRIMARY_TENANT]: 'Primary Tenant',
+  [ContractPartyRole.GUARANTOR]: 'Guarantor',
+  [ContractPartyRole.COSIGNER]: 'Co-signer',
+  [ContractPartyRole.EXTRA_TENANT]: 'Additional Tenant',
+};
+
+export interface ContractPartyResponse {
+  identifier: string;
+  tenant: TenantSummary;
+  role: ContractPartyRole;
+}
+
+export interface ContractPartyRequest {
+  tenantIdentifier?: string;
+  newTenant?: CreateTenantRequest;
+  role: ContractPartyRole;
+}
+
+export interface AddContractPartyRequest {
+  tenantIdentifier?: string;
+  newTenant?: CreateTenantRequest;
+  role: ContractPartyRole;
+}
+
+export interface ChangePrimaryTenantRequest {
+  tenantIdentifier?: string;
+  newTenant?: CreateTenantRequest;
+}
+
 export interface ContractResponse {
   identifier: string;
   property: PropertySummary;
-  tenant: TenantSummary;
+  parties: ContractPartyResponse[];
+  primaryTenant: TenantSummary;
   contractType: ContractType;
   startDate: string;
   endDate?: string;
@@ -50,7 +88,7 @@ export interface ContractResponse {
 export interface ContractSummary {
   identifier: string;
   property: PropertySummary;
-  tenant: TenantSummary;
+  primaryTenant: TenantSummary;
   startDate: string;
   endDate?: string;
   rentAmount: number;
@@ -59,7 +97,7 @@ export interface ContractSummary {
 
 export interface CreateContractRequest {
   propertyIdentifier: string;
-  tenantIdentifier: string;
+  parties: ContractPartyRequest[];
   contractType: ContractType;
   startDate: string;
   endDate?: string;
@@ -80,7 +118,6 @@ export interface CreateContractRequest {
 
 export interface UpdateContractRequest {
   propertyIdentifier: string;
-  tenantIdentifier: string;
   contractType: ContractType;
   startDate: string;
   endDate?: string;

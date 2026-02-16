@@ -19,7 +19,6 @@ public class ContractRecordMapper {
         contract.setIdentifier(record.getIdentifier());
         contract.setTeamId(record.getTeamId());
         contract.setPropertyId(record.getPropertyId());
-        contract.setTenantId(record.getTenantId());
         contract.setContractType(Contract.ContractType.valueOf(record.getContractType()));
         contract.setStartDate(record.getStartDate());
         contract.setEndDate(record.getEndDate());

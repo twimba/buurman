@@ -8,6 +8,7 @@ import com.buurman.service.FeatureFlagService;
 import com.buurman.service.ReportService;
 import com.buurman.util.FeatureFlags;
 import io.swagger.v3.oas.annotations.Operation;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,6 +23,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static com.buurman.util.FeatureFlags.REPORTS;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+
 @RestController
 @RequestMapping("/reports")
 @Tag(name = "Reports", description = "Financial reporting and analytics")
@@ -35,7 +39,7 @@ public class ReportController {
 
     @ModelAttribute
     private void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {
-        if (!featureFlagService.isEnabled(FeatureFlags.REPORTS, principal)) {
+        if (featureFlagService.isDisabled(REPORTS, principal)) {
             throw new ForbiddenException("Reports feature is not available");
         }
     }
@@ -46,8 +50,8 @@ public class ReportController {
     )
     @GetMapping("/financial-overview")
     public FinancialOverviewResponse getFinancialOverview(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
             @RequestParam(required = false) List<UUID> propertyIds,
             @RequestParam(required = false, defaultValue = "EUR") String currency,
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -73,8 +77,8 @@ public class ReportController {
     )
     @GetMapping("/charts/expense-breakdown")
     public ExpenseBreakdownResponse getExpenseBreakdown(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         return reportService.getExpenseBreakdown(startDate, endDate, principal);
@@ -86,8 +90,8 @@ public class ReportController {
     )
     @GetMapping("/charts/property-comparison")
     public PropertyComparisonResponse getPropertyComparison(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         return reportService.getPropertyComparison(startDate, endDate, principal);
@@ -123,8 +127,8 @@ public class ReportController {
     )
     @GetMapping("/export/transactions/csv")
     public ResponseEntity<byte[]> exportTransactionHistoryCSV(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         byte[] csv = exportService.generateTransactionHistoryCSV(startDate, endDate, principal.getTeamId());
@@ -141,8 +145,8 @@ public class ReportController {
     )
     @GetMapping("/export/transactions/pdf")
     public ResponseEntity<byte[]> exportTransactionHistoryPDF(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
             @AuthenticationPrincipal UserPrincipal principal) {
 
         byte[] pdf = exportService.generateTransactionHistoryPDF(startDate, endDate, principal.getTeamId());

@@ -1,9 +1,12 @@
 import client from './client';
 import {
   ContractResponse,
+  ContractPartyResponse,
   CreateContractRequest,
   UpdateContractRequest,
   ChangeContractStatusRequest,
+  AddContractPartyRequest,
+  ChangePrimaryTenantRequest,
 } from '../types/contract';
 import { DocumentResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
@@ -109,6 +112,34 @@ export const deleteContractDocument = async (
   documentId: string
 ): Promise<void> => {
   await client.delete(`/contracts/documents/${documentId}`);
+};
+
+// --- Contract Party endpoints ---
+
+export const addContractParty = async (
+  contractId: string,
+  data: AddContractPartyRequest
+): Promise<ContractPartyResponse> => {
+  const response = await client.post(`/contracts/${contractId}/parties`, data);
+  return response.data;
+};
+
+export const removeContractParty = async (
+  contractId: string,
+  partyIdentifier: string
+): Promise<void> => {
+  await client.delete(`/contracts/${contractId}/parties/${partyIdentifier}`);
+};
+
+export const changePrimaryTenant = async (
+  contractId: string,
+  data: ChangePrimaryTenantRequest
+): Promise<ContractPartyResponse> => {
+  const response = await client.post(
+    `/contracts/${contractId}/parties/change-primary`,
+    data
+  );
+  return response.data;
 };
 
 export const getContractAuditLog = async (

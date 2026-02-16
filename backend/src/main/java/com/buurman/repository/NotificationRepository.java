@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 
 import static java.time.ZoneOffset.UTC;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.count;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
+import static org.jooq.impl.DSL.trueCondition;
 
 @Repository
 @RequiredArgsConstructor

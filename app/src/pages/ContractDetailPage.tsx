@@ -25,6 +25,8 @@ import { ChangeContractStatusModal } from '@/components/contracts/ChangeContract
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 import client from '@/api/client';
 import {
   Edit,
@@ -46,13 +48,20 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
+import {
+  ChangeContractStatusRequest,
+  ContractStatus,
+  PARTY_ROLE_LABELS,
+  ContractPartyRole,
+} from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
+import { PaymentStatus } from '@/types/payment';
 
 export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { isEnabled } = useFeatureFlags();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
     'overview' | 'payments' | 'documents' | 'history'
@@ -264,36 +273,38 @@ export const ContractDetailPage = () => {
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              <Button
-                variant="secondary"
-                leftIcon={<Download />}
-                onClick={async () => {
-                  try {
-                    const response = await client.get(
-                      `/reports/export/contract/${id}/report`,
-                      {
-                        responseType: 'blob',
-                      }
-                    );
-                    const blob = new Blob([response.data], {
-                      type: 'application/pdf',
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'contract-report.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                  } catch (error) {
-                    console.error('Failed to download report:', error);
-                    alert('Failed to download report. Please try again.');
-                  }
-                }}
-              >
-                Report
-              </Button>
+              {isEnabled(FeatureFlags.REPORTS) && (
+                <Button
+                  variant="secondary"
+                  leftIcon={<Download />}
+                  onClick={async () => {
+                    try {
+                      const response = await client.get(
+                        `/reports/export/contract/${id}/report`,
+                        {
+                          responseType: 'blob',
+                        }
+                      );
+                      const blob = new Blob([response.data], {
+                        type: 'application/pdf',
+                      });
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = 'contract-report.pdf';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      window.URL.revokeObjectURL(url);
+                    } catch (error) {
+                      console.error('Failed to download report:', error);
+                      alert('Failed to download report. Please try again.');
+                    }
+                  }}
+                >
+                  Report
+                </Button>
+              )}
               {!canReopen && (
                 <Button
                   variant="primary"
@@ -426,25 +437,32 @@ export const ContractDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
-                  <div className="flex-1">
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Tenant
-                    </p>
-                    <button
-                      onClick={() =>
-                        navigate(`/tenants/${contract.tenant.identifier}`)
-                      }
-                      className="font-medium text-[#5c7cfa] hover:underline text-left"
-                    >
-                      {contract.tenant.firstName} {contract.tenant.lastName}
-                    </button>
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                      #{contract.tenant.identifier}
-                    </p>
+                {/* Contract Parties */}
+                {contract.parties?.map((party) => (
+                  <div
+                    key={party.identifier}
+                    className="flex items-start gap-3"
+                  >
+                    <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <div className="flex-1">
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        {PARTY_ROLE_LABELS[party.role as ContractPartyRole] ??
+                          party.role}
+                      </p>
+                      <button
+                        onClick={() =>
+                          navigate(`/tenants/${party.tenant.identifier}`)
+                        }
+                        className="font-medium text-[#5c7cfa] hover:underline text-left"
+                      >
+                        {party.tenant.firstName} {party.tenant.lastName}
+                      </button>
+                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                        #{party.tenant.identifier}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -831,8 +849,19 @@ export const ContractDetailPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                               {formatDate(payment.dueDate)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                              {payment.currency} {payment.amount.toFixed(2)}
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                              <div>
+                                <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                                  {payment.currency} {payment.amount.toFixed(2)}
+                                </span>
+                                {payment.receivedAmount > 0 &&
+                                  payment.status !== PaymentStatus.PAID && (
+                                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                      Balance: {payment.currency}{' '}
+                                      {(payment.balance ?? 0).toFixed(2)}
+                                    </p>
+                                  )}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <PaymentStatusBadge status={payment.status} />

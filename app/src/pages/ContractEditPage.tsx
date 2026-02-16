@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useContract, useUpdateContract } from '@/hooks/useContractHooks';
 import { ContractForm } from '@/components/contracts/ContractForm';
-import { UpdateContractRequest } from '@/types/contract';
+import { CreateContractRequest, UpdateContractRequest } from '@/types/contract';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
@@ -12,8 +12,12 @@ export const ContractEditPage = () => {
   const { data: contract, isLoading, error } = useContract(id);
   const updateContractMutation = useUpdateContract(id!);
 
-  const handleSubmit = async (data: UpdateContractRequest) => {
-    await updateContractMutation.mutateAsync(data);
+  const handleSubmit = async (data: CreateContractRequest) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { parties, ...updateData } = data;
+    await updateContractMutation.mutateAsync(
+      updateData as UpdateContractRequest
+    );
   };
 
   if (isLoading) {

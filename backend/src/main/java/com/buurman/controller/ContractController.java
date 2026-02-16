@@ -2,17 +2,21 @@ package com.buurman.controller;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.SortDirection;
+import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;
+import com.buurman.dto.request.ChangePrimaryTenantRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContractRequest;
+import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuditService;
+import com.buurman.service.ContractPartyService;
 import com.buurman.service.ContractService;
 import com.buurman.service.DocumentService;
 import com.buurman.service.PaymentSchedulingService;
@@ -41,6 +45,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class ContractController {
 
     private final ContractService contractService;
+    private final ContractPartyService contractPartyService;
     private final DocumentService documentService;
     private final AuditService auditService;
     private final PaymentSchedulingService paymentSchedulingService;
@@ -133,6 +138,39 @@ public class ContractController {
             @AuthenticationPrincipal UserPrincipal principal) {
         return contractService.duplicateContract(identifier, principal);
     }
+
+    // --- Contract Party endpoints ---
+
+    @Operation(summary = "Add party", description = "Add a party (guarantor, cosigner, extra tenant) to a contract (Admin/Editor)")
+    @PostMapping("/{identifier}/parties")
+    @ResponseStatus(CREATED)
+    public ContractPartyResponse addParty(
+            @PathVariable String identifier,
+            @Valid @RequestBody AddContractPartyRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return contractPartyService.addParty(identifier, request, principal);
+    }
+
+    @Operation(summary = "Remove party", description = "Remove a party from a contract (Admin/Editor)")
+    @DeleteMapping("/{identifier}/parties/{partyIdentifier}")
+    @ResponseStatus(NO_CONTENT)
+    public void removeParty(
+            @PathVariable String identifier,
+            @PathVariable String partyIdentifier,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        contractPartyService.removeParty(identifier, partyIdentifier, principal);
+    }
+
+    @Operation(summary = "Change primary tenant", description = "Change the primary tenant of a contract (Admin/Editor)")
+    @PostMapping("/{identifier}/parties/change-primary")
+    public ContractPartyResponse changePrimaryTenant(
+            @PathVariable String identifier,
+            @Valid @RequestBody ChangePrimaryTenantRequest request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        return contractPartyService.changePrimaryTenant(identifier, request, principal);
+    }
+
+    // --- Document endpoints ---
 
     @Operation(summary = "Upload document", description = "Upload a document for a contract (Admin/Editor)")
     @PostMapping("/{identifier}/documents")

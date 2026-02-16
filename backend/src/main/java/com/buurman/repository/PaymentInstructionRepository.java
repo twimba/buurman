@@ -9,9 +9,9 @@ import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
 
-
 import static java.time.ZoneOffset.UTC;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.field;
 
 import java.time.Clock;
 import java.time.Instant;

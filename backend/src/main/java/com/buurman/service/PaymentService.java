@@ -87,6 +87,7 @@ public class PaymentService {
     private final ContractRepository contractRepository;
     private final PropertyRepository propertyRepository;
     private final TenantRepository tenantRepository;
+    private final ContractPartyService contractPartyService;
     private final DocumentRepository documentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentReceivalMapper receivalMapper;
@@ -643,7 +644,7 @@ public class PaymentService {
         String tenantName = "N/A";
         if (contract != null) {
             Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-            Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+            Tenant tenant = contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
             if (property != null) {
                 propertyName = property.getStreet() != null ? property.getStreet() + ", " + property.getCity() : property.getIdentifier();
             }
@@ -672,7 +673,7 @@ public class PaymentService {
         String tenantName = "N/A";
         if (contract != null) {
             Property property = propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-            Tenant tenant = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId).orElse(null);
+            Tenant tenant = contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
             if (property != null) {
                 propertyName = property.getStreet() != null ? property.getStreet() + ", " + property.getCity() : property.getIdentifier();
             }
@@ -718,16 +719,15 @@ public class PaymentService {
         Map<UUID, Contract> contractsById = contractRepository.findByIdsAndTeamId(contractIds, teamId).stream()
                 .collect(toMap(Contract::getId, identity()));
 
-        // Batch-fetch properties and tenants from contracts
+        // Batch-fetch properties from contracts
         Set<UUID> propertyIds = contractsById.values().stream()
                 .map(Contract::getPropertyId).filter(java.util.Objects::nonNull).collect(toSet());
-        Set<UUID> tenantIds = contractsById.values().stream()
-                .map(Contract::getTenantId).filter(java.util.Objects::nonNull).collect(toSet());
 
         Map<UUID, com.buurman.domain.Property> propertiesById = propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
                 .collect(toMap(com.buurman.domain.Property::getId, identity()));
-        Map<UUID, com.buurman.domain.Tenant> tenantsById = tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-                .collect(toMap(com.buurman.domain.Tenant::getId, identity()));
+
+        // Batch-fetch primary tenants via contract_parties
+        Map<UUID, com.buurman.domain.Tenant> primaryTenantByContract = contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
         // Batch-fetch documents for all payments
         List<com.buurman.domain.Document> allDocs = documentRepository.findByEntityTypeAndEntityIdsAndTeamId("PAYMENT", paymentIds, teamId);
@@ -755,7 +755,7 @@ public class PaymentService {
 
             if (contract != null) {
                 com.buurman.domain.Property property = contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
-                com.buurman.domain.Tenant tenant = contract.getTenantId() != null ? tenantsById.get(contract.getTenantId()) : null;
+                com.buurman.domain.Tenant tenant = primaryTenantByContract.get(contract.getId());
                 if (property != null) {
                     propertySummary = propertyMapper.toSummary(property);
                 }
@@ -812,7 +812,7 @@ public class PaymentService {
                     .map(propertyMapper::toSummary)
                     .orElse(null);
 
-            TenantSummary tenantSummary = tenantRepository.findByIdAndTeamId(contract.getTenantId(), teamId)
+            TenantSummary tenantSummary = contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId)
                     .map(tenantMapper::toSummary)
                     .orElse(null);
 

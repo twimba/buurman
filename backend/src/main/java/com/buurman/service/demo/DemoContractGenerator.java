@@ -14,6 +14,9 @@ import java.util.*;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.UlidGenerator.newContractId;
+import static com.buurman.util.UlidGenerator.newContractPartyId;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
 
 @Component
 @Slf4j
@@ -115,7 +118,6 @@ public class DemoContractGenerator {
                         .set(CONTRACTS.IDENTIFIER, contractIdentifier)
                         .set(CONTRACTS.TEAM_ID, teamId)
                         .set(CONTRACTS.PROPERTY_ID, propertyId)
-                        .set(CONTRACTS.TENANT_ID, tenantId)
                         .set(CONTRACTS.CONTRACT_TYPE, contractType)
                         .set(CONTRACTS.START_DATE, startDate)
                         .set(CONTRACTS.END_DATE, endDate)
@@ -136,6 +138,20 @@ public class DemoContractGenerator {
                         .set(CONTRACTS.UPDATED_AT, now)
                         .set(CONTRACTS.CREATED_BY, createdBy)
                         .set(CONTRACTS.UPDATED_BY, createdBy)
+                        .execute();
+
+                // Insert primary tenant into contract_parties
+                dsl.insertInto(table("contract_parties"))
+                        .set(field("id", UUID.class), UUID.randomUUID())
+                        .set(field("identifier", String.class), newContractPartyId().value())
+                        .set(field("team_id", UUID.class), teamId)
+                        .set(field("contract_id", UUID.class), contractId)
+                        .set(field("tenant_id", UUID.class), tenantId)
+                        .set(field("role", String.class), "PRIMARY_TENANT")
+                        .set(field("created_at", LocalDateTime.class), now)
+                        .set(field("updated_at", LocalDateTime.class), now)
+                        .set(field("created_by", UUID.class), createdBy)
+                        .set(field("updated_by", UUID.class), createdBy)
                         .execute();
 
                 contractIds.add(contractId);

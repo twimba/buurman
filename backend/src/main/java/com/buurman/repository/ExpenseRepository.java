@@ -17,10 +17,8 @@ import java.time.Clock;
 import com.buurman.jooq.generated.tables.records.ExpensesRecord;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +26,9 @@ import java.util.UUID;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static java.time.ZoneOffset.UTC;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.sum;
 
 @Repository
 @RequiredArgsConstructor

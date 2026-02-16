@@ -34,6 +34,10 @@ public class UlidGenerator {
         return generate(EntityPrefix.CON);
     }
 
+    public static Ulid newContractPartyId() {
+        return generate(EntityPrefix.CTP);
+    }
+
     public static Ulid newContractPaymentInstructionId() {
         return generate(EntityPrefix.CPI);
     }

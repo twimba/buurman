@@ -26,6 +26,8 @@ import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.util.UlidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
 
 @Component
 @Slf4j
@@ -127,7 +129,7 @@ public class DemoNotificationGenerator {
                     continue;
                 }
 
-                UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
+                UUID tenantId = findPrimaryTenantId(contractId);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 String status = contract.get(CONTRACTS.STATUS);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
@@ -190,7 +192,7 @@ public class DemoNotificationGenerator {
                     continue;
                 }
 
-                UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
+                UUID tenantId = findPrimaryTenantId(contractId);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
@@ -259,7 +261,7 @@ public class DemoNotificationGenerator {
                     continue;
                 }
 
-                UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
+                UUID tenantId = findPrimaryTenantId(contractId);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
@@ -313,7 +315,7 @@ public class DemoNotificationGenerator {
                     continue;
                 }
 
-                UUID tenantId = contract.get(CONTRACTS.TENANT_ID);
+                UUID tenantId = findPrimaryTenantId(contractId);
                 UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
                 Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
                 Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
@@ -350,11 +352,17 @@ public class DemoNotificationGenerator {
                     String tenantEmail = tenant.get(TENANTS.EMAIL);
                     String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
 
-                    // Find a property for this tenant via contract
+                    // Find a property for this tenant via contract_parties
                     String propertyName = "your property";
-                    var tenantContract = dsl.selectFrom(CONTRACTS)
-                            .where(CONTRACTS.TENANT_ID.eq(tenantId).and(CONTRACTS.TEAM_ID.eq(teamId)))
-                            .fetchAny();
+                    var tenantContractId = dsl.select(field("contract_id", UUID.class))
+                            .from(table("contract_parties"))
+                            .where(field("tenant_id", UUID.class).eq(tenantId))
+                            .and(field("deleted_at").isNull())
+                            .fetchOptional(field("contract_id", UUID.class))
+                            .orElse(null);
+                    var tenantContract = tenantContractId != null
+                            ? dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(tenantContractId).and(CONTRACTS.TEAM_ID.eq(teamId))).fetchOne()
+                            : null;
                     if (tenantContract != null) {
                         Record prop = dsl.selectFrom(PROPERTIES)
                                 .where(PROPERTIES.ID.eq(tenantContract.get(CONTRACTS.PROPERTY_ID)))
@@ -474,6 +482,27 @@ public class DemoNotificationGenerator {
             log.warn("Failed to serialize template variables: {}", e.getMessage());
             return "{}";
         }
+    }
+
+    private UUID findPrimaryTenantId(UUID contractId) {
+        return dsl.select(field("tenant_id", UUID.class))
+                .from(table("contract_parties"))
+                .where(field("contract_id", UUID.class).eq(contractId))
+                .and(field("role", String.class).eq("PRIMARY_TENANT"))
+                .and(field("deleted_at").isNull())
+                .fetchOptional(field("tenant_id", UUID.class))
+                .orElse(null);
+    }
+
+    private UUID findPrimaryTenantIdForTenant(UUID tenantId, UUID teamId) {
+        // Find a contract for this tenant via contract_parties
+        return dsl.select(field("contract_id", UUID.class))
+                .from(table("contract_parties"))
+                .where(field("tenant_id", UUID.class).eq(tenantId))
+                .and(field("role", String.class).eq("PRIMARY_TENANT"))
+                .and(field("deleted_at").isNull())
+                .fetchOptional(field("contract_id", UUID.class))
+                .orElse(null);
     }
 
     private void insertNotification(UUID teamId, UUID createdBy, LocalDateTime createdAt,

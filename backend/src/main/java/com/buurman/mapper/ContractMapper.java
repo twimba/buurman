@@ -18,7 +18,6 @@ public interface ContractMapper {
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)
     @Mapping(target = "propertyId", ignore = true)
-    @Mapping(target = "tenantId", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -28,11 +27,12 @@ public interface ContractMapper {
     Contract toEntity(CreateContractRequest request);
 
     @Mapping(target = "property", ignore = true)
-    @Mapping(target = "tenant", ignore = true)
+    @Mapping(target = "parties", ignore = true)
+    @Mapping(target = "primaryTenant", ignore = true)
     ContractResponse toResponse(Contract contract);
 
     @Mapping(target = "property", ignore = true)
-    @Mapping(target = "tenant", ignore = true)
+    @Mapping(target = "primaryTenant", ignore = true)
     ContractSummary toSummary(Contract contract);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -40,7 +40,6 @@ public interface ContractMapper {
     @Mapping(target = "identifier", ignore = true)
     @Mapping(target = "teamId", ignore = true)
     @Mapping(target = "propertyId", ignore = true)
-    @Mapping(target = "tenantId", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

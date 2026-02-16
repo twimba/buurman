@@ -134,22 +134,20 @@ twilio:
 # Notification Configuration
 notification:
   outbox:
-    poll-interval-ms: ${NOTIFICATION_OUTBOX_POLL_MS:10000}
     batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:50}
-    max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:3}
+    max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:5}
 
 # Scheduling Configuration
 scheduling:
+  notifications:
+    outbox-push-cron: "*/30 * * * * ?"
   payment-generation:
     cron: "0 0 * * * ?"
   notification-reminders:
     contract-expiry-cron: "0 0 0 * * ?"
     payment-reminder-cron: "0 0 0 * * ?"
   metrics:
-    fixed-rate-ms: 600000
-    initial-delay-ms: 60000
-  thumbnail-backfill:
-    enabled: true
+    metrics-push-cron: "0 * * * * ?"
 
 # Actuator Configuration
 management:

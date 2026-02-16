@@ -18,6 +18,8 @@ import { RefreshButton } from '@/components/ui/RefreshButton';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
 
@@ -35,6 +37,7 @@ interface Transaction {
 export const TransactionHistoryPage = () => {
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
+  const { isEnabled } = useFeatureFlags();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType>('ALL');
   const [startDate, setStartDate] = useState('');
@@ -287,20 +290,24 @@ export const TransactionHistoryPage = () => {
             }}
             isRefreshing={paymentsFetching || expensesFetching}
           />
-          <button
-            onClick={handleDownloadCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"
-          >
-            <Download className="h-4 w-4" />
-            CSV
-          </button>
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
-          >
-            <FileText className="h-4 w-4" />
-            PDF
-          </button>
+          {isEnabled(FeatureFlags.REPORTS) && (
+            <>
+              <button
+                onClick={handleDownloadCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                CSV
+              </button>
+              <button
+                onClick={handleDownloadPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                PDF
+              </button>
+            </>
+          )}
         </div>
       </div>
 

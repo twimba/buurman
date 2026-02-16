@@ -39,6 +39,10 @@ public class FeatureFlagService {
         }
     }
 
+    public boolean isDisabled(String flagKey) {
+        return !isEnabled(flagKey);
+    }
+
     /**
      * Identity-aware flag evaluation with user/team traits.
      */
@@ -57,6 +61,10 @@ public class FeatureFlagService {
             log.warn("Failed to evaluate flag '{}' for identity, defaulting to false", flagKey, e);
             return false;
         }
+    }
+
+    public boolean isDisabled(String flagKey, UserPrincipal principal) {
+        return !isEnabled(flagKey, principal);
     }
 
     /**

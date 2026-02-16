@@ -6,6 +6,7 @@ import com.buurman.service.S3StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -243,7 +244,13 @@ public class DemoDataService {
                 .execute();
         log.debug("Deleted {} expenses", deleted);
 
-        // 9. Contracts (FK -> properties, tenants)
+        // 9a. Contract parties (FK -> contracts, tenants)
+        deleted = dsl.deleteFrom(DSL.table("contract_parties"))
+                .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+                .execute();
+        log.debug("Deleted {} contract parties", deleted);
+
+        // 9b. Contracts (FK -> properties, tenants)
         deleted = dsl.deleteFrom(CONTRACTS)
                 .where(CONTRACTS.TEAM_ID.in(demoTeamIds))
                 .execute();

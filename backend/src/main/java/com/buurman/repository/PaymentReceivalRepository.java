@@ -6,11 +6,13 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
-import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
 
 import static java.time.ZoneOffset.UTC;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.coalesce;
+import static org.jooq.impl.DSL.sum;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.table;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -18,7 +20,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
