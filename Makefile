@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -36,3 +36,9 @@ ps:
 ## Generate local TLS certificates (one-time setup)
 certs:
 	bash scripts/setup-local-certs.sh
+
+stats:
+	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
+
+stats-by-file:
+	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
