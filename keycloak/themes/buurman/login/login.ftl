@@ -4,6 +4,11 @@
         <h2 class="kc-page-title">Welcome back</h2>
         <p class="kc-page-subtitle">Sign in to manage your properties</p>
     <#elseif section = "form">
+    <div id="kc-demo-banner" class="kc-demo-banner" style="display:none">
+        <div class="kc-demo-badge">&#9734; LIVE DEMO &#9734;</div>
+        <p class="kc-demo-text">Logging you in &mdash; hang tight!</p>
+        <div class="kc-demo-spinner"></div>
+    </div>
     <div id="kc-form">
       <div id="kc-form-wrapper">
         <#if realm.password>
@@ -96,6 +101,26 @@
                 eyeClosed.style.display = 'none';
             }
         }
+
+        // Demo mode: auto-fill password and submit when demo user detected
+        (function() {
+            var usernameInput = document.getElementById('username');
+            var passwordInput = document.getElementById('password');
+            var form = document.getElementById('kc-form-login');
+            if (usernameInput && passwordInput && form) {
+                var email = (usernameInput.value || '').trim().toLowerCase();
+                if (email === 'demo.user@demo.buurman.io') {
+                    passwordInput.value = 'buurman';
+                    // Show demo banner
+                    var banner = document.getElementById('kc-demo-banner');
+                    if (banner) banner.style.display = 'block';
+                    // Auto-submit after a short delay so the user sees the banner
+                    setTimeout(function() {
+                        form.submit();
+                    }, 800);
+                }
+            }
+        })();
       </script>
 
     </#if>

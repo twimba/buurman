@@ -14,7 +14,7 @@ import type Keycloak from 'keycloak-js';
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (redirectUri?: string) => void;
+  login: (redirectUri?: string, loginHint?: string) => void;
   logout: () => void;
   token: string | undefined;
   keycloak: Keycloak;
@@ -91,9 +91,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     initKeycloak();
   }, []);
 
-  const login = (redirectUri?: string) => {
+  const login = (redirectUri?: string, loginHint?: string) => {
     keycloak.login({
       redirectUri: redirectUri || `${window.location.origin}/dashboard`,
+      ...(loginHint && { loginHint }),
     });
   };
 

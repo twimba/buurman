@@ -895,6 +895,122 @@
             .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
         }
 
+        /* ── Demo Banner ─────────────────────────────────── */
+        .demo-banner {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+            border-top: 3px dashed var(--accent);
+            border-bottom: 3px dashed var(--accent);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .demo-banner::before,
+        .demo-banner::after {
+            content: "★";
+            position: absolute;
+            font-size: 6rem;
+            color: rgba(252, 196, 25, 0.12);
+            pointer-events: none;
+        }
+        .demo-banner::before { top: -1rem; left: 2rem; transform: rotate(-15deg); }
+        .demo-banner::after { bottom: -1rem; right: 2rem; transform: rotate(15deg); }
+
+        .demo-starburst {
+            display: inline-block;
+            position: relative;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1rem;
+            animation: demo-pulse 2s ease-in-out infinite;
+        }
+        @keyframes demo-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .demo-headline {
+            font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+            font-weight: 900;
+            color: #92400e;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .demo-headline em {
+            font-style: normal;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-subtext {
+            font-size: 1.0625rem;
+            color: #a16207;
+            margin-bottom: 1.5rem;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .demo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.875rem 2.25rem;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.0625rem;
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+        .demo-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg);
+            animation: demo-shine 3s ease-in-out infinite;
+        }
+        @keyframes demo-shine {
+            0% { left: -60%; }
+            20% { left: 120%; }
+            100% { left: 120%; }
+        }
+
+        .demo-fine-print {
+            margin-top: 0.75rem;
+            font-size: 0.8125rem;
+            color: #b45309;
+            font-style: italic;
+        }
+
+        @media (max-width: 640px) {
+            .demo-banner { padding: 2.5rem 1.5rem; }
+            .demo-btn { width: 100%; justify-content: center; }
+        }
+
         /* ── CTA ─────────────────────────────────────────── */
         .cta {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, var(--primary-darker) 100%);
@@ -1452,6 +1568,20 @@
             </div>
         </div>
     </div>
+</section>
+
+<!-- ═══════════════ DEMO BANNER ═══════════════ -->
+<section class="demo-banner">
+    <div class="demo-starburst">&#9734; As Seen on Your Screen! &#9734;</div>
+    <h2 class="demo-headline">But Wait, There's <em>More!</em></h2>
+    <p class="demo-subtext">
+        Don't just take our word for it &mdash; take it for a spin! Our fully loaded demo is standing by, ready to blow your landlord socks off.
+    </p>
+    <a href="https://app.buurman.io/login?demo=true" class="demo-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Try the Live Demo &mdash; Free!
+    </a>
+    <p class="demo-fine-print">One click and you're in. No sign-up. No credit card. Just vibes.</p>
 </section>
 
 <!-- ═══════════════ PRICING ═══════════════ -->
