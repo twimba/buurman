@@ -1,6 +1,7 @@
 package com.buurman.service.export;
 
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static com.buurman.service.export.BookletHelper.appendCheckItem;
 import static com.buurman.service.export.BookletHelper.appendCoverCell;
 import static com.buurman.service.export.BookletHelper.appendCoverEnd;
 import static com.buurman.service.export.BookletHelper.appendCoverStart;
@@ -11,8 +12,11 @@ import static com.buurman.service.export.BookletHelper.appendPageEnd;
 import static com.buurman.service.export.BookletHelper.appendPageStart;
 import static com.buurman.service.export.BookletHelper.appendRunningFooter;
 import static com.buurman.service.export.BookletHelper.appendSectionTitle;
+import static com.buurman.service.export.BookletHelper.appendStatusBadge;
+import static com.buurman.service.export.BookletHelper.appendTextBlock;
 import static com.buurman.service.export.BookletHelper.escapeHtml;
 import static com.buurman.service.export.BookletHelper.formatEnumValue;
+import static com.buurman.service.export.BookletHelper.isTrue;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
