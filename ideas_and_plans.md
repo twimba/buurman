@@ -22,8 +22,13 @@ Refactor de tenant brochure to include all the information and photos in the pro
 
 Rework the tenant section to be less about tenants but be more of people that we interact with - make it more like a VERY small CRM or even digital Rolodex
 
-In the tenants list the same way we show the property where they are associated with, also include/color code their role (ie: priamry, gurantor, etc, etc)
+When creating a new tenant make the phone number and email optional.
 
+In the contract edit form the contract party selector and the role (Guarantor, primary, etc) is missaligned!
+
+Update the website to have a call to action for the potential customer to try out the demo version.
+This should be a link to prepopulated login page with the demo.user@buurman.io username and buurman password.
+Make it so that is not too much in your face but again, jovial, quirky, like "as seen on tv" ... Something that will drive engagement!
 # Tenant Portal
   ## New application for tenants
   A new application - Tenant portal where tenants can:

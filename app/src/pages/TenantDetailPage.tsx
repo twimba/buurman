@@ -24,7 +24,11 @@ import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
 import { TenantAddressList } from '@/components/tenants/TenantAddressList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { ContractStatus } from '@/types/contract';
+import {
+  ContractStatus,
+  ContractPartyRole,
+  PARTY_ROLE_LABELS,
+} from '@/types/contract';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
@@ -51,6 +55,25 @@ import client from '@/api/client';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
+
+const ROLE_COLORS: Record<ContractPartyRole, string> = {
+  [ContractPartyRole.PRIMARY_TENANT]:
+    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+  [ContractPartyRole.GUARANTOR]:
+    'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  [ContractPartyRole.COSIGNER]:
+    'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  [ContractPartyRole.EXTRA_TENANT]:
+    'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
+};
+
+const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
+  <span
+    className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'}`}
+  >
+    {PARTY_ROLE_LABELS[role] ?? role}
+  </span>
+);
 
 export const TenantDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -153,15 +176,25 @@ export const TenantDetailPage = () => {
     await setMainPhotoMutation.mutateAsync(photoId);
   };
 
-  // Get unique properties from active contracts
+  // Get properties from active contracts with the tenant's role
   const activeContractProperties = contracts
     ? contracts
         .filter((contract) => contract.status === ContractStatus.ACTIVE)
-        .map((contract) => contract.property)
+        .map((contract) => {
+          const party = contract.parties?.find(
+            (p) => p.tenant.identifier === id
+          );
+          return {
+            property: contract.property,
+            role: party?.role,
+          };
+        })
         .filter(
-          (property, index, self) =>
+          (item, index, self) =>
             index ===
-            self.findIndex((p) => p.identifier === property.identifier)
+            self.findIndex(
+              (i) => i.property.identifier === item.property.identifier
+            )
         )
     : [];
 
@@ -487,9 +520,9 @@ export const TenantDetailPage = () => {
                 <LoadingSpinner />
               ) : activeContractProperties.length > 0 ? (
                 <div className="space-y-3">
-                  {activeContractProperties.map((property) => (
+                  {activeContractProperties.map((item) => (
                     <div
-                      key={property.identifier}
+                      key={item.property.identifier}
                       className="flex items-center justify-between bg-green-50 dark:bg-green-900/30 p-4 rounded border border-green-200 dark:border-green-900/50"
                     >
                       <div className="flex items-center gap-3">
@@ -497,17 +530,20 @@ export const TenantDetailPage = () => {
                         <div>
                           <button
                             onClick={() =>
-                              navigate(`/properties/${property.identifier}`)
+                              navigate(
+                                `/properties/${item.property.identifier}`
+                              )
                             }
                             className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] hover:text-[#5c7cfa] text-left"
                           >
-                            {property.street}
+                            {item.property.street}
                           </button>
                           <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                            {property.city}, {property.postalCode}
+                            {item.property.city}, {item.property.postalCode}
                           </p>
                         </div>
                       </div>
+                      {item.role && <RoleBadge role={item.role} />}
                     </div>
                   ))}
                 </div>
@@ -682,6 +718,9 @@ export const TenantDetailPage = () => {
                               ))}
                           </div>
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Role
+                        </th>
                         <th
                           className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
                           onClick={() => handleContractsSort('contractType')}
@@ -747,7 +786,7 @@ export const TenantDetailPage = () => {
                       {paginatedContracts.length === 0 ? (
                         <tr>
                           <td
-                            colSpan={7}
+                            colSpan={8}
                             className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
                           >
                             No contracts found matching your search
@@ -771,6 +810,20 @@ export const TenantDetailPage = () => {
                               <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
                                 {contract.property.street}
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {(() => {
+                                const party = contract.parties?.find(
+                                  (p) => p.tenant.identifier === id
+                                );
+                                return party?.role ? (
+                                  <RoleBadge role={party.role} />
+                                ) : (
+                                  <span className="text-sm text-[#9ca0b8]">
+                                    -
+                                  </span>
+                                );
+                              })()}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">

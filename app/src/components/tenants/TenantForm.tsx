@@ -53,12 +53,16 @@ export const TenantForm = ({
 
     if (!formData.firstName.trim())
       newErrors.firstName = 'First name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (
+      formData.email.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
       newErrors.email = 'Email must be valid';
     }
-    const phoneErr = validatePhoneE164(formData.phone);
-    if (phoneErr) newErrors.phone = phoneErr;
+    if (formData.phone) {
+      const phoneErr = validatePhoneE164(formData.phone);
+      if (phoneErr) newErrors.phone = phoneErr;
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -69,7 +73,11 @@ export const TenantForm = ({
     if (!validate()) return;
 
     try {
-      await onSubmit(formData);
+      await onSubmit({
+        ...formData,
+        email: formData.email.trim() || null,
+        phone: formData.phone?.trim() || null,
+      });
       navigate(tenant ? `/tenants/${tenant.identifier}` : '/tenants');
     } catch (error) {
       console.error('Failed to save tenant:', error);
@@ -124,7 +132,7 @@ export const TenantForm = ({
 
           <div>
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Email <span className="text-red-500">*</span>
+              Email
             </label>
             <input
               type="email"

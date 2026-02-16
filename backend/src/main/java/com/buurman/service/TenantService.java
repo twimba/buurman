@@ -33,8 +33,10 @@ import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.PropertyTenantHistoryResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantAddressResponse;
+import com.buurman.dto.response.TenantPropertyAssignment;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyRepository;
@@ -64,6 +66,7 @@ public class TenantService {
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
   private final ContractRepository contractRepository;
+  private final ContractPartyRepository contractPartyRepository;
   private final TenantAddressService addressService;
   private final TenantAddressRepository addressRepository;
   private final MetricsService metricsService;
@@ -451,12 +454,22 @@ public class TenantService {
                 })
             .orElse(null);
 
-    PropertySummary propertySummary = null;
-    if (tenant.getCurrentPropertyId() != null) {
+    List<Contract> activeContracts =
+        contractRepository.findByTenantIdViaParties(tenant.getId(), teamId).stream()
+            .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
+            .toList();
+
+    List<TenantPropertyAssignment> activeProperties = new java.util.ArrayList<>();
+    for (Contract contract : activeContracts) {
       Property property =
-          propertyRepository.findByIdAndTeamId(tenant.getCurrentPropertyId(), teamId).orElse(null);
+          propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
       if (property != null) {
-        propertySummary =
+        String role =
+            contractPartyRepository
+                .findByTenantIdAndContractIdAndTeamId(tenant.getId(), contract.getId(), teamId)
+                .map(party -> party.getRole().name())
+                .orElse(null);
+        PropertySummary summary =
             new PropertySummary(
                 property.getIdentifier(),
                 property.getStreet(),
@@ -464,30 +477,7 @@ public class TenantService {
                 property.getPostalCode(),
                 property.getPropertyType(),
                 property.getStatus());
-      }
-    } else {
-      List<Contract> contracts =
-          contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
-      Optional<Contract> activeContract =
-          contracts.stream()
-              .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
-              .findFirst();
-
-      if (activeContract.isPresent()) {
-        Property property =
-            propertyRepository
-                .findByIdAndTeamId(activeContract.get().getPropertyId(), teamId)
-                .orElse(null);
-        if (property != null) {
-          propertySummary =
-              new PropertySummary(
-                  property.getIdentifier(),
-                  property.getStreet(),
-                  property.getCity(),
-                  property.getPostalCode(),
-                  property.getPropertyType(),
-                  property.getStatus());
-        }
+        activeProperties.add(new TenantPropertyAssignment(summary, role));
       }
     }
 
@@ -502,7 +492,7 @@ public class TenantService {
         response.additionalInfo(),
         mainPhotoUrl,
         mainPhotoThumbnailUrl,
-        propertySummary,
+        activeProperties,
         response.createdAt(),
         response.updatedAt());
   }

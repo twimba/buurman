@@ -15,7 +15,7 @@ import com.buurman.dto.response.TenantSummary;
 @Mapper(componentModel = "spring")
 public interface TenantMapper {
 
-  @Mapping(target = "currentProperty", ignore = true)
+  @Mapping(target = "activeProperties", ignore = true)
   @Mapping(target = "mainPhotoUrl", ignore = true)
   @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
   TenantResponse toResponse(Tenant tenant);

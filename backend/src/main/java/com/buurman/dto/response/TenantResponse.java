@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.List;
 
 public record TenantResponse(
     String identifier,
@@ -13,6 +14,6 @@ public record TenantResponse(
     String additionalInfo,
     String mainPhotoUrl,
     String mainPhotoThumbnailUrl,
-    PropertySummary currentProperty,
+    List<TenantPropertyAssignment> activeProperties,
     Instant createdAt,
     Instant updatedAt) {}

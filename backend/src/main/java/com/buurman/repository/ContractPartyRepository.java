@@ -113,6 +113,19 @@ public class ContractPartyRepository {
         .fetchOptional(this::toDomain);
   }
 
+  public Optional<ContractParty> findByTenantIdAndContractIdAndTeamId(
+      UUID tenantId, UUID contractId, UUID teamId) {
+    return dsl.select()
+        .from(CONTRACT_PARTIES)
+        .where(
+            TENANT_ID
+                .eq(tenantId)
+                .and(CONTRACT_ID.eq(contractId))
+                .and(TEAM_ID.eq(teamId))
+                .and(DELETED_AT.isNull()))
+        .fetchOptional(this::toDomain);
+  }
+
   public boolean existsByContractIdAndTenantIdAndTeamId(
       UUID contractId, UUID tenantId, UUID teamId) {
     return dsl.fetchExists(

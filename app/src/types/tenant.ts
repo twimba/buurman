@@ -1,4 +1,10 @@
+import { ContractPartyRole } from './contract';
 import { PropertySummary } from './property';
+
+export interface TenantPropertyAssignment {
+  property: PropertySummary;
+  role?: ContractPartyRole;
+}
 
 export interface TenantResponse {
   identifier: string;
@@ -11,7 +17,7 @@ export interface TenantResponse {
   additionalInfo?: string;
   mainPhotoUrl?: string;
   mainPhotoThumbnailUrl?: string;
-  currentProperty?: PropertySummary;
+  activeProperties?: TenantPropertyAssignment[];
   createdAt: string;
   updatedAt: string;
 }

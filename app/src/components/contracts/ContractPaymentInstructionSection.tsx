@@ -306,8 +306,7 @@ export const ContractPaymentInstructionSection = ({
                   !!entry.effectiveTo &&
                   !(
                     contractStatus !== ContractStatus.DRAFT &&
-                    entry.effectiveFrom <
-                      new Date().toISOString().split('T')[0]
+                    entry.effectiveFrom < new Date().toISOString().split('T')[0]
                   )
                 }
                 onDelete={() => {
@@ -499,9 +498,7 @@ export const ContractPaymentInstructionSection = ({
                       <input
                         type="text"
                         value={customAccountNumber}
-                        onChange={(e) =>
-                          setCustomAccountNumber(e.target.value)
-                        }
+                        onChange={(e) => setCustomAccountNumber(e.target.value)}
                         className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
                       />
                     </div>
@@ -512,9 +509,7 @@ export const ContractPaymentInstructionSection = ({
                       <input
                         type="text"
                         value={customRoutingNumber}
-                        onChange={(e) =>
-                          setCustomRoutingNumber(e.target.value)
-                        }
+                        onChange={(e) => setCustomRoutingNumber(e.target.value)}
                         className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
                       />
                     </div>

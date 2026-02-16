@@ -119,7 +119,7 @@ const InlineTenantForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-            Email <span className="text-red-500">*</span>
+            Email
           </label>
           <input
             type="email"
@@ -176,6 +176,15 @@ const InlineTenantForm = ({
   );
 };
 
+// Convert empty optional strings to null before submission
+function sanitizeTenant(data: CreateTenantRequest): CreateTenantRequest {
+  return {
+    ...data,
+    email: data.email?.trim() || null,
+    phone: data.phone?.trim() || null,
+  };
+}
+
 // Validate inline tenant data, return errors keyed by prefix
 function validateInlineTenant(
   data: CreateTenantRequest,
@@ -183,11 +192,12 @@ function validateInlineTenant(
 ): Record<string, string> {
   const errs: Record<string, string> = {};
   if (!data.firstName.trim()) errs[`${prefix}_firstName`] = 'Required';
-  if (!data.email.trim()) errs[`${prefix}_email`] = 'Required';
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
+  if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
     errs[`${prefix}_email`] = 'Invalid email';
-  const phoneErr = validatePhoneE164(data.phone);
-  if (phoneErr) errs[`${prefix}_phone`] = phoneErr;
+  if (data.phone) {
+    const phoneErr = validatePhoneE164(data.phone);
+    if (phoneErr) errs[`${prefix}_phone`] = phoneErr;
+  }
   return errs;
 }
 
@@ -224,7 +234,7 @@ export const ContractForm = ({
     startDate: contract?.startDate || '',
     endDate: contract?.endDate || '',
     signedDate: contract?.signedDate || '',
-    rentAmount: contract?.rentAmount || 0,
+    rentAmount: contract?.rentAmount ?? '',
     depositAmount: contract?.depositAmount || undefined,
     securityDeposit: contract?.securityDeposit || undefined,
     currency: contract?.currency || defaultCurrency || 'EUR',
@@ -252,7 +262,7 @@ export const ContractForm = ({
         startDate: contract.startDate,
         endDate: contract.endDate || '',
         signedDate: contract.signedDate || '',
-        rentAmount: contract.rentAmount,
+        rentAmount: contract.rentAmount ?? '',
         depositAmount: contract.depositAmount || undefined,
         securityDeposit: contract.securityDeposit || undefined,
         currency: contract.currency,
@@ -288,7 +298,7 @@ export const ContractForm = ({
     }
 
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (formData.rentAmount <= 0)
+    if (!formData.rentAmount || formData.rentAmount <= 0)
       newErrors.rentAmount = 'Rent amount must be greater than 0';
 
     if (
@@ -345,7 +355,7 @@ export const ContractForm = ({
                   role: ContractPartyRole.PRIMARY_TENANT,
                 }
               : {
-                  newTenant: newPrimaryTenant,
+                  newTenant: sanitizeTenant(newPrimaryTenant),
                   role: ContractPartyRole.PRIMARY_TENANT,
                 },
             ...additionalParties
@@ -357,7 +367,7 @@ export const ContractForm = ({
               .map((p) =>
                 p.mode === 'select'
                   ? { tenantIdentifier: p.tenantIdentifier, role: p.role }
-                  : { newTenant: p.newTenant, role: p.role }
+                  : { newTenant: sanitizeTenant(p.newTenant), role: p.role }
               ),
           ];
 
@@ -386,7 +396,7 @@ export const ContractForm = ({
     }
   };
 
-  const addParty = () => {
+  const addParty = (role: ContractPartyRole) => {
     setAdditionalParties((prev) => [
       ...prev,
       {
@@ -394,7 +404,7 @@ export const ContractForm = ({
         mode: 'select',
         tenantIdentifier: '',
         newTenant: { ...EMPTY_NEW_TENANT },
-        role: ContractPartyRole.GUARANTOR,
+        role,
       },
     ]);
   };
@@ -521,11 +531,11 @@ export const ContractForm = ({
 
               {/* Additional parties */}
               {additionalParties.map((party, index) => (
-                <div key={party.id} className="space-y-2">
-                  <div className="flex gap-2 items-start">
-                    <div className="flex-1">
-                      {party.mode === 'select' ? (
-                        <>
+                <div key={party.id}>
+                  {party.mode === 'select' ? (
+                    <div>
+                      <div className="flex gap-2 items-center">
+                        <div className="flex-1">
                           <TenantSelector
                             value={party.tenantIdentifier}
                             onChange={(value) =>
@@ -535,81 +545,115 @@ export const ContractForm = ({
                             }
                             disabled={isLoading}
                           />
-                          {errors[`party_${index}`] && (
-                            <p className="text-red-600 text-sm mt-1">
-                              {errors[`party_${index}`]}
-                            </p>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updatePartyField(index, {
-                                mode: 'create',
-                                tenantIdentifier: '',
-                              })
-                            }
-                            className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
-                            disabled={isLoading}
-                          >
-                            <UserPlus className="h-3 w-3" />
-                            Create new tenant
-                          </button>
-                        </>
-                      ) : (
-                        <InlineTenantForm
-                          value={party.newTenant}
-                          onChange={(data) =>
-                            updatePartyField(index, { newTenant: data })
-                          }
-                          onSwitchToSelect={() =>
+                        </div>
+                        <select
+                          value={party.role}
+                          onChange={(e) =>
                             updatePartyField(index, {
-                              mode: 'select',
-                              newTenant: { ...EMPTY_NEW_TENANT },
+                              role: e.target.value as ContractPartyRole,
                             })
                           }
-                          errors={errors}
-                          errorPrefix={`party_${index}`}
+                          className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
                           disabled={isLoading}
-                        />
+                        >
+                          {ADDITIONAL_ROLES.map((role) => (
+                            <option key={role} value={role}>
+                              {PARTY_ROLE_LABELS[role]}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => removeParty(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          disabled={isLoading}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      {errors[`party_${index}`] && (
+                        <p className="text-red-600 text-sm mt-1">
+                          {errors[`party_${index}`]}
+                        </p>
                       )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updatePartyField(index, {
+                            mode: 'create',
+                            tenantIdentifier: '',
+                          })
+                        }
+                        className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                        disabled={isLoading}
+                      >
+                        <UserPlus className="h-3 w-3" />
+                        Create new tenant
+                      </button>
                     </div>
-                    <select
-                      value={party.role}
-                      onChange={(e) =>
-                        updatePartyField(index, {
-                          role: e.target.value as ContractPartyRole,
-                        })
-                      }
-                      className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
-                      disabled={isLoading}
-                    >
-                      {ADDITIONAL_ROLES.map((role) => (
-                        <option key={role} value={role}>
-                          {PARTY_ROLE_LABELS[role]}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => removeParty(index)}
-                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                      disabled={isLoading}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  ) : (
+                    <div>
+                      <div className="flex gap-2 items-center mb-2">
+                        <select
+                          value={party.role}
+                          onChange={(e) =>
+                            updatePartyField(index, {
+                              role: e.target.value as ContractPartyRole,
+                            })
+                          }
+                          className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                          disabled={isLoading}
+                        >
+                          {ADDITIONAL_ROLES.map((role) => (
+                            <option key={role} value={role}>
+                              {PARTY_ROLE_LABELS[role]}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex-1" />
+                        <button
+                          type="button"
+                          onClick={() => removeParty(index)}
+                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          disabled={isLoading}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <InlineTenantForm
+                        value={party.newTenant}
+                        onChange={(data) =>
+                          updatePartyField(index, { newTenant: data })
+                        }
+                        onSwitchToSelect={() =>
+                          updatePartyField(index, {
+                            mode: 'select',
+                            newTenant: { ...EMPTY_NEW_TENANT },
+                          })
+                        }
+                        errors={errors}
+                        errorPrefix={`party_${index}`}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
 
-              <button
-                type="button"
-                onClick={addParty}
-                className="flex items-center gap-2 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
-                disabled={isLoading}
-              >
-                <Plus className="h-4 w-4" />
-                Add Guarantor, Co-signer, or Additional Tenant
-              </button>
+              <div className="flex items-center gap-4">
+                {ADDITIONAL_ROLES.map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => addParty(role)}
+                    className="flex items-center gap-1 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                    disabled={isLoading}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add {PARTY_ROLE_LABELS[role]}
+                  </button>
+                ))}
+              </div>
             </>
           )}
         </div>
@@ -745,7 +789,10 @@ export const ContractForm = ({
               step="0.01"
               value={formData.rentAmount}
               onChange={(e) =>
-                handleChange('rentAmount', parseFloat(e.target.value) || 0)
+                handleChange(
+                  'rentAmount',
+                  e.target.value ? parseFloat(e.target.value) : ''
+                )
               }
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
               placeholder="1000.00"
@@ -1057,7 +1104,7 @@ const ContractPartiesEditor = ({
           return;
         }
         await addPartyMutation.mutateAsync({
-          newTenant: inlineNewTenant,
+          newTenant: sanitizeTenant(inlineNewTenant),
           role: newRole,
         });
       }
@@ -1101,7 +1148,7 @@ const ContractPartiesEditor = ({
           return;
         }
         await changePrimaryMutation.mutateAsync({
-          newTenant: inlineNewPrimary,
+          newTenant: sanitizeTenant(inlineNewPrimary),
         });
       }
       resetChangePrimaryForm();
@@ -1246,76 +1293,14 @@ const ContractPartiesEditor = ({
 
       {/* Add party form */}
       {showAddForm && (
-        <div className="space-y-2">
+        <div>
           {addMode === 'select' ? (
-            <div className="flex gap-2 items-center">
-              <div className="flex-1">
-                <TenantSelector
-                  value={newTenantId}
-                  onChange={setNewTenantId}
-                  disabled={isBusy}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAddMode('create');
-                    setNewTenantId('');
-                  }}
-                  className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
-                  disabled={isBusy}
-                >
-                  <UserPlus className="h-3 w-3" />
-                  Create new tenant
-                </button>
-              </div>
-              <select
-                value={newRole}
-                onChange={(e) =>
-                  setNewRole(e.target.value as ContractPartyRole)
-                }
-                className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
-                disabled={isBusy}
-              >
-                {ADDITIONAL_ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {PARTY_ROLE_LABELS[role]}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={handleAddParty}
-                className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm whitespace-nowrap"
-                disabled={isBusy || !newTenantId}
-              >
-                Add
-              </button>
-              <button
-                type="button"
-                onClick={resetAddForm}
-                className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
-                disabled={isBusy}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex gap-2 items-start">
+            <div>
+              <div className="flex gap-2 items-center">
                 <div className="flex-1">
-                  <InlineTenantForm
-                    value={inlineNewTenant}
-                    onChange={(data) => {
-                      setInlineNewTenant(data);
-                      setErrors({});
-                    }}
-                    onSwitchToSelect={() => {
-                      setAddMode('select');
-                      setInlineNewTenant({ ...EMPTY_NEW_TENANT });
-                      setErrors({});
-                    }}
-                    errors={errors}
-                    errorPrefix="add_party"
+                  <TenantSelector
+                    value={newTenantId}
+                    onChange={setNewTenantId}
                     disabled={isBusy}
                   />
                 </div>
@@ -1333,8 +1318,79 @@ const ContractPartiesEditor = ({
                     </option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  onClick={handleAddParty}
+                  className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm whitespace-nowrap"
+                  disabled={isBusy || !newTenantId}
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={resetAddForm}
+                  className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                  disabled={isBusy}
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setAddMode('create');
+                  setNewTenantId('');
+                }}
+                className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                disabled={isBusy}
+              >
+                <UserPlus className="h-3 w-3" />
+                Create new tenant
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex gap-2 items-center mb-2">
+                <select
+                  value={newRole}
+                  onChange={(e) =>
+                    setNewRole(e.target.value as ContractPartyRole)
+                  }
+                  className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                  disabled={isBusy}
+                >
+                  {ADDITIONAL_ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {PARTY_ROLE_LABELS[role]}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex-1" />
+                <button
+                  type="button"
+                  onClick={resetAddForm}
+                  className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                  disabled={isBusy}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <InlineTenantForm
+                value={inlineNewTenant}
+                onChange={(data) => {
+                  setInlineNewTenant(data);
+                  setErrors({});
+                }}
+                onSwitchToSelect={() => {
+                  setAddMode('select');
+                  setInlineNewTenant({ ...EMPTY_NEW_TENANT });
+                  setErrors({});
+                }}
+                errors={errors}
+                errorPrefix="add_party"
+                disabled={isBusy}
+              />
+              <div className="flex gap-2 justify-end mt-2">
                 <button
                   type="button"
                   onClick={resetAddForm}
@@ -1358,15 +1414,23 @@ const ContractPartiesEditor = ({
       )}
 
       {!showAddForm && !changingPrimary && (
-        <button
-          type="button"
-          onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
-          disabled={isBusy}
-        >
-          <Plus className="h-4 w-4" />
-          Add Guarantor, Co-signer, or Additional Tenant
-        </button>
+        <div className="flex items-center gap-4">
+          {ADDITIONAL_ROLES.map((role) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => {
+                setNewRole(role);
+                setShowAddForm(true);
+              }}
+              className="flex items-center gap-1 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+              disabled={isBusy}
+            >
+              <Plus className="h-4 w-4" />
+              Add {PARTY_ROLE_LABELS[role]}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
