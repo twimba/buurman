@@ -90,6 +90,7 @@ public class BackofficeTeamService {
             statsRepository.sumActiveRentForTeam(team.getId()),
             currency,
             statsRepository.propertyStatusDistribution(team.getId()),
+            statsRepository.propertyCategoryDistribution(team.getId()),
             statsRepository.contractStatusDistribution(team.getId()),
             statsRepository.paymentStatusDistribution(team.getId()));
 

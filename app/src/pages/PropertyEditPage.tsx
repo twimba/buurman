@@ -26,7 +26,7 @@ export const PropertyEditPage = () => {
   const { data: outdoorAreas = [] } = useOutdoorAreas(id);
   const createOutdoorAreaMutation = useCreateOutdoorArea(id!);
   const deleteOutdoorAreaMutation = useDeleteOutdoorArea(id!);
-  const { data: allAmenities = {} } = useAmenities();
+  const { data: allAmenities = {} } = useAmenities(property?.propertyCategory);
   const { data: propertyAmenities = [] } = usePropertyAmenities(id);
   const addAmenityMutation = useAddPropertyAmenity(id!);
   const removeAmenityMutation = useRemovePropertyAmenity(id!);

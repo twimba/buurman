@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,8 +40,9 @@ public class AmenityController {
       summary = "List all amenities grouped by category",
       description = "Get all available amenities grouped by category")
   @GetMapping("/amenities")
-  public Map<String, List<AmenityResponse>> getAllAmenities() {
-    return propertyAmenityService.getAllAmenitiesGrouped();
+  public Map<String, List<AmenityResponse>> getAllAmenities(
+      @RequestParam(required = false) String category) {
+    return propertyAmenityService.getAllAmenitiesGrouped(category);
   }
 
   @Tag(name = "Property Amenities", description = "Manage amenities for properties")

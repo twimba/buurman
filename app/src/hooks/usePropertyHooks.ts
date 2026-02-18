@@ -9,6 +9,7 @@ import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
   PropertyStatus,
+  PropertyCategory,
   OutdoorAreaRequest,
 } from '../types/property';
 import type { PageParams } from '@/types/common';
@@ -16,7 +17,11 @@ import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
 export const useProperties = (
-  params?: { status?: PropertyStatus } & PageParams
+  params?: {
+    status?: PropertyStatus;
+    category?: PropertyCategory;
+    query?: string;
+  } & PageParams
 ) => {
   return useQuery({
     queryKey: ['properties', params],
@@ -295,10 +300,10 @@ export const useDeleteOutdoorArea = (propertyId: string) => {
 
 // --- Amenities ---
 
-export const useAmenities = () => {
+export const useAmenities = (category?: string) => {
   return useQuery({
-    queryKey: ['amenities'],
-    queryFn: propertiesApi.getAmenities,
+    queryKey: ['amenities', category],
+    queryFn: () => propertiesApi.getAmenities(category),
     staleTime: Infinity,
   });
 };

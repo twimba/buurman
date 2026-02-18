@@ -424,6 +424,7 @@ public class TenantService {
                 property.getStreet(),
                 property.getCity(),
                 property.getPostalCode(),
+                property.getPropertyCategory(),
                 property.getPropertyType(),
                 property.getStatus());
         activeProperties.add(new TenantPropertyAssignment(summary, role));
@@ -456,6 +457,7 @@ public class TenantService {
             property.getStreet(),
             property.getCity(),
             property.getPostalCode(),
+            property.getPropertyCategory(),
             property.getPropertyType(),
             property.getStatus());
 

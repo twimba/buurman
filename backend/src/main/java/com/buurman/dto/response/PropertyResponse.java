@@ -9,18 +9,17 @@ import com.buurman.domain.Property;
 
 public record PropertyResponse(
     String identifier,
+    Property.PropertyCategory propertyCategory,
+    Property.PropertyType propertyType,
+    Property.PropertyStatus status,
     String street,
     String city,
     String postalCode,
     String country,
     BigDecimal latitude,
     BigDecimal longitude,
-    Integer bedrooms,
-    Integer bathrooms,
     BigDecimal areaValue,
     String areaUnit,
-    Property.PropertyType propertyType,
-    Property.PropertyStatus status,
     String mainPhotoUrl,
     String mainPhotoThumbnailUrl,
 
@@ -74,6 +73,12 @@ public record PropertyResponse(
     Boolean hasStepFreeEntrance,
     Boolean hasAdaptedBathroom,
     String accessibilityNotes,
+
+    // Category-specific details (only one is non-null)
+    ResidentialDetailsResponse residentialDetails,
+    CommercialDetailsResponse commercialDetails,
+    IndustrialDetailsResponse industrialDetails,
+    AgriculturalDetailsResponse agriculturalDetails,
 
     // Nested collections
     List<PropertyOutdoorAreaResponse> outdoorAreas,

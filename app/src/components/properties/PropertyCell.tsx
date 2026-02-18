@@ -1,35 +1,59 @@
 import { useNavigate } from 'react-router-dom';
-import { PropertyStatus, PropertyType } from '@/types/property';
-import { Home, Building2, MapPin } from 'lucide-react';
+import {
+  PropertyStatus,
+  PropertyType,
+  PropertyCategory,
+  PROPERTY_STATUS_LABELS,
+} from '@/types/property';
+import { Home, Building2, Factory, Tractor, MapPin } from 'lucide-react';
 
 interface PropertyCellProps {
   propertyIdentifier: string;
   propertyStatus: PropertyStatus;
   propertyType: PropertyType;
+  propertyCategory?: PropertyCategory;
   street: string;
   city: string;
   postalCode: string;
   onClick?: (e: React.MouseEvent) => void;
 }
 
-const statusColors: Record<PropertyStatus, string> = {
+const statusColors: Record<string, string> = {
   [PropertyStatus.VACANT]: 'bg-emerald-500',
   [PropertyStatus.OCCUPIED]: 'bg-blue-500',
   [PropertyStatus.MAINTENANCE]: 'bg-amber-500',
   [PropertyStatus.UNAVAILABLE]: 'bg-[#9ca0b8] dark:bg-[#5c6180]',
+  [PropertyStatus.UNDER_RENOVATION]: 'bg-orange-500',
+  [PropertyStatus.FALLOW]: 'bg-stone-500',
+  [PropertyStatus.LISTED]: 'bg-purple-500',
 };
 
-const statusLabels: Record<PropertyStatus, string> = {
-  [PropertyStatus.VACANT]: 'Vacant',
-  [PropertyStatus.OCCUPIED]: 'Occupied',
-  [PropertyStatus.MAINTENANCE]: 'Maintenance',
-  [PropertyStatus.UNAVAILABLE]: 'Unavailable',
+const iconCls = 'h-3.5 w-3.5 text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0';
+
+const CategoryIcon = ({
+  category,
+  type,
+}: {
+  category?: PropertyCategory;
+  type?: PropertyType;
+}) => {
+  if (category === PropertyCategory.INDUSTRIAL)
+    return <Factory className={iconCls} />;
+  if (category === PropertyCategory.AGRICULTURAL)
+    return <Tractor className={iconCls} />;
+  if (
+    category === PropertyCategory.COMMERCIAL ||
+    type === PropertyType.COMMERCIAL
+  )
+    return <Building2 className={iconCls} />;
+  return <Home className={iconCls} />;
 };
 
 export const PropertyCell = ({
   propertyIdentifier,
   propertyStatus,
   propertyType,
+  propertyCategory,
   street,
   city,
   postalCode,
@@ -45,9 +69,6 @@ export const PropertyCell = ({
       navigate(`/properties/${propertyIdentifier}`);
     }
   };
-
-  const PropertyIcon =
-    propertyType === PropertyType.COMMERCIAL ? Building2 : Home;
 
   return (
     <button
@@ -70,8 +91,8 @@ export const PropertyCell = ({
         {/* Status indicator */}
         <div className="flex-shrink-0 pt-1">
           <div
-            className={`w-2 h-2 rounded-full ${statusColors[propertyStatus]}`}
-            title={statusLabels[propertyStatus]}
+            className={`w-2 h-2 rounded-full ${statusColors[propertyStatus] ?? 'bg-gray-400'}`}
+            title={PROPERTY_STATUS_LABELS[propertyStatus] ?? propertyStatus}
           />
         </div>
 
@@ -79,7 +100,7 @@ export const PropertyCell = ({
         <div className="min-w-0 flex-1">
           {/* Street */}
           <div className="flex items-center gap-1.5 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] group-hover:text-[#5c7cfa] dark:group-hover:text-blue-400 transition-colors">
-            <PropertyIcon className="h-3.5 w-3.5 text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0" />
+            <CategoryIcon category={propertyCategory} type={propertyType} />
             <span className="truncate">{street}</span>
           </div>
 

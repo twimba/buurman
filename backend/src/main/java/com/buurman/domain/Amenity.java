@@ -1,5 +1,6 @@
 package com.buurman.domain;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Data;
@@ -14,4 +15,5 @@ public class Amenity {
   private String name;
   private String category;
   private String icon;
+  private List<String> applicableCategories;
 }

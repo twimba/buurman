@@ -18,7 +18,13 @@ import { CalendarFeedType } from '@/types/calendarFeed';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
-import { PropertyStatus } from '@/types/property';
+import {
+  PropertyStatus,
+  PropertyCategory,
+  PROPERTY_TYPE_LABELS,
+  PROPERTY_CATEGORY_LABELS,
+  PROPERTY_STATUS_LABELS,
+} from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
@@ -49,7 +55,7 @@ import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
-const statusColors: Record<PropertyStatus, string> = {
+const statusColors: Record<string, string> = {
   VACANT:
     'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
   OCCUPIED:
@@ -58,13 +64,12 @@ const statusColors: Record<PropertyStatus, string> = {
     'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
   UNAVAILABLE:
     'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
-};
-
-const statusLabels: Record<PropertyStatus, string> = {
-  VACANT: 'Vacant',
-  OCCUPIED: 'Occupied',
-  MAINTENANCE: 'Maintenance',
-  UNAVAILABLE: 'Unavailable',
+  UNDER_RENOVATION:
+    'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300',
+  FALLOW:
+    'bg-stone-100 dark:bg-stone-900/30 text-stone-800 dark:text-stone-300',
+  LISTED:
+    'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
 };
 
 export const PropertyDetailPage = () => {
@@ -398,9 +403,10 @@ export const PropertyDetailPage = () => {
           backTo="/properties"
           badge={
             <span
-              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status as PropertyStatus]}`}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
             >
-              {statusLabels[property.status as PropertyStatus]}
+              {PROPERTY_STATUS_LABELS[property.status as PropertyStatus] ??
+                property.status}
             </span>
           }
           actions={
@@ -535,37 +541,43 @@ export const PropertyDetailPage = () => {
         {activeTab === 'info' && (
           <div className="space-y-6">
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
-              {/* Status Badge */}
-              <div>
+              {/* Status & Category Badges */}
+              <div className="flex gap-2 flex-wrap">
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status as PropertyStatus]}`}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
                 >
-                  {statusLabels[property.status as PropertyStatus]}
+                  {PROPERTY_STATUS_LABELS[property.status as PropertyStatus] ??
+                    property.status}
+                </span>
+                <span className="px-4 py-2 rounded-full text-sm font-semibold bg-[#e8ecf4] dark:bg-[#1a1d28] text-[#3d4463] dark:text-[#c4c8db]">
+                  {PROPERTY_CATEGORY_LABELS[
+                    property.propertyCategory as PropertyCategory
+                  ] ?? property.propertyCategory}
                 </span>
               </div>
 
               {/* Specifications Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {property.bedrooms !== null && (
+                {property.residentialDetails?.bedrooms != null && (
                   <div>
                     <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
                       <Bed className="h-5 w-5" />
                       <span className="text-sm font-medium">Bedrooms</span>
                     </div>
                     <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {property.bedrooms}
+                      {property.residentialDetails.bedrooms}
                     </p>
                   </div>
                 )}
 
-                {property.bathrooms !== null && (
+                {property.residentialDetails?.bathrooms != null && (
                   <div>
                     <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
                       <Bath className="h-5 w-5" />
                       <span className="text-sm font-medium">Bathrooms</span>
                     </div>
                     <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {property.bathrooms}
+                      {property.residentialDetails.bathrooms}
                     </p>
                   </div>
                 )}
@@ -589,7 +601,8 @@ export const PropertyDetailPage = () => {
                     <span className="text-sm font-medium">Type</span>
                   </div>
                   <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.propertyType.replace('_', ' ')}
+                    {PROPERTY_TYPE_LABELS[property.propertyType] ??
+                      property.propertyType}
                   </p>
                 </div>
 

@@ -15,6 +15,9 @@ import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 @Mapper(componentModel = "spring")
 public interface PropertyRecordMapper {
 
+  @Mapping(
+      target = "propertyCategory",
+      expression = "java(toPropertyCategory(record.getPropertyCategory()))")
   @Mapping(target = "propertyType", expression = "java(toPropertyType(record.getPropertyType()))")
   @Mapping(target = "status", expression = "java(toPropertyStatus(record.getStatus()))")
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
@@ -22,6 +25,9 @@ public interface PropertyRecordMapper {
   @Mapping(target = "deletedAt", expression = "java(toInstant(record.getDeletedAt()))")
   Property toDomain(PropertiesRecord record);
 
+  @Mapping(
+      target = "propertyCategory",
+      expression = "java(fromPropertyCategory(property.getPropertyCategory()))")
   @Mapping(
       target = "propertyType",
       expression = "java(fromPropertyType(property.getPropertyType()))")
@@ -39,6 +45,14 @@ public interface PropertyRecordMapper {
 
   default LocalDateTime toLocalDateTime(Instant instant) {
     return instant == null ? null : LocalDateTime.ofInstant(instant, UTC);
+  }
+
+  default Property.PropertyCategory toPropertyCategory(String value) {
+    return value == null ? null : Property.PropertyCategory.valueOf(value);
+  }
+
+  default String fromPropertyCategory(Property.PropertyCategory category) {
+    return category == null ? null : category.name();
   }
 
   default Property.PropertyType toPropertyType(String value) {

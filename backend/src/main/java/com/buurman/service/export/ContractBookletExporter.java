@@ -358,12 +358,10 @@ public class ContractBookletExporter {
     html.append("</tr><tr>");
     appendField(
         html,
-        "Bedrooms",
-        property.getBedrooms() != null ? String.valueOf(property.getBedrooms()) : "—");
-    appendField(
-        html,
-        "Bathrooms",
-        property.getBathrooms() != null ? String.valueOf(property.getBathrooms()) : "—");
+        "Category",
+        formatEnumValue(
+            property.getPropertyCategory() != null ? property.getPropertyCategory().name() : ""));
+    appendField(html, "Property ID", property.getIdentifier());
     html.append("</tr><tr>");
     String area =
         property.getAreaValue() != null
@@ -372,7 +370,6 @@ public class ContractBookletExporter {
                 + (property.getAreaUnit() != null ? property.getAreaUnit() : "m²")
             : "—";
     appendField(html, "Area", area);
-    appendField(html, "Property ID", property.getIdentifier());
     html.append("</tr>");
     html.append("</table>");
 

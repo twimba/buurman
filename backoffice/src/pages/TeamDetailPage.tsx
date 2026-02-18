@@ -242,11 +242,16 @@ export const TeamDetailPage = () => {
           </div>
 
           {/* Distributions */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatusDistribution
-              title="Properties"
+              title="Property Status"
               data={team.financialSnapshot.propertyStatusDistribution}
               colorMap={propertyStatusColors}
+            />
+            <StatusDistribution
+              title="Property Category"
+              data={team.financialSnapshot.propertyCategoryDistribution}
+              colorMap={propertyCategoryColors}
             />
             <StatusDistribution
               title="Contracts"
@@ -526,6 +531,19 @@ const propertyStatusColors: Record<string, string> = {
   MAINTENANCE:
     "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
   UNAVAILABLE:
+    "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
+};
+
+const propertyCategoryColors: Record<string, string> = {
+  RESIDENTIAL:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  COMMERCIAL:
+    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
+  INDUSTRIAL:
+    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+  AGRICULTURAL:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+  MIXED_USE:
     "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
 };
 

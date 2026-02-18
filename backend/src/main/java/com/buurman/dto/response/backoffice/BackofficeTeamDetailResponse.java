@@ -35,6 +35,7 @@ public record BackofficeTeamDetailResponse(
       BigDecimal totalActiveRent,
       String currency,
       Map<String, Long> propertyStatusDistribution,
+      Map<String, Long> propertyCategoryDistribution,
       Map<String, Long> contractStatusDistribution,
       Map<String, Long> paymentStatusDistribution) {}
 

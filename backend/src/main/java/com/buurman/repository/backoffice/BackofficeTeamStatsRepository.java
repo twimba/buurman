@@ -107,4 +107,15 @@ public class BackofficeTeamStatsRepository {
         .forEach(r -> result.put(r.value1(), r.value2().longValue()));
     return result;
   }
+
+  public Map<String, Long> propertyCategoryDistribution(UUID teamId) {
+    Map<String, Long> result = new LinkedHashMap<>();
+    dsl.select(PROPERTIES.PROPERTY_CATEGORY, count())
+        .from(PROPERTIES)
+        .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
+        .groupBy(PROPERTIES.PROPERTY_CATEGORY)
+        .fetch()
+        .forEach(r -> result.put(r.value1(), r.value2().longValue()));
+    return result;
+  }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
 import {
@@ -6,9 +6,14 @@ import {
   CreatePropertyRequest,
   PropertyType,
   PropertyStatus,
+  PropertyCategory,
   OutdoorAreaResponse,
   AmenityResponse,
   PropertyAmenityResponse,
+  PROPERTY_TYPES_BY_CATEGORY,
+  PROPERTY_CATEGORY_LABELS,
+  PROPERTY_TYPE_LABELS,
+  PROPERTY_STATUS_LABELS,
 } from '@/types/property';
 import { PropertyMap } from './PropertyMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
@@ -34,6 +39,12 @@ interface PropertyFormProps {
   onRemoveAmenity?: (amenityIdentifier: string) => void;
 }
 
+const selectCls =
+  'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]';
+const inputCls = selectCls;
+const labelCls =
+  'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+
 export const PropertyForm = ({
   property,
   onSubmit,
@@ -50,21 +61,30 @@ export const PropertyForm = ({
   const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
+  const isEditMode = !!property;
+
+  const resolveCategory = (): PropertyCategory =>
+    (property?.propertyCategory as PropertyCategory) ??
+    PropertyCategory.RESIDENTIAL;
+
+  const resolveType = (): PropertyType => {
+    if (property?.propertyType) return property.propertyType as PropertyType;
+    const types = PROPERTY_TYPES_BY_CATEGORY[PropertyCategory.RESIDENTIAL];
+    return types[0];
+  };
 
   const [formData, setFormData] = useState<CreatePropertyRequest>({
+    propertyCategory: resolveCategory(),
+    propertyType: resolveType(),
+    status: (property?.status as PropertyStatus) || PropertyStatus.VACANT,
     street: property?.street || '',
     city: property?.city || '',
     postalCode: property?.postalCode || '',
     country: property?.country || defaultCountry || '',
     latitude: property?.latitude || null,
     longitude: property?.longitude || null,
-    bedrooms: property?.bedrooms || null,
-    bathrooms: property?.bathrooms || null,
     areaValue: property?.areaValue || null,
     areaUnit: property?.areaUnit || 'sqm',
-    propertyType:
-      (property?.propertyType as PropertyType) || PropertyType.APARTMENT,
-    status: (property?.status as PropertyStatus) || PropertyStatus.VACANT,
     // Characteristics
     yearBuilt: property?.yearBuilt ?? null,
     yearLastRenovated: property?.yearLastRenovated ?? null,
@@ -105,30 +125,44 @@ export const PropertyForm = ({
     hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
     hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
     accessibilityNotes: property?.accessibilityNotes ?? null,
+    // Category-specific details
+    residentialDetails: property?.residentialDetails ?? null,
+    commercialDetails: property?.commercialDetails ?? null,
+    industrialDetails: property?.industrialDetails ?? null,
+    agriculturalDetails: property?.agriculturalDetails ?? null,
   });
 
   const [propertyIdentifier, setPropertyIdentifier] = useState(
     property?.identifier
   );
 
+  // Available sub-types based on selected category
+  const availableTypes = useMemo(
+    () =>
+      PROPERTY_TYPES_BY_CATEGORY[
+        formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+      ] ?? [],
+    [formData.propertyCategory]
+  );
+
   useEffect(() => {
     // Only update if property identifier changed (editing a different property)
-
     if (property && property.identifier !== propertyIdentifier) {
       setPropertyIdentifier(property.identifier);
       setFormData({
+        propertyCategory:
+          (property.propertyCategory as PropertyCategory) ??
+          PropertyCategory.RESIDENTIAL,
+        propertyType: property.propertyType as PropertyType,
+        status: property.status as PropertyStatus,
         street: property.street,
         city: property.city,
         postalCode: property.postalCode,
         country: property.country,
         latitude: property.latitude,
         longitude: property.longitude,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
         areaValue: property.areaValue,
         areaUnit: property.areaUnit || 'sqm',
-        propertyType: property.propertyType as PropertyType,
-        status: property.status as PropertyStatus,
         yearBuilt: property.yearBuilt ?? null,
         yearLastRenovated: property.yearLastRenovated ?? null,
         constructionType: property.constructionType ?? null,
@@ -169,6 +203,10 @@ export const PropertyForm = ({
         hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
         hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
         accessibilityNotes: property.accessibilityNotes ?? null,
+        residentialDetails: property.residentialDetails ?? null,
+        commercialDetails: property.commercialDetails ?? null,
+        industrialDetails: property.industrialDetails ?? null,
+        agriculturalDetails: property.agriculturalDetails ?? null,
       });
     }
   }, [property, propertyIdentifier]);
@@ -218,6 +256,20 @@ export const PropertyForm = ({
     property,
   ]);
 
+  const handleCategoryChange = (category: PropertyCategory) => {
+    const types = PROPERTY_TYPES_BY_CATEGORY[category];
+    setFormData((prev) => ({
+      ...prev,
+      propertyCategory: category,
+      propertyType: types[0],
+      // Clear detail objects when switching category
+      residentialDetails: null,
+      commercialDetails: null,
+      industrialDetails: null,
+      agriculturalDetails: null,
+    }));
+  };
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -227,12 +279,6 @@ export const PropertyForm = ({
       newErrors.postalCode = 'Postal code is required';
     if (!formData.country.trim()) newErrors.country = 'Country is required';
 
-    if (formData.bedrooms !== null && formData.bedrooms < 0) {
-      newErrors.bedrooms = 'Bedrooms must be non-negative';
-    }
-    if (formData.bathrooms !== null && formData.bathrooms < 0) {
-      newErrors.bathrooms = 'Bathrooms must be non-negative';
-    }
     if (
       formData.areaValue !== null &&
       formData.areaValue !== undefined &&
@@ -281,14 +327,14 @@ export const PropertyForm = ({
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className={labelCls}>
               Street <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.street}
               onChange={(e) => handleChange('street', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className={inputCls}
               placeholder="Main Street 123"
             />
             {errors.street && (
@@ -297,14 +343,14 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className={labelCls}>
               City <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.city}
               onChange={(e) => handleChange('city', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className={inputCls}
               placeholder="Amsterdam"
             />
             {errors.city && (
@@ -313,14 +359,14 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className={labelCls}>
               Postal Code <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.postalCode}
               onChange={(e) => handleChange('postalCode', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className={inputCls}
               placeholder="1012 AB"
             />
             {errors.postalCode && (
@@ -329,7 +375,7 @@ export const PropertyForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className={labelCls}>
               Country <span className="text-red-500">*</span>
             </label>
             <CountrySelector
@@ -364,54 +410,78 @@ export const PropertyForm = ({
           Specifications
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Property Category */}
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Bedrooms
+            <label className={labelCls}>
+              Category <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.bedrooms ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'bedrooms',
-                  e.target.value ? parseInt(e.target.value) : null
-                )
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="2"
-            />
-            {errors.bedrooms && (
-              <p className="text-red-600 text-sm mt-1">{errors.bedrooms}</p>
+            {isEditMode ? (
+              <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-[#3d4463] dark:text-[#c4c8db]">
+                {PROPERTY_CATEGORY_LABELS[formData.propertyCategory!]}
+                <span className="text-xs text-[#9ca0b8] ml-2">
+                  (cannot be changed)
+                </span>
+              </div>
+            ) : (
+              <select
+                value={formData.propertyCategory}
+                onChange={(e) =>
+                  handleCategoryChange(e.target.value as PropertyCategory)
+                }
+                className={selectCls}
+              >
+                {Object.values(PropertyCategory).map((cat) => (
+                  <option key={cat} value={cat}>
+                    {PROPERTY_CATEGORY_LABELS[cat]}
+                  </option>
+                ))}
+              </select>
             )}
           </div>
 
+          {/* Property Type (filtered by category) */}
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Bathrooms
+            <label className={labelCls}>
+              Type <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.bathrooms ?? ''}
+            <select
+              value={formData.propertyType}
               onChange={(e) =>
-                handleChange(
-                  'bathrooms',
-                  e.target.value ? parseInt(e.target.value) : null
-                )
+                handleChange('propertyType', e.target.value as PropertyType)
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="1"
-            />
-            {errors.bathrooms && (
-              <p className="text-red-600 text-sm mt-1">{errors.bathrooms}</p>
-            )}
+              className={selectCls}
+            >
+              {availableTypes.map((type) => (
+                <option key={type} value={type}>
+                  {PROPERTY_TYPE_LABELS[type] ?? type}
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Status */}
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Area
+            <label className={labelCls}>
+              Status <span className="text-red-500">*</span>
             </label>
+            <select
+              value={formData.status}
+              onChange={(e) =>
+                handleChange('status', e.target.value as PropertyStatus)
+              }
+              className={selectCls}
+            >
+              {Object.values(PropertyStatus).map((status) => (
+                <option key={status} value={status}>
+                  {PROPERTY_STATUS_LABELS[status]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Area */}
+          <div>
+            <label className={labelCls}>Area</label>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -424,7 +494,7 @@ export const PropertyForm = ({
                     e.target.value ? parseFloat(e.target.value) : null
                   )
                 }
-                className="flex-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className={`flex-1 ${inputCls}`}
                 placeholder="75.5"
               />
               <select
@@ -439,42 +509,6 @@ export const PropertyForm = ({
             {errors.areaValue && (
               <p className="text-red-600 text-sm mt-1">{errors.areaValue}</p>
             )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Property Type <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={formData.propertyType}
-              onChange={(e) =>
-                handleChange('propertyType', e.target.value as PropertyType)
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-            >
-              <option value={PropertyType.APARTMENT}>Apartment</option>
-              <option value={PropertyType.HOUSE}>House</option>
-              <option value={PropertyType.STUDIO}>Studio</option>
-              <option value={PropertyType.COMMERCIAL}>Commercial</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Status <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={formData.status}
-              onChange={(e) =>
-                handleChange('status', e.target.value as PropertyStatus)
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-            >
-              <option value={PropertyStatus.VACANT}>Vacant</option>
-              <option value={PropertyStatus.OCCUPIED}>Occupied</option>
-              <option value={PropertyStatus.MAINTENANCE}>Maintenance</option>
-              <option value={PropertyStatus.UNAVAILABLE}>Unavailable</option>
-            </select>
           </div>
         </div>
       </div>

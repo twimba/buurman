@@ -41,6 +41,7 @@ export interface FinancialSnapshot {
   totalActiveRent: number;
   currency: string;
   propertyStatusDistribution: Record<string, number>;
+  propertyCategoryDistribution: Record<string, number>;
   contractStatusDistribution: Record<string, number>;
   paymentStatusDistribution: Record<string, number>;
 }

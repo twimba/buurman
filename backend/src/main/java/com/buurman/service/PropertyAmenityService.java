@@ -34,9 +34,22 @@ public class PropertyAmenityService {
   private final PropertyAmenityRepository propertyAmenityRepository;
   private final PropertyRepository propertyRepository;
 
-  public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped() {
-    return amenityRepository.findAll().stream()
-        .map(a -> new AmenityResponse(a.getIdentifier(), a.getName(), a.getCategory(), a.getIcon()))
+  public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped(String propertyCategory) {
+    List<Amenity> amenities;
+    if (propertyCategory != null && !propertyCategory.isBlank()) {
+      amenities = amenityRepository.findByApplicableCategory(propertyCategory);
+    } else {
+      amenities = amenityRepository.findAll();
+    }
+    return amenities.stream()
+        .map(
+            a ->
+                new AmenityResponse(
+                    a.getIdentifier(),
+                    a.getName(),
+                    a.getCategory(),
+                    a.getIcon(),
+                    a.getApplicableCategories()))
         .collect(groupingBy(AmenityResponse::category));
   }
 

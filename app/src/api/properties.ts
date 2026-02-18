@@ -4,6 +4,7 @@ import {
   CreatePropertyRequest,
   UpdatePropertyRequest,
   PropertyStatus,
+  PropertyCategory,
   DocumentResponse,
   PhotoResponse,
   OutdoorAreaResponse,
@@ -15,7 +16,11 @@ import { RecentActivity } from './dashboard';
 import { PageResponse, PageParams } from '@/types/common';
 
 export const getProperties = async (
-  params?: { status?: PropertyStatus } & PageParams
+  params?: {
+    status?: PropertyStatus;
+    category?: PropertyCategory;
+    query?: string;
+  } & PageParams
 ): Promise<PageResponse<PropertyResponse>> => {
   const response = await client.get('/properties', { params });
   return response.data;
@@ -176,10 +181,12 @@ export const deleteOutdoorArea = async (
 
 // --- Amenities ---
 
-export const getAmenities = async (): Promise<
-  Record<string, AmenityResponse[]>
-> => {
-  const response = await client.get('/amenities');
+export const getAmenities = async (
+  category?: string
+): Promise<Record<string, AmenityResponse[]>> => {
+  const response = await client.get('/amenities', {
+    params: category ? { category } : undefined,
+  });
   return response.data;
 };
 

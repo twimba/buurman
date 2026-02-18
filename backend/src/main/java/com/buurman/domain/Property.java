@@ -21,10 +21,9 @@ public class Property {
   private String country;
   private BigDecimal latitude;
   private BigDecimal longitude;
-  private Integer bedrooms;
-  private Integer bathrooms;
   private BigDecimal areaValue;
   private String areaUnit;
+  private PropertyCategory propertyCategory;
   private PropertyType propertyType;
   private PropertyStatus status;
 
@@ -86,10 +85,54 @@ public class Property {
   private UUID updatedBy;
   private Instant deletedAt;
 
+  public enum PropertyCategory {
+    RESIDENTIAL,
+    COMMERCIAL,
+    INDUSTRIAL,
+    AGRICULTURAL,
+    MIXED_USE
+  }
+
   public enum PropertyType {
+    // Residential
     APARTMENT,
     HOUSE,
     STUDIO,
+    ROOM,
+    VILLA,
+    TOWNHOUSE,
+    OTHER_RESIDENTIAL,
+    // Commercial
+    OFFICE,
+    RETAIL,
+    RESTAURANT,
+    HOTEL,
+    SHOWROOM,
+    AUTO_DEALERSHIP,
+    SNACKBAR,
+    CAFE,
+    MOTEL,
+    BAR,
+    BED_AND_BREAKFAST,
+    OTHER_COMMERCIAL,
+    // Industrial
+    WAREHOUSE,
+    WORKSHOP,
+    FACTORY,
+    DATA_CENTER,
+    COLD_STORAGE,
+    GARAGE,
+    OTHER_INDUSTRIAL,
+    // Agricultural
+    FARMLAND,
+    RANCH,
+    GREENHOUSE,
+    ORCHARD,
+    VINEYARD,
+    OTHER_AGRICULTURAL,
+    // Mixed-Use
+    MIXED_USE,
+    // Legacy
     COMMERCIAL
   }
 
@@ -97,6 +140,9 @@ public class Property {
     VACANT,
     OCCUPIED,
     MAINTENANCE,
-    UNAVAILABLE
+    UNAVAILABLE,
+    UNDER_RENOVATION,
+    FALLOW,
+    LISTED
   }
 }

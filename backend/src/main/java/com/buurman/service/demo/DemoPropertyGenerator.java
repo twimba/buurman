@@ -2,6 +2,7 @@ package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
 
@@ -31,7 +32,17 @@ public class DemoPropertyGenerator {
   private final DSLContext dsl;
   private final Random random = new Random(42);
 
-  private static final String[] PROPERTY_TYPES = {"APARTMENT", "HOUSE", "STUDIO", "COMMERCIAL"};
+  private static final String[] PROPERTY_TYPES = {
+    "APARTMENT", "HOUSE", "STUDIO", "OFFICE", "WAREHOUSE", "FARMLAND"
+  };
+  private static final Map<String, String> PROPERTY_TYPE_CATEGORIES =
+      Map.of(
+          "APARTMENT", "RESIDENTIAL",
+          "HOUSE", "RESIDENTIAL",
+          "STUDIO", "RESIDENTIAL",
+          "OFFICE", "COMMERCIAL",
+          "WAREHOUSE", "INDUSTRIAL",
+          "FARMLAND", "AGRICULTURAL");
   private static final String[] CONSTRUCTION_TYPES = {"BRICK", "CONCRETE", "WOOD", "MIXED"};
   private static final String[] FOUNDATION_TYPES = {
     "CONCRETE_SLAB", "CRAWL_SPACE", "BASEMENT", "PILE"
@@ -242,14 +253,15 @@ public class DemoPropertyGenerator {
         double lat = country.latMin() + random.nextDouble() * (country.latMax() - country.latMin());
         double lon = country.lonMin() + random.nextDouble() * (country.lonMax() - country.lonMin());
 
+        String propertyCategory =
+            PROPERTY_TYPE_CATEGORIES.getOrDefault(propertyType, "RESIDENTIAL");
         int yearBuilt = random.nextInt(1920, 2020);
         int bedrooms =
             switch (propertyType) {
               case "STUDIO" -> 1;
               case "APARTMENT" -> random.nextInt(1, 4);
               case "HOUSE" -> random.nextInt(2, 6);
-              case "COMMERCIAL" -> 0;
-              default -> 2;
+              default -> 0;
             };
         int bathrooms = Math.max(1, bedrooms / 2 + 1);
         BigDecimal area =
@@ -273,8 +285,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.COUNTRY, country.name())
             .set(PROPERTIES.LATITUDE, BigDecimal.valueOf(lat))
             .set(PROPERTIES.LONGITUDE, BigDecimal.valueOf(lon))
-            .set(PROPERTIES.BEDROOMS, bedrooms)
-            .set(PROPERTIES.BATHROOMS, bathrooms)
+            .set(PROPERTIES.PROPERTY_CATEGORY, propertyCategory)
             .set(PROPERTIES.AREA_VALUE, area)
             .set(PROPERTIES.AREA_UNIT, "sqm")
             .set(PROPERTIES.PROPERTY_TYPE, propertyType)
@@ -322,6 +333,25 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.CREATED_BY, createdBy)
             .set(PROPERTIES.UPDATED_BY, createdBy)
             .execute();
+
+        // Insert residential details for residential properties
+        if ("RESIDENTIAL".equals(propertyCategory) && bedrooms > 0) {
+          dsl.insertInto(PROPERTY_RESIDENTIAL_DETAILS)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.ID, UUID.randomUUID())
+              .set(PROPERTY_RESIDENTIAL_DETAILS.PROPERTY_ID, propertyId)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.TEAM_ID, teamId)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.BEDROOMS, bedrooms)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.BATHROOMS, bathrooms)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.FURNISHED, random.nextBoolean())
+              .set(
+                  PROPERTY_RESIDENTIAL_DETAILS.PET_POLICY,
+                  random.nextBoolean() ? "ALLOWED" : "NOT_ALLOWED")
+              .set(PROPERTY_RESIDENTIAL_DETAILS.CREATED_AT, now)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.UPDATED_AT, now)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.CREATED_BY, createdBy)
+              .set(PROPERTY_RESIDENTIAL_DETAILS.UPDATED_BY, createdBy)
+              .execute();
+        }
 
         propertyIds.add(propertyId);
         ctx.putIdentifier(propertyId, propertyIdentifier);

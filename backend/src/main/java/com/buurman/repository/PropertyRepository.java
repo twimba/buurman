@@ -114,10 +114,9 @@ public class PropertyRepository {
           .set(PROPERTIES.COUNTRY, property.getCountry())
           .set(PROPERTIES.LATITUDE, property.getLatitude())
           .set(PROPERTIES.LONGITUDE, property.getLongitude())
-          .set(PROPERTIES.BEDROOMS, property.getBedrooms())
-          .set(PROPERTIES.BATHROOMS, property.getBathrooms())
           .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
           .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
+          .set(PROPERTIES.PROPERTY_CATEGORY, property.getPropertyCategory().name())
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
           .set(PROPERTIES.STATUS, property.getStatus().name())
           // Construction & Structure
@@ -189,12 +188,11 @@ public class PropertyRepository {
           .set(PROPERTIES.COUNTRY, property.getCountry())
           .set(PROPERTIES.LATITUDE, property.getLatitude())
           .set(PROPERTIES.LONGITUDE, property.getLongitude())
-          .set(PROPERTIES.BEDROOMS, property.getBedrooms())
-          .set(PROPERTIES.BATHROOMS, property.getBathrooms())
           .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
           .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
           .set(PROPERTIES.STATUS, property.getStatus().name())
+          // Note: property_category is NOT updated (immutable)
           // Construction & Structure
           .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt())
           .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated())
@@ -254,18 +252,36 @@ public class PropertyRepository {
   }
 
   public PaginatedResult<Property> findAllByTeamIdPaginated(
-      UUID teamId, String status, PageRequest pageRequest) {
+      UUID teamId, String status, String category, String query, PageRequest pageRequest) {
     Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       condition = condition.and(PROPERTIES.STATUS.eq(status));
     }
+    if (category != null && !category.isEmpty()) {
+      condition = condition.and(PROPERTIES.PROPERTY_CATEGORY.eq(category));
+    }
+    if (query != null && !query.isBlank()) {
+      String like = "%" + query.trim().toLowerCase() + "%";
+      condition =
+          condition.and(
+              PROPERTIES
+                  .STREET
+                  .lower()
+                  .like(like)
+                  .or(PROPERTIES.CITY.lower().like(like))
+                  .or(PROPERTIES.POSTAL_CODE.lower().like(like))
+                  .or(PROPERTIES.IDENTIFIER.lower().like(like))
+                  .or(PROPERTIES.PROPERTY_TYPE.lower().like(like)));
+    }
     Map<String, Field<?>> sortableFields =
         Map.of(
             "createdAt", PROPERTIES.CREATED_AT,
+            "updatedAt", PROPERTIES.UPDATED_AT,
             "street", PROPERTIES.STREET,
             "city", PROPERTIES.CITY,
             "status", PROPERTIES.STATUS,
-            "propertyType", PROPERTIES.PROPERTY_TYPE);
+            "propertyType", PROPERTIES.PROPERTY_TYPE,
+            "propertyCategory", PROPERTIES.PROPERTY_CATEGORY);
     return PaginationHelper.paginate(
         dsl,
         PROPERTIES,

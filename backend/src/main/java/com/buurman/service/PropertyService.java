@@ -3,10 +3,12 @@ package com.buurman.service;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,20 +20,39 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
+import com.buurman.domain.Property.PropertyCategory;
+import com.buurman.domain.Property.PropertyType;
+import com.buurman.domain.PropertyAgriculturalDetails;
+import com.buurman.domain.PropertyCommercialDetails;
+import com.buurman.domain.PropertyIndustrialDetails;
+import com.buurman.domain.PropertyResidentialDetails;
+import com.buurman.dto.request.AgriculturalDetailsRequest;
+import com.buurman.dto.request.CommercialDetailsRequest;
 import com.buurman.dto.request.CreatePropertyRequest;
+import com.buurman.dto.request.IndustrialDetailsRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.ResidentialDetailsRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
+import com.buurman.dto.response.AgriculturalDetailsResponse;
+import com.buurman.dto.response.CommercialDetailsResponse;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.IndustrialDetailsResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyAmenityResponse;
 import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.ResidentialDetailsResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.PhotoRepository;
+import com.buurman.repository.PropertyAgriculturalDetailsRepository;
+import com.buurman.repository.PropertyCommercialDetailsRepository;
+import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -46,6 +67,10 @@ import lombok.extern.slf4j.Slf4j;
 public class PropertyService {
 
   private final PropertyRepository propertyRepository;
+  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
+  private final PropertyCommercialDetailsRepository commercialDetailsRepository;
+  private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
+  private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
   private final PropertyMapper propertyMapper;
   private final AuditService auditService;
   private final DocumentService documentService;
@@ -59,9 +84,62 @@ public class PropertyService {
   private final AppProperties appProperties;
   private final GeocodingService geocodingService;
 
+  private static final Map<PropertyCategory, Set<PropertyType>> VALID_TYPES_BY_CATEGORY;
+
+  static {
+    VALID_TYPES_BY_CATEGORY = new EnumMap<>(PropertyCategory.class);
+    VALID_TYPES_BY_CATEGORY.put(
+        PropertyCategory.RESIDENTIAL,
+        Set.of(
+            PropertyType.APARTMENT,
+            PropertyType.HOUSE,
+            PropertyType.STUDIO,
+            PropertyType.ROOM,
+            PropertyType.VILLA,
+            PropertyType.TOWNHOUSE,
+            PropertyType.OTHER_RESIDENTIAL));
+    VALID_TYPES_BY_CATEGORY.put(
+        PropertyCategory.COMMERCIAL,
+        Set.of(
+            PropertyType.OFFICE,
+            PropertyType.RETAIL,
+            PropertyType.RESTAURANT,
+            PropertyType.HOTEL,
+            PropertyType.SHOWROOM,
+            PropertyType.AUTO_DEALERSHIP,
+            PropertyType.SNACKBAR,
+            PropertyType.CAFE,
+            PropertyType.MOTEL,
+            PropertyType.BAR,
+            PropertyType.BED_AND_BREAKFAST,
+            PropertyType.OTHER_COMMERCIAL));
+    VALID_TYPES_BY_CATEGORY.put(
+        PropertyCategory.INDUSTRIAL,
+        Set.of(
+            PropertyType.WAREHOUSE,
+            PropertyType.WORKSHOP,
+            PropertyType.FACTORY,
+            PropertyType.DATA_CENTER,
+            PropertyType.COLD_STORAGE,
+            PropertyType.GARAGE,
+            PropertyType.OTHER_INDUSTRIAL));
+    VALID_TYPES_BY_CATEGORY.put(
+        PropertyCategory.AGRICULTURAL,
+        Set.of(
+            PropertyType.FARMLAND,
+            PropertyType.RANCH,
+            PropertyType.GREENHOUSE,
+            PropertyType.ORCHARD,
+            PropertyType.VINEYARD,
+            PropertyType.OTHER_AGRICULTURAL));
+    VALID_TYPES_BY_CATEGORY.put(PropertyCategory.MIXED_USE, Set.of(PropertyType.MIXED_USE));
+  }
+
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
+    validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
+
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
     property.setTeamId(principal.getTeamId());
@@ -82,10 +160,23 @@ public class PropertyService {
 
     Property savedProperty = propertyRepository.save(property);
 
+    saveDetailsForCategory(
+        request.propertyCategory(),
+        savedProperty.getId(),
+        principal.getTeamId(),
+        principal.getUserId(),
+        request.residentialDetails(),
+        request.commercialDetails(),
+        request.industrialDetails(),
+        request.agriculturalDetails());
+
     metricsService.incrementCounter("property.total");
 
     log.info(
-        "Property created: {} for team {}", savedProperty.getIdentifier(), principal.getTeamId());
+        "Property created: {} ({}) for team {}",
+        savedProperty.getIdentifier(),
+        request.propertyCategory(),
+        principal.getTeamId());
 
     auditService.logCreate(
         principal.getTeamId(),
@@ -136,9 +227,14 @@ public class PropertyService {
   }
 
   public PageResponse<PropertyResponse> getPropertiesPaginated(
-      UserPrincipal principal, String status, PageRequest pageRequest) {
+      UserPrincipal principal,
+      String status,
+      String category,
+      String query,
+      PageRequest pageRequest) {
     PaginatedResult<Property> result =
-        propertyRepository.findAllByTeamIdPaginated(principal.getTeamId(), status, pageRequest);
+        propertyRepository.findAllByTeamIdPaginated(
+            principal.getTeamId(), status, category, query, pageRequest);
     List<PropertyResponse> responses =
         result.items().stream()
             .map(property -> toResponseWithMainPhoto(property, principal.getTeamId(), false))
@@ -164,7 +260,9 @@ public class PropertyService {
 
     PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId(), true);
 
-    // Capture old address before update
+    // Category is immutable — validate type still matches
+    validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
+
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
     String oldPostalCode = property.getPostalCode();
@@ -192,6 +290,17 @@ public class PropertyService {
     }
 
     Property updatedProperty = propertyRepository.save(property);
+
+    updateDetailsForCategory(
+        property.getPropertyCategory(),
+        property.getId(),
+        principal.getTeamId(),
+        principal.getUserId(),
+        request.residentialDetails(),
+        request.commercialDetails(),
+        request.industrialDetails(),
+        request.agriculturalDetails());
+
     PropertyResponse newState =
         toResponseWithMainPhoto(updatedProperty, principal.getTeamId(), true);
 
@@ -273,6 +382,341 @@ public class PropertyService {
     return photoService.setMainPhoto(photo.getId(), "PROPERTY", property.getId(), principal);
   }
 
+  // --- Private helpers ---
+
+  private void validateCategoryTypeMatch(PropertyCategory category, PropertyType type) {
+    Set<PropertyType> validTypes = VALID_TYPES_BY_CATEGORY.get(category);
+    if (validTypes == null || !validTypes.contains(type)) {
+      throw new BadRequestException(
+          "Property type " + type + " is not valid for category " + category);
+    }
+  }
+
+  private void saveDetailsForCategory(
+      PropertyCategory category,
+      UUID propertyId,
+      UUID teamId,
+      UUID userId,
+      ResidentialDetailsRequest residential,
+      CommercialDetailsRequest commercial,
+      IndustrialDetailsRequest industrial,
+      AgriculturalDetailsRequest agricultural) {
+    switch (category) {
+      case RESIDENTIAL -> {
+        if (residential != null) {
+          PropertyResidentialDetails d = new PropertyResidentialDetails();
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setBedrooms(residential.bedrooms());
+          d.setBathrooms(residential.bathrooms());
+          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
+          d.setPetPolicy(residential.petPolicy());
+          d.setCreatedBy(userId);
+          d.setUpdatedBy(userId);
+          residentialDetailsRepository.save(d);
+        }
+      }
+      case COMMERCIAL -> {
+        if (commercial != null) {
+          PropertyCommercialDetails d = new PropertyCommercialDetails();
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setUsableAreaValue(commercial.usableAreaValue());
+          d.setUsableAreaUnit(commercial.usableAreaUnit());
+          d.setCommonAreaValue(commercial.commonAreaValue());
+          d.setCommonAreaUnit(commercial.commonAreaUnit());
+          d.setFloorLevel(commercial.floorLevel());
+          d.setCeilingHeightM(commercial.ceilingHeightM());
+          d.setHasStorefront(
+              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
+          d.setHasSignageRights(
+              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
+          d.setZoningClassification(commercial.zoningClassification());
+          d.setMaxOccupancy(commercial.maxOccupancy());
+          d.setRestroomCount(commercial.restroomCount());
+          d.setHasKitchenFacility(
+              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
+          d.setAccessibilityCompliant(
+              commercial.accessibilityCompliant() != null
+                  ? commercial.accessibilityCompliant()
+                  : false);
+          d.setCreatedBy(userId);
+          d.setUpdatedBy(userId);
+          commercialDetailsRepository.save(d);
+        }
+      }
+      case INDUSTRIAL -> {
+        if (industrial != null) {
+          PropertyIndustrialDetails d = new PropertyIndustrialDetails();
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setClearHeightM(industrial.clearHeightM());
+          d.setLoadingDocks(industrial.loadingDocks());
+          d.setDriveInDoors(industrial.driveInDoors());
+          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
+          d.setPowerCapacityKva(industrial.powerCapacityKva());
+          d.setHasThreePhasePower(
+              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
+          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
+          d.setCraneCapacityTons(industrial.craneCapacityTons());
+          d.setHasHazmatCertification(
+              industrial.hasHazmatCertification() != null
+                  ? industrial.hasHazmatCertification()
+                  : false);
+          d.setHasVentilationSystem(
+              industrial.hasVentilationSystem() != null
+                  ? industrial.hasVentilationSystem()
+                  : false);
+          d.setHasClimateControl(
+              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
+          d.setYardAreaValue(industrial.yardAreaValue());
+          d.setYardAreaUnit(industrial.yardAreaUnit());
+          d.setZoningClassification(industrial.zoningClassification());
+          d.setCreatedBy(userId);
+          d.setUpdatedBy(userId);
+          industrialDetailsRepository.save(d);
+        }
+      }
+      case AGRICULTURAL -> {
+        if (agricultural != null) {
+          PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
+          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
+          d.setArableAreaValue(agricultural.arableAreaValue());
+          d.setArableAreaUnit(agricultural.arableAreaUnit());
+          d.setSoilType(agricultural.soilType());
+          d.setHasWaterRights(
+              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
+          d.setWaterSource(agricultural.waterSource());
+          d.setIrrigationType(agricultural.irrigationType());
+          d.setFencingType(agricultural.fencingType());
+          d.setHasOutbuildings(
+              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
+          d.setOutbuildingDetails(agricultural.outbuildingDetails());
+          d.setCurrentUse(agricultural.currentUse());
+          d.setZoningClassification(agricultural.zoningClassification());
+          d.setCreatedBy(userId);
+          d.setUpdatedBy(userId);
+          agriculturalDetailsRepository.save(d);
+        }
+      }
+      case MIXED_USE -> {
+        // No detail table for MIXED_USE
+      }
+    }
+  }
+
+  private void updateDetailsForCategory(
+      PropertyCategory category,
+      UUID propertyId,
+      UUID teamId,
+      UUID userId,
+      ResidentialDetailsRequest residential,
+      CommercialDetailsRequest commercial,
+      IndustrialDetailsRequest industrial,
+      AgriculturalDetailsRequest agricultural) {
+    switch (category) {
+      case RESIDENTIAL -> {
+        if (residential != null) {
+          Optional<PropertyResidentialDetails> existing =
+              residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+          PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setBedrooms(residential.bedrooms());
+          d.setBathrooms(residential.bathrooms());
+          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
+          d.setPetPolicy(residential.petPolicy());
+          d.setUpdatedBy(userId);
+          if (d.getId() == null) {
+            d.setCreatedBy(userId);
+          }
+          residentialDetailsRepository.save(d);
+        }
+      }
+      case COMMERCIAL -> {
+        if (commercial != null) {
+          Optional<PropertyCommercialDetails> existing =
+              commercialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+          PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setUsableAreaValue(commercial.usableAreaValue());
+          d.setUsableAreaUnit(commercial.usableAreaUnit());
+          d.setCommonAreaValue(commercial.commonAreaValue());
+          d.setCommonAreaUnit(commercial.commonAreaUnit());
+          d.setFloorLevel(commercial.floorLevel());
+          d.setCeilingHeightM(commercial.ceilingHeightM());
+          d.setHasStorefront(
+              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
+          d.setHasSignageRights(
+              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
+          d.setZoningClassification(commercial.zoningClassification());
+          d.setMaxOccupancy(commercial.maxOccupancy());
+          d.setRestroomCount(commercial.restroomCount());
+          d.setHasKitchenFacility(
+              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
+          d.setAccessibilityCompliant(
+              commercial.accessibilityCompliant() != null
+                  ? commercial.accessibilityCompliant()
+                  : false);
+          d.setUpdatedBy(userId);
+          if (d.getId() == null) {
+            d.setCreatedBy(userId);
+          }
+          commercialDetailsRepository.save(d);
+        }
+      }
+      case INDUSTRIAL -> {
+        if (industrial != null) {
+          Optional<PropertyIndustrialDetails> existing =
+              industrialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+          PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setClearHeightM(industrial.clearHeightM());
+          d.setLoadingDocks(industrial.loadingDocks());
+          d.setDriveInDoors(industrial.driveInDoors());
+          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
+          d.setPowerCapacityKva(industrial.powerCapacityKva());
+          d.setHasThreePhasePower(
+              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
+          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
+          d.setCraneCapacityTons(industrial.craneCapacityTons());
+          d.setHasHazmatCertification(
+              industrial.hasHazmatCertification() != null
+                  ? industrial.hasHazmatCertification()
+                  : false);
+          d.setHasVentilationSystem(
+              industrial.hasVentilationSystem() != null
+                  ? industrial.hasVentilationSystem()
+                  : false);
+          d.setHasClimateControl(
+              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
+          d.setYardAreaValue(industrial.yardAreaValue());
+          d.setYardAreaUnit(industrial.yardAreaUnit());
+          d.setZoningClassification(industrial.zoningClassification());
+          d.setUpdatedBy(userId);
+          if (d.getId() == null) {
+            d.setCreatedBy(userId);
+          }
+          industrialDetailsRepository.save(d);
+        }
+      }
+      case AGRICULTURAL -> {
+        if (agricultural != null) {
+          Optional<PropertyAgriculturalDetails> existing =
+              agriculturalDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+          PropertyAgriculturalDetails d = existing.orElseGet(PropertyAgriculturalDetails::new);
+          d.setPropertyId(propertyId);
+          d.setTeamId(teamId);
+          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
+          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
+          d.setArableAreaValue(agricultural.arableAreaValue());
+          d.setArableAreaUnit(agricultural.arableAreaUnit());
+          d.setSoilType(agricultural.soilType());
+          d.setHasWaterRights(
+              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
+          d.setWaterSource(agricultural.waterSource());
+          d.setIrrigationType(agricultural.irrigationType());
+          d.setFencingType(agricultural.fencingType());
+          d.setHasOutbuildings(
+              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
+          d.setOutbuildingDetails(agricultural.outbuildingDetails());
+          d.setCurrentUse(agricultural.currentUse());
+          d.setZoningClassification(agricultural.zoningClassification());
+          d.setUpdatedBy(userId);
+          if (d.getId() == null) {
+            d.setCreatedBy(userId);
+          }
+          agriculturalDetailsRepository.save(d);
+        }
+      }
+      case MIXED_USE -> {
+        // No detail table
+      }
+    }
+  }
+
+  private ResidentialDetailsResponse buildResidentialResponse(UUID propertyId, UUID teamId) {
+    return residentialDetailsRepository
+        .findByPropertyIdAndTeamId(propertyId, teamId)
+        .map(
+            d ->
+                new ResidentialDetailsResponse(
+                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()))
+        .orElse(null);
+  }
+
+  private CommercialDetailsResponse buildCommercialResponse(UUID propertyId, UUID teamId) {
+    return commercialDetailsRepository
+        .findByPropertyIdAndTeamId(propertyId, teamId)
+        .map(
+            d ->
+                new CommercialDetailsResponse(
+                    d.getUsableAreaValue(),
+                    d.getUsableAreaUnit(),
+                    d.getCommonAreaValue(),
+                    d.getCommonAreaUnit(),
+                    d.getFloorLevel(),
+                    d.getCeilingHeightM(),
+                    d.getHasStorefront(),
+                    d.getHasSignageRights(),
+                    d.getZoningClassification(),
+                    d.getMaxOccupancy(),
+                    d.getRestroomCount(),
+                    d.getHasKitchenFacility(),
+                    d.getAccessibilityCompliant()))
+        .orElse(null);
+  }
+
+  private IndustrialDetailsResponse buildIndustrialResponse(UUID propertyId, UUID teamId) {
+    return industrialDetailsRepository
+        .findByPropertyIdAndTeamId(propertyId, teamId)
+        .map(
+            d ->
+                new IndustrialDetailsResponse(
+                    d.getClearHeightM(),
+                    d.getLoadingDocks(),
+                    d.getDriveInDoors(),
+                    d.getFloorLoadCapacityKgSqm(),
+                    d.getPowerCapacityKva(),
+                    d.getHasThreePhasePower(),
+                    d.getHasCrane(),
+                    d.getCraneCapacityTons(),
+                    d.getHasHazmatCertification(),
+                    d.getHasVentilationSystem(),
+                    d.getHasClimateControl(),
+                    d.getYardAreaValue(),
+                    d.getYardAreaUnit(),
+                    d.getZoningClassification()))
+        .orElse(null);
+  }
+
+  private AgriculturalDetailsResponse buildAgriculturalResponse(UUID propertyId, UUID teamId) {
+    return agriculturalDetailsRepository
+        .findByPropertyIdAndTeamId(propertyId, teamId)
+        .map(
+            d ->
+                new AgriculturalDetailsResponse(
+                    d.getTotalLandAreaValue(),
+                    d.getTotalLandAreaUnit(),
+                    d.getArableAreaValue(),
+                    d.getArableAreaUnit(),
+                    d.getSoilType(),
+                    d.getHasWaterRights(),
+                    d.getWaterSource(),
+                    d.getIrrigationType(),
+                    d.getFencingType(),
+                    d.getHasOutbuildings(),
+                    d.getOutbuildingDetails(),
+                    d.getCurrentUse(),
+                    d.getZoningClassification()))
+        .orElse(null);
+  }
+
   private PropertyResponse toResponseWithMainPhoto(
       Property property, UUID teamId, boolean includeNestedCollections) {
     PropertyResponse response = propertyMapper.toResponse(property);
@@ -320,20 +764,38 @@ public class PropertyService {
             ? propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId)
             : null;
 
+    // Build category-specific detail responses
+    ResidentialDetailsResponse residentialDetails = null;
+    CommercialDetailsResponse commercialDetails = null;
+    IndustrialDetailsResponse industrialDetails = null;
+    AgriculturalDetailsResponse agriculturalDetails = null;
+
+    if (property.getPropertyCategory() != null) {
+      switch (property.getPropertyCategory()) {
+        case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+        case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
+        case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
+        case AGRICULTURAL ->
+            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
+        case MIXED_USE -> {
+          // No detail table
+        }
+      }
+    }
+
     return new PropertyResponse(
         response.identifier(),
+        response.propertyCategory(),
+        response.propertyType(),
+        response.status(),
         response.street(),
         response.city(),
         response.postalCode(),
         response.country(),
         response.latitude(),
         response.longitude(),
-        response.bedrooms(),
-        response.bathrooms(),
         response.areaValue(),
         response.areaUnit(),
-        response.propertyType(),
-        response.status(),
         mainPhotoUrl,
         mainPhotoThumbnailUrl,
         // Construction & Structure
@@ -381,7 +843,12 @@ public class PropertyService {
         response.hasStepFreeEntrance(),
         response.hasAdaptedBathroom(),
         response.accessibilityNotes(),
-        // Nested collections (null on list endpoint, populated on detail)
+        // Category-specific details
+        residentialDetails,
+        commercialDetails,
+        industrialDetails,
+        agriculturalDetails,
+        // Nested collections
         outdoorAreas,
         amenities,
         response.createdAt(),

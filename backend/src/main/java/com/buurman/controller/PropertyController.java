@@ -58,10 +58,13 @@ public class PropertyController {
 
   @Operation(
       summary = "List properties",
-      description = "Get all properties with optional status filter and pagination")
+      description =
+          "Get all properties with optional status, category, and search filters with pagination")
   @GetMapping
   public PageResponse<PropertyResponse> getProperties(
       @RequestParam(required = false) Property.PropertyStatus status,
+      @RequestParam(required = false) Property.PropertyCategory category,
+      @RequestParam(required = false) String query,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
       @RequestParam(required = false) String sort,
@@ -69,7 +72,11 @@ public class PropertyController {
       @AuthenticationPrincipal UserPrincipal principal) {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return propertyService.getPropertiesPaginated(
-        principal, status != null ? status.name() : null, pageRequest);
+        principal,
+        status != null ? status.name() : null,
+        category != null ? category.name() : null,
+        query,
+        pageRequest);
   }
 
   @Operation(summary = "Get property", description = "Get property details by identifier")

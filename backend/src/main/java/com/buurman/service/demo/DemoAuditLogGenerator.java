@@ -56,9 +56,8 @@ public class DemoAuditLogGenerator {
                 PROPERTIES.POSTAL_CODE,
                 PROPERTIES.COUNTRY,
                 PROPERTIES.PROPERTY_TYPE,
+                PROPERTIES.PROPERTY_CATEGORY,
                 PROPERTIES.STATUS,
-                PROPERTIES.BEDROOMS,
-                PROPERTIES.BATHROOMS,
                 PROPERTIES.AREA_VALUE,
                 PROPERTIES.AREA_UNIT,
                 PROPERTIES.YEAR_BUILT,
@@ -77,9 +76,8 @@ public class DemoAuditLogGenerator {
       values.put("postalCode", r.get(PROPERTIES.POSTAL_CODE));
       values.put("country", r.get(PROPERTIES.COUNTRY));
       values.put("propertyType", r.get(PROPERTIES.PROPERTY_TYPE));
+      values.put("propertyCategory", r.get(PROPERTIES.PROPERTY_CATEGORY));
       values.put("status", r.get(PROPERTIES.STATUS));
-      values.put("bedrooms", r.get(PROPERTIES.BEDROOMS));
-      values.put("bathrooms", r.get(PROPERTIES.BATHROOMS));
       values.put("area", r.get(PROPERTIES.AREA_VALUE));
       values.put("areaUnit", r.get(PROPERTIES.AREA_UNIT));
       values.put("yearBuilt", r.get(PROPERTIES.YEAR_BUILT));

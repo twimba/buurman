@@ -5,9 +5,14 @@ import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   CreatePropertyRequest,
   PropertyResponse,
+  PropertyCategory,
   OutdoorAreaResponse,
   AmenityResponse,
   PropertyAmenityResponse,
+  ResidentialDetailsRequest,
+  CommercialDetailsRequest,
+  IndustrialDetailsRequest,
+  AgriculturalDetailsRequest,
   CONSTRUCTION_TYPES,
   FOUNDATION_TYPES,
   ROOF_TYPES,
@@ -584,6 +589,32 @@ export const PropertyCharacteristicsForm = ({
         />
       </CollapsibleSection>
 
+      {/* Category-Specific Details */}
+      {formData.propertyCategory === PropertyCategory.RESIDENTIAL && (
+        <ResidentialDetailsSection
+          details={formData.residentialDetails ?? {}}
+          onChange={(details) => onChange('residentialDetails', details)}
+        />
+      )}
+      {formData.propertyCategory === PropertyCategory.COMMERCIAL && (
+        <CommercialDetailsSection
+          details={formData.commercialDetails ?? {}}
+          onChange={(details) => onChange('commercialDetails', details)}
+        />
+      )}
+      {formData.propertyCategory === PropertyCategory.INDUSTRIAL && (
+        <IndustrialDetailsSection
+          details={formData.industrialDetails ?? {}}
+          onChange={(details) => onChange('industrialDetails', details)}
+        />
+      )}
+      {formData.propertyCategory === PropertyCategory.AGRICULTURAL && (
+        <AgriculturalDetailsSection
+          details={formData.agriculturalDetails ?? {}}
+          onChange={(details) => onChange('agriculturalDetails', details)}
+        />
+      )}
+
       {/* Outdoor Areas */}
       {property && (
         <OutdoorAreasSection
@@ -716,6 +747,490 @@ const OutdoorAreasSection = ({
           <Plus className="h-3.5 w-3.5" />
           Add outdoor area
         </button>
+      )}
+    </CollapsibleSection>
+  );
+};
+
+// --- Residential Details Section ---
+
+const PET_POLICIES = [
+  'ALLOWED',
+  'NOT_ALLOWED',
+  'NEGOTIABLE',
+  'SMALL_PETS_ONLY',
+] as const;
+
+interface ResidentialDetailsSectionProps {
+  details: Partial<ResidentialDetailsRequest>;
+  onChange: (details: ResidentialDetailsRequest) => void;
+}
+
+const ResidentialDetailsSection = ({
+  details,
+  onChange,
+}: ResidentialDetailsSectionProps) => {
+  const update = (field: keyof ResidentialDetailsRequest, value: unknown) =>
+    onChange({ ...details, [field]: value } as ResidentialDetailsRequest);
+
+  const fields = [
+    details.bedrooms,
+    details.bathrooms,
+    details.furnished,
+    details.petPolicy,
+  ];
+
+  return (
+    <CollapsibleSection
+      title="Residential Details"
+      filledCount={countFilled(fields)}
+      totalCount={fields.length}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NumberField
+          label="Bedrooms"
+          value={details.bedrooms}
+          onChange={(v) => update('bedrooms', v)}
+          min={0}
+          step={1}
+        />
+        <NumberField
+          label="Bathrooms"
+          value={details.bathrooms}
+          onChange={(v) => update('bathrooms', v)}
+          min={0}
+          step={1}
+        />
+        <ToggleField
+          label="Furnished"
+          value={details.furnished ?? false}
+          onChange={(v) => update('furnished', v)}
+        />
+        <SelectField
+          label="Pet Policy"
+          value={details.petPolicy ?? null}
+          options={arrayOptions(PET_POLICIES)}
+          onChange={(v) => update('petPolicy', v)}
+        />
+      </div>
+    </CollapsibleSection>
+  );
+};
+
+// --- Commercial Details Section ---
+
+interface CommercialDetailsSectionProps {
+  details: Partial<CommercialDetailsRequest>;
+  onChange: (details: CommercialDetailsRequest) => void;
+}
+
+const CommercialDetailsSection = ({
+  details,
+  onChange,
+}: CommercialDetailsSectionProps) => {
+  const update = (field: keyof CommercialDetailsRequest, value: unknown) =>
+    onChange({ ...details, [field]: value } as CommercialDetailsRequest);
+
+  const fields = [
+    details.usableAreaValue,
+    details.commonAreaValue,
+    details.floorLevel,
+    details.ceilingHeightM,
+    details.hasStorefront,
+    details.hasSignageRights,
+    details.zoningClassification,
+    details.maxOccupancy,
+    details.restroomCount,
+    details.hasKitchenFacility,
+    details.accessibilityCompliant,
+  ];
+
+  return (
+    <CollapsibleSection
+      title="Commercial Details"
+      filledCount={countFilled(fields)}
+      totalCount={fields.length}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NumberField
+          label="Usable Area"
+          value={details.usableAreaValue}
+          onChange={(v) => update('usableAreaValue', v)}
+          min={0}
+          step={0.01}
+          suffix={details.usableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+        />
+        <NumberField
+          label="Common Area"
+          value={details.commonAreaValue}
+          onChange={(v) => update('commonAreaValue', v)}
+          min={0}
+          step={0.01}
+          suffix={details.commonAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+        />
+        <NumberField
+          label="Floor Level"
+          value={details.floorLevel}
+          onChange={(v) => update('floorLevel', v)}
+          step={1}
+        />
+        <NumberField
+          label="Ceiling Height"
+          value={details.ceilingHeightM}
+          onChange={(v) => update('ceilingHeightM', v)}
+          min={0}
+          step={0.1}
+          suffix="m"
+        />
+        <NumberField
+          label="Max Occupancy"
+          value={details.maxOccupancy}
+          onChange={(v) => update('maxOccupancy', v)}
+          min={0}
+          step={1}
+        />
+        <NumberField
+          label="Restroom Count"
+          value={details.restroomCount}
+          onChange={(v) => update('restroomCount', v)}
+          min={0}
+          step={1}
+        />
+        <div>
+          <label className={labelCls}>Zoning Classification</label>
+          <input
+            type="text"
+            value={details.zoningClassification ?? ''}
+            onChange={(e) =>
+              update('zoningClassification', e.target.value || null)
+            }
+            className={inputCls}
+            placeholder="e.g. C-2, Mixed Commercial"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-3">
+        <ToggleField
+          label="Has Storefront"
+          value={details.hasStorefront ?? false}
+          onChange={(v) => update('hasStorefront', v)}
+        />
+        <ToggleField
+          label="Signage Rights"
+          value={details.hasSignageRights ?? false}
+          onChange={(v) => update('hasSignageRights', v)}
+        />
+        <ToggleField
+          label="Kitchen Facility"
+          value={details.hasKitchenFacility ?? false}
+          onChange={(v) => update('hasKitchenFacility', v)}
+        />
+        <ToggleField
+          label="Accessibility Compliant"
+          value={details.accessibilityCompliant ?? false}
+          onChange={(v) => update('accessibilityCompliant', v)}
+        />
+      </div>
+    </CollapsibleSection>
+  );
+};
+
+// --- Industrial Details Section ---
+
+interface IndustrialDetailsSectionProps {
+  details: Partial<IndustrialDetailsRequest>;
+  onChange: (details: IndustrialDetailsRequest) => void;
+}
+
+const IndustrialDetailsSection = ({
+  details,
+  onChange,
+}: IndustrialDetailsSectionProps) => {
+  const update = (field: keyof IndustrialDetailsRequest, value: unknown) =>
+    onChange({ ...details, [field]: value } as IndustrialDetailsRequest);
+
+  const fields = [
+    details.clearHeightM,
+    details.loadingDocks,
+    details.driveInDoors,
+    details.floorLoadCapacityKgSqm,
+    details.powerCapacityKva,
+    details.hasThreePhasePower,
+    details.hasCrane,
+    details.craneCapacityTons,
+    details.hasHazmatCertification,
+    details.hasVentilationSystem,
+    details.hasClimateControl,
+    details.yardAreaValue,
+    details.zoningClassification,
+  ];
+
+  return (
+    <CollapsibleSection
+      title="Industrial Details"
+      filledCount={countFilled(fields)}
+      totalCount={fields.length}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NumberField
+          label="Clear Height"
+          value={details.clearHeightM}
+          onChange={(v) => update('clearHeightM', v)}
+          min={0}
+          step={0.1}
+          suffix="m"
+        />
+        <NumberField
+          label="Loading Docks"
+          value={details.loadingDocks}
+          onChange={(v) => update('loadingDocks', v)}
+          min={0}
+          step={1}
+        />
+        <NumberField
+          label="Drive-in Doors"
+          value={details.driveInDoors}
+          onChange={(v) => update('driveInDoors', v)}
+          min={0}
+          step={1}
+        />
+        <NumberField
+          label="Floor Load Capacity"
+          value={details.floorLoadCapacityKgSqm}
+          onChange={(v) => update('floorLoadCapacityKgSqm', v)}
+          min={0}
+          step={1}
+          suffix="kg/m²"
+        />
+        <NumberField
+          label="Power Capacity"
+          value={details.powerCapacityKva}
+          onChange={(v) => update('powerCapacityKva', v)}
+          min={0}
+          step={1}
+          suffix="kVA"
+        />
+        <NumberField
+          label="Crane Capacity"
+          value={details.craneCapacityTons}
+          onChange={(v) => update('craneCapacityTons', v)}
+          min={0}
+          step={0.1}
+          suffix="tons"
+          tooltip="Only relevant if crane is available"
+        />
+        <NumberField
+          label="Yard Area"
+          value={details.yardAreaValue}
+          onChange={(v) => update('yardAreaValue', v)}
+          min={0}
+          step={0.01}
+          suffix={details.yardAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+        />
+        <div>
+          <label className={labelCls}>Zoning Classification</label>
+          <input
+            type="text"
+            value={details.zoningClassification ?? ''}
+            onChange={(e) =>
+              update('zoningClassification', e.target.value || null)
+            }
+            className={inputCls}
+            placeholder="e.g. I-1, Light Industrial"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-3">
+        <ToggleField
+          label="Three-Phase Power"
+          value={details.hasThreePhasePower ?? false}
+          onChange={(v) => update('hasThreePhasePower', v)}
+        />
+        <ToggleField
+          label="Crane Available"
+          value={details.hasCrane ?? false}
+          onChange={(v) => update('hasCrane', v)}
+        />
+        <ToggleField
+          label="Hazmat Certified"
+          value={details.hasHazmatCertification ?? false}
+          onChange={(v) => update('hasHazmatCertification', v)}
+        />
+        <ToggleField
+          label="Ventilation System"
+          value={details.hasVentilationSystem ?? false}
+          onChange={(v) => update('hasVentilationSystem', v)}
+        />
+        <ToggleField
+          label="Climate Control"
+          value={details.hasClimateControl ?? false}
+          onChange={(v) => update('hasClimateControl', v)}
+        />
+      </div>
+    </CollapsibleSection>
+  );
+};
+
+// --- Agricultural Details Section ---
+
+const SOIL_TYPES = [
+  'CLAY',
+  'SANDY',
+  'LOAM',
+  'SILT',
+  'PEAT',
+  'CHALK',
+  'MIXED',
+  'OTHER',
+] as const;
+const IRRIGATION_TYPES = [
+  'DRIP',
+  'SPRINKLER',
+  'FLOOD',
+  'CENTER_PIVOT',
+  'NONE',
+  'OTHER',
+] as const;
+const WATER_SOURCES = [
+  'RIVER',
+  'WELL',
+  'MUNICIPAL',
+  'RAINWATER',
+  'CANAL',
+  'NONE',
+  'OTHER',
+] as const;
+const FENCING_TYPES = [
+  'WIRE',
+  'WOODEN',
+  'ELECTRIC',
+  'HEDGE',
+  'STONE',
+  'NONE',
+  'OTHER',
+] as const;
+
+interface AgriculturalDetailsSectionProps {
+  details: Partial<AgriculturalDetailsRequest>;
+  onChange: (details: AgriculturalDetailsRequest) => void;
+}
+
+const AgriculturalDetailsSection = ({
+  details,
+  onChange,
+}: AgriculturalDetailsSectionProps) => {
+  const update = (field: keyof AgriculturalDetailsRequest, value: unknown) =>
+    onChange({ ...details, [field]: value } as AgriculturalDetailsRequest);
+
+  const fields = [
+    details.totalLandAreaValue,
+    details.arableAreaValue,
+    details.soilType,
+    details.hasWaterRights,
+    details.waterSource,
+    details.irrigationType,
+    details.fencingType,
+    details.hasOutbuildings,
+    details.outbuildingDetails,
+    details.currentUse,
+    details.zoningClassification,
+  ];
+
+  return (
+    <CollapsibleSection
+      title="Agricultural Details"
+      filledCount={countFilled(fields)}
+      totalCount={fields.length}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <NumberField
+          label="Total Land Area"
+          value={details.totalLandAreaValue}
+          onChange={(v) => update('totalLandAreaValue', v)}
+          min={0}
+          step={0.01}
+          suffix={details.totalLandAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+        />
+        <NumberField
+          label="Arable Area"
+          value={details.arableAreaValue}
+          onChange={(v) => update('arableAreaValue', v)}
+          min={0}
+          step={0.01}
+          suffix={details.arableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+        />
+        <SelectField
+          label="Soil Type"
+          value={details.soilType ?? null}
+          options={arrayOptions(SOIL_TYPES)}
+          onChange={(v) => update('soilType', v)}
+        />
+        <SelectField
+          label="Water Source"
+          value={details.waterSource ?? null}
+          options={arrayOptions(WATER_SOURCES)}
+          onChange={(v) => update('waterSource', v)}
+        />
+        <SelectField
+          label="Irrigation Type"
+          value={details.irrigationType ?? null}
+          options={arrayOptions(IRRIGATION_TYPES)}
+          onChange={(v) => update('irrigationType', v)}
+        />
+        <SelectField
+          label="Fencing Type"
+          value={details.fencingType ?? null}
+          options={arrayOptions(FENCING_TYPES)}
+          onChange={(v) => update('fencingType', v)}
+        />
+        <div>
+          <label className={labelCls}>Current Use</label>
+          <input
+            type="text"
+            value={details.currentUse ?? ''}
+            onChange={(e) => update('currentUse', e.target.value || null)}
+            className={inputCls}
+            placeholder="e.g. Crop farming, Livestock grazing"
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Zoning Classification</label>
+          <input
+            type="text"
+            value={details.zoningClassification ?? ''}
+            onChange={(e) =>
+              update('zoningClassification', e.target.value || null)
+            }
+            className={inputCls}
+            placeholder="e.g. A-1, Agricultural"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-x-4 gap-y-1 mt-3">
+        <ToggleField
+          label="Water Rights"
+          value={details.hasWaterRights ?? false}
+          onChange={(v) => update('hasWaterRights', v)}
+        />
+        <ToggleField
+          label="Has Outbuildings"
+          value={details.hasOutbuildings ?? false}
+          onChange={(v) => update('hasOutbuildings', v)}
+        />
+      </div>
+      {details.hasOutbuildings && (
+        <div className="mt-3">
+          <label className={labelCls}>Outbuilding Details</label>
+          <input
+            type="text"
+            value={details.outbuildingDetails ?? ''}
+            onChange={(e) =>
+              update('outbuildingDetails', e.target.value || null)
+            }
+            className={inputCls}
+            placeholder="e.g. Barn, Storage shed, Equipment garage"
+          />
+        </div>
       )}
     </CollapsibleSection>
   );

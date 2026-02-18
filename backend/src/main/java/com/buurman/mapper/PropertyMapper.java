@@ -19,6 +19,10 @@ public interface PropertyMapper {
   @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
   @Mapping(target = "outdoorAreas", ignore = true)
   @Mapping(target = "amenities", ignore = true)
+  @Mapping(target = "residentialDetails", ignore = true)
+  @Mapping(target = "commercialDetails", ignore = true)
+  @Mapping(target = "industrialDetails", ignore = true)
+  @Mapping(target = "agriculturalDetails", ignore = true)
   PropertyResponse toResponse(Property property);
 
   PropertySummary toSummary(Property property);
@@ -37,6 +41,7 @@ public interface PropertyMapper {
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "identifier", ignore = true)
   @Mapping(target = "teamId", ignore = true)
+  @Mapping(target = "propertyCategory", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)

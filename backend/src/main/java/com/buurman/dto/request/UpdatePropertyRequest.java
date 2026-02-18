@@ -5,24 +5,22 @@ import java.time.LocalDate;
 
 import com.buurman.domain.Property;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record UpdatePropertyRequest(
+    @NotNull(message = "Property type is required") Property.PropertyType propertyType,
+    @NotNull(message = "Status is required") Property.PropertyStatus status,
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,
     @NotBlank(message = "Postal code is required") String postalCode,
     @NotBlank(message = "Country is required") String country,
     BigDecimal latitude,
     BigDecimal longitude,
-    @Min(value = 0, message = "Bedrooms must be non-negative") Integer bedrooms,
-    @Min(value = 0, message = "Bathrooms must be non-negative") Integer bathrooms,
     @Positive(message = "Area value must be positive") BigDecimal areaValue,
     String areaUnit,
-    @NotNull(message = "Property type is required") Property.PropertyType propertyType,
-    @NotNull(message = "Status is required") Property.PropertyStatus status,
 
     // Construction & Structure
     Integer yearBuilt,
@@ -73,4 +71,11 @@ public record UpdatePropertyRequest(
     Boolean hasElevator,
     Boolean hasStepFreeEntrance,
     Boolean hasAdaptedBathroom,
-    String accessibilityNotes) {}
+    String accessibilityNotes,
+
+    // Category-specific details (only matching category should be provided)
+    // Note: propertyCategory is NOT here — it's immutable
+    @Valid ResidentialDetailsRequest residentialDetails,
+    @Valid CommercialDetailsRequest commercialDetails,
+    @Valid IndustrialDetailsRequest industrialDetails,
+    @Valid AgriculturalDetailsRequest agriculturalDetails) {}

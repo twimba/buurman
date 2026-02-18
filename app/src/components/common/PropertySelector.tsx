@@ -1,13 +1,35 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getProperties } from '@/api/properties';
-import { ChevronDown, Home } from 'lucide-react';
+import {
+  PropertyCategory,
+  PROPERTY_CATEGORY_LABELS,
+  PROPERTY_TYPE_LABELS,
+  PropertyResponse,
+} from '@/types/property';
+import { ChevronDown, Home, Building2, Factory, Tractor } from 'lucide-react';
 
 interface PropertySelectorProps {
   value?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
 }
+
+const categoryIcons: Record<string, typeof Home> = {
+  [PropertyCategory.RESIDENTIAL]: Home,
+  [PropertyCategory.COMMERCIAL]: Building2,
+  [PropertyCategory.INDUSTRIAL]: Factory,
+  [PropertyCategory.AGRICULTURAL]: Tractor,
+  [PropertyCategory.MIXED_USE]: Building2,
+};
+
+const categoryOrder: PropertyCategory[] = [
+  PropertyCategory.RESIDENTIAL,
+  PropertyCategory.COMMERCIAL,
+  PropertyCategory.INDUSTRIAL,
+  PropertyCategory.AGRICULTURAL,
+  PropertyCategory.MIXED_USE,
+];
 
 export const PropertySelector = ({
   value,
@@ -25,20 +47,56 @@ export const PropertySelector = ({
     queryKey: ['properties'],
     queryFn: () => getProperties(),
   });
-  const properties = propertiesData?.content ?? [];
+  const properties = useMemo(
+    () => propertiesData?.content ?? [],
+    [propertiesData]
+  );
 
   const selectedProperty = properties.find((p) => p.identifier === value);
   const displayValue = selectedProperty
     ? `${selectedProperty.street}, ${selectedProperty.city}`
     : '';
 
-  const filtered = properties.filter(
-    (property) =>
-      property.street.toLowerCase().includes(search.toLowerCase()) ||
-      property.city.toLowerCase().includes(search.toLowerCase()) ||
-      property.identifier.toLowerCase().includes(search.toLowerCase()) ||
-      property.postalCode?.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () =>
+      properties.filter(
+        (property) =>
+          property.street.toLowerCase().includes(search.toLowerCase()) ||
+          property.city.toLowerCase().includes(search.toLowerCase()) ||
+          property.identifier.toLowerCase().includes(search.toLowerCase()) ||
+          property.postalCode?.toLowerCase().includes(search.toLowerCase())
+      ),
+    [properties, search]
   );
+
+  // Group filtered properties by category
+  const grouped = useMemo(() => {
+    const groups = new Map<string, PropertyResponse[]>();
+    for (const p of filtered) {
+      const cat = p.propertyCategory ?? 'OTHER';
+      if (!groups.has(cat)) groups.set(cat, []);
+      groups.get(cat)!.push(p);
+    }
+    // Sort groups by category order
+    const sorted: { category: string; items: PropertyResponse[] }[] = [];
+    for (const cat of categoryOrder) {
+      if (groups.has(cat)) {
+        sorted.push({ category: cat, items: groups.get(cat)! });
+        groups.delete(cat);
+      }
+    }
+    // Any remaining categories
+    for (const [cat, items] of groups) {
+      sorted.push({ category: cat, items });
+    }
+    return sorted;
+  }, [filtered]);
+
+  // Flat list for keyboard navigation
+  const flatList = useMemo(() => filtered, [filtered]);
+
+  // Only show group headers when there's more than one category
+  const showGroupHeaders = grouped.length > 1;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -81,7 +139,7 @@ export const PropertySelector = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setHighlightedIndex((i) => Math.min(i + 1, filtered.length - 1));
+        setHighlightedIndex((i) => Math.min(i + 1, flatList.length - 1));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -89,8 +147,8 @@ export const PropertySelector = ({
         break;
       case 'Enter':
         e.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < filtered.length) {
-          handleSelect(filtered[highlightedIndex].identifier);
+        if (highlightedIndex >= 0 && highlightedIndex < flatList.length) {
+          handleSelect(flatList[highlightedIndex].identifier);
         }
         break;
       case 'Escape':
@@ -104,6 +162,63 @@ export const PropertySelector = ({
         break;
     }
   };
+
+  const renderPropertyItem = (
+    property: PropertyResponse,
+    flatIndex: number
+  ) => {
+    const Icon = categoryIcons[property.propertyCategory] ?? Home;
+    return (
+      <button
+        key={property.identifier}
+        type="button"
+        data-option
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => handleSelect(property.identifier)}
+        onMouseEnter={() => setHighlightedIndex(flatIndex)}
+        className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
+          highlightedIndex === flatIndex
+            ? 'bg-blue-50 dark:bg-blue-900/30'
+            : property.identifier === value
+              ? 'bg-blue-100 dark:bg-blue-900'
+              : ''
+        }`}
+      >
+        {(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl) ? (
+          <img
+            src={(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl)!}
+            alt={property.street}
+            className="w-10 h-10 rounded object-cover flex-shrink-0"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded bg-[#e8ecf4] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">
+            <Icon className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+            {property.street}
+          </div>
+          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+            {property.city}, {property.postalCode}
+          </div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[10px] text-[#9ca0b8] dark:text-[#5c6180] font-mono">
+              #{property.identifier}
+            </span>
+            <span className="text-[10px] bg-[#f1f3f9] dark:bg-[#1a1d28] text-[#6b7194] dark:text-[#8b90a8] px-1.5 py-0.5 rounded">
+              {PROPERTY_TYPE_LABELS[property.propertyType] ??
+                property.propertyType}
+            </span>
+          </div>
+        </div>
+      </button>
+    );
+  };
+
+  // Build flat index map for grouped rendering
+  let flatIndex = 0;
 
   return (
     <div ref={containerRef} className="relative">
@@ -149,49 +264,30 @@ export const PropertySelector = ({
               No properties found
             </div>
           ) : (
-            filtered.map((property, index) => (
-              <button
-                key={property.identifier}
-                type="button"
-                data-option
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(property.identifier)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
-                  highlightedIndex === index
-                    ? 'bg-blue-50 dark:bg-blue-900/30'
-                    : property.identifier === value
-                      ? 'bg-blue-100 dark:bg-blue-900'
-                      : ''
-                }`}
-              >
-                {(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl) ? (
-                  <img
-                    src={
-                      (property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl)!
-                    }
-                    alt={property.street}
-                    className="w-10 h-10 rounded object-cover flex-shrink-0"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded bg-[#e8ecf4] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">
-                    <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.street}
-                  </div>
-                  <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                    {property.city}, {property.postalCode}
-                  </div>
-                  <div className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                    #{property.identifier}
-                  </div>
+            grouped.map((group) => {
+              const header = showGroupHeaders ? (
+                <div
+                  key={`header-${group.category}`}
+                  className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                >
+                  {PROPERTY_CATEGORY_LABELS[
+                    group.category as PropertyCategory
+                  ] ?? group.category}
                 </div>
-              </button>
-            ))
+              ) : null;
+
+              const items = group.items.map((property) => {
+                const idx = flatIndex++;
+                return renderPropertyItem(property, idx);
+              });
+
+              return (
+                <div key={group.category}>
+                  {header}
+                  {items}
+                </div>
+              );
+            })
           )}
         </div>
       )}

@@ -42,17 +42,26 @@ import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
+import com.buurman.domain.Property.PropertyCategory;
+import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyAmenity;
+import com.buurman.domain.PropertyCommercialDetails;
+import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
+import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Tenant;
 import com.buurman.repository.AmenityRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PhotoRepository;
+import com.buurman.repository.PropertyAgriculturalDetailsRepository;
 import com.buurman.repository.PropertyAmenityRepository;
+import com.buurman.repository.PropertyCommercialDetailsRepository;
+import com.buurman.repository.PropertyIndustrialDetailsRepository;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.S3StorageService;
 
@@ -63,6 +72,10 @@ import lombok.RequiredArgsConstructor;
 public class PropertyBookletExporter {
 
   private final PropertyRepository propertyRepository;
+  private final PropertyResidentialDetailsRepository residentialDetailsRepository;
+  private final PropertyCommercialDetailsRepository commercialDetailsRepository;
+  private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
+  private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
   private final ContractRepository contractRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
@@ -78,6 +91,40 @@ public class PropertyBookletExporter {
   public byte[] generate(String propertyIdentifier, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
+
+    PropertyCategory category = property.getPropertyCategory();
+    PropertyResidentialDetails residentialDetails = null;
+    PropertyCommercialDetails commercialDetails = null;
+    PropertyIndustrialDetails industrialDetails = null;
+    PropertyAgriculturalDetails agriculturalDetails = null;
+
+    if (category != null) {
+      switch (category) {
+        case RESIDENTIAL ->
+            residentialDetails =
+                residentialDetailsRepository
+                    .findByPropertyIdAndTeamId(propertyId, teamId)
+                    .orElse(null);
+        case COMMERCIAL ->
+            commercialDetails =
+                commercialDetailsRepository
+                    .findByPropertyIdAndTeamId(propertyId, teamId)
+                    .orElse(null);
+        case INDUSTRIAL ->
+            industrialDetails =
+                industrialDetailsRepository
+                    .findByPropertyIdAndTeamId(propertyId, teamId)
+                    .orElse(null);
+        case AGRICULTURAL ->
+            agriculturalDetails =
+                agriculturalDetailsRepository
+                    .findByPropertyIdAndTeamId(propertyId, teamId)
+                    .orElse(null);
+        case MIXED_USE -> {
+          // No category-specific details for mixed-use
+        }
+      }
+    }
 
     List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
     List<Payment> payments =
@@ -100,6 +147,11 @@ public class PropertyBookletExporter {
     String html =
         buildHtml(
             property,
+            category,
+            residentialDetails,
+            commercialDetails,
+            industrialDetails,
+            agriculturalDetails,
             contracts,
             payments,
             expenses,
@@ -116,6 +168,11 @@ public class PropertyBookletExporter {
 
   private String buildHtml(
       Property property,
+      PropertyCategory category,
+      PropertyResidentialDetails residentialDetails,
+      PropertyCommercialDetails commercialDetails,
+      PropertyIndustrialDetails industrialDetails,
+      PropertyAgriculturalDetails agriculturalDetails,
       List<Contract> contracts,
       List<Payment> payments,
       List<Expense> expenses,
@@ -143,11 +200,37 @@ public class PropertyBookletExporter {
     appendDocumentStart(html, css);
     appendRunningFooter(html, generatedDate);
 
-    appendCoverPage(html, property, generatedDate, location, area);
-    appendPropertyOverviewPage(html, property, area);
-    appendBuildingSpecsPage(html, property);
+    appendCoverPage(
+        html,
+        property,
+        category,
+        residentialDetails,
+        commercialDetails,
+        industrialDetails,
+        agriculturalDetails,
+        generatedDate,
+        location,
+        area);
+    appendPropertyOverviewPage(
+        html,
+        property,
+        category,
+        residentialDetails,
+        commercialDetails,
+        industrialDetails,
+        agriculturalDetails,
+        area);
+
+    if (category != PropertyCategory.AGRICULTURAL) {
+      appendBuildingSpecsPage(html, property);
+    }
+
     appendFeaturesPage(html, propertyAmenities, amenityMap, outdoorAreas);
-    appendSafetyPage(html, property);
+
+    if (category != PropertyCategory.AGRICULTURAL) {
+      appendSafetyPage(html, property, category);
+    }
+
     appendPhotoGalleryPage(html, photos);
     appendFinancialOverviewPage(html, yearSummaries);
     appendContractsPage(html, contracts, teamId);
@@ -159,13 +242,46 @@ public class PropertyBookletExporter {
   // ── Page: Cover ─────────────────────────────────────────────────
 
   private void appendCoverPage(
-      StringBuilder html, Property property, String generatedDate, String location, String area) {
+      StringBuilder html,
+      Property property,
+      PropertyCategory category,
+      PropertyResidentialDetails residentialDetails,
+      PropertyCommercialDetails commercialDetails,
+      PropertyIndustrialDetails industrialDetails,
+      PropertyAgriculturalDetails agriculturalDetails,
+      String generatedDate,
+      String location,
+      String area) {
     appendCoverStart(html, "PROPERTY REPORT", escapeHtml(property.getStreet()), generatedDate);
 
     String statusStr = property.getStatus() != null ? property.getStatus().name() : "VACANT";
     appendStatusBadge(html, statusStr);
 
     html.append("<table class='cover-summary'>");
+
+    if (category == PropertyCategory.COMMERCIAL && commercialDetails != null) {
+      appendCoverSummaryCommercial(html, property, commercialDetails, location);
+    } else if (category == PropertyCategory.INDUSTRIAL && industrialDetails != null) {
+      appendCoverSummaryIndustrial(html, property, industrialDetails, location, area);
+    } else if (category == PropertyCategory.AGRICULTURAL && agriculturalDetails != null) {
+      appendCoverSummaryAgricultural(html, property, agriculturalDetails, location);
+    } else if (category == PropertyCategory.RESIDENTIAL && residentialDetails != null) {
+      appendCoverSummaryResidential(html, property, residentialDetails, location, area);
+    } else {
+      // MIXED_USE or fallback (no detail record)
+      appendCoverSummaryMixedUse(html, property, location, area);
+    }
+
+    html.append("</table>");
+    appendCoverEnd(html);
+  }
+
+  private void appendCoverSummaryResidential(
+      StringBuilder html,
+      Property property,
+      PropertyResidentialDetails details,
+      String location,
+      String area) {
     html.append("<tr>");
     appendCoverCell(
         html,
@@ -175,9 +291,9 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String bedBath =
-        (property.getBedrooms() != null ? property.getBedrooms() + " bed" : "—")
+        (details.getBedrooms() != null ? details.getBedrooms() + " bed" : "—")
             + " / "
-            + (property.getBathrooms() != null ? property.getBathrooms() + " bath" : "—");
+            + (details.getBathrooms() != null ? details.getBathrooms() + " bath" : "—");
     appendCoverCell(html, "Bedrooms / Bathrooms", bedBath);
     appendCoverCell(html, "Total Area", area);
     html.append("</tr><tr>");
@@ -187,14 +303,133 @@ public class PropertyBookletExporter {
         property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("</tr>");
-    html.append("</table>");
+  }
 
-    appendCoverEnd(html);
+  private void appendCoverSummaryCommercial(
+      StringBuilder html, Property property, PropertyCommercialDetails details, String location) {
+    html.append("<tr>");
+    appendCoverCell(
+        html,
+        "Property Type",
+        formatEnumValue(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Location", location);
+    html.append("</tr><tr>");
+    String usable = buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit());
+    String common = buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit());
+    appendCoverCell(html, "Usable / Common Area", usable + " / " + common);
+    appendCoverCell(
+        html,
+        "Floor Level",
+        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        "Ceiling Height",
+        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+    appendCoverCell(html, "Reference", property.getIdentifier());
+    html.append("</tr>");
+  }
+
+  private void appendCoverSummaryIndustrial(
+      StringBuilder html,
+      Property property,
+      PropertyIndustrialDetails details,
+      String location,
+      String area) {
+    html.append("<tr>");
+    appendCoverCell(
+        html,
+        "Property Type",
+        formatEnumValue(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Location", location);
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Total Area", area);
+    appendCoverCell(
+        html,
+        "Clear Height",
+        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        "Loading Docks",
+        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+    appendCoverCell(
+        html,
+        "Power Capacity",
+        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Reference", property.getIdentifier());
+    html.append("<td></td>");
+    html.append("</tr>");
+  }
+
+  private void appendCoverSummaryAgricultural(
+      StringBuilder html, Property property, PropertyAgriculturalDetails details, String location) {
+    html.append("<tr>");
+    appendCoverCell(
+        html,
+        "Property Type",
+        formatEnumValue(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Location", location);
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        "Total Land Area",
+        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+    appendCoverCell(
+        html,
+        "Arable Area",
+        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+    html.append("</tr><tr>");
+    appendCoverCell(
+        html,
+        "Soil Type",
+        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+    appendCoverCell(
+        html,
+        "Current Use",
+        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Reference", property.getIdentifier());
+    html.append("<td></td>");
+    html.append("</tr>");
+  }
+
+  private void appendCoverSummaryMixedUse(
+      StringBuilder html, Property property, String location, String area) {
+    html.append("<tr>");
+    appendCoverCell(
+        html,
+        "Property Type",
+        formatEnumValue(
+            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Location", location);
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Total Area", area);
+    appendCoverCell(
+        html,
+        "Year Built",
+        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
+    html.append("</tr><tr>");
+    appendCoverCell(html, "Reference", property.getIdentifier());
+    html.append("<td></td>");
+    html.append("</tr>");
   }
 
   // ── Page: Property Overview ─────────────────────────────────────
 
-  private void appendPropertyOverviewPage(StringBuilder html, Property property, String area) {
+  private void appendPropertyOverviewPage(
+      StringBuilder html,
+      Property property,
+      PropertyCategory category,
+      PropertyResidentialDetails residentialDetails,
+      PropertyCommercialDetails commercialDetails,
+      PropertyIndustrialDetails industrialDetails,
+      PropertyAgriculturalDetails agriculturalDetails,
+      String area) {
     appendPageStart(html, "Property Overview");
 
     appendSectionTitle(html, "Property Details");
@@ -209,13 +444,6 @@ public class PropertyBookletExporter {
         html,
         "Status",
         formatEnumValue(property.getStatus() != null ? property.getStatus().name() : ""));
-    html.append("</tr><tr>");
-    appendField(
-        html, "Bedrooms", property.getBedrooms() != null ? property.getBedrooms().toString() : "—");
-    appendField(
-        html,
-        "Bathrooms",
-        property.getBathrooms() != null ? property.getBathrooms().toString() : "—");
     html.append("</tr><tr>");
     appendField(html, "Total Area", area);
     appendField(
@@ -236,9 +464,255 @@ public class PropertyBookletExporter {
 
     appendConstructionSection(html, property);
 
+    if (category == PropertyCategory.RESIDENTIAL && residentialDetails != null) {
+      appendResidentialDetailsSection(html, residentialDetails);
+    } else if (category == PropertyCategory.COMMERCIAL && commercialDetails != null) {
+      appendCommercialDetailsSection(html, commercialDetails);
+    } else if (category == PropertyCategory.INDUSTRIAL && industrialDetails != null) {
+      appendIndustrialDetailsSection(html, industrialDetails);
+    } else if (category == PropertyCategory.AGRICULTURAL && agriculturalDetails != null) {
+      appendAgriculturalDetailsSection(html, agriculturalDetails);
+    }
+
     appendTextBlock(html, "Structural Notes", property.getStructuralNotes());
 
     appendPageEnd(html);
+  }
+
+  private void appendResidentialDetailsSection(
+      StringBuilder html, PropertyResidentialDetails details) {
+    appendSectionTitle(html, "Residential Details");
+    html.append("<table class='detail-grid'>");
+    html.append("<tr>");
+    appendField(
+        html, "Bedrooms", details.getBedrooms() != null ? details.getBedrooms().toString() : "—");
+    appendField(
+        html,
+        "Bathrooms",
+        details.getBathrooms() != null ? details.getBathrooms().toString() : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Furnished",
+        details.getFurnished() != null ? (isTrue(details.getFurnished()) ? "Yes" : "No") : "—");
+    appendField(
+        html,
+        "Pet Policy",
+        details.getPetPolicy() != null ? formatEnumValue(details.getPetPolicy()) : "—");
+    html.append("</tr>");
+    html.append("</table>");
+  }
+
+  private void appendCommercialDetailsSection(
+      StringBuilder html, PropertyCommercialDetails details) {
+    appendSectionTitle(html, "Commercial Details");
+    html.append("<table class='detail-grid'>");
+    html.append("<tr>");
+    appendField(
+        html,
+        "Usable Area",
+        buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit()));
+    appendField(
+        html,
+        "Common Area",
+        buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit()));
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Floor Level",
+        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
+    appendField(
+        html,
+        "Ceiling Height",
+        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Storefront",
+        details.getHasStorefront() != null
+            ? (isTrue(details.getHasStorefront()) ? "Yes" : "No")
+            : "—");
+    appendField(
+        html,
+        "Signage Rights",
+        details.getHasSignageRights() != null
+            ? (isTrue(details.getHasSignageRights()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Max Occupancy",
+        details.getMaxOccupancy() != null ? details.getMaxOccupancy().toString() : "—");
+    appendField(
+        html,
+        "Restrooms",
+        details.getRestroomCount() != null ? details.getRestroomCount().toString() : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Kitchen Facility",
+        details.getHasKitchenFacility() != null
+            ? (isTrue(details.getHasKitchenFacility()) ? "Yes" : "No")
+            : "—");
+    appendField(
+        html,
+        "Accessibility Compliant",
+        details.getAccessibilityCompliant() != null
+            ? (isTrue(details.getAccessibilityCompliant()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Zoning",
+        details.getZoningClassification() != null
+            ? escapeHtml(details.getZoningClassification())
+            : "—");
+    html.append("<td></td>");
+    html.append("</tr>");
+    html.append("</table>");
+  }
+
+  private void appendIndustrialDetailsSection(
+      StringBuilder html, PropertyIndustrialDetails details) {
+    appendSectionTitle(html, "Industrial Details");
+    html.append("<table class='detail-grid'>");
+    html.append("<tr>");
+    appendField(
+        html,
+        "Clear Height",
+        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
+    appendField(
+        html,
+        "Loading Docks",
+        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Drive-In Doors",
+        details.getDriveInDoors() != null ? details.getDriveInDoors().toString() : "—");
+    appendField(
+        html,
+        "Floor Load Capacity",
+        details.getFloorLoadCapacityKgSqm() != null
+            ? details.getFloorLoadCapacityKgSqm() + " kg/sqm"
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Power Capacity",
+        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+    appendField(
+        html,
+        "Three-Phase Power",
+        details.getHasThreePhasePower() != null
+            ? (isTrue(details.getHasThreePhasePower()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Crane",
+        details.getHasCrane() != null
+            ? (isTrue(details.getHasCrane())
+                ? "Yes"
+                    + (details.getCraneCapacityTons() != null
+                        ? " (" + details.getCraneCapacityTons() + " tons)"
+                        : "")
+                : "No")
+            : "—");
+    appendField(
+        html,
+        "Hazmat Certification",
+        details.getHasHazmatCertification() != null
+            ? (isTrue(details.getHasHazmatCertification()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Ventilation System",
+        details.getHasVentilationSystem() != null
+            ? (isTrue(details.getHasVentilationSystem()) ? "Yes" : "No")
+            : "—");
+    appendField(
+        html,
+        "Climate Control",
+        details.getHasClimateControl() != null
+            ? (isTrue(details.getHasClimateControl()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html, "Yard Area", buildAreaDisplay(details.getYardAreaValue(), details.getYardAreaUnit()));
+    appendField(
+        html,
+        "Zoning",
+        details.getZoningClassification() != null
+            ? escapeHtml(details.getZoningClassification())
+            : "—");
+    html.append("</tr>");
+    html.append("</table>");
+  }
+
+  private void appendAgriculturalDetailsSection(
+      StringBuilder html, PropertyAgriculturalDetails details) {
+    appendSectionTitle(html, "Agricultural Details");
+    html.append("<table class='detail-grid'>");
+    html.append("<tr>");
+    appendField(
+        html,
+        "Total Land Area",
+        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+    appendField(
+        html,
+        "Arable Area",
+        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Soil Type",
+        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+    appendField(
+        html,
+        "Water Rights",
+        details.getHasWaterRights() != null
+            ? (isTrue(details.getHasWaterRights()) ? "Yes" : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Water Source",
+        details.getWaterSource() != null ? formatEnumValue(details.getWaterSource()) : "—");
+    appendField(
+        html,
+        "Irrigation",
+        details.getIrrigationType() != null ? formatEnumValue(details.getIrrigationType()) : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Fencing",
+        details.getFencingType() != null ? formatEnumValue(details.getFencingType()) : "—");
+    appendField(
+        html,
+        "Outbuildings",
+        details.getHasOutbuildings() != null
+            ? (isTrue(details.getHasOutbuildings())
+                ? "Yes"
+                    + (details.getOutbuildingDetails() != null
+                        ? " — " + escapeHtml(details.getOutbuildingDetails())
+                        : "")
+                : "No")
+            : "—");
+    html.append("</tr><tr>");
+    appendField(
+        html,
+        "Current Use",
+        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+    appendField(
+        html,
+        "Zoning",
+        details.getZoningClassification() != null
+            ? escapeHtml(details.getZoningClassification())
+            : "—");
+    html.append("</tr>");
+    html.append("</table>");
   }
 
   private void appendConstructionSection(StringBuilder html, Property property) {
@@ -481,7 +955,7 @@ public class PropertyBookletExporter {
 
   // ── Page: Safety & Accessibility ────────────────────────────────
 
-  private void appendSafetyPage(StringBuilder html, Property property) {
+  private void appendSafetyPage(StringBuilder html, Property property, PropertyCategory category) {
     boolean hasSafetyData =
         isTrue(property.getHasSmokeDetectors())
             || isTrue(property.getHasCoDetectors())
@@ -491,13 +965,16 @@ public class PropertyBookletExporter {
             || isTrue(property.getHasSecurityCameras())
             || isTrue(property.getHasSecureEntry())
             || (property.getSafetyNotes() != null && !property.getSafetyNotes().isBlank());
+
+    boolean skipAccessibility = category == PropertyCategory.INDUSTRIAL;
     boolean hasAccessibilityData =
-        isTrue(property.getIsWheelchairAccessible())
-            || isTrue(property.getHasElevator())
-            || isTrue(property.getHasStepFreeEntrance())
-            || isTrue(property.getHasAdaptedBathroom())
-            || (property.getAccessibilityNotes() != null
-                && !property.getAccessibilityNotes().isBlank());
+        !skipAccessibility
+            && (isTrue(property.getIsWheelchairAccessible())
+                || isTrue(property.getHasElevator())
+                || isTrue(property.getHasStepFreeEntrance())
+                || isTrue(property.getHasAdaptedBathroom())
+                || (property.getAccessibilityNotes() != null
+                    && !property.getAccessibilityNotes().isBlank()));
 
     if (!hasSafetyData && !hasAccessibilityData) return;
 
@@ -712,6 +1189,11 @@ public class PropertyBookletExporter {
     if (property.getAreaValue() == null) return "—";
     String unit = property.getAreaUnit() != null ? property.getAreaUnit() : "sqm";
     return property.getAreaValue() + " " + unit;
+  }
+
+  private String buildAreaDisplay(BigDecimal value, String unit) {
+    if (value == null) return "—";
+    return value + " " + (unit != null ? unit : "sqm");
   }
 
   private String photoToBase64DataUri(Photo photo) {

@@ -7,5 +7,6 @@ public record PropertySummary(
     String street,
     String city,
     String postalCode,
+    Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
     Property.PropertyStatus status) {}
