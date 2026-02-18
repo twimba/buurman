@@ -1,5 +1,12 @@
-import { useEffect } from 'react';
-import { X, Download, ExternalLink, Pencil } from 'lucide-react';
+import { useEffect, useRef, useCallback } from 'react';
+import {
+  X,
+  Download,
+  ExternalLink,
+  Pencil,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { DocumentResponse, PhotoResponse } from '@/types/property';
 import { RichTextDisplay } from '../ui/RichTextDisplay';
 
@@ -7,24 +14,56 @@ interface DocumentPreviewModalProps {
   document: DocumentResponse | PhotoResponse;
   onClose: () => void;
   onEdit?: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  currentIndex?: number;
+  totalCount?: number;
 }
+
+const SWIPE_THRESHOLD = 50;
 
 export const DocumentPreviewModal = ({
   document,
   onClose,
   onEdit,
+  onNext,
+  onPrevious,
+  currentIndex,
+  totalCount,
 }: DocumentPreviewModalProps) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const touchStartX = useRef<number | null>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-    };
+      if (e.key === 'ArrowRight' && onNext) onNext();
+      if (e.key === 'ArrowLeft' && onPrevious) onPrevious();
+    },
+    [onClose, onNext, onPrevious]
+  );
+
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [handleKeyDown]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (delta > SWIPE_THRESHOLD && onPrevious) onPrevious();
+    if (delta < -SWIPE_THRESHOLD && onNext) onNext();
+  };
 
   const isImage = document.mimeType.startsWith('image/');
   const isPDF = document.mimeType === 'application/pdf';
   const canPreview = isImage || isPDF;
+  const showPosition =
+    currentIndex !== undefined && totalCount !== undefined && totalCount > 1;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onClose}>
@@ -32,22 +71,59 @@ export const DocumentPreviewModal = ({
         {/* Background overlay */}
         <div className="fixed inset-0 bg-black bg-opacity-60" />
 
+        {/* Previous button */}
+        {onPrevious && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrevious();
+            }}
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-[60] p-2 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition-colors"
+            title="Previous"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+        )}
+
+        {/* Next button */}
+        {onNext && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext();
+            }}
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-[60] p-2 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition-colors"
+            title="Next"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        )}
+
         {/* Modal panel */}
         <div
           className="relative bg-white dark:bg-[#14161f] rounded-lg text-left overflow-hidden shadow-xl dark:shadow-black/20 w-full max-w-4xl"
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Header */}
           <div className="bg-white dark:bg-[#14161f] px-4 py-3 border-b border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
-                {document.title ?? document.fileName}
-              </h3>
-              {document.title && document.title !== document.fileName ? (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] truncate">
-                  {document.fileName}
-                </p>
-              ) : null}
+            <div className="flex-1 min-w-0 flex items-center gap-3">
+              <div className="min-w-0">
+                <h3 className="text-lg font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+                  {document.title ?? document.fileName}
+                </h3>
+                {document.title && document.title !== document.fileName ? (
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] truncate">
+                    {document.fileName}
+                  </p>
+                ) : null}
+              </div>
+              {showPosition && (
+                <span className="shrink-0 text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] bg-[#f1f3f9] dark:bg-[#1e2130] px-2 py-1 rounded-full">
+                  {currentIndex! + 1} / {totalCount}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 ml-4">
               {onEdit && (

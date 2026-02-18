@@ -69,8 +69,7 @@ export const DocumentList = ({
     current: number;
     total: number;
   } | null>(null);
-  const [previewDocument, setPreviewDocument] =
-    useState<DocumentResponse | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [pendingBulkDelete, setPendingBulkDelete] = useState<string[] | null>(
     null
   );
@@ -286,7 +285,7 @@ export const DocumentList = ({
                     className={`hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer ${
                       isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                     }`}
-                    onClick={() => setPreviewDocument(doc)}
+                    onClick={() => setPreviewIndex(documents.indexOf(doc))}
                   >
                     <td
                       className="px-6 py-4"
@@ -343,7 +342,9 @@ export const DocumentList = ({
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
-                          onClick={() => setPreviewDocument(doc)}
+                          onClick={() =>
+                            setPreviewIndex(documents.indexOf(doc))
+                          }
                           className="p-1.5 text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md transition-colors"
                           title="Preview"
                         >
@@ -386,19 +387,31 @@ export const DocumentList = ({
       )}
 
       {/* Preview Modal */}
-      {previewDocument && (
+      {previewIndex !== null && documents[previewIndex] && (
         <DocumentPreviewModal
-          document={previewDocument}
-          onClose={() => setPreviewDocument(null)}
+          document={documents[previewIndex]}
+          onClose={() => setPreviewIndex(null)}
           onEdit={
             readOnly
               ? undefined
               : () => {
-                  const doc = previewDocument;
-                  setPreviewDocument(null);
+                  const doc = documents[previewIndex];
+                  setPreviewIndex(null);
                   setEditingDocument(doc);
                 }
           }
+          onPrevious={
+            previewIndex > 0
+              ? () => setPreviewIndex(previewIndex - 1)
+              : undefined
+          }
+          onNext={
+            previewIndex < documents.length - 1
+              ? () => setPreviewIndex(previewIndex + 1)
+              : undefined
+          }
+          currentIndex={previewIndex}
+          totalCount={documents.length}
         />
       )}
 

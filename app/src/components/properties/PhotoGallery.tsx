@@ -43,7 +43,7 @@ export const PhotoGallery = ({
     current: number;
     total: number;
   } | null>(null);
-  const [previewPhoto, setPreviewPhoto] = useState<PhotoResponse | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [pendingBulkDelete, setPendingBulkDelete] = useState<string[] | null>(
     null
   );
@@ -164,26 +164,38 @@ export const PhotoGallery = ({
         onBulkDownload={handleBulkDownload}
         onBulkDelete={readOnly ? undefined : handleBulkDelete}
         isBulkDownloading={bulkDownloadMutation.isPending}
-        onPreview={setPreviewPhoto}
+        onPreview={(photo) => setPreviewIndex(photos.indexOf(photo))}
         showMainBadge
         readOnly={readOnly}
         disableActions={isUploading || isDeleting}
       />
 
       {/* Preview Modal */}
-      {previewPhoto && (
+      {previewIndex !== null && photos[previewIndex] && (
         <DocumentPreviewModal
-          document={previewPhoto}
-          onClose={() => setPreviewPhoto(null)}
+          document={photos[previewIndex]}
+          onClose={() => setPreviewIndex(null)}
           onEdit={
             readOnly
               ? undefined
               : () => {
-                  const photo = previewPhoto;
-                  setPreviewPhoto(null);
+                  const photo = photos[previewIndex];
+                  setPreviewIndex(null);
                   setEditingPhoto(photo);
                 }
           }
+          onPrevious={
+            previewIndex > 0
+              ? () => setPreviewIndex(previewIndex - 1)
+              : undefined
+          }
+          onNext={
+            previewIndex < photos.length - 1
+              ? () => setPreviewIndex(previewIndex + 1)
+              : undefined
+          }
+          currentIndex={previewIndex}
+          totalCount={photos.length}
         />
       )}
 

@@ -21,7 +21,7 @@ export const PhotosPage = () => {
   const { canEditData } = useTeam();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
-  const [previewPhoto, setPreviewPhoto] = useState<PhotoResponse | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [pendingBulkDelete, setPendingBulkDelete] = useState<string[] | null>(
     null
   );
@@ -146,7 +146,7 @@ export const PhotosPage = () => {
           onBulkDownload={handleBulkDownload}
           onBulkDelete={canEditData ? handleBulkDelete : undefined}
           isBulkDownloading={bulkDownloadMutation.isPending}
-          onPreview={setPreviewPhoto}
+          onPreview={(photo) => setPreviewIndex(photos.indexOf(photo))}
           showEntityLink
           showMainBadge={false}
           readOnly={!canEditData}
@@ -167,15 +167,27 @@ export const PhotosPage = () => {
       )}
 
       {/* Preview Modal */}
-      {previewPhoto && (
+      {previewIndex !== null && photos[previewIndex] && (
         <DocumentPreviewModal
-          document={previewPhoto}
-          onClose={() => setPreviewPhoto(null)}
+          document={photos[previewIndex]}
+          onClose={() => setPreviewIndex(null)}
           onEdit={() => {
-            const photo = previewPhoto;
-            setPreviewPhoto(null);
+            const photo = photos[previewIndex];
+            setPreviewIndex(null);
             setEditingPhoto(photo);
           }}
+          onPrevious={
+            previewIndex > 0
+              ? () => setPreviewIndex(previewIndex - 1)
+              : undefined
+          }
+          onNext={
+            previewIndex < photos.length - 1
+              ? () => setPreviewIndex(previewIndex + 1)
+              : undefined
+          }
+          currentIndex={previewIndex}
+          totalCount={photos.length}
         />
       )}
 

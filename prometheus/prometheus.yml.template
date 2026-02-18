@@ -4,8 +4,20 @@ global:
   external_labels:
     monitor: 'dokploy-prometheus'
 
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - 'alertmanager:9093'
 
+# Load rules once and periodically evaluate them
+# rule_files:
+#   - "alerts.yml"
+
+# Scrape configurations
 scrape_configs:
+  # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
@@ -14,8 +26,7 @@ scrape_configs:
     metrics_path: /actuator/prometheus
     scrape_interval: 30s
     static_configs:
-      # - targets: ['buurman-api-uucnc9:8081']
-      - targets: ["${BACKEND_HOST:-backend}:${BACKEND_PORT:-8081}"]
+      - targets: ['buurman-api-uucnc9:8081']
 
   - job_name: 'hetzner-nodes'
     hetzner_sd_configs:
@@ -34,3 +45,13 @@ scrape_configs:
         target_label: instance
       - action: labelmap
         regex: __meta_hetzner_server_label_(.+)
+
+  # Example: Add your own targets here
+  # - job_name: 'node_exporter'
+  #   static_configs:
+  #     - targets: ['node-exporter:9100']
+  
+  # - job_name: 'docker'
+  #   static_configs:
+  #     - targets: ['docker-host:9323']
+

@@ -12,9 +12,6 @@
 Refactor de tenant booklet to include all the information in the professional style of the contract report
 (pay atention to include the first page, footer, page number, generation date, etc)
 
-
-Rework the tenant section to be less about tenants but be more of people that we interact with - make it more like a VERY small CRM or even digital Rolodex
-
 navigate in the photos and documents with left and right arrows in the ui and in the keyboard with the left/right keys
 
 Add page to the backoffice with build information of the app, backoffic and backend
