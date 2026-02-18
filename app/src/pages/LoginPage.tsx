@@ -30,12 +30,6 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  React.useEffect(() => {
-    if (isDemo && !isAuthenticated) {
-      login(undefined, DEMO_EMAIL);
-    }
-  }, [isDemo, isAuthenticated, login]);
-
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#f0f4ff] via-white to-[#f8f9fc]">
       {/* Left Side - Branding */}
