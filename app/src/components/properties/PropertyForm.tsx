@@ -61,6 +61,7 @@ export const PropertyForm = ({
   const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
+  const [addressDirty, setAddressDirty] = useState(false);
   const isEditMode = !!property;
 
   const resolveCategory = (): PropertyCategory =>
@@ -213,6 +214,19 @@ export const PropertyForm = ({
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
+    if (formData.street && formData.city && formData.country) {
+      const hasChanged = property
+        ? formData.street !== property.street ||
+          formData.city !== property.city ||
+          formData.postalCode !== property.postalCode ||
+          formData.country !== property.country
+        : true;
+
+      if (hasChanged) {
+        setAddressDirty(true);
+      }
+    }
+
     const timeoutId = setTimeout(() => {
       if (formData.street && formData.city && formData.country) {
         const hasChanged = property
@@ -232,6 +246,7 @@ export const PropertyForm = ({
             },
             {
               onSuccess: (result) => {
+                setAddressDirty(false);
                 if (result) {
                   setFormData((prev) => ({
                     ...prev,
@@ -239,6 +254,9 @@ export const PropertyForm = ({
                     longitude: result.longitude,
                   }));
                 }
+              },
+              onError: () => {
+                setAddressDirty(false);
               },
             }
           );
@@ -399,6 +417,7 @@ export const PropertyForm = ({
               city={formData.city}
               latitude={formData.latitude}
               longitude={formData.longitude}
+              isGeocoding={addressDirty || geocodeMutation.isPending}
             />
           </div>
         )}
