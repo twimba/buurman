@@ -13,4 +13,5 @@ public record UpdateTenantAddressRequest(
     @NotNull(message = "Address type is required") TenantAddress.AddressType addressType,
     @NotNull(message = "Status is required") TenantAddress.AddressStatus status,
     Double latitude,
-    Double longitude) {}
+    Double longitude,
+    String geocodeAccuracy) {}

@@ -19,6 +19,7 @@ public record UpdatePropertyRequest(
     @NotBlank(message = "Country is required") String country,
     BigDecimal latitude,
     BigDecimal longitude,
+    String geocodeAccuracy,
     @Positive(message = "Area value must be positive") BigDecimal areaValue,
     String areaUnit,
 

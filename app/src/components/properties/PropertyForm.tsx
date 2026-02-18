@@ -15,7 +15,7 @@ import {
   PROPERTY_TYPE_LABELS,
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
-import { PropertyMap } from './PropertyMap';
+import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
@@ -84,6 +84,7 @@ export const PropertyForm = ({
     country: property?.country || defaultCountry || '',
     latitude: property?.latitude || null,
     longitude: property?.longitude || null,
+    geocodeAccuracy: property?.geocodeAccuracy || null,
     areaValue: property?.areaValue || null,
     areaUnit: property?.areaUnit || 'sqm',
     // Characteristics
@@ -162,6 +163,7 @@ export const PropertyForm = ({
         country: property.country,
         latitude: property.latitude,
         longitude: property.longitude,
+        geocodeAccuracy: property.geocodeAccuracy,
         areaValue: property.areaValue,
         areaUnit: property.areaUnit || 'sqm',
         yearBuilt: property.yearBuilt ?? null,
@@ -252,6 +254,14 @@ export const PropertyForm = ({
                     ...prev,
                     latitude: result.latitude,
                     longitude: result.longitude,
+                    geocodeAccuracy: result.accuracy,
+                  }));
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: null,
+                    longitude: null,
+                    geocodeAccuracy: null,
                   }));
                 }
               },
@@ -412,12 +422,22 @@ export const PropertyForm = ({
             <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
               Location Preview
             </h4>
-            <PropertyMap
+            <InteractiveMap
               street={formData.street}
               city={formData.city}
               latitude={formData.latitude}
               longitude={formData.longitude}
+              geocodeAccuracy={formData.geocodeAccuracy}
               isGeocoding={addressDirty || geocodeMutation.isPending}
+              defaultCountry={formData.country || defaultCountry}
+              onLocationChange={(lat, lng) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  latitude: lat,
+                  longitude: lng,
+                  geocodeAccuracy: 'MANUAL',
+                }));
+              }}
             />
           </div>
         )}

@@ -92,6 +92,7 @@ export interface TenantAddressResponse {
   status: AddressStatus;
   latitude?: number | null;
   longitude?: number | null;
+  geocodeAccuracy?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -105,6 +106,7 @@ export interface CreateTenantAddressRequest {
   status?: AddressStatus;
   latitude?: number | null;
   longitude?: number | null;
+  geocodeAccuracy?: string | null;
 }
 
 export interface UpdateTenantAddressRequest {
@@ -116,4 +118,5 @@ export interface UpdateTenantAddressRequest {
   status: AddressStatus;
   latitude?: number | null;
   longitude?: number | null;
+  geocodeAccuracy?: string | null;
 }

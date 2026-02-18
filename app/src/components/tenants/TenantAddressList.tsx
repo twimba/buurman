@@ -22,7 +22,7 @@ import {
   UpdateTenantAddressRequest,
 } from '@/types/tenant';
 import { AddressForm } from './AddressForm';
-import { AddressMap } from '../common/AddressMap';
+import { InteractiveMap } from '../common/InteractiveMap';
 import { useTeam } from '@/context/TeamContext';
 import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
@@ -429,7 +429,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                         address.longitude && (
                           <tr key={`${address.identifier}-map`}>
                             <td colSpan={canEditData ? 6 : 5} className="p-4">
-                              <AddressMap
+                              <InteractiveMap
                                 street={address.street}
                                 city={address.city}
                                 latitude={address.latitude}

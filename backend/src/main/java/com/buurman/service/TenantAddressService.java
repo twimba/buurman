@@ -82,6 +82,7 @@ public class TenantAddressService {
               result -> {
                 address.setLatitude(result.latitude().doubleValue());
                 address.setLongitude(result.longitude().doubleValue());
+                address.setGeocodeAccuracy(result.accuracy());
               });
     }
 
@@ -145,6 +146,7 @@ public class TenantAddressService {
             address.getStatus(),
             address.getLatitude(),
             address.getLongitude(),
+            address.getGeocodeAccuracy(),
             address.getCreatedAt(),
             address.getUpdatedAt(),
             address.getCreatedBy(),
@@ -200,6 +202,7 @@ public class TenantAddressService {
               result -> {
                 address.setLatitude(result.latitude().doubleValue());
                 address.setLongitude(result.longitude().doubleValue());
+                address.setGeocodeAccuracy(result.accuracy());
               });
     }
 

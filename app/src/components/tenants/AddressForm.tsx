@@ -7,7 +7,7 @@ import {
   AddressType,
   AddressStatus,
 } from '@/types/tenant';
-import { AddressMap } from '../common/AddressMap';
+import { InteractiveMap } from '../common/InteractiveMap';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
@@ -34,6 +34,7 @@ export const AddressForm = ({
   const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
+  const [addressDirty, setAddressDirty] = useState(false);
 
   const [formData, setFormData] = useState({
     street: address?.street || '',
@@ -44,10 +45,24 @@ export const AddressForm = ({
     status: address?.status || AddressStatus.ACTIVE,
     latitude: address?.latitude || null,
     longitude: address?.longitude || null,
+    geocodeAccuracy: address?.geocodeAccuracy || null,
   });
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
+    if (formData.street && formData.city && formData.country) {
+      const hasChanged = address
+        ? formData.street !== address.street ||
+          formData.city !== address.city ||
+          formData.postalCode !== address.postalCode ||
+          formData.country !== address.country
+        : true;
+
+      if (hasChanged) {
+        setAddressDirty(true);
+      }
+    }
+
     const timeoutId = setTimeout(() => {
       if (formData.street && formData.city && formData.country) {
         const hasChanged = address
@@ -67,13 +82,25 @@ export const AddressForm = ({
             },
             {
               onSuccess: (result) => {
+                setAddressDirty(false);
                 if (result) {
                   setFormData((prev) => ({
                     ...prev,
                     latitude: result.latitude,
                     longitude: result.longitude,
+                    geocodeAccuracy: result.accuracy,
+                  }));
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    latitude: null,
+                    longitude: null,
+                    geocodeAccuracy: null,
                   }));
                 }
+              },
+              onError: () => {
+                setAddressDirty(false);
               },
             }
           );
@@ -143,7 +170,7 @@ export const AddressForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:text-[#8b90a8] dark:hover:text-[#9ca0b8] dark:text-[#5c6180]"
+          className="text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#9ca0b8]"
         >
           <X className="h-5 w-5" />
         </button>
@@ -257,11 +284,22 @@ export const AddressForm = ({
           <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
             Location Preview
           </h4>
-          <AddressMap
+          <InteractiveMap
             street={formData.street}
             city={formData.city}
             latitude={formData.latitude}
             longitude={formData.longitude}
+            geocodeAccuracy={formData.geocodeAccuracy}
+            isGeocoding={addressDirty || geocodeMutation.isPending}
+            defaultCountry={formData.country || defaultCountry}
+            onLocationChange={(lat, lng) => {
+              setFormData((prev) => ({
+                ...prev,
+                latitude: lat,
+                longitude: lng,
+                geocodeAccuracy: 'MANUAL',
+              }));
+            }}
           />
         </div>
       )}

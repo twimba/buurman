@@ -35,7 +35,9 @@ public class GeocodingController {
             request.street(), request.city(),
             request.postalCode(), request.country())
         .map(
-            result -> ResponseEntity.ok(new GeocodeResponse(result.latitude(), result.longitude())))
+            result ->
+                ResponseEntity.ok(
+                    new GeocodeResponse(result.latitude(), result.longitude(), result.accuracy())))
         .orElse(ResponseEntity.noContent().build());
   }
 }

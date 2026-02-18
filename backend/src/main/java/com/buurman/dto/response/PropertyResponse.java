@@ -18,6 +18,7 @@ public record PropertyResponse(
     String country,
     BigDecimal latitude,
     BigDecimal longitude,
+    String geocodeAccuracy,
     BigDecimal areaValue,
     String areaUnit,
     String mainPhotoUrl,

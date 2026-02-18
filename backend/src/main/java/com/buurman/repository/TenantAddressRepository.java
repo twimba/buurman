@@ -59,6 +59,7 @@ public class TenantAddressRepository {
           .set(
               TENANT_ADDRESSES.LONGITUDE,
               address.getLongitude() != null ? BigDecimal.valueOf(address.getLongitude()) : null)
+          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy())
           .set(TENANT_ADDRESSES.CREATED_AT, createdAt)
           .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
           .set(TENANT_ADDRESSES.CREATED_BY, address.getCreatedBy())
@@ -86,6 +87,7 @@ public class TenantAddressRepository {
           .set(
               TENANT_ADDRESSES.LONGITUDE,
               address.getLongitude() != null ? BigDecimal.valueOf(address.getLongitude()) : null)
+          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy())
           .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
           .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
           .where(

@@ -14,5 +14,6 @@ public record TenantAddressResponse(
     TenantAddress.AddressStatus status,
     Double latitude,
     Double longitude,
+    String geocodeAccuracy,
     Instant createdAt,
     Instant updatedAt) {}

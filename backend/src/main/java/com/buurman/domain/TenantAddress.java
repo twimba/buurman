@@ -35,6 +35,7 @@ public class TenantAddress {
   private AddressStatus status;
   private Double latitude;
   private Double longitude;
+  private String geocodeAccuracy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
@@ -53,6 +54,7 @@ public class TenantAddress {
       AddressStatus status,
       Double latitude,
       Double longitude,
+      String geocodeAccuracy,
       Instant createdAt,
       Instant updatedAt,
       UUID createdBy,
@@ -69,6 +71,7 @@ public class TenantAddress {
     this.status = status;
     this.latitude = latitude;
     this.longitude = longitude;
+    this.geocodeAccuracy = geocodeAccuracy;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.createdBy = createdBy;

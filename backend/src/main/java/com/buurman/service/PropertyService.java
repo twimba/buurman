@@ -155,6 +155,7 @@ public class PropertyService {
               result -> {
                 property.setLatitude(result.latitude());
                 property.setLongitude(result.longitude());
+                property.setGeocodeAccuracy(result.accuracy());
               });
     }
 
@@ -286,6 +287,7 @@ public class PropertyService {
               result -> {
                 property.setLatitude(result.latitude());
                 property.setLongitude(result.longitude());
+                property.setGeocodeAccuracy(result.accuracy());
               });
     }
 
@@ -794,6 +796,7 @@ public class PropertyService {
         response.country(),
         response.latitude(),
         response.longitude(),
+        response.geocodeAccuracy(),
         response.areaValue(),
         response.areaUnit(),
         mainPhotoUrl,

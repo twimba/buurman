@@ -29,7 +29,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
-import { PropertyMap } from '@/components/properties/PropertyMap';
+import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
@@ -652,11 +652,12 @@ export const PropertyDetailPage = () => {
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
                   Location
                 </h3>
-                <PropertyMap
+                <InteractiveMap
                   street={property.street}
                   city={property.city}
                   latitude={property.latitude}
                   longitude={property.longitude}
+                  geocodeAccuracy={property.geocodeAccuracy}
                 />
               </div>
             </div>

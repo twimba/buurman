@@ -476,6 +476,7 @@ export interface PropertyResponse {
   country: string;
   latitude: number | null;
   longitude: number | null;
+  geocodeAccuracy: string | null;
   areaValue: number | null;
   areaUnit: string;
   mainPhotoUrl: string | null;
@@ -556,6 +557,7 @@ export interface CreatePropertyRequest {
   country: string;
   latitude?: number | null;
   longitude?: number | null;
+  geocodeAccuracy?: string | null;
   areaValue?: number | null;
   areaUnit?: string | null;
 
@@ -626,6 +628,7 @@ export interface UpdatePropertyRequest {
   country: string;
   latitude?: number | null;
   longitude?: number | null;
+  geocodeAccuracy?: string | null;
   areaValue?: number | null;
   areaUnit?: string | null;
 

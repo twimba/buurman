@@ -21,6 +21,7 @@ public class Property {
   private String country;
   private BigDecimal latitude;
   private BigDecimal longitude;
+  private String geocodeAccuracy;
   private BigDecimal areaValue;
   private String areaUnit;
   private PropertyCategory propertyCategory;

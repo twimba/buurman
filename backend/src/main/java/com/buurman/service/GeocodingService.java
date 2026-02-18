@@ -36,8 +36,9 @@ public class GeocodingService {
     this.httpClient = HttpClient.newBuilder().connectTimeout(REQUEST_TIMEOUT).build();
   }
 
-  public record GeocodingResult(BigDecimal latitude, BigDecimal longitude) {}
+  public record GeocodingResult(BigDecimal latitude, BigDecimal longitude, String accuracy) {}
 
+  /** Geocode with progressive fallback: full address → city+country → country only. */
   public Optional<GeocodingResult> geocode(
       String street, String city, String postalCode, String country) {
     if (properties.apiKey() == null || properties.apiKey().isBlank()) {
@@ -45,11 +46,45 @@ public class GeocodingService {
       return Optional.empty();
     }
 
-    String address =
+    // Try 1: Full address
+    String fullAddress =
         Stream.of(street, city, postalCode, country)
             .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.joining(", "));
+    Optional<GeocodingResult> result = geocodeAddress(fullAddress);
+    if (result.isPresent()) {
+      return result;
+    }
 
+    // Try 2: City + country
+    String cityCountry =
+        Stream.of(city, country)
+            .filter(s -> s != null && !s.isBlank())
+            .collect(Collectors.joining(", "));
+    if (!cityCountry.equals(fullAddress)) {
+      result = geocodeAddress(cityCountry);
+      if (result.isPresent()) {
+        log.debug("Geocoding fell back to city+country for: {}", fullAddress);
+        return Optional.of(
+            new GeocodingResult(result.get().latitude(), result.get().longitude(), "CITY"));
+      }
+    }
+
+    // Try 3: Country only
+    if (country != null && !country.isBlank()) {
+      result = geocodeAddress(country);
+      if (result.isPresent()) {
+        log.debug("Geocoding fell back to country for: {}", fullAddress);
+        return Optional.of(
+            new GeocodingResult(result.get().latitude(), result.get().longitude(), "COUNTRY"));
+      }
+    }
+
+    log.debug("Geocoding returned no results at any level for: {}", fullAddress);
+    return Optional.empty();
+  }
+
+  private Optional<GeocodingResult> geocodeAddress(String address) {
     try {
       URI uri =
           URI.create(
@@ -71,13 +106,16 @@ public class GeocodingService {
       if ("OK".equals(status)
           && root.path("results").isArray()
           && !root.path("results").isEmpty()) {
-        JsonNode location = root.path("results").get(0).path("geometry").path("location");
+        JsonNode firstResult = root.path("results").get(0);
+        JsonNode geometry = firstResult.path("geometry");
+        JsonNode location = geometry.path("location");
         BigDecimal lat = new BigDecimal(location.path("lat").asText());
         BigDecimal lng = new BigDecimal(location.path("lng").asText());
-        return Optional.of(new GeocodingResult(lat, lng));
+
+        String locationType = geometry.path("location_type").asText("APPROXIMATE");
+        return Optional.of(new GeocodingResult(lat, lng, locationType));
       }
 
-      log.debug("Geocoding returned no results for address: {}", address);
       return Optional.empty();
     } catch (Exception e) {
       log.warn("Geocoding failed for address '{}': {}", address, e.getMessage());
