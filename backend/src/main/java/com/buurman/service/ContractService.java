@@ -76,6 +76,7 @@ public class ContractService {
   private final MetricsService metricsService;
   private final NotificationService notificationService;
   private final ContractPartyService contractPartyService;
+  private final ContractRentPeriodService contractRentPeriodService;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -131,6 +132,9 @@ public class ContractService {
     // Create parties
     contractPartyService.createPartiesForContract(
         savedContract.getId(), request.parties(), principal);
+
+    // Create initial rent period
+    contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
 
     metricsService.incrementCounter("contract.total");
     metricsService.recordHistogram(
@@ -292,6 +296,13 @@ public class ContractService {
     contract.setUpdatedAt(clock.instant());
 
     Contract updatedContract = contractRepository.save(contract);
+
+    // Update initial rent period if rent or start date changed on DRAFT
+    if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0
+        || !oldContract.getStartDate().equals(updatedContract.getStartDate())) {
+      contractRentPeriodService.updateInitialRentPeriod(updatedContract, principal);
+    }
+
     log.info("Contract updated: {} in team {}", identifier, teamId);
 
     // Determine changed fields for audit
@@ -659,6 +670,9 @@ public class ContractService {
     // Duplicate parties
     contractPartyService.duplicateParties(
         sourceContract.getId(), savedContract.getId(), teamId, principal.getUserId());
+
+    // Create initial rent period for duplicated contract
+    contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
 
     metricsService.incrementCounter("contract.duplicated.total");
 

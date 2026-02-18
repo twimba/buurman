@@ -16,6 +16,7 @@ public enum NotificationType {
   CONTRACT_CREATED("Contract Created", true),
   CONTRACT_STATUS_CHANGED("Contract Status Changed", true),
   CONTRACT_REOPENED("Contract Reopened", true),
+  CONTRACT_RENT_ADJUSTED("Contract Rent Adjusted", true),
   PAYMENT_PAID("Payment Paid", true),
   PAYMENT_RECEIVAL("Payment Received", true),
   EXPENSE_CREATED("Expense Created", true);

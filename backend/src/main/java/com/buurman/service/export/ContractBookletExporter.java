@@ -43,12 +43,14 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractPaymentInstruction;
+import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.repository.ContractPaymentInstructionRepository;
+import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -70,6 +72,7 @@ public class ContractBookletExporter {
   private final PaymentReceivalRepository paymentReceivalRepository;
   private final ContractPaymentInstructionRepository contractPaymentInstructionRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
+  private final ContractRentPeriodRepository rentPeriodRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
@@ -111,6 +114,10 @@ public class ContractBookletExporter {
       receivedByPayment.merge(r.getPaymentId(), r.getAmount(), BigDecimal::add);
     }
 
+    // Load rent periods
+    List<ContractRentPeriod> rentPeriods =
+        rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+
     // Load payment instructions
     List<ContractPaymentInstruction> allCpis =
         contractPaymentInstructionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
@@ -129,7 +136,15 @@ public class ContractBookletExporter {
 
     String html =
         buildHtml(
-            contract, property, parties, tenantMap, payments, receivedByPayment, allCpis, piMap);
+            contract,
+            property,
+            parties,
+            tenantMap,
+            payments,
+            receivedByPayment,
+            rentPeriods,
+            allCpis,
+            piMap);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -142,6 +157,7 @@ public class ContractBookletExporter {
       Map<UUID, Tenant> tenantMap,
       List<Payment> payments,
       Map<UUID, BigDecimal> receivedByPayment,
+      List<ContractRentPeriod> rentPeriods,
       List<ContractPaymentInstruction> allCpis,
       Map<UUID, PaymentInstruction> piMap) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
@@ -174,7 +190,7 @@ public class ContractBookletExporter {
     appendRunningFooter(html, generatedDate);
 
     appendCoverPage(html, contract, property, primaryName, ccy, dateFmt, generatedDate);
-    appendContractDetailsPage(html, contract, property, dateFmt, ccy);
+    appendContractDetailsPage(html, contract, property, rentPeriods, dateFmt, ccy);
     appendPartiesPage(html, parties, tenantMap);
     appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt);
     appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt);
@@ -204,7 +220,7 @@ public class ContractBookletExporter {
         html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
     appendCoverCell(html, "Primary Tenant", primaryName);
     html.append("</tr><tr>");
-    appendCoverCell(html, "Monthly Rent", ccy + " " + fmt(contract.getRentAmount()));
+    appendCoverCell(html, "Current Rent", ccy + " " + fmt(contract.getRentAmount()));
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
@@ -235,6 +251,7 @@ public class ContractBookletExporter {
       StringBuilder html,
       Contract contract,
       Property property,
+      List<ContractRentPeriod> rentPeriods,
       DateTimeFormatter dateFmt,
       String ccy) {
     appendPageStart(html, "Contract Details");
@@ -264,7 +281,7 @@ public class ContractBookletExporter {
         "End Date",
         contract.getEndDate() != null ? formatDate(contract.getEndDate(), dateFmt) : "Indefinite");
     html.append("</tr><tr>");
-    appendField(html, "Rent Amount", ccy + " " + fmt(contract.getRentAmount()));
+    appendField(html, "Current Rent", ccy + " " + fmt(contract.getRentAmount()));
     appendField(html, "Deposit Amount", ccy + " " + fmt(contract.getDepositAmount()));
     html.append("</tr><tr>");
     appendField(html, "Security Deposit", ccy + " " + fmt(contract.getSecurityDeposit()));
@@ -316,6 +333,11 @@ public class ContractBookletExporter {
       html.append("<div class='text-block'>")
           .append(sanitizeRichText(contract.getNotes()))
           .append("</div>");
+    }
+
+    // Rent History section
+    if (rentPeriods.size() > 1) {
+      appendRentHistorySection(html, rentPeriods, ccy, dateFmt);
     }
 
     // Property section
@@ -443,6 +465,77 @@ public class ContractBookletExporter {
     }
 
     appendPageEnd(html);
+  }
+
+  // ── Section: Rent History ──────────────────────────────────────
+
+  private void appendRentHistorySection(
+      StringBuilder html,
+      List<ContractRentPeriod> rentPeriods,
+      String ccy,
+      DateTimeFormatter dateFmt) {
+    appendSectionTitle(html, "Rent History (" + rentPeriods.size() + " periods)");
+
+    // Periods are already ordered by effective_from DESC from the repository
+    List<ContractRentPeriod> sorted = new ArrayList<>(rentPeriods);
+    sorted.sort((a, b) -> b.getEffectiveFrom().compareTo(a.getEffectiveFrom()));
+
+    html.append("<table class='payment-table'>");
+    html.append("<thead><tr>");
+    html.append(
+        "<th>Effective From</th><th>Effective To</th><th style='text-align:right'>Rent"
+            + " Amount</th><th style='text-align:right'>Change</th>");
+    html.append("</tr></thead><tbody>");
+
+    for (int i = 0; i < sorted.size(); i++) {
+      ContractRentPeriod period = sorted.get(i);
+      boolean isCurrent = period.getEffectiveTo() == null;
+
+      html.append("<tr>");
+      html.append("<td>").append(formatDate(period.getEffectiveFrom(), dateFmt)).append("</td>");
+      html.append("<td>")
+          .append(
+              period.getEffectiveTo() != null
+                  ? formatDate(period.getEffectiveTo(), dateFmt)
+                  : "<span style='color:#166534;font-weight:600;'>Current</span>")
+          .append("</td>");
+      html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
+          .append(isCurrent ? "font-weight:600;" : "")
+          .append("'>")
+          .append(ccy)
+          .append(" ")
+          .append(fmt(period.getRentAmount()))
+          .append("</td>");
+
+      // Percentage change vs next older period
+      html.append("<td style='text-align:right;'>");
+      if (i < sorted.size() - 1) {
+        BigDecimal previousAmount = sorted.get(i + 1).getRentAmount();
+        if (previousAmount.compareTo(BigDecimal.ZERO) > 0) {
+          BigDecimal change =
+              period
+                  .getRentAmount()
+                  .subtract(previousAmount)
+                  .multiply(new BigDecimal("100"))
+                  .divide(previousAmount, 1, java.math.RoundingMode.HALF_UP);
+          String color = change.compareTo(BigDecimal.ZERO) > 0 ? "#dc2626" : "#166534";
+          String prefix = change.compareTo(BigDecimal.ZERO) > 0 ? "+" : "";
+          html.append("<span style='color:")
+              .append(color)
+              .append(";font-weight:600;font-size:12px;'>")
+              .append(prefix)
+              .append(change)
+              .append("%</span>");
+        }
+      } else {
+        html.append("<span style='color:#718096;font-size:12px;'>Initial</span>");
+      }
+      html.append("</td>");
+
+      html.append("</tr>");
+    }
+
+    html.append("</tbody></table>");
   }
 
   // ── Page: Payment Instructions ──────────────────────────────────

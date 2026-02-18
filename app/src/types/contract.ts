@@ -140,3 +140,27 @@ export interface ChangeContractStatusRequest {
   status: ContractStatus;
   reason?: string;
 }
+
+// --- Rent Periods ---
+
+export interface RentPeriodResponse {
+  identifier: string;
+  rentAmount: number;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  notes?: string;
+  percentageChange?: number;
+  createdAt: string;
+}
+
+export interface CreateRentPeriodRequest {
+  rentAmount: number;
+  effectiveFrom: string;
+  notes?: string;
+}
+
+export interface UpdateRentPeriodRequest {
+  rentAmount: number;
+  effectiveFrom: string;
+  notes?: string;
+}

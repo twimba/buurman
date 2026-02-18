@@ -222,6 +222,21 @@ public class PaymentRepository {
                     .and(PAYMENTS.DELETED_AT.isNull())));
   }
 
+  public List<Payment> findPendingByContractIdFromDate(
+      UUID contractId, UUID teamId, LocalDate fromDate) {
+    return dsl.selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS
+                .CONTRACT_ID
+                .eq(contractId)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.STATUS.eq(PENDING.name()))
+                .and(PAYMENTS.DUE_DATE.ge(fromDate))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .fetch()
+        .map(mapper::toDomain);
+  }
+
   public List<Payment> findFuturePendingByContractId(UUID contractId, UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     return dsl.selectFrom(PAYMENTS)

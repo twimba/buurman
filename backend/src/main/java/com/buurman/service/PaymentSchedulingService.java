@@ -20,6 +20,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamSettings;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.TeamRepository;
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentSchedulingService {
 
   private final ContractRepository contractRepository;
+  private final ContractRentPeriodRepository rentPeriodRepository;
   private final PaymentRepository paymentRepository;
   private final TeamRepository teamRepository;
   private final AuditService auditService;
@@ -149,11 +151,19 @@ public class PaymentSchedulingService {
       }
 
       try {
+        // Use rent period amount for the due date, falling back to contract rent amount
+        java.math.BigDecimal paymentAmount = contract.getRentAmount();
+        var rentPeriod =
+            rentPeriodRepository.findAtDateByContractIdAndTeamId(contractId, teamId, nextDueDate);
+        if (rentPeriod.isPresent()) {
+          paymentAmount = rentPeriod.get().getRentAmount();
+        }
+
         Payment payment = new Payment();
         payment.setIdentifier(newPaymentId().value());
         payment.setTeamId(teamId);
         payment.setContractId(contractId);
-        payment.setAmount(contract.getRentAmount());
+        payment.setAmount(paymentAmount);
         payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
         payment.setDueDate(nextDueDate);
         payment.setStatus(PENDING);

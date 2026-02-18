@@ -38,6 +38,10 @@ public class UlidGenerator {
     return generate(EntityPrefix.CTP);
   }
 
+  public static Ulid newContractRentPeriodId() {
+    return generate(EntityPrefix.CRP);
+  }
+
   public static Ulid newContractPaymentInstructionId() {
     return generate(EntityPrefix.CPI);
   }

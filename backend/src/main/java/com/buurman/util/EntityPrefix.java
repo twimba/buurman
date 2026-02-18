@@ -20,6 +20,7 @@ public enum EntityPrefix {
   TEA("TEA", "Teams"),
   TAD("TAD", "Tenant Addresses"),
   TEN("TEN", "Tenants"),
+  CRP("CRP", "Contract Rent Periods"),
   USR("USR", "Users");
 
   private final String code;

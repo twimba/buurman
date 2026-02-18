@@ -23,6 +23,7 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
+import { RentTimeline } from '@/components/contracts/RentTimeline';
 import { Button, PageHeader } from '@/components/ui';
 import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
@@ -521,18 +522,13 @@ export const ContractDetailPage = () => {
                 Financial Terms
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
-                  <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Rent Amount
-                    </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {contract.currency} {contract.rentAmount.toFixed(2)} /{' '}
-                      {contract.paymentFrequency.toLowerCase()}
-                    </p>
-                  </div>
-                </div>
+                <RentTimeline
+                  contractIdentifier={id!}
+                  contractStatus={contract.status}
+                  currency={contract.currency}
+                  currentRentAmount={contract.rentAmount}
+                  paymentFrequency={contract.paymentFrequency}
+                />
                 {contract.depositAmount && (
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
