@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flagsmith.FlagsmithClient;
 import com.flagsmith.models.DefaultFlag;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +30,21 @@ public class FlagsmithConfig {
   private static final String SERVER_KEY_NAME = "Backend";
 
   private final FlagsmithProperties properties;
+
+  @PostConstruct
+  public void logFlagsmithAdminStatus() {
+    if (StringUtils.hasText(properties.apiToken())) {
+      log.info("Flagsmith admin: configured via API token");
+    } else if (StringUtils.hasText(properties.adminEmail())
+        && StringUtils.hasText(properties.adminPassword())) {
+      log.info("Flagsmith admin: configured via email/password login");
+    } else {
+      log.warn(
+          "Flagsmith admin: NOT configured — backoffice flag management will be unavailable."
+              + " Set FLAGSMITH_API_TOKEN (Cloud) or FLAGSMITH_ADMIN_EMAIL +"
+              + " FLAGSMITH_ADMIN_PASSWORD (self-hosted)");
+    }
+  }
 
   @Bean
   public FlagsmithClient flagsmithClient() {
@@ -65,7 +82,9 @@ public class FlagsmithConfig {
    * not yet set up — the app boots normally with all feature flags defaulting to OFF.
    */
   private Optional<String> discoverServerKey() {
-    if (properties.adminEmail() == null || properties.adminPassword() == null) {
+    // Try API token first (Flagsmith Cloud), then email/password (self-hosted)
+    String adminToken = resolveAdminTokenForDiscovery();
+    if (adminToken == null) {
       log.warn("Flagsmith admin credentials not configured — feature flags disabled");
       return Optional.empty();
     }
@@ -75,7 +94,13 @@ public class FlagsmithConfig {
       var mapper = new ObjectMapper();
       var api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
-      String token = api.login(properties.adminEmail(), properties.adminPassword());
+      String token;
+      if (StringUtils.hasText(properties.apiToken())) {
+        token = properties.apiToken();
+      } else {
+        token = api.login(properties.adminEmail(), properties.adminPassword());
+      }
+
       int projectId = api.findProjectId(token, properties.projectName());
       String clientKey =
           api.findEnvironmentClientKey(token, projectId, properties.environmentName());
@@ -89,6 +114,17 @@ public class FlagsmithConfig {
       log.warn("Flagsmith auto-discovery failed — feature flags disabled: {}", e.getMessage(), e);
       return Optional.empty();
     }
+  }
+
+  private String resolveAdminTokenForDiscovery() {
+    if (StringUtils.hasText(properties.apiToken())) {
+      return properties.apiToken();
+    }
+    if (StringUtils.hasText(properties.adminEmail())
+        && StringUtils.hasText(properties.adminPassword())) {
+      return "credentials";
+    }
+    return null;
   }
 
   private String resolveBaseUrl() {

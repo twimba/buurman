@@ -10,5 +10,6 @@ public record FlagsmithProperties(
     String serverSideKey,
     String adminEmail,
     String adminPassword,
+    String apiToken,
     String projectName,
     String environmentName) {}

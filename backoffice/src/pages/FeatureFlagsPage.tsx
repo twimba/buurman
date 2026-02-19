@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Flag, User, XCircle } from "lucide-react";
+import { Search, Flag, User, XCircle, AlertTriangle } from "lucide-react";
+import { AxiosError } from "axios";
 import { RefreshButton } from "@buurman/ui";
 import {
+  useAdminStatus,
   useGlobalFeatureFlags,
   useUpdateGlobalFlag,
 } from "../hooks/useFeatureFlags";
@@ -29,9 +31,13 @@ export const FeatureFlagsPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [mutatingFlag, setMutatingFlag] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const debouncedSearch = useDebouncedValue(inputValue, 300);
+
+  const { data: adminStatus } = useAdminStatus();
+  const adminConfigured = adminStatus?.adminConfigured ?? true;
 
   const {
     data: globalFlags,
@@ -51,14 +57,25 @@ export const FeatureFlagsPage = () => {
 
   const globalFlagCount = globalFlags ? Object.keys(globalFlags).length : 0;
 
+  const extractError = (error: unknown): string => {
+    if (error instanceof AxiosError && error.response?.data) {
+      const data = error.response.data;
+      return data.detail || data.message || data.title || "Failed to update feature flag";
+    }
+    if (error instanceof Error) return error.message;
+    return "Failed to update feature flag";
+  };
+
   const handleToggle = useCallback(
     (flagName: string, enabled: boolean) => {
+      setErrorMessage(null);
       setMutatingFlag(flagName);
       updateGlobalFlag.mutate(
         { flagName, data: { enabled } },
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
+          onError: (error) => setErrorMessage(extractError(error)),
         },
       );
     },
@@ -67,12 +84,14 @@ export const FeatureFlagsPage = () => {
 
   const handleValueChange = useCallback(
     (flagName: string, value: string | null) => {
+      setErrorMessage(null);
       setMutatingFlag(flagName);
       updateGlobalFlag.mutate(
         { flagName, data: { value } },
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
+          onError: (error) => setErrorMessage(extractError(error)),
         },
       );
     },
@@ -115,6 +134,40 @@ export const FeatureFlagsPage = () => {
         </p>
       </div>
 
+      {/* Admin not configured warning */}
+      {!adminConfigured && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+              Feature flag management unavailable
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+              No Flagsmith admin credentials configured. Set{" "}
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_API_TOKEN</code> (Cloud) or{" "}
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_ADMIN_EMAIL</code> +{" "}
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_ADMIN_PASSWORD</code> (self-hosted).
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error banner */}
+      {errorMessage && (
+        <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl">
+          <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
+          </div>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
+          >
+            <XCircle className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
       {/* Global Flags */}
       <section className="space-y-3">
         <PropagationBanner
@@ -137,7 +190,7 @@ export const FeatureFlagsPage = () => {
             isRefreshing={globalFetching}
           />
         </div>
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+        <div className={`bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}>
           {globalLoading ? (
             <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180] text-sm">
               Loading flags...

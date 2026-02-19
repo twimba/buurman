@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.buurman.config.models.FlagsmithProperties;
+import com.buurman.exception.ExternalServiceException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -567,13 +569,29 @@ public class FlagsmithAdminService {
     if (adminToken != null && Instant.now().isBefore(tokenExpiresAt)) {
       return;
     }
-    login();
+    resolveAdminToken();
+  }
+
+  private void resolveAdminToken() {
+    // Priority 1: Direct API token (Flagsmith Cloud)
+    if (StringUtils.hasText(properties.apiToken())) {
+      this.adminToken = properties.apiToken();
+      this.tokenExpiresAt = Instant.MAX;
+      return;
+    }
+    // Priority 2: Login with email/password (self-hosted)
+    if (StringUtils.hasText(properties.adminEmail())
+        && StringUtils.hasText(properties.adminPassword())) {
+      login();
+      return;
+    }
+    // Priority 3: Not configured
+    throw new ExternalServiceException(
+        "Flagsmith admin not configured. Set FLAGSMITH_API_TOKEN (Cloud) or"
+            + " FLAGSMITH_ADMIN_EMAIL + FLAGSMITH_ADMIN_PASSWORD (self-hosted)");
   }
 
   private void login() {
-    if (properties.adminEmail() == null || properties.adminPassword() == null) {
-      throw new IllegalStateException("Flagsmith admin credentials not configured");
-    }
     ObjectNode body =
         mapper
             .createObjectNode()
@@ -581,11 +599,23 @@ public class FlagsmithAdminService {
             .put("password", properties.adminPassword());
     JsonNode resp = post("/auth/login/", body, null);
     if (!resp.has("key")) {
-      throw new IllegalStateException("Flagsmith admin login failed");
+      throw new ExternalServiceException("Flagsmith admin login failed");
     }
     this.adminToken = resp.get("key").asText();
     this.tokenExpiresAt = Instant.now().plus(TOKEN_TTL);
     log.debug("Flagsmith admin token refreshed");
+  }
+
+  public boolean isAdminConfigured() {
+    return StringUtils.hasText(properties.apiToken())
+        || (StringUtils.hasText(properties.adminEmail())
+            && StringUtils.hasText(properties.adminPassword()));
+  }
+
+  public String getAuthMethod() {
+    if (StringUtils.hasText(properties.apiToken())) return "api_token";
+    if (StringUtils.hasText(properties.adminEmail())) return "credentials";
+    return "none";
   }
 
   private void discover() {
@@ -656,10 +686,10 @@ public class FlagsmithAdminService {
       HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "GET", path);
       return mapper.readTree(resp.body());
-    } catch (IllegalStateException e) {
+    } catch (ExternalServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new IllegalStateException(
+      throw new ExternalServiceException(
           "Flagsmith API GET %s failed: %s".formatted(path, e.getMessage()), e);
     }
   }
@@ -678,10 +708,10 @@ public class FlagsmithAdminService {
       HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "POST", path);
       return mapper.readTree(resp.body());
-    } catch (IllegalStateException e) {
+    } catch (ExternalServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new IllegalStateException(
+      throw new ExternalServiceException(
           "Flagsmith API POST %s failed: %s".formatted(path, e.getMessage()), e);
     }
   }
@@ -699,10 +729,10 @@ public class FlagsmithAdminService {
       HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PUT", path);
       return mapper.readTree(resp.body());
-    } catch (IllegalStateException e) {
+    } catch (ExternalServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new IllegalStateException(
+      throw new ExternalServiceException(
           "Flagsmith API PUT %s failed: %s".formatted(path, e.getMessage()), e);
     }
   }
@@ -721,10 +751,10 @@ public class FlagsmithAdminService {
       HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PATCH", path);
       return mapper.readTree(resp.body());
-    } catch (IllegalStateException e) {
+    } catch (ExternalServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new IllegalStateException(
+      throw new ExternalServiceException(
           "Flagsmith API PATCH %s failed: %s".formatted(path, e.getMessage()), e);
     }
   }
@@ -740,10 +770,10 @@ public class FlagsmithAdminService {
               .build();
       HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "DELETE", path);
-    } catch (IllegalStateException e) {
+    } catch (ExternalServiceException e) {
       throw e;
     } catch (Exception e) {
-      throw new IllegalStateException(
+      throw new ExternalServiceException(
           "Flagsmith API DELETE %s failed: %s".formatted(path, e.getMessage()), e);
     }
   }
@@ -758,7 +788,7 @@ public class FlagsmithAdminService {
       this.adminToken = null;
       this.tokenExpiresAt = Instant.MIN;
     }
-    throw new IllegalStateException(
+    throw new ExternalServiceException(
         "Flagsmith API %s %s returned %d: %s".formatted(method, path, status, resp.body()));
   }
 

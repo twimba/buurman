@@ -73,6 +73,16 @@ public class BackofficeFeatureFlagController {
   // --- Read endpoints ---
 
   @Operation(
+      summary = "Check if Flagsmith admin operations are available",
+      description = "Returns whether the backend has admin credentials configured for flag management")
+  @GetMapping("/admin-status")
+  public Map<String, Object> getAdminStatus() {
+    return Map.of(
+        "adminConfigured", flagsmithAdminService.isAdminConfigured(),
+        "authMethod", flagsmithAdminService.getAuthMethod());
+  }
+
+  @Operation(
       summary = "Get global feature flag status",
       description = "Returns all flags at environment level (no identity context)")
   @GetMapping

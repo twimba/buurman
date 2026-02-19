@@ -2,6 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { featureFlagsApi } from "../api/featureFlags";
 import type { UpdateFlagRequest } from "../api/featureFlags";
 
+export const useAdminStatus = () => {
+  return useQuery({
+    queryKey: ["feature-flags", "admin-status"],
+    queryFn: () => featureFlagsApi.getAdminStatus().then((res) => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 export const useGlobalFeatureFlags = () => {
   return useQuery({
     queryKey: ["feature-flags", "global"],
