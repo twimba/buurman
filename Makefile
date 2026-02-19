@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -42,3 +42,9 @@ stats:
 
 stats-by-file:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
+
+## Move the 'prod' tag to latest main and push to GitHub
+deploy-prod:
+	git fetch origin main
+	git tag -f prod origin/main
+	git push origin prod --force

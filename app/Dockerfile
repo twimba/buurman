@@ -11,6 +11,7 @@ COPY app/package.json app/
 RUN yarn config set nodeLinker node-modules && yarn install
 
 COPY packages/ui/ packages/ui/
+COPY scripts/ scripts/
 COPY app/ app/
 
 WORKDIR /monorepo/app

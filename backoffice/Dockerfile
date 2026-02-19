@@ -11,6 +11,7 @@ COPY backoffice/package.json backoffice/
 RUN yarn config set nodeLinker node-modules && yarn install
 
 COPY packages/ui/ packages/ui/
+COPY scripts/ scripts/
 COPY backoffice/ backoffice/
 
 WORKDIR /monorepo/backoffice

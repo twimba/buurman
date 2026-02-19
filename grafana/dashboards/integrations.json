@@ -134,22 +134,97 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 21 },
       "id": 101,
-      "title": "Email / Mailhog",
+      "title": "Notifications (Email & SMS)",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "ops" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 22 },
       "id": 20,
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Emails Sent by Template",
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Notifications/s",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_notification_send_total{job=\"$job\"}[$__rate_interval]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }, "unit": "s" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 22 },
+      "id": 21,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Notification P95 Latency",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(buurman_notification_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 22 },
+      "id": 22,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Notification Error Rate",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_notification_send_total{job=\"$job\", result=\"failure\"}[$__rate_interval])) / sum(rate(buurman_notification_send_total{job=\"$job\"}[$__rate_interval]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 22 },
+      "id": 23,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Total Sent",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_notification_send_total{job=\"$job\", result=\"success\"}[$__range]))", "instant": false, "range": true, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "id": 24,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Notifications by Channel",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (channel) (rate(buurman_notification_send_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{channel}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "id": 25,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Notifications by Provider",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (provider) (rate(buurman_notification_send_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{provider}}", "refId": "A" }
       ]
     },
     {
@@ -158,13 +233,13 @@
         "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "fillOpacity": 30 }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
-      "id": 21,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 34 },
+      "id": 26,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Email Delivery Failures",
+      "title": "Notification Failures",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (template) (rate(buurman_email_sent_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (channel, provider) (rate(buurman_notification_send_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{channel}} / {{provider}}", "refId": "A" }
       ]
     },
     {
@@ -173,18 +248,18 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 },
-      "id": 22,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 34 },
+      "id": 27,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Email Send Latency (P95)",
+      "title": "Notification Send Latency P95",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, template) (rate(buurman_email_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{template}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, channel) (rate(buurman_notification_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{channel}}", "refId": "A" }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 38 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 42 },
       "id": 102,
       "title": "Documents",
       "type": "row"
@@ -195,7 +270,7 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 39 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 43 },
       "id": 30,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
       "title": "Document Uploads by Entity Type",
@@ -210,7 +285,7 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 39 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 43 },
       "id": 31,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Document Operations",
@@ -224,7 +299,7 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 47 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 51 },
       "id": 103,
       "title": "Exports / PDF Generation",
       "type": "row"
@@ -235,7 +310,7 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 48 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
       "id": 40,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
       "title": "Export Generation by Type",
@@ -250,7 +325,7 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 48 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
       "id": 41,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Export Generation Duration (P95)",
@@ -265,7 +340,7 @@
         "defaults": { "color": { "mode": "palette-classic" } },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 56 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 60 },
       "id": 42,
       "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "title": "Most Popular Export Type",
@@ -280,7 +355,7 @@
         "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "fillOpacity": 30 }, "unit": "short" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 56 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
       "id": 43,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Export Generation Failures",
@@ -291,7 +366,7 @@
     }
   ],
   "schemaVersion": 39,
-  "tags": ["buurman", "integrations", "s3", "email"],
+  "tags": ["buurman", "integrations", "s3", "notifications"],
   "templating": {
     "list": [
       {
