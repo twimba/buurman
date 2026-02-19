@@ -384,7 +384,7 @@ jobs:
       - name: Deploy Backend
         if: needs.build-backend.result == 'success' && (inputs.deploy-backend != false || github.event_name != 'workflow_dispatch')
         env:
-          APP_ID: "-DQP8uFDI8BFmuos34Ied"
+          APP_ID: "mcHoRsnypt4mrA7ZEGks8"
           IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/backend:${{ needs.build-backend.outputs.tag }}
         run: |
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
@@ -400,7 +400,7 @@ jobs:
       - name: Deploy App
         if: needs.build-app.result == 'success' && (inputs.deploy-app != false || github.event_name != 'workflow_dispatch')
         env:
-          APP_ID: "MGAIvuOi9NBTmD3EAAdzW"
+          APP_ID: "tq94w6tj3rLmEd02neSUR"
           IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/app:${{ needs.build-app.outputs.tag }}
         run: |
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
@@ -416,7 +416,7 @@ jobs:
       - name: Deploy Backoffice
         if: needs.build-backoffice.result == 'success' && (inputs.deploy-backoffice != false || github.event_name != 'workflow_dispatch')
         env:
-          APP_ID: "D_uQNdmaTZS8yURK7dcf5"
+          APP_ID: "aYL9TUnY9o-zE0Bgc_0GB"
           IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/backoffice:${{ needs.build-backoffice.outputs.tag }}
         run: |
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
@@ -432,7 +432,7 @@ jobs:
       - name: Deploy Keycloak
         if: needs.build-keycloak.result == 'success' && inputs.deploy-keycloak == true
         env:
-          APP_ID: "Jwi7QTE3W-wYtKkqs1HKR"
+          APP_ID: "t5-Ten900gCZTY3ra6xw3"
           IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/keycloak:${{ needs.build-keycloak.outputs.tag }}
         run: |
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
@@ -448,7 +448,7 @@ jobs:
       - name: Deploy Grafana
         if: needs.build-grafana.result == 'success' && inputs.deploy-grafana == true
         env:
-          APP_ID: "sCbejyhnQklHc5JK5Le3b"
+          APP_ID: "1gqRUoUdKkGDraocz4wsL"
           IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/grafana:${{ needs.build-grafana.outputs.tag }}
         run: |
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
