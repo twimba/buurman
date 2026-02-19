@@ -38,7 +38,8 @@ export const UserPreferencesSection = () => {
   const [typePrefs, setTypePrefs] = useState<NotificationTypePreferenceEntry[]>(
     () => notifTypeData?.preferences ?? []
   );
-  const [hasChanges, setHasChanges] = useState(false);
+  const [hasGlobalChanges, setHasGlobalChanges] = useState(false);
+  const [hasNotifTypeChanges, setHasNotifTypeChanges] = useState(false);
 
   // Sync global preferences from server
   const [lastSyncedPreferences, setLastSyncedPreferences] =
@@ -64,23 +65,23 @@ export const UserPreferencesSection = () => {
 
   const handleThemeChange = (theme: string) => {
     setPreferences((prev) => ({ ...prev, theme }));
-    setHasChanges(true);
+    setHasGlobalChanges(true);
     setTheme(theme as 'light' | 'dark' | 'system');
   };
 
   const handleLanguageChange = (language: string) => {
     setPreferences((prev) => ({ ...prev, language }));
-    setHasChanges(true);
+    setHasGlobalChanges(true);
   };
 
   const handleTimezoneChange = (timezone: string) => {
     setPreferences((prev) => ({ ...prev, timezone }));
-    setHasChanges(true);
+    setHasGlobalChanges(true);
   };
 
   const handleDateFormatChange = (dateFormat: string) => {
     setPreferences((prev) => ({ ...prev, dateFormat }));
-    setHasChanges(true);
+    setHasGlobalChanges(true);
   };
 
   const handleGlobalToggle = (
@@ -95,7 +96,8 @@ export const UserPreferencesSection = () => {
       );
       return { ...prev, [field]: newValue };
     });
-    setHasChanges(true);
+    setHasGlobalChanges(true);
+    setHasNotifTypeChanges(true);
   };
 
   const handleTypeToggle = (
@@ -109,21 +111,30 @@ export const UserPreferencesSection = () => {
           : p
       )
     );
-    setHasChanges(true);
+    setHasNotifTypeChanges(true);
   };
 
   const handleSave = () => {
-    const globalPromise = updatePreferencesMutation.mutateAsync(preferences);
-    const typePromise = updateNotifTypeMutation.mutateAsync({
-      preferences: typePrefs.map((p) => ({
-        notificationType: p.notificationType,
-        emailEnabled: p.emailEnabled,
-        smsEnabled: p.smsEnabled,
-      })),
-    });
+    const promises: Promise<unknown>[] = [];
 
-    Promise.all([globalPromise, typePromise]).then(() => {
-      setHasChanges(false);
+    if (hasGlobalChanges) {
+      promises.push(updatePreferencesMutation.mutateAsync(preferences));
+    }
+    if (hasNotifTypeChanges) {
+      promises.push(
+        updateNotifTypeMutation.mutateAsync({
+          preferences: typePrefs.map((p) => ({
+            notificationType: p.notificationType,
+            emailEnabled: p.emailEnabled,
+            smsEnabled: p.smsEnabled,
+          })),
+        })
+      );
+    }
+
+    Promise.all(promises).then(() => {
+      setHasGlobalChanges(false);
+      setHasNotifTypeChanges(false);
     });
   };
 
@@ -175,7 +186,7 @@ export const UserPreferencesSection = () => {
                 Customize your personal experience
               </p>
             </div>
-            {hasChanges && (
+            {(hasGlobalChanges || hasNotifTypeChanges) && (
               <button
                 onClick={handleSave}
                 disabled={isSaving}
