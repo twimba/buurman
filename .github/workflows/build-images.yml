@@ -55,6 +55,8 @@ jobs:
     name: Build & Publish Backend
     if: github.event_name != 'workflow_dispatch' || inputs.build-backend != false
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -134,6 +136,8 @@ jobs:
     name: Build & Publish App
     if: github.event_name != 'workflow_dispatch' || inputs.build-app != false
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -193,6 +197,8 @@ jobs:
     name: Build & Publish Backoffice
     if: github.event_name != 'workflow_dispatch' || inputs.build-backoffice != false
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -252,6 +258,8 @@ jobs:
     name: Build & Publish Keycloak
     if: github.event_name != 'workflow_dispatch' || inputs.build-keycloak == true
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -309,6 +317,8 @@ jobs:
     name: Build & Publish Grafana
     if: github.event_name != 'workflow_dispatch' || inputs.build-grafana == true
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     permissions:
       contents: read
       packages: write
@@ -367,26 +377,89 @@ jobs:
     needs: [build-backend, build-app, build-backoffice, build-keycloak, build-grafana]
     if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
+    env:
+      DOKPLOY_API: https://dokploy.buurman.io/api
+      IMAGE_BASE: ghcr.io/${{ github.repository_owner }}/buurman
     steps:
       - name: Deploy Backend
-        if: contains(fromJSON('["success","skipped"]'), needs.build-backend.result) && (inputs.deploy-backend != false || (github.event_name != 'workflow_dispatch'))
-        run: curl -sSf -X POST "https://dokploy.buurman.io/api/deploy/-DQP8uFDI8BFmuos34Ied" --max-time 10 || echo "⚠️ Backend deploy webhook failed"
+        if: needs.build-backend.result == 'success' && (inputs.deploy-backend != false || github.event_name != 'workflow_dispatch')
+        env:
+          APP_ID: "-DQP8uFDI8BFmuos34Ied"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/backend:${{ needs.build-backend.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed backend → $IMAGE"
 
       - name: Deploy App
-        if: contains(fromJSON('["success","skipped"]'), needs.build-app.result) && (inputs.deploy-app != false || (github.event_name != 'workflow_dispatch'))
-        run: curl -sSf -X POST "https://dokploy.buurman.io/api/deploy/MGAIvuOi9NBTmD3EAAdzW" --max-time 10 || echo "⚠️ App deploy webhook failed"
+        if: needs.build-app.result == 'success' && (inputs.deploy-app != false || github.event_name != 'workflow_dispatch')
+        env:
+          APP_ID: "MGAIvuOi9NBTmD3EAAdzW"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/app:${{ needs.build-app.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed app → $IMAGE"
 
       - name: Deploy Backoffice
-        if: contains(fromJSON('["success","skipped"]'), needs.build-backoffice.result) && (inputs.deploy-backoffice != false || (github.event_name != 'workflow_dispatch'))
-        run: curl -sSf -X POST "https://dokploy.buurman.io/api/deploy/D_uQNdmaTZS8yURK7dcf5" --max-time 10 || echo "⚠️ Backoffice deploy webhook failed"
+        if: needs.build-backoffice.result == 'success' && (inputs.deploy-backoffice != false || github.event_name != 'workflow_dispatch')
+        env:
+          APP_ID: "D_uQNdmaTZS8yURK7dcf5"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/backoffice:${{ needs.build-backoffice.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed backoffice → $IMAGE"
 
       - name: Deploy Keycloak
-        if: contains(fromJSON('["success","skipped"]'), needs.build-keycloak.result) && inputs.deploy-keycloak == true
-        run: curl -sSf -X POST "https://dokploy.buurman.io/api/deploy/Jwi7QTE3W-wYtKkqs1HKR" --max-time 10 || echo "⚠️ Keycloak deploy webhook failed"
+        if: needs.build-keycloak.result == 'success' && inputs.deploy-keycloak == true
+        env:
+          APP_ID: "Jwi7QTE3W-wYtKkqs1HKR"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/keycloak:${{ needs.build-keycloak.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed keycloak → $IMAGE"
 
       - name: Deploy Grafana
-        if: contains(fromJSON('["success","skipped"]'), needs.build-grafana.result) && inputs.deploy-grafana == true
-        run: curl -sSf -X POST "https://dokploy.buurman.io/api/deploy/sCbejyhnQklHc5JK5Le3b" --max-time 10 || echo "⚠️ Grafana deploy webhook failed"
+        if: needs.build-grafana.result == 'success' && inputs.deploy-grafana == true
+        env:
+          APP_ID: "sCbejyhnQklHc5JK5Le3b"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/grafana:${{ needs.build-grafana.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed grafana → $IMAGE"
 
       - name: Summary
         if: always()
@@ -394,13 +467,13 @@ jobs:
           cat >> "$GITHUB_STEP_SUMMARY" <<EOF
           ## Deploy
 
-          | Service | Deployed |
-          |---------|----------|
-          | Backend | ${{ (inputs.deploy-backend != false || github.event_name != 'workflow_dispatch') && contains(fromJSON('["success","skipped"]'), needs.build-backend.result) && '🚀 Yes' || '⏭️ Skipped' }} |
-          | App | ${{ (inputs.deploy-app != false || github.event_name != 'workflow_dispatch') && contains(fromJSON('["success","skipped"]'), needs.build-app.result) && '🚀 Yes' || '⏭️ Skipped' }} |
-          | Backoffice | ${{ (inputs.deploy-backoffice != false || github.event_name != 'workflow_dispatch') && contains(fromJSON('["success","skipped"]'), needs.build-backoffice.result) && '🚀 Yes' || '⏭️ Skipped' }} |
-          | Keycloak | ${{ inputs.deploy-keycloak == true && needs.build-keycloak.result == 'success' && '🚀 Yes' || '⏭️ Skipped' }} |
-          | Grafana | ${{ inputs.deploy-grafana == true && needs.build-grafana.result == 'success' && '🚀 Yes' || '⏭️ Skipped' }} |
+          | Service | Tag | Status |
+          |---------|-----|--------|
+          | Backend | \`${{ needs.build-backend.outputs.tag || '—' }}\` | ${{ needs.build-backend.result == 'success' && (inputs.deploy-backend != false || github.event_name != 'workflow_dispatch') && '🚀 Deployed' || '⏭️ Skipped' }} |
+          | App | \`${{ needs.build-app.outputs.tag || '—' }}\` | ${{ needs.build-app.result == 'success' && (inputs.deploy-app != false || github.event_name != 'workflow_dispatch') && '🚀 Deployed' || '⏭️ Skipped' }} |
+          | Backoffice | \`${{ needs.build-backoffice.outputs.tag || '—' }}\` | ${{ needs.build-backoffice.result == 'success' && (inputs.deploy-backoffice != false || github.event_name != 'workflow_dispatch') && '🚀 Deployed' || '⏭️ Skipped' }} |
+          | Keycloak | \`${{ needs.build-keycloak.outputs.tag || '—' }}\` | ${{ inputs.deploy-keycloak == true && needs.build-keycloak.result == 'success' && '🚀 Deployed' || '⏭️ Skipped' }} |
+          | Grafana | \`${{ needs.build-grafana.outputs.tag || '—' }}\` | ${{ inputs.deploy-grafana == true && needs.build-grafana.result == 'success' && '🚀 Deployed' || '⏭️ Skipped' }} |
           EOF
 
   summary:
@@ -464,11 +537,11 @@ jobs:
           \`\`\`
           3. Pull the images:
           \`\`\`bash
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:latest
-          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:latest
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backend:${{ needs.build-backend.outputs.tag || 'latest' }}
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:${{ needs.build-app.outputs.tag || 'latest' }}
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:${{ needs.build-backoffice.outputs.tag || 'latest' }}
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:${{ needs.build-keycloak.outputs.tag || 'latest' }}
+          docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/grafana:${{ needs.build-grafana.outputs.tag || 'latest' }}
           \`\`\`
 
           EOF
