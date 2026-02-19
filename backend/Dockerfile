@@ -14,7 +14,7 @@ COPY src ./src
 EXPOSE 8081
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1
 
 # Build at startup so the Docker socket is available for Testcontainers/JOOQ codegen
 ENV DOCKER_HOST=unix:///var/run/docker.sock
@@ -39,6 +39,6 @@ COPY target/buurman-backend-*.jar app.jar
 EXPOSE 8081
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
