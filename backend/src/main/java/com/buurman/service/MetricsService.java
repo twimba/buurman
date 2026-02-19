@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
@@ -52,6 +53,22 @@ public class MetricsService {
     io.micrometer.core.instrument.Gauge.builder(PREFIX + name, obj, valueFunction)
         .tags(tags)
         .register(registry);
+  }
+
+  public void recordNotificationSend(
+      Instant start, String channel, String provider, String result) {
+    Duration duration = Duration.between(start, Instant.now());
+    recordTimer(
+        "notification.send.seconds",
+        duration,
+        "channel",
+        channel,
+        "provider",
+        provider,
+        "result",
+        result);
+    incrementCounter(
+        "notification.send.total", "channel", channel, "provider", provider, "result", result);
   }
 
   public MeterRegistry getRegistry() {

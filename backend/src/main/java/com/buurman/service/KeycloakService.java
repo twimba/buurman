@@ -3,7 +3,10 @@ package com.buurman.service;
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -238,6 +241,58 @@ public class KeycloakService {
     } catch (NotFoundException e) {
       throw new com.buurman.exception.NotFoundException(
           "Keycloak user not found: " + keycloakUserId);
+    }
+  }
+
+  /** Get the set of Keycloak user IDs with active sessions in the app realm. */
+  public Set<String> getActiveAppUserIds() {
+    return getActiveUserIdsInRealm(realm);
+  }
+
+  /** Check if a specific user has an active session in the app realm. */
+  public boolean isAppUserOnline(String keycloakUserId) {
+    try {
+      var sessions = keycloak.realm(realm).users().get(keycloakUserId).getUserSessions();
+      return sessions != null && !sessions.isEmpty();
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /** Get active session counts per realm for the system info page. */
+  public Map<String, Integer> getActiveSessionCounts() {
+    int appCount = getActiveSessionCountInRealm(realm);
+    int backofficeCount = getActiveSessionCountInRealm(backofficeRealm);
+    return Map.of("app", appCount, "backoffice", backofficeCount);
+  }
+
+  private Set<String> getActiveUserIdsInRealm(String targetRealm) {
+    Set<String> userIds = new HashSet<>();
+    try {
+      var clients = keycloak.realm(targetRealm).clients().findAll();
+      for (var client : clients) {
+        try {
+          var sessions =
+              keycloak.realm(targetRealm).clients().get(client.getId()).getUserSessions(0, 1000);
+          for (var session : sessions) {
+            userIds.add(session.getUserId());
+          }
+        } catch (Exception ignored) {
+          // Some clients may not support sessions
+        }
+      }
+    } catch (Exception e) {
+      // Realm may not be accessible
+    }
+    return userIds;
+  }
+
+  private int getActiveSessionCountInRealm(String targetRealm) {
+    try {
+      var stats = keycloak.realm(targetRealm).getClientSessionStats();
+      return stats.stream().mapToInt(s -> Integer.parseInt(s.getOrDefault("active", "0"))).sum();
+    } catch (Exception e) {
+      return 0;
     }
   }
 

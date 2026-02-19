@@ -48,6 +48,12 @@
         "description": "Full access to the Buurman backoffice administration panel",
         "composite": false,
         "clientRole": false
+      },
+      {
+        "name": "BACKOFFICE_SYSTEM",
+        "description": "Access to system information, health checks, and actuator endpoints in the backoffice",
+        "composite": false,
+        "clientRole": false
       }
     ]
   },
@@ -246,7 +252,8 @@
         }
       ],
       "realmRoles": [
-        "BACKOFFICE_ADMIN"
+        "BACKOFFICE_ADMIN",
+        "BACKOFFICE_SYSTEM"
       ]
     }
   ],

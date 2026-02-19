@@ -3,6 +3,7 @@ package com.buurman.service.notification.channel;
 import static com.buurman.domain.NotificationChannel.SMS;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.context.annotation.Profile;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.config.models.TwilioProperties;
 import com.buurman.domain.NotificationChannel;
+import com.buurman.service.MetricsService;
 import com.buurman.service.notification.NotificationChannelSender;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
@@ -25,11 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TwilioSmsSender implements NotificationChannelSender {
 
+  private final MetricsService metricsService;
   private final String fromNumber;
   private final String messagingServiceSid;
   private final String statusCallbackUrl;
 
-  public TwilioSmsSender(TwilioProperties twilioProperties) {
+  public TwilioSmsSender(TwilioProperties twilioProperties, MetricsService metricsService) {
+    this.metricsService = metricsService;
     this.fromNumber = twilioProperties.fromNumber();
     this.messagingServiceSid = twilioProperties.messagingServiceSid();
     this.statusCallbackUrl = twilioProperties.statusCallbackUrl();
@@ -37,6 +41,7 @@ public class TwilioSmsSender implements NotificationChannelSender {
 
   @Override
   public String send(NotificationSendRequest request) throws NotificationSendException {
+    Instant start = Instant.now();
     try {
       MessageCreator creator;
       if (messagingServiceSid != null && !messagingServiceSid.isBlank()) {
@@ -58,8 +63,10 @@ public class TwilioSmsSender implements NotificationChannelSender {
       Message message = creator.create();
 
       log.info("Twilio SMS sent to {}, SID: {}", request.recipientPhone(), message.getSid());
+      metricsService.recordNotificationSend(start, "sms", "twilio", "success");
       return message.getSid();
     } catch (Exception e) {
+      metricsService.recordNotificationSend(start, "sms", "twilio", "failure");
       throw new NotificationSendException("Failed to send SMS via Twilio: " + e.getMessage(), e);
     }
   }

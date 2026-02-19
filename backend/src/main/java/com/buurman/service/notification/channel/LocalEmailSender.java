@@ -2,6 +2,7 @@ package com.buurman.service.notification.channel;
 
 import static com.buurman.domain.NotificationChannel.EMAIL;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ import org.thymeleaf.context.Context;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.NotificationChannel;
+import com.buurman.service.MetricsService;
 import com.buurman.service.notification.NotificationChannelSender;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
@@ -30,19 +32,25 @@ public class LocalEmailSender implements NotificationChannelSender {
 
   private final JavaMailSender mailSender;
   private final TemplateEngine templateEngine;
+  private final MetricsService metricsService;
   private final String fromEmail;
   private final String fromName;
 
   public LocalEmailSender(
-      JavaMailSender mailSender, TemplateEngine templateEngine, AppProperties appProperties) {
+      JavaMailSender mailSender,
+      TemplateEngine templateEngine,
+      AppProperties appProperties,
+      MetricsService metricsService) {
     this.mailSender = mailSender;
     this.templateEngine = templateEngine;
+    this.metricsService = metricsService;
     this.fromEmail = appProperties.email().from();
     this.fromName = appProperties.email().fromName();
   }
 
   @Override
   public String send(NotificationSendRequest request) throws NotificationSendException {
+    Instant start = Instant.now();
     try {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -60,8 +68,10 @@ public class LocalEmailSender implements NotificationChannelSender {
           request.recipientEmail(),
           request.subject(),
           fakeMessageId);
+      metricsService.recordNotificationSend(start, "email", "mailpit", "success");
       return fakeMessageId;
     } catch (MessagingException | java.io.UnsupportedEncodingException e) {
+      metricsService.recordNotificationSend(start, "email", "mailpit", "failure");
       throw new NotificationSendException("Failed to send email via Mailpit: " + e.getMessage(), e);
     }
   }

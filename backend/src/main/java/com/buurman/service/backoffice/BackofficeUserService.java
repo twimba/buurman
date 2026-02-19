@@ -7,6 +7,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
@@ -46,9 +47,23 @@ public class BackofficeUserService {
             .groupBy(TEAM_MEMBERS.USER_ID)
             .fetchMap(TEAM_MEMBERS.USER_ID, count());
 
+    Set<String> activeKeycloakUserIds;
+    try {
+      activeKeycloakUserIds = keycloakService.getActiveAppUserIds();
+    } catch (Exception e) {
+      log.warn("Failed to fetch active sessions from Keycloak: {}", e.getMessage());
+      activeKeycloakUserIds = Set.of();
+    }
+
+    Set<String> finalActiveIds = activeKeycloakUserIds;
     List<BackofficeUserResponse> responses =
         result.items().stream()
-            .map(user -> toResponse(user, teamCountMap.getOrDefault(user.getId(), 0)))
+            .map(
+                user ->
+                    toResponse(
+                        user,
+                        teamCountMap.getOrDefault(user.getId(), 0),
+                        finalActiveIds.contains(user.getKeycloakId())))
             .toList();
 
     return PageResponse.of(
@@ -65,7 +80,14 @@ public class BackofficeUserService {
             .where(TEAM_MEMBERS.USER_ID.eq(user.getId()).and(TEAM_MEMBERS.DELETED_AT.isNull()))
             .fetchOne(0, long.class);
 
-    return toResponse(user, teamCount);
+    boolean online = false;
+    try {
+      online = keycloakService.isAppUserOnline(user.getKeycloakId());
+    } catch (Exception e) {
+      log.warn("Failed to check user session status: {}", e.getMessage());
+    }
+
+    return toResponse(user, teamCount, online);
   }
 
   @Transactional
@@ -110,7 +132,7 @@ public class BackofficeUserService {
         user.getEmail());
   }
 
-  private BackofficeUserResponse toResponse(User user, long teamCount) {
+  private BackofficeUserResponse toResponse(User user, long teamCount, boolean online) {
     return new BackofficeUserResponse(
         user.getIdentifier(),
         user.getEmail(),
@@ -119,6 +141,7 @@ public class BackofficeUserService {
         user.getPhone(),
         user.getEmailVerifiedAt() != null,
         user.getDisabledAt() != null,
+        online,
         teamCount,
         user.getCreatedAt(),
         user.getUpdatedAt());

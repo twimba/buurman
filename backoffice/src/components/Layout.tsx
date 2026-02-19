@@ -16,6 +16,7 @@ import {
   Ticket,
   Timer,
   ScrollText,
+  Monitor,
   LogOut,
   Shield,
   ChevronsLeft,
@@ -57,6 +58,12 @@ const adminNavigation = [
   { name: "Buurmies", href: "/buurmies", icon: Smile },
   { name: "Scheduler", href: "/scheduler", icon: Timer },
   { name: "Loggers", href: "/loggers", icon: ScrollText },
+  {
+    name: "System",
+    href: "/system",
+    icon: Monitor,
+    role: "BACKOFFICE_SYSTEM" as const,
+  },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
@@ -150,6 +157,8 @@ const dashboardLinkClass = (isActive: boolean) => `
 export const Layout = () => {
   const { logout, keycloak } = useAuth();
   const userEmail = keycloak.tokenParsed?.email || "Admin";
+  const userRoles =
+    (keycloak.tokenParsed?.realm_access as { roles?: string[] })?.roles ?? [];
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const isToolRoute = location.pathname.startsWith("/tools/");
@@ -270,23 +279,25 @@ export const Layout = () => {
                 </p>
               )}
               <ul className="space-y-1">
-                {adminNavigation.map((item) => (
-                  <li key={item.name}>
-                    <SidebarTooltip label={item.name} show={collapsed}>
-                      <NavLink
-                        to={item.href}
-                        className={({ isActive }) =>
-                          navLinkClass(isActive, collapsed)
-                        }
-                      >
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && (
-                          <span className="truncate">{item.name}</span>
-                        )}
-                      </NavLink>
-                    </SidebarTooltip>
-                  </li>
-                ))}
+                {adminNavigation
+                  .filter((item) => !item.role || userRoles.includes(item.role))
+                  .map((item) => (
+                    <li key={item.name}>
+                      <SidebarTooltip label={item.name} show={collapsed}>
+                        <NavLink
+                          to={item.href}
+                          className={({ isActive }) =>
+                            navLinkClass(isActive, collapsed)
+                          }
+                        >
+                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          {!collapsed && (
+                            <span className="truncate">{item.name}</span>
+                          )}
+                        </NavLink>
+                      </SidebarTooltip>
+                    </li>
+                  ))}
               </ul>
             </div>
 

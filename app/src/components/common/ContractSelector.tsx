@@ -36,11 +36,8 @@ export const ContractSelector = ({
     (contract) =>
       contract.identifier.toLowerCase().includes(search.toLowerCase()) ||
       contract.property.street.toLowerCase().includes(search.toLowerCase()) ||
-      contract.primaryTenant.firstName
+      `${contract.primaryTenant.firstName} ${contract.primaryTenant.lastName ?? ''}`
         .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      contract.primaryTenant.lastName
-        ?.toLowerCase()
         .includes(search.toLowerCase())
   );
 

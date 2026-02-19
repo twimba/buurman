@@ -151,6 +151,8 @@ scheduling:
 
 # Actuator Configuration
 management:
+  server:
+    port: 8082
   endpoints:
     web:
       exposure:
@@ -161,6 +163,10 @@ management:
       show-details: always
   info:
     env:
+      enabled: true
+    git:
+      mode: full
+    build:
       enabled: true
   metrics:
     tags:

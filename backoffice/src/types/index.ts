@@ -76,6 +76,7 @@ export interface BackofficeUser {
   phone: string | null;
   emailVerified: boolean;
   disabled: boolean;
+  online: boolean;
   teamCount: number;
   createdAt: string;
   updatedAt: string;
@@ -171,4 +172,106 @@ export interface CreateBuurmyRequest {
   lastName: string;
   password: string;
   temporaryPassword: boolean;
+}
+
+// System Info types
+export type ServiceHealthStatus = "UP" | "DOWN" | "DISABLED" | "UNKNOWN";
+
+export interface ServiceHealth {
+  name: string;
+  status: ServiceHealthStatus;
+  latencyMs: number | null;
+  details: string | null;
+  error: string | null;
+}
+
+export interface MigrationEntry {
+  version: string | null;
+  description: string;
+  state: string;
+  installedOn: string | null;
+  executionTimeMs: number | null;
+  script: string;
+}
+
+export interface GcInfo {
+  name: string;
+  collectionCount: number;
+  collectionTimeMs: number;
+}
+
+export interface ConfigEntry {
+  category: string;
+  key: string;
+  value: string;
+}
+
+export interface MetricEntry {
+  name: string;
+  type: string;
+  value: number;
+  tags: Record<string, string>;
+}
+
+export interface HttpLatencyStats {
+  meanMs: number;
+  minMs: number;
+  maxMs: number;
+  p50Ms: number;
+  p75Ms: number;
+  p95Ms: number;
+  p99Ms: number;
+}
+
+export interface MetricsSnapshot {
+  httpRequestCount: number;
+  httpRequestTotalTimeSeconds: number;
+  httpLatency: HttpLatencyStats;
+  custom: MetricEntry[];
+}
+
+export interface SessionInfo {
+  appActiveUsers: number;
+  backofficeActiveUsers: number;
+}
+
+export interface SystemInfoResponse {
+  build: {
+    version: string;
+    gitCommit: string | null;
+    gitCommitFull: string | null;
+    gitBranch: string | null;
+    gitCommitTime: string | null;
+    gitDirty: boolean;
+    buildTime: string | null;
+  };
+  runtime: {
+    javaVersion: string;
+    springBootVersion: string;
+    activeProfiles: string;
+    uptimeMs: number;
+    heapUsedBytes: number;
+    heapMaxBytes: number;
+    nonHeapUsedBytes: number;
+    nonHeapMaxBytes: number;
+    cpuUsage: number;
+    availableProcessors: number;
+    threadCount: number;
+    peakThreadCount: number;
+    daemonThreadCount: number;
+    garbageCollectors: GcInfo[];
+    pid: number;
+    serverTime: string;
+  };
+  migrations: {
+    currentVersion: string | null;
+    appliedCount: number;
+    pendingCount: number;
+    failedCount: number;
+    entries: MigrationEntry[];
+  };
+  services: ServiceHealth[];
+  configuration: ConfigEntry[];
+  metrics: MetricsSnapshot;
+  sessions: SessionInfo;
 }

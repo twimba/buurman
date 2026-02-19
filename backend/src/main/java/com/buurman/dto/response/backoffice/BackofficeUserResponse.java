@@ -10,6 +10,7 @@ public record BackofficeUserResponse(
     String phone,
     boolean emailVerified,
     boolean disabled,
+    boolean online,
     long teamCount,
     Instant createdAt,
     Instant updatedAt) {}

@@ -8,6 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,10 +30,13 @@ public class GeocodingService {
   private final GoogleMapsProperties properties;
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
+  private final MetricsService metricsService;
 
-  public GeocodingService(GoogleMapsProperties properties, ObjectMapper objectMapper) {
+  public GeocodingService(
+      GoogleMapsProperties properties, ObjectMapper objectMapper, MetricsService metricsService) {
     this.properties = properties;
     this.objectMapper = objectMapper;
+    this.metricsService = metricsService;
     this.httpClient = HttpClient.newBuilder().connectTimeout(REQUEST_TIMEOUT).build();
   }
 
@@ -46,6 +50,8 @@ public class GeocodingService {
       return Optional.empty();
     }
 
+    Instant start = Instant.now();
+
     // Try 1: Full address
     String fullAddress =
         Stream.of(street, city, postalCode, country)
@@ -53,6 +59,7 @@ public class GeocodingService {
             .collect(Collectors.joining(", "));
     Optional<GeocodingResult> result = geocodeAddress(fullAddress);
     if (result.isPresent()) {
+      recordMetrics(start, "success", result.get().accuracy());
       return result;
     }
 
@@ -65,8 +72,10 @@ public class GeocodingService {
       result = geocodeAddress(cityCountry);
       if (result.isPresent()) {
         log.debug("Geocoding fell back to city+country for: {}", fullAddress);
-        return Optional.of(
-            new GeocodingResult(result.get().latitude(), result.get().longitude(), "CITY"));
+        var fallbackResult =
+            new GeocodingResult(result.get().latitude(), result.get().longitude(), "CITY");
+        recordMetrics(start, "success", "CITY");
+        return Optional.of(fallbackResult);
       }
     }
 
@@ -75,12 +84,15 @@ public class GeocodingService {
       result = geocodeAddress(country);
       if (result.isPresent()) {
         log.debug("Geocoding fell back to country for: {}", fullAddress);
-        return Optional.of(
-            new GeocodingResult(result.get().latitude(), result.get().longitude(), "COUNTRY"));
+        var fallbackResult =
+            new GeocodingResult(result.get().latitude(), result.get().longitude(), "COUNTRY");
+        recordMetrics(start, "success", "COUNTRY");
+        return Optional.of(fallbackResult);
       }
     }
 
     log.debug("Geocoding returned no results at any level for: {}", fullAddress);
+    recordMetrics(start, "no_result", "NONE");
     return Optional.empty();
   }
 
@@ -119,7 +131,15 @@ public class GeocodingService {
       return Optional.empty();
     } catch (Exception e) {
       log.warn("Geocoding failed for address '{}': {}", address, e.getMessage());
+      metricsService.incrementCounter("geocoding.error.total");
       return Optional.empty();
     }
+  }
+
+  private void recordMetrics(Instant start, String result, String accuracy) {
+    Duration duration = Duration.between(start, Instant.now());
+    metricsService.recordTimer(
+        "geocoding.seconds", duration, "result", result, "accuracy", accuracy);
+    metricsService.incrementCounter("geocoding.total", "result", result, "accuracy", accuracy);
   }
 }

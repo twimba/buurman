@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { getBuildDefines } from '../scripts/vite-build-info'
+
+const { defines } = getBuildDefines(process.env.npm_package_version || '0.0.0')
 
 export default defineConfig({
   plugins: [react()],
+  define: defines,
   server: {
     port: 5174,
     host: true,

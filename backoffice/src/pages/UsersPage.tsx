@@ -168,9 +168,15 @@ export const UsersPage = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                        {user.firstName} {user.lastName}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`h-2 w-2 rounded-full flex-shrink-0 ${user.online ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`}
+                          title={user.online ? "Online" : "Offline"}
+                        />
+                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                          {user.firstName} {user.lastName}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">

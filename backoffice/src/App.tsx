@@ -50,6 +50,9 @@ const LoggersPage = lazy(() =>
 const BuurmiesPage = lazy(() =>
   import("./pages/BuurmiesPage").then((m) => ({ default: m.BuurmiesPage })),
 );
+const SystemInfoPage = lazy(() =>
+  import("./pages/SystemInfoPage").then((m) => ({ default: m.SystemInfoPage })),
+);
 const RegistrationInvitationsPage = lazy(() =>
   import("./pages/RegistrationInvitationsPage").then((m) => ({
     default: m.RegistrationInvitationsPage,
@@ -92,6 +95,7 @@ function App() {
                 <Route path="/feature-flags" element={<FeatureFlagsPage />} />
                 <Route path="/scheduler" element={<SchedulerPage />} />
                 <Route path="/loggers" element={<LoggersPage />} />
+                <Route path="/system" element={<SystemInfoPage />} />
                 <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
               </Route>
             </Route>

@@ -2,6 +2,7 @@ package com.buurman.service.notification.channel;
 
 import static com.buurman.domain.NotificationChannel.SMS;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.NotificationChannel;
+import com.buurman.service.MetricsService;
 import com.buurman.service.notification.NotificationChannelSender;
 import com.buurman.service.notification.NotificationSendException;
 import com.buurman.service.notification.NotificationSendRequest;
@@ -21,8 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LocalSmsSender implements NotificationChannelSender {
 
+  private final MetricsService metricsService;
+
+  public LocalSmsSender(MetricsService metricsService) {
+    this.metricsService = metricsService;
+  }
+
   @Override
   public String send(NotificationSendRequest request) throws NotificationSendException {
+    Instant start = Instant.now();
     String fakeSid = "SM" + UUID.randomUUID().toString().replace("-", "").substring(0, 32);
 
     log.info("========== LOCAL SMS ==========");
@@ -31,6 +40,7 @@ public class LocalSmsSender implements NotificationChannelSender {
     log.info("Fake SID: {}", fakeSid);
     log.info("===============================");
 
+    metricsService.recordNotificationSend(start, "sms", "local", "success");
     return fakeSid;
   }
 

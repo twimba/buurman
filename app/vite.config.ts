@@ -1,9 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { writeFileSync, mkdirSync } from 'fs'
+import { getBuildDefines } from '../scripts/vite-build-info'
+
+const { defines, raw } = getBuildDefines(process.env.npm_package_version || '0.0.0')
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'generate-build-info',
+      configureServer(server) {
+        server.middlewares.use('/build-info.json', (_req, res) => {
+          res.setHeader('Content-Type', 'application/json')
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          res.end(JSON.stringify(raw))
+        })
+      },
+      closeBundle() {
+        mkdirSync('dist', { recursive: true })
+        writeFileSync('dist/build-info.json', JSON.stringify(raw))
+      },
+    },
+  ],
+  define: defines,
   server: {
     port: 5173,
     host: true,
