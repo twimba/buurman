@@ -248,13 +248,14 @@ public class NotificationService {
     }
 
     boolean smsEnabled = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS);
+    boolean emailFlagEnabled = featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS);
 
     UserPreferences globalPrefs =
         userPreferencesRepository
             .findByUserId(request.recipientUserId())
             .orElseGet(UserPreferences::new);
 
-    // System notification types → all globally-enabled channels
+    // System notification types (essential) → always eligible for email regardless of flag
     if (!type.isConfigurable()) {
       List<NotificationChannel> channels = new ArrayList<>();
       if (globalPrefs.isEmailNotifications()) {
@@ -266,14 +267,14 @@ public class NotificationService {
       return channels.isEmpty() ? List.of(EMAIL) : channels;
     }
 
-    // Configurable types → intersect global prefs AND per-type prefs
+    // Configurable (business) types → email gated by feature flag
     UserNotificationTypePreference typePref =
         notifTypePrefRepository
             .findByUserIdAndType(request.recipientUserId(), type)
             .orElseGet(UserNotificationTypePreference::new);
 
     List<NotificationChannel> channels = new ArrayList<>();
-    if (globalPrefs.isEmailNotifications() && typePref.isEmailEnabled()) {
+    if (emailFlagEnabled && globalPrefs.isEmailNotifications() && typePref.isEmailEnabled()) {
       channels.add(EMAIL);
     }
     if (smsEnabled && globalPrefs.isSmsNotifications() && typePref.isSmsEnabled()) {

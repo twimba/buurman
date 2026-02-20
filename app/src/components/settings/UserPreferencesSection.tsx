@@ -42,6 +42,7 @@ export const UserPreferencesSection = () => {
   const [hasNotifTypeChanges, setHasNotifTypeChanges] = useState(false);
 
   const smsAvailable = notifTypeData?.smsAvailable ?? false;
+  const emailAvailable = notifTypeData?.emailAvailable ?? true;
 
   // Sync global preferences from server
   const [lastSyncedPreferences, setLastSyncedPreferences] =
@@ -350,35 +351,49 @@ export const UserPreferencesSection = () => {
 
             {/* Global Master Switches */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-                  <div>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                      Email Notifications
-                    </p>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Receive notifications via email
-                    </p>
+              {emailAvailable && (
+                <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                    <div>
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                        Email Notifications
+                      </p>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Receive notifications via email
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleGlobalToggle('emailNotifications')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      preferences.emailNotifications
+                        ? 'bg-[#5c7cfa]'
+                        : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        preferences.emailNotifications
+                          ? 'translate-x-6'
+                          : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
+              {!emailAvailable && (
+                <div className="p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                    <div>
+                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        Security emails (password reset, verification, invitations) are always sent regardless of plan.
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleGlobalToggle('emailNotifications')}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    preferences.emailNotifications
-                      ? 'bg-[#5c7cfa]'
-                      : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      preferences.emailNotifications
-                        ? 'translate-x-6'
-                        : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
+              )}
 
               {smsAvailable && (
                 <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#1e2130] rounded-lg">
@@ -427,12 +442,14 @@ export const UserPreferencesSection = () => {
                         <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
                           Notification Type
                         </th>
-                        <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
-                          <div className="flex items-center justify-center gap-1">
-                            <Mail className="h-3.5 w-3.5" />
-                            Email
-                          </div>
-                        </th>
+                        {emailAvailable && (
+                          <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
+                            <div className="flex items-center justify-center gap-1">
+                              <Mail className="h-3.5 w-3.5" />
+                              Email
+                            </div>
+                          </th>
+                        )}
                         {smsAvailable && (
                           <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
                             <div className="flex items-center justify-center gap-1">
@@ -456,20 +473,22 @@ export const UserPreferencesSection = () => {
                           <td className="px-4 py-3 text-[#1a1d2e] dark:text-[#eef0f6]">
                             {pref.displayName}
                           </td>
-                          <td className="px-4 py-3 text-center">
-                            <input
-                              type="checkbox"
-                              checked={pref.emailEnabled}
-                              disabled={!preferences.emailNotifications}
-                              onChange={() =>
-                                handleTypeToggle(
-                                  pref.notificationType,
-                                  'emailEnabled'
-                                )
-                              }
-                              className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
-                            />
-                          </td>
+                          {emailAvailable && (
+                            <td className="px-4 py-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={pref.emailEnabled}
+                                disabled={!preferences.emailNotifications}
+                                onChange={() =>
+                                  handleTypeToggle(
+                                    pref.notificationType,
+                                    'emailEnabled'
+                                  )
+                                }
+                                className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
+                              />
+                            </td>
+                          )}
                           {smsAvailable && (
                             <td className="px-4 py-3 text-center">
                               <input
@@ -491,14 +510,15 @@ export const UserPreferencesSection = () => {
                     </tbody>
                   </table>
                 </div>
-                {!preferences.emailNotifications &&
+                {(!emailAvailable || !preferences.emailNotifications) &&
                   (!smsAvailable || !preferences.smsNotifications) && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
                       Enable at least one global channel above to configure
                       per-type settings
                     </p>
                   )}
-                {!preferences.emailNotifications &&
+                {emailAvailable &&
+                  !preferences.emailNotifications &&
                   smsAvailable &&
                   preferences.smsNotifications && (
                     <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
@@ -506,7 +526,8 @@ export const UserPreferencesSection = () => {
                       is off
                     </p>
                   )}
-                {preferences.emailNotifications &&
+                {emailAvailable &&
+                  preferences.emailNotifications &&
                   smsAvailable &&
                   !preferences.smsNotifications && (
                     <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">

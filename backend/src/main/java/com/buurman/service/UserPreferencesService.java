@@ -67,7 +67,12 @@ public class UserPreferencesService {
       prefs.setCurrencyFormat(request.currencyFormat());
     }
     if (request.emailNotifications() != null) {
-      prefs.setEmailNotifications(request.emailNotifications());
+      if (request.emailNotifications()
+          && !featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal)) {
+        prefs.setEmailNotifications(false);
+      } else {
+        prefs.setEmailNotifications(request.emailNotifications());
+      }
     }
     if (request.smsNotifications() != null) {
       if (request.smsNotifications()
@@ -89,6 +94,8 @@ public class UserPreferencesService {
 
     boolean smsAvailable =
         featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
+    boolean emailAvailable =
+        featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> saved =
         notifTypePrefRepository.findByUserId(principal.getUserId());
@@ -108,7 +115,11 @@ public class UserPreferencesService {
     }
 
     return new NotificationTypePreferencesResponse(
-        globalPrefs.isEmailNotifications(), globalPrefs.isSmsNotifications(), smsAvailable, entries);
+        globalPrefs.isEmailNotifications(),
+        globalPrefs.isSmsNotifications(),
+        smsAvailable,
+        emailAvailable,
+        entries);
   }
 
   @Transactional
@@ -117,6 +128,8 @@ public class UserPreferencesService {
 
     boolean smsAvailable =
         featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
+    boolean emailAvailable =
+        featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> prefs = new ArrayList<>();
     for (UpdateNotificationTypePreferencesRequest.Entry entry : request.preferences()) {
@@ -127,7 +140,7 @@ public class UserPreferencesService {
       UserNotificationTypePreference pref = new UserNotificationTypePreference();
       pref.setUserId(principal.getUserId());
       pref.setNotificationType(type);
-      pref.setEmailEnabled(entry.emailEnabled());
+      pref.setEmailEnabled(emailAvailable && entry.emailEnabled());
       pref.setSmsEnabled(smsAvailable && entry.smsEnabled());
       prefs.add(pref);
     }
