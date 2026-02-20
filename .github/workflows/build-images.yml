@@ -102,10 +102,10 @@ jobs:
           sed -i "s|<version>${CURRENT}</version>|<version>${NEW_VERSION}${SUFFIX}</version>|" backend/pom.xml
 
           # Bump app/package.json
-          cd app && npm version "${NEW_VERSION}" --no-git-tag-version --allow-same-version && cd ..
+          node -e "const fs=require('fs'),p='app/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
 
           # Bump backoffice/package.json
-          cd backoffice && npm version "${NEW_VERSION}" --no-git-tag-version --allow-same-version && cd ..
+          node -e "const fs=require('fs'),p='backoffice/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
 
       - name: Commit, tag and push
         id: push
