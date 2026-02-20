@@ -104,9 +104,11 @@ export const useUpdateUserPreferences = () => {
 };
 
 export const useNotificationTypePreferences = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['notificationTypePreferences'],
     queryFn: usersApi.getNotificationTypePreferences,
+    enabled: isAuthenticated,
   });
 };
 
@@ -127,10 +129,12 @@ export const useUpdateNotificationTypePreferences = () => {
 };
 
 export const useUserTeams = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['user-teams'],
     queryFn: usersApi.getUserTeams,
     staleTime: 5 * 60 * 1000,
+    enabled: isAuthenticated,
   });
 };
 

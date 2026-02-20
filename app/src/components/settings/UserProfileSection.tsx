@@ -84,7 +84,7 @@ function validatePhoneAgainstPolicy(
 }
 
 export const UserProfileSection = () => {
-  const { data: currentUser, isLoading } = useCurrentUser();
+  const { data: currentUser, isLoading, isError, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateUserProfile();
   const verifyPhoneMutation = useVerifyPhone();
   const resendMutation = useResendPhoneVerification();
@@ -92,13 +92,13 @@ export const UserProfileSection = () => {
   const { data: phonePolicy } = usePhonePolicy();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+  const [userData, setUserData] = useState(() => ({
+    firstName: currentUser?.firstName || '',
+    lastName: currentUser?.lastName || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
     avatarUrl: null as string | null,
-  });
+  }));
 
   const [lastSyncedUser, setLastSyncedUser] = useState(currentUser);
   if (currentUser && currentUser !== lastSyncedUser) {
@@ -296,6 +296,23 @@ export const UserProfileSection = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-4">
+        <AlertTriangle className="h-8 w-8 text-amber-500" />
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          Failed to load profile data
+        </p>
+        <button
+          onClick={() => refetch()}
+          className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors text-sm"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
