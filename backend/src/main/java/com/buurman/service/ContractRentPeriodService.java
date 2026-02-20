@@ -81,6 +81,7 @@ public class ContractRentPeriodService {
     period.setTeamId(teamId);
     period.setContractId(contract.getId());
     period.setRentAmount(request.rentAmount());
+    period.setCurrency(contract.getCurrency());
     period.setEffectiveFrom(request.effectiveFrom());
     period.setEffectiveTo(null);
     period.setNotes(request.notes());
@@ -276,6 +277,7 @@ public class ContractRentPeriodService {
     period.setTeamId(contract.getTeamId());
     period.setContractId(contract.getId());
     period.setRentAmount(contract.getRentAmount());
+    period.setCurrency(contract.getCurrency());
     period.setEffectiveFrom(contract.getStartDate());
     period.setEffectiveTo(null);
     period.setCreatedBy(principal.getUserId());

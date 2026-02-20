@@ -17,6 +17,7 @@ public class PaymentReceival {
   private UUID teamId;
   private UUID paymentId;
   private BigDecimal amount;
+  private String currency;
   private LocalDate receivalDate;
   private String notes;
   private Instant createdAt;

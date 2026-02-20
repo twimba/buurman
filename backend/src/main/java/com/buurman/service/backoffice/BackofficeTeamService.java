@@ -87,7 +87,7 @@ public class BackofficeTeamService {
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
-            statsRepository.sumActiveRentForTeam(team.getId()),
+            statsRepository.sumActiveRentForTeam(team.getId(), currency),
             currency,
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),

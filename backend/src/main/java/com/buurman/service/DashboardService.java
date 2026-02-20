@@ -24,6 +24,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -131,8 +132,9 @@ public class DashboardService {
     Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
 
     for (var contract : activeContracts) {
-      BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
       String currency = contract.get(CONTRACTS.CURRENCY);
+      BigDecimal rentAmount =
+          CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
       String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
 
       // Convert to monthly amount based on payment frequency

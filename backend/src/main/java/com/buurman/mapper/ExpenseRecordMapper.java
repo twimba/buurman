@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Expense;
 import com.buurman.jooq.generated.tables.records.ExpensesRecord;
+import com.buurman.util.CurrencyUtils;
 
 @Component
 public class ExpenseRecordMapper {
@@ -21,7 +22,7 @@ public class ExpenseRecordMapper {
     expense.setTeamId(record.getTeamId());
     expense.setPropertyId(record.getPropertyId());
     expense.setCategory(Expense.ExpenseCategory.valueOf(record.getCategory()));
-    expense.setAmount(record.getAmount());
+    expense.setAmount(CurrencyUtils.toMajorUnits(record.getAmount(), record.getCurrency()));
     expense.setCurrency(record.getCurrency());
     expense.setExpenseDate(record.getExpenseDate());
     expense.setDescription(record.getDescription());

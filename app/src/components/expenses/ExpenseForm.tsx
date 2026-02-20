@@ -7,6 +7,7 @@ import {
   formatExpenseCategory,
 } from '@/types/expense';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
@@ -70,15 +71,29 @@ export const ExpenseForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
-
     await onSubmit(formData);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-6"
+    >
       {/* Property */}
       <div>
         <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
@@ -130,19 +145,12 @@ export const ExpenseForm = ({
         <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
-        <input
-          type="number"
-          step="0.01"
-          value={formData.amount}
-          onChange={(e) =>
-            setFormData({ ...formData, amount: parseFloat(e.target.value) })
-          }
-          className={`w-full px-3 py-2 border rounded-md ${
-            errors.amount
-              ? 'border-red-500'
-              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-          }`}
+        <MoneyInput
+          value={formData.amount || undefined}
+          onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
+          currency={formData.currency || defaultCurrency || 'EUR'}
           disabled={isLoading}
+          error={!!errors.amount}
         />
         {errors.amount && (
           <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
@@ -233,6 +241,7 @@ export const ExpenseForm = ({
           onChange={(value) => setFormData({ ...formData, notes: value })}
           placeholder="Add any additional notes about this expense..."
           readOnly={isLoading}
+          onSubmit={submitForm}
         />
       </div>
 

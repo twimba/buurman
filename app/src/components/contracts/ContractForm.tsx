@@ -13,6 +13,7 @@ import {
 import { CreateTenantRequest } from '@/types/tenant';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { TenantSelector } from '@/components/common/TenantSelector';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
@@ -342,8 +343,7 @@ export const ContractForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
 
     try {
@@ -381,6 +381,18 @@ export const ContractForm = ({
       }
     } catch (error) {
       console.error('Failed to save contract:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -433,7 +445,11 @@ export const ContractForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-6"
+    >
       {/* Property Selection */}
       <div>
         <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
@@ -786,19 +802,12 @@ export const ContractForm = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Rent Amount <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.rentAmount}
-              onChange={(e) =>
-                handleChange(
-                  'rentAmount',
-                  e.target.value ? parseFloat(e.target.value) : ''
-                )
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="1000.00"
+            <MoneyInput
+              value={formData.rentAmount || undefined}
+              onChange={(val) => handleChange('rentAmount', val ?? '')}
+              currency={formData.currency || 'EUR'}
               disabled={isLoading}
+              error={!!errors.rentAmount}
             />
             {errors.rentAmount && (
               <p className="text-red-600 text-sm mt-1">{errors.rentAmount}</p>
@@ -820,18 +829,10 @@ export const ContractForm = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Deposit Amount
             </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.depositAmount || ''}
-              onChange={(e) =>
-                handleChange(
-                  'depositAmount',
-                  e.target.value ? parseFloat(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="1000.00"
+            <MoneyInput
+              value={formData.depositAmount || undefined}
+              onChange={(val) => handleChange('depositAmount', val)}
+              currency={formData.currency || 'EUR'}
               disabled={isLoading}
             />
           </div>
@@ -840,18 +841,10 @@ export const ContractForm = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Security Deposit
             </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.securityDeposit || ''}
-              onChange={(e) =>
-                handleChange(
-                  'securityDeposit',
-                  e.target.value ? parseFloat(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
-              placeholder="1000.00"
+            <MoneyInput
+              value={formData.securityDeposit || undefined}
+              onChange={(val) => handleChange('securityDeposit', val)}
+              currency={formData.currency || 'EUR'}
               disabled={isLoading}
             />
           </div>
@@ -1010,6 +1003,7 @@ export const ContractForm = ({
             value={formData.termsAndConditions || ''}
             onChange={(value) => handleChange('termsAndConditions', value)}
             placeholder="Enter contract terms and conditions"
+            onSubmit={submitForm}
           />
         </div>
       </div>
@@ -1024,6 +1018,7 @@ export const ContractForm = ({
             value={formData.notes || ''}
             onChange={(value) => handleChange('notes', value)}
             placeholder="Add any additional notes"
+            onSubmit={submitForm}
           />
         </div>
       </div>

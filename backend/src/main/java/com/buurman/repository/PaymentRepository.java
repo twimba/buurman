@@ -29,6 +29,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.PaymentsRecord;
 import com.buurman.mapper.PaymentRecordMapper;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -163,13 +164,14 @@ public class PaymentRepository {
               ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
               : now;
 
+      String currency = payment.getCurrency();
       dsl.insertInto(PAYMENTS)
           .set(PAYMENTS.ID, id)
           .set(PAYMENTS.IDENTIFIER, payment.getIdentifier())
           .set(PAYMENTS.TEAM_ID, payment.getTeamId())
           .set(PAYMENTS.CONTRACT_ID, payment.getContractId())
-          .set(PAYMENTS.AMOUNT, payment.getAmount())
-          .set(PAYMENTS.CURRENCY, payment.getCurrency())
+          .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))
+          .set(PAYMENTS.CURRENCY, currency)
           .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
           .set(PAYMENTS.DUE_DATE, payment.getDueDate())
           .set(PAYMENTS.STATUS, payment.getStatus().name())
@@ -193,9 +195,10 @@ public class PaymentRepository {
               ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
               : now;
 
+      String currency = payment.getCurrency();
       dsl.update(PAYMENTS)
-          .set(PAYMENTS.AMOUNT, payment.getAmount())
-          .set(PAYMENTS.CURRENCY, payment.getCurrency())
+          .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))
+          .set(PAYMENTS.CURRENCY, currency)
           .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
           .set(PAYMENTS.DUE_DATE, payment.getDueDate())
           .set(PAYMENTS.STATUS, payment.getStatus().name())

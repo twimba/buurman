@@ -18,6 +18,7 @@ public class ContractRentPeriod {
   private UUID teamId;
   private UUID contractId;
   private BigDecimal rentAmount;
+  private String currency;
   private LocalDate effectiveFrom;
   private LocalDate effectiveTo;
   private String notes;

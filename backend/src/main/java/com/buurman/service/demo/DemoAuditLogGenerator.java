@@ -17,6 +17,7 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Component;
 
+import com.buurman.util.CurrencyUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -153,10 +154,13 @@ public class DemoAuditLogGenerator {
       values.put("status", r.get(CONTRACTS.STATUS));
       values.put("startDate", Objects.toString(r.get(CONTRACTS.START_DATE), null));
       values.put("endDate", Objects.toString(r.get(CONTRACTS.END_DATE), null));
-      values.put("rentAmount", r.get(CONTRACTS.RENT_AMOUNT));
-      values.put("currency", r.get(CONTRACTS.CURRENCY));
+      String currency = r.get(CONTRACTS.CURRENCY) != null ? r.get(CONTRACTS.CURRENCY) : "EUR";
+      values.put("rentAmount", CurrencyUtils.toMajorUnits(r.get(CONTRACTS.RENT_AMOUNT), currency));
+      values.put("currency", currency);
       values.put("paymentFrequency", r.get(CONTRACTS.PAYMENT_FREQUENCY));
-      values.put("depositAmount", r.get(CONTRACTS.DEPOSIT_AMOUNT));
+      values.put(
+          "depositAmount",
+          CurrencyUtils.toMajorUnitsOrNull(r.get(CONTRACTS.DEPOSIT_AMOUNT), currency));
 
       insertAuditLog(
           teamId,
@@ -187,8 +191,9 @@ public class DemoAuditLogGenerator {
 
     for (var r : records) {
       Map<String, Object> values = new LinkedHashMap<>();
-      values.put("amount", r.get(PAYMENTS.AMOUNT));
-      values.put("currency", r.get(PAYMENTS.CURRENCY));
+      String payCurrency = r.get(PAYMENTS.CURRENCY) != null ? r.get(PAYMENTS.CURRENCY) : "EUR";
+      values.put("amount", CurrencyUtils.toMajorUnits(r.get(PAYMENTS.AMOUNT), payCurrency));
+      values.put("currency", payCurrency);
       values.put("dueDate", Objects.toString(r.get(PAYMENTS.DUE_DATE), null));
       values.put("status", r.get(PAYMENTS.STATUS));
       values.put("paymentDate", Objects.toString(r.get(PAYMENTS.PAYMENT_DATE), null));
@@ -222,9 +227,10 @@ public class DemoAuditLogGenerator {
 
     for (var r : records) {
       Map<String, Object> values = new LinkedHashMap<>();
+      String expCurrency = r.get(EXPENSES.CURRENCY) != null ? r.get(EXPENSES.CURRENCY) : "EUR";
       values.put("category", r.get(EXPENSES.CATEGORY));
-      values.put("amount", r.get(EXPENSES.AMOUNT));
-      values.put("currency", r.get(EXPENSES.CURRENCY));
+      values.put("amount", CurrencyUtils.toMajorUnits(r.get(EXPENSES.AMOUNT), expCurrency));
+      values.put("currency", expCurrency);
       values.put("expenseDate", Objects.toString(r.get(EXPENSES.EXPENSE_DATE), null));
       values.put("description", r.get(EXPENSES.DESCRIPTION));
 

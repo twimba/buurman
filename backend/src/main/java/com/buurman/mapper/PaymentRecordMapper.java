@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Payment;
 import com.buurman.jooq.generated.tables.records.PaymentsRecord;
+import com.buurman.util.CurrencyUtils;
 
 @Component
 public class PaymentRecordMapper {
@@ -20,7 +21,7 @@ public class PaymentRecordMapper {
     payment.setIdentifier(record.getIdentifier());
     payment.setTeamId(record.getTeamId());
     payment.setContractId(record.getContractId());
-    payment.setAmount(record.getAmount());
+    payment.setAmount(CurrencyUtils.toMajorUnits(record.getAmount(), record.getCurrency()));
     payment.setCurrency(record.getCurrency());
     payment.setPaymentDate(record.getPaymentDate());
     payment.setDueDate(record.getDueDate());

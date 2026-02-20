@@ -24,6 +24,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import com.buurman.mapper.ContractRecordMapper;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -172,6 +173,7 @@ public class ContractRepository {
               ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
               : now;
 
+      String currency = contract.getCurrency();
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
           .set(CONTRACTS.IDENTIFIER, contract.getIdentifier())
@@ -181,10 +183,15 @@ public class ContractRepository {
           .set(CONTRACTS.START_DATE, contract.getStartDate())
           .set(CONTRACTS.END_DATE, contract.getEndDate())
           .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
-          .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount())
-          .set(CONTRACTS.DEPOSIT_AMOUNT, contract.getDepositAmount())
-          .set(CONTRACTS.SECURITY_DEPOSIT, contract.getSecurityDeposit())
-          .set(CONTRACTS.CURRENCY, contract.getCurrency())
+          .set(
+              CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(contract.getRentAmount(), currency))
+          .set(
+              CONTRACTS.DEPOSIT_AMOUNT,
+              CurrencyUtils.toMinorUnitsOrNull(contract.getDepositAmount(), currency))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT,
+              CurrencyUtils.toMinorUnitsOrNull(contract.getSecurityDeposit(), currency))
+          .set(CONTRACTS.CURRENCY, currency)
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
@@ -210,16 +217,22 @@ public class ContractRepository {
               ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
               : now;
 
+      String currency = contract.getCurrency();
       dsl.update(CONTRACTS)
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
           .set(CONTRACTS.END_DATE, contract.getEndDate())
           .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
-          .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount())
-          .set(CONTRACTS.DEPOSIT_AMOUNT, contract.getDepositAmount())
-          .set(CONTRACTS.SECURITY_DEPOSIT, contract.getSecurityDeposit())
-          .set(CONTRACTS.CURRENCY, contract.getCurrency())
+          .set(
+              CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(contract.getRentAmount(), currency))
+          .set(
+              CONTRACTS.DEPOSIT_AMOUNT,
+              CurrencyUtils.toMinorUnitsOrNull(contract.getDepositAmount(), currency))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT,
+              CurrencyUtils.toMinorUnitsOrNull(contract.getSecurityDeposit(), currency))
+          .set(CONTRACTS.CURRENCY, currency)
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())

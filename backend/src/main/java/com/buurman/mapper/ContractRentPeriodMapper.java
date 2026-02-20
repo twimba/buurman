@@ -27,6 +27,7 @@ public class ContractRentPeriodMapper {
     return new RentPeriodResponse(
         period.getIdentifier(),
         period.getRentAmount(),
+        period.getCurrency(),
         period.getEffectiveFrom(),
         period.getEffectiveTo(),
         period.getNotes(),

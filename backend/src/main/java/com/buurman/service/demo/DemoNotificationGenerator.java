@@ -12,6 +12,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.util.CurrencyUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -180,9 +182,10 @@ public class DemoNotificationGenerator {
         // Contract created notification
         var startDate = contract.get(CONTRACTS.START_DATE);
         var endDate = contract.get(CONTRACTS.END_DATE);
-        var rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
         String currency =
             contract.get(CONTRACTS.CURRENCY) != null ? contract.get(CONTRACTS.CURRENCY) : "EUR";
+        BigDecimal rentAmount =
+            CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
 
         Map<String, Object> contractVars = new HashMap<>();
         contractVars.put("propertyName", propertyName);
@@ -272,7 +275,10 @@ public class DemoNotificationGenerator {
 
           String paymentStatus = payment.get(PAYMENTS.STATUS);
           if ("PENDING".equals(paymentStatus) || "OVERDUE".equals(paymentStatus)) {
-            String amount = "EUR " + payment.get(PAYMENTS.AMOUNT).toPlainString();
+            String amount =
+                "EUR "
+                    + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), "EUR")
+                        .toPlainString();
             String dueDate = payment.get(PAYMENTS.DUE_DATE).toString();
 
             Map<String, Object> vars =
@@ -357,7 +363,9 @@ public class DemoNotificationGenerator {
             continue;
           }
 
-          String amount = "EUR " + payment.get(PAYMENTS.AMOUNT).toPlainString();
+          String amount =
+              "EUR "
+                  + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), "EUR").toPlainString();
           var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
           Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
           String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";

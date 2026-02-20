@@ -18,6 +18,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,7 +62,7 @@ public class BackofficeTeamStatsRepository {
     return new DataCounts(properties, tenants, contracts, expenses, payments, documents);
   }
 
-  public BigDecimal sumActiveRentForTeam(UUID teamId) {
+  public BigDecimal sumActiveRentForTeam(UUID teamId, String currency) {
     BigDecimal result =
         dsl.select(sum(CONTRACTS.RENT_AMOUNT))
             .from(CONTRACTS)
@@ -72,7 +73,7 @@ public class BackofficeTeamStatsRepository {
                     .and(CONTRACTS.STATUS.eq("ACTIVE"))
                     .and(CONTRACTS.DELETED_AT.isNull()))
             .fetchOne(0, BigDecimal.class);
-    return result != null ? result : BigDecimal.ZERO;
+    return CurrencyUtils.sumToMajorUnits(result, currency);
   }
 
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {

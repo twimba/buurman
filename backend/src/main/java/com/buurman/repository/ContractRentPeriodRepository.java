@@ -3,7 +3,6 @@ package com.buurman.repository;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.exception.NotFoundException;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +36,8 @@ public class ContractRentPeriodRepository {
   private static final Field<String> IDENTIFIER = field("identifier", String.class);
   private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
   private static final Field<UUID> CONTRACT_ID = field("contract_id", UUID.class);
-  private static final Field<BigDecimal> RENT_AMOUNT = field("rent_amount", BigDecimal.class);
+  private static final Field<Long> RENT_AMOUNT = field("rent_amount", Long.class);
+  private static final Field<String> CURRENCY = field("currency", String.class);
   private static final Field<Date> EFFECTIVE_FROM = field("effective_from", Date.class);
   private static final Field<Date> EFFECTIVE_TO = field("effective_to", Date.class);
   private static final Field<String> NOTES = field("notes", String.class);
@@ -48,6 +49,7 @@ public class ContractRentPeriodRepository {
 
   public ContractRentPeriod save(ContractRentPeriod period) {
     LocalDateTime now = LocalDateTime.now(clock);
+    String currency = period.getCurrency() != null ? period.getCurrency() : "EUR";
     Timestamp createdAt =
         period.getCreatedAt() != null
             ? Timestamp.from(period.getCreatedAt())
@@ -64,7 +66,8 @@ public class ContractRentPeriodRepository {
           .set(IDENTIFIER, period.getIdentifier())
           .set(TEAM_ID, period.getTeamId())
           .set(CONTRACT_ID, period.getContractId())
-          .set(RENT_AMOUNT, period.getRentAmount())
+          .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
+          .set(CURRENCY, currency)
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
           .set(
               EFFECTIVE_TO,
@@ -81,7 +84,7 @@ public class ContractRentPeriodRepository {
       period.setUpdatedAt(updatedAt.toInstant());
     } else {
       dsl.update(TABLE)
-          .set(RENT_AMOUNT, period.getRentAmount())
+          .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
           .set(
               EFFECTIVE_TO,
@@ -191,12 +194,14 @@ public class ContractRentPeriodRepository {
   }
 
   private ContractRentPeriod toDomain(Record record) {
+    String currency = record.get(CURRENCY) != null ? record.get(CURRENCY) : "EUR";
     ContractRentPeriod period = new ContractRentPeriod();
     period.setId(record.get(ID));
     period.setIdentifier(record.get(IDENTIFIER));
     period.setTeamId(record.get(TEAM_ID));
     period.setContractId(record.get(CONTRACT_ID));
-    period.setRentAmount(record.get(RENT_AMOUNT));
+    period.setRentAmount(CurrencyUtils.toMajorUnits(record.get(RENT_AMOUNT), currency));
+    period.setCurrency(currency);
 
     Date effectiveFromVal = record.get(EFFECTIVE_FROM);
     period.setEffectiveFrom(effectiveFromVal != null ? effectiveFromVal.toLocalDate() : null);

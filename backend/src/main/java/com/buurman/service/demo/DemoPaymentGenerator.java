@@ -6,7 +6,6 @@ import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.util.UlidGenerator.newPaymentId;
 import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,7 +60,7 @@ public class DemoPaymentGenerator {
         }
 
         LocalDate startDate = contract.get(CONTRACTS.START_DATE);
-        BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
+        Long rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
 
         // Determine end date for payment generation
         LocalDate paymentEndDate;
@@ -151,6 +150,7 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
+                .set(PAYMENT_RECEIVALS.CURRENCY, "EUR")
                 .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
                 .set(PAYMENT_RECEIVALS.CREATED_AT, now)
                 .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
@@ -158,13 +158,14 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
                 .execute();
           } else if ("PARTIALLY_PAID".equals(paymentStatus)) {
-            BigDecimal partialAmount = rentAmount.multiply(BigDecimal.valueOf(0.6));
+            long partialAmount = (long) (rentAmount * 0.6);
             dsl.insertInto(PAYMENT_RECEIVALS)
                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
                 .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId().value())
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)
+                .set(PAYMENT_RECEIVALS.CURRENCY, "EUR")
                 .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
                 .set(PAYMENT_RECEIVALS.CREATED_AT, now)
                 .set(PAYMENT_RECEIVALS.UPDATED_AT, now)

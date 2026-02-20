@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public record PaymentReceivalResponse(
     String identifier,
     BigDecimal amount,
+    String currency,
     LocalDate receivalDate,
     String notes,
     Instant createdAt) {}

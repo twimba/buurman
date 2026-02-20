@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface AdjustRentModalProps {
@@ -41,10 +42,21 @@ export const AdjustRentModal = ({
     return ((parsedAmount - currentRent) / currentRent) * 100;
   }, [parsedAmount, currentRent]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = () => {
     if (parsedAmount === null || parsedAmount <= 0) return;
     onConfirm(parsedAmount, effectiveFrom, notes || undefined);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
   };
 
   return (
@@ -65,7 +77,7 @@ export const AdjustRentModal = ({
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
           <div className="p-4 space-y-4">
             {/* Current Rent */}
             <div>
@@ -86,17 +98,16 @@ export const AdjustRentModal = ({
                 New Rent Amount
               </label>
               <div className="relative">
-                <input
+                <MoneyInput
                   id="rentAmount"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={rentAmount}
-                  onChange={(e) => setRentAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+                  value={parsedAmount ?? undefined}
+                  onChange={(val) =>
+                    setRentAmount(val !== undefined ? String(val) : '')
+                  }
+                  currency={currency}
                   disabled={isLoading}
-                  required
+                  min={0.01}
+                  className="pr-20"
                 />
                 {percentageChange !== null && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -154,6 +165,7 @@ export const AdjustRentModal = ({
                 value={notes}
                 onChange={setNotes}
                 placeholder="Reason for adjustment (e.g., annual CPI increase)..."
+                onSubmit={submitForm}
               />
             </div>
           </div>

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public record RentPeriodResponse(
     String identifier,
     BigDecimal rentAmount,
+    String currency,
     LocalDate effectiveFrom,
     LocalDate effectiveTo,
     String notes,

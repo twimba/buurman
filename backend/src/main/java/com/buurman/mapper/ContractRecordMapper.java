@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
+import com.buurman.util.CurrencyUtils;
 
 @Component
 public class ContractRecordMapper {
@@ -24,9 +25,12 @@ public class ContractRecordMapper {
     contract.setStartDate(record.getStartDate());
     contract.setEndDate(record.getEndDate());
     contract.setSignedDate(record.getSignedDate());
-    contract.setRentAmount(record.getRentAmount());
-    contract.setDepositAmount(record.getDepositAmount());
-    contract.setSecurityDeposit(record.getSecurityDeposit());
+    String currency = record.getCurrency();
+    contract.setRentAmount(CurrencyUtils.toMajorUnits(record.getRentAmount(), currency));
+    contract.setDepositAmount(
+        CurrencyUtils.toMajorUnitsOrNull(record.getDepositAmount(), currency));
+    contract.setSecurityDeposit(
+        CurrencyUtils.toMajorUnitsOrNull(record.getSecurityDeposit(), currency));
     contract.setCurrency(record.getCurrency());
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(record.getPaymentDueDay());

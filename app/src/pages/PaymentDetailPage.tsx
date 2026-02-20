@@ -54,11 +54,13 @@ import {
   PaymentReceivalResponse,
 } from '@/types/payment';
 import { getCurrencySymbol } from '@/utils/currencies';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface ReceivalsTableProps {
   receivals: PaymentReceivalResponse[];
   symbol: string;
+  currency: string;
   formatDate: (d: string) => string;
   canEdit: boolean;
   onEdit: (
@@ -79,6 +81,7 @@ interface ReceivalsTableProps {
 const ReceivalsTable = ({
   receivals,
   symbol,
+  currency,
   formatDate,
   canEdit,
   onEdit,
@@ -209,13 +212,13 @@ const ReceivalsTable = ({
                     />
                   </td>
                   <td className="px-4 py-2 text-right">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      value={editAmount}
-                      onChange={(e) => setEditAmount(e.target.value)}
-                      className={`${inputClass} w-28 text-right`}
+                    <MoneyInput
+                      value={editAmount ? parseFloat(editAmount) : undefined}
+                      onChange={(val) =>
+                        setEditAmount(val !== undefined ? String(val) : '')
+                      }
+                      currency={currency}
+                      className="w-28 text-right"
                     />
                   </td>
                   <td className="px-4 py-2" colSpan={canEdit ? 2 : 1}>
@@ -829,6 +832,7 @@ export const PaymentDetailPage = () => {
               <ReceivalsTable
                 receivals={payment.receivals}
                 symbol={symbol}
+                currency={payment.currency}
                 formatDate={formatDate}
                 canEdit={canEditData}
                 onEdit={(receivalId, data) =>
@@ -1224,7 +1228,15 @@ export const PaymentDetailPage = () => {
 
       {/* Mark Paid Modal */}
       {showMarkPaidModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault();
+              handleMarkPaid();
+            }
+          }}
+        >
           <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Mark Payment as Paid
@@ -1254,12 +1266,11 @@ export const PaymentDetailPage = () => {
                 <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
                   Notes (Optional)
                 </label>
-                <textarea
+                <RichTextEditor
                   value={markPaidNotes}
-                  onChange={(e) => setMarkPaidNotes(e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md"
+                  onChange={setMarkPaidNotes}
                   placeholder="Add any notes about this payment..."
+                  onSubmit={handleMarkPaid}
                 />
               </div>
             </div>
@@ -1285,7 +1296,15 @@ export const PaymentDetailPage = () => {
 
       {/* Register Receival Modal */}
       {showReceivalModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault();
+              handleRegisterReceival();
+            }
+          }}
+        >
           <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
             <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
               Register Receival
@@ -1301,14 +1320,15 @@ export const PaymentDetailPage = () => {
                 <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
                   Amount <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
+                <MoneyInput
+                  value={
+                    receivalAmount ? parseFloat(receivalAmount) : undefined
+                  }
+                  onChange={(val) =>
+                    setReceivalAmount(val !== undefined ? String(val) : '')
+                  }
+                  currency={payment.currency}
                   max={payment.balance}
-                  value={receivalAmount}
-                  onChange={(e) => setReceivalAmount(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md"
                   placeholder={`Max: ${payment.balance.toFixed(2)}`}
                 />
               </div>
@@ -1331,6 +1351,7 @@ export const PaymentDetailPage = () => {
                   value={receivalNotes}
                   onChange={setReceivalNotes}
                   placeholder="Add notes about this receival..."
+                  onSubmit={handleRegisterReceival}
                 />
               </div>
             </div>

@@ -19,6 +19,8 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
 
+import com.buurman.util.CurrencyUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -130,9 +132,9 @@ public class DemoContractGenerator {
             .set(CONTRACTS.START_DATE, startDate)
             .set(CONTRACTS.END_DATE, endDate)
             .set(CONTRACTS.SIGNED_DATE, signedDate)
-            .set(CONTRACTS.RENT_AMOUNT, rentAmount)
-            .set(CONTRACTS.DEPOSIT_AMOUNT, deposit)
-            .set(CONTRACTS.SECURITY_DEPOSIT, securityDeposit)
+            .set(CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(rentAmount, "EUR"))
+            .set(CONTRACTS.DEPOSIT_AMOUNT, CurrencyUtils.toMinorUnits(deposit, "EUR"))
+            .set(CONTRACTS.SECURITY_DEPOSIT, CurrencyUtils.toMinorUnits(securityDeposit, "EUR"))
             .set(CONTRACTS.CURRENCY, "EUR")
             .set(CONTRACTS.PAYMENT_FREQUENCY, "MONTHLY")
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)

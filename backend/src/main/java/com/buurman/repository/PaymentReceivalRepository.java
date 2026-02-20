@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentReceival;
 import com.buurman.exception.NotFoundException;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +37,8 @@ public class PaymentReceivalRepository {
   private static final Field<String> IDENTIFIER = field("identifier", String.class);
   private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
   private static final Field<UUID> PAYMENT_ID = field("payment_id", UUID.class);
-  private static final Field<BigDecimal> AMOUNT = field("amount", BigDecimal.class);
+  private static final Field<Long> AMOUNT = field("amount", Long.class);
+  private static final Field<String> CURRENCY = field("currency", String.class);
   private static final Field<LocalDate> RECEIVAL_DATE = field("receival_date", LocalDate.class);
   private static final Field<String> NOTES = field("notes", String.class);
   private static final Field<LocalDateTime> CREATED_AT = field("created_at", LocalDateTime.class);
@@ -93,17 +95,18 @@ public class PaymentReceivalRepository {
         .map(this::toDomain);
   }
 
-  public BigDecimal sumByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
+  public BigDecimal sumByPaymentIdAndTeamId(UUID paymentId, UUID teamId, String currency) {
     BigDecimal sum =
-        dsl.select(coalesce(sum(AMOUNT), BigDecimal.ZERO))
+        dsl.select(coalesce(sum(AMOUNT), 0L))
             .from(TABLE)
             .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
             .fetchOneInto(BigDecimal.class);
-    return sum != null ? sum : BigDecimal.ZERO;
+    return CurrencyUtils.sumToMajorUnits(sum, currency);
   }
 
   public PaymentReceival save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
+    String currency = receival.getCurrency() != null ? receival.getCurrency() : "EUR";
 
     UUID id = UUID.randomUUID();
     LocalDateTime createdAt =
@@ -120,7 +123,8 @@ public class PaymentReceivalRepository {
         .set(IDENTIFIER, receival.getIdentifier())
         .set(TEAM_ID, receival.getTeamId())
         .set(PAYMENT_ID, receival.getPaymentId())
-        .set(AMOUNT, receival.getAmount())
+        .set(AMOUNT, CurrencyUtils.toMinorUnits(receival.getAmount(), currency))
+        .set(CURRENCY, currency)
         .set(RECEIVAL_DATE, receival.getReceivalDate())
         .set(NOTES, receival.getNotes())
         .set(CREATED_AT, createdAt)
@@ -142,10 +146,11 @@ public class PaymentReceivalRepository {
       BigDecimal amount,
       LocalDate receivalDate,
       String notes,
-      UUID updatedBy) {
+      UUID updatedBy,
+      String currency) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(TABLE)
-        .set(AMOUNT, amount)
+        .set(AMOUNT, CurrencyUtils.toMinorUnits(amount, currency))
         .set(RECEIVAL_DATE, receivalDate)
         .set(NOTES, notes)
         .set(UPDATED_AT, now)
@@ -160,12 +165,14 @@ public class PaymentReceivalRepository {
   }
 
   private PaymentReceival toDomain(Record record) {
+    String currency = record.get(CURRENCY) != null ? record.get(CURRENCY) : "EUR";
     PaymentReceival receival = new PaymentReceival();
     receival.setId(record.get(ID));
     receival.setIdentifier(record.get(IDENTIFIER));
     receival.setTeamId(record.get(TEAM_ID));
     receival.setPaymentId(record.get(PAYMENT_ID));
-    receival.setAmount(record.get(AMOUNT));
+    receival.setAmount(CurrencyUtils.toMajorUnits(record.get(AMOUNT), currency));
+    receival.setCurrency(currency);
     receival.setReceivalDate(toLocalDate(record.get("receival_date")));
     receival.setNotes(record.get(NOTES));
     receival.setCreatedAt(toInstant(record.get("created_at")));

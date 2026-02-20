@@ -35,6 +35,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
@@ -164,7 +165,9 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.CategoryTotal(
-                        r.value1(), r.value3() != null ? r.value3() : BigDecimal.ZERO, r.value2()))
+                        r.value1(),
+                        CurrencyUtils.sumToMajorUnits(r.value3(), currency),
+                        r.value2()))
             .toList();
 
     List<ExpenseStatsResponse.MonthlyTrend> monthlyTrend =
@@ -172,11 +175,11 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.MonthlyTrend(
-                        r.value1(), r.value2() != null ? r.value2() : BigDecimal.ZERO))
+                        r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
             .toList();
 
     return new ExpenseStatsResponse(
-        totalStats.value2() != null ? totalStats.value2() : BigDecimal.ZERO,
+        CurrencyUtils.sumToMajorUnits(totalStats.value2(), currency),
         currency,
         topCategories,
         monthlyTrend);
