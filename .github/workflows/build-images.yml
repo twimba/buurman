@@ -68,6 +68,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
       - name: Bump versions
         id: bump
         run: |
@@ -77,7 +83,7 @@ jobs:
           echo "Previous version tag: ${PREV_TAG:-'(none)'}"
 
           # Read current backend version (source of truth)
-          CURRENT=$(grep -A1 '<artifactId>buurman-backend</artifactId>' backend/pom.xml | grep '<version>' | sed 's/.*<version>//;s/<\/version>.*//')
+          CURRENT=$(mvn -f backend/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "Current backend version: ${CURRENT}"
 
           # Parse MAJOR.MINOR.PATCH, preserve -SNAPSHOT suffix
@@ -98,8 +104,8 @@ jobs:
             exit 1
           fi
 
-          # Bump backend/pom.xml
-          sed -i "s|<version>${CURRENT}</version>|<version>${NEW_VERSION}${SUFFIX}</version>|" backend/pom.xml
+          # Bump backend/pom.xml via Maven versions plugin
+          mvn -f backend/pom.xml versions:set -DnewVersion="${NEW_VERSION}${SUFFIX}" -DgenerateBackupPoms=false -q
 
           # Bump app/package.json
           node -e "const fs=require('fs'),p='app/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
