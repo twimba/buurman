@@ -262,8 +262,14 @@ export const useGenerateContractPayments = (contractId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (count: number) =>
-      contractsApi.generateContractPayments(contractId, { count }),
+    mutationFn: ({
+      count,
+      markAsPaid,
+    }: {
+      count: number;
+      markAsPaid?: boolean;
+    }) =>
+      contractsApi.generateContractPayments(contractId, { count, markAsPaid }),
     onSuccess: (result) => {
       queryClient.invalidateQueries({
         queryKey: ['paymentsByContract', contractId],
@@ -273,14 +279,18 @@ export const useGenerateContractPayments = (contractId: string) => {
         queryKey: ['contractAuditLog', contractId],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      const paidSuffix =
+        result.markedAsPaid && result.markedAsPaid > 0
+          ? ' and marked as paid'
+          : '';
       if (result.generated === result.requested) {
         showToast(
-          `Generated ${result.generated} payment(s) successfully`,
+          `Scheduled ${result.generated} payment(s)${paidSuffix} successfully`,
           'success'
         );
       } else {
         showToast(
-          `Generated ${result.generated} of ${result.requested} payment(s). Some dates already had payments.`,
+          `Scheduled ${result.generated} of ${result.requested} payment(s)${paidSuffix}. Some dates already had payments.`,
           'success'
         );
       }

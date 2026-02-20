@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { Calendar, CalendarCheck } from 'lucide-react';
 
 interface GeneratePaymentsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (count: number) => Promise<void>;
+  onSubmit: (count: number, markAsPaid: boolean) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -17,11 +18,22 @@ export default function GeneratePaymentsModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit(count);
+  const submitForm = async (markAsPaid: boolean) => {
+    await onSubmit(count, markAsPaid);
     setCount(1);
     onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm(false);
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm(false);
+    }
   };
 
   return (
@@ -29,16 +41,16 @@ export default function GeneratePaymentsModal({
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-4 text-[#1a1d2e] dark:text-[#eef0f6]">
-          Generate Payments
+          Schedule Payments
         </h3>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
           <div className="mb-4">
             <label
               htmlFor="count"
               className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1"
             >
-              Number of payments to generate
+              Number of payments to schedule
             </label>
             <input
               type="number"
@@ -55,7 +67,7 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             />
             <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-              Payments will be generated for the next {count} period(s) based on
+              Payments will be scheduled for the next {count} period(s) based on
               the contract&apos;s payment frequency.
             </p>
           </div>
@@ -71,12 +83,20 @@ export default function GeneratePaymentsModal({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md disabled:opacity-50"
+              className="px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md disabled:opacity-50 flex items-center gap-1.5"
               disabled={isLoading}
             >
-              {isLoading
-                ? 'Generating...'
-                : `Generate ${count} Payment${count > 1 ? 's' : ''}`}
+              <Calendar className="h-4 w-4" />
+              Schedule
+            </button>
+            <button
+              type="button"
+              onClick={() => submitForm(true)}
+              className="px-4 py-2 text-sm text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md disabled:opacity-50 flex items-center gap-1.5"
+              disabled={isLoading}
+            >
+              <CalendarCheck className="h-4 w-4" />
+              {isLoading ? 'Scheduling...' : 'Schedule & Mark Paid'}
             </button>
           </div>
         </form>

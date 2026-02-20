@@ -151,11 +151,14 @@ export const getContractAuditLog = async (
 
 export interface GeneratePaymentsRequest {
   count: number;
+  markAsPaid?: boolean;
+  paymentDate?: string;
 }
 
 export interface GeneratePaymentsResponse {
   generated: number;
   requested: number;
+  markedAsPaid?: number;
 }
 
 export const generateContractPayments = async (

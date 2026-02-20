@@ -699,7 +699,7 @@ export const ContractDetailPage = () => {
                     onClick={() => setShowGeneratePaymentsModal(true)}
                     disabled={!canEditData}
                   >
-                    Generate Payments
+                    Schedule Payments
                   </Button>
                 )}
                 <Button
@@ -1199,12 +1199,12 @@ export const ContractDetailPage = () => {
         />
       )}
 
-      {/* Generate Payments Modal */}
+      {/* Schedule Payments Modal */}
       <GeneratePaymentsModal
         isOpen={showGeneratePaymentsModal}
         onClose={() => setShowGeneratePaymentsModal(false)}
-        onSubmit={async (count) => {
-          await generatePaymentsMutation.mutateAsync(count);
+        onSubmit={async (count, markAsPaid) => {
+          await generatePaymentsMutation.mutateAsync({ count, markAsPaid });
         }}
         isLoading={generatePaymentsMutation.isPending}
       />

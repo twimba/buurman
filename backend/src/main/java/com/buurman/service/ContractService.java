@@ -12,6 +12,7 @@ import static com.buurman.util.UlidGenerator.newContractId;
 
 import java.net.URL;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -732,10 +733,26 @@ public class ContractService {
       String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
+    LocalDate paymentDate =
+        markAsPaid
+            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now())
+            : null;
     int generated =
         paymentSchedulingService.generatePaymentsManually(
-            contract.getId(), principal.getTeamId(), principal.getUserId(), request.count());
-    return Map.of("generated", generated, "requested", request.count());
+            contract.getId(),
+            principal.getTeamId(),
+            principal.getUserId(),
+            request.count(),
+            markAsPaid,
+            paymentDate);
+    Map<String, Object> result = new HashMap<>();
+    result.put("generated", generated);
+    result.put("requested", request.count());
+    if (markAsPaid) {
+      result.put("markedAsPaid", generated);
+    }
+    return result;
   }
 
   // --- Private helpers ---
