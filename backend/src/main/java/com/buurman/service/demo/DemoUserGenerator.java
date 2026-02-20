@@ -1,6 +1,7 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.USERS;
+import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.util.UlidGenerator.newUserId;
 
 import java.time.Clock;
@@ -39,6 +40,13 @@ public class DemoUserGenerator {
           .set(USERS.EMAIL_VERIFIED_AT, now)
           .set(USERS.CREATED_AT, now)
           .set(USERS.UPDATED_AT, now)
+          .execute();
+
+      dsl.insertInto(USER_PREFERENCES)
+          .set(USER_PREFERENCES.USER_ID, userId)
+          .set(USER_PREFERENCES.THEME, "light")
+          .set(USER_PREFERENCES.CREATED_AT, now)
+          .set(USER_PREFERENCES.UPDATED_AT, now)
           .execute();
 
       ctx.getUserIds().put(user.email(), userId);

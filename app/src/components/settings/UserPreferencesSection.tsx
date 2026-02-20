@@ -9,6 +9,7 @@ import {
   Loader2,
   Globe,
   Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   useUserPreferences,
@@ -20,10 +21,19 @@ import { useTheme } from '../../context/ThemeContext';
 import { NotificationTypePreferenceEntry } from '../../api/users';
 
 export const UserPreferencesSection = () => {
-  const { data: preferencesData, isLoading } = useUserPreferences();
+  const {
+    data: preferencesData,
+    isLoading,
+    isError: isPreferencesError,
+    refetch: refetchPreferences,
+  } = useUserPreferences();
   const updatePreferencesMutation = useUpdateUserPreferences();
-  const { data: notifTypeData, isLoading: notifTypeLoading } =
-    useNotificationTypePreferences();
+  const {
+    data: notifTypeData,
+    isLoading: notifTypeLoading,
+    isError: isNotifTypeError,
+    refetch: refetchNotifType,
+  } = useNotificationTypePreferences();
   const updateNotifTypeMutation = useUpdateNotificationTypePreferences();
   const { setTheme } = useTheme();
 
@@ -172,6 +182,26 @@ export const UserPreferencesSection = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
+      </div>
+    );
+  }
+
+  if (isPreferencesError || isNotifTypeError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-4">
+        <AlertTriangle className="h-8 w-8 text-amber-500" />
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          Failed to load preferences
+        </p>
+        <button
+          onClick={() => {
+            refetchPreferences();
+            refetchNotifType();
+          }}
+          className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors text-sm"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
@@ -388,7 +418,8 @@ export const UserPreferencesSection = () => {
                     <Mail className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
                     <div>
                       <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Security emails (password reset, verification, invitations) are always sent regardless of plan.
+                        Security emails (password reset, verification,
+                        invitations) are always sent regardless of plan.
                       </p>
                     </div>
                   </div>
@@ -429,8 +460,9 @@ export const UserPreferencesSection = () => {
               )}
             </div>
 
-            {/* Per-Type Notification Grid */}
-            {typePrefs.length > 0 && (
+            {/* Per-Type Notification Grid — only shown when at least one channel is enabled */}
+            {typePrefs.length > 0 &&
+              (preferences.emailNotifications || preferences.smsNotifications) && (
               <div className="mt-4">
                 <p className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-3">
                   Configure notifications per type
@@ -510,13 +542,6 @@ export const UserPreferencesSection = () => {
                     </tbody>
                   </table>
                 </div>
-                {(!emailAvailable || !preferences.emailNotifications) &&
-                  (!smsAvailable || !preferences.smsNotifications) && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                      Enable at least one global channel above to configure
-                      per-type settings
-                    </p>
-                  )}
                 {emailAvailable &&
                   !preferences.emailNotifications &&
                   smsAvailable &&
