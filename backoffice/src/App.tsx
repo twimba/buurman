@@ -70,43 +70,52 @@ function App() {
     <>
       <EnvironmentBanner />
       <BrowserRouter>
-      <AuthProvider>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route element={<ProtectedRoute />}>
-              <Route element={<Layout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/teams" element={<TeamsPage />} />
-                <Route path="/teams/:identifier" element={<TeamDetailPage />} />
-                <Route path="/users" element={<UsersPage />} />
-                <Route path="/users/:identifier" element={<UserDetailPage />} />
-                <Route path="/buurmies" element={<BuurmiesPage />} />
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route
-                  path="/notifications/:identifier"
-                  element={<NotificationDetailPage />}
-                />
-                <Route path="/sms-policy" element={<SmsPolicyPage />} />
-                <Route
-                  path="/registration-invitations"
-                  element={<RegistrationInvitationsPage />}
-                />
-                <Route
-                  path="/registration-invitations/:identifier"
-                  element={<RegistrationInvitationDetailPage />}
-                />
-                <Route path="/feature-flags" element={<FeatureFlagsPage />} />
-                <Route path="/scheduler" element={<SchedulerPage />} />
-                <Route path="/loggers" element={<LoggersPage />} />
-                <Route path="/system" element={<SystemInfoPage />} />
-                <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
+        <AuthProvider>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route element={<ProtectedRoute />}>
+                <Route element={<Layout />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/teams" element={<TeamsPage />} />
+                  <Route
+                    path="/teams/:identifier"
+                    element={<TeamDetailPage />}
+                  />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route
+                    path="/users/:identifier"
+                    element={<UserDetailPage />}
+                  />
+                  <Route path="/buurmies" element={<BuurmiesPage />} />
+                  <Route
+                    path="/notifications"
+                    element={<NotificationsPage />}
+                  />
+                  <Route
+                    path="/notifications/:identifier"
+                    element={<NotificationDetailPage />}
+                  />
+                  <Route path="/sms-policy" element={<SmsPolicyPage />} />
+                  <Route
+                    path="/registration-invitations"
+                    element={<RegistrationInvitationsPage />}
+                  />
+                  <Route
+                    path="/registration-invitations/:identifier"
+                    element={<RegistrationInvitationDetailPage />}
+                  />
+                  <Route path="/feature-flags" element={<FeatureFlagsPage />} />
+                  <Route path="/scheduler" element={<SchedulerPage />} />
+                  <Route path="/loggers" element={<LoggersPage />} />
+                  <Route path="/system" element={<SystemInfoPage />} />
+                  <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />
+                </Route>
               </Route>
-            </Route>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </Suspense>
-      </AuthProvider>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </Suspense>
+        </AuthProvider>
       </BrowserRouter>
     </>
   );

@@ -16,7 +16,12 @@ const CONFIG: Record<
 
 function getEnvironment(): Environment {
   const value = env("VITE_ENVIRONMENT") || "local";
-  if (value === "production" || value === "staging" || value === "dev" || value === "local") {
+  if (
+    value === "production" ||
+    value === "staging" ||
+    value === "dev" ||
+    value === "local"
+  ) {
     return value;
   }
   return "local";
@@ -29,7 +34,10 @@ export function EnvironmentBanner() {
     if (environment === "production") return;
 
     // Set CSS variable so fixed-position elements (sidebar) can offset themselves
-    document.documentElement.style.setProperty("--env-banner-height", `${BANNER_HEIGHT}px`);
+    document.documentElement.style.setProperty(
+      "--env-banner-height",
+      `${BANNER_HEIGHT}px`,
+    );
 
     const config = CONFIG[environment];
     const originalTitle = document.title;

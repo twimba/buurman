@@ -372,15 +372,15 @@ services:
       context: .
       dockerfile: backoffice/Dockerfile
       args:
-        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
-        VITE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
-        VITE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
+        VITE_BACKOFFICE_KEYCLOAK_URL: ${VITE_BACKOFFICE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
+        VITE_BACKOFFICE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
+        VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
         VITE_ENVIRONMENT: ${VITE_ENVIRONMENT:-local}
     container_name: buurman-backoffice
     environment:
-      VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
-      VITE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
-      VITE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
+      VITE_BACKOFFICE_KEYCLOAK_URL: ${VITE_BACKOFFICE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
+      VITE_BACKOFFICE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
+      VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
       VITE_ENVIRONMENT: ${VITE_ENVIRONMENT:-local}
     labels:
       - "traefik.enable=true"

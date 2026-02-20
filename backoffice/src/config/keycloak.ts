@@ -3,7 +3,7 @@ import { env } from "./env";
 
 // Create Keycloak instance with configuration
 const keycloakConfig = {
-  url: env("VITE_KEYCLOAK_URL"),
+  url: env("VITE_BACKOFFICE_KEYCLOAK_URL"),
   realm: env("VITE_BACKOFFICE_KEYCLOAK_REALM"),
   clientId: env("VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID"),
 };
