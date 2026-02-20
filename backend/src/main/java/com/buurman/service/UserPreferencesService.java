@@ -92,8 +92,7 @@ public class UserPreferencesService {
     UserPreferences globalPrefs =
         preferencesRepository.findByUserId(principal.getUserId()).orElseGet(UserPreferences::new);
 
-    boolean smsAvailable =
-        featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
+    boolean smsAvailable = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
     boolean emailAvailable =
         featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
 
@@ -126,8 +125,7 @@ public class UserPreferencesService {
   public NotificationTypePreferencesResponse updateNotificationTypePreferences(
       UserPrincipal principal, UpdateNotificationTypePreferencesRequest request) {
 
-    boolean smsAvailable =
-        featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
+    boolean smsAvailable = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
     boolean emailAvailable =
         featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
 

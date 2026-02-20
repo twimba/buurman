@@ -462,106 +462,107 @@ export const UserPreferencesSection = () => {
 
             {/* Per-Type Notification Grid — only shown when at least one channel is enabled */}
             {typePrefs.length > 0 &&
-              (preferences.emailNotifications || preferences.smsNotifications) && (
-              <div className="mt-4">
-                <p className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-3">
-                  Configure notifications per type
-                </p>
-                <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-[#f8f9fc] dark:bg-[#1a1d2e] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                        <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
-                          Notification Type
-                        </th>
-                        {emailAvailable && (
-                          <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
-                            <div className="flex items-center justify-center gap-1">
-                              <Mail className="h-3.5 w-3.5" />
-                              Email
-                            </div>
+              (preferences.emailNotifications ||
+                preferences.smsNotifications) && (
+                <div className="mt-4">
+                  <p className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-3">
+                    Configure notifications per type
+                  </p>
+                  <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-[#f8f9fc] dark:bg-[#1a1d2e] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                          <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                            Notification Type
                           </th>
-                        )}
-                        {smsAvailable && (
-                          <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
-                            <div className="flex items-center justify-center gap-1">
-                              <MessageSquare className="h-3.5 w-3.5" />
-                              SMS
-                            </div>
-                          </th>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {typePrefs.map((pref, index) => (
-                        <tr
-                          key={pref.notificationType}
-                          className={
-                            index < typePrefs.length - 1
-                              ? 'border-b border-[#e2e6f0] dark:border-[#2a2e3f]'
-                              : ''
-                          }
-                        >
-                          <td className="px-4 py-3 text-[#1a1d2e] dark:text-[#eef0f6]">
-                            {pref.displayName}
-                          </td>
                           {emailAvailable && (
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="checkbox"
-                                checked={pref.emailEnabled}
-                                disabled={!preferences.emailNotifications}
-                                onChange={() =>
-                                  handleTypeToggle(
-                                    pref.notificationType,
-                                    'emailEnabled'
-                                  )
-                                }
-                                className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
-                              />
-                            </td>
+                            <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
+                              <div className="flex items-center justify-center gap-1">
+                                <Mail className="h-3.5 w-3.5" />
+                                Email
+                              </div>
+                            </th>
                           )}
                           {smsAvailable && (
-                            <td className="px-4 py-3 text-center">
-                              <input
-                                type="checkbox"
-                                checked={pref.smsEnabled}
-                                disabled={!preferences.smsNotifications}
-                                onChange={() =>
-                                  handleTypeToggle(
-                                    pref.notificationType,
-                                    'smsEnabled'
-                                  )
-                                }
-                                className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
-                              />
-                            </td>
+                            <th className="text-center px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8] w-20">
+                              <div className="flex items-center justify-center gap-1">
+                                <MessageSquare className="h-3.5 w-3.5" />
+                                SMS
+                              </div>
+                            </th>
                           )}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {typePrefs.map((pref, index) => (
+                          <tr
+                            key={pref.notificationType}
+                            className={
+                              index < typePrefs.length - 1
+                                ? 'border-b border-[#e2e6f0] dark:border-[#2a2e3f]'
+                                : ''
+                            }
+                          >
+                            <td className="px-4 py-3 text-[#1a1d2e] dark:text-[#eef0f6]">
+                              {pref.displayName}
+                            </td>
+                            {emailAvailable && (
+                              <td className="px-4 py-3 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={pref.emailEnabled}
+                                  disabled={!preferences.emailNotifications}
+                                  onChange={() =>
+                                    handleTypeToggle(
+                                      pref.notificationType,
+                                      'emailEnabled'
+                                    )
+                                  }
+                                  className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
+                                />
+                              </td>
+                            )}
+                            {smsAvailable && (
+                              <td className="px-4 py-3 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={pref.smsEnabled}
+                                  disabled={!preferences.smsNotifications}
+                                  onChange={() =>
+                                    handleTypeToggle(
+                                      pref.notificationType,
+                                      'smsEnabled'
+                                    )
+                                  }
+                                  className="h-4 w-4 rounded border-[#c9cfd9] text-[#5c7cfa] focus:ring-[#5c7cfa] disabled:opacity-40 disabled:cursor-not-allowed"
+                                />
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {emailAvailable &&
+                    !preferences.emailNotifications &&
+                    smsAvailable &&
+                    preferences.smsNotifications && (
+                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                        Email column is disabled because the global Email toggle
+                        is off
+                      </p>
+                    )}
+                  {emailAvailable &&
+                    preferences.emailNotifications &&
+                    smsAvailable &&
+                    !preferences.smsNotifications && (
+                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                        SMS column is disabled because the global SMS toggle is
+                        off
+                      </p>
+                    )}
                 </div>
-                {emailAvailable &&
-                  !preferences.emailNotifications &&
-                  smsAvailable &&
-                  preferences.smsNotifications && (
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
-                      Email column is disabled because the global Email toggle
-                      is off
-                    </p>
-                  )}
-                {emailAvailable &&
-                  preferences.emailNotifications &&
-                  smsAvailable &&
-                  !preferences.smsNotifications && (
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
-                      SMS column is disabled because the global SMS toggle is
-                      off
-                    </p>
-                  )}
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>

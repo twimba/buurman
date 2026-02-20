@@ -400,7 +400,7 @@ function VersionsCard({
                   {row.version}
                 </td>
                 <td className="px-5 py-3 text-sm font-mono">
-                  {row.commitFull ? (
+                  {row.commitFull && row.commitFull !== "unknown" ? (
                     <a
                       href={`${GITHUB_REPO}/commit/${row.commitFull}`}
                       target="_blank"
@@ -417,7 +417,7 @@ function VersionsCard({
                   )}
                 </td>
                 <td className="px-5 py-3 text-sm">
-                  {row.branch ? (
+                  {row.branch && row.branch !== "unknown" ? (
                     <a
                       href={`${GITHUB_REPO}/tree/${row.branch}`}
                       target="_blank"

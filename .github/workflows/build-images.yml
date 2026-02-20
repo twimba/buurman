@@ -152,6 +152,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           SHA=${GITHUB_SHA::7}
           echo "tag=${VERSION}-${SHA}" >> "$GITHUB_OUTPUT"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -174,6 +175,10 @@ jobs:
           file: ./app/Dockerfile
           push: true
           platforms: linux/arm64
+          build-args: |
+            GIT_COMMIT=${{ github.sha }}
+            GIT_COMMIT_SHORT=${{ steps.version.outputs.sha }}
+            GIT_BRANCH=${{ github.ref_name }}
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/app:latest
@@ -213,6 +218,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           SHA=${GITHUB_SHA::7}
           echo "tag=${VERSION}-${SHA}" >> "$GITHUB_OUTPUT"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -235,6 +241,10 @@ jobs:
           file: ./backoffice/Dockerfile
           push: true
           platforms: linux/arm64
+          build-args: |
+            GIT_COMMIT=${{ github.sha }}
+            GIT_COMMIT_SHORT=${{ steps.version.outputs.sha }}
+            GIT_BRANCH=${{ github.ref_name }}
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:${{ steps.version.outputs.tag }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/backoffice:latest

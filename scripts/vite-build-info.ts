@@ -9,10 +9,11 @@ function gitExec(cmd: string): string {
 }
 
 export function getGitInfo() {
+  const env = process.env
   return {
-    gitCommit: gitExec('git rev-parse --short HEAD'),
-    gitCommitFull: gitExec('git rev-parse HEAD'),
-    gitBranch: gitExec('git rev-parse --abbrev-ref HEAD'),
+    gitCommit: env.GIT_COMMIT_SHORT || gitExec('git rev-parse --short HEAD'),
+    gitCommitFull: env.GIT_COMMIT || gitExec('git rev-parse HEAD'),
+    gitBranch: env.GIT_BRANCH || gitExec('git rev-parse --abbrev-ref HEAD'),
   }
 }
 

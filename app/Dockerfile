@@ -1,6 +1,10 @@
 FROM --platform=$BUILDPLATFORM node:24.13.0-alpine3.22 AS build
 WORKDIR /monorepo
 
+ARG GIT_COMMIT=""
+ARG GIT_COMMIT_SHORT=""
+ARG GIT_BRANCH=""
+
 RUN corepack enable
 
 # Copy workspace files
@@ -16,7 +20,7 @@ COPY app/ app/
 
 WORKDIR /monorepo/app
 RUN rm -rf dist
-RUN yarn build
+RUN GIT_COMMIT="$GIT_COMMIT" GIT_COMMIT_SHORT="$GIT_COMMIT_SHORT" GIT_BRANCH="$GIT_BRANCH" yarn build
 
 FROM nginx:1.29.4-alpine
 WORKDIR /usr/share/nginx/html

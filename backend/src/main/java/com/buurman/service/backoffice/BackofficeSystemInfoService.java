@@ -96,7 +96,7 @@ public class BackofficeSystemInfoService {
     return new BuildInfo(
         appProperties.version(),
         git != null ? git.getShortCommitId() : null,
-        git != null ? git.getCommitId() : null,
+        git != null ? git.get("commit.id.full") : null,
         git != null ? git.getBranch() : null,
         git != null ? git.getCommitTime() : null,
         git != null && Boolean.parseBoolean(git.get("dirty")),
