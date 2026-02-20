@@ -97,7 +97,8 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
       {/* Mobile menu button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/95 dark:bg-[#14161f]/95 shadow-md backdrop-blur-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+        className="lg:hidden fixed left-4 z-50 p-2 rounded-lg bg-white/95 dark:bg-[#14161f]/95 shadow-md backdrop-blur-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+        style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
       >
         {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
       </button>
@@ -105,12 +106,16 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full bg-white/95 dark:bg-[#0c0d14]/95 backdrop-blur-xl border-r border-[#e2e6f0] dark:border-[#2a2e3f] z-40
+          fixed left-0 bg-white/95 dark:bg-[#0c0d14]/95 backdrop-blur-xl border-r border-[#e2e6f0] dark:border-[#2a2e3f] z-40
           transition-all duration-300 ease-in-out
           ${mobileOpen ? 'w-64 translate-x-0' : '-translate-x-full'}
           ${collapsed ? 'lg:w-20' : 'lg:w-64'}
           lg:translate-x-0
         `}
+        style={{
+          top: 'var(--env-banner-height, 0px)',
+          height: 'calc(100vh - var(--env-banner-height, 0px))',
+        }}
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo */}

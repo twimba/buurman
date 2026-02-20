@@ -190,11 +190,13 @@ export const Layout = () => {
   const mainMargin = collapsed ? "ml-16" : "ml-64";
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0d14]">
+    <div className="flex overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0d14]" style={{ height: 'calc(100vh - var(--env-banner-height, 0px))', marginTop: 'var(--env-banner-height, 0px)' }}>
       {/* Sidebar — subtle blue-tinted background to distinguish from the app */}
       <aside
-        className={`fixed top-0 left-0 h-full ${sidebarWidth} z-40 transition-all duration-300 ease-in-out`}
+        className={`fixed left-0 ${sidebarWidth} z-40 transition-all duration-300 ease-in-out`}
         style={{
+          top: "var(--env-banner-height, 0px)",
+          height: "calc(100vh - var(--env-banner-height, 0px))",
           background: "var(--bo-sidebar-bg)",
           borderRight: "1px solid var(--bo-sidebar-border)",
         }}

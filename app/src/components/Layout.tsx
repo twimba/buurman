@@ -27,7 +27,13 @@ export const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0d14]">
+    <div
+      className="flex overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0d14]"
+      style={{
+        height: 'calc(100vh - var(--env-banner-height, 0px))',
+        marginTop: 'var(--env-banner-height, 0px)',
+      }}
+    >
       <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
       <main
         className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}

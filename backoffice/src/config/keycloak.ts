@@ -1,10 +1,5 @@
 import Keycloak from "keycloak-js";
-
-// Runtime config (injected by docker-entrypoint.sh) with build-time fallback
-const cfg =
-  (window as unknown as Record<string, Record<string, string>>).__CONFIG__ ||
-  {};
-const env = (key: string) => cfg[key] || import.meta.env[key] || "";
+import { env } from "./env";
 
 // Create Keycloak instance with configuration
 const keycloakConfig = {

@@ -4,6 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { EnvironmentBanner } from "./components/EnvironmentBanner";
 
 const DashboardPage = lazy(() =>
   import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })),
@@ -66,7 +67,9 @@ const RegistrationInvitationDetailPage = lazy(() =>
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <EnvironmentBanner />
+      <BrowserRouter>
       <AuthProvider>
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
@@ -104,7 +107,8 @@ function App() {
           </Routes>
         </Suspense>
       </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </>
   );
 }
 

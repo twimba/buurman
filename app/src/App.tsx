@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { EnvironmentBanner } from './components/common/EnvironmentBanner';
 
 // Auth pages (small, keep near-instant)
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -168,6 +169,7 @@ const AdminBillingPage = lazy(() =>
 function App() {
   return (
     <ErrorBoundary>
+      <EnvironmentBanner />
       <BrowserRouter>
         <AuthProvider>
           <TeamProvider>
