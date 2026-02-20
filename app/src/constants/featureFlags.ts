@@ -4,6 +4,7 @@
  */
 export const FeatureFlags = {
   REPORTS: 'reports',
+  SMS_NOTIFICATIONS: 'sms_notifications',
 } as const;
 
 export type FeatureFlagKey = (typeof FeatureFlags)[keyof typeof FeatureFlags];

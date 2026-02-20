@@ -64,6 +64,7 @@ export interface NotificationTypePreferenceEntry {
 export interface NotificationTypePreferencesResponse {
   globalEmailEnabled: boolean;
   globalSmsEnabled: boolean;
+  smsAvailable: boolean;
   preferences: NotificationTypePreferenceEntry[];
 }
 

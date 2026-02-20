@@ -10,4 +10,5 @@ public final class FeatureFlags {
 
   public static final String REPORTS = "reports";
   public static final String INVITATION_REQUIRED = "invitation_required";
+  public static final String SMS_NOTIFICATIONS = "sms_notifications";
 }

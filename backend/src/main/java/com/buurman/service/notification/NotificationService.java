@@ -29,6 +29,8 @@ import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.service.FeatureFlagService;
+import com.buurman.util.FeatureFlags;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,6 +46,7 @@ public class NotificationService {
   private final UserPreferencesRepository userPreferencesRepository;
   private final UserRepository userRepository;
   private final UserNotificationTypePreferenceRepository notifTypePrefRepository;
+  private final FeatureFlagService featureFlagService;
   private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
   private final ObjectMapper objectMapper;
 
@@ -54,6 +57,7 @@ public class NotificationService {
       UserPreferencesRepository userPreferencesRepository,
       UserRepository userRepository,
       UserNotificationTypePreferenceRepository notifTypePrefRepository,
+      FeatureFlagService featureFlagService,
       List<NotificationChannelSender> senders,
       ObjectMapper objectMapper) {
     this.notificationRepository = notificationRepository;
@@ -62,6 +66,7 @@ public class NotificationService {
     this.userPreferencesRepository = userPreferencesRepository;
     this.userRepository = userRepository;
     this.notifTypePrefRepository = notifTypePrefRepository;
+    this.featureFlagService = featureFlagService;
     this.objectMapper = objectMapper;
 
     this.channelSenders = new HashMap<>();
@@ -242,6 +247,8 @@ public class NotificationService {
       return List.of(SMS);
     }
 
+    boolean smsEnabled = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS);
+
     UserPreferences globalPrefs =
         userPreferencesRepository
             .findByUserId(request.recipientUserId())
@@ -253,7 +260,7 @@ public class NotificationService {
       if (globalPrefs.isEmailNotifications()) {
         channels.add(EMAIL);
       }
-      if (globalPrefs.isSmsNotifications()) {
+      if (smsEnabled && globalPrefs.isSmsNotifications()) {
         channels.add(SMS);
       }
       return channels.isEmpty() ? List.of(EMAIL) : channels;
@@ -269,7 +276,7 @@ public class NotificationService {
     if (globalPrefs.isEmailNotifications() && typePref.isEmailEnabled()) {
       channels.add(EMAIL);
     }
-    if (globalPrefs.isSmsNotifications() && typePref.isSmsEnabled()) {
+    if (smsEnabled && globalPrefs.isSmsNotifications() && typePref.isSmsEnabled()) {
       channels.add(SMS);
     }
 
