@@ -53,6 +53,7 @@ export interface CreatePaymentRequest {
   currency?: string;
   dueDate: string;
   notes?: string;
+  markAsPaid?: boolean;
 }
 
 export interface UpdatePaymentRequest {

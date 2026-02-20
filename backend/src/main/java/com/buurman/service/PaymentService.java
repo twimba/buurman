@@ -118,21 +118,47 @@ public class PaymentService {
 
     validateCurrencyDecimals(request.amount(), request.currency());
 
+    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
+    LocalDate paymentDate =
+        markAsPaid
+            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now(clock))
+            : null;
+
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
     payment.setIdentifier(newPaymentId().value());
     payment.setTeamId(teamId);
-    payment.setStatus(PENDING);
+    payment.setStatus(markAsPaid ? PAID : PENDING);
     payment.setCreatedBy(principal.getUserId());
     payment.setUpdatedBy(principal.getUserId());
     payment.setCreatedAt(clock.instant());
     payment.setUpdatedAt(clock.instant());
+
+    if (markAsPaid) {
+      payment.setPaymentDate(paymentDate);
+    }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
       payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
     }
 
     Payment savedPayment = paymentRepository.save(payment);
+
+    // Create receival record when marking as paid
+    if (markAsPaid) {
+      PaymentReceival receival = new PaymentReceival();
+      receival.setIdentifier(newPaymentReceivalId().value());
+      receival.setTeamId(teamId);
+      receival.setPaymentId(savedPayment.getId());
+      receival.setAmount(savedPayment.getAmount());
+      receival.setCurrency(savedPayment.getCurrency());
+      receival.setReceivalDate(paymentDate);
+      receival.setCreatedBy(principal.getUserId());
+      receival.setUpdatedBy(principal.getUserId());
+      receival.setCreatedAt(clock.instant());
+      receival.setUpdatedAt(clock.instant());
+      receivalRepository.save(receival);
+    }
 
     metricsService.incrementCounter("payment.total");
     metricsService.recordHistogram(
@@ -174,7 +200,13 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public PageResponse<PaymentResponse> getPaymentsPaginated(
-      UserPrincipal principal, String status, UUID contractId, PageRequest pageRequest) {
+      UserPrincipal principal, String status, String contractIdentifier, PageRequest pageRequest) {
+    UUID contractId = null;
+    if (contractIdentifier != null) {
+      Contract contract =
+          contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+      contractId = contract.getId();
+    }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
             principal.getTeamId(), status, contractId, pageRequest);
@@ -199,14 +231,14 @@ public class PaymentService {
             .map(
                 r ->
                     new PaymentStatsResponse.MonthlyTrend(
-                        r.value1(), r.value2() != null ? r.value2() : BigDecimal.ZERO))
+                        r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
             .toList();
 
     return new PaymentStatsResponse(
         pending.value1(),
-        pending.value2() != null ? pending.value2() : BigDecimal.ZERO,
+        CurrencyUtils.sumToMajorUnits(pending.value2(), currency),
         overdue.value1(),
-        overdue.value2() != null ? overdue.value2() : BigDecimal.ZERO,
+        CurrencyUtils.sumToMajorUnits(overdue.value2(), currency),
         currency,
         monthlyTrend);
   }
@@ -296,7 +328,9 @@ public class PaymentService {
     }
 
     // Register a receival for the remaining balance
-    BigDecimal receivedAmount = receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId);
+    String currency = payment.getCurrency();
+    BigDecimal receivedAmount =
+        receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);
     BigDecimal remainingBalance = payment.getAmount().subtract(receivedAmount);
 
     if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
@@ -305,6 +339,7 @@ public class PaymentService {
       receival.setTeamId(teamId);
       receival.setPaymentId(payment.getId());
       receival.setAmount(remainingBalance);
+      receival.setCurrency(currency);
       receival.setReceivalDate(request.paymentDate());
       receival.setNotes(request.notes());
       receival.setCreatedBy(principal.getUserId());
@@ -372,8 +407,12 @@ public class PaymentService {
       throw new BusinessRuleException("Cannot register receival on a cancelled payment");
     }
 
+    String currency = payment.getCurrency();
+    validateCurrencyDecimals(request.amount(), currency);
+
     // Validate amount does not exceed balance
-    BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId);
+    BigDecimal currentReceived =
+        receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId, currency);
     BigDecimal currentBalance = payment.getAmount().subtract(currentReceived);
 
     if (request.amount().compareTo(currentBalance) > 0) {
@@ -390,6 +429,7 @@ public class PaymentService {
     receival.setTeamId(teamId);
     receival.setPaymentId(paymentId);
     receival.setAmount(request.amount());
+    receival.setCurrency(currency);
     receival.setReceivalDate(request.receivalDate());
     receival.setNotes(request.notes());
     receival.setCreatedBy(principal.getUserId());
@@ -451,13 +491,17 @@ public class PaymentService {
 
     UUID paymentId = payment.getId();
 
+    String currency = payment.getCurrency();
+    validateCurrencyDecimals(request.amount(), currency);
+
     PaymentReceival receival =
         receivalRepository.getByIdentifierAndPaymentIdAndTeamId(
             receivalIdentifier, paymentId, teamId);
 
     // Validate new amount: total received minus old amount plus new amount must not exceed payment
     // amount
-    BigDecimal currentReceived = receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId);
+    BigDecimal currentReceived =
+        receivalRepository.sumByPaymentIdAndTeamId(paymentId, teamId, currency);
     BigDecimal receivedWithoutThis = currentReceived.subtract(receival.getAmount());
     BigDecimal newBalance =
         payment.getAmount().subtract(receivedWithoutThis).subtract(request.amount());
@@ -476,7 +520,8 @@ public class PaymentService {
         request.amount(),
         request.receivalDate(),
         request.notes(),
-        principal.getUserId());
+        principal.getUserId(),
+        currency);
 
     // Recalculate payment status
     recalculatePaymentStatus(payment, principal);
@@ -539,8 +584,10 @@ public class PaymentService {
   }
 
   private void recalculatePaymentStatus(Payment payment, UserPrincipal principal) {
+    String currency = payment.getCurrency();
     BigDecimal totalReceived =
-        receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), principal.getTeamId());
+        receivalRepository.sumByPaymentIdAndTeamId(
+            payment.getId(), principal.getTeamId(), currency);
     BigDecimal balance = payment.getAmount().subtract(totalReceived);
 
     Payment.PaymentStatus newStatus;
@@ -790,7 +837,8 @@ public class PaymentService {
       }
     }
     String currency = payment.getCurrency() != null ? payment.getCurrency() : "EUR";
-    BigDecimal totalReceived = receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId);
+    BigDecimal totalReceived =
+        receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);
     BigDecimal remainingBalance = payment.getAmount().subtract(totalReceived);
 
     Map<String, Object> vars = new HashMap<>();

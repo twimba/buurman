@@ -8,8 +8,10 @@ import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { ContractSelector } from '@/components/common/ContractSelector';
 import {
   Plus,
+  CalendarCheck,
   DollarSign,
   AlertTriangle,
   Filter,
@@ -49,6 +51,9 @@ export const PaymentsPage = () => {
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
+  const [contractFilter, setContractFilter] = useState<string | undefined>(
+    undefined
+  );
 
   const {
     pageParams,
@@ -66,7 +71,11 @@ export const PaymentsPage = () => {
     isFetching,
     refetch,
     error,
-  } = usePayments({ status: statusFilter, ...pageParams });
+  } = usePayments({
+    status: statusFilter,
+    contractIdentifier: contractFilter,
+    ...pageParams,
+  });
 
   const { data: paymentStats } = usePaymentStats();
 
@@ -112,10 +121,18 @@ export const PaymentsPage = () => {
             <button
               onClick={() => navigate('/payments/new')}
               disabled={!canEditData}
-              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+              className="text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
-              Add Payment
+              Schedule Payment
+            </button>
+            <button
+              onClick={() => navigate('/payments/new?register=true')}
+              disabled={!canEditData}
+              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+            >
+              <CalendarCheck className="h-5 w-5" />
+              Register Payment
             </button>
           </div>
         </div>
@@ -240,29 +257,55 @@ export const PaymentsPage = () => {
 
         {/* Filter Bar */}
         <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
             <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Status Filter
+              Filters
             </h3>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {statusFilters.map((filter) => (
-              <button
-                key={filter.label}
-                onClick={() => {
-                  setStatusFilter(filter.value);
+
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Contract Filter */}
+            <div className="lg:w-72">
+              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                Contract
+              </label>
+              <ContractSelector
+                value={contractFilter ?? ''}
+                onChange={(id) => {
+                  setContractFilter(id || undefined);
                   resetPage();
                 }}
-                className={`px-4 py-2 rounded transition-colors text-sm ${
-                  statusFilter === filter.value
-                    ? 'bg-[#5c7cfa] text-white'
-                    : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
+                status={undefined}
+                clearable
+                placeholder="All Contracts"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                Status
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {statusFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => {
+                      setStatusFilter(filter.value);
+                      resetPage();
+                    }}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      statusFilter === filter.value
+                        ? 'bg-[#5c7cfa] text-white'
+                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -395,14 +438,24 @@ export const PaymentsPage = () => {
                 : 'Get started by recording your first payment'}
             </p>
             {!statusFilter && (
-              <button
-                onClick={() => navigate('/payments/new')}
-                disabled={!canEditData}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
-              >
-                <Plus className="h-5 w-5" />
-                Add Payment
-              </button>
+              <div className="flex items-center gap-2 justify-center">
+                <button
+                  onClick={() => navigate('/payments/new')}
+                  disabled={!canEditData}
+                  className="text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus className="h-5 w-5" />
+                  Schedule Payment
+                </button>
+                <button
+                  onClick={() => navigate('/payments/new?register=true')}
+                  disabled={!canEditData}
+                  className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                >
+                  <CalendarCheck className="h-5 w-5" />
+                  Register Payment
+                </button>
+              </div>
             )}
           </div>
         )}

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
 import { useCreatePayment } from '@/hooks/usePaymentHooks';
 import { PaymentForm } from '@/components/payments/PaymentForm';
+import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
 import { ContractSelector } from '@/components/common/ContractSelector';
 import { CreatePaymentRequest } from '@/types/payment';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
@@ -14,6 +15,7 @@ export const PaymentCreatePage = () => {
   const createPaymentMutation = useCreatePayment();
 
   const prefilledContractId = searchParams.get('contractId') || '';
+  const registerMode = searchParams.get('register') === 'true';
 
   const { data: activeContracts } = useQuery({
     queryKey: ['contracts', 'ACTIVE'],
@@ -60,7 +62,7 @@ export const PaymentCreatePage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Add New Payment
+            {registerMode ? 'Register Payment' : 'Schedule Payment'}
           </h1>
         </div>
 
@@ -95,14 +97,22 @@ export const PaymentCreatePage = () => {
             )}
           </div>
 
-          {effectiveContractId && (
-            <PaymentForm
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-              isLoading={createPaymentMutation.isPending}
-              contractIdentifier={effectiveContractId}
-            />
-          )}
+          {effectiveContractId &&
+            (registerMode ? (
+              <RegisterPaymentForm
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                isLoading={createPaymentMutation.isPending}
+                contractIdentifier={effectiveContractId}
+              />
+            ) : (
+              <PaymentForm
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                isLoading={createPaymentMutation.isPending}
+                contractIdentifier={effectiveContractId}
+              />
+            ))}
         </div>
       </div>
     </div>

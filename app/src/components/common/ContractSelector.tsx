@@ -8,12 +8,21 @@ interface ContractSelectorProps {
   value?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  /** Filter contracts by status. Defaults to 'ACTIVE'. Pass undefined to load all. */
+  status?: string;
+  /** Show a "clear" option to deselect. */
+  clearable?: boolean;
+  /** Placeholder text when no contract is selected. */
+  placeholder?: string;
 }
 
 export const ContractSelector = ({
   value,
   onChange,
   disabled = false,
+  status = 'ACTIVE',
+  clearable = false,
+  placeholder,
 }: ContractSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -23,8 +32,8 @@ export const ContractSelector = ({
   const listRef = useRef<HTMLDivElement>(null);
 
   const { data: contractsData, isLoading } = useQuery({
-    queryKey: ['contracts', 'ACTIVE'],
-    queryFn: () => getContracts({ status: 'ACTIVE' }),
+    queryKey: ['contracts', status ?? 'ALL'],
+    queryFn: () => getContracts(status ? { status } : undefined),
   });
   const contracts = contractsData?.content ?? [];
 
@@ -128,7 +137,9 @@ export const ContractSelector = ({
           }}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={isOpen ? 'Type to search...' : 'Select a contract'}
+          placeholder={
+            isOpen ? 'Type to search...' : (placeholder ?? 'Select a contract')
+          }
           autoComplete="off"
           className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#1e2130] hover:border-[#5c7cfa] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed text-left text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
         />
@@ -149,42 +160,54 @@ export const ContractSelector = ({
           ) : filtered.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
               {contracts.length === 0
-                ? 'No active contracts available'
+                ? 'No contracts available'
                 : 'No contracts found'}
             </div>
           ) : (
-            filtered.map((contract, index) => (
-              <button
-                key={contract.identifier}
-                type="button"
-                data-option
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(contract.identifier)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
-                  highlightedIndex === index
-                    ? 'bg-blue-50 dark:bg-blue-900/30'
-                    : contract.identifier === value
-                      ? 'bg-blue-100 dark:bg-blue-900'
-                      : ''
-                }`}
-              >
-                <div className="w-10 h-10 rounded bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
-                  <FileText className="h-5 w-5 text-primary-500 dark:text-primary-300" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {contract.property.street}
+            <>
+              {clearable && value && !search && (
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect('')}
+                  className="w-full text-left px-3 py-2.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                >
+                  All Contracts
+                </button>
+              )}
+              {filtered.map((contract, index) => (
+                <button
+                  key={contract.identifier}
+                  type="button"
+                  data-option
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect(contract.identifier)}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                  className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
+                    highlightedIndex === index
+                      ? 'bg-blue-50 dark:bg-blue-900/30'
+                      : contract.identifier === value
+                        ? 'bg-blue-100 dark:bg-blue-900'
+                        : ''
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-5 w-5 text-primary-500 dark:text-primary-300" />
                   </div>
-                  <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                    {contract.primaryTenant.firstName}{' '}
-                    {contract.primaryTenant.lastName} &middot;{' '}
-                    {getCurrencySymbol(contract.currency)}{' '}
-                    {contract.rentAmount.toFixed(2)}/mo
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {contract.property.street}
+                    </div>
+                    <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      {contract.primaryTenant.firstName}{' '}
+                      {contract.primaryTenant.lastName} &middot;{' '}
+                      {getCurrencySymbol(contract.currency)}{' '}
+                      {contract.rentAmount.toFixed(2)}/mo
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))
+                </button>
+              ))}
+            </>
           )}
         </div>
       )}

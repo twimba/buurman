@@ -86,16 +86,9 @@ public class PaymentController {
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    // When filtering by contractIdentifier, use existing per-contract list wrapped in PageResponse
-    if (contractIdentifier != null) {
-      List<PaymentResponse> results =
-          paymentService.getPaymentsByContract(contractIdentifier, principal);
-      return PageResponse.of(results, 0, results.size(), results.size());
-    }
-
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return paymentService.getPaymentsPaginated(
-        principal, status != null ? status.name() : null, null, pageRequest);
+        principal, status != null ? status.name() : null, contractIdentifier, pageRequest);
   }
 
   @Operation(

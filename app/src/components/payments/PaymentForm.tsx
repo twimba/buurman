@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
-import { X, Save, Info } from 'lucide-react';
+import { X, Calendar, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';
@@ -29,9 +30,6 @@ export const PaymentForm = ({
   const { data: rentPeriods } = useRentPeriods(contractIdentifier || undefined);
   const { showToast } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [amountRaw, setAmountRaw] = useState(
-    payment?.amount ? String(payment.amount) : ''
-  );
 
   const [formData, setFormData] = useState<
     CreatePaymentRequest & { paymentDate?: string }
@@ -47,7 +45,6 @@ export const PaymentForm = ({
   const [lastSyncedPayment, setLastSyncedPayment] = useState(payment);
   if (payment && payment !== lastSyncedPayment) {
     setLastSyncedPayment(payment);
-    setAmountRaw(String(payment.amount));
     setFormData({
       contractIdentifier: payment.contract.identifier,
       amount: payment.amount,
@@ -68,7 +65,10 @@ export const PaymentForm = ({
     if (!rentPeriods || !dueDate) return null;
     return (
       rentPeriods.find((rp) => {
-        return dueDate >= rp.effectiveFrom && (!rp.effectiveTo || dueDate <= rp.effectiveTo);
+        return (
+          dueDate >= rp.effectiveFrom &&
+          (!rp.effectiveTo || dueDate <= rp.effectiveTo)
+        );
       }) ?? null
     );
   }, [rentPeriods, dueDate]);
@@ -79,7 +79,10 @@ export const PaymentForm = ({
     const today = new Date().toISOString().split('T')[0];
     return (
       rentPeriods.find((rp) => {
-        return rp.effectiveFrom <= today && (!rp.effectiveTo || rp.effectiveTo >= today);
+        return (
+          rp.effectiveFrom <= today &&
+          (!rp.effectiveTo || rp.effectiveTo >= today)
+        );
       }) ?? null
     );
   }, [rentPeriods]);
@@ -105,7 +108,6 @@ export const PaymentForm = ({
       );
     }
 
-    setAmountRaw(newAmount ? String(newAmount) : '');
     setFormData({ ...formData, currency: newCurrency, amount: newAmount });
   };
 
@@ -120,41 +122,40 @@ export const PaymentForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
-
     await onSubmit(formData);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-6"
+    >
       {/* Amount */}
       <div>
         <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
           Amount <span className="text-red-500">*</span>
         </label>
-        <input
-          type="text"
-          inputMode="decimal"
-          value={amountRaw}
-          onChange={(e) => {
-            const raw = e.target.value.replace(',', '.');
-            // Only allow digits, one dot, and valid decimal length
-            if (raw !== '' && !/^\d*\.?\d*$/.test(raw)) return;
-            const parts = raw.split('.');
-            if (parts[1] !== undefined && parts[1].length > fractionalDigits) return;
-            if (fractionalDigits === 0 && raw.includes('.')) return;
-            setAmountRaw(raw);
-            const num = parseFloat(raw);
-            setFormData({ ...formData, amount: isNaN(num) ? 0 : num });
-          }}
-          className={`w-full px-3 py-2 border rounded-md ${
-            errors.amount
-              ? 'border-red-500'
-              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-          }`}
+        <MoneyInput
+          value={formData.amount || undefined}
+          onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
+          currency={currency}
           disabled={isLoading}
+          error={!!errors.amount}
         />
         {errors.amount && (
           <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
@@ -222,8 +223,11 @@ export const PaymentForm = ({
                 : ''}
               ).
               {currentRentPeriod && (
-                <> Current rent is {getCurrencySymbol(currency)}{' '}
-                {currentRentPeriod.rentAmount.toFixed(fractionalDigits)}/mo.</>
+                <>
+                  {' '}
+                  Current rent is {getCurrencySymbol(currency)}{' '}
+                  {currentRentPeriod.rentAmount.toFixed(fractionalDigits)}/mo.
+                </>
               )}
             </span>
           </div>
@@ -270,6 +274,7 @@ export const PaymentForm = ({
           onChange={(value) => setFormData({ ...formData, notes: value })}
           placeholder="Add any additional notes about this payment..."
           readOnly={isLoading}
+          onSubmit={submitForm}
         />
       </div>
 
@@ -286,11 +291,20 @@ export const PaymentForm = ({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-2 disabled:opacity-50"
+          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-1.5 disabled:opacity-50"
           disabled={isLoading}
         >
-          <Save className="h-4 w-4" />
-          {isLoading ? 'Saving...' : payment ? 'Update' : 'Create'} Payment
+          {payment ? (
+            <>
+              <Save className="h-4 w-4" />
+              {isLoading ? 'Saving...' : 'Update Payment'}
+            </>
+          ) : (
+            <>
+              <Calendar className="h-4 w-4" />
+              {isLoading ? 'Saving...' : 'Schedule Payment'}
+            </>
+          )}
         </button>
       </div>
     </form>

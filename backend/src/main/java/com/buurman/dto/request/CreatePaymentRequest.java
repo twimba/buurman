@@ -11,4 +11,6 @@ public record CreatePaymentRequest(
     @NotNull(message = "Amount is required") @Positive(message = "Amount must be positive") BigDecimal amount,
     @NotNull(message = "Currency is required") String currency,
     @NotNull(message = "Due date is required") LocalDate dueDate,
-    String notes) {}
+    String notes,
+    Boolean markAsPaid,
+    LocalDate paymentDate) {}

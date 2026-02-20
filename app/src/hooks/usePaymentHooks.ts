@@ -73,7 +73,8 @@ export const useCreatePayment = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
-      showToast('Payment created successfully', 'success');
+      const verb = newPayment.status === 'PAID' ? 'registered' : 'scheduled';
+      showToast(`Payment ${verb} successfully`, 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
