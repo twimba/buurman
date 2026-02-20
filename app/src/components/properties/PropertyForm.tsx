@@ -319,13 +319,11 @@ export const PropertyForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
 
     try {
       await onSubmit(formData);
-      // Navigate to property detail page if editing, otherwise to list
       if (property) {
         navigate(`/properties/${property.identifier}`);
       } else {
@@ -333,6 +331,18 @@ export const PropertyForm = ({
       }
     } catch (error) {
       console.error('Failed to save property:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -347,7 +357,11 @@ export const PropertyForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-6"
+    >
       {/* Address Section */}
       <div>
         <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">

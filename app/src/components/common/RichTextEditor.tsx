@@ -1,4 +1,4 @@
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Extension } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
@@ -6,7 +6,7 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import DOMPurify from 'dompurify';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import {
   Bold,
   Italic,
@@ -36,6 +36,7 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   readOnly?: boolean;
+  onSubmit?: () => void;
 }
 
 const ToolbarButton = ({
@@ -75,9 +76,14 @@ export const RichTextEditor = ({
   onChange,
   placeholder = 'Start writing...',
   readOnly = false,
+  onSubmit,
 }: RichTextEditorProps) => {
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const onSubmitRef = useRef(onSubmit);
+  useEffect(() => {
+    onSubmitRef.current = onSubmit;
+  });
 
   const editor = useEditor({
     extensions: [
@@ -97,6 +103,17 @@ export const RichTextEditor = ({
       }),
       Placeholder.configure({ placeholder }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Extension.create({
+        name: 'submitShortcut',
+        addKeyboardShortcuts() {
+          return {
+            'Mod-Enter': () => {
+              onSubmitRef.current?.();
+              return !!onSubmitRef.current;
+            },
+          };
+        },
+      }),
     ],
     content: value || '',
     editable: !readOnly,

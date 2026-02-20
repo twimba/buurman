@@ -127,6 +127,13 @@ export const DocumentList = ({
     e.target.value = '';
   };
 
+  const handleCmdEnterUpload = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleUpload();
+    }
+  };
+
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
     const cleanNotes = uploadNotes.trim();
@@ -458,7 +465,10 @@ export const DocumentList = ({
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onKeyDown={handleCmdEnterUpload}
+        >
           <div className="bg-white dark:bg-[#14161f] rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
@@ -533,6 +543,7 @@ export const DocumentList = ({
                   onChange={setUploadNotes}
                   placeholder="Additional notes about this document"
                   readOnly={!!uploadProgress}
+                  onSubmit={handleUpload}
                 />
               </div>
             </div>

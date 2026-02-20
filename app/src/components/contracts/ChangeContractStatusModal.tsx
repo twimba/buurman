@@ -48,9 +48,20 @@ export const ChangeContractStatusModal = ({
   );
   const [reason, setReason] = useState('');
 
+  const submitForm = () => {
+    onConfirm(selectedStatus, reason || undefined);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onConfirm(selectedStatus, reason || undefined);
+    submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
   };
 
   return (
@@ -71,7 +82,7 @@ export const ChangeContractStatusModal = ({
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
           <div className="p-4 space-y-4">
             {/* Current Status */}
             <div>
@@ -122,6 +133,7 @@ export const ChangeContractStatusModal = ({
                     value={reason}
                     onChange={setReason}
                     placeholder="Enter reason for status change..."
+                    onSubmit={submitForm}
                   />
                 </div>
               </>

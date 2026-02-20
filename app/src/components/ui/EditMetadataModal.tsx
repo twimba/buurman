@@ -31,6 +31,7 @@ export const EditMetadataModal = ({
   }, [onCancel]);
 
   const handleSave = () => {
+    if (isLoading) return;
     const cleanNotes = editNotes.trim();
     // Treat empty editor content as null
     const notesValue =
@@ -38,8 +39,18 @@ export const EditMetadataModal = ({
     onSave(editTitle.trim() || null, notesValue);
   };
 
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onKeyDown={handleCmdEnter}
+    >
       <div className="bg-white dark:bg-[#14161f] rounded-lg p-6 max-w-lg w-full">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -79,6 +90,7 @@ export const EditMetadataModal = ({
               onChange={setEditNotes}
               placeholder="Add notes"
               readOnly={isLoading}
+              onSubmit={handleSave}
             />
           </div>
         </div>

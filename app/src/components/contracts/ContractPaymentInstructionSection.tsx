@@ -122,8 +122,7 @@ export const ContractPaymentInstructionSection = ({
     setCustomPaymentReference('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = () => {
     const data: CreateContractPaymentInstructionRequest = {
       effectiveFrom,
       notes: notes || undefined,
@@ -151,6 +150,18 @@ export const ContractPaymentInstructionSection = ({
       );
     } else {
       createMutation.mutate(data, { onSuccess: resetForm });
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -326,7 +337,11 @@ export const ContractPaymentInstructionSection = ({
               ? 'Change Payment Instructions'
               : 'Set Payment Instructions'}
           </h3>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={handleCmdEnter}
+            className="space-y-4"
+          >
             {/* Template vs Custom Toggle */}
             <div className="flex rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
               <button
@@ -550,6 +565,7 @@ export const ContractPaymentInstructionSection = ({
                 value={notes}
                 onChange={setNotes}
                 placeholder="Optional reason..."
+                onSubmit={submitForm}
               />
             </div>
 

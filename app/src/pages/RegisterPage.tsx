@@ -142,9 +142,7 @@ const RegisterPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const submitForm = async () => {
     if (!validate()) return;
 
     try {
@@ -169,6 +167,18 @@ const RegisterPage: React.FC = () => {
       setErrors({
         submit: err.response?.data?.message || 'Registration failed',
       });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -315,7 +325,11 @@ const RegisterPage: React.FC = () => {
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form
+                  onSubmit={handleSubmit}
+                  onKeyDown={handleCmdEnter}
+                  className="space-y-5"
+                >
                   {/* Invitation Code Gate */}
                   {invitationRequired && (
                     <div

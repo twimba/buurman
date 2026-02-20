@@ -129,14 +129,25 @@ export const AddressForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
 
     try {
       await onSubmit(formData);
     } catch (error) {
       console.error('Failed to save address:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -161,6 +172,7 @@ export const AddressForm = ({
   return (
     <form
       onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
       className="space-y-6 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg p-6"
     >
       <div className="flex justify-between items-center">

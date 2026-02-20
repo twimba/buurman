@@ -68,8 +68,7 @@ export const TenantForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async () => {
     if (!validate()) return;
 
     try {
@@ -84,6 +83,18 @@ export const TenantForm = ({
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
+  };
+
   const handleChange = (field: keyof CreateTenantRequest, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -92,7 +103,11 @@ export const TenantForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-6"
+    >
       {/* Personal Information */}
       <div>
         <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
@@ -197,6 +212,7 @@ export const TenantForm = ({
             value={formData.additionalInfo || ''}
             onChange={(value) => handleChange('additionalInfo', value)}
             placeholder="Add any additional information about the tenant"
+            onSubmit={submitForm}
           />
         </div>
       </div>

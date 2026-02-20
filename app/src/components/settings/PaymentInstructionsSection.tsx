@@ -78,8 +78,7 @@ export const PaymentInstructionsSection = () => {
     setShowForm(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = () => {
     if (editingId) {
       // handled by child component
     } else {
@@ -89,6 +88,18 @@ export const PaymentInstructionsSection = () => {
           setFormData(emptyForm);
         },
       });
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
     }
   };
 
@@ -148,7 +159,11 @@ export const PaymentInstructionsSection = () => {
               }}
             />
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              onKeyDown={handleCmdEnter}
+              className="space-y-4"
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
@@ -199,6 +214,7 @@ export const PaymentInstructionsSection = () => {
                     setFormData({ ...formData, description: val })
                   }
                   placeholder="Instructions for the tenant..."
+                  onSubmit={submitForm}
                 />
               </div>
 
@@ -495,13 +511,28 @@ const PaymentInstructionEditForm = ({
     formData.paymentMethod === PaymentMethod.IDEAL_WERO ||
     formData.paymentMethod === PaymentMethod.ZELLE;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = () => {
     updateMutation.mutate(formData, { onSuccess: onCancel });
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm();
+  };
+
+  const handleCmdEnter = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleCmdEnter}
+      className="space-y-4"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
@@ -545,6 +576,7 @@ const PaymentInstructionEditForm = ({
           value={formData.description || ''}
           onChange={(val) => setFormData({ ...formData, description: val })}
           placeholder="Instructions for the tenant..."
+          onSubmit={submitForm}
         />
       </div>
 
