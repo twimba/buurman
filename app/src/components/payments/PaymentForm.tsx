@@ -1,9 +1,13 @@
-import { useState } from 'react';
-import { X, Save } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';
+import { useRentPeriods } from '@/hooks/useRentPeriodHooks';
+import { useToast } from '@/context/ToastContext';
+import { getCurrencySymbol } from '@/utils/currencies';
 
 interface PaymentFormProps {
   payment?: PaymentResponse;
@@ -21,7 +25,13 @@ export const PaymentForm = ({
   contractIdentifier,
 }: PaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
+  const { data: currencies } = useCurrencies();
+  const { data: rentPeriods } = useRentPeriods(contractIdentifier || undefined);
+  const { showToast } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [amountRaw, setAmountRaw] = useState(
+    payment?.amount ? String(payment.amount) : ''
+  );
 
   const [formData, setFormData] = useState<
     CreatePaymentRequest & { paymentDate?: string }
@@ -29,7 +39,7 @@ export const PaymentForm = ({
     contractIdentifier: contractIdentifier,
     amount: payment?.amount || 0,
     currency: payment?.currency || defaultCurrency || 'EUR',
-    dueDate: payment?.dueDate || '',
+    dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
     notes: payment?.notes || '',
     paymentDate: payment?.paymentDate || '',
   });
@@ -37,6 +47,7 @@ export const PaymentForm = ({
   const [lastSyncedPayment, setLastSyncedPayment] = useState(payment);
   if (payment && payment !== lastSyncedPayment) {
     setLastSyncedPayment(payment);
+    setAmountRaw(String(payment.amount));
     setFormData({
       contractIdentifier: payment.contract.identifier,
       amount: payment.amount,
@@ -46,6 +57,57 @@ export const PaymentForm = ({
       paymentDate: payment.paymentDate || '',
     });
   }
+
+  const currency = formData.currency || defaultCurrency || 'EUR';
+  const fractionalDigits = getFractionalDigits(currencies, currency);
+
+  const dueDate = formData.dueDate;
+
+  // Determine which rent period the due date falls into
+  const rentPeriodForDate = useMemo(() => {
+    if (!rentPeriods || !dueDate) return null;
+    return (
+      rentPeriods.find((rp) => {
+        return dueDate >= rp.effectiveFrom && (!rp.effectiveTo || dueDate <= rp.effectiveTo);
+      }) ?? null
+    );
+  }, [rentPeriods, dueDate]);
+
+  // Current rent period (no end date or end date >= today)
+  const currentRentPeriod = useMemo(() => {
+    if (!rentPeriods) return null;
+    const today = new Date().toISOString().split('T')[0];
+    return (
+      rentPeriods.find((rp) => {
+        return rp.effectiveFrom <= today && (!rp.effectiveTo || rp.effectiveTo >= today);
+      }) ?? null
+    );
+  }, [rentPeriods]);
+
+  // Show notice when the due date's rent period differs from the current one,
+  // or when the due date falls in a known period but there is no current period
+  const showRentNotice =
+    !!rentPeriodForDate &&
+    (!currentRentPeriod ||
+      rentPeriodForDate.identifier !== currentRentPeriod.identifier);
+
+  const handleCurrencyChange = (newCurrency: string) => {
+    const newDigits = getFractionalDigits(currencies, newCurrency);
+    let newAmount = formData.amount;
+
+    if (newAmount && newDigits < fractionalDigits) {
+      // Ceil to the new precision
+      const factor = Math.pow(10, newDigits);
+      newAmount = Math.ceil(newAmount * factor) / factor;
+      showToast(
+        `Amount rounded to ${newAmount.toFixed(newDigits)} for ${newCurrency}`,
+        'info'
+      );
+    }
+
+    setAmountRaw(newAmount ? String(newAmount) : '');
+    setFormData({ ...formData, currency: newCurrency, amount: newAmount });
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -73,12 +135,20 @@ export const PaymentForm = ({
           Amount <span className="text-red-500">*</span>
         </label>
         <input
-          type="number"
-          step="0.01"
-          value={formData.amount}
-          onChange={(e) =>
-            setFormData({ ...formData, amount: parseFloat(e.target.value) })
-          }
+          type="text"
+          inputMode="decimal"
+          value={amountRaw}
+          onChange={(e) => {
+            const raw = e.target.value.replace(',', '.');
+            // Only allow digits, one dot, and valid decimal length
+            if (raw !== '' && !/^\d*\.?\d*$/.test(raw)) return;
+            const parts = raw.split('.');
+            if (parts[1] !== undefined && parts[1].length > fractionalDigits) return;
+            if (fractionalDigits === 0 && raw.includes('.')) return;
+            setAmountRaw(raw);
+            const num = parseFloat(raw);
+            setFormData({ ...formData, amount: isNaN(num) ? 0 : num });
+          }}
           className={`w-full px-3 py-2 border rounded-md ${
             errors.amount
               ? 'border-red-500'
@@ -98,7 +168,7 @@ export const PaymentForm = ({
         </label>
         <CurrencySelector
           value={formData.currency || defaultCurrency || 'EUR'}
-          onChange={(currency) => setFormData({ ...formData, currency })}
+          onChange={handleCurrencyChange}
           disabled={isLoading}
         />
       </div>
@@ -138,6 +208,25 @@ export const PaymentForm = ({
         </div>
         {errors.dueDate && (
           <p className="mt-1 text-sm text-red-500">{errors.dueDate}</p>
+        )}
+        {showRentNotice && rentPeriodForDate && (
+          <div className="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-xs text-amber-700 dark:text-amber-300">
+            <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+            <span>
+              This date falls in a different rent period (
+              {getCurrencySymbol(currency)}{' '}
+              {rentPeriodForDate.rentAmount.toFixed(fractionalDigits)}/mo from{' '}
+              {rentPeriodForDate.effectiveFrom}
+              {rentPeriodForDate.effectiveTo
+                ? ` to ${rentPeriodForDate.effectiveTo}`
+                : ''}
+              ).
+              {currentRentPeriod && (
+                <> Current rent is {getCurrencySymbol(currency)}{' '}
+                {currentRentPeriod.rentAmount.toFixed(fractionalDigits)}/mo.</>
+              )}
+            </span>
+          </div>
         )}
       </div>
 

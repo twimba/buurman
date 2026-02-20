@@ -1,9 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import {
-  allCurrencies,
-  topCurrencies,
-  formatCurrency,
-} from '@/utils/currencies';
+import { useCurrencies, splitCurrencies } from '@/hooks/useCurrencies';
 import { ChevronDown } from 'lucide-react';
 
 interface CurrencySelectorProps {
@@ -24,10 +20,9 @@ export const CurrencySelector = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const topCurrencyCodes = new Set(topCurrencies.map((c) => c.code));
-  const otherCurrencies = allCurrencies.filter(
-    (c) => !topCurrencyCodes.has(c.code)
-  );
+  const { data: currencies = [], isLoading } = useCurrencies();
+  const { top: topCurrencies, other: otherCurrencies } =
+    splitCurrencies(currencies);
 
   const filteredTop = topCurrencies.filter(
     (c) =>
@@ -44,10 +39,10 @@ export const CurrencySelector = ({
   const allFiltered = [...filteredTop, ...filteredOther];
 
   const selectedCurrency = value
-    ? allCurrencies.find((c) => c.code === value)
+    ? currencies.find((c) => c.code === value)
     : undefined;
   const displayValue = selectedCurrency
-    ? formatCurrency(selectedCurrency.code)
+    ? `${selectedCurrency.symbol} ${selectedCurrency.name} (${selectedCurrency.code})`
     : '';
 
   useEffect(() => {
@@ -115,6 +110,9 @@ export const CurrencySelector = ({
     }
   };
 
+  const formatCurrency = (c: { symbol: string; name: string; code: string }) =>
+    `${c.symbol} ${c.name} (${c.code})`;
+
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
@@ -150,71 +148,79 @@ export const CurrencySelector = ({
           ref={listRef}
           className="absolute z-50 w-full mt-1 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-80 overflow-y-auto"
         >
-          {filteredTop.length > 0 && (
-            <div>
-              <div className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] bg-[#f8f9fc] dark:bg-[#1e2130] sticky top-0">
-                Common
-              </div>
-              {filteredTop.map((currency, localIndex) => (
-                <button
-                  key={currency.code}
-                  type="button"
-                  data-option
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleSelect(currency.code)}
-                  onMouseEnter={() => setHighlightedIndex(localIndex)}
-                  className={`w-full text-left px-3 py-2 text-sm ${
-                    highlightedIndex === localIndex
-                      ? 'bg-blue-50 dark:bg-blue-900/30'
-                      : currency.code === value
-                        ? 'bg-primary-100 dark:bg-primary-500/10'
-                        : ''
-                  }`}
-                >
-                  {formatCurrency(currency.code)}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {filteredTop.length > 0 && filteredOther.length > 0 && (
-            <div className="border-t border-[#e2e6f0] dark:border-[#2a2e3f] my-1" />
-          )}
-
-          {filteredOther.length > 0 && (
-            <div>
-              <div className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] bg-[#f8f9fc] dark:bg-[#1e2130] sticky top-0">
-                Other Currencies
-              </div>
-              {filteredOther.map((currency, localIndex) => {
-                const flatIndex = filteredTop.length + localIndex;
-                return (
-                  <button
-                    key={currency.code}
-                    type="button"
-                    data-option
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => handleSelect(currency.code)}
-                    onMouseEnter={() => setHighlightedIndex(flatIndex)}
-                    className={`w-full text-left px-3 py-2 text-sm ${
-                      highlightedIndex === flatIndex
-                        ? 'bg-blue-50 dark:bg-blue-900/30'
-                        : currency.code === value
-                          ? 'bg-primary-100 dark:bg-primary-500/10'
-                          : ''
-                    }`}
-                  >
-                    {formatCurrency(currency.code)}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {allFiltered.length === 0 && (
+          {isLoading ? (
             <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
-              No currencies found
+              Loading currencies...
             </div>
+          ) : (
+            <>
+              {filteredTop.length > 0 && (
+                <div>
+                  <div className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] bg-[#f8f9fc] dark:bg-[#1e2130] sticky top-0">
+                    Common
+                  </div>
+                  {filteredTop.map((currency, localIndex) => (
+                    <button
+                      key={currency.code}
+                      type="button"
+                      data-option
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSelect(currency.code)}
+                      onMouseEnter={() => setHighlightedIndex(localIndex)}
+                      className={`w-full text-left px-3 py-2 text-sm ${
+                        highlightedIndex === localIndex
+                          ? 'bg-blue-50 dark:bg-blue-900/30'
+                          : currency.code === value
+                            ? 'bg-primary-100 dark:bg-primary-500/10'
+                            : ''
+                      }`}
+                    >
+                      {formatCurrency(currency)}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {filteredTop.length > 0 && filteredOther.length > 0 && (
+                <div className="border-t border-[#e2e6f0] dark:border-[#2a2e3f] my-1" />
+              )}
+
+              {filteredOther.length > 0 && (
+                <div>
+                  <div className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] bg-[#f8f9fc] dark:bg-[#1e2130] sticky top-0">
+                    Other Currencies
+                  </div>
+                  {filteredOther.map((currency, localIndex) => {
+                    const flatIndex = filteredTop.length + localIndex;
+                    return (
+                      <button
+                        key={currency.code}
+                        type="button"
+                        data-option
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSelect(currency.code)}
+                        onMouseEnter={() => setHighlightedIndex(flatIndex)}
+                        className={`w-full text-left px-3 py-2 text-sm ${
+                          highlightedIndex === flatIndex
+                            ? 'bg-blue-50 dark:bg-blue-900/30'
+                            : currency.code === value
+                              ? 'bg-primary-100 dark:bg-primary-500/10'
+                              : ''
+                        }`}
+                      >
+                        {formatCurrency(currency)}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {allFiltered.length === 0 && (
+                <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  No currencies found
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

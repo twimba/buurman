@@ -373,6 +373,10 @@ services:
         VITE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
     container_name: buurman-backoffice
+    environment:
+      VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
+      VITE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
+      VITE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backoffice.rule=Host(`backoffice.local.buurman.io`)"

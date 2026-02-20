@@ -9,8 +9,8 @@ const env = (key: string) => cfg[key] || import.meta.env[key] || "";
 // Create Keycloak instance with configuration
 const keycloakConfig = {
   url: env("VITE_KEYCLOAK_URL"),
-  realm: env("VITE_KEYCLOAK_REALM"),
-  clientId: env("VITE_KEYCLOAK_CLIENT_ID"),
+  realm: env("VITE_BACKOFFICE_KEYCLOAK_REALM"),
+  clientId: env("VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID"),
 };
 
 // Singleton pattern to ensure only one Keycloak instance is created

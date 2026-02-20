@@ -74,7 +74,8 @@ public class BackofficeFeatureFlagController {
 
   @Operation(
       summary = "Check if Flagsmith admin operations are available",
-      description = "Returns whether the backend has admin credentials configured for flag management")
+      description =
+          "Returns whether the backend has admin credentials configured for flag management")
   @GetMapping("/admin-status")
   public Map<String, Object> getAdminStatus() {
     return Map.of(

@@ -70,6 +70,7 @@ import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
@@ -108,6 +109,14 @@ public class PaymentService {
     // Resolve contract by identifier
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
+
+    if (contract.getStatus() != ACTIVE) {
+      throw new BusinessRuleException(
+          "Payments can only be created for active contracts. Current status: "
+              + contract.getStatus());
+    }
+
+    validateCurrencyDecimals(request.amount(), request.currency());
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
@@ -231,6 +240,20 @@ public class PaymentService {
     UUID teamId = principal.getTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+
+    // Validate contract is still active
+    Contract contract = contractRepository.getByIdAndTeamId(payment.getContractId(), teamId);
+    if (contract.getStatus() != ACTIVE) {
+      throw new BusinessRuleException(
+          "Payments can only be edited for active contracts. Current status: "
+              + contract.getStatus());
+    }
+
+    // Validate currency decimals if amount or currency is being changed
+    BigDecimal effectiveAmount = request.amount() != null ? request.amount() : payment.getAmount();
+    String effectiveCurrency =
+        request.currency() != null ? request.currency() : payment.getCurrency();
+    validateCurrencyDecimals(effectiveAmount, effectiveCurrency);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
@@ -981,5 +1004,18 @@ public class PaymentService {
         receivalResponses,
         response.createdAt(),
         response.updatedAt());
+  }
+
+  private void validateCurrencyDecimals(BigDecimal amount, String currencyCode) {
+    if (amount == null || currencyCode == null) {
+      return;
+    }
+    if (!CurrencyUtils.isAmountValidForCurrency(amount, currencyCode)) {
+      int allowed = CurrencyUtils.getFractionalDigits(currencyCode);
+      throw new BusinessRuleException(
+          String.format(
+              "%s amounts cannot have more than %d decimal place%s",
+              currencyCode, allowed, allowed == 1 ? "" : "s"));
+    }
   }
 }

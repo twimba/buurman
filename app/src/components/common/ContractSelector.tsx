@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
+import { getCurrencySymbol } from '@/utils/currencies';
 import { ChevronDown, FileText } from 'lucide-react';
 
 interface ContractSelectorProps {
@@ -22,14 +23,14 @@ export const ContractSelector = ({
   const listRef = useRef<HTMLDivElement>(null);
 
   const { data: contractsData, isLoading } = useQuery({
-    queryKey: ['contracts'],
-    queryFn: () => getContracts(),
+    queryKey: ['contracts', 'ACTIVE'],
+    queryFn: () => getContracts({ status: 'ACTIVE' }),
   });
   const contracts = contractsData?.content ?? [];
 
   const selectedContract = contracts.find((c) => c.identifier === value);
   const displayValue = selectedContract
-    ? `Contract #${selectedContract.identifier} - ${selectedContract.property.street}`
+    ? `${selectedContract.property.street} — ${getCurrencySymbol(selectedContract.currency)} ${selectedContract.rentAmount.toFixed(2)}/mo`
     : '';
 
   const filtered = contracts.filter(
@@ -147,7 +148,9 @@ export const ContractSelector = ({
             </div>
           ) : filtered.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
-              No contracts found
+              {contracts.length === 0
+                ? 'No active contracts available'
+                : 'No contracts found'}
             </div>
           ) : (
             filtered.map((contract, index) => (
@@ -171,14 +174,13 @@ export const ContractSelector = ({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                    Contract #{contract.identifier}
-                  </div>
-                  <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                    {contract.property.street}, {contract.property.city}
+                    {contract.property.street}
                   </div>
                   <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                     {contract.primaryTenant.firstName}{' '}
-                    {contract.primaryTenant.lastName} • {contract.status}
+                    {contract.primaryTenant.lastName} &middot;{' '}
+                    {getCurrencySymbol(contract.currency)}{' '}
+                    {contract.rentAmount.toFixed(2)}/mo
                   </div>
                 </div>
               </button>

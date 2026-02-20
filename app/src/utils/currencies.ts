@@ -2,6 +2,7 @@ export interface Currency {
   code: string;
   name: string;
   symbol: string;
+  fractionalDigits?: number;
 }
 
 // Top world currencies (ordered by importance/usage)

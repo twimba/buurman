@@ -60,7 +60,12 @@ export const FeatureFlagsPage = () => {
   const extractError = (error: unknown): string => {
     if (error instanceof AxiosError && error.response?.data) {
       const data = error.response.data;
-      return data.detail || data.message || data.title || "Failed to update feature flag";
+      return (
+        data.detail ||
+        data.message ||
+        data.title ||
+        "Failed to update feature flag"
+      );
     }
     if (error instanceof Error) return error.message;
     return "Failed to update feature flag";
@@ -144,9 +149,18 @@ export const FeatureFlagsPage = () => {
             </p>
             <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
               No Flagsmith admin credentials configured. Set{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_API_TOKEN</code> (Cloud) or{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_ADMIN_EMAIL</code> +{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">FLAGSMITH_ADMIN_PASSWORD</code> (self-hosted).
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+                FLAGSMITH_API_TOKEN
+              </code>{" "}
+              (Cloud) or{" "}
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+                FLAGSMITH_ADMIN_EMAIL
+              </code>{" "}
+              +{" "}
+              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+                FLAGSMITH_ADMIN_PASSWORD
+              </code>{" "}
+              (self-hosted).
             </p>
           </div>
         </div>
@@ -157,7 +171,9 @@ export const FeatureFlagsPage = () => {
         <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl">
           <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm text-red-800 dark:text-red-300">{errorMessage}</p>
+            <p className="text-sm text-red-800 dark:text-red-300">
+              {errorMessage}
+            </p>
           </div>
           <button
             onClick={() => setErrorMessage(null)}
@@ -190,7 +206,9 @@ export const FeatureFlagsPage = () => {
             isRefreshing={globalFetching}
           />
         </div>
-        <div className={`bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}>
+        <div
+          className={`bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}
+        >
           {globalLoading ? (
             <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180] text-sm">
               Loading flags...

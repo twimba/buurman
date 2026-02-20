@@ -148,7 +148,7 @@ scheduling:
     contract-expiry-cron: "0 0 0 * * ?"
     payment-reminder-cron: "0 0 0 * * ?"
   metrics:
-    metrics-push-cron: "0 * * * * ?"
+    metrics-push-cron: "0 */15 * * * ?"
 
 # Actuator Configuration
 management:

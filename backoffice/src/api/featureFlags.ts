@@ -46,8 +46,7 @@ export interface AdminStatus {
 }
 
 export const featureFlagsApi = {
-  getAdminStatus: () =>
-    client.get<AdminStatus>("/feature-flags/admin-status"),
+  getAdminStatus: () => client.get<AdminStatus>("/feature-flags/admin-status"),
   getGlobal: () => client.get<FlagMap>("/feature-flags"),
   getForUser: (userIdentifier: string) =>
     client.get<TeamFlagEvaluation[]>(`/feature-flags/users/${userIdentifier}`),
