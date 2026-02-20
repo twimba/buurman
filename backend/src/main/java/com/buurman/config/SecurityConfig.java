@@ -100,7 +100,7 @@ public class SecurityConfig {
                     // Public endpoints
                     .requestMatchers("/health", "/info", "/reference/**")
                     .permitAll()
-                    .requestMatchers("/actuator/health")
+                    .requestMatchers("/actuator/health", "/actuator/prometheus")
                     .permitAll()
                     .requestMatchers("/api-docs/**", "/swagger-ui/**")
                     .permitAll()
