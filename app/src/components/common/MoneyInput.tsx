@@ -1,14 +1,18 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 import {
   useCurrencies,
   getFractionalDigits,
   getCurrencySymbol,
 } from '@/hooks/useCurrencies';
+import { CurrencyDropdown } from './CurrencyDropdown';
 
 interface MoneyInputProps {
   value: number | undefined;
   onChange: (value: number | undefined) => void;
   currency: string;
+  /** When provided, the currency prefix becomes a clickable selector. */
+  onCurrencyChange?: (currency: string) => void;
   disabled?: boolean;
   error?: boolean;
   placeholder?: string;
@@ -22,6 +26,7 @@ export const MoneyInput = ({
   value,
   onChange,
   currency,
+  onCurrencyChange,
   disabled = false,
   error = false,
   placeholder,
@@ -40,6 +45,23 @@ export const MoneyInput = ({
   const [lastEmitted, setLastEmitted] = useState(value);
   const [prevFractionalDigits, setPrevFractionalDigits] =
     useState(fractionalDigits);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const prefixRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click (desktop popover)
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        prefixRef.current &&
+        !prefixRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [dropdownOpen]);
 
   // Sync external value → rawValue when parent changes it
   if (value !== lastEmitted) {
@@ -106,11 +128,38 @@ export const MoneyInput = ({
     placeholder ??
     (fractionalDigits > 0 ? `0.${'0'.repeat(fractionalDigits)}` : '0');
 
+  const isClickable = !!onCurrencyChange && !disabled;
+
   return (
     <div className="flex">
-      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm">
-        {symbol}
-      </span>
+      {/* Currency prefix — static span or clickable button */}
+      <div ref={prefixRef} className="relative">
+        {isClickable ? (
+          <button
+            type="button"
+            onClick={() => setDropdownOpen((o) => !o)}
+            className="inline-flex items-center gap-1 px-3 h-full rounded-l-md border border-r-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm hover:bg-[#eef0f6] dark:hover:bg-[#262a3a] cursor-pointer transition-colors"
+          >
+            {symbol}
+            <ChevronDown
+              className={`h-3 w-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+        ) : (
+          <span className="inline-flex items-center px-3 h-full rounded-l-md border border-r-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm">
+            {symbol}
+          </span>
+        )}
+
+        {dropdownOpen && onCurrencyChange && (
+          <CurrencyDropdown
+            value={currency}
+            onSelect={onCurrencyChange}
+            onClose={() => setDropdownOpen(false)}
+          />
+        )}
+      </div>
+
       <input
         id={id}
         type="text"
