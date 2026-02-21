@@ -25,13 +25,15 @@ public class ContractRecordMapper {
     contract.setStartDate(record.getStartDate());
     contract.setEndDate(record.getEndDate());
     contract.setSignedDate(record.getSignedDate());
-    String currency = record.getCurrency();
-    contract.setRentAmount(CurrencyUtils.toMajorUnits(record.getRentAmount(), currency));
+    contract.setRentAmount(
+        CurrencyUtils.toMajorUnits(record.getRentAmount(), record.getRentAmountCurrency()));
+    contract.setRentAmountCurrency(record.getRentAmountCurrency());
     contract.setDepositAmount(
-        CurrencyUtils.toMajorUnitsOrNull(record.getDepositAmount(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(record.getDepositAmount(), record.getDepositAmountCurrency()));
+    contract.setDepositAmountCurrency(record.getDepositAmountCurrency());
     contract.setSecurityDeposit(
-        CurrencyUtils.toMajorUnitsOrNull(record.getSecurityDeposit(), currency));
-    contract.setCurrency(record.getCurrency());
+        CurrencyUtils.toMajorUnitsOrNull(record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
+    contract.setSecurityDepositCurrency(record.getSecurityDepositCurrency());
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(record.getPaymentDueDay());
     contract.setAutoRenewal(record.getAutoRenewal());

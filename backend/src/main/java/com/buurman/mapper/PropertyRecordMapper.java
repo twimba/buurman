@@ -65,26 +65,46 @@ public interface PropertyRecordMapper {
 
   @AfterMapping
   default void convertMonetaryFields(PropertiesRecord record, @MappingTarget Property property) {
-    String currency = record.getCurrency();
-    if (currency == null) return;
     property.setPurchasePrice(
-        CurrencyUtils.toMajorUnitsOrNull(record.getPurchasePrice(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getPurchasePrice(), record.getPurchasePriceCurrency()));
+    property.setPurchasePriceCurrency(record.getPurchasePriceCurrency());
     property.setCurrentMarketValue(
-        CurrencyUtils.toMajorUnitsOrNull(record.getCurrentMarketValue(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getCurrentMarketValue(), record.getCurrentMarketValueCurrency()));
+    property.setCurrentMarketValueCurrency(record.getCurrentMarketValueCurrency());
     property.setMortgageAmount(
-        CurrencyUtils.toMajorUnitsOrNull(record.getMortgageAmount(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getMortgageAmount(), record.getMortgageAmountCurrency()));
+    property.setMortgageAmountCurrency(record.getMortgageAmountCurrency());
     property.setMonthlyMortgagePayment(
-        CurrencyUtils.toMajorUnitsOrNull(record.getMonthlyMortgagePayment(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getMonthlyMortgagePayment(), record.getMonthlyMortgagePaymentCurrency()));
+    property.setMonthlyMortgagePaymentCurrency(record.getMonthlyMortgagePaymentCurrency());
     property.setAnnualPropertyTax(
-        CurrencyUtils.toMajorUnitsOrNull(record.getAnnualPropertyTax(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getAnnualPropertyTax(), record.getAnnualPropertyTaxCurrency()));
+    property.setAnnualPropertyTaxCurrency(record.getAnnualPropertyTaxCurrency());
     property.setAnnualInsurance(
-        CurrencyUtils.toMajorUnitsOrNull(record.getAnnualInsurance(), currency));
-    property.setAnnualHoaFee(CurrencyUtils.toMajorUnitsOrNull(record.getAnnualHoaFee(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getAnnualInsurance(), record.getAnnualInsuranceCurrency()));
+    property.setAnnualInsuranceCurrency(record.getAnnualInsuranceCurrency());
+    property.setAnnualHoaFee(
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getAnnualHoaFee(), record.getAnnualHoaFeeCurrency()));
+    property.setAnnualHoaFeeCurrency(record.getAnnualHoaFeeCurrency());
     property.setAnnualManagementFee(
-        CurrencyUtils.toMajorUnitsOrNull(record.getAnnualManagementFee(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getAnnualManagementFee(), record.getAnnualManagementFeeCurrency()));
+    property.setAnnualManagementFeeCurrency(record.getAnnualManagementFeeCurrency());
     property.setAnnualMaintenanceReserve(
-        CurrencyUtils.toMajorUnitsOrNull(record.getAnnualMaintenanceReserve(), currency));
-    property.setLandValue(CurrencyUtils.toMajorUnitsOrNull(record.getLandValue(), currency));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getAnnualMaintenanceReserve(), record.getAnnualMaintenanceReserveCurrency()));
+    property.setAnnualMaintenanceReserveCurrency(record.getAnnualMaintenanceReserveCurrency());
+    property.setLandValue(
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getLandValue(), record.getLandValueCurrency()));
+    property.setLandValueCurrency(record.getLandValueCurrency());
   }
 
   default Instant toInstant(LocalDateTime localDateTime) {
