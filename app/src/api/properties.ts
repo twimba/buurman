@@ -11,6 +11,7 @@ import {
   OutdoorAreaRequest,
   AmenityResponse,
   PropertyAmenityResponse,
+  PropertyDashboardResponse,
 } from '../types/property';
 import { RecentActivity } from './dashboard';
 import { PageResponse, PageParams } from '@/types/common';
@@ -216,4 +217,15 @@ export const removePropertyAmenity = async (
   await client.delete(
     `/properties/${propertyId}/amenities/${amenityIdentifier}`
   );
+};
+
+// --- Property Dashboard ---
+
+export const getPropertyDashboard = async (
+  propertyId: string
+): Promise<PropertyDashboardResponse> => {
+  const response = await client.get(
+    `/properties/${propertyId}/dashboard`
+  );
+  return response.data;
 };

@@ -343,6 +343,17 @@ export const useAddPropertyAmenity = (propertyId: string) => {
   });
 };
 
+// --- Property Dashboard ---
+
+export const usePropertyDashboard = (propertyId: string | undefined) => {
+  return useQuery({
+    queryKey: ['propertyDashboard', propertyId],
+    queryFn: () => propertiesApi.getPropertyDashboard(propertyId!),
+    enabled: !!propertyId,
+    staleTime: 60_000,
+  });
+};
+
 export const useRemovePropertyAmenity = (propertyId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
