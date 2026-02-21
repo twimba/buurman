@@ -21,7 +21,7 @@
   "quickLoginCheckMilliSeconds": 1000,
   "maxDeltaTimeSeconds": 43200,
   "failureFactor": 5,
-  "passwordPolicy": "length(1)",
+  "passwordPolicy": "length(6)",
   "accessTokenLifespan": 300,
   "accessTokenLifespanForImplicitFlow": 300,
   "ssoSessionIdleTimeout": 1800,
@@ -291,5 +291,5 @@
     "frontendUrl": "",
     "acr.loa.map": "{}"
   },
-  "keycloakVersion": "23.0.5"
+  "keycloakVersion": "26.5.2"
 }
