@@ -22,13 +22,13 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "S3 / LocalStack Storage",
+      "title": "S3 Storage",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "ops" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "ops", "noValue": "No S3 activity" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
@@ -43,7 +43,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }, "unit": "s" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }, "unit": "s", "noValue": "No S3 activity" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
@@ -58,7 +58,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit", "noValue": "No S3 activity" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
@@ -73,16 +73,16 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "bytes" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No S3 activity" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
       "id": 4,
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Avg Upload Size",
+      "title": "Total S3 Operations",
       "type": "stat",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_document_upload_bytes_sum{job=\"$job\"} / buurman_document_upload_bytes_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_s3_operation_total{job=\"$job\"}[$__range]))", "instant": false, "range": true, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -97,7 +97,7 @@
       "title": "S3 Operations by Type",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (operation) (rate(buurman_s3_operation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{operation}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (operation) (rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{operation}}", "refId": "A" }
       ]
     },
     {
@@ -118,16 +118,36 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "bytes" },
-        "overrides": []
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "ops" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "failure" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "success" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] }
+        ]
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 13 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
       "id": 12,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Document Upload Size by Entity Type",
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "S3 Operations by Result",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_document_upload_bytes_sum{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (result) (rate(buurman_s3_operation_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{result}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+      "id": 13,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "S3 Latency Distribution (P50 / P95 / P99)",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.50, sum by (le) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "P50", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "P95", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.99, sum by (le) (rate(buurman_s3_operation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "P99", "refId": "C" }
       ]
     },
     {
@@ -140,7 +160,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "ops" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "ops", "noValue": "No notifications sent yet" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 22 },
@@ -155,7 +175,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }, "unit": "s" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] }, "unit": "s", "noValue": "No notifications sent yet" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 22 },
@@ -170,7 +190,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit", "noValue": "No notifications sent yet" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 22 },
@@ -185,7 +205,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No notifications sent yet" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 6, "x": 18, "y": 22 },
@@ -255,113 +275,6 @@
       "type": "timeseries",
       "targets": [
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, channel) (rate(buurman_notification_send_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{channel}}", "refId": "A" }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 42 },
-      "id": 102,
-      "title": "Documents",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 43 },
-      "id": 30,
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Document Uploads by Entity Type",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 43 },
-      "id": 31,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Document Operations",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_upload_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Uploads", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_download_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Downloads", "refId": "B" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_delete_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Deletes", "refId": "C" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_document_bulk_download_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Bulk Downloads", "refId": "D" }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 51 },
-      "id": 103,
-      "title": "Exports / PDF Generation",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
-      "id": 40,
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Export Generation by Type",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
-      "id": 41,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Export Generation Duration (P95)",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le, type) (rate(buurman_export_generation_seconds_bucket{job=\"$job\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" } },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 60 },
-      "id": 42,
-      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Most Popular Export Type",
-      "type": "piechart",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (increase(buurman_export_generation_total{job=\"$job\", result=\"success\"}[$__range]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "fillOpacity": 30 }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
-      "id": 43,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Export Generation Failures",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (type) (rate(buurman_export_generation_total{job=\"$job\", result=\"failure\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{type}}", "refId": "A" }
       ]
     }
   ],

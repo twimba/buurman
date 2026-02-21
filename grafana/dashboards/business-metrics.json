@@ -28,7 +28,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
@@ -43,7 +43,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
@@ -58,7 +58,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
@@ -73,7 +73,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
@@ -88,7 +88,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
@@ -103,7 +103,7 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
       "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
@@ -119,7 +119,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
-      "title": "Properties",
+      "title": "Growth Over Time",
       "type": "row"
     },
     {
@@ -131,10 +131,11 @@
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "id": 10,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Properties Count Over Time",
+      "title": "Properties & Tenants Over Time",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_properties_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Properties", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_properties_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Properties", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Tenants", "refId": "B" }
       ]
     },
     {
@@ -146,10 +147,11 @@
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
       "id": 11,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Tenants Count Over Time",
+      "title": "Contracts & Teams Over Time",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Tenants", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Contracts", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_teams_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Teams", "refId": "B" }
       ]
     },
     {
@@ -262,99 +264,6 @@
       "type": "timeseries",
       "targets": [
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_by_status{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "{{status}}", "refId": "A" }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
-      "id": 104,
-      "title": "Tenants",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 41 },
-      "id": 40,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Tenants Count Over Time",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_tenants_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Tenants", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 41 },
-      "id": 41,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Contracts Count Over Time",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_contracts_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Contracts", "refId": "A" }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 49 },
-      "id": 105,
-      "title": "Teams & Audit",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 50 },
-      "id": 50,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Teams Count Over Time",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_teams_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "Teams", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
-        "overrides": []
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 50 },
-      "id": 51,
-      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
-      "title": "Audit Activity by Entity Type",
-      "type": "timeseries",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (entity_type) (rate(buurman_audit_log_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{entity_type}}", "refId": "A" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" } },
-        "overrides": [
-          { "matcher": { "id": "byName", "options": "CREATE" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
-          { "matcher": { "id": "byName", "options": "UPDATE" }, "properties": [{ "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }] },
-          { "matcher": { "id": "byName", "options": "DELETE" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
-        ]
-      },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 58 },
-      "id": 52,
-      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Audit Actions Distribution",
-      "type": "piechart",
-      "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (action) (increase(buurman_audit_log_total{job=\"$job\"}[$__range]))", "instant": false, "range": true, "legendFormat": "{{action}}", "refId": "A" }
       ]
     }
   ],

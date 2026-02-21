@@ -28,10 +28,10 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "reqps" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "reqps", "noValue": "No auth requests" },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
       "id": 1,
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
       "title": "Auth Request Rate",
@@ -43,31 +43,46 @@
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No data" },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
       "id": 2,
-      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Teams Registered (Total)",
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Active Teams",
       "type": "stat",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(buurman_team_registered_total{job=\"$job\"})", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "buurman_teams_count{job=\"$job\"}", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short" },
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.01 }] }, "unit": "percentunit", "noValue": "No auth requests" },
         "overrides": []
       },
-      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Keycloak Users Created (Total)",
+      "title": "Auth Error Rate (4xx+5xx)",
       "type": "stat",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(buurman_keycloak_user_creation_total{job=\"$job\"})", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/auth.*\", status=~\"4..|5..\"}[$__rate_interval])) / sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/auth.*\"}[$__rate_interval]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 2 }] }, "unit": "s", "noValue": "No auth requests" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Auth P95 Latency",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/auth.*\"}[$__rate_interval])))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -117,13 +132,13 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
       "id": 102,
-      "title": "Keycloak Integration",
+      "title": "Spring Security",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "short" },
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "ops" },
         "overrides": [
           { "matcher": { "id": "byRegexp", "options": ".*failure.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
           { "matcher": { "id": "byRegexp", "options": ".*success.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] }
@@ -131,31 +146,63 @@
       },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
       "id": 20,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Keycloak User Creations",
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Authentication Attempts",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (result) (rate(buurman_keycloak_user_creation_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{result}}", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (authentication) (rate(spring_security_authentications_seconds_count{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{authentication}}", "refId": "A" }
       ]
     },
     {
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "short" },
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
         "overrides": []
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
       "id": 21,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Team Registrations Over Time",
+      "title": "Authentication Duration",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "rate(buurman_team_registered_total{job=\"$job\"}[$__rate_interval])", "instant": false, "range": true, "legendFormat": "Teams Registered", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "spring_security_authentications_seconds_max{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "max", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "spring_security_authentications_seconds_sum{job=\"$job\"} / spring_security_authentications_seconds_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "avg", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20, "stacking": { "mode": "normal" } }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+      "id": 22,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "sum"] }, "tooltip": { "mode": "multi" } },
+      "title": "Authorization Checks",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (authorization) (rate(spring_security_authorizations_seconds_count{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{authorization}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 10 }, "unit": "s" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+      "id": 23,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Security Filter Chain Duration",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "spring_security_filterchains_seconds_max{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "max", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "spring_security_filterchains_seconds_sum{job=\"$job\"} / spring_security_filterchains_seconds_count{job=\"$job\"}", "instant": false, "range": true, "legendFormat": "avg", "refId": "B" }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 31 },
       "id": 103,
       "title": "Registration Activity",
       "type": "row"
@@ -168,7 +215,7 @@
           { "matcher": { "id": "byRegexp", "options": ".*fail.*" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
         ]
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
       "id": 30,
       "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Registration HTTP Activity",
@@ -184,7 +231,7 @@
         "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "reqps" },
         "overrides": []
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
       "id": 31,
       "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum"] }, "tooltip": { "mode": "multi" } },
       "title": "Auth Endpoints by URI",
@@ -195,7 +242,7 @@
     }
   ],
   "schemaVersion": 39,
-  "tags": ["buurman", "auth", "keycloak"],
+  "tags": ["buurman", "auth", "security"],
   "templating": {
     "list": [
       {
@@ -215,7 +262,7 @@
   "time": { "from": "now-6h", "to": "now" },
   "timepicker": {},
   "timezone": "",
-  "title": "Buurman - Authentication",
+  "title": "Buurman - Authentication & Security",
   "uid": "buurman-auth",
   "version": 1
 }

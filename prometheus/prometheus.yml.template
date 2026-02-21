@@ -28,6 +28,11 @@ scrape_configs:
     static_configs:
       - targets: ['buurman-api-uucnc9:8082']
 
+  - job_name: 'postgres-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
   - job_name: 'hetzner-nodes'
     hetzner_sd_configs:
       - bearer_token: "9cS86hBDSNJKRmD6ooRb8izRbqG7Q52lB5nda3WRzNyfasvyF9Uhrol4oIA5MfNV"
