@@ -537,7 +537,9 @@ export const ContractDetailPage = () => {
                         Deposit
                       </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                        {contract.depositAmountCurrency ?? contract.rentAmountCurrency} {contract.depositAmount.toFixed(2)}
+                        {contract.depositAmountCurrency ??
+                          contract.rentAmountCurrency}{' '}
+                        {contract.depositAmount.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -550,7 +552,8 @@ export const ContractDetailPage = () => {
                         Security Deposit
                       </p>
                       <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                        {contract.securityDepositCurrency ?? contract.rentAmountCurrency}{' '}
+                        {contract.securityDepositCurrency ??
+                          contract.rentAmountCurrency}{' '}
                         {contract.securityDeposit.toFixed(2)}
                       </p>
                     </div>

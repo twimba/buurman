@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useCurrencies, splitCurrencies } from '@/hooks/useCurrencies';
 import { getCurrencyFlag } from '@/utils/currencyFlags';
@@ -83,6 +84,28 @@ export const CurrencyDropdown = ({
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [isMobile, onClose, triggerRef]);
+
+  // Desktop portal position — track trigger element
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (isMobile) return;
+    const anchor = triggerRef?.current;
+    if (!anchor) return;
+
+    const update = () => {
+      const rect = anchor.getBoundingClientRect();
+      setPos({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
+    };
+    update();
+
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [isMobile, triggerRef]);
 
   const handleSelect = (code: string) => {
     onSelect(code);
@@ -254,11 +277,14 @@ export const CurrencyDropdown = ({
     );
   }
 
-  // Desktop: popover dropdown
-  return (
+  // Desktop: portal-rendered popover (escapes overflow:hidden ancestors)
+  if (!pos) return null;
+
+  return createPortal(
     <div
       ref={dropdownRef}
-      className="absolute z-50 left-0 top-full mt-1 w-72 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg flex flex-col max-h-80"
+      style={{ position: 'absolute', top: pos.top, left: pos.left }}
+      className="z-50 w-72 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg flex flex-col max-h-80"
     >
       {/* Search */}
       <div className="p-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
@@ -288,6 +314,7 @@ export const CurrencyDropdown = ({
       >
         {listContent}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

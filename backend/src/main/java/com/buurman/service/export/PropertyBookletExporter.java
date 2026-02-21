@@ -1182,7 +1182,9 @@ public class PropertyBookletExporter {
           .append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing")
           .append("</td>");
       html.append("<td>")
-          .append(CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getRentAmountCurrency()))
+          .append(
+              CurrencyUtils.formatCurrency(
+                  contract.getRentAmount(), contract.getRentAmountCurrency()))
           .append("</td>");
       html.append("<td>")
           .append(

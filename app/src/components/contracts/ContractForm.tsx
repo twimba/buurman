@@ -239,9 +239,12 @@ export const ContractForm = ({
     rentAmount: contract?.rentAmount ?? '',
     depositAmount: contract?.depositAmount || undefined,
     securityDeposit: contract?.securityDeposit || undefined,
-    rentAmountCurrency: contract?.rentAmountCurrency || defaultCurrency || 'EUR',
-    depositAmountCurrency: contract?.depositAmountCurrency || defaultCurrency || 'EUR',
-    securityDepositCurrency: contract?.securityDepositCurrency || defaultCurrency || 'EUR',
+    rentAmountCurrency:
+      contract?.rentAmountCurrency || defaultCurrency || 'EUR',
+    depositAmountCurrency:
+      contract?.depositAmountCurrency || defaultCurrency || 'EUR',
+    securityDepositCurrency:
+      contract?.securityDepositCurrency || defaultCurrency || 'EUR',
     paymentFrequency: contract?.paymentFrequency || PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay || 1,
     autoRenewal: contract?.autoRenewal || false,
@@ -270,8 +273,10 @@ export const ContractForm = ({
         depositAmount: contract.depositAmount || undefined,
         securityDeposit: contract.securityDeposit || undefined,
         rentAmountCurrency: contract.rentAmountCurrency,
-        depositAmountCurrency: contract.depositAmountCurrency || defaultCurrency || 'EUR',
-        securityDepositCurrency: contract.securityDepositCurrency || defaultCurrency || 'EUR',
+        depositAmountCurrency:
+          contract.depositAmountCurrency || defaultCurrency || 'EUR',
+        securityDepositCurrency:
+          contract.securityDepositCurrency || defaultCurrency || 'EUR',
         paymentFrequency: contract.paymentFrequency,
         paymentDueDay: contract.paymentDueDay || 1,
         autoRenewal: contract.autoRenewal,
@@ -809,7 +814,9 @@ export const ContractForm = ({
               value={formData.rentAmount || undefined}
               onChange={(val) => handleChange('rentAmount', val ?? '')}
               currency={formData.rentAmountCurrency || 'EUR'}
-              onCurrencyChange={(value) => handleChange('rentAmountCurrency', value)}
+              onCurrencyChange={(value) =>
+                handleChange('rentAmountCurrency', value)
+              }
               disabled={isLoading}
               error={!!errors.rentAmount}
             />
@@ -826,7 +833,9 @@ export const ContractForm = ({
               value={formData.depositAmount || undefined}
               onChange={(val) => handleChange('depositAmount', val)}
               currency={formData.depositAmountCurrency || 'EUR'}
-              onCurrencyChange={(value) => handleChange('depositAmountCurrency', value)}
+              onCurrencyChange={(value) =>
+                handleChange('depositAmountCurrency', value)
+              }
               disabled={isLoading}
             />
           </div>
@@ -839,7 +848,9 @@ export const ContractForm = ({
               value={formData.securityDeposit || undefined}
               onChange={(val) => handleChange('securityDeposit', val)}
               currency={formData.securityDepositCurrency || 'EUR'}
-              onCurrencyChange={(value) => handleChange('securityDepositCurrency', value)}
+              onCurrencyChange={(value) =>
+                handleChange('securityDepositCurrency', value)
+              }
               disabled={isLoading}
             />
           </div>

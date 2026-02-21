@@ -183,7 +183,9 @@ public class DemoNotificationGenerator {
         var startDate = contract.get(CONTRACTS.START_DATE);
         var endDate = contract.get(CONTRACTS.END_DATE);
         String currency =
-            contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null ? contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY) : "EUR";
+            contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null
+                ? contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY)
+                : "EUR";
         BigDecimal rentAmount =
             CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
 

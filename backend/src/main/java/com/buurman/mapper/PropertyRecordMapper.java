@@ -102,8 +102,7 @@ public interface PropertyRecordMapper {
             record.getAnnualMaintenanceReserve(), record.getAnnualMaintenanceReserveCurrency()));
     property.setAnnualMaintenanceReserveCurrency(record.getAnnualMaintenanceReserveCurrency());
     property.setLandValue(
-        CurrencyUtils.toMajorUnitsOrNull(
-            record.getLandValue(), record.getLandValueCurrency()));
+        CurrencyUtils.toMajorUnitsOrNull(record.getLandValue(), record.getLandValueCurrency()));
     property.setLandValueCurrency(record.getLandValueCurrency());
   }
 

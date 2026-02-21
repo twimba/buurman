@@ -98,7 +98,9 @@ export const PropertyFinancialForm = ({
               value={formData.currentMarketValue ?? undefined}
               onChange={(val) => onChange('currentMarketValue', val ?? null)}
               currency={formData.currentMarketValueCurrency || 'EUR'}
-              onCurrencyChange={(v) => onChange('currentMarketValueCurrency', v)}
+              onCurrencyChange={(v) =>
+                onChange('currentMarketValueCurrency', v)
+              }
             />
           </div>
           <div>
@@ -188,7 +190,9 @@ export const PropertyFinancialForm = ({
                 onChange('monthlyMortgagePayment', val ?? null)
               }
               currency={formData.monthlyMortgagePaymentCurrency || 'EUR'}
-              onCurrencyChange={(v) => onChange('monthlyMortgagePaymentCurrency', v)}
+              onCurrencyChange={(v) =>
+                onChange('monthlyMortgagePaymentCurrency', v)
+              }
               disabled={isMortgageNone}
             />
           </div>
@@ -261,7 +265,9 @@ export const PropertyFinancialForm = ({
               value={formData.annualManagementFee ?? undefined}
               onChange={(val) => onChange('annualManagementFee', val ?? null)}
               currency={formData.annualManagementFeeCurrency || 'EUR'}
-              onCurrencyChange={(v) => onChange('annualManagementFeeCurrency', v)}
+              onCurrencyChange={(v) =>
+                onChange('annualManagementFeeCurrency', v)
+              }
             />
           </div>
           <div>
@@ -274,7 +280,9 @@ export const PropertyFinancialForm = ({
                 onChange('annualMaintenanceReserve', val ?? null)
               }
               currency={formData.annualMaintenanceReserveCurrency || 'EUR'}
-              onCurrencyChange={(v) => onChange('annualMaintenanceReserveCurrency', v)}
+              onCurrencyChange={(v) =>
+                onChange('annualMaintenanceReserveCurrency', v)
+              }
             />
           </div>
         </div>

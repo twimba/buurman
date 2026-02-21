@@ -29,10 +29,12 @@ public class ContractRecordMapper {
         CurrencyUtils.toMajorUnits(record.getRentAmount(), record.getRentAmountCurrency()));
     contract.setRentAmountCurrency(record.getRentAmountCurrency());
     contract.setDepositAmount(
-        CurrencyUtils.toMajorUnitsOrNull(record.getDepositAmount(), record.getDepositAmountCurrency()));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getDepositAmount(), record.getDepositAmountCurrency()));
     contract.setDepositAmountCurrency(record.getDepositAmountCurrency());
     contract.setSecurityDeposit(
-        CurrencyUtils.toMajorUnitsOrNull(record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
+        CurrencyUtils.toMajorUnitsOrNull(
+            record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
     contract.setSecurityDepositCurrency(record.getSecurityDepositCurrency());
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(record.getPaymentDueDay());
