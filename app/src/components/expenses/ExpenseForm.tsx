@@ -6,7 +6,6 @@ import {
   ExpenseCategory,
   formatExpenseCategory,
 } from '@/types/expense';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
@@ -149,24 +148,13 @@ export const ExpenseForm = ({
           value={formData.amount || undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={formData.currency || defaultCurrency || 'EUR'}
+          onCurrencyChange={(currency) => setFormData({ ...formData, currency })}
           disabled={isLoading}
           error={!!errors.amount}
         />
         {errors.amount && (
           <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
         )}
-      </div>
-
-      {/* Currency */}
-      <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Currency
-        </label>
-        <CurrencySelector
-          value={formData.currency || defaultCurrency || 'EUR'}
-          onChange={(currency) => setFormData({ ...formData, currency })}
-          disabled={isLoading}
-        />
       </div>
 
       {/* Expense Date */}

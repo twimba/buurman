@@ -39,7 +39,7 @@ export const ContractSelector = ({
 
   const selectedContract = contracts.find((c) => c.identifier === value);
   const displayValue = selectedContract
-    ? `${selectedContract.property.street} — ${getCurrencySymbol(selectedContract.currency)} ${selectedContract.rentAmount.toFixed(2)}/mo`
+    ? `${selectedContract.property.street} — ${getCurrencySymbol(selectedContract.rentAmountCurrency)} ${selectedContract.rentAmount.toFixed(2)}/mo`
     : '';
 
   const filtered = contracts.filter(
@@ -201,7 +201,7 @@ export const ContractSelector = ({
                     <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
                       {contract.primaryTenant.firstName}{' '}
                       {contract.primaryTenant.lastName} &middot;{' '}
-                      {getCurrencySymbol(contract.currency)}{' '}
+                      {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
                       {contract.rentAmount.toFixed(2)}/mo
                     </div>
                   </div>

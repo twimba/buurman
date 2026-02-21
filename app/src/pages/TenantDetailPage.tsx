@@ -837,7 +837,7 @@ export const TenantDetailPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                                {getCurrencySymbol(contract.currency)}{' '}
+                                {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
                                 {contract.rentAmount.toFixed(2)}
                               </div>
                             </td>

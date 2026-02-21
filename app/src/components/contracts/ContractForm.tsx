@@ -12,7 +12,6 @@ import {
 } from '@/types/contract';
 import { CreateTenantRequest } from '@/types/tenant';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { TenantSelector } from '@/components/common/TenantSelector';
@@ -240,7 +239,9 @@ export const ContractForm = ({
     rentAmount: contract?.rentAmount ?? '',
     depositAmount: contract?.depositAmount || undefined,
     securityDeposit: contract?.securityDeposit || undefined,
-    currency: contract?.currency || defaultCurrency || 'EUR',
+    rentAmountCurrency: contract?.rentAmountCurrency || defaultCurrency || 'EUR',
+    depositAmountCurrency: contract?.depositAmountCurrency || defaultCurrency || 'EUR',
+    securityDepositCurrency: contract?.securityDepositCurrency || defaultCurrency || 'EUR',
     paymentFrequency: contract?.paymentFrequency || PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay || 1,
     autoRenewal: contract?.autoRenewal || false,
@@ -268,7 +269,9 @@ export const ContractForm = ({
         rentAmount: contract.rentAmount ?? '',
         depositAmount: contract.depositAmount || undefined,
         securityDeposit: contract.securityDeposit || undefined,
-        currency: contract.currency,
+        rentAmountCurrency: contract.rentAmountCurrency,
+        depositAmountCurrency: contract.depositAmountCurrency || defaultCurrency || 'EUR',
+        securityDepositCurrency: contract.securityDepositCurrency || defaultCurrency || 'EUR',
         paymentFrequency: contract.paymentFrequency,
         paymentDueDay: contract.paymentDueDay || 1,
         autoRenewal: contract.autoRenewal,
@@ -280,7 +283,7 @@ export const ContractForm = ({
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [contract, contractIdentifier]);
+  }, [contract, contractIdentifier, defaultCurrency]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -805,7 +808,8 @@ export const ContractForm = ({
             <MoneyInput
               value={formData.rentAmount || undefined}
               onChange={(val) => handleChange('rentAmount', val ?? '')}
-              currency={formData.currency || 'EUR'}
+              currency={formData.rentAmountCurrency || 'EUR'}
+              onCurrencyChange={(value) => handleChange('rentAmountCurrency', value)}
               disabled={isLoading}
               error={!!errors.rentAmount}
             />
@@ -816,23 +820,13 @@ export const ContractForm = ({
 
           <div>
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Currency
-            </label>
-            <CurrencySelector
-              value={formData.currency}
-              onChange={(value) => handleChange('currency', value)}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Deposit Amount
             </label>
             <MoneyInput
               value={formData.depositAmount || undefined}
               onChange={(val) => handleChange('depositAmount', val)}
-              currency={formData.currency || 'EUR'}
+              currency={formData.depositAmountCurrency || 'EUR'}
+              onCurrencyChange={(value) => handleChange('depositAmountCurrency', value)}
               disabled={isLoading}
             />
           </div>
@@ -844,7 +838,8 @@ export const ContractForm = ({
             <MoneyInput
               value={formData.securityDeposit || undefined}
               onChange={(val) => handleChange('securityDeposit', val)}
-              currency={formData.currency || 'EUR'}
+              currency={formData.securityDepositCurrency || 'EUR'}
+              onCurrencyChange={(value) => handleChange('securityDepositCurrency', value)}
               disabled={isLoading}
             />
           </div>

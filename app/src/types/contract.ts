@@ -71,7 +71,9 @@ export interface ContractResponse {
   rentAmount: number;
   depositAmount?: number;
   securityDeposit?: number;
-  currency: string;
+  rentAmountCurrency: string;
+  depositAmountCurrency?: string;
+  securityDepositCurrency?: string;
   paymentFrequency: PaymentFrequency;
   paymentDueDay?: number;
   autoRenewal: boolean;
@@ -105,7 +107,9 @@ export interface CreateContractRequest {
   rentAmount: number;
   depositAmount?: number;
   securityDeposit?: number;
-  currency?: string;
+  rentAmountCurrency?: string;
+  depositAmountCurrency?: string;
+  securityDepositCurrency?: string;
   paymentFrequency: PaymentFrequency;
   paymentDueDay?: number;
   autoRenewal?: boolean;
@@ -125,7 +129,9 @@ export interface UpdateContractRequest {
   rentAmount: number;
   depositAmount?: number;
   securityDeposit?: number;
-  currency?: string;
+  rentAmountCurrency?: string;
+  depositAmountCurrency?: string;
+  securityDepositCurrency?: string;
   paymentFrequency: PaymentFrequency;
   paymentDueDay?: number;
   autoRenewal?: boolean;

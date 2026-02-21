@@ -1,7 +1,6 @@
 import { CollapsibleSection } from './CollapsibleSection';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { MetricHint } from '@/components/common/MetricHint';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import {
   CreatePropertyRequest,
   MortgageType,
@@ -28,13 +27,11 @@ export const PropertyFinancialForm = ({
   formData,
   onChange,
 }: PropertyFinancialFormProps) => {
-  const currency = formData.currency || 'EUR';
   const isMortgageNone = formData.mortgageType === MortgageType.NONE;
   const isDepreciationNone =
     formData.depreciationMethod === DepreciationMethod.NONE;
 
   const purchaseFields = [
-    formData.currency,
     formData.purchasePrice,
     formData.purchaseDate,
     formData.currentMarketValue,
@@ -78,18 +75,12 @@ export const PropertyFinancialForm = ({
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>Currency</label>
-            <CurrencySelector
-              value={formData.currency || ''}
-              onChange={(v) => onChange('currency', v || null)}
-            />
-          </div>
-          <div>
             <label className={labelCls}>Purchase Price</label>
             <MoneyInput
               value={formData.purchasePrice ?? undefined}
               onChange={(val) => onChange('purchasePrice', val ?? null)}
-              currency={currency}
+              currency={formData.purchasePriceCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('purchasePriceCurrency', v)}
             />
           </div>
           <div>
@@ -106,7 +97,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.currentMarketValue ?? undefined}
               onChange={(val) => onChange('currentMarketValue', val ?? null)}
-              currency={currency}
+              currency={formData.currentMarketValueCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('currentMarketValueCurrency', v)}
             />
           </div>
           <div>
@@ -160,7 +152,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.mortgageAmount ?? undefined}
               onChange={(val) => onChange('mortgageAmount', val ?? null)}
-              currency={currency}
+              currency={formData.mortgageAmountCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('mortgageAmountCurrency', v)}
               disabled={isMortgageNone}
             />
           </div>
@@ -194,7 +187,8 @@ export const PropertyFinancialForm = ({
               onChange={(val) =>
                 onChange('monthlyMortgagePayment', val ?? null)
               }
-              currency={currency}
+              currency={formData.monthlyMortgagePaymentCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('monthlyMortgagePaymentCurrency', v)}
               disabled={isMortgageNone}
             />
           </div>
@@ -237,7 +231,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualPropertyTax ?? undefined}
               onChange={(val) => onChange('annualPropertyTax', val ?? null)}
-              currency={currency}
+              currency={formData.annualPropertyTaxCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('annualPropertyTaxCurrency', v)}
             />
           </div>
           <div>
@@ -245,7 +240,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualInsurance ?? undefined}
               onChange={(val) => onChange('annualInsurance', val ?? null)}
-              currency={currency}
+              currency={formData.annualInsuranceCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('annualInsuranceCurrency', v)}
             />
           </div>
           <div>
@@ -255,7 +251,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualHoaFee ?? undefined}
               onChange={(val) => onChange('annualHoaFee', val ?? null)}
-              currency={currency}
+              currency={formData.annualHoaFeeCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('annualHoaFeeCurrency', v)}
             />
           </div>
           <div>
@@ -263,7 +260,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualManagementFee ?? undefined}
               onChange={(val) => onChange('annualManagementFee', val ?? null)}
-              currency={currency}
+              currency={formData.annualManagementFeeCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('annualManagementFeeCurrency', v)}
             />
           </div>
           <div>
@@ -275,7 +273,8 @@ export const PropertyFinancialForm = ({
               onChange={(val) =>
                 onChange('annualMaintenanceReserve', val ?? null)
               }
-              currency={currency}
+              currency={formData.annualMaintenanceReserveCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('annualMaintenanceReserveCurrency', v)}
             />
           </div>
         </div>
@@ -340,7 +339,8 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.landValue ?? undefined}
               onChange={(val) => onChange('landValue', val ?? null)}
-              currency={currency}
+              currency={formData.landValueCurrency || 'EUR'}
+              onCurrencyChange={(v) => onChange('landValueCurrency', v)}
               disabled={isDepreciationNone}
             />
           </div>
