@@ -15,6 +15,7 @@ import {
   Check,
   Eye,
   Pencil,
+  Loader2,
 } from 'lucide-react';
 import {
   useDocuments,
@@ -232,7 +233,7 @@ export const DocumentsPage = () => {
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
                   >
                     {bulkDownloadMutation.isPending ? (
-                      <LoadingSpinner />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Download className="h-4 w-4" />
                     )}

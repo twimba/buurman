@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { PhotoResponse } from '@/types/property';
-import { Upload, X } from 'lucide-react';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { RichTextEditor } from '../common/RichTextEditor';
 import { PhotoGrid } from '../photos/PhotoGrid';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
@@ -11,7 +10,6 @@ import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useBulkDownloadPhotos, useUpdatePhoto } from '@/hooks/usePhotoHooks';
 
 interface PhotoGalleryProps {
-  propertyId: string;
   photos: PhotoResponse[];
   isLoading: boolean;
   error: unknown;
@@ -342,14 +340,25 @@ export const PhotoGallery = ({
               </button>
               <button
                 onClick={handleUpload}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="relative overflow-hidden bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
                 disabled={!!uploadProgress || selectedFiles.length === 0}
+                aria-busy={!!uploadProgress}
               >
                 {uploadProgress ? (
                   <>
-                    <LoadingSpinner />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Uploading {uploadProgress.current} of {uploadProgress.total}
                     ...
+                    <div
+                      role="progressbar"
+                      aria-valuenow={uploadProgress.current}
+                      aria-valuemin={0}
+                      aria-valuemax={uploadProgress.total}
+                      className="absolute bottom-0 left-0 h-0.5 bg-white/30 transition-all duration-300"
+                      style={{
+                        width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
+                      }}
+                    />
                   </>
                 ) : (
                   <>
