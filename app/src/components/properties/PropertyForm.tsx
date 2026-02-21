@@ -17,6 +17,7 @@ import {
 } from '@/types/property';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
+import { PropertyFinancialForm } from './PropertyFinancialForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
@@ -579,6 +580,9 @@ export const PropertyForm = ({
         onAddAmenity={onAddAmenity}
         onRemoveAmenity={onRemoveAmenity}
       />
+
+      {/* Investment & Financial */}
+      <PropertyFinancialForm formData={formData} onChange={handleChange} />
 
       {/* Actions */}
       <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">

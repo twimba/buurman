@@ -47,6 +47,7 @@ export const useCreateProperty = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property created successfully', 'success');
     },
     onError: (error) => {
@@ -66,6 +67,7 @@ export const useUpdateProperty = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['property', id] });
       queryClient.invalidateQueries({ queryKey: ['propertyAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property updated successfully', 'success');
     },
     onError: (error) => {
@@ -82,6 +84,7 @@ export const useDeleteProperty = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property deleted successfully', 'success');
     },
     onError: (error) => {
@@ -340,6 +343,17 @@ export const useAddPropertyAmenity = (propertyId: string) => {
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
     },
+  });
+};
+
+// --- Property Dashboard ---
+
+export const usePropertyDashboard = (propertyId: string | undefined) => {
+  return useQuery({
+    queryKey: ['propertyDashboard', propertyId],
+    queryFn: () => propertiesApi.getPropertyDashboard(propertyId!),
+    enabled: !!propertyId,
+    staleTime: 60_000,
   });
 };
 

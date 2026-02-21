@@ -46,6 +46,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantAddressRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -233,12 +234,11 @@ public class TenantBookletExporter {
 
     appendSectionTitle(html, "Financial Summary");
     html.append("<table class='summary-grid'><tr>");
-    appendSummaryCard(
-        html, "Total Paid", "EUR " + fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
+    appendSummaryCard(html, "Total Paid", fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
     appendSummaryCard(
         html,
         "Outstanding",
-        "EUR " + fmt(totalPending),
+        fmt(totalPending),
         null,
         totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#fef2f2" : "#f0fdf4",
         totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#991b1b" : "#166534",
@@ -397,7 +397,9 @@ public class TenantBookletExporter {
           contract.getEndDate() != null ? contract.getEndDate().format(shortFmt) : "Ongoing");
       html.append("</tr><tr>");
       appendField(
-          html, "Rent Amount", contract.getCurrency() + " " + fmt(contract.getRentAmount()));
+          html,
+          "Rent Amount",
+          CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getCurrency()));
       appendField(
           html,
           "Payment Frequency",
@@ -447,12 +449,12 @@ public class TenantBookletExporter {
                     + "font-weight:600;color:#4a5568;margin-bottom:6px;'>")
             .append(entry.getKey())
             .append("</div>");
-        html.append("<div style='font-size:18px;font-weight:700;color:#059669;'>EUR ")
-            .append(String.format("%.2f", entry.getValue()[0]))
+        html.append("<div style='font-size:18px;font-weight:700;color:#059669;'>")
+            .append(String.format("%,.2f", entry.getValue()[0]))
             .append("</div>");
         if (entry.getValue()[1].compareTo(BigDecimal.ZERO) > 0) {
-          html.append("<div style='font-size:11px;color:#dc2626;margin-top:4px;'>Outstanding: EUR ")
-              .append(String.format("%.2f", entry.getValue()[1]))
+          html.append("<div style='font-size:11px;color:#dc2626;margin-top:4px;'>Outstanding: ")
+              .append(String.format("%,.2f", entry.getValue()[1]))
               .append("</div>");
         }
         html.append("</td>");
@@ -486,9 +488,7 @@ public class TenantBookletExporter {
           .append(payment.getDueDate() != null ? payment.getDueDate().format(shortFmt) : "—")
           .append("</td>");
       html.append("<td style='font-variant-numeric:tabular-nums;'>")
-          .append(payment.getCurrency())
-          .append(" ")
-          .append(String.format("%.2f", payment.getAmount()))
+          .append(CurrencyUtils.formatCurrency(payment.getAmount(), payment.getCurrency()))
           .append("</td>");
       html.append("<td>")
           .append(

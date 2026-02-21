@@ -40,6 +40,7 @@ export const useCreateTenant = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Tenant created successfully', 'success');
     },
     onError: (error) => {
@@ -59,6 +60,7 @@ export const useUpdateTenant = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['tenant', id] });
       queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Tenant updated successfully', 'success');
     },
     onError: (error) => {
@@ -75,6 +77,7 @@ export const useDeleteTenant = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Tenant deleted successfully', 'success');
     },
     onError: (error) => {

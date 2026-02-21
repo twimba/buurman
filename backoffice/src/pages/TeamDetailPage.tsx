@@ -21,6 +21,19 @@ import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
+function formatMoney(value: number, currencyCode: string): string {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${currencyCode} ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+}
+
 export const TeamDetailPage = () => {
   const { identifier } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
@@ -227,16 +240,10 @@ export const TeamDetailPage = () => {
             <div className="flex items-baseline gap-2">
               <DollarSign className="h-5 w-5 text-emerald-500" />
               <span className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
-                {team.financialSnapshot.totalActiveRent.toLocaleString(
-                  undefined,
-                  {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  },
+                {formatMoney(
+                  team.financialSnapshot.totalActiveRent,
+                  team.financialSnapshot.currency,
                 )}
-              </span>
-              <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                {team.financialSnapshot.currency}
               </span>
             </div>
           </div>

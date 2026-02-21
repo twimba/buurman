@@ -301,6 +301,34 @@ export const WATER_CONNECTION_TYPES = [
   'OTHER',
 ] as const;
 
+// --- Investment & Financial enums ---
+
+export enum MortgageType {
+  FIXED_RATE = 'FIXED_RATE',
+  VARIABLE_RATE = 'VARIABLE_RATE',
+  INTEREST_ONLY = 'INTEREST_ONLY',
+  NONE = 'NONE',
+}
+
+export enum DepreciationMethod {
+  STRAIGHT_LINE = 'STRAIGHT_LINE',
+  DECLINING_BALANCE = 'DECLINING_BALANCE',
+  NONE = 'NONE',
+}
+
+export const MORTGAGE_TYPE_LABELS: Record<MortgageType, string> = {
+  [MortgageType.FIXED_RATE]: 'Fixed Rate',
+  [MortgageType.VARIABLE_RATE]: 'Variable Rate',
+  [MortgageType.INTEREST_ONLY]: 'Interest Only',
+  [MortgageType.NONE]: 'None',
+};
+
+export const DEPRECIATION_METHOD_LABELS: Record<DepreciationMethod, string> = {
+  [DepreciationMethod.STRAIGHT_LINE]: 'Straight Line',
+  [DepreciationMethod.DECLINING_BALANCE]: 'Declining Balance',
+  [DepreciationMethod.NONE]: 'None',
+};
+
 // --- Category-specific detail interfaces ---
 
 export interface ResidentialDetailsResponse {
@@ -533,6 +561,27 @@ export interface PropertyResponse {
   hasAdaptedBathroom: boolean;
   accessibilityNotes: string | null;
 
+  // Investment & Financial
+  currency: string | null;
+  purchasePrice: number | null;
+  purchaseDate: string | null;
+  currentMarketValue: number | null;
+  marketValueDate: string | null;
+  mortgageType: MortgageType | null;
+  mortgageAmount: number | null;
+  mortgageInterestRate: number | null;
+  mortgageStartDate: string | null;
+  mortgageEndDate: string | null;
+  monthlyMortgagePayment: number | null;
+  annualPropertyTax: number | null;
+  annualInsurance: number | null;
+  annualHoaFee: number | null;
+  annualManagementFee: number | null;
+  annualMaintenanceReserve: number | null;
+  depreciationMethod: DepreciationMethod | null;
+  depreciationYears: number | null;
+  landValue: number | null;
+
   // Category-specific details (only one is non-null based on category)
   residentialDetails: ResidentialDetailsResponse | null;
   commercialDetails: CommercialDetailsResponse | null;
@@ -612,6 +661,27 @@ export interface CreatePropertyRequest {
   hasAdaptedBathroom?: boolean;
   accessibilityNotes?: string | null;
 
+  // Investment & Financial
+  currency?: string | null;
+  purchasePrice?: number | null;
+  purchaseDate?: string | null;
+  currentMarketValue?: number | null;
+  marketValueDate?: string | null;
+  mortgageType?: MortgageType | null;
+  mortgageAmount?: number | null;
+  mortgageInterestRate?: number | null;
+  mortgageStartDate?: string | null;
+  mortgageEndDate?: string | null;
+  monthlyMortgagePayment?: number | null;
+  annualPropertyTax?: number | null;
+  annualInsurance?: number | null;
+  annualHoaFee?: number | null;
+  annualManagementFee?: number | null;
+  annualMaintenanceReserve?: number | null;
+  depreciationMethod?: DepreciationMethod | null;
+  depreciationYears?: number | null;
+  landValue?: number | null;
+
   // Category-specific details (only matching category should be provided)
   residentialDetails?: ResidentialDetailsRequest | null;
   commercialDetails?: CommercialDetailsRequest | null;
@@ -683,6 +753,27 @@ export interface UpdatePropertyRequest {
   hasAdaptedBathroom?: boolean;
   accessibilityNotes?: string | null;
 
+  // Investment & Financial
+  currency?: string | null;
+  purchasePrice?: number | null;
+  purchaseDate?: string | null;
+  currentMarketValue?: number | null;
+  marketValueDate?: string | null;
+  mortgageType?: MortgageType | null;
+  mortgageAmount?: number | null;
+  mortgageInterestRate?: number | null;
+  mortgageStartDate?: string | null;
+  mortgageEndDate?: string | null;
+  monthlyMortgagePayment?: number | null;
+  annualPropertyTax?: number | null;
+  annualInsurance?: number | null;
+  annualHoaFee?: number | null;
+  annualManagementFee?: number | null;
+  annualMaintenanceReserve?: number | null;
+  depreciationMethod?: DepreciationMethod | null;
+  depreciationYears?: number | null;
+  landValue?: number | null;
+
   // Category-specific details (only matching category should be provided)
   // Note: propertyCategory is NOT here — it's immutable after creation
   residentialDetails?: ResidentialDetailsRequest | null;
@@ -732,4 +823,82 @@ export interface AuditLogEntry {
   changedFields?: Record<string, unknown>;
   oldValues?: Record<string, unknown>;
   newValues?: Record<string, unknown>;
+}
+
+// --- Property Dashboard ---
+
+export interface PropertyDashboardResponse {
+  summary: DashboardSummaryMetrics;
+  cashFlow: CashFlowChartData;
+  equity: EquityChartData;
+  expenseBreakdown: ExpenseBreakdownChartData;
+  occupancy: OccupancyChartData;
+  dataCompleteness: DashboardDataCompleteness;
+}
+
+export interface DashboardSummaryMetrics {
+  totalRoiPercent: number | null;
+  annualizedRoiPercent: number | null;
+  capRatePercent: number | null;
+  cashOnCashPercent: number | null;
+  monthlyCashFlow: number | null;
+  annualNoi: number | null;
+  totalEquity: number | null;
+  equityGrowthPercent: number | null;
+  occupancyRatePercent: number | null;
+  grossRentMultiplier: number | null;
+  currency: string | null;
+}
+
+export interface CashFlowChartData {
+  months: MonthlyDataPoint[];
+}
+
+export interface MonthlyDataPoint {
+  month: string;
+  income: number;
+  expenses: number;
+  mortgage: number;
+  net: number;
+}
+
+export interface EquityChartData {
+  purchasePrice: number | null;
+  currentMarketValue: number | null;
+  mortgageBalance: number | null;
+}
+
+export interface ExpenseBreakdownChartData {
+  categories: CategorySlice[];
+  timeline: ExpenseTimelineMonth[];
+}
+
+export interface ExpenseTimelineMonth {
+  month: string;
+  categoryAmounts: Record<string, number>;
+}
+
+export interface CategorySlice {
+  category: string;
+  amount: number;
+}
+
+export interface OccupancyChartData {
+  months: OccupancyDataPoint[];
+}
+
+export interface OccupancyDataPoint {
+  month: string;
+  occupancyPercent: number;
+}
+
+export interface DashboardDataCompleteness {
+  hasPurchasePrice: boolean;
+  hasMarketValue: boolean;
+  hasMortgageInfo: boolean;
+  hasOperatingCosts: boolean;
+  hasContracts: boolean;
+  hasPayments: boolean;
+  hasExpenses: boolean;
+  completenessPercent: number;
 }

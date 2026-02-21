@@ -26,6 +26,9 @@ import {
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { PropertyDashboardTab } from '@/components/properties/dashboard/PropertyDashboardTab';
+import { FeatureGate } from '@/components/FeatureGate';
+import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
@@ -50,6 +53,7 @@ import {
   ChevronUp,
   ChevronDown,
   Download,
+  BarChart3,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -78,7 +82,13 @@ export const PropertyDetailPage = () => {
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useState<
-    'info' | 'photos' | 'documents' | 'contracts' | 'expenses' | 'audit'
+    | 'info'
+    | 'photos'
+    | 'documents'
+    | 'contracts'
+    | 'expenses'
+    | 'audit'
+    | 'dashboard'
   >('info');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
@@ -480,6 +490,19 @@ export const PropertyDetailPage = () => {
             >
               Info
             </button>
+            <FeatureGate flag={FeatureFlags.REPORTS}>
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'dashboard'
+                    ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
+                    : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                }`}
+              >
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </button>
+            </FeatureGate>
             <button
               onClick={() => setActiveTab('photos')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
@@ -1254,6 +1277,8 @@ export const PropertyDetailPage = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id!} />}
 
         {activeTab === 'photos' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">

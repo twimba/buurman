@@ -75,6 +75,27 @@ public record PropertyResponse(
     Boolean hasAdaptedBathroom,
     String accessibilityNotes,
 
+    // Investment & Financial
+    String currency,
+    BigDecimal purchasePrice,
+    LocalDate purchaseDate,
+    BigDecimal currentMarketValue,
+    LocalDate marketValueDate,
+    Property.MortgageType mortgageType,
+    BigDecimal mortgageAmount,
+    BigDecimal mortgageInterestRate,
+    LocalDate mortgageStartDate,
+    LocalDate mortgageEndDate,
+    BigDecimal monthlyMortgagePayment,
+    BigDecimal annualPropertyTax,
+    BigDecimal annualInsurance,
+    BigDecimal annualHoaFee,
+    BigDecimal annualManagementFee,
+    BigDecimal annualMaintenanceReserve,
+    Property.DepreciationMethod depreciationMethod,
+    Integer depreciationYears,
+    BigDecimal landValue,
+
     // Category-specific details (only one is non-null)
     ResidentialDetailsResponse residentialDetails,
     CommercialDetailsResponse commercialDetails,

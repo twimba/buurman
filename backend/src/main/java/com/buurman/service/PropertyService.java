@@ -139,6 +139,18 @@ public class PropertyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
+    validateCurrencyRequired(
+        request.currency(),
+        request.purchasePrice(),
+        request.currentMarketValue(),
+        request.mortgageAmount(),
+        request.monthlyMortgagePayment(),
+        request.annualPropertyTax(),
+        request.annualInsurance(),
+        request.annualHoaFee(),
+        request.annualManagementFee(),
+        request.annualMaintenanceReserve(),
+        request.landValue());
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
@@ -263,6 +275,18 @@ public class PropertyService {
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
+    validateCurrencyRequired(
+        request.currency(),
+        request.purchasePrice(),
+        request.currentMarketValue(),
+        request.mortgageAmount(),
+        request.monthlyMortgagePayment(),
+        request.annualPropertyTax(),
+        request.annualInsurance(),
+        request.annualHoaFee(),
+        request.annualManagementFee(),
+        request.annualMaintenanceReserve(),
+        request.landValue());
 
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
@@ -391,6 +415,22 @@ public class PropertyService {
     if (validTypes == null || !validTypes.contains(type)) {
       throw new BadRequestException(
           "Property type " + type + " is not valid for category " + category);
+    }
+  }
+
+  private void validateCurrencyRequired(String currency, java.math.BigDecimal... monetaryFields) {
+    if (currency != null) {
+      try {
+        java.util.Currency.getInstance(currency);
+      } catch (IllegalArgumentException e) {
+        throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
+      }
+      return;
+    }
+    for (java.math.BigDecimal field : monetaryFields) {
+      if (field != null) {
+        throw new BadRequestException("Currency is required when monetary fields are provided");
+      }
     }
   }
 
@@ -846,6 +886,26 @@ public class PropertyService {
         response.hasStepFreeEntrance(),
         response.hasAdaptedBathroom(),
         response.accessibilityNotes(),
+        // Investment & Financial
+        response.currency(),
+        response.purchasePrice(),
+        response.purchaseDate(),
+        response.currentMarketValue(),
+        response.marketValueDate(),
+        response.mortgageType(),
+        response.mortgageAmount(),
+        response.mortgageInterestRate(),
+        response.mortgageStartDate(),
+        response.mortgageEndDate(),
+        response.monthlyMortgagePayment(),
+        response.annualPropertyTax(),
+        response.annualInsurance(),
+        response.annualHoaFee(),
+        response.annualManagementFee(),
+        response.annualMaintenanceReserve(),
+        response.depreciationMethod(),
+        response.depreciationYears(),
+        response.landValue(),
         // Category-specific details
         residentialDetails,
         commercialDetails,

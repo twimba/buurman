@@ -54,6 +54,7 @@ export const useCreateContract = () => {
         queryKey: ['tenant', newContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contract created successfully', 'success');
     },
     onError: (error) => {
@@ -85,6 +86,7 @@ export const useUpdateContract = (id: string) => {
         queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       // Contract changes may affect payment display
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
@@ -106,6 +108,7 @@ export const useDeleteContract = () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['tenants'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contract deleted successfully', 'success');
     },
     onError: (error) => {
@@ -134,6 +137,7 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
     },
@@ -162,6 +166,7 @@ export const useReopenContract = (id: string) => {
         queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       // Reopening cancels future payments
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
@@ -187,6 +192,7 @@ export const useDuplicateContract = () => {
         queryKey: ['tenant', newContract.primaryTenant?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contract duplicated successfully', 'success');
     },
     onError: (error) => {
@@ -279,6 +285,7 @@ export const useGenerateContractPayments = (contractId: string) => {
         queryKey: ['contractAuditLog', contractId],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       const paidSuffix =
         result.markedAsPaid && result.markedAsPaid > 0
           ? ' and marked as paid'

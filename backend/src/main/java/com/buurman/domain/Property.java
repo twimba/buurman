@@ -79,6 +79,33 @@ public class Property {
   private Boolean hasAdaptedBathroom;
   private String accessibilityNotes;
 
+  // Investment & Financial
+  private String currency;
+  private BigDecimal purchasePrice;
+  private LocalDate purchaseDate;
+  private BigDecimal currentMarketValue;
+  private LocalDate marketValueDate;
+
+  // Mortgage
+  private MortgageType mortgageType;
+  private BigDecimal mortgageAmount;
+  private BigDecimal mortgageInterestRate;
+  private LocalDate mortgageStartDate;
+  private LocalDate mortgageEndDate;
+  private BigDecimal monthlyMortgagePayment;
+
+  // Operating Costs (annual)
+  private BigDecimal annualPropertyTax;
+  private BigDecimal annualInsurance;
+  private BigDecimal annualHoaFee;
+  private BigDecimal annualManagementFee;
+  private BigDecimal annualMaintenanceReserve;
+
+  // Depreciation
+  private DepreciationMethod depreciationMethod;
+  private Integer depreciationYears;
+  private BigDecimal landValue;
+
   // Audit
   private Instant createdAt;
   private Instant updatedAt;
@@ -145,5 +172,18 @@ public class Property {
     UNDER_RENOVATION,
     FALLOW,
     LISTED
+  }
+
+  public enum MortgageType {
+    FIXED_RATE,
+    VARIABLE_RATE,
+    INTEREST_ONLY,
+    NONE
+  }
+
+  public enum DepreciationMethod {
+    STRAIGHT_LINE,
+    DECLINING_BALANCE,
+    NONE
   }
 }

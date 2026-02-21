@@ -71,6 +71,7 @@ export const useCreatePayment = () => {
         queryKey: ['contract', newPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       const verb = newPayment.status === 'PAID' ? 'registered' : 'scheduled';
@@ -97,6 +98,7 @@ export const useUpdatePayment = (id: string) => {
         queryKey: ['contract', updatedPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment updated successfully', 'success');
@@ -117,6 +119,7 @@ export const useDeletePayment = () => {
       queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment deleted successfully', 'success');
@@ -146,6 +149,7 @@ export const useMarkPaymentAsPaid = () => {
         queryKey: ['contract', updatedPayment.contract.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment marked as paid successfully', 'success');
@@ -167,6 +171,7 @@ export const useBulkGeneratePayments = () => {
       queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast(
@@ -264,6 +269,7 @@ export const useRegisterReceival = (paymentId: string) => {
         queryKey: ['paymentAuditLog', paymentId],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Receival registered successfully', 'success');
@@ -301,6 +307,7 @@ export const useUpdatePaymentReceival = (paymentId: string) => {
         queryKey: ['paymentAuditLog', paymentId],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Receival updated successfully', 'success');
@@ -325,6 +332,7 @@ export const useDeletePaymentReceival = (paymentId: string) => {
         queryKey: ['paymentAuditLog', paymentId],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Receival deleted successfully', 'success');

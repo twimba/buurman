@@ -17,13 +17,16 @@ export const CollapsibleSection = ({
   defaultOpen = false,
 }: CollapsibleSectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const panelId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
   return (
     <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden">
       <button
         type="button"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-[#f8f9fc] dark:bg-[#1a1d28] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-[#f8f9fc] dark:bg-[#1a1d28] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] focus-visible:ring-2 focus-visible:ring-[#5c7cfa] focus-visible:ring-offset-1 transition-colors text-left"
       >
         <div className="flex items-center gap-2">
           {isOpen ? (
@@ -39,7 +42,11 @@ export const CollapsibleSection = ({
           {filledCount} of {totalCount} filled
         </span>
       </button>
-      {isOpen && <div className="px-4 py-4 space-y-4">{children}</div>}
+      {isOpen && (
+        <div id={panelId} role="region" className="px-4 py-4 space-y-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
