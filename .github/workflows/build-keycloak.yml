@@ -1,0 +1,105 @@
+name: Build & Deploy Keycloak
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy after build"
+        type: boolean
+        default: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-keycloak:
+    name: Build & Publish Keycloak
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION=26.5.2
+          SHA=${GITHUB_SHA::7}
+          echo "tag=${VERSION}-${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./keycloak
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak:latest
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Keycloak Image
+
+          | | |
+          |---|---|
+          | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/keycloak\` |
+          | **Tag** | \`${{ steps.version.outputs.tag }}\` |
+          | **Digest** | \`${{ steps.build.outputs.digest }}\` |
+
+          EOF
+
+  deploy:
+    name: Deploy Keycloak to Dokploy
+    needs: [build-keycloak]
+    if: inputs.deploy == true
+    runs-on: ubuntu-latest
+    env:
+      DOKPLOY_API: https://dokploy.buurman.io/api
+    steps:
+      - name: Deploy Keycloak
+        env:
+          APP_ID: "t5-Ten900gCZTY3ra6xw3"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/keycloak:${{ needs.build-keycloak.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed keycloak → $IMAGE"
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Deploy
+
+          | Service | Tag | Status |
+          |---------|-----|--------|
+          | Keycloak | \`${{ needs.build-keycloak.outputs.tag }}\` | ${{ needs.build-keycloak.result == 'success' && '🚀 Deployed' || '⏭️ Skipped' }} |
+          EOF
