@@ -56,10 +56,41 @@ public class DemoContractGenerator {
 
       int contractCount = Math.min(propertyIds.size(), tenantIds.size());
 
+      // Sort tenants: put business tenants at end so they can match non-residential properties
+      List<UUID> sortedTenants = new ArrayList<>(tenantIds);
+      sortedTenants.sort(
+          (a, b) -> {
+            boolean aBiz = ctx.isBusinessTenant(a);
+            boolean bBiz = ctx.isBusinessTenant(b);
+            return Boolean.compare(aBiz, bBiz); // individuals first, business last
+          });
+
+      // Sort properties: put non-residential at end to match business tenants
+      List<UUID> sortedProperties = new ArrayList<>(propertyIds);
+      sortedProperties.sort(
+          (a, b) -> {
+            boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
+            boolean bRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(b));
+            return Boolean.compare(
+                aRes, bRes); // non-residential first (false < true), then residential
+          });
+
+      // Now reverse: we want residential first, non-residential last to match with business tenants
+      // Actually we want: individual tenants matched to residential, business to non-residential
+      // So pair from both ends: first individual+residential, then business+non-residential
+      // Simpler: just sort both so residential+individual come first
+      sortedProperties.sort(
+          (a, b) -> {
+            boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
+            boolean bRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(b));
+            return Boolean.compare(!aRes, !bRes); // residential first
+          });
+
       for (int i = 0; i < contractCount; i++) {
         UUID contractId = UUID.randomUUID();
-        UUID propertyId = propertyIds.get(i);
-        UUID tenantId = tenantIds.get(i);
+        UUID propertyId = sortedProperties.get(i);
+        UUID tenantId = sortedTenants.get(i);
+        String propertyCategory = ctx.getPropertyCategory(propertyId);
 
         // Determine contract scenario
         String status;
@@ -78,10 +109,8 @@ public class DemoContractGenerator {
           status = "ACTIVE";
           startDate = today.minusMonths(random.nextInt(6, 18));
           if (random.nextBoolean()) {
-            // Fixed term
-            endDate = today.plusMonths(random.nextInt(6, 24));
+            endDate = today.plusMonths(endDateMonthsForCategory(propertyCategory));
           } else {
-            // Indefinite
             endDate = null;
           }
           signedDate = startDate.minusDays(random.nextInt(7, 30));
@@ -110,18 +139,11 @@ public class DemoContractGenerator {
           contractType = "INDEFINITE";
         }
 
-        // Realistic Dutch rent amounts
-        BigDecimal rentAmount =
-            BigDecimal.valueOf(
-                switch (i % 4) {
-                  case 0 -> random.nextInt(800, 1300); // Studio/small apt
-                  case 1 -> random.nextInt(1200, 1800); // Apartment
-                  case 2 -> random.nextInt(1500, 2500); // House
-                  default -> random.nextInt(1000, 3000); // Commercial/varied
-                });
-
-        BigDecimal deposit = rentAmount.multiply(BigDecimal.valueOf(2));
+        BigDecimal rentAmount = rentAmountForCategory(propertyCategory);
+        BigDecimal deposit = rentAmount.multiply(depositMultiplierForCategory(propertyCategory));
         BigDecimal securityDeposit = rentAmount;
+        String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
+        int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
 
         String contractIdentifier = newContractId().value();
         dsl.insertInto(CONTRACTS)
@@ -139,11 +161,11 @@ public class DemoContractGenerator {
             .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
             .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
             .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
-            .set(CONTRACTS.PAYMENT_FREQUENCY, "MONTHLY")
+            .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequency)
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
             .set(CONTRACTS.AUTO_RENEWAL, "INDEFINITE".equals(contractType))
             .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
-            .set(CONTRACTS.TERMINATION_NOTICE_DAYS, 30)
+            .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
             .set(CONTRACTS.STATUS, status)
             .set(CONTRACTS.NOTES, "Demo contract for testing purposes")
@@ -175,5 +197,48 @@ public class DemoContractGenerator {
       ctx.getContractIdsByTeam().put(teamId, contractIds);
       log.info("Created {} contracts for team {}", contractCount, teamKey);
     }
+  }
+
+  private BigDecimal rentAmountForCategory(String category) {
+    return BigDecimal.valueOf(
+        switch (category) {
+          case "COMMERCIAL" -> random.nextInt(1500, 8000);
+          case "INDUSTRIAL" -> random.nextInt(2000, 15000);
+          case "AGRICULTURAL" -> random.nextInt(500, 5000);
+          case "MIXED_USE" -> random.nextInt(2000, 10000);
+          default -> random.nextInt(800, 3000); // RESIDENTIAL
+        });
+  }
+
+  private BigDecimal depositMultiplierForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL", "INDUSTRIAL" -> BigDecimal.valueOf(random.nextInt(3, 7));
+      default -> BigDecimal.valueOf(2);
+    };
+  }
+
+  private String paymentFrequencyForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL", "INDUSTRIAL" -> random.nextInt(3) == 0 ? "QUARTERLY" : "MONTHLY";
+      case "AGRICULTURAL" -> random.nextInt(3) == 0 ? "ANNUALLY" : "QUARTERLY";
+      default -> "MONTHLY";
+    };
+  }
+
+  private int endDateMonthsForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL" -> random.nextInt(36, 120); // 3-10 years
+      case "INDUSTRIAL" -> random.nextInt(60, 180); // 5-15 years
+      case "AGRICULTURAL" -> random.nextInt(12, 60); // 1-5 years
+      default -> random.nextInt(6, 24); // residential
+    };
+  }
+
+  private int terminationNoticeForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL", "INDUSTRIAL" -> 90;
+      case "AGRICULTURAL" -> 60;
+      default -> 30;
+    };
   }
 }

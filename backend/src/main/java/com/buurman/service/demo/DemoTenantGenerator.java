@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -32,41 +31,122 @@ public class DemoTenantGenerator {
   private final Faker faker = new Faker(Locale.ENGLISH, new Random(42));
   private final Random random = new Random(42);
 
-  // teamKey -> number of tenants
-  public static final Map<String, Integer> TENANTS_PER_TEAM =
-      Map.of(
-          "demo-team", 10,
-          "team-alpha", 8,
-          "team-beta", 6);
+  public static final int TENANTS_PER_TEAM = 8;
 
   private static final String[] DUTCH_CITIES = {
     "Amsterdam", "Rotterdam", "Den Haag", "Utrecht", "Eindhoven",
     "Tilburg", "Groningen", "Almere", "Breda", "Nijmegen"
   };
 
+  // Business company names per country
+  private static final String[][] BUSINESS_NAMES = {
+    // NL
+    {
+      "TechVentures B.V.",
+      "Van der Berg Logistics B.V.",
+      "Bakkerij De Gouden Oven B.V.",
+      "Noord-Holland Consultancy B.V.",
+      "Groen Energie B.V."
+    },
+    // DE
+    {
+      "Müller Maschinenbau GmbH",
+      "Schmidt & Partners GmbH",
+      "Brauereigesellschaft GmbH",
+      "Berliner Tech Solutions GmbH",
+      "Rhein Logistik GmbH"
+    },
+    // UK
+    {
+      "Hartley & Sons Ltd",
+      "Crown Industrial Services Ltd",
+      "The Old Mill Trading Co. Ltd",
+      "Brighton Digital Solutions Ltd",
+      "Thames Warehousing Ltd"
+    },
+    // FR
+    {
+      "Boulangerie Martin SARL",
+      "Groupe Industriel Dupont SARL",
+      "Vignobles du Sud SARL",
+      "Paris Consulting SARL",
+      "Lyon Distribution SARL"
+    },
+    // ES
+    {
+      "Construcciones García S.L.",
+      "Viñedos del Sur S.A.",
+      "Olivares de Andalucía S.L.",
+      "Barcelona Tech S.L.",
+      "Transportes Madrid S.A."
+    },
+    // PT
+    {
+      "Vinhos do Douro Lda.",
+      "Oliveira & Filhos Lda.",
+      "Porto Logística Lda.",
+      "Lisboa Digital Lda.",
+      "Algarve Imobiliária Lda."
+    }
+  };
+
+  private static final String[] BUSINESS_DOMAINS = {".nl", ".de", ".co.uk", ".fr", ".es", ".pt"};
+
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
 
-    for (var entry : TENANTS_PER_TEAM.entrySet()) {
-      String teamKey = entry.getKey();
-      int count = entry.getValue();
-      UUID teamId = ctx.getTeamIds().get(teamKey);
+    for (var teamEntry : ctx.getTeamIds().entrySet()) {
+      String teamKey = teamEntry.getKey();
+      UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
       List<UUID> tenantIds = new ArrayList<>();
 
-      for (int i = 0; i < count; i++) {
+      int businessStart = (int) (TENANTS_PER_TEAM * 0.6); // first 60% individual, rest business
+
+      for (int i = 0; i < TENANTS_PER_TEAM; i++) {
         UUID tenantId = UUID.randomUUID();
-        String firstName = faker.name().firstName();
-        String lastName = faker.name().lastName();
-        String email =
-            (firstName.toLowerCase()
-                    + "."
-                    + lastName.toLowerCase()
-                    + "."
-                    + teamKey.replace("-", "")
-                    + i
-                    + "@example.com")
-                .replaceAll("[^a-z0-9.@]", "");
+        boolean isBusiness = i >= businessStart;
+
+        String firstName;
+        String lastName;
+        String email;
+        String phone;
+        String taxNumber;
+        String additionalInfo = null;
+
+        if (isBusiness) {
+          int countryIdx = (i - businessStart) % BUSINESS_NAMES.length;
+          String[] names = BUSINESS_NAMES[countryIdx];
+          String companyName = names[random.nextInt(names.length)];
+          String domain = BUSINESS_DOMAINS[countryIdx];
+
+          firstName = faker.name().firstName(); // contact person
+          lastName = companyName;
+          String slug =
+              companyName
+                  .toLowerCase()
+                  .replaceAll("[^a-z0-9]+", "")
+                  .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
+          email = "info@" + slug + domain;
+          // Landline format
+          phone = "+3120" + String.format("%07d", random.nextInt(1000000, 9999999));
+          taxNumber = "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01";
+          additionalInfo = "Business tenant - " + companyName;
+        } else {
+          firstName = faker.name().firstName();
+          lastName = faker.name().lastName();
+          email =
+              (firstName.toLowerCase()
+                      + "."
+                      + lastName.toLowerCase()
+                      + "."
+                      + teamKey.replace("-", "")
+                      + i
+                      + "@example.com")
+                  .replaceAll("[^a-z0-9.@]", "");
+          phone = "+316" + String.format("%08d", random.nextInt(10000000, 99999999));
+          taxNumber = "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01";
+        }
 
         String tenantIdentifier = newTenantId().value();
         dsl.insertInto(TENANTS)
@@ -76,11 +156,10 @@ public class DemoTenantGenerator {
             .set(TENANTS.FIRST_NAME, firstName)
             .set(TENANTS.LAST_NAME, lastName)
             .set(TENANTS.EMAIL, email)
-            .set(TENANTS.PHONE, "+316" + String.format("%08d", random.nextInt(10000000, 99999999)))
-            .set(
-                TENANTS.TAX_NUMBER,
-                "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01")
+            .set(TENANTS.PHONE, phone)
+            .set(TENANTS.TAX_NUMBER, taxNumber)
             .set(TENANTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
+            .set(TENANTS.ADDITIONAL_INFO, additionalInfo)
             .set(TENANTS.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(TENANTS.UPDATED_AT, now)
             .set(TENANTS.CREATED_BY, createdBy)
@@ -117,11 +196,12 @@ public class DemoTenantGenerator {
 
         tenantIds.add(tenantId);
         ctx.putIdentifier(tenantId, tenantIdentifier);
+        ctx.putBusinessTenantFlag(tenantId, isBusiness);
         ctx.incrementTenants();
       }
 
       ctx.getTenantIdsByTeam().put(teamId, tenantIds);
-      log.info("Created {} tenants for team {}", count, teamKey);
+      log.info("Created {} tenants for team {}", TENANTS_PER_TEAM, teamKey);
     }
   }
 }

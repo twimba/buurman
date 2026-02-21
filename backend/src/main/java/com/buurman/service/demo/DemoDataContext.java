@@ -38,6 +38,13 @@ public class DemoDataContext {
   // Contract UUID -> list of payment UUIDs
   private final Map<UUID, List<UUID>> paymentIdsByContract = new LinkedHashMap<>();
 
+  // Property UUID -> property category (RESIDENTIAL, COMMERCIAL, INDUSTRIAL, AGRICULTURAL,
+  // MIXED_USE)
+  private final Map<UUID, String> propertyCategoriesByProperty = new LinkedHashMap<>();
+
+  // Tenant UUID -> whether the tenant is a business entity
+  private final Map<UUID, Boolean> businessTenantFlags = new LinkedHashMap<>();
+
   // Counters
   private int teamsCreated;
   private int usersCreated;
@@ -95,6 +102,22 @@ public class DemoDataContext {
 
   public Map<UUID, List<UUID>> getPaymentIdsByContract() {
     return paymentIdsByContract;
+  }
+
+  public void putPropertyCategory(UUID propertyId, String category) {
+    propertyCategoriesByProperty.put(propertyId, category);
+  }
+
+  public String getPropertyCategory(UUID propertyId) {
+    return propertyCategoriesByProperty.getOrDefault(propertyId, "RESIDENTIAL");
+  }
+
+  public void putBusinessTenantFlag(UUID tenantId, boolean isBusiness) {
+    businessTenantFlags.put(tenantId, isBusiness);
+  }
+
+  public boolean isBusinessTenant(UUID tenantId) {
+    return businessTenantFlags.getOrDefault(tenantId, false);
   }
 
   public int getTeamsCreated() {

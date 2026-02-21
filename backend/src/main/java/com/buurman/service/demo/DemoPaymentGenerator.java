@@ -62,6 +62,8 @@ public class DemoPaymentGenerator {
 
         LocalDate startDate = contract.get(CONTRACTS.START_DATE);
         Long rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
+        String frequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
+        int periodMonths = periodMonthsForFrequency(frequency);
 
         // Determine end date for payment generation
         LocalDate paymentEndDate;
@@ -79,7 +81,7 @@ public class DemoPaymentGenerator {
           }
         }
 
-        // Generate monthly payments
+        // Generate payments at the correct frequency
         LocalDate dueDate = startDate.withDayOfMonth(1);
         if (dueDate.isBefore(startDate)) {
           dueDate = dueDate.plusMonths(1);
@@ -175,7 +177,7 @@ public class DemoPaymentGenerator {
                 .execute();
           }
 
-          dueDate = dueDate.plusMonths(1);
+          dueDate = dueDate.plusMonths(periodMonths);
         }
 
         ctx.getPaymentIdsByContract().put(contractId, paymentIds);
@@ -183,5 +185,16 @@ public class DemoPaymentGenerator {
 
       log.info("Created {} payments for team {}", teamPayments, teamKey);
     }
+  }
+
+  private int periodMonthsForFrequency(String frequency) {
+    if (frequency == null) {
+      return 1;
+    }
+    return switch (frequency) {
+      case "QUARTERLY" -> 3;
+      case "ANNUALLY" -> 12;
+      default -> 1; // MONTHLY
+    };
   }
 }

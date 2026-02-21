@@ -26,6 +26,19 @@ public class DemoPhotoGenerator {
 
   private static final String RESOURCE_BASE = "classpath:demo/photos/";
 
+  private static final List<String> ALL_CATEGORIES =
+      List.of(
+          "exteriors",
+          "living-rooms",
+          "kitchens",
+          "bathrooms",
+          "bedrooms",
+          "offices",
+          "retail",
+          "warehouses",
+          "agricultural",
+          "mixed-use");
+
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
   private final ThumbnailService thumbnailService;
@@ -62,13 +75,15 @@ public class DemoPhotoGenerator {
       }
 
       for (UUID propertyId : propertyIds) {
+        String category = ctx.getPropertyCategory(propertyId);
         totalPhotos +=
             generatePropertyPhotos(
                 teamId,
                 ctx.getIdentifier(teamId),
                 propertyId,
                 ctx.getIdentifier(propertyId),
-                uploadedBy);
+                uploadedBy,
+                category);
       }
 
       log.info("Uploaded photos for {} properties in team {}", propertyIds.size(), teamKey);
@@ -82,18 +97,41 @@ public class DemoPhotoGenerator {
       String teamIdentifier,
       UUID propertyId,
       String propertyIdentifier,
-      UUID uploadedBy) {
+      UUID uploadedBy,
+      String propertyCategory) {
     record PhotoSlot(String category, String title, boolean isMain) {}
 
     List<PhotoSlot> slots =
-        List.of(
-            new PhotoSlot("exteriors", "Front view", true),
-            new PhotoSlot("living-rooms", "Living area", false),
-            new PhotoSlot("kitchens", "Kitchen", false),
-            new PhotoSlot(
-                random.nextBoolean() ? "bedrooms" : "bathrooms",
-                random.nextBoolean() ? "Bedroom" : "Bathroom",
-                false));
+        switch (propertyCategory) {
+          case "COMMERCIAL" ->
+              List.of(
+                  new PhotoSlot("offices", "Building exterior", true),
+                  new PhotoSlot("offices", "Workspace", false),
+                  new PhotoSlot("offices", "Meeting room", false));
+          case "INDUSTRIAL" ->
+              List.of(
+                  new PhotoSlot("warehouses", "Exterior", true),
+                  new PhotoSlot("warehouses", "Loading area", false),
+                  new PhotoSlot("warehouses", "Storage space", false));
+          case "AGRICULTURAL" ->
+              List.of(
+                  new PhotoSlot("agricultural", "Overview", true),
+                  new PhotoSlot("agricultural", "Detail", false));
+          case "MIXED_USE" ->
+              List.of(
+                  new PhotoSlot("mixed-use", "Street view", true),
+                  new PhotoSlot("mixed-use", "Commercial space", false),
+                  new PhotoSlot("living-rooms", "Residential unit", false));
+          default ->
+              List.of( // RESIDENTIAL
+                  new PhotoSlot("exteriors", "Front view", true),
+                  new PhotoSlot("living-rooms", "Living area", false),
+                  new PhotoSlot("kitchens", "Kitchen", false),
+                  new PhotoSlot(
+                      random.nextBoolean() ? "bedrooms" : "bathrooms",
+                      random.nextBoolean() ? "Bedroom" : "Bathroom",
+                      false));
+        };
 
     int count = 0;
     for (PhotoSlot slot : slots) {
@@ -156,8 +194,7 @@ public class DemoPhotoGenerator {
     Map<String, List<byte[]>> pool = new LinkedHashMap<>();
     var resolver = new PathMatchingResourcePatternResolver();
 
-    for (String category :
-        List.of("exteriors", "living-rooms", "kitchens", "bathrooms", "bedrooms")) {
+    for (String category : ALL_CATEGORIES) {
       List<byte[]> images = new ArrayList<>();
       try {
         Resource[] resources = resolver.getResources(RESOURCE_BASE + category + "/*.jpg");
