@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
@@ -42,7 +42,7 @@ export const PaymentCreatePage = () => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const createPaymentMutation = useCreatePayment();
-  const { defaultCurrency } = useTeamDefaults();
+  const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
 
   const prefilledContractId = searchParams.get('contractId') || '';
   const registerMode = searchParams.get('register') === 'true';
@@ -88,58 +88,52 @@ export const PaymentCreatePage = () => {
     navigate('/payments');
   };
 
-  const handleBulkSubmit = useCallback(
-    (
-      rows: RowData[],
-      callbacks: {
-        onRowStart: (index: number) => void;
-        onRowSuccess: (index: number) => void;
-        onRowError: (index: number, error: string) => void;
-        onComplete: () => void;
-      }
-    ) => {
-      const currency = bulkCurrency || defaultCurrency || '';
-      setBulkSubmitting(true);
+  const handleBulkSubmit = (
+    rows: RowData[],
+    callbacks: {
+      onRowStart: (index: number) => void;
+      onRowSuccess: (index: number) => void;
+      onRowError: (index: number, error: string) => void;
+      onComplete: () => void;
+    }
+  ) => {
+    const currency = bulkCurrency || defaultCurrency || '';
+    setBulkSubmitting(true);
 
-      (async () => {
-        for (let i = 0; i < rows.length; i++) {
-          callbacks.onRowStart(i);
-          try {
-            const req: CreatePaymentRequest = {
-              contractIdentifier: effectiveContractId,
-              amount: parseFloat(rows[i].amount),
-              currency,
-              dueDate: rows[i].date,
-              markAsPaid: registerMode ? true : undefined,
-            };
-            await createPayment(req);
-            callbacks.onRowSuccess(i);
-          } catch (e) {
-            callbacks.onRowError(i, getErrorMessage(e));
-          }
+    (async () => {
+      let hasErrors = false;
+      for (let i = 0; i < rows.length; i++) {
+        callbacks.onRowStart(i);
+        try {
+          const req: CreatePaymentRequest = {
+            contractIdentifier: effectiveContractId,
+            amount: parseFloat(rows[i].amount),
+            currency,
+            dueDate: rows[i].date,
+            markAsPaid: registerMode ? true : undefined,
+          };
+          await createPayment(req);
+          callbacks.onRowSuccess(i);
+        } catch (e) {
+          hasErrors = true;
+          callbacks.onRowError(i, getErrorMessage(e));
         }
+      }
 
-        // Invalidate caches once
-        queryClient.invalidateQueries({ queryKey: ['payments'] });
-        queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
-        queryClient.invalidateQueries({ queryKey: ['contracts'] });
-        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-        queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-        queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
-        queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      // Invalidate caches once
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
+      queryClient.invalidateQueries({ queryKey: ['contracts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
 
-        setBulkSubmitting(false);
-        callbacks.onComplete();
-      })();
-    },
-    [
-      effectiveContractId,
-      bulkCurrency,
-      defaultCurrency,
-      registerMode,
-      queryClient,
-    ]
-  );
+      setBulkSubmitting(false);
+      callbacks.onComplete();
+      if (!hasErrors) navigate('/payments');
+    })();
+  };
 
   const showWarning = isPrefillInvalid && !dismissedWarning;
 
@@ -219,19 +213,6 @@ export const PaymentCreatePage = () => {
 
           {effectiveContractId && mode === 'single' && (
             <>
-              {/* Continue adding checkbox */}
-              <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={continueAdding}
-                  onChange={(e) => setContinueAdding(e.target.checked)}
-                  className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
-                />
-                <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                  Continue adding more
-                </span>
-              </label>
-
               {registerMode ? (
                 <RegisterPaymentForm
                   onSubmit={handleSubmit}
@@ -239,6 +220,8 @@ export const PaymentCreatePage = () => {
                   isLoading={createPaymentMutation.isPending}
                   contractIdentifier={effectiveContractId}
                   resetKey={resetKey}
+                  continueAdding={continueAdding}
+                  onContinueAddingChange={setContinueAdding}
                 />
               ) : (
                 <PaymentForm
@@ -247,6 +230,8 @@ export const PaymentCreatePage = () => {
                   isLoading={createPaymentMutation.isPending}
                   contractIdentifier={effectiveContractId}
                   resetKey={resetKey}
+                  continueAdding={continueAdding}
+                  onContinueAddingChange={setContinueAdding}
                 />
               )}
             </>
@@ -270,7 +255,15 @@ export const PaymentCreatePage = () => {
                 columns={BULK_COLUMNS}
                 onSubmit={handleBulkSubmit}
                 isSubmitting={bulkSubmitting}
-                disabled={!effectiveContractId || !(bulkCurrency || defaultCurrency)}
+                disabled={
+                  !effectiveContractId || !(bulkCurrency || defaultCurrency)
+                }
+                dateFormat={
+                  defaultDateFormat as
+                    | 'DD/MM/YYYY'
+                    | 'MM/DD/YYYY'
+                    | 'YYYY-MM-DD'
+                }
               />
             </>
           )}

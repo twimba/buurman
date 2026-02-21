@@ -14,20 +14,27 @@ import {
 export interface ColumnDef {
   key: string;
   label: string;
-  type: 'date' | 'number' | 'text';
+  type: 'date' | 'number' | 'text' | 'select';
   required?: boolean;
   placeholder?: string;
+  options?: { value: string; label: string }[];
+  defaultValue?: string;
 }
 
 export type RowData = Record<string, string>;
 
 export type RowStatus = 'pending' | 'submitting' | 'success' | 'error';
 
+let nextRowId = 1;
+
 interface RowState {
+  id: number;
   data: RowData;
   status: RowStatus;
   error?: string;
 }
+
+type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD';
 
 interface BulkDataGridProps {
   columns: ColumnDef[];
@@ -42,11 +49,16 @@ interface BulkDataGridProps {
   ) => void;
   isSubmitting: boolean;
   disabled?: boolean;
+  dateFormat?: DateFormat;
 }
 
 // --- Helpers ---
 
-function parseClipboard(text: string, columns: ColumnDef[]): RowData[] {
+function parseClipboard(
+  text: string,
+  columns: ColumnDef[],
+  dateFormat?: DateFormat
+): RowData[] {
   const lines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -64,30 +76,74 @@ function parseClipboard(text: string, columns: ColumnDef[]): RowData[] {
     columns.forEach((col, i) => {
       const val = (parts[i] || '').trim();
       if (col.type === 'date' && val) {
-        // Normalize common date formats to YYYY-MM-DD
-        row[col.key] = normalizeDate(val);
-      } else {
+        row[col.key] = normalizeDate(val, dateFormat);
+      } else if (col.type === 'select' && col.options && val) {
+        row[col.key] =
+          matchSelectOption(val, col.options) || col.defaultValue || '';
+      } else if (val) {
         row[col.key] = val;
+      } else {
+        row[col.key] = col.defaultValue || '';
       }
     });
     return row;
   });
 }
 
-function normalizeDate(raw: string): string {
+function normalizeDate(raw: string, dateFormat?: DateFormat): string {
   // Already ISO
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-  // DD/MM/YYYY or DD-MM-YYYY
-  const dmy = raw.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
-  if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}`;
-  // MM/DD/YYYY — ambiguous, but try parsing
+
+  const match = raw.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
+  if (match) {
+    const [, a, b, year] = match;
+    const n1 = parseInt(a, 10);
+    const n2 = parseInt(b, 10);
+
+    // If first number > 12, it can only be a day → DD/MM/YYYY
+    if (n1 > 12 && n2 >= 1 && n2 <= 12) {
+      return `${year}-${b.padStart(2, '0')}-${a.padStart(2, '0')}`;
+    }
+    // If second number > 12, it can only be a day → MM/DD/YYYY
+    if (n2 > 12 && n1 >= 1 && n1 <= 12) {
+      return `${year}-${a.padStart(2, '0')}-${b.padStart(2, '0')}`;
+    }
+    // Ambiguous (both ≤ 12) — use team's date format preference
+    if (dateFormat === 'MM/DD/YYYY') {
+      return `${year}-${a.padStart(2, '0')}-${b.padStart(2, '0')}`;
+    }
+    // Default to DD/MM/YYYY
+    return `${year}-${b.padStart(2, '0')}-${a.padStart(2, '0')}`;
+  }
+
+  // Fallback: try native Date parsing
   const parsed = new Date(raw);
   if (!isNaN(parsed.getTime())) return parsed.toISOString().split('T')[0];
   return raw;
 }
 
-function isRowEmpty(row: RowData): boolean {
-  return Object.values(row).every((v) => !v);
+function matchSelectOption(
+  val: string,
+  options: { value: string; label: string }[]
+): string | undefined {
+  const lower = val.toLowerCase();
+  // Exact value match
+  const exact = options.find((o) => o.value.toLowerCase() === lower);
+  if (exact) return exact.value;
+  // Exact label match
+  const label = options.find((o) => o.label.toLowerCase() === lower);
+  if (label) return label.value;
+  // Prefix match on label
+  const prefix = options.find((o) => o.label.toLowerCase().startsWith(lower));
+  if (prefix) return prefix.value;
+  return undefined;
+}
+
+function isRowEmpty(row: RowData, columns: ColumnDef[]): boolean {
+  return columns.every((col) => {
+    const val = row[col.key];
+    return !val || val === col.defaultValue;
+  });
 }
 
 function isRowValid(row: RowData, columns: ColumnDef[]): boolean {
@@ -97,9 +153,15 @@ function isRowValid(row: RowData, columns: ColumnDef[]): boolean {
     if (!val) return false;
     if (col.type === 'number' && (isNaN(Number(val)) || Number(val) <= 0))
       return false;
-    if (col.type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+    if (col.type === 'date' && !isValidDate(val)) return false;
     return true;
   });
+}
+
+function isValidDate(val: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+  const d = new Date(val + 'T00:00:00');
+  return !isNaN(d.getTime());
 }
 
 function isCellInvalid(
@@ -112,13 +174,13 @@ function isCellInvalid(
   if (!value) return true;
   if (col.type === 'number' && (isNaN(Number(value)) || Number(value) <= 0))
     return true;
-  if (col.type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(value)) return true;
+  if (col.type === 'date' && !isValidDate(value)) return true;
   return false;
 }
 
 function createEmptyRow(columns: ColumnDef[]): RowData {
   const row: RowData = {};
-  columns.forEach((col) => (row[col.key] = ''));
+  columns.forEach((col) => (row[col.key] = col.defaultValue || ''));
   return row;
 }
 
@@ -129,13 +191,14 @@ export const BulkDataGrid = ({
   onSubmit,
   isSubmitting,
   disabled,
+  dateFormat,
 }: BulkDataGridProps) => {
   const [rows, setRows] = useState<RowState[]>([
-    { data: createEmptyRow(columns), status: 'pending' },
+    { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
   ]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const nonEmptyRows = rows.filter((r) => !isRowEmpty(r.data));
+  const nonEmptyRows = rows.filter((r) => !isRowEmpty(r.data, columns));
   const validRows = nonEmptyRows.filter((r) => isRowValid(r.data, columns));
   const successCount = rows.filter((r) => r.status === 'success').length;
   const errorCount = rows.filter((r) => r.status === 'error').length;
@@ -154,7 +217,10 @@ export const BulkDataGrid = ({
       }
 
       e.preventDefault();
-      const parsed = parseClipboard(text, columns);
+      // Blur the focused input to prevent native date/number input handling
+      // from interfering with the React state update for that cell
+      (document.activeElement as HTMLElement)?.blur();
+      const parsed = parseClipboard(text, columns, dateFormat);
       if (parsed.length === 0) return;
 
       setRows((prev) => {
@@ -163,13 +229,14 @@ export const BulkDataGrid = ({
           (r) => r.status === 'success' || r.status === 'error'
         );
         const newRows = parsed.map((data) => ({
+          id: nextRowId++,
           data,
           status: 'pending' as RowStatus,
         }));
         return [...submitted, ...newRows];
       });
     },
-    [columns]
+    [columns, dateFormat]
   );
 
   const updateCell = (rowIndex: number, key: string, value: string) => {
@@ -186,7 +253,13 @@ export const BulkDataGrid = ({
     setRows((prev) => {
       const updated = prev.filter((_, i) => i !== rowIndex);
       return updated.length === 0
-        ? [{ data: createEmptyRow(columns), status: 'pending' }]
+        ? [
+            {
+              id: nextRowId++,
+              data: createEmptyRow(columns),
+              status: 'pending',
+            },
+          ]
         : updated;
     });
   };
@@ -194,12 +267,14 @@ export const BulkDataGrid = ({
   const addRow = () => {
     setRows((prev) => [
       ...prev,
-      { data: createEmptyRow(columns), status: 'pending' },
+      { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
     ]);
   };
 
   const clearAll = () => {
-    setRows([{ data: createEmptyRow(columns), status: 'pending' }]);
+    setRows([
+      { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
+    ]);
   };
 
   const handleSubmit = () => {
@@ -208,7 +283,7 @@ export const BulkDataGrid = ({
     rows.forEach((r, i) => {
       if (
         r.status !== 'success' &&
-        !isRowEmpty(r.data) &&
+        !isRowEmpty(r.data, columns) &&
         isRowValid(r.data, columns)
       ) {
         toSubmit.push({ index: i, data: r.data });
@@ -252,16 +327,12 @@ export const BulkDataGrid = ({
   const submittableCount = rows.filter(
     (r) =>
       r.status !== 'success' &&
-      !isRowEmpty(r.data) &&
+      !isRowEmpty(r.data, columns) &&
       isRowValid(r.data, columns)
   ).length;
 
   return (
-    <div
-      ref={containerRef}
-      onPaste={handlePaste}
-      className="space-y-4"
-    >
+    <div ref={containerRef} onPaste={handlePaste} className="space-y-4">
       {/* Hint */}
       {nonEmptyRows.length === 0 && (
         <div className="flex items-center gap-2 p-3 bg-[#f1f3f9] dark:bg-[#1e2130] border border-dashed border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg text-sm text-[#6b7194] dark:text-[#8b90a8]">
@@ -300,10 +371,10 @@ export const BulkDataGrid = ({
           </thead>
           <tbody>
             {rows.map((row, rowIndex) => {
-              const empty = isRowEmpty(row.data);
+              const empty = isRowEmpty(row.data, columns);
               return (
                 <tr
-                  key={rowIndex}
+                  key={row.id}
                   className={`border-t border-[#e2e6f0] dark:border-[#2a2e3f] transition-colors ${
                     row.status === 'success'
                       ? 'bg-emerald-50/50 dark:bg-emerald-900/10'
@@ -328,27 +399,57 @@ export const BulkDataGrid = ({
                       row.status === 'submitting';
                     return (
                       <td key={col.key} className="px-1 py-1">
-                        <input
-                          type={col.type === 'number' ? 'text' : col.type}
-                          inputMode={
-                            col.type === 'number' ? 'decimal' : undefined
-                          }
-                          value={row.data[col.key]}
-                          onChange={(e) =>
-                            updateCell(rowIndex, col.key, e.target.value)
-                          }
-                          disabled={isDisabled}
-                          placeholder={col.placeholder}
-                          className={`w-full px-2 py-1.5 text-sm rounded border transition-colors
-                            ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}
-                            ${
-                              invalid
-                                ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
-                                : 'border-transparent hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] focus:border-[#5c7cfa] dark:focus:border-[#5c7cfa]'
+                        {col.type === 'select' && col.options ? (
+                          <select
+                            value={row.data[col.key]}
+                            onChange={(e) =>
+                              updateCell(rowIndex, col.key, e.target.value)
                             }
-                            bg-transparent text-[#1a1d2e] dark:text-[#eef0f6]
-                            focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30`}
-                        />
+                            disabled={isDisabled}
+                            className={`w-full px-2 py-1.5 text-sm rounded border transition-colors
+                              ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}
+                              ${
+                                invalid
+                                  ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
+                                  : 'border-transparent hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] focus:border-[#5c7cfa] dark:focus:border-[#5c7cfa]'
+                              }
+                              bg-transparent text-[#1a1d2e] dark:text-[#eef0f6]
+                              focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30`}
+                          >
+                            {col.options.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={col.type === 'number' ? 'text' : col.type}
+                            inputMode={
+                              col.type === 'number' ? 'decimal' : undefined
+                            }
+                            value={row.data[col.key]}
+                            onChange={(e) =>
+                              updateCell(rowIndex, col.key, e.target.value)
+                            }
+                            onPaste={(e) => {
+                              const text =
+                                e.clipboardData.getData('text/plain');
+                              if (text.includes('\n')) e.preventDefault();
+                            }}
+                            disabled={isDisabled}
+                            placeholder={col.placeholder}
+                            className={`w-full px-2 py-1.5 text-sm rounded border transition-colors
+                              ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}
+                              ${
+                                invalid
+                                  ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
+                                  : 'border-transparent hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] focus:border-[#5c7cfa] dark:focus:border-[#5c7cfa]'
+                              }
+                              bg-transparent text-[#1a1d2e] dark:text-[#eef0f6]
+                              focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30`}
+                          />
+                        )}
                       </td>
                     );
                   })}
@@ -413,9 +514,7 @@ export const BulkDataGrid = ({
           <div className="flex items-center gap-3 text-xs text-[#6b7194] dark:text-[#8b90a8]">
             <span>{nonEmptyRows.length} rows</span>
             <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
-            <span>
-              {validRows.length} valid
-            </span>
+            <span>{validRows.length} valid</span>
             {successCount > 0 && (
               <>
                 <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>

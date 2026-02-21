@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { createExpense } from '@/api/expenses';
@@ -22,6 +22,11 @@ import { getErrorMessage } from '@/utils/errorMessages';
 
 type Mode = 'single' | 'bulk';
 
+const CATEGORY_OPTIONS = Object.values(ExpenseCategory).map((cat) => ({
+  value: cat,
+  label: formatExpenseCategory(cat),
+}));
+
 const BULK_COLUMNS: ColumnDef[] = [
   {
     key: 'date',
@@ -44,6 +49,14 @@ const BULK_COLUMNS: ColumnDef[] = [
     required: true,
     placeholder: 'e.g., Plumbing repair',
   },
+  {
+    key: 'category',
+    label: 'Category',
+    type: 'select',
+    required: true,
+    options: CATEGORY_OPTIONS,
+    defaultValue: ExpenseCategory.MAINTENANCE,
+  },
 ];
 
 export const ExpenseCreatePage = () => {
@@ -51,7 +64,7 @@ export const ExpenseCreatePage = () => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const createExpenseMutation = useCreateExpense();
-  const { defaultCurrency } = useTeamDefaults();
+  const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
 
   const prefilledPropertyId = searchParams.get('propertyId') || undefined;
 
@@ -61,9 +74,6 @@ export const ExpenseCreatePage = () => {
   const [mode, setMode] = useState<Mode>('single');
   const [bulkPropertyId, setBulkPropertyId] = useState(
     prefilledPropertyId || ''
-  );
-  const [bulkCategory, setBulkCategory] = useState<ExpenseCategory>(
-    ExpenseCategory.MAINTENANCE
   );
   const [bulkCurrency, setBulkCurrency] = useState(defaultCurrency || '');
   const [bulkSubmitting, setBulkSubmitting] = useState(false);
@@ -82,54 +92,56 @@ export const ExpenseCreatePage = () => {
     navigate('/expenses');
   };
 
-  const handleBulkSubmit = useCallback(
-    (
-      rows: RowData[],
-      callbacks: {
-        onRowStart: (index: number) => void;
-        onRowSuccess: (index: number) => void;
-        onRowError: (index: number, error: string) => void;
-        onComplete: () => void;
-      }
-    ) => {
-      const currency = bulkCurrency || defaultCurrency || '';
-      setBulkSubmitting(true);
+  const handleBulkSubmit = (
+    rows: RowData[],
+    callbacks: {
+      onRowStart: (index: number) => void;
+      onRowSuccess: (index: number) => void;
+      onRowError: (index: number, error: string) => void;
+      onComplete: () => void;
+    }
+  ) => {
+    const currency = bulkCurrency || defaultCurrency || '';
+    setBulkSubmitting(true);
 
-      (async () => {
-        for (let i = 0; i < rows.length; i++) {
-          callbacks.onRowStart(i);
-          try {
-            const req: CreateExpenseRequest = {
-              propertyIdentifier: bulkPropertyId,
-              category: bulkCategory,
-              amount: parseFloat(rows[i].amount),
-              currency,
-              expenseDate: rows[i].date,
-              description: rows[i].description,
-            };
-            await createExpense(req);
-            callbacks.onRowSuccess(i);
-          } catch (e) {
-            callbacks.onRowError(i, getErrorMessage(e));
-          }
+    (async () => {
+      let hasErrors = false;
+      for (let i = 0; i < rows.length; i++) {
+        callbacks.onRowStart(i);
+        try {
+          const req: CreateExpenseRequest = {
+            propertyIdentifier: bulkPropertyId,
+            category:
+              (rows[i].category as ExpenseCategory) ||
+              ExpenseCategory.MAINTENANCE,
+            amount: parseFloat(rows[i].amount),
+            currency,
+            expenseDate: rows[i].date,
+            description: rows[i].description,
+          };
+          await createExpense(req);
+          callbacks.onRowSuccess(i);
+        } catch (e) {
+          hasErrors = true;
+          callbacks.onRowError(i, getErrorMessage(e));
         }
+      }
 
-        queryClient.invalidateQueries({ queryKey: ['expenses'] });
-        queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
-        queryClient.invalidateQueries({ queryKey: ['properties'] });
-        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-        queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-        queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
-        queryClient.invalidateQueries({ queryKey: ['income-trend'] });
-        queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
-        queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
+      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
+      queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
 
-        setBulkSubmitting(false);
-        callbacks.onComplete();
-      })();
-    },
-    [bulkPropertyId, bulkCategory, bulkCurrency, defaultCurrency, queryClient]
-  );
+      setBulkSubmitting(false);
+      callbacks.onComplete();
+      if (!hasErrors) navigate('/expenses');
+    })();
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#0c0d14]">
@@ -177,33 +189,21 @@ export const ExpenseCreatePage = () => {
         {/* Form */}
         <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
           {mode === 'single' && (
-            <>
-              <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={continueAdding}
-                  onChange={(e) => setContinueAdding(e.target.checked)}
-                  className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
-                />
-                <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                  Continue adding more
-                </span>
-              </label>
-
-              <ExpenseForm
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-                isLoading={createExpenseMutation.isPending}
-                prefilledPropertyId={prefilledPropertyId}
-                resetKey={resetKey}
-              />
-            </>
+            <ExpenseForm
+              onSubmit={handleSubmit}
+              onCancel={handleCancel}
+              isLoading={createExpenseMutation.isPending}
+              prefilledPropertyId={prefilledPropertyId}
+              resetKey={resetKey}
+              continueAdding={continueAdding}
+              onContinueAddingChange={setContinueAdding}
+            />
           )}
 
           {mode === 'bulk' && (
             <>
               {/* Fixed fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
                     Property <span className="text-red-500">*</span>
@@ -213,25 +213,6 @@ export const ExpenseCreatePage = () => {
                     onChange={(val) => setBulkPropertyId((val as string) || '')}
                     disabled={bulkSubmitting}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={bulkCategory}
-                    onChange={(e) =>
-                      setBulkCategory(e.target.value as ExpenseCategory)
-                    }
-                    className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
-                    disabled={bulkSubmitting}
-                  >
-                    {Object.values(ExpenseCategory).map((cat) => (
-                      <option key={cat} value={cat}>
-                        {formatExpenseCategory(cat)}
-                      </option>
-                    ))}
-                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
@@ -249,8 +230,12 @@ export const ExpenseCreatePage = () => {
                 columns={BULK_COLUMNS}
                 onSubmit={handleBulkSubmit}
                 isSubmitting={bulkSubmitting}
-                disabled={
-                  !bulkPropertyId || !(bulkCurrency || defaultCurrency)
+                disabled={!bulkPropertyId || !(bulkCurrency || defaultCurrency)}
+                dateFormat={
+                  defaultDateFormat as
+                    | 'DD/MM/YYYY'
+                    | 'MM/DD/YYYY'
+                    | 'YYYY-MM-DD'
                 }
               />
             </>

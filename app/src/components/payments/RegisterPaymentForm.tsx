@@ -11,6 +11,8 @@ interface RegisterPaymentFormProps {
   isLoading: boolean;
   contractIdentifier: string;
   resetKey?: number;
+  continueAdding?: boolean;
+  onContinueAddingChange?: (value: boolean) => void;
 }
 
 export const RegisterPaymentForm = ({
@@ -19,6 +21,8 @@ export const RegisterPaymentForm = ({
   isLoading,
   contractIdentifier,
   resetKey,
+  continueAdding,
+  onContinueAddingChange,
 }: RegisterPaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -171,7 +175,20 @@ export const RegisterPaymentForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex items-center gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+        {onContinueAddingChange && (
+          <label className="flex items-center gap-2 cursor-pointer select-none mr-auto">
+            <input
+              type="checkbox"
+              checked={continueAdding ?? false}
+              onChange={(e) => onContinueAddingChange(e.target.checked)}
+              className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+            />
+            <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+              Continue adding more
+            </span>
+          </label>
+        )}
         <button
           type="button"
           onClick={onCancel}
