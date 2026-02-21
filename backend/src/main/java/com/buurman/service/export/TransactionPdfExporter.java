@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.util.CurrencyUtils;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -71,14 +73,14 @@ public class TransactionPdfExporter {
 
     // Summary cards
     html.append("<div class='summary'>");
-    html.append("<div class='summary-card income'><h3>Total Income</h3><p>EUR ")
-        .append(String.format("%.2f", totalIncome))
+    html.append("<div class='summary-card income'><h3>Total Income</h3><p>")
+        .append(String.format("%,.2f", totalIncome))
         .append("</p></div>");
-    html.append("<div class='summary-card expense'><h3>Total Expenses</h3><p>EUR ")
-        .append(String.format("%.2f", totalExpenses))
+    html.append("<div class='summary-card expense'><h3>Total Expenses</h3><p>")
+        .append(String.format("%,.2f", totalExpenses))
         .append("</p></div>");
-    html.append("<div class='summary-card net'><h3>Net Total</h3><p>EUR ")
-        .append(String.format("%.2f", netTotal))
+    html.append("<div class='summary-card net'><h3>Net Total</h3><p>")
+        .append(String.format("%,.2f", netTotal))
         .append("</p></div>");
     html.append("</div>");
 
@@ -108,9 +110,7 @@ public class TransactionPdfExporter {
           .append(t.type().equals("INCOME") ? "amount-income" : "amount-expense")
           .append("'>")
           .append(t.type().equals("INCOME") ? "+" : "-")
-          .append(t.currency())
-          .append(" ")
-          .append(String.format("%.2f", t.amount()))
+          .append(CurrencyUtils.formatCurrency(t.amount(), t.currency()))
           .append("</td>");
       html.append("</tr>");
     }

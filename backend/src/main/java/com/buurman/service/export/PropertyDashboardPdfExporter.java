@@ -10,6 +10,7 @@ import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +27,7 @@ public class PropertyDashboardPdfExporter {
 
   private String buildHtml(PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency() != null ? escapeHtml(s.currency()) : "";
+    String currency = s.currency();
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");
@@ -58,13 +59,13 @@ public class PropertyDashboardPdfExporter {
     for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
       html.append("<tr>");
       html.append("<td>").append(escapeHtml(m.month())).append("</td>");
-      html.append("<td class='right'>").append(fmtNum(m.income())).append("</td>");
-      html.append("<td class='right'>").append(fmtNum(m.expenses())).append("</td>");
-      html.append("<td class='right'>").append(fmtNum(m.mortgage())).append("</td>");
+      html.append("<td class='right'>").append(fmtMoney(m.income(), currency)).append("</td>");
+      html.append("<td class='right'>").append(fmtMoney(m.expenses(), currency)).append("</td>");
+      html.append("<td class='right'>").append(fmtMoney(m.mortgage(), currency)).append("</td>");
       html.append("<td class='right ")
           .append(m.net().signum() >= 0 ? "positive" : "negative")
           .append("'>")
-          .append(fmtNum(m.net()))
+          .append(fmtMoney(m.net(), currency))
           .append("</td>");
       html.append("</tr>");
     }
@@ -75,8 +76,10 @@ public class PropertyDashboardPdfExporter {
       html.append("<h2>Expense Breakdown</h2>");
       html.append("<table><thead><tr><th>Category</th><th>Amount</th></tr></thead><tbody>");
       for (CategorySlice c : dashboard.expenseBreakdown().categories()) {
-        html.append("<tr><td>").append(escapeHtml(c.category())).append("</td>");
-        html.append("<td class='right'>").append(fmtNum(c.amount())).append("</td></tr>");
+        html.append("<tr><td>").append(escapeHtml(humanize(c.category()))).append("</td>");
+        html.append("<td class='right'>")
+            .append(fmtMoney(c.amount(), currency))
+            .append("</td></tr>");
       }
       html.append("</tbody></table>");
     }
@@ -110,12 +113,19 @@ public class PropertyDashboardPdfExporter {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currency) {
-    return value != null ? currency + " " + fmtNum(value) : "N/A";
+  private static String fmtMoney(BigDecimal value, String currencyCode) {
+    return CurrencyUtils.formatCurrency(value, currencyCode);
   }
 
-  private static String fmtNum(BigDecimal value) {
-    return value != null ? String.format("%,.2f", value) : "N/A";
+  private static String humanize(String enumValue) {
+    if (enumValue == null || enumValue.isBlank()) return enumValue;
+    String[] words = enumValue.split("_");
+    StringBuilder sb = new StringBuilder();
+    for (String w : words) {
+      if (!sb.isEmpty()) sb.append(' ');
+      sb.append(w.substring(0, 1).toUpperCase()).append(w.substring(1).toLowerCase());
+    }
+    return sb.toString();
   }
 
   private void appendCss(StringBuilder css) {

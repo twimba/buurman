@@ -18,7 +18,6 @@ import static com.buurman.service.export.BookletHelper.appendSectionTitle;
 import static com.buurman.service.export.BookletHelper.appendStatusBadge;
 import static com.buurman.service.export.BookletHelper.appendSummaryCard;
 import static com.buurman.service.export.BookletHelper.escapeHtml;
-import static com.buurman.service.export.BookletHelper.fmt;
 import static com.buurman.service.export.BookletHelper.formatDate;
 import static com.buurman.service.export.BookletHelper.formatEnumValue;
 import static com.buurman.service.export.BookletHelper.sanitizeRichText;
@@ -58,6 +57,7 @@ import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -220,7 +220,8 @@ public class ContractBookletExporter {
         html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
     appendCoverCell(html, "Primary Tenant", primaryName);
     html.append("</tr><tr>");
-    appendCoverCell(html, "Current Rent", ccy + " " + fmt(contract.getRentAmount()));
+    appendCoverCell(
+        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount(), ccy));
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
@@ -281,11 +282,13 @@ public class ContractBookletExporter {
         "End Date",
         contract.getEndDate() != null ? formatDate(contract.getEndDate(), dateFmt) : "Indefinite");
     html.append("</tr><tr>");
-    appendField(html, "Current Rent", ccy + " " + fmt(contract.getRentAmount()));
-    appendField(html, "Deposit Amount", ccy + " " + fmt(contract.getDepositAmount()));
+    appendField(html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount(), ccy));
+    appendField(
+        html, "Deposit Amount", CurrencyUtils.formatCurrency(contract.getDepositAmount(), ccy));
     html.append("</tr><tr>");
-    appendField(html, "Security Deposit", ccy + " " + fmt(contract.getSecurityDeposit()));
-    appendField(html, "Currency", ccy);
+    appendField(
+        html, "Security Deposit", CurrencyUtils.formatCurrency(contract.getSecurityDeposit(), ccy));
+    appendField(html, "Currency", CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
     html.append("</tr><tr>");
     appendField(
         html,
@@ -499,9 +502,7 @@ public class ContractBookletExporter {
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
           .append(isCurrent ? "font-weight:600;" : "")
           .append("'>")
-          .append(ccy)
-          .append(" ")
-          .append(fmt(period.getRentAmount()))
+          .append(CurrencyUtils.formatCurrency(period.getRentAmount(), ccy))
           .append("</td>");
 
       // Percentage change vs next older period
@@ -698,7 +699,7 @@ public class ContractBookletExporter {
         html,
         "Paid",
         agg.countPaid,
-        ccy + " " + fmt(agg.totalPaid),
+        CurrencyUtils.formatCurrency(agg.totalPaid, ccy),
         "#f0fdf4",
         "#16a34a",
         "#166534");
@@ -706,7 +707,7 @@ public class ContractBookletExporter {
         html,
         "Pending",
         agg.countPending,
-        ccy + " " + fmt(agg.totalPending),
+        CurrencyUtils.formatCurrency(agg.totalPending, ccy),
         "#fefce8",
         "#ca8a04",
         "#854d0e");
@@ -714,13 +715,12 @@ public class ContractBookletExporter {
         html,
         "Partial",
         agg.countPartial,
-        ccy
-            + " "
-            + fmt(
-                payments.stream()
-                    .filter(p -> p.getStatus() == PARTIALLY_PAID)
-                    .map(Payment::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)),
+        CurrencyUtils.formatCurrency(
+            payments.stream()
+                .filter(p -> p.getStatus() == PARTIALLY_PAID)
+                .map(Payment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add),
+            ccy),
         "#eff6ff",
         "#3b82f6",
         "#1e40af");
@@ -728,7 +728,7 @@ public class ContractBookletExporter {
         html,
         "Overdue",
         agg.countOverdue,
-        ccy + " " + fmt(agg.totalOverdue),
+        CurrencyUtils.formatCurrency(agg.totalOverdue, ccy),
         "#fef2f2",
         "#dc2626",
         "#991b1b");
@@ -761,20 +761,18 @@ public class ContractBookletExporter {
         html.append("<tr>");
         html.append("<td>").append(formatDate(payment.getDueDate(), dateFmt)).append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(payment.getCurrency())
-            .append(" ")
-            .append(fmt(payment.getAmount()))
+            .append(CurrencyUtils.formatCurrency(payment.getAmount(), payment.getCurrency()))
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 received.compareTo(BigDecimal.ZERO) > 0
-                    ? payment.getCurrency() + " " + fmt(received)
+                    ? CurrencyUtils.formatCurrency(received, payment.getCurrency())
                     : "—")
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 balance.compareTo(BigDecimal.ZERO) > 0 && payment.getStatus() != PAID
-                    ? payment.getCurrency() + " " + fmt(balance)
+                    ? CurrencyUtils.formatCurrency(balance, payment.getCurrency())
                     : "—")
             .append("</td>");
         html.append("<td>");

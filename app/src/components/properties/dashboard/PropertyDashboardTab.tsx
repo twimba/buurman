@@ -82,6 +82,41 @@ function formatMonthTick(v: string): string {
   return MONTH_NAMES[parseInt(m, 10) - 1] || v;
 }
 
+function getCurrencySymbol(currencyCode: string): string {
+  try {
+    const parts = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+    }).formatToParts(0);
+    return parts.find((p) => p.type === 'currency')?.value ?? currencyCode;
+  } catch {
+    return currencyCode;
+  }
+}
+
+function formatCurrency(value: number | null, currencyCode: string): string {
+  if (value == null) return 'N/A';
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${currencyCode} ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+}
+
+function formatAxisValue(value: number, currencyCode: string): string {
+  const symbol = getCurrencySymbol(currencyCode);
+  const abs = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  if (abs >= 1_000_000) return `${sign}${symbol}${(abs / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000) return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
+  return `${sign}${symbol}${abs.toFixed(0)}`;
+}
+
 interface PropertyDashboardTabProps {
   propertyId: string;
 }
@@ -199,6 +234,7 @@ export const PropertyDashboardTab = ({
             data={cashFlow}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
+            currency={summary.currency || 'EUR'}
           />
         </ChartCard>
 
@@ -211,6 +247,7 @@ export const PropertyDashboardTab = ({
             cashFlow={cashFlow}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
+            currency={summary.currency || 'EUR'}
           />
         </ChartCard>
 
@@ -222,6 +259,7 @@ export const PropertyDashboardTab = ({
             data={expenseBreakdown}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
+            currency={summary.currency || 'EUR'}
           />
         </ChartCard>
 
@@ -239,11 +277,8 @@ export const PropertyDashboardTab = ({
 // --- Summary Cards ---
 
 function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
-  const currency = metrics.currency || 'EUR';
-  const fmt = (val: number | null, prefix = '') =>
-    val != null
-      ? `${prefix}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : 'N/A';
+  const cur = metrics.currency || 'EUR';
+  const fmtMoney = (val: number | null) => formatCurrency(val, cur);
   const fmtPct = (val: number | null) =>
     val != null ? `${val >= 0 ? '+' : ''}${val.toFixed(2)}%` : 'N/A';
 
@@ -274,19 +309,19 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
     },
     {
       label: 'Monthly Cash Flow',
-      value: fmt(metrics.monthlyCashFlow, `${currency} `),
+      value: fmtMoney(metrics.monthlyCashFlow),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.monthlyCashFlow ?? 0) >= 0,
     },
     {
       label: 'Annual NOI',
-      value: fmt(metrics.annualNoi, `${currency} `),
+      value: fmtMoney(metrics.annualNoi),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.annualNoi ?? 0) >= 0,
     },
     {
       label: 'Total Equity',
-      value: fmt(metrics.totalEquity, `${currency} `),
+      value: fmtMoney(metrics.totalEquity),
       icon: <Home className="h-5 w-5" />,
       positive: (metrics.totalEquity ?? 0) >= 0,
     },
@@ -459,11 +494,13 @@ function CashFlowTooltip({
   payload,
   label,
   isDark,
+  currency,
 }: {
   active?: boolean;
   payload?: Array<{ dataKey?: string; value?: number }>;
   label?: string;
   isDark: boolean;
+  currency: string;
 }) {
   if (!active || !payload?.length) return null;
   const get = (key: string) =>
@@ -473,9 +510,10 @@ function CashFlowTooltip({
   const mortgage = get('mortgage') as number;
   const net = get('net') as number;
 
-  const fmt = (v: number, sign = false) => {
-    const prefix = sign ? (v >= 0 ? '+' : '') : '';
-    return `${prefix}${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmt = (v: number) => formatCurrency(Math.abs(v), currency);
+  const fmtSigned = (v: number) => {
+    const prefix = v >= 0 ? '+' : '-';
+    return `${prefix}${formatCurrency(Math.abs(v), currency).replace(/^-/, '')}`;
   };
 
   return (
@@ -507,7 +545,7 @@ function CashFlowTooltip({
         >
           <span style={{ color: COLORS.net }}>Net</span>
           <span style={{ color: net >= 0 ? COLORS.income : COLORS.expenses }}>
-            {fmt(net, true)}
+            {fmtSigned(net)}
           </span>
         </div>
       </div>
@@ -518,10 +556,12 @@ function CashFlowTooltip({
 function CashFlowChart({
   data,
   isDark,
+  currency,
 }: {
   data: CashFlowChartData;
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
+  currency: string;
 }) {
   const chartData = useMemo(
     () =>
@@ -555,14 +595,17 @@ function CashFlowChart({
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
           tickFormatter={formatMonthTick}
         />
-        <YAxis tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }} />
+        <YAxis
+          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+          tickFormatter={(v) => formatAxisValue(v, currency)}
+        />
         <ReferenceLine
           y={0}
           stroke={isDark ? '#5c6180' : '#9ca0b8'}
           strokeWidth={1.5}
         />
         <Tooltip
-          content={<CashFlowTooltip isDark={isDark} />}
+          content={<CashFlowTooltip isDark={isDark} currency={currency} />}
           cursor={{
             fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
           }}
@@ -618,11 +661,13 @@ function OccupancyAndTrendChart({
   cashFlow,
   tooltipStyle,
   isDark,
+  currency,
 }: {
   occupancy: OccupancyChartData;
   cashFlow: CashFlowChartData;
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
+  currency: string;
 }) {
   if (!occupancy.months.length && !cashFlow.months.length) {
     return <EmptyChart message="No contract data" />;
@@ -701,8 +746,15 @@ function OccupancyAndTrendChart({
               />
               <YAxis
                 tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+                tickFormatter={(v) => formatAxisValue(v, currency)}
               />
-              <Tooltip contentStyle={tooltipStyle} />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                formatter={(value?: number | string) => [
+                  formatCurrency(Number(value ?? 0), currency),
+                  'Net Income',
+                ]}
+              />
               <ReferenceLine
                 y={0}
                 stroke={isDark ? '#4a4e5f' : '#d0d0d0'}
@@ -732,10 +784,12 @@ function ExpenseTimelineChart({
   data,
   tooltipStyle,
   isDark,
+  currency,
 }: {
   data: ExpenseBreakdownChartData;
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
+  currency: string;
 }) {
   const allCategories = data.categories.map((c) => c.category);
   const [enabled, setEnabled] = useState<Set<string>>(
@@ -793,15 +847,13 @@ function ExpenseTimelineChart({
           />
           <YAxis
             tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={(v) => formatAxisValue(v, currency)}
           />
           <Tooltip
             contentStyle={tooltipStyle}
             labelFormatter={(label) => formatMonthTick(String(label))}
             formatter={(value?: number | string, name?: string) => [
-              Number(value ?? 0).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }),
+              formatCurrency(Number(value ?? 0), currency),
               humanizeCategory(name ?? ''),
             ]}
           />
@@ -873,10 +925,7 @@ function EquityBreakdownCard({
   currency: string | null;
 }) {
   const cur = currency || 'EUR';
-  const fmt = (v: number | null) =>
-    v != null
-      ? `${cur} ${v.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-      : 'N/A';
+  const fmt = (v: number | null) => formatCurrency(v, cur);
 
   const { purchasePrice, currentMarketValue, mortgageBalance } = data;
 

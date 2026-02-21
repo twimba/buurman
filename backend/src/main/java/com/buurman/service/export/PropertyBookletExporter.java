@@ -70,6 +70,7 @@ import com.buurman.service.ContractPartyService;
 import com.buurman.service.FeatureFlagService;
 import com.buurman.service.PropertyDashboardService;
 import com.buurman.service.S3StorageService;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.FeatureFlags;
 
 import lombok.RequiredArgsConstructor;
@@ -252,7 +253,8 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    appendFinancialOverviewPage(html, yearSummaries);
+    String currency = property.getCurrency();
+    appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
       appendDashboardPage(html, dashboard);
@@ -1101,7 +1103,7 @@ public class PropertyBookletExporter {
   // ── Page: Financial Overview ────────────────────────────────────
 
   private void appendFinancialOverviewPage(
-      StringBuilder html, Map<Integer, FinancialYearSummary> yearSummaries) {
+      StringBuilder html, Map<Integer, FinancialYearSummary> yearSummaries, String currency) {
     if (yearSummaries.isEmpty()) return;
 
     appendPageStart(html, "Financial Overview");
@@ -1119,22 +1121,22 @@ public class PropertyBookletExporter {
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Income</div><div"
-                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>EUR ")
-          .append(String.format("%.2f", summary.income))
+                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>")
+          .append(CurrencyUtils.formatCurrency(summary.income, currency))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Expenses</div><div"
-                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>EUR ")
-          .append(String.format("%.2f", summary.expenses))
+                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>")
+          .append(CurrencyUtils.formatCurrency(summary.expenses, currency))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;'>Net"
                   + " Profit</div><div"
-                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>EUR ")
-          .append(String.format("%.2f", summary.getNetProfit()))
+                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>")
+          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), currency))
           .append("</div></td>");
       html.append("</tr></table>");
       html.append("</div>");
@@ -1180,9 +1182,7 @@ public class PropertyBookletExporter {
           .append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing")
           .append("</td>");
       html.append("<td>")
-          .append(contract.getCurrency())
-          .append(" ")
-          .append(String.format("%.2f", contract.getRentAmount()))
+          .append(CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getCurrency()))
           .append("</td>");
       html.append("<td>")
           .append(
@@ -1297,8 +1297,8 @@ public class PropertyBookletExporter {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currency) {
-    return value != null ? currency + " " + fmtNum(value) : "N/A";
+  private static String fmtMoney(BigDecimal value, String currencyCode) {
+    return CurrencyUtils.formatCurrency(value, currencyCode);
   }
 
   private static String fmtNum(BigDecimal value) {
