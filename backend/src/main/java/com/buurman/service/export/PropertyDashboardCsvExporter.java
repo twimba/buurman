@@ -41,13 +41,14 @@ public class PropertyDashboardCsvExporter {
       writer.writeNext(new String[] {"--- Monthly Cash Flow ---"});
       writer.writeNext(new String[] {"Month", "Income", "Expenses", "Mortgage", "Net"});
       for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
-        writer.writeNext(new String[] {
-            m.month(),
-            m.income().toPlainString(),
-            m.expenses().toPlainString(),
-            m.mortgage().toPlainString(),
-            m.net().toPlainString()
-        });
+        writer.writeNext(
+            new String[] {
+              m.month(),
+              m.income().toPlainString(),
+              m.expenses().toPlainString(),
+              m.mortgage().toPlainString(),
+              m.net().toPlainString()
+            });
       }
       writer.writeNext(new String[] {""});
 

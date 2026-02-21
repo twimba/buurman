@@ -224,8 +224,26 @@ export const removePropertyAmenity = async (
 export const getPropertyDashboard = async (
   propertyId: string
 ): Promise<PropertyDashboardResponse> => {
+  const response = await client.get(`/properties/${propertyId}/dashboard`);
+  return response.data;
+};
+
+export const exportPropertyDashboardPDF = async (
+  propertyId: string
+): Promise<Blob> => {
   const response = await client.get(
-    `/properties/${propertyId}/dashboard`
+    `/properties/${propertyId}/dashboard/export/pdf`,
+    { responseType: 'blob' }
+  );
+  return response.data;
+};
+
+export const exportPropertyDashboardCSV = async (
+  propertyId: string
+): Promise<Blob> => {
+  const response = await client.get(
+    `/properties/${propertyId}/dashboard/export/csv`,
+    { responseType: 'blob' }
   );
   return response.data;
 };

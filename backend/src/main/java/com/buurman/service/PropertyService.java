@@ -139,10 +139,18 @@ public class PropertyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
-    validateCurrencyRequired(request.currency(), request.purchasePrice(),
-        request.currentMarketValue(), request.mortgageAmount(), request.monthlyMortgagePayment(),
-        request.annualPropertyTax(), request.annualInsurance(), request.annualHoaFee(),
-        request.annualManagementFee(), request.annualMaintenanceReserve(), request.landValue());
+    validateCurrencyRequired(
+        request.currency(),
+        request.purchasePrice(),
+        request.currentMarketValue(),
+        request.mortgageAmount(),
+        request.monthlyMortgagePayment(),
+        request.annualPropertyTax(),
+        request.annualInsurance(),
+        request.annualHoaFee(),
+        request.annualManagementFee(),
+        request.annualMaintenanceReserve(),
+        request.landValue());
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
@@ -267,10 +275,18 @@ public class PropertyService {
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
-    validateCurrencyRequired(request.currency(), request.purchasePrice(),
-        request.currentMarketValue(), request.mortgageAmount(), request.monthlyMortgagePayment(),
-        request.annualPropertyTax(), request.annualInsurance(), request.annualHoaFee(),
-        request.annualManagementFee(), request.annualMaintenanceReserve(), request.landValue());
+    validateCurrencyRequired(
+        request.currency(),
+        request.purchasePrice(),
+        request.currentMarketValue(),
+        request.mortgageAmount(),
+        request.monthlyMortgagePayment(),
+        request.annualPropertyTax(),
+        request.annualInsurance(),
+        request.annualHoaFee(),
+        request.annualManagementFee(),
+        request.annualMaintenanceReserve(),
+        request.landValue());
 
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();

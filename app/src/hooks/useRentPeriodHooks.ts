@@ -33,6 +33,7 @@ export const useAddRentPeriod = (contractId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Rent period added successfully', 'success');
     },
     onError: (error) => {
@@ -64,6 +65,7 @@ export const useUpdateRentPeriod = (contractId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Rent period updated successfully', 'success');
     },
     onError: (error) => {
@@ -90,6 +92,7 @@ export const useDeleteRentPeriod = (contractId: string) => {
       });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Rent period deleted successfully', 'success');
     },
     onError: (error) => {

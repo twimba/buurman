@@ -47,6 +47,7 @@ export const useCreateProperty = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property created successfully', 'success');
     },
     onError: (error) => {
@@ -66,6 +67,7 @@ export const useUpdateProperty = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['property', id] });
       queryClient.invalidateQueries({ queryKey: ['propertyAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property updated successfully', 'success');
     },
     onError: (error) => {
@@ -82,6 +84,7 @@ export const useDeleteProperty = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property deleted successfully', 'success');
     },
     onError: (error) => {

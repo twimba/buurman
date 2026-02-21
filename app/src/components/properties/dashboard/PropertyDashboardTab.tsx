@@ -1,19 +1,19 @@
-import { useMemo, useId } from 'react';
+import { useMemo, useState } from 'react';
 import {
+  ComposedChart,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  AreaChart,
-  Area,
+  LineChart,
+  Line,
+  ReferenceLine,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
   Legend,
 } from 'recharts';
+import type { BarShapeProps } from 'recharts';
 import {
   TrendingUp,
   DollarSign,
@@ -23,9 +23,14 @@ import {
   AlertCircle,
   CheckCircle2,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
+import {
+  exportPropertyDashboardPDF,
+  exportPropertyDashboardCSV,
+} from '@/api/properties';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import type {
   DashboardSummaryMetrics,
@@ -58,7 +63,20 @@ const PIE_COLORS = [
   '#84CC16',
 ];
 
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 function formatMonthTick(v: string): string {
   const [, m] = v.split('-');
   return MONTH_NAMES[parseInt(m, 10) - 1] || v;
@@ -71,9 +89,16 @@ interface PropertyDashboardTabProps {
 export const PropertyDashboardTab = ({
   propertyId,
 }: PropertyDashboardTabProps) => {
-  const { data: dashboard, isLoading, error, refetch } = usePropertyDashboard(propertyId);
+  const {
+    data: dashboard,
+    isLoading,
+    error,
+    refetch,
+  } = usePropertyDashboard(propertyId);
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
+
+  const [exporting, setExporting] = useState<'pdf' | 'csv' | null>(null);
 
   const tooltipStyle = useMemo(
     () => ({
@@ -86,23 +111,76 @@ export const PropertyDashboardTab = ({
     [isDark]
   );
 
+  const handleExport = async (format: 'pdf' | 'csv') => {
+    setExporting(format);
+    try {
+      const blob =
+        format === 'pdf'
+          ? await exportPropertyDashboardPDF(propertyId)
+          : await exportPropertyDashboardCSV(propertyId);
+      const mimeType = format === 'pdf' ? 'application/pdf' : 'text/csv';
+      const file = new Blob([blob], { type: mimeType });
+      const url = window.URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `property-dashboard-${propertyId}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      // silently fail — user sees the button reset
+    } finally {
+      setExporting(null);
+    }
+  };
+
   if (isLoading) return <LoadingSpinner />;
   if (error)
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
         Failed to load dashboard data.{' '}
-        <button onClick={() => refetch()} className="inline-flex items-center gap-1 underline hover:no-underline">
+        <button
+          onClick={() => refetch()}
+          className="inline-flex items-center gap-1 underline hover:no-underline"
+        >
           <RefreshCw className="h-3 w-3" /> Retry
         </button>
       </div>
     );
   if (!dashboard) return null;
 
-  const { summary, cashFlow, equity, expenseBreakdown, occupancy, dataCompleteness } =
-    dashboard;
+  const {
+    summary,
+    cashFlow,
+    equity,
+    expenseBreakdown,
+    occupancy,
+    dataCompleteness,
+  } = dashboard;
 
   return (
     <div className="space-y-6">
+      {/* Export buttons */}
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => handleExport('csv')}
+          disabled={exporting !== null}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+        >
+          <Download className="h-3.5 w-3.5" />
+          {exporting === 'csv' ? 'Exporting...' : 'CSV'}
+        </button>
+        <button
+          onClick={() => handleExport('pdf')}
+          disabled={exporting !== null}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+        >
+          <Download className="h-3.5 w-3.5" />
+          {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
+        </button>
+      </div>
+
       {/* Data Completeness Banner */}
       {dataCompleteness.completenessPercent < 100 && (
         <DataCompletenessCard data={dataCompleteness} />
@@ -113,19 +191,44 @@ export const PropertyDashboardTab = ({
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Monthly Cash Flow" icon={<BarChart3 className="h-5 w-5" />}>
-          <CashFlowChart data={cashFlow} tooltipStyle={tooltipStyle} isDark={isDark} />
+        <ChartCard
+          title="Monthly Cash Flow"
+          icon={<BarChart3 className="h-5 w-5" />}
+        >
+          <CashFlowChart
+            data={cashFlow}
+            tooltipStyle={tooltipStyle}
+            isDark={isDark}
+          />
         </ChartCard>
 
-        <ChartCard title="Occupancy Rate" icon={<Home className="h-5 w-5" />}>
-          <OccupancyChart data={occupancy} tooltipStyle={tooltipStyle} isDark={isDark} />
+        <ChartCard
+          title="Occupancy & Income Trend"
+          icon={<TrendingUp className="h-5 w-5" />}
+        >
+          <OccupancyAndTrendChart
+            occupancy={occupancy}
+            cashFlow={cashFlow}
+            tooltipStyle={tooltipStyle}
+            isDark={isDark}
+          />
         </ChartCard>
 
-        <ChartCard title="Expense Breakdown" icon={<DollarSign className="h-5 w-5" />}>
-          <ExpensePieChart data={expenseBreakdown} tooltipStyle={tooltipStyle} />
+        <ChartCard
+          title="Expense Breakdown"
+          icon={<DollarSign className="h-5 w-5" />}
+        >
+          <ExpenseTimelineChart
+            data={expenseBreakdown}
+            tooltipStyle={tooltipStyle}
+            isDark={isDark}
+          />
         </ChartCard>
 
-        <ChartCard title="Equity Overview" icon={<TrendingUp className="h-5 w-5" />}>
+        <ChartCard
+          title="Equity Overview"
+          icon={<TrendingUp className="h-5 w-5" />}
+        >
           <EquityBreakdownCard data={equity} currency={summary.currency} />
         </ChartCard>
       </div>
@@ -138,21 +241,79 @@ export const PropertyDashboardTab = ({
 function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
   const currency = metrics.currency || 'EUR';
   const fmt = (val: number | null, prefix = '') =>
-    val != null ? `${prefix}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A';
+    val != null
+      ? `${prefix}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : 'N/A';
   const fmtPct = (val: number | null) =>
     val != null ? `${val >= 0 ? '+' : ''}${val.toFixed(2)}%` : 'N/A';
 
   const cards = [
-    { label: 'Total ROI', value: fmtPct(metrics.totalRoiPercent), icon: <TrendingUp className="h-5 w-5" />, positive: (metrics.totalRoiPercent ?? 0) >= 0 },
-    { label: 'Annualized ROI', value: fmtPct(metrics.annualizedRoiPercent), icon: <Percent className="h-5 w-5" />, positive: (metrics.annualizedRoiPercent ?? 0) >= 0 },
-    { label: 'Cap Rate', value: fmtPct(metrics.capRatePercent), icon: <Percent className="h-5 w-5" />, positive: (metrics.capRatePercent ?? 0) >= 0 },
-    { label: 'Cash-on-Cash', value: fmtPct(metrics.cashOnCashPercent), icon: <Percent className="h-5 w-5" />, positive: (metrics.cashOnCashPercent ?? 0) >= 0 },
-    { label: 'Monthly Cash Flow', value: fmt(metrics.monthlyCashFlow, `${currency} `), icon: <DollarSign className="h-5 w-5" />, positive: (metrics.monthlyCashFlow ?? 0) >= 0 },
-    { label: 'Annual NOI', value: fmt(metrics.annualNoi, `${currency} `), icon: <DollarSign className="h-5 w-5" />, positive: (metrics.annualNoi ?? 0) >= 0 },
-    { label: 'Total Equity', value: fmt(metrics.totalEquity, `${currency} `), icon: <Home className="h-5 w-5" />, positive: (metrics.totalEquity ?? 0) >= 0 },
-    { label: 'Equity Growth', value: fmtPct(metrics.equityGrowthPercent), icon: <TrendingUp className="h-5 w-5" />, positive: (metrics.equityGrowthPercent ?? 0) >= 0 },
-    { label: 'Occupancy', value: metrics.occupancyRatePercent != null ? `${metrics.occupancyRatePercent.toFixed(1)}%` : 'N/A', icon: <Home className="h-5 w-5" />, positive: (metrics.occupancyRatePercent ?? 0) >= 50 },
-    { label: 'Gross Rent Multiplier', value: metrics.grossRentMultiplier != null ? `${metrics.grossRentMultiplier.toFixed(1)}x` : 'N/A', icon: <BarChart3 className="h-5 w-5" />, positive: true },
+    {
+      label: 'Total ROI',
+      value: fmtPct(metrics.totalRoiPercent),
+      icon: <TrendingUp className="h-5 w-5" />,
+      positive: (metrics.totalRoiPercent ?? 0) >= 0,
+    },
+    {
+      label: 'Annualized ROI',
+      value: fmtPct(metrics.annualizedRoiPercent),
+      icon: <Percent className="h-5 w-5" />,
+      positive: (metrics.annualizedRoiPercent ?? 0) >= 0,
+    },
+    {
+      label: 'Cap Rate',
+      value: fmtPct(metrics.capRatePercent),
+      icon: <Percent className="h-5 w-5" />,
+      positive: (metrics.capRatePercent ?? 0) >= 0,
+    },
+    {
+      label: 'Cash-on-Cash',
+      value: fmtPct(metrics.cashOnCashPercent),
+      icon: <Percent className="h-5 w-5" />,
+      positive: (metrics.cashOnCashPercent ?? 0) >= 0,
+    },
+    {
+      label: 'Monthly Cash Flow',
+      value: fmt(metrics.monthlyCashFlow, `${currency} `),
+      icon: <DollarSign className="h-5 w-5" />,
+      positive: (metrics.monthlyCashFlow ?? 0) >= 0,
+    },
+    {
+      label: 'Annual NOI',
+      value: fmt(metrics.annualNoi, `${currency} `),
+      icon: <DollarSign className="h-5 w-5" />,
+      positive: (metrics.annualNoi ?? 0) >= 0,
+    },
+    {
+      label: 'Total Equity',
+      value: fmt(metrics.totalEquity, `${currency} `),
+      icon: <Home className="h-5 w-5" />,
+      positive: (metrics.totalEquity ?? 0) >= 0,
+    },
+    {
+      label: 'Equity Growth',
+      value: fmtPct(metrics.equityGrowthPercent),
+      icon: <TrendingUp className="h-5 w-5" />,
+      positive: (metrics.equityGrowthPercent ?? 0) >= 0,
+    },
+    {
+      label: 'Occupancy',
+      value:
+        metrics.occupancyRatePercent != null
+          ? `${metrics.occupancyRatePercent.toFixed(1)}%`
+          : 'N/A',
+      icon: <Home className="h-5 w-5" />,
+      positive: (metrics.occupancyRatePercent ?? 0) >= 50,
+    },
+    {
+      label: 'Gross Rent Multiplier',
+      value:
+        metrics.grossRentMultiplier != null
+          ? `${metrics.grossRentMultiplier.toFixed(1)}x`
+          : 'N/A',
+      icon: <BarChart3 className="h-5 w-5" />,
+      positive: true,
+    },
   ];
 
   return (
@@ -163,7 +324,15 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
           className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4"
         >
           <div className="flex items-center gap-2 mb-2">
-            <span className={card.value === 'N/A' ? 'text-[#9ca0b8]' : card.positive ? 'text-emerald-500' : 'text-red-500'}>
+            <span
+              className={
+                card.value === 'N/A'
+                  ? 'text-[#9ca0b8]'
+                  : card.positive
+                    ? 'text-emerald-500'
+                    : 'text-red-500'
+              }
+            >
               {card.icon}
             </span>
             <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-medium">
@@ -212,135 +381,485 @@ function ChartCard({
   );
 }
 
-// --- Cash Flow Bar Chart ---
+// --- Custom bar shape for outflow stack rounding ---
+
+/**
+ * Creates a Recharts shape function for outflow stack bars.
+ * Rounds the bottom corners of the outermost bar (furthest from zero),
+ * matching the income bar's rounded top corners for visual symmetry.
+ *
+ * For the outflow stack (expenses + mortgage stacked below zero):
+ * - If this bar is "mortgage" and its value is non-zero -> round bottom corners
+ * - If this bar is "expenses" and mortgage is 0 -> round bottom corners (it's the outermost)
+ * - Otherwise -> sharp corners (this bar is interior to the stack)
+ */
+function makeOutflowShape(dataKey: 'expenses' | 'mortgage') {
+  function OutflowBar(props: BarShapeProps): React.ReactElement | null {
+    const {
+      x = 0,
+      y = 0,
+      width = 0,
+      height = 0,
+      fill,
+      fillOpacity,
+      payload,
+    } = props;
+    if (height === 0 || width === 0) return null;
+
+    // Normalize: Recharts passes negative height for below-zero bars.
+    // SVG <rect> doesn't render with negative height, so always normalize.
+    const absH = Math.abs(height);
+    const top = height >= 0 ? y : y + height;
+    const bottom = top + absH;
+
+    const r = 4;
+    const isOutermost =
+      dataKey === 'mortgage'
+        ? (payload?.mortgage ?? 0) !== 0
+        : (payload?.mortgage ?? 0) === 0;
+
+    if (!isOutermost) {
+      return (
+        <rect
+          x={x}
+          y={top}
+          width={width}
+          height={absH}
+          fill={fill}
+          fillOpacity={fillOpacity}
+        />
+      );
+    }
+
+    // Rounded bottom corners only (outermost edge away from zero)
+    const clampedR = Math.min(r, width / 2, absH);
+    const d = [
+      `M ${x},${top}`,
+      `L ${x + width},${top}`,
+      `L ${x + width},${bottom - clampedR}`,
+      `Q ${x + width},${bottom} ${x + width - clampedR},${bottom}`,
+      `L ${x + clampedR},${bottom}`,
+      `Q ${x},${bottom} ${x},${bottom - clampedR}`,
+      `Z`,
+    ].join(' ');
+
+    return <path d={d} fill={fill} fillOpacity={fillOpacity} />;
+  }
+  OutflowBar.displayName = `OutflowBar(${dataKey})`;
+  return OutflowBar;
+}
+
+const expensesBarShape = makeOutflowShape('expenses');
+const mortgageBarShape = makeOutflowShape('mortgage');
+
+// --- Cash Flow Diverging Chart ---
+
+function CashFlowTooltip({
+  active,
+  payload,
+  label,
+  isDark,
+}: {
+  active?: boolean;
+  payload?: Array<{ dataKey?: string; value?: number }>;
+  label?: string;
+  isDark: boolean;
+}) {
+  if (!active || !payload?.length) return null;
+  const get = (key: string) =>
+    payload.find((p) => p.dataKey === key)?.value ?? 0;
+  const income = get('income') as number;
+  const expenses = get('expenses') as number;
+  const mortgage = get('mortgage') as number;
+  const net = get('net') as number;
+
+  const fmt = (v: number, sign = false) => {
+    const prefix = sign ? (v >= 0 ? '+' : '') : '';
+    return `${prefix}${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  return (
+    <div
+      className="rounded-lg px-3 py-2.5 text-xs shadow-lg border"
+      style={{
+        backgroundColor: isDark ? '#14161f' : '#fff',
+        borderColor: isDark ? '#2a2e3f' : '#e2e6f0',
+        color: isDark ? '#eef0f6' : '#1a1d2e',
+      }}
+    >
+      <p className="font-semibold mb-1.5">{formatMonthTick(label as string)}</p>
+      <div className="space-y-0.5">
+        <div className="flex justify-between gap-4">
+          <span style={{ color: COLORS.income }}>Income</span>
+          <span className="font-medium">{fmt(income)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span style={{ color: COLORS.expenses }}>Expenses</span>
+          <span className="font-medium">{fmt(expenses)}</span>
+        </div>
+        <div className="flex justify-between gap-4">
+          <span style={{ color: COLORS.mortgage }}>Mortgage</span>
+          <span className="font-medium">{fmt(mortgage)}</span>
+        </div>
+        <div
+          className="flex justify-between gap-4 border-t pt-1 mt-1 font-bold"
+          style={{ borderColor: isDark ? '#2a2e3f' : '#e2e6f0' }}
+        >
+          <span style={{ color: COLORS.net }}>Net</span>
+          <span style={{ color: net >= 0 ? COLORS.income : COLORS.expenses }}>
+            {fmt(net, true)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function CashFlowChart({
   data,
-  tooltipStyle,
   isDark,
 }: {
   data: CashFlowChartData;
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
 }) {
+  const chartData = useMemo(
+    () =>
+      data.months.map((d) => ({
+        month: d.month,
+        income: d.income,
+        expenses: -Math.abs(d.expenses),
+        mortgage: -Math.abs(d.mortgage),
+        net: d.net,
+      })),
+    [data.months]
+  );
+
   if (!data.months.length) return <EmptyChart message="No transaction data" />;
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data.months} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2e3f' : '#f0f0f0'} />
+    <ResponsiveContainer width="100%" height={380}>
+      <ComposedChart
+        data={chartData}
+        margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+        barCategoryGap="20%"
+        barGap={2}
+      >
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+        />
         <XAxis
           dataKey="month"
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
           tickFormatter={formatMonthTick}
         />
         <YAxis tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }} />
-        <Tooltip contentStyle={tooltipStyle} />
+        <ReferenceLine
+          y={0}
+          stroke={isDark ? '#5c6180' : '#9ca0b8'}
+          strokeWidth={1.5}
+        />
+        <Tooltip
+          content={<CashFlowTooltip isDark={isDark} />}
+          cursor={{
+            fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+          }}
+        />
         <Legend wrapperStyle={{ fontSize: '12px' }} />
-        <Bar dataKey="income" name="Income" fill={COLORS.income} radius={[2, 2, 0, 0]} />
-        <Bar dataKey="expenses" name="Expenses" fill={COLORS.expenses} radius={[2, 2, 0, 0]} />
-        <Bar dataKey="mortgage" name="Mortgage" fill={COLORS.mortgage} radius={[2, 2, 0, 0]} />
-      </BarChart>
+        <Bar
+          dataKey="income"
+          name="Income"
+          stackId="inflow"
+          fill={COLORS.income}
+          fillOpacity={0.85}
+          radius={[4, 4, 0, 0]}
+          isAnimationActive={false}
+        />
+        <Bar
+          dataKey="expenses"
+          name="Expenses"
+          stackId="outflow"
+          fill={COLORS.expenses}
+          fillOpacity={0.85}
+          shape={expensesBarShape}
+          isAnimationActive={false}
+        />
+        <Bar
+          dataKey="mortgage"
+          name="Mortgage"
+          stackId="outflow"
+          fill={COLORS.mortgage}
+          fillOpacity={0.85}
+          shape={mortgageBarShape}
+          isAnimationActive={false}
+        />
+        <Line
+          dataKey="net"
+          name="Net Cash Flow"
+          type="monotone"
+          stroke={COLORS.net}
+          strokeWidth={1.5}
+          strokeDasharray="6 3"
+          dot={{ r: 2.5, fill: COLORS.net, strokeWidth: 0 }}
+          activeDot={{ r: 4 }}
+          isAnimationActive={false}
+        />
+      </ComposedChart>
     </ResponsiveContainer>
   );
 }
 
-// --- Occupancy Area Chart ---
+// --- Occupancy Timeline + Net Income Trend ---
 
-function OccupancyChart({
+function OccupancyAndTrendChart({
+  occupancy,
+  cashFlow,
+  tooltipStyle,
+  isDark,
+}: {
+  occupancy: OccupancyChartData;
+  cashFlow: CashFlowChartData;
+  tooltipStyle: React.CSSProperties;
+  isDark: boolean;
+}) {
+  if (!occupancy.months.length && !cashFlow.months.length) {
+    return <EmptyChart message="No contract data" />;
+  }
+
+  const vacantColor = isDark ? '#2a2e3f' : '#e2e6f0';
+
+  return (
+    <div className="space-y-4">
+      {/* Occupancy Timeline */}
+      {occupancy.months.length > 0 && (
+        <div>
+          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1.5 font-medium">
+            Occupancy
+          </p>
+          <div className="flex gap-0.5">
+            {occupancy.months.map((m) => {
+              const occupied = m.occupancyPercent > 0;
+              return (
+                <div
+                  key={m.month}
+                  className="flex-1 flex flex-col items-center"
+                >
+                  <div
+                    className="w-full h-6 rounded-sm"
+                    style={{
+                      backgroundColor: occupied ? COLORS.income : vacantColor,
+                    }}
+                    title={`${formatMonthTick(m.month)}: ${occupied ? 'Occupied' : 'Vacant'}`}
+                  />
+                  <span className="text-[10px] text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                    {formatMonthTick(m.month)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex gap-3 mt-1.5">
+            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-sm"
+                style={{ backgroundColor: COLORS.income }}
+              />
+              Occupied
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-sm"
+                style={{ backgroundColor: vacantColor }}
+              />
+              Vacant
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Net Income Trend */}
+      {cashFlow.months.length > 0 && (
+        <div>
+          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1.5 font-medium">
+            Net Income Trend
+          </p>
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart
+              data={cashFlow.months}
+              margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+              />
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+                tickFormatter={formatMonthTick}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+              />
+              <Tooltip contentStyle={tooltipStyle} />
+              <ReferenceLine
+                y={0}
+                stroke={isDark ? '#4a4e5f' : '#d0d0d0'}
+                strokeDasharray="4 4"
+              />
+              <Line
+                type="monotone"
+                dataKey="net"
+                name="Net Income"
+                stroke={COLORS.net}
+                strokeWidth={2}
+                dot={{ fill: COLORS.net, r: 3 }}
+                activeDot={{ r: 5 }}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Expense Timeline Stacked Bar Chart ---
+
+function ExpenseTimelineChart({
   data,
   tooltipStyle,
   isDark,
 }: {
-  data: OccupancyChartData;
+  data: ExpenseBreakdownChartData;
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
 }) {
-  const gradientId = useId();
-
-  if (!data.months.length) return <EmptyChart message="No contract data" />;
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <AreaChart data={data.months} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={COLORS.occupancy} stopOpacity={0.3} />
-            <stop offset="95%" stopColor={COLORS.occupancy} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2a2e3f' : '#f0f0f0'} />
-        <XAxis
-          dataKey="month"
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={formatMonthTick}
-        />
-        <YAxis
-          domain={[0, 100]}
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={(v) => `${v}%`}
-        />
-        <Tooltip
-          contentStyle={tooltipStyle}
-          formatter={(value?: number | string) => [`${Number(value ?? 0).toFixed(1)}%`, 'Occupancy']}
-        />
-        <Area
-          type="monotone"
-          dataKey="occupancyPercent"
-          stroke={COLORS.occupancy}
-          strokeWidth={2}
-          fill={`url(#${gradientId})`}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+  const allCategories = data.categories.map((c) => c.category);
+  const [enabled, setEnabled] = useState<Set<string>>(
+    () => new Set(allCategories)
   );
-}
 
-// --- Expense Pie Chart ---
+  const toggle = (cat: string) => {
+    setEnabled((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) {
+        if (next.size > 1) next.delete(cat);
+      } else {
+        next.add(cat);
+      }
+      return next;
+    });
+  };
 
-function ExpensePieChart({
-  data,
-  tooltipStyle,
-}: {
-  data: ExpenseBreakdownChartData;
-  tooltipStyle: React.CSSProperties;
-}) {
+  const chartData = useMemo(
+    () =>
+      (data.timeline ?? []).map((m) => {
+        const row: Record<string, string | number> = { month: m.month };
+        for (const cat of allCategories) {
+          if (enabled.has(cat)) {
+            row[cat] = m.categoryAmounts[cat] ?? 0;
+          }
+        }
+        return row;
+      }),
+    [data.timeline, allCategories, enabled]
+  );
+
   if (!data.categories.length) return <EmptyChart message="No expense data" />;
 
-  const chartData = data.categories.map((c) => ({
-    ...c,
-    category: humanizeCategory(c.category),
-  }));
+  const enabledCategories = allCategories.filter((c) => enabled.has(c));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
+    <div>
+      {/* Stacked bar chart */}
+      <ResponsiveContainer width="100%" height={320}>
+        <BarChart
           data={chartData}
-          cx="50%"
-          cy="50%"
-          innerRadius={60}
-          outerRadius={100}
-          paddingAngle={2}
-          dataKey="amount"
-          nameKey="category"
+          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+          barCategoryGap="20%"
         >
-          {chartData.map((_, index) => (
-            <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip
-          contentStyle={tooltipStyle}
-          formatter={(value?: number | string) => [
-            Number(value ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 }),
-          ]}
-        />
-        <Legend
-          wrapperStyle={{ fontSize: '12px' }}
-          formatter={(value: string) => value}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+          />
+          <XAxis
+            dataKey="month"
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={formatMonthTick}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+          />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            labelFormatter={(label) => formatMonthTick(String(label))}
+            formatter={(value?: number | string, name?: string) => [
+              Number(value ?? 0).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }),
+              humanizeCategory(name ?? ''),
+            ]}
+          />
+          {enabledCategories.map((cat, i) => {
+            const colorIndex = allCategories.indexOf(cat);
+            const isLast = i === enabledCategories.length - 1;
+            return (
+              <Bar
+                key={cat}
+                dataKey={cat}
+                name={cat}
+                stackId="expenses"
+                fill={PIE_COLORS[colorIndex % PIE_COLORS.length]}
+                fillOpacity={0.85}
+                isAnimationActive={false}
+                radius={isLast ? [4, 4, 0, 0] : undefined}
+              />
+            );
+          })}
+        </BarChart>
+      </ResponsiveContainer>
+
+      {/* Clickable legend — styled like Recharts default legend */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+        {allCategories.map((cat, i) => {
+          const color = PIE_COLORS[i % PIE_COLORS.length];
+          const active = enabled.has(cat);
+          return (
+            <button
+              key={cat}
+              onClick={() => toggle(cat)}
+              className="inline-flex items-center gap-1.5 text-xs cursor-pointer"
+              style={{
+                color: active
+                  ? isDark
+                    ? '#eef0f6'
+                    : '#1a1d2e'
+                  : isDark
+                    ? '#5c6180'
+                    : '#9ca0b8',
+              }}
+            >
+              <span
+                className="inline-block w-3 h-3 rounded-sm shrink-0"
+                style={{
+                  backgroundColor: active
+                    ? color
+                    : isDark
+                      ? '#2a2e3f'
+                      : '#e2e6f0',
+                }}
+              />
+              {humanizeCategory(cat)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -355,12 +874,16 @@ function EquityBreakdownCard({
 }) {
   const cur = currency || 'EUR';
   const fmt = (v: number | null) =>
-    v != null ? `${cur} ${v.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : 'N/A';
+    v != null
+      ? `${cur} ${v.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+      : 'N/A';
 
   const { purchasePrice, currentMarketValue, mortgageBalance } = data;
 
   if (purchasePrice == null && currentMarketValue == null) {
-    return <EmptyChart message="Add purchase price and market value to see equity" />;
+    return (
+      <EmptyChart message="Add purchase price and market value to see equity" />
+    );
   }
 
   const equity =
@@ -382,7 +905,9 @@ function EquityBreakdownCard({
       {bars.map((bar) => (
         <div key={bar.label}>
           <div className="flex justify-between text-sm mb-1">
-            <span className="text-[#6b7194] dark:text-[#8b90a8]">{bar.label}</span>
+            <span className="text-[#6b7194] dark:text-[#8b90a8]">
+              {bar.label}
+            </span>
             <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
               {fmt(bar.value)}
             </span>
@@ -391,9 +916,10 @@ function EquityBreakdownCard({
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
-                width: bar.value != null && bar.value > 0 && maxVal > 0
-                  ? `${Math.max((bar.value / maxVal) * 100, 2)}%`
-                  : '0%',
+                width:
+                  bar.value != null && bar.value > 0 && maxVal > 0
+                    ? `${Math.max((bar.value / maxVal) * 100, 2)}%`
+                    : '0%',
                 backgroundColor: bar.color,
               }}
             />

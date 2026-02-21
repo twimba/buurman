@@ -15,9 +15,7 @@ const inputCls =
   'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] disabled:dark:bg-[#1a1d28] disabled:text-[#9ca0b8] disabled:dark:text-[#5c6180] disabled:cursor-not-allowed';
 
 function countFilled(values: (unknown | null | undefined)[]): number {
-  return values.filter(
-    (v) => v !== null && v !== undefined && v !== ''
-  ).length;
+  return values.filter((v) => v !== null && v !== undefined && v !== '').length;
 }
 
 interface PropertyFinancialFormProps {
@@ -98,9 +96,7 @@ export const PropertyFinancialForm = ({
             <input
               type="date"
               value={formData.purchaseDate ?? ''}
-              onChange={(e) =>
-                onChange('purchaseDate', e.target.value || null)
-              }
+              onChange={(e) => onChange('purchaseDate', e.target.value || null)}
               className={inputCls}
             />
           </div>
@@ -263,9 +259,7 @@ export const PropertyFinancialForm = ({
             <label className={labelCls}>Management Fee</label>
             <MoneyInput
               value={formData.annualManagementFee ?? undefined}
-              onChange={(val) =>
-                onChange('annualManagementFee', val ?? null)
-              }
+              onChange={(val) => onChange('annualManagementFee', val ?? null)}
               currency={currency}
             />
           </div>

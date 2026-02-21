@@ -1,8 +1,8 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public record PropertyDashboardResponse(
     SummaryMetrics summary,
@@ -33,9 +33,12 @@ public record PropertyDashboardResponse(
   public record EquityChartData(
       BigDecimal purchasePrice, BigDecimal currentMarketValue, BigDecimal mortgageBalance) {}
 
-  public record ExpenseBreakdownChartData(List<CategorySlice> categories) {}
+  public record ExpenseBreakdownChartData(
+      List<CategorySlice> categories, List<ExpenseTimelineMonth> timeline) {}
 
   public record CategorySlice(String category, BigDecimal amount) {}
+
+  public record ExpenseTimelineMonth(String month, Map<String, BigDecimal> categoryAmounts) {}
 
   public record OccupancyChartData(List<OccupancyDataPoint> months) {}
 

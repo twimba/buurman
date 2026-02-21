@@ -2,13 +2,14 @@ package com.buurman.controller;
 
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,7 +48,7 @@ public class ReportController {
   private final FeatureFlagService featureFlagService;
 
   @ModelAttribute
-  private void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {
+  public void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {
     if (featureFlagService.isDisabled(REPORTS, principal)) {
       throw new ForbiddenException("Reports feature is not available");
     }
@@ -138,7 +139,7 @@ public class ReportController {
         exportService.generateTransactionHistoryCSV(startDate, endDate, principal.getTeamId());
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
+        .header(CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
         .contentType(MediaType.parseMediaType("text/csv"))
         .body(csv);
   }
@@ -156,8 +157,8 @@ public class ReportController {
         exportService.generateTransactionHistoryPDF(startDate, endDate, principal.getTeamId());
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
+        .header(CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")
+        .contentType(APPLICATION_PDF)
         .body(pdf);
   }
 }

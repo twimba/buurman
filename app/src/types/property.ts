@@ -870,6 +870,12 @@ export interface EquityChartData {
 
 export interface ExpenseBreakdownChartData {
   categories: CategorySlice[];
+  timeline: ExpenseTimelineMonth[];
+}
+
+export interface ExpenseTimelineMonth {
+  month: string;
+  categoryAmounts: Record<string, number>;
 }
 
 export interface CategorySlice {

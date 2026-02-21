@@ -68,6 +68,7 @@ export const useCreateExpense = () => {
         queryKey: ['property', newExpense.property.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
@@ -95,6 +96,7 @@ export const useUpdateExpense = (id: string) => {
         queryKey: ['property', updatedExpense.property.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
@@ -117,6 +119,7 @@ export const useDeleteExpense = () => {
       queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });

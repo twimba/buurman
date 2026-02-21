@@ -2,7 +2,6 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,9 +26,7 @@ public interface PropertyRecordMapper {
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toInstant(record.getDeletedAt()))")
-  @Mapping(
-      target = "mortgageType",
-      expression = "java(toMortgageType(record.getMortgageType()))")
+  @Mapping(target = "mortgageType", expression = "java(toMortgageType(record.getMortgageType()))")
   @Mapping(
       target = "depreciationMethod",
       expression = "java(toDepreciationMethod(record.getDepreciationMethod()))")
@@ -70,7 +67,8 @@ public interface PropertyRecordMapper {
   default void convertMonetaryFields(PropertiesRecord record, @MappingTarget Property property) {
     String currency = record.getCurrency();
     if (currency == null) return;
-    property.setPurchasePrice(CurrencyUtils.toMajorUnitsOrNull(record.getPurchasePrice(), currency));
+    property.setPurchasePrice(
+        CurrencyUtils.toMajorUnitsOrNull(record.getPurchasePrice(), currency));
     property.setCurrentMarketValue(
         CurrencyUtils.toMajorUnitsOrNull(record.getCurrentMarketValue(), currency));
     property.setMortgageAmount(

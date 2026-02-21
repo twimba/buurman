@@ -50,6 +50,10 @@ import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Tenant;
+import com.buurman.dto.response.PropertyDashboardResponse;
+import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
+import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
+import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
 import com.buurman.repository.AmenityRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
@@ -63,7 +67,10 @@ import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.service.FeatureFlagService;
+import com.buurman.service.PropertyDashboardService;
 import com.buurman.service.S3StorageService;
+import com.buurman.util.FeatureFlags;
 
 import lombok.RequiredArgsConstructor;
 
@@ -85,6 +92,8 @@ public class PropertyBookletExporter {
   private final PhotoRepository photoRepository;
   private final ContractPartyService contractPartyService;
   private final S3StorageService s3StorageService;
+  private final FeatureFlagService featureFlagService;
+  private final PropertyDashboardService propertyDashboardService;
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
@@ -144,6 +153,15 @@ public class PropertyBookletExporter {
 
     Map<Integer, FinancialYearSummary> yearSummaries = calculateYearSummaries(payments, expenses);
 
+    PropertyDashboardResponse dashboard = null;
+    if (featureFlagService.isEnabled(FeatureFlags.REPORTS)) {
+      try {
+        dashboard = propertyDashboardService.getDashboardData(propertyIdentifier, teamId);
+      } catch (Exception e) {
+        // Non-critical: booklet still generates without dashboard section
+      }
+    }
+
     String html =
         buildHtml(
             property,
@@ -160,7 +178,8 @@ public class PropertyBookletExporter {
             outdoorAreas,
             propertyAmenities,
             allAmenities,
-            photos);
+            photos,
+            dashboard);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -181,7 +200,8 @@ public class PropertyBookletExporter {
       List<PropertyOutdoorArea> outdoorAreas,
       List<PropertyAmenity> propertyAmenities,
       List<Amenity> allAmenities,
-      List<Photo> photos) {
+      List<Photo> photos,
+      PropertyDashboardResponse dashboard) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     Map<UUID, Amenity> amenityMap =
@@ -233,6 +253,11 @@ public class PropertyBookletExporter {
 
     appendPhotoGalleryPage(html, photos);
     appendFinancialOverviewPage(html, yearSummaries);
+
+    if (dashboard != null) {
+      appendDashboardPage(html, dashboard);
+    }
+
     appendContractsPage(html, contracts, teamId);
 
     appendDocumentEnd(html);
@@ -1169,6 +1194,115 @@ public class PropertyBookletExporter {
 
     html.append("</tbody></table>");
     appendPageEnd(html);
+  }
+
+  // ── Page: Investment Dashboard ──────────────────────────────────
+
+  private void appendDashboardPage(StringBuilder html, PropertyDashboardResponse dashboard) {
+    SummaryMetrics s = dashboard.summary();
+    String currency = s.currency() != null ? escapeHtml(s.currency()) : "";
+
+    appendPageStart(html, "Investment Dashboard");
+
+    // Summary metrics grid
+    appendSectionTitle(html, "Key Metrics");
+    html.append("<table style='width:100%;border-collapse:collapse;margin-bottom:16px;'>");
+    html.append("<tr>");
+    appendMetricCell(html, "Total ROI", fmtPct(s.totalRoiPercent()));
+    appendMetricCell(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent()));
+    appendMetricCell(html, "Cap Rate", fmtPct(s.capRatePercent()));
+    appendMetricCell(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent()));
+    html.append("</tr><tr>");
+    appendMetricCell(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
+    appendMetricCell(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
+    appendMetricCell(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
+    appendMetricCell(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
+    html.append("</tr>");
+    html.append("</table>");
+
+    // Cash flow table
+    if (!dashboard.cashFlow().months().isEmpty()) {
+      appendSectionTitle(html, "Monthly Cash Flow (Last 12 Months)");
+      html.append("<table class='payment-table'><thead><tr>");
+      html.append("<th>Month</th><th>Income</th><th>Expenses</th><th>Mortgage</th><th>Net</th>");
+      html.append("</tr></thead><tbody>");
+      for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
+        html.append("<tr>");
+        html.append("<td>").append(escapeHtml(m.month())).append("</td>");
+        html.append("<td style='text-align:right;'>").append(fmtNum(m.income())).append("</td>");
+        html.append("<td style='text-align:right;'>").append(fmtNum(m.expenses())).append("</td>");
+        html.append("<td style='text-align:right;'>").append(fmtNum(m.mortgage())).append("</td>");
+        String netColor = m.net().signum() >= 0 ? "#059669" : "#dc2626";
+        html.append("<td style='text-align:right;color:")
+            .append(netColor)
+            .append(";font-weight:600;'>")
+            .append(fmtNum(m.net()))
+            .append("</td>");
+        html.append("</tr>");
+      }
+      html.append("</tbody></table>");
+    }
+
+    // Expense breakdown
+    if (!dashboard.expenseBreakdown().categories().isEmpty()) {
+      appendSectionTitle(html, "Expense Breakdown");
+      html.append("<table class='payment-table'><thead><tr>");
+      html.append("<th>Category</th><th>Amount</th>");
+      html.append("</tr></thead><tbody>");
+      for (CategorySlice c : dashboard.expenseBreakdown().categories()) {
+        html.append("<tr>");
+        html.append("<td>").append(escapeHtml(formatEnumValue(c.category()))).append("</td>");
+        html.append("<td style='text-align:right;'>")
+            .append(fmtMoney(c.amount(), currency))
+            .append("</td>");
+        html.append("</tr>");
+      }
+      html.append("</tbody></table>");
+    }
+
+    // Equity overview
+    appendSectionTitle(html, "Equity Overview");
+    html.append("<table class='payment-table'><thead><tr>");
+    html.append("<th>Item</th><th>Amount</th>");
+    html.append("</tr></thead><tbody>");
+    appendEquityRow(html, "Purchase Price", dashboard.equity().purchasePrice(), currency);
+    appendEquityRow(
+        html, "Current Market Value", dashboard.equity().currentMarketValue(), currency);
+    appendEquityRow(html, "Mortgage Balance", dashboard.equity().mortgageBalance(), currency);
+    html.append("</tbody></table>");
+
+    appendPageEnd(html);
+  }
+
+  private void appendMetricCell(StringBuilder html, String label, String value) {
+    html.append(
+            "<td style='padding:8px 10px;text-align:center;'>"
+                + "<div style='font-size:9px;color:#718096;text-transform:uppercase;"
+                + "letter-spacing:0.8px;'>")
+        .append(escapeHtml(label))
+        .append("</div><div style='font-size:16px;font-weight:700;color:#1a365d;margin-top:2px;'>")
+        .append(escapeHtml(value))
+        .append("</div></td>");
+  }
+
+  private void appendEquityRow(
+      StringBuilder html, String label, BigDecimal value, String currency) {
+    html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
+    html.append("<td style='text-align:right;'>")
+        .append(fmtMoney(value, currency))
+        .append("</td></tr>");
+  }
+
+  private static String fmtPct(BigDecimal value) {
+    return value != null ? value.toPlainString() + "%" : "N/A";
+  }
+
+  private static String fmtMoney(BigDecimal value, String currency) {
+    return value != null ? currency + " " + fmtNum(value) : "N/A";
+  }
+
+  private static String fmtNum(BigDecimal value) {
+    return value != null ? String.format("%,.2f", value) : "N/A";
   }
 
   // ── Helpers ─────────────────────────────────────────────────────

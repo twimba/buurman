@@ -1,7 +1,8 @@
 package com.buurman.controller;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.MediaType.APPLICATION_PDF;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +38,8 @@ public class BookletController {
         exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.getTeamId());
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-booklet.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
+        .header(CONTENT_DISPOSITION, "attachment; filename=property-booklet.pdf")
+        .contentType(APPLICATION_PDF)
         .body(pdf);
   }
 
@@ -52,8 +53,8 @@ public class BookletController {
     byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.getTeamId());
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tenant-booklet.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
+        .header(CONTENT_DISPOSITION, "attachment; filename=tenant-booklet.pdf")
+        .contentType(APPLICATION_PDF)
         .body(pdf);
   }
 
@@ -67,8 +68,8 @@ public class BookletController {
     byte[] pdf = exportService.generateContractReportPDF(contractIdentifier, principal.getTeamId());
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contract-booklet.pdf")
-        .contentType(MediaType.APPLICATION_PDF)
+        .header(CONTENT_DISPOSITION, "attachment; filename=contract-booklet.pdf")
+        .contentType(APPLICATION_PDF)
         .body(pdf);
   }
 }

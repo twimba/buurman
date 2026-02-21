@@ -100,7 +100,9 @@ public class PaymentRepository {
     if (contractIds.isEmpty()) return List.of();
     return dsl.selectFrom(PAYMENTS)
         .where(
-            PAYMENTS.CONTRACT_ID.in(contractIds)
+            PAYMENTS
+                .CONTRACT_ID
+                .in(contractIds)
                 .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.STATUS.eq(PAID.name()))
                 .and(PAYMENTS.PAYMENT_DATE.isNotNull())

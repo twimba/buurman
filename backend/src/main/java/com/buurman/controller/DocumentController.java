@@ -1,10 +1,11 @@
 package com.buurman.controller;
 
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
+
 import java.net.URL;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -126,8 +127,8 @@ public class DocumentController {
     ByteArrayResource resource = new ByteArrayResource(zipData);
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=documents.zip")
-        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .header(CONTENT_DISPOSITION, "attachment; filename=documents.zip")
+        .contentType(APPLICATION_OCTET_STREAM)
         .contentLength(zipData.length)
         .body(resource);
   }

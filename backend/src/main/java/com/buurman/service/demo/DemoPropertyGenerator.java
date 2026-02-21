@@ -333,15 +333,11 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.PURCHASE_PRICE,
                 i < 4 ? Long.valueOf((200_000 + i * 75_000) * 100L) : null)
-            .set(
-                PROPERTIES.PURCHASE_DATE,
-                i < 4 ? java.time.LocalDate.of(2020 + i, 3, 15) : null)
+            .set(PROPERTIES.PURCHASE_DATE, i < 4 ? java.time.LocalDate.of(2020 + i, 3, 15) : null)
             .set(
                 PROPERTIES.CURRENT_MARKET_VALUE,
                 i < 4 ? Long.valueOf((220_000 + i * 80_000) * 100L) : null)
-            .set(
-                PROPERTIES.MARKET_VALUE_DATE,
-                i < 4 ? java.time.LocalDate.of(2025, 12, 1) : null)
+            .set(PROPERTIES.MARKET_VALUE_DATE, i < 4 ? java.time.LocalDate.of(2025, 12, 1) : null)
             .set(PROPERTIES.MORTGAGE_TYPE, i == 0 ? "NONE" : i < 4 ? "FIXED_RATE" : null)
             .set(
                 PROPERTIES.MORTGAGE_AMOUNT,
@@ -361,9 +357,7 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.ANNUAL_PROPERTY_TAX,
                 i < 4 ? Long.valueOf((1200 + i * 300) * 100L) : null)
-            .set(
-                PROPERTIES.ANNUAL_INSURANCE,
-                i < 4 ? Long.valueOf((400 + i * 100) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? Long.valueOf((400 + i * 100) * 100L) : null)
             .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? Long.valueOf((600 + i * 200) * 100L) : null)
             .set(
                 PROPERTIES.ANNUAL_MANAGEMENT_FEE,
@@ -371,9 +365,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? Long.valueOf(500_00L) : null)
             .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
             .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
-            .set(
-                PROPERTIES.LAND_VALUE,
-                i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)
+            .set(PROPERTIES.LAND_VALUE, i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)
             .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(PROPERTIES.UPDATED_AT, now)
             .set(PROPERTIES.CREATED_BY, createdBy)

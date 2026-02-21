@@ -47,20 +47,25 @@ public class PropertyDashboardPdfExporter {
     metricCard(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
     metricCard(html, "Equity Growth", fmtPct(s.equityGrowthPercent()));
     metricCard(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
-    metricCard(html, "GRM", s.grossRentMultiplier() != null ? s.grossRentMultiplier() + "x" : "N/A");
+    metricCard(
+        html, "GRM", s.grossRentMultiplier() != null ? s.grossRentMultiplier() + "x" : "N/A");
     html.append("</div>");
 
     // Cash flow table
     html.append("<h2>Monthly Cash Flow (Last 12 Months)</h2>");
-    html.append("<table><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Mortgage</th><th>Net</th></tr></thead><tbody>");
+    html.append(
+        "<table><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Mortgage</th><th>Net</th></tr></thead><tbody>");
     for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
       html.append("<tr>");
       html.append("<td>").append(escapeHtml(m.month())).append("</td>");
       html.append("<td class='right'>").append(fmtNum(m.income())).append("</td>");
       html.append("<td class='right'>").append(fmtNum(m.expenses())).append("</td>");
       html.append("<td class='right'>").append(fmtNum(m.mortgage())).append("</td>");
-      html.append("<td class='right ").append(m.net().signum() >= 0 ? "positive" : "negative").append("'>")
-          .append(fmtNum(m.net())).append("</td>");
+      html.append("<td class='right ")
+          .append(m.net().signum() >= 0 ? "positive" : "negative")
+          .append("'>")
+          .append(fmtNum(m.net()))
+          .append("</td>");
       html.append("</tr>");
     }
     html.append("</tbody></table>");
