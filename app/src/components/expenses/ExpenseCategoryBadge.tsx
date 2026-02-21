@@ -25,6 +25,9 @@ const categoryColors: Record<ExpenseCategory, string> = {
     'bg-lime-50 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-lime-500/10 dark:text-lime-400 dark:ring-lime-500/20',
   PROPERTY_MANAGEMENT:
     'bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-600/20 dark:bg-violet-500/10 dark:text-violet-400 dark:ring-violet-500/20',
+  FEES: 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20',
+  PROPERTY_TAX:
+    'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/20',
   OTHER:
     'bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-400 dark:ring-slate-500/20',
 };
@@ -40,6 +43,8 @@ const categoryLabels: Record<ExpenseCategory, string> = {
   CLEANING: 'Cleaning',
   LANDSCAPING: 'Landscaping',
   PROPERTY_MANAGEMENT: 'Property Management',
+  FEES: 'Fees',
+  PROPERTY_TAX: 'Property Taxes',
   OTHER: 'Other',
 };
 

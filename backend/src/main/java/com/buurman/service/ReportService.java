@@ -73,6 +73,8 @@ public class ReportService {
           Map.entry("CLEANING", "#6366F1"),
           Map.entry("LANDSCAPING", "#84CC16"),
           Map.entry("PROPERTY_MANAGEMENT", "#06B6D4"),
+          Map.entry("FEES", "#D97706"),
+          Map.entry("PROPERTY_TAX", "#F43F5E"),
           Map.entry("OTHER", "#6B7280"));
 
   private final Clock clock;

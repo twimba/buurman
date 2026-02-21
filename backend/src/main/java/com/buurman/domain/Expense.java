@@ -25,6 +25,8 @@ public class Expense {
     CLEANING,
     LANDSCAPING,
     PROPERTY_MANAGEMENT,
+    FEES,
+    PROPERTY_TAX,
     OTHER
   }
 
