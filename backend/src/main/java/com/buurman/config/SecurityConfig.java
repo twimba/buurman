@@ -64,7 +64,20 @@ public class SecurityConfig {
   }
 
   @Bean
-  @Order(1)
+  @Order(0)
+  public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
+    http.securityMatcher("/actuator/**")
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
   public SecurityFilterChain backofficeFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/backoffice/**")
         .cors(cors -> cors.configurationSource(backofficeCorsConfigurationSource()))
@@ -89,7 +102,7 @@ public class SecurityConfig {
   }
 
   @Bean
-  @Order(2)
+  @Order(3)
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
