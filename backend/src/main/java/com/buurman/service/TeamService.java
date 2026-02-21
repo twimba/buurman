@@ -506,6 +506,18 @@ public class TeamService {
     return settings;
   }
 
+  /**
+   * Returns the team's configured default currency (e.g. "EUR", "USD"), or null if not configured.
+   */
+  public String getDefaultCurrency(UUID teamId) {
+    return teamRepository
+        .findById(teamId)
+        .map(Team::getSettings)
+        .map(TeamSettings::getRegional)
+        .map(TeamSettings.RegionalSettings::getDefaultCurrency)
+        .orElse(null);
+  }
+
   @Transactional
   public TeamMemberResponse transferOwnership(
       String teamIdentifier, String newOwnerIdentifier, UserPrincipal principal) {

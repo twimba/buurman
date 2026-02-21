@@ -64,7 +64,7 @@ public class ReportController {
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
       @RequestParam(required = false) List<UUID> propertyIds,
-      @RequestParam(required = false, defaultValue = "EUR") String currency,
+      @RequestParam(required = false) String currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);

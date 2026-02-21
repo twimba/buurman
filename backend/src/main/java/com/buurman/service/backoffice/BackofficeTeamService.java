@@ -81,13 +81,17 @@ public class BackofficeTeamService {
     // Data counts
     DataCounts dataCounts = statsRepository.countEntitiesForTeam(team.getId());
 
-    // Financial snapshot
+    // Financial snapshot — derive currency from actual contract data
     TeamSettings settings = team.getSettings() != null ? team.getSettings() : new TeamSettings();
-    String currency = settings.getRegional().getDefaultCurrency();
+    var activeRent = statsRepository.sumActiveRentForTeam(team.getId());
+    String currency =
+        activeRent.getValue() != null
+            ? activeRent.getValue()
+            : settings.getRegional().getDefaultCurrency();
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
-            statsRepository.sumActiveRentForTeam(team.getId(), currency),
+            activeRent.getKey(),
             currency,
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),

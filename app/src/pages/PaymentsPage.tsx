@@ -79,7 +79,7 @@ export const PaymentsPage = () => {
 
   const { data: paymentStats } = usePaymentStats();
 
-  const currencySymbol = getCurrencySymbol(paymentStats?.currency ?? 'EUR');
+  const currencySymbol = getCurrencySymbol(paymentStats?.currency ?? '');
 
   if (isLoading) {
     return (

@@ -58,6 +58,7 @@ public class ReportService {
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final PropertyMapper propertyMapper;
+  private final TeamService teamService;
 
   // Color palette for charts
   private static final Map<String, String> EXPENSE_COLORS =
@@ -85,7 +86,8 @@ public class ReportService {
       UserPrincipal principal) {
 
     UUID teamId = principal.getTeamId();
-    String activeCurrency = currency != null ? currency : "EUR";
+    String activeCurrency =
+        currency != null ? currency : teamService.getDefaultCurrency(principal.getTeamId());
 
     // Pre-fetch all contracts for the team to resolve payment→property mapping
     Map<UUID, Contract> contractsById =
@@ -257,7 +259,8 @@ public class ReportService {
               month.toString(), monthIncome, monthExpenses, monthNetProfit));
     }
 
-    return new IncomeTrendResponse(dataPoints, "EUR");
+    return new IncomeTrendResponse(
+        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -289,7 +292,8 @@ public class ReportService {
             .sorted(Comparator.comparing(ExpenseBreakdownResponse.Category::value).reversed())
             .toList();
 
-    return new ExpenseBreakdownResponse(categories, total, "EUR");
+    return new ExpenseBreakdownResponse(
+        categories, total, teamService.getDefaultCurrency(principal.getTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -355,7 +359,8 @@ public class ReportService {
                 Comparator.comparing(PropertyComparisonResponse.PropertyData::netProfit).reversed())
             .toList();
 
-    return new PropertyComparisonResponse(propertyData, "EUR");
+    return new PropertyComparisonResponse(
+        propertyData, teamService.getDefaultCurrency(principal.getTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -491,7 +496,13 @@ public class ReportService {
             .toList();
 
     return new TaxSummaryResponse(
-        year, totalIncome, totalExpenses, netIncome, expensesByCategory, properties, "EUR");
+        year,
+        totalIncome,
+        totalExpenses,
+        netIncome,
+        expensesByCategory,
+        properties,
+        teamService.getDefaultCurrency(principal.getTeamId()));
   }
 
   // Helper methods

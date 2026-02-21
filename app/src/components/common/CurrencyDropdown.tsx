@@ -95,7 +95,10 @@ export const CurrencyDropdown = ({
 
     const update = () => {
       const rect = anchor.getBoundingClientRect();
-      setPos({ top: rect.bottom + window.scrollY + 4, left: rect.left + window.scrollX });
+      setPos({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+      });
     };
     update();
 

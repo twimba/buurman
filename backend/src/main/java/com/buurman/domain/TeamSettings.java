@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamSettings {
 
+  private Boolean demoData;
   private PaymentSettings payments = new PaymentSettings();
   private RegionalSettings regional = new RegionalSettings();
 
@@ -25,7 +26,7 @@ public class TeamSettings {
   @NoArgsConstructor
   @JsonIgnoreProperties(ignoreUnknown = true)
   public static class RegionalSettings {
-    private String defaultCurrency = "EUR";
+    private String defaultCurrency;
     private String defaultCountry = "Netherlands";
     private String timezone = "Europe/Amsterdam";
     private String dateFormat = "DD/MM/YYYY";

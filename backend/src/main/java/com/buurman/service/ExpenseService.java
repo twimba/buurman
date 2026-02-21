@@ -78,7 +78,7 @@ public class ExpenseService {
     expense.setUpdatedAt(clock.instant());
 
     // Validate currency is provided
-    if (expense.getCurrency() == null || expense.getCurrency().isEmpty()) {
+    if (expense.getCurrency() == null || expense.getCurrency().isBlank()) {
       throw new BadRequestException("Currency is required for expenses");
     }
 

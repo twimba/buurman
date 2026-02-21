@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import {
   ExpenseResponse,
@@ -34,7 +34,7 @@ export const ExpenseForm = ({
       prefilledPropertyId || expense?.property.identifier || '',
     category: expense?.category || ExpenseCategory.MAINTENANCE,
     amount: expense?.amount || 0,
-    currency: expense?.currency || defaultCurrency || 'EUR',
+    currency: expense?.currency || defaultCurrency || '',
     expenseDate: expense?.expenseDate || '',
     description: expense?.description || '',
     notes: expense?.notes || '',
@@ -54,6 +54,15 @@ export const ExpenseForm = ({
     });
   }
 
+  useEffect(() => {
+    if (!defaultCurrency) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) =>
+      prev.currency ? prev : { ...prev, currency: defaultCurrency }
+    );
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [defaultCurrency]);
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -61,6 +70,11 @@ export const ExpenseForm = ({
       newErrors.propertyIdentifier = 'Property is required';
     if (formData.amount <= 0)
       newErrors.amount = 'Amount must be greater than 0';
+    if (
+      formData.amount > 0 &&
+      !(formData.currency || defaultCurrency || '').trim()
+    )
+      newErrors.currency = 'Currency is required';
     if (!formData.expenseDate)
       newErrors.expenseDate = 'Expense date is required';
     if (!formData.description || formData.description.trim().length === 0)
@@ -147,15 +161,17 @@ export const ExpenseForm = ({
         <MoneyInput
           value={formData.amount || undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
-          currency={formData.currency || defaultCurrency || 'EUR'}
+          currency={formData.currency || defaultCurrency || ''}
           onCurrencyChange={(currency) =>
             setFormData({ ...formData, currency })
           }
           disabled={isLoading}
-          error={!!errors.amount}
+          error={!!errors.amount || !!errors.currency}
         />
-        {errors.amount && (
-          <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+        {(errors.amount || errors.currency) && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.amount || errors.currency}
+          </p>
         )}
       </div>
 

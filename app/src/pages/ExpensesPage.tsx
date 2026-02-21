@@ -21,6 +21,7 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { PropertySelector } from '@/components/common/PropertySelector';
 import {
   AreaChart,
   Area,
@@ -53,6 +54,9 @@ export const ExpensesPage = () => {
   const [categoryFilter, setCategoryFilter] = useState<
     ExpenseCategory | undefined
   >(undefined);
+  const [propertyFilter, setPropertyFilter] = useState<string | undefined>(
+    undefined
+  );
 
   const {
     pageParams,
@@ -70,11 +74,15 @@ export const ExpensesPage = () => {
     isFetching,
     refetch,
     error,
-  } = useExpenses({ category: categoryFilter, ...pageParams });
+  } = useExpenses({
+    category: categoryFilter,
+    propertyIdentifier: propertyFilter,
+    ...pageParams,
+  });
 
   const { data: expenseStats } = useExpenseStats();
 
-  const currencySymbol = expenseStats?.currency ?? 'EUR';
+  const currencySymbol = expenseStats?.currency ?? '';
 
   if (isLoading) {
     return (
@@ -239,29 +247,54 @@ export const ExpensesPage = () => {
 
         {/* Filter Bar */}
         <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
             <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Category Filter
+              Filters
             </h3>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {categoryFilters.map((filter) => (
-              <button
-                key={filter.label}
-                onClick={() => {
-                  setCategoryFilter(filter.value);
+
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Property Filter */}
+            <div className="lg:w-72">
+              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                Property
+              </label>
+              <PropertySelector
+                value={propertyFilter ?? ''}
+                onChange={(id) => {
+                  setPropertyFilter(id || undefined);
                   resetPage();
                 }}
-                className={`px-4 py-2 rounded transition-colors text-sm ${
-                  categoryFilter === filter.value
-                    ? 'bg-[#5c7cfa] text-white'
-                    : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
+                clearable
+                placeholder="All Properties"
+              />
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                Category
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {categoryFilters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    onClick={() => {
+                      setCategoryFilter(filter.value);
+                      resetPage();
+                    }}
+                    className={`px-4 py-2 rounded transition-colors text-sm ${
+                      categoryFilter === filter.value
+                        ? 'bg-[#5c7cfa] text-white'
+                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -383,11 +416,11 @@ export const ExpensesPage = () => {
               No expenses found
             </h3>
             <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
-              {categoryFilter
+              {categoryFilter || propertyFilter
                 ? 'Try adjusting your filters'
                 : 'Get started by recording your first expense'}
             </p>
-            {!categoryFilter && (
+            {!categoryFilter && !propertyFilter && (
               <button
                 onClick={() => navigate('/expenses/new')}
                 disabled={!canEditData}

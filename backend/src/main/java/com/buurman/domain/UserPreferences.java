@@ -14,7 +14,7 @@ public class UserPreferences {
   private String language = "en";
   private String timezone = "UTC";
   private String dateFormat = "DD/MM/YYYY";
-  private String currencyFormat = "EUR";
+  private String currencyFormat;
   private boolean emailNotifications = true;
   private boolean inAppNotifications = true;
   private boolean smsNotifications = false;

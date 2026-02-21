@@ -190,10 +190,16 @@ export const TransactionHistoryPage = () => {
     return { income, expenses, net: income - expenses };
   }, [filteredAndSortedTransactions]);
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, cur?: string) => {
+    if (!cur) {
+      return value.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
     return new Intl.NumberFormat('nl-NL', {
       style: 'currency',
-      currency: 'EUR',
+      currency: cur,
     }).format(value);
   };
 
@@ -528,7 +534,7 @@ export const TransactionHistoryPage = () => {
                     }`}
                   >
                     {transaction.type === 'INCOME' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
+                    {formatCurrency(transaction.amount, transaction.currency)}
                   </td>
                 </tr>
               ))}

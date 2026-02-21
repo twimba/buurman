@@ -419,7 +419,7 @@ public class PropertyService {
   }
 
   private void validateCurrencyRequired(String currency, java.math.BigDecimal... monetaryFields) {
-    if (currency != null) {
+    if (currency != null && !currency.isBlank()) {
       try {
         java.util.Currency.getInstance(currency);
       } catch (IllegalArgumentException e) {

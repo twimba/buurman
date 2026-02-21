@@ -13,6 +13,10 @@ interface PropertySelectorProps {
   value?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  /** Show a "clear" option to deselect. */
+  clearable?: boolean;
+  /** Placeholder text when no property is selected. */
+  placeholder?: string;
 }
 
 const categoryIcons: Record<string, typeof Home> = {
@@ -35,6 +39,8 @@ export const PropertySelector = ({
   value,
   onChange,
   disabled = false,
+  clearable = false,
+  placeholder,
 }: PropertySelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -241,7 +247,9 @@ export const PropertySelector = ({
           }}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={isOpen ? 'Type to search...' : 'Select a property'}
+          placeholder={
+            isOpen ? 'Type to search...' : (placeholder ?? 'Select a property')
+          }
           autoComplete="off"
           className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#1e2130] hover:border-[#5c7cfa] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed text-left text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
         />
@@ -264,30 +272,42 @@ export const PropertySelector = ({
               No properties found
             </div>
           ) : (
-            grouped.map((group) => {
-              const header = showGroupHeaders ? (
-                <div
-                  key={`header-${group.category}`}
-                  className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+            <>
+              {clearable && value && !search && (
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect('')}
+                  className="w-full text-left px-3 py-2.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
                 >
-                  {PROPERTY_CATEGORY_LABELS[
-                    group.category as PropertyCategory
-                  ] ?? group.category}
-                </div>
-              ) : null;
+                  All Properties
+                </button>
+              )}
+              {grouped.map((group) => {
+                const header = showGroupHeaders ? (
+                  <div
+                    key={`header-${group.category}`}
+                    className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  >
+                    {PROPERTY_CATEGORY_LABELS[
+                      group.category as PropertyCategory
+                    ] ?? group.category}
+                  </div>
+                ) : null;
 
-              const items = group.items.map((property) => {
-                const idx = flatIndex++;
-                return renderPropertyItem(property, idx);
-              });
+                const items = group.items.map((property) => {
+                  const idx = flatIndex++;
+                  return renderPropertyItem(property, idx);
+                });
 
-              return (
-                <div key={group.category}>
-                  {header}
-                  {items}
-                </div>
-              );
-            })
+                return (
+                  <div key={group.category}>
+                    {header}
+                    {items}
+                  </div>
+                );
+              })}
+            </>
           )}
         </div>
       )}

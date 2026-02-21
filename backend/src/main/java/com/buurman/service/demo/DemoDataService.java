@@ -323,15 +323,26 @@ public class DemoDataService {
 
     // 18. Nullify user references to demo teams, then delete demo users
     List<String> demoEmails = DemoUsers.ALL_EMAILS;
+    List<UUID> demoUserIds =
+        dsl.select(USERS.ID).from(USERS).where(USERS.EMAIL.in(demoEmails)).fetch(USERS.ID);
+
     dsl.update(USERS)
         .set(USERS.DEFAULT_TEAM_ID, (UUID) null)
         .set(USERS.ACTIVE_TEAM_ID, (UUID) null)
         .where(USERS.EMAIL.in(demoEmails))
         .execute();
 
-    // Delete user preferences for demo users
-    List<UUID> demoUserIds =
-        dsl.select(USERS.ID).from(USERS).where(USERS.EMAIL.in(demoEmails)).fetch(USERS.ID);
+    // Nullify created_by/updated_by references to demo users in remaining rows
+    if (!demoUserIds.isEmpty()) {
+      dsl.update(PROPERTIES)
+          .set(PROPERTIES.CREATED_BY, (UUID) null)
+          .where(PROPERTIES.CREATED_BY.in(demoUserIds))
+          .execute();
+      dsl.update(PROPERTIES)
+          .set(PROPERTIES.UPDATED_BY, (UUID) null)
+          .where(PROPERTIES.UPDATED_BY.in(demoUserIds))
+          .execute();
+    }
 
     if (!demoUserIds.isEmpty()) {
       deleted =

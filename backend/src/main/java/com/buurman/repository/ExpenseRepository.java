@@ -240,7 +240,7 @@ public class ExpenseRepository {
         .limit(1)
         .fetchOptional()
         .map(r -> r.get(EXPENSES.CURRENCY))
-        .orElse("EUR");
+        .orElse(null);
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

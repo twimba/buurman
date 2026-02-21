@@ -8,6 +8,7 @@ import {
   MORTGAGE_TYPE_LABELS,
   DEPRECIATION_METHOD_LABELS,
 } from '@/types/property';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 const labelCls =
   'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
@@ -21,12 +22,16 @@ function countFilled(values: (unknown | null | undefined)[]): number {
 interface PropertyFinancialFormProps {
   formData: CreatePropertyRequest;
   onChange: (field: keyof CreatePropertyRequest, value: unknown) => void;
+  errors?: Record<string, string>;
 }
 
 export const PropertyFinancialForm = ({
   formData,
   onChange,
+  errors,
 }: PropertyFinancialFormProps) => {
+  const { defaultCurrency } = useTeamDefaults();
+  const currencyFallback = defaultCurrency || '';
   const isMortgageNone = formData.mortgageType === MortgageType.NONE;
   const isDepreciationNone =
     formData.depreciationMethod === DepreciationMethod.NONE;
@@ -79,9 +84,15 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.purchasePrice ?? undefined}
               onChange={(val) => onChange('purchasePrice', val ?? null)}
-              currency={formData.purchasePriceCurrency || 'EUR'}
+              currency={formData.purchasePriceCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('purchasePriceCurrency', v)}
+              error={!!errors?.purchasePriceCurrency}
             />
+            {errors?.purchasePriceCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.purchasePriceCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Purchase Date</label>
@@ -97,11 +108,17 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.currentMarketValue ?? undefined}
               onChange={(val) => onChange('currentMarketValue', val ?? null)}
-              currency={formData.currentMarketValueCurrency || 'EUR'}
+              currency={formData.currentMarketValueCurrency || currencyFallback}
               onCurrencyChange={(v) =>
                 onChange('currentMarketValueCurrency', v)
               }
+              error={!!errors?.currentMarketValueCurrency}
             />
+            {errors?.currentMarketValueCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.currentMarketValueCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Market Value Date</label>
@@ -154,10 +171,16 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.mortgageAmount ?? undefined}
               onChange={(val) => onChange('mortgageAmount', val ?? null)}
-              currency={formData.mortgageAmountCurrency || 'EUR'}
+              currency={formData.mortgageAmountCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('mortgageAmountCurrency', v)}
               disabled={isMortgageNone}
+              error={!!errors?.mortgageAmountCurrency}
             />
+            {errors?.mortgageAmountCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.mortgageAmountCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Interest Rate</label>
@@ -189,12 +212,20 @@ export const PropertyFinancialForm = ({
               onChange={(val) =>
                 onChange('monthlyMortgagePayment', val ?? null)
               }
-              currency={formData.monthlyMortgagePaymentCurrency || 'EUR'}
+              currency={
+                formData.monthlyMortgagePaymentCurrency || currencyFallback
+              }
               onCurrencyChange={(v) =>
                 onChange('monthlyMortgagePaymentCurrency', v)
               }
               disabled={isMortgageNone}
+              error={!!errors?.monthlyMortgagePaymentCurrency}
             />
+            {errors?.monthlyMortgagePaymentCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.monthlyMortgagePaymentCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Start Date</label>
@@ -235,18 +266,30 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualPropertyTax ?? undefined}
               onChange={(val) => onChange('annualPropertyTax', val ?? null)}
-              currency={formData.annualPropertyTaxCurrency || 'EUR'}
+              currency={formData.annualPropertyTaxCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('annualPropertyTaxCurrency', v)}
+              error={!!errors?.annualPropertyTaxCurrency}
             />
+            {errors?.annualPropertyTaxCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.annualPropertyTaxCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Insurance</label>
             <MoneyInput
               value={formData.annualInsurance ?? undefined}
               onChange={(val) => onChange('annualInsurance', val ?? null)}
-              currency={formData.annualInsuranceCurrency || 'EUR'}
+              currency={formData.annualInsuranceCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('annualInsuranceCurrency', v)}
+              error={!!errors?.annualInsuranceCurrency}
             />
+            {errors?.annualInsuranceCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.annualInsuranceCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>
@@ -255,20 +298,34 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.annualHoaFee ?? undefined}
               onChange={(val) => onChange('annualHoaFee', val ?? null)}
-              currency={formData.annualHoaFeeCurrency || 'EUR'}
+              currency={formData.annualHoaFeeCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('annualHoaFeeCurrency', v)}
+              error={!!errors?.annualHoaFeeCurrency}
             />
+            {errors?.annualHoaFeeCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.annualHoaFeeCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>Management Fee</label>
             <MoneyInput
               value={formData.annualManagementFee ?? undefined}
               onChange={(val) => onChange('annualManagementFee', val ?? null)}
-              currency={formData.annualManagementFeeCurrency || 'EUR'}
+              currency={
+                formData.annualManagementFeeCurrency || currencyFallback
+              }
               onCurrencyChange={(v) =>
                 onChange('annualManagementFeeCurrency', v)
               }
+              error={!!errors?.annualManagementFeeCurrency}
             />
+            {errors?.annualManagementFeeCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.annualManagementFeeCurrency}
+              </p>
+            )}
           </div>
           <div>
             <label className={labelCls}>
@@ -279,11 +336,19 @@ export const PropertyFinancialForm = ({
               onChange={(val) =>
                 onChange('annualMaintenanceReserve', val ?? null)
               }
-              currency={formData.annualMaintenanceReserveCurrency || 'EUR'}
+              currency={
+                formData.annualMaintenanceReserveCurrency || currencyFallback
+              }
               onCurrencyChange={(v) =>
                 onChange('annualMaintenanceReserveCurrency', v)
               }
+              error={!!errors?.annualMaintenanceReserveCurrency}
             />
+            {errors?.annualMaintenanceReserveCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.annualMaintenanceReserveCurrency}
+              </p>
+            )}
           </div>
         </div>
       </CollapsibleSection>
@@ -347,10 +412,16 @@ export const PropertyFinancialForm = ({
             <MoneyInput
               value={formData.landValue ?? undefined}
               onChange={(val) => onChange('landValue', val ?? null)}
-              currency={formData.landValueCurrency || 'EUR'}
+              currency={formData.landValueCurrency || currencyFallback}
               onCurrencyChange={(v) => onChange('landValueCurrency', v)}
               disabled={isDepreciationNone}
+              error={!!errors?.landValueCurrency}
             />
+            {errors?.landValueCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.landValueCurrency}
+              </p>
+            )}
           </div>
         </div>
       </CollapsibleSection>

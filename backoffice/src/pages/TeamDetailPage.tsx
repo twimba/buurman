@@ -14,14 +14,19 @@ import {
   Globe,
   Settings,
   Crown,
-  DollarSign,
   Clock,
 } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
-function formatMoney(value: number, currencyCode: string): string {
+function formatMoney(value: number, currencyCode: string | null): string {
+  if (!currencyCode) {
+    return value.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -238,12 +243,13 @@ export const TeamDetailPage = () => {
               Monthly Active Rent
             </p>
             <div className="flex items-baseline gap-2">
-              <DollarSign className="h-5 w-5 text-emerald-500" />
               <span className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
-                {formatMoney(
-                  team.financialSnapshot.totalActiveRent,
-                  team.financialSnapshot.currency,
-                )}
+                {team.financialSnapshot.currency
+                  ? formatMoney(
+                      team.financialSnapshot.totalActiveRent,
+                      team.financialSnapshot.currency,
+                    )
+                  : "\u2013"}
               </span>
             </div>
           </div>
