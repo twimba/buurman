@@ -403,7 +403,14 @@ public class PropertyService {
   }
 
   private void validateCurrencyRequired(String currency, java.math.BigDecimal... monetaryFields) {
-    if (currency != null) return;
+    if (currency != null) {
+      try {
+        java.util.Currency.getInstance(currency);
+      } catch (IllegalArgumentException e) {
+        throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
+      }
+      return;
+    }
     for (java.math.BigDecimal field : monetaryFields) {
       if (field != null) {
         throw new BadRequestException("Currency is required when monetary fields are provided");

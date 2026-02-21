@@ -12,11 +12,11 @@ import {
 const labelCls =
   'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
 const inputCls =
-  'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]';
+  'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] disabled:dark:bg-[#1a1d28] disabled:text-[#9ca0b8] disabled:dark:text-[#5c6180] disabled:cursor-not-allowed';
 
 function countFilled(values: (unknown | null | undefined)[]): number {
   return values.filter(
-    (v) => v !== null && v !== undefined && v !== '' && v !== false
+    (v) => v !== null && v !== undefined && v !== ''
   ).length;
 }
 
@@ -137,12 +137,17 @@ export const PropertyFinancialForm = ({
             <label className={labelCls}>Mortgage Type</label>
             <select
               value={formData.mortgageType ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'mortgageType',
-                  (e.target.value as MortgageType) || null
-                )
-              }
+              onChange={(e) => {
+                const val = (e.target.value as MortgageType) || null;
+                onChange('mortgageType', val);
+                if (val === MortgageType.NONE) {
+                  onChange('mortgageAmount', null);
+                  onChange('mortgageInterestRate', null);
+                  onChange('monthlyMortgagePayment', null);
+                  onChange('mortgageStartDate', null);
+                  onChange('mortgageEndDate', null);
+                }
+              }}
               className={inputCls}
             >
               <option value="">-- Select --</option>
@@ -288,12 +293,14 @@ export const PropertyFinancialForm = ({
             <label className={labelCls}>Method</label>
             <select
               value={formData.depreciationMethod ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'depreciationMethod',
-                  (e.target.value as DepreciationMethod) || null
-                )
-              }
+              onChange={(e) => {
+                const val = (e.target.value as DepreciationMethod) || null;
+                onChange('depreciationMethod', val);
+                if (val === DepreciationMethod.NONE) {
+                  onChange('depreciationYears', null);
+                  onChange('landValue', null);
+                }
+              }}
               className={inputCls}
             >
               <option value="">-- Select --</option>

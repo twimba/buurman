@@ -1,6 +1,7 @@
 package com.buurman.service.export;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.stereotype.Component;
 
@@ -57,7 +58,13 @@ public class PropertyDashboardCsvExporter {
         writer.writeNext(new String[] {c.category(), c.amount().toPlainString()});
       }
 
-      return sw.toString().getBytes();
+      // UTF-8 BOM for Excel compatibility
+      byte[] bom = new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+      byte[] csv = sw.toString().getBytes(StandardCharsets.UTF_8);
+      byte[] result = new byte[bom.length + csv.length];
+      System.arraycopy(bom, 0, result, 0, bom.length);
+      System.arraycopy(csv, 0, result, bom.length, csv.length);
+      return result;
     } catch (Exception e) {
       throw new ExternalServiceException("Failed to generate dashboard CSV", e);
     }

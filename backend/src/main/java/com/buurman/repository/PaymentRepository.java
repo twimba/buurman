@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,6 +91,22 @@ public class PaymentRepository {
                 .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.desc())
+        .fetch()
+        .map(mapper::toDomain);
+  }
+
+  public List<Payment> findPaidByContractIdsAndDateRange(
+      Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
+    if (contractIds.isEmpty()) return List.of();
+    return dsl.selectFrom(PAYMENTS)
+        .where(
+            PAYMENTS.CONTRACT_ID.in(contractIds)
+                .and(PAYMENTS.TEAM_ID.eq(teamId))
+                .and(PAYMENTS.STATUS.eq(PAID.name()))
+                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                .and(PAYMENTS.PAYMENT_DATE.between(from, to))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .orderBy(PAYMENTS.PAYMENT_DATE.asc())
         .fetch()
         .map(mapper::toDomain);
   }

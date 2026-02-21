@@ -58,16 +58,15 @@ public class PropertyDashboardService {
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
 
+    String currency = property.getCurrency();
     LocalDate now = LocalDate.now();
     LocalDate twelveMonthsAgo = now.minusMonths(MONTHS_LOOKBACK);
 
-    // Fetch payments for all contracts of this property in the last 12 months
-    List<Payment> allPayments = contractIds.stream()
-        .flatMap(cid -> paymentRepository.findByContractId(cid, teamId).stream())
-        .filter(p -> p.getPaymentDate() != null
-            && !p.getPaymentDate().isBefore(twelveMonthsAgo)
-            && !p.getPaymentDate().isAfter(now)
-            && p.getStatus() == Payment.PaymentStatus.PAID)
+    // Fetch payments for all contracts of this property in the last 12 months (single query)
+    List<Payment> allPayments = paymentRepository
+        .findPaidByContractIdsAndDateRange(contractIds, teamId, twelveMonthsAgo, now)
+        .stream()
+        .filter(p -> currency == null || currency.equals(p.getCurrency()))
         .toList();
 
     List<Expense> allExpenses = expenseRepository.findByPropertyId(property.getId(), teamId)
@@ -75,13 +74,12 @@ public class PropertyDashboardService {
         .filter(e -> e.getExpenseDate() != null
             && !e.getExpenseDate().isBefore(twelveMonthsAgo)
             && !e.getExpenseDate().isAfter(now))
+        .filter(e -> currency == null || currency.equals(e.getCurrency()))
         .toList();
-
-    String currency = property.getCurrency();
     SummaryMetrics summary = buildSummaryMetrics(property, contracts, allPayments, allExpenses);
     CashFlowChartData cashFlow = buildCashFlowChart(allPayments, allExpenses, property, now);
     EquityChartData equity = buildEquityChart(property);
-    ExpenseBreakdownChartData expenseBreakdown = buildExpenseBreakdown(allExpenses);
+    ExpenseBreakdownChartData expenseBreakdown = buildExpenseBreakdown(allExpenses, property);
     OccupancyChartData occupancy = buildOccupancyChart(contracts, now);
     DataCompleteness completeness = buildDataCompleteness(property, contracts, allPayments, allExpenses);
 
@@ -107,8 +105,14 @@ public class PropertyDashboardService {
     BigDecimal annualMortgage = monthlyMortgage != null
         ? monthlyMortgage.multiply(BigDecimal.valueOf(12)) : BigDecimal.ZERO;
 
-    // Annual NOI = income - operating expenses (excluding mortgage)
-    BigDecimal annualNoi = annualIncome.subtract(annualExpenses);
+    // Include property-level operating costs in expenses
+    BigDecimal annualOperatingCosts = sumAmounts(List.of(
+        property.getAnnualPropertyTax(), property.getAnnualInsurance(),
+        property.getAnnualHoaFee(), property.getAnnualManagementFee(),
+        property.getAnnualMaintenanceReserve()));
+
+    // Annual NOI = income - recorded expenses - property-level operating costs (excluding mortgage)
+    BigDecimal annualNoi = annualIncome.subtract(annualExpenses).subtract(annualOperatingCosts);
 
     // Monthly Cash Flow = avg monthly income - avg monthly expenses - mortgage payment
     BigDecimal avgMonthlyIncome = divideOrNull(annualIncome, BigDecimal.valueOf(MONTHS_LOOKBACK));
@@ -158,12 +162,17 @@ public class PropertyDashboardService {
           .divide(marketValue, SCALE, RoundingMode.HALF_UP);
     }
 
-    // Cash-on-Cash = annual cash flow / total cash invested * 100
+    // Cash-on-Cash = annual cash flow / cash invested * 100
+    // Cash invested = purchase price - mortgage (i.e. down payment)
     BigDecimal cashOnCashPercent = null;
     if (purchasePrice != null && purchasePrice.compareTo(BigDecimal.ZERO) > 0) {
-      BigDecimal annualCashFlow = annualNoi.subtract(annualMortgage);
-      cashOnCashPercent = annualCashFlow.multiply(BigDecimal.valueOf(100))
-          .divide(purchasePrice, SCALE, RoundingMode.HALF_UP);
+      BigDecimal cashInvested = mortgageAmount != null
+          ? purchasePrice.subtract(mortgageAmount) : purchasePrice;
+      if (cashInvested.compareTo(BigDecimal.ZERO) > 0) {
+        BigDecimal annualCashFlow = annualNoi.subtract(annualMortgage);
+        cashOnCashPercent = annualCashFlow.multiply(BigDecimal.valueOf(100))
+            .divide(cashInvested, SCALE, RoundingMode.HALF_UP);
+      }
     }
 
     // Occupancy Rate (last 12 months)
@@ -216,17 +225,30 @@ public class PropertyDashboardService {
         property.getMortgageAmount());
   }
 
-  private ExpenseBreakdownChartData buildExpenseBreakdown(List<Expense> expenses) {
-    Map<String, BigDecimal> byCategory = expenses.stream()
+  private ExpenseBreakdownChartData buildExpenseBreakdown(List<Expense> expenses, Property property) {
+    Map<String, BigDecimal> byCategory = new java.util.LinkedHashMap<>(expenses.stream()
         .collect(Collectors.groupingBy(
             e -> e.getCategory() != null ? e.getCategory().name() : "OTHER",
-            Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+            Collectors.reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add))));
+
+    // Add property-level annual operating costs to breakdown
+    addIfNotNull(byCategory, "PROPERTY_TAX", property.getAnnualPropertyTax());
+    addIfNotNull(byCategory, "INSURANCE", property.getAnnualInsurance());
+    addIfNotNull(byCategory, "HOA", property.getAnnualHoaFee());
+    addIfNotNull(byCategory, "MANAGEMENT", property.getAnnualManagementFee());
+    addIfNotNull(byCategory, "MAINTENANCE_RESERVE", property.getAnnualMaintenanceReserve());
 
     List<CategorySlice> slices = byCategory.entrySet().stream()
         .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
         .map(e -> new CategorySlice(e.getKey(), e.getValue()))
         .toList();
     return new ExpenseBreakdownChartData(slices);
+  }
+
+  private static void addIfNotNull(Map<String, BigDecimal> map, String key, BigDecimal value) {
+    if (value != null && value.compareTo(BigDecimal.ZERO) > 0) {
+      map.merge(key, value, BigDecimal::add);
+    }
   }
 
   private OccupancyChartData buildOccupancyChart(List<Contract> contracts, LocalDate now) {

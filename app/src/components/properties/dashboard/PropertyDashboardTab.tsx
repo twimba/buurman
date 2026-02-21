@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useId } from 'react';
 import {
   BarChart,
   Bar,
@@ -22,6 +22,7 @@ import {
   BarChart3,
   AlertCircle,
   CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
@@ -57,6 +58,12 @@ const PIE_COLORS = [
   '#84CC16',
 ];
 
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function formatMonthTick(v: string): string {
+  const [, m] = v.split('-');
+  return MONTH_NAMES[parseInt(m, 10) - 1] || v;
+}
+
 interface PropertyDashboardTabProps {
   propertyId: string;
 }
@@ -64,7 +71,7 @@ interface PropertyDashboardTabProps {
 export const PropertyDashboardTab = ({
   propertyId,
 }: PropertyDashboardTabProps) => {
-  const { data: dashboard, isLoading, error } = usePropertyDashboard(propertyId);
+  const { data: dashboard, isLoading, error, refetch } = usePropertyDashboard(propertyId);
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
@@ -82,8 +89,11 @@ export const PropertyDashboardTab = ({
   if (isLoading) return <LoadingSpinner />;
   if (error)
     return (
-      <div className="text-center py-12 text-red-500">
-        Failed to load dashboard data
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+        Failed to load dashboard data.{' '}
+        <button onClick={() => refetch()} className="inline-flex items-center gap-1 underline hover:no-underline">
+          <RefreshCw className="h-3 w-3" /> Retry
+        </button>
       </div>
     );
   if (!dashboard) return null;
@@ -146,7 +156,7 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
       {cards.map((card) => (
         <div
           key={card.label}
@@ -161,13 +171,14 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
             </span>
           </div>
           <div
-            className={`text-lg font-bold ${
+            className={`text-base lg:text-lg font-bold truncate ${
               card.value === 'N/A'
                 ? 'text-[#9ca0b8] dark:text-[#5c6180]'
                 : card.positive
                   ? 'text-[#1a1d2e] dark:text-[#eef0f6]'
                   : 'text-red-600 dark:text-red-400'
             }`}
+            title={card.value}
           >
             {card.value}
           </div>
@@ -221,11 +232,7 @@ function CashFlowChart({
         <XAxis
           dataKey="month"
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={(v) => {
-            const [, m] = v.split('-');
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return months[parseInt(m, 10) - 1] || v;
-          }}
+          tickFormatter={formatMonthTick}
         />
         <YAxis tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }} />
         <Tooltip contentStyle={tooltipStyle} />
@@ -249,13 +256,15 @@ function OccupancyChart({
   tooltipStyle: React.CSSProperties;
   isDark: boolean;
 }) {
+  const gradientId = useId();
+
   if (!data.months.length) return <EmptyChart message="No contract data" />;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={data.months} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
         <defs>
-          <linearGradient id="occupancyGradient" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor={COLORS.occupancy} stopOpacity={0.3} />
             <stop offset="95%" stopColor={COLORS.occupancy} stopOpacity={0} />
           </linearGradient>
@@ -264,11 +273,7 @@ function OccupancyChart({
         <XAxis
           dataKey="month"
           tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={(v) => {
-            const [, m] = v.split('-');
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return months[parseInt(m, 10) - 1] || v;
-          }}
+          tickFormatter={formatMonthTick}
         />
         <YAxis
           domain={[0, 100]}
@@ -284,7 +289,7 @@ function OccupancyChart({
           dataKey="occupancyPercent"
           stroke={COLORS.occupancy}
           strokeWidth={2}
-          fill="url(#occupancyGradient)"
+          fill={`url(#${gradientId})`}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -302,13 +307,16 @@ function ExpensePieChart({
 }) {
   if (!data.categories.length) return <EmptyChart message="No expense data" />;
 
-  const total = data.categories.reduce((sum, c) => sum + c.amount, 0);
+  const chartData = data.categories.map((c) => ({
+    ...c,
+    category: humanizeCategory(c.category),
+  }));
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
-          data={data.categories}
+          data={chartData}
           cx="50%"
           cy="50%"
           innerRadius={60}
@@ -316,22 +324,20 @@ function ExpensePieChart({
           paddingAngle={2}
           dataKey="amount"
           nameKey="category"
-          label={({ name, value }) => {
-            const pct = ((Number(value) / total) * 100).toFixed(0);
-            return `${humanizeCategory(String(name))} ${pct}%`;
-          }}
-          labelLine={false}
         >
-          {data.categories.map((_, index) => (
+          {chartData.map((_, index) => (
             <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
           ))}
         </Pie>
         <Tooltip
           contentStyle={tooltipStyle}
-          formatter={(value?: number | string, name?: string) => [
+          formatter={(value?: number | string) => [
             Number(value ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 }),
-            humanizeCategory(name ?? ''),
           ]}
+        />
+        <Legend
+          wrapperStyle={{ fontSize: '12px' }}
+          formatter={(value: string) => value}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -385,7 +391,7 @@ function EquityBreakdownCard({
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
-                width: bar.value != null && maxVal > 0
+                width: bar.value != null && bar.value > 0 && maxVal > 0
                   ? `${Math.max((bar.value / maxVal) * 100, 2)}%`
                   : '0%',
                 backgroundColor: bar.color,

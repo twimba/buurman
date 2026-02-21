@@ -19,6 +19,8 @@ import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
 import com.buurman.service.PropertyDashboardService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/properties/{identifier}/dashboard")
 @Tag(name = "Property Dashboard", description = "Property-level investment analytics")
 @SecurityRequirement(name = "bearer-jwt")
+@PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
 @RequiredArgsConstructor
 public class PropertyDashboardController {
 
@@ -61,7 +64,7 @@ public class PropertyDashboardController {
     PropertyDashboardResponse dashboard = dashboardService.getDashboard(identifier, principal);
     byte[] pdf = exportService.generatePropertyDashboardPDF(dashboard);
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-dashboard.pdf")
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".pdf")
         .contentType(MediaType.APPLICATION_PDF)
         .body(pdf);
   }
@@ -74,7 +77,7 @@ public class PropertyDashboardController {
     PropertyDashboardResponse dashboard = dashboardService.getDashboard(identifier, principal);
     byte[] csv = exportService.generatePropertyDashboardCSV(dashboard);
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-dashboard.csv")
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".csv")
         .contentType(MediaType.parseMediaType("text/csv"))
         .body(csv);
   }
