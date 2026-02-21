@@ -139,7 +139,7 @@ public class DemoAuditLogGenerator {
                 CONTRACTS.START_DATE,
                 CONTRACTS.END_DATE,
                 CONTRACTS.RENT_AMOUNT,
-                CONTRACTS.CURRENCY,
+                CONTRACTS.RENT_AMOUNT_CURRENCY,
                 CONTRACTS.PAYMENT_FREQUENCY,
                 CONTRACTS.DEPOSIT_AMOUNT,
                 CONTRACTS.CREATED_AT,
@@ -154,7 +154,7 @@ public class DemoAuditLogGenerator {
       values.put("status", r.get(CONTRACTS.STATUS));
       values.put("startDate", Objects.toString(r.get(CONTRACTS.START_DATE), null));
       values.put("endDate", Objects.toString(r.get(CONTRACTS.END_DATE), null));
-      String currency = r.get(CONTRACTS.CURRENCY) != null ? r.get(CONTRACTS.CURRENCY) : "EUR";
+      String currency = r.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null ? r.get(CONTRACTS.RENT_AMOUNT_CURRENCY) : "EUR";
       values.put("rentAmount", CurrencyUtils.toMajorUnits(r.get(CONTRACTS.RENT_AMOUNT), currency));
       values.put("currency", currency);
       values.put("paymentFrequency", r.get(CONTRACTS.PAYMENT_FREQUENCY));

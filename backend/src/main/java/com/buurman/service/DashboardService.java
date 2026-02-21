@@ -132,7 +132,7 @@ public class DashboardService {
     Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
 
     for (var contract : activeContracts) {
-      String currency = contract.get(CONTRACTS.CURRENCY);
+      String currency = contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY);
       BigDecimal rentAmount =
           CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
       String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);

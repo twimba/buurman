@@ -121,8 +121,8 @@ public class ContractService {
     contract.setUpdatedAt(clock.instant());
 
     // Set defaults
-    if (contract.getCurrency() == null) {
-      contract.setCurrency("EUR");
+    if (contract.getRentAmountCurrency() == null) {
+      contract.setRentAmountCurrency("EUR");
     }
     if (contract.getAutoRenewal() == null) {
       contract.setAutoRenewal(false);
@@ -142,7 +142,7 @@ public class ContractService {
         "contract.rent.amount",
         savedContract.getRentAmount().doubleValue(),
         "currency",
-        savedContract.getCurrency());
+        savedContract.getRentAmountCurrency());
 
     log.info(
         "Contract created: {} for property {} in team {}",
@@ -167,7 +167,7 @@ public class ContractService {
     contractVars.put("propertyName", propertyName);
     contractVars.put("tenantName", tenantName);
     contractVars.put(
-        "rentAmount", savedContract.getCurrency() + " " + savedContract.getRentAmount());
+        "rentAmount", savedContract.getRentAmountCurrency() + " " + savedContract.getRentAmount());
     contractVars.put("startDate", savedContract.getStartDate().toString());
     contractVars.put(
         "endDate", savedContract.getEndDate() != null ? savedContract.getEndDate().toString() : "");
@@ -274,7 +274,9 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getCurrency(),
+            contract.getRentAmountCurrency(),
+            contract.getDepositAmountCurrency(),
+            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -332,8 +334,9 @@ public class ContractService {
     if (!bigDecimalEquals(oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
       changedFields.put("securityDeposit", updatedContract.getSecurityDeposit());
     }
-    if (!oldContract.getCurrency().equals(updatedContract.getCurrency())) {
-      changedFields.put("currency", updatedContract.getCurrency());
+    if (!java.util.Objects.equals(
+        oldContract.getRentAmountCurrency(), updatedContract.getRentAmountCurrency())) {
+      changedFields.put("rentAmountCurrency", updatedContract.getRentAmountCurrency());
     }
     if (!oldContract.getPaymentFrequency().equals(updatedContract.getPaymentFrequency())) {
       changedFields.put("paymentFrequency", updatedContract.getPaymentFrequency());
@@ -442,7 +445,9 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getCurrency(),
+            contract.getRentAmountCurrency(),
+            contract.getDepositAmountCurrency(),
+            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -559,7 +564,9 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getCurrency(),
+            contract.getRentAmountCurrency(),
+            contract.getDepositAmountCurrency(),
+            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -650,7 +657,9 @@ public class ContractService {
             sourceContract.getRentAmount(),
             sourceContract.getDepositAmount(),
             sourceContract.getSecurityDeposit(),
-            sourceContract.getCurrency(),
+            sourceContract.getRentAmountCurrency(),
+            sourceContract.getDepositAmountCurrency(),
+            sourceContract.getSecurityDepositCurrency(),
             sourceContract.getPaymentFrequency(),
             sourceContract.getPaymentDueDay(),
             sourceContract.getAutoRenewal(),
@@ -804,7 +813,9 @@ public class ContractService {
         contract.getRentAmount(),
         contract.getDepositAmount(),
         contract.getSecurityDeposit(),
-        contract.getCurrency(),
+        contract.getRentAmountCurrency(),
+        contract.getDepositAmountCurrency(),
+        contract.getSecurityDepositCurrency(),
         contract.getPaymentFrequency(),
         contract.getPaymentDueDay(),
         contract.getAutoRenewal(),
@@ -884,7 +895,9 @@ public class ContractService {
                   contract.getRentAmount(),
                   contract.getDepositAmount(),
                   contract.getSecurityDeposit(),
-                  contract.getCurrency(),
+                  contract.getRentAmountCurrency(),
+                  contract.getDepositAmountCurrency(),
+                  contract.getSecurityDepositCurrency(),
                   contract.getPaymentFrequency(),
                   contract.getPaymentDueDay(),
                   contract.getAutoRenewal(),

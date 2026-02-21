@@ -139,18 +139,18 @@ public class PropertyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
+    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
+    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
+    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
     validateCurrencyRequired(
-        request.currency(),
-        request.purchasePrice(),
-        request.currentMarketValue(),
-        request.mortgageAmount(),
-        request.monthlyMortgagePayment(),
-        request.annualPropertyTax(),
-        request.annualInsurance(),
-        request.annualHoaFee(),
-        request.annualManagementFee(),
-        request.annualMaintenanceReserve(),
-        request.landValue());
+        request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
+    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
+    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
+    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
+    validateCurrencyRequired(
+        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
+    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
@@ -275,18 +275,18 @@ public class PropertyService {
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
+    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
+    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
+    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
     validateCurrencyRequired(
-        request.currency(),
-        request.purchasePrice(),
-        request.currentMarketValue(),
-        request.mortgageAmount(),
-        request.monthlyMortgagePayment(),
-        request.annualPropertyTax(),
-        request.annualInsurance(),
-        request.annualHoaFee(),
-        request.annualManagementFee(),
-        request.annualMaintenanceReserve(),
-        request.landValue());
+        request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
+    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
+    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
+    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
+    validateCurrencyRequired(
+        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
+    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
@@ -887,25 +887,34 @@ public class PropertyService {
         response.hasAdaptedBathroom(),
         response.accessibilityNotes(),
         // Investment & Financial
-        response.currency(),
         response.purchasePrice(),
+        response.purchasePriceCurrency(),
         response.purchaseDate(),
         response.currentMarketValue(),
+        response.currentMarketValueCurrency(),
         response.marketValueDate(),
         response.mortgageType(),
         response.mortgageAmount(),
+        response.mortgageAmountCurrency(),
         response.mortgageInterestRate(),
         response.mortgageStartDate(),
         response.mortgageEndDate(),
         response.monthlyMortgagePayment(),
+        response.monthlyMortgagePaymentCurrency(),
         response.annualPropertyTax(),
+        response.annualPropertyTaxCurrency(),
         response.annualInsurance(),
+        response.annualInsuranceCurrency(),
         response.annualHoaFee(),
+        response.annualHoaFeeCurrency(),
         response.annualManagementFee(),
+        response.annualManagementFeeCurrency(),
         response.annualMaintenanceReserve(),
+        response.annualMaintenanceReserveCurrency(),
         response.depreciationMethod(),
         response.depreciationYears(),
         response.landValue(),
+        response.landValueCurrency(),
         // Category-specific details
         residentialDetails,
         commercialDetails,

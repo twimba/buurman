@@ -139,7 +139,7 @@ public class PaymentService {
     }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
-      payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
+      payment.setCurrency(contract.getRentAmountCurrency() != null ? contract.getRentAmountCurrency() : "EUR");
     }
 
     Payment savedPayment = paymentRepository.save(payment);
@@ -679,7 +679,7 @@ public class PaymentService {
       payment.setTeamId(teamId);
       payment.setContractId(contract.getId());
       payment.setAmount(contract.getRentAmount());
-      payment.setCurrency(contract.getCurrency());
+      payment.setCurrency(contract.getRentAmountCurrency());
       payment.setDueDate(dueDate);
       payment.setStatus(PENDING);
       payment.setNotes("Auto-generated for " + month);

@@ -69,7 +69,7 @@ public class PropertyDashboardService {
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
 
-    String currency = property.getCurrency();
+    String currency = property.getPurchasePriceCurrency();
     LocalDate now = LocalDate.now();
     LocalDate twelveMonthsAgo = now.minusMonths(MONTHS_LOOKBACK);
 
@@ -109,7 +109,7 @@ public class PropertyDashboardService {
     BigDecimal marketValue = property.getCurrentMarketValue();
     BigDecimal mortgageAmount = property.getMortgageAmount();
     BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
-    String currency = property.getCurrency();
+    String currency = property.getPurchasePriceCurrency();
 
     BigDecimal totalIncome = sumAmounts(payments.stream().map(Payment::getAmount).toList());
     BigDecimal totalExpenses = sumAmounts(expenses.stream().map(Expense::getAmount).toList());
