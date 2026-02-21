@@ -42,7 +42,8 @@ public class DemoDocumentGenerator {
 
   private record DocTemplate(String title, String pdfResource, String notes) {}
 
-  private static final List<DocTemplate> PROPERTY_DOCS =
+  // --- Residential property documents ---
+  private static final List<DocTemplate> RESIDENTIAL_PROPERTY_DOCS =
       List.of(
           new DocTemplate(
               "Building insurance policy",
@@ -64,7 +65,54 @@ public class DemoDocumentGenerator {
               "condition-report.pdf",
               "Pre-renovation asbestos inspection"));
 
-  private static final List<DocTemplate> TENANT_DOCS =
+  // --- Commercial property documents ---
+  private static final List<DocTemplate> COMMERCIAL_PROPERTY_DOCS =
+      List.of(
+          new DocTemplate(
+              "Commercial lease agreement", "lease-agreement.pdf", "Standard commercial lease"),
+          new DocTemplate(
+              "Fire safety certificate",
+              "insurance-cert-2.pdf",
+              "Annual fire safety inspection report"),
+          new DocTemplate("Building permit", "generic-form.pdf", "Municipal building permit"),
+          new DocTemplate("Floor plan", "generic-form.pdf", "Office/retail floor layout"),
+          new DocTemplate(
+              "Environmental assessment",
+              "condition-report.pdf",
+              "Environmental impact assessment"));
+
+  // --- Industrial property documents ---
+  private static final List<DocTemplate> INDUSTRIAL_PROPERTY_DOCS =
+      List.of(
+          new DocTemplate("Warehouse lease", "lease-agreement.pdf", "Industrial lease agreement"),
+          new DocTemplate(
+              "Environmental compliance certificate",
+              "insurance-certificate.pdf",
+              "Environmental compliance documentation"),
+          new DocTemplate(
+              "Structural inspection report",
+              "condition-report.pdf",
+              "Annual structural inspection"),
+          new DocTemplate(
+              "Loading dock specifications",
+              "generic-form.pdf",
+              "Loading dock dimensions and capacity"));
+
+  // --- Agricultural property documents ---
+  private static final List<DocTemplate> AGRICULTURAL_PROPERTY_DOCS =
+      List.of(
+          new DocTemplate(
+              "Agricultural lease agreement", "lease-agreement.pdf", "Agricultural land lease"),
+          new DocTemplate(
+              "Soil analysis report", "condition-report.pdf", "Annual soil quality analysis"),
+          new DocTemplate(
+              "Water rights documentation",
+              "generic-form.pdf",
+              "Water extraction and irrigation rights"),
+          new DocTemplate("Land survey", "generic-form.pdf", "Cadastral land survey report"));
+
+  // --- Individual tenant documents ---
+  private static final List<DocTemplate> INDIVIDUAL_TENANT_DOCS =
       List.of(
           new DocTemplate(
               "ID verification", "generic-form.pdf", "Copy of passport/ID for tenant verification"),
@@ -80,6 +128,26 @@ public class DemoDocumentGenerator {
               "3-month bank statement for affordability check"),
           new DocTemplate(
               "Rental application", "rental-application.pdf", "Completed rental application form"));
+
+  // --- Business tenant documents ---
+  private static final List<DocTemplate> BUSINESS_TENANT_DOCS =
+      List.of(
+          new DocTemplate(
+              "Chamber of Commerce registration",
+              "generic-form.pdf",
+              "KvK extract or equivalent company registration"),
+          new DocTemplate(
+              "Company financial statements",
+              "invoice-template.pdf",
+              "Annual financial statements"),
+          new DocTemplate(
+              "VAT registration certificate",
+              "tax-assessment.pdf",
+              "VAT/BTW registration documentation"),
+          new DocTemplate(
+              "Director ID verification",
+              "generic-form.pdf",
+              "ID verification of company director"));
 
   private static final List<DocTemplate> CONTRACT_DOCS =
       List.of(
@@ -125,11 +193,13 @@ public class DemoDocumentGenerator {
       List<UUID> tenantIds = ctx.getTenantIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
 
-      // Property documents (2-3 per property)
+      // Property documents (2-3 per property, category-specific)
       for (UUID propertyId : propertyIds) {
         String street = fetchPropertyStreet(propertyId);
         String prefix = street != null ? slugify(street) : "property";
-        for (DocTemplate doc : pickRandom(PROPERTY_DOCS, random.nextInt(2, 4))) {
+        String category = ctx.getPropertyCategory(propertyId);
+        List<DocTemplate> templates = propertyDocsForCategory(category);
+        for (DocTemplate doc : pickRandom(templates, random.nextInt(2, 4))) {
           if (uploadDocument(
               ctx,
               teamId,
@@ -145,11 +215,13 @@ public class DemoDocumentGenerator {
         }
       }
 
-      // Tenant documents (1-2 per tenant)
+      // Tenant documents (1-2 per tenant, type-specific)
       for (UUID tenantId : tenantIds) {
         String tenantName = fetchTenantName(tenantId);
         String prefix = tenantName != null ? slugify(tenantName) : "tenant";
-        for (DocTemplate doc : pickRandom(TENANT_DOCS, random.nextInt(1, 3))) {
+        boolean isBusiness = ctx.isBusinessTenant(tenantId);
+        List<DocTemplate> templates = isBusiness ? BUSINESS_TENANT_DOCS : INDIVIDUAL_TENANT_DOCS;
+        for (DocTemplate doc : pickRandom(templates, random.nextInt(1, 3))) {
           if (uploadDocument(
               ctx,
               teamId,
@@ -241,6 +313,15 @@ public class DemoDocumentGenerator {
       ctx.incrementDocuments(teamDocuments);
       log.info("Created {} documents for team {}", teamDocuments, teamKey);
     }
+  }
+
+  private List<DocTemplate> propertyDocsForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL" -> COMMERCIAL_PROPERTY_DOCS;
+      case "INDUSTRIAL" -> INDUSTRIAL_PROPERTY_DOCS;
+      case "AGRICULTURAL" -> AGRICULTURAL_PROPERTY_DOCS;
+      default -> RESIDENTIAL_PROPERTY_DOCS;
+    };
   }
 
   private boolean uploadDocument(

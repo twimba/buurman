@@ -16,7 +16,10 @@ import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_COMMERCIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
 import static com.buurman.jooq.generated.Tables.TEAMS;
@@ -297,6 +300,25 @@ public class DemoDataService {
             .where(PROPERTY_OUTDOOR_AREAS.TEAM_ID.in(demoTeamIds))
             .execute();
     log.debug("Deleted {} property outdoor areas", deleted);
+
+    // 13b. Property category-specific details
+    deleted =
+        dsl.deleteFrom(PROPERTY_COMMERCIAL_DETAILS)
+            .where(PROPERTY_COMMERCIAL_DETAILS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property commercial details", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_INDUSTRIAL_DETAILS)
+            .where(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property industrial details", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_AGRICULTURAL_DETAILS)
+            .where(PROPERTY_AGRICULTURAL_DETAILS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property agricultural details", deleted);
 
     // 14. Properties
     deleted = dsl.deleteFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(demoTeamIds)).execute();
