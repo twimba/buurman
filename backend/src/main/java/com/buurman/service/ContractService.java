@@ -44,6 +44,7 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantSummary;
+import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
@@ -120,10 +121,12 @@ public class ContractService {
     contract.setCreatedAt(clock.instant());
     contract.setUpdatedAt(clock.instant());
 
+    // Validate currencies
+    validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
+    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
+    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
+
     // Set defaults
-    if (contract.getRentAmountCurrency() == null) {
-      contract.setRentAmountCurrency("EUR");
-    }
     if (contract.getAutoRenewal() == null) {
       contract.setAutoRenewal(false);
     }
@@ -298,6 +301,11 @@ public class ContractService {
     contract.setUpdatedBy(principal.getUserId());
     contract.setUpdatedAt(clock.instant());
 
+    // Validate currencies
+    validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
+    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
+    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
+
     Contract updatedContract = contractRepository.save(contract);
 
     // Update initial rent period if rent or start date changed on DRAFT
@@ -337,6 +345,14 @@ public class ContractService {
     if (!java.util.Objects.equals(
         oldContract.getRentAmountCurrency(), updatedContract.getRentAmountCurrency())) {
       changedFields.put("rentAmountCurrency", updatedContract.getRentAmountCurrency());
+    }
+    if (!java.util.Objects.equals(
+        oldContract.getDepositAmountCurrency(), updatedContract.getDepositAmountCurrency())) {
+      changedFields.put("depositAmountCurrency", updatedContract.getDepositAmountCurrency());
+    }
+    if (!java.util.Objects.equals(
+        oldContract.getSecurityDepositCurrency(), updatedContract.getSecurityDepositCurrency())) {
+      changedFields.put("securityDepositCurrency", updatedContract.getSecurityDepositCurrency());
     }
     if (!oldContract.getPaymentFrequency().equals(updatedContract.getPaymentFrequency())) {
       changedFields.put("paymentFrequency", updatedContract.getPaymentFrequency());
@@ -911,6 +927,20 @@ public class ContractService {
                   contract.getUpdatedAt());
             })
         .toList();
+  }
+
+  private void validateCurrencyRequired(String currency, java.math.BigDecimal amount) {
+    if (currency != null) {
+      try {
+        java.util.Currency.getInstance(currency);
+      } catch (IllegalArgumentException e) {
+        throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
+      }
+      return;
+    }
+    if (amount != null) {
+      throw new BadRequestException("Currency is required when a monetary value is provided");
+    }
   }
 
   private static boolean bigDecimalEquals(java.math.BigDecimal a, java.math.BigDecimal b) {

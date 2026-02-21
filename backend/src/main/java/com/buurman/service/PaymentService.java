@@ -139,7 +139,7 @@ public class PaymentService {
     }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
-      payment.setCurrency(contract.getRentAmountCurrency() != null ? contract.getRentAmountCurrency() : "EUR");
+      payment.setCurrency(contract.getRentAmountCurrency());
     }
 
     Payment savedPayment = paymentRepository.save(payment);

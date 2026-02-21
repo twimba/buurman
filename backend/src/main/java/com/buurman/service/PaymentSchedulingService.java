@@ -176,7 +176,7 @@ public class PaymentSchedulingService {
           paymentAmount = rentPeriod.get().getRentAmount();
         }
 
-        String currency = contract.getRentAmountCurrency() != null ? contract.getRentAmountCurrency() : "EUR";
+        String currency = contract.getRentAmountCurrency();
 
         Payment payment = new Payment();
         payment.setIdentifier(newPaymentId().value());
