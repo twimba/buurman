@@ -97,10 +97,22 @@ public class BackofficeSystemInfoService {
         appProperties.version(),
         git != null ? git.getShortCommitId() : null,
         git != null ? git.get("commit.id.full") : null,
-        git != null ? git.getBranch() : null,
+        git != null ? resolveGitBranch(git) : null,
         git != null ? git.getCommitTime() : null,
         git != null && Boolean.parseBoolean(git.get("dirty")),
         build != null ? build.getTime() : null);
+  }
+
+  private String resolveGitBranch(GitProperties git) {
+    String branch = git.getBranch();
+    // Detached HEAD (e.g. tag checkout in CI) returns the commit SHA as branch
+    if (branch != null && branch.matches("[0-9a-f]{40}")) {
+      String tag = git.get("closest.tag.name");
+      if (tag != null && !tag.isEmpty()) {
+        return tag;
+      }
+    }
+    return branch;
   }
 
   // --- Runtime info ---

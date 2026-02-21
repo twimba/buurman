@@ -302,6 +302,7 @@
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <includeOnlyProperties>
                         <includeOnlyProperty>git.branch</includeOnlyProperty>
+                        <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
                         <includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
                         <includeOnlyProperty>git.commit.id.full</includeOnlyProperty>
                         <includeOnlyProperty>git.commit.message.short</includeOnlyProperty>
