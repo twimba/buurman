@@ -67,6 +67,7 @@ public class DemoExpenseGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
 
       if (propertyIds == null) {
@@ -128,8 +129,8 @@ public class DemoExpenseGenerator {
               .set(EXPENSES.TEAM_ID, teamId)
               .set(EXPENSES.PROPERTY_ID, propertyId)
               .set(EXPENSES.CATEGORY, category)
-              .set(EXPENSES.AMOUNT, CurrencyUtils.toMinorUnits(amount, "EUR"))
-              .set(EXPENSES.CURRENCY, "EUR")
+              .set(EXPENSES.AMOUNT, CurrencyUtils.toMinorUnits(amount, currency))
+              .set(EXPENSES.CURRENCY, currency)
               .set(EXPENSES.EXPENSE_DATE, expenseDate)
               .set(EXPENSES.DESCRIPTION, description)
               .set(EXPENSES.NOTES, random.nextInt(3) == 0 ? "Vendor invoice attached" : null)

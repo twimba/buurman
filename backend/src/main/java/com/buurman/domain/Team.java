@@ -15,7 +15,7 @@ public class Team {
   private UUID id;
   private String identifier;
   private String name;
-  private TeamSettings settings;
+  private boolean demo;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

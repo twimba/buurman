@@ -11,6 +11,9 @@ public class DemoDataContext {
   // Team key (e.g., "demo-team") -> team UUID
   private final Map<String, UUID> teamIds = new LinkedHashMap<>();
 
+  // Team key -> default currency code (e.g., "EUR")
+  private final Map<String, String> teamCurrencies = new LinkedHashMap<>();
+
   // UUID -> identifier (ULID) for S3 key generation
   private final Map<UUID, String> identifiers = new LinkedHashMap<>();
 
@@ -56,6 +59,14 @@ public class DemoDataContext {
 
   public String getIdentifier(UUID id) {
     return identifiers.getOrDefault(id, id.toString());
+  }
+
+  public void putTeamCurrency(String teamKey, String currency) {
+    teamCurrencies.put(teamKey, currency);
+  }
+
+  public String getCurrencyForTeam(String teamKey) {
+    return teamCurrencies.getOrDefault(teamKey, "EUR");
   }
 
   public Map<String, UUID> getUserIds() {

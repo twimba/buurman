@@ -22,7 +22,7 @@ import com.buurman.domain.NotificationType;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
-import com.buurman.domain.TeamSettings;
+import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
@@ -30,12 +30,14 @@ import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
+import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.mapper.TeamMapper;
 import com.buurman.repository.TeamInvitationRepository;
 import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.security.UserPrincipal;
@@ -49,6 +51,7 @@ import lombok.RequiredArgsConstructor;
 public class TeamService {
 
   private final TeamRepository teamRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final TeamInvitationRepository invitationRepository;
   private final UserRepository userRepository;
@@ -435,87 +438,73 @@ public class TeamService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public TeamResponse updateTeamSettings(
+  public TeamPreferencesResponse updateTeamPreferences(
       String teamIdentifier, UpdateTeamSettingsRequest request, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    // Verify user is admin of this team
     if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
       throw new ForbiddenException("Access denied");
     }
 
-    // Update settings
-    TeamSettings settings = team.getSettings();
-    if (settings == null) {
-      settings = new TeamSettings();
-    }
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
 
-    // Update payment settings
     if (request.payments() != null) {
-      TeamSettings.PaymentSettings paymentSettings = new TeamSettings.PaymentSettings();
-      paymentSettings.setPaymentsAheadCount(request.payments().paymentsAheadCount());
-      paymentSettings.setAutoGenerationEnabled(request.payments().autoGenerationEnabled());
-      settings.setPayments(paymentSettings);
+      prefs.setPaymentsAheadCount(request.payments().paymentsAheadCount());
+      prefs.setAutoGenerationEnabled(request.payments().autoGenerationEnabled());
     }
 
-    // Update regional settings
     if (request.regional() != null) {
-      TeamSettings.RegionalSettings regionalSettings = settings.getRegional();
-      if (regionalSettings == null) {
-        regionalSettings = new TeamSettings.RegionalSettings();
-      }
       if (request.regional().defaultCurrency() != null) {
-        regionalSettings.setDefaultCurrency(request.regional().defaultCurrency());
+        prefs.setDefaultCurrency(request.regional().defaultCurrency());
       }
       if (request.regional().defaultCountry() != null) {
-        regionalSettings.setDefaultCountry(request.regional().defaultCountry());
+        prefs.setDefaultCountry(request.regional().defaultCountry());
       }
       if (request.regional().timezone() != null) {
-        regionalSettings.setTimezone(request.regional().timezone());
+        prefs.setTimezone(request.regional().timezone());
       }
       if (request.regional().dateFormat() != null) {
-        regionalSettings.setDateFormat(request.regional().dateFormat());
+        prefs.setDateFormat(request.regional().dateFormat());
       }
       if (request.regional().fiscalYearStartMonth() != null) {
-        regionalSettings.setFiscalYearStartMonth(request.regional().fiscalYearStartMonth());
+        prefs.setFiscalYearStartMonth(request.regional().fiscalYearStartMonth());
       }
-      settings.setRegional(regionalSettings);
     }
 
-    team.setSettings(settings);
-    team.setUpdatedBy(principal.getUserId());
-    team = teamRepository.save(team);
-
-    long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
-    return teamMapper.toResponse(team, memberCount);
+    prefs = teamPreferencesRepository.save(prefs);
+    return toPreferencesResponse(prefs);
   }
 
-  public TeamSettings getTeamSettings(String teamIdentifier, UserPrincipal principal) {
+  public TeamPreferencesResponse getTeamPreferences(
+      String teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    // Verify user belongs to this team
     if (!team.getId().equals(principal.getTeamId())) {
       throw new ForbiddenException("Access denied");
     }
 
-    TeamSettings settings = team.getSettings();
-    if (settings == null) {
-      settings = new TeamSettings(); // Return defaults
-    }
-
-    return settings;
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
+    return toPreferencesResponse(prefs);
   }
 
-  /**
-   * Returns the team's configured default currency (e.g. "EUR", "USD"), or null if not configured.
-   */
+  /** Returns the team's configured default currency, or null if not configured. */
   public String getDefaultCurrency(UUID teamId) {
-    return teamRepository
-        .findById(teamId)
-        .map(Team::getSettings)
-        .map(TeamSettings::getRegional)
-        .map(TeamSettings.RegionalSettings::getDefaultCurrency)
+    return teamPreferencesRepository
+        .findByTeamId(teamId)
+        .map(TeamPreferences::getDefaultCurrency)
         .orElse(null);
+  }
+
+  private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {
+    return new TeamPreferencesResponse(
+        new TeamPreferencesResponse.PaymentSettings(
+            prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
+        new TeamPreferencesResponse.RegionalSettings(
+            prefs.getDefaultCurrency(),
+            prefs.getDefaultCountry(),
+            prefs.getTimezone(),
+            prefs.getDateFormat(),
+            prefs.getFiscalYearStartMonth()));
   }
 
   @Transactional

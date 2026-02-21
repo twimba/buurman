@@ -148,10 +148,7 @@ public class DemoDataService {
 
     // Find demo team IDs
     List<UUID> demoTeamIds =
-        dsl.select(TEAMS.ID)
-            .from(TEAMS)
-            .where(TEAMS.SETTINGS.cast(String.class).contains("\"demoData\""))
-            .fetch(TEAMS.ID);
+        dsl.select(TEAMS.ID).from(TEAMS).where(TEAMS.DEMO.isTrue()).fetch(TEAMS.ID);
 
     if (demoTeamIds.isEmpty()) {
       log.info("No existing demo data found");

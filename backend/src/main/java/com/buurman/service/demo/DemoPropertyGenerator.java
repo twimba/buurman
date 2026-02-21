@@ -235,6 +235,7 @@ public class DemoPropertyGenerator {
       int count = entry.getValue();
       UUID teamId = ctx.getTeamIds().get(teamKey);
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = new ArrayList<>();
 
       for (int i = 0; i < count; i++) {
@@ -332,18 +333,18 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.PURCHASE_PRICE,
                 i < 4 ? Long.valueOf((200_000 + i * 75_000) * 100L) : null)
-            .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, i < 4 ? "EUR" : null)
+            .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.PURCHASE_DATE, i < 4 ? java.time.LocalDate.of(2020 + i, 3, 15) : null)
             .set(
                 PROPERTIES.CURRENT_MARKET_VALUE,
                 i < 4 ? Long.valueOf((220_000 + i * 80_000) * 100L) : null)
-            .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, i < 4 ? "EUR" : null)
+            .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.MARKET_VALUE_DATE, i < 4 ? java.time.LocalDate.of(2025, 12, 1) : null)
             .set(PROPERTIES.MORTGAGE_TYPE, i == 0 ? "NONE" : i < 4 ? "FIXED_RATE" : null)
             .set(
                 PROPERTIES.MORTGAGE_AMOUNT,
                 i > 0 && i < 4 ? Long.valueOf((150_000 + i * 50_000) * 100L) : null)
-            .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, i > 0 && i < 4 ? "EUR" : null)
+            .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, i > 0 && i < 4 ? currency : null)
             .set(
                 PROPERTIES.MORTGAGE_INTEREST_RATE,
                 i > 0 && i < 4 ? new BigDecimal("3." + (i * 2) + "50") : null)
@@ -356,25 +357,25 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
                 i > 0 && i < 4 ? Long.valueOf((600 + i * 150) * 100L) : null)
-            .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY, i > 0 && i < 4 ? "EUR" : null)
+            .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY, i > 0 && i < 4 ? currency : null)
             .set(
                 PROPERTIES.ANNUAL_PROPERTY_TAX,
                 i < 4 ? Long.valueOf((1200 + i * 300) * 100L) : null)
-            .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, i < 4 ? "EUR" : null)
+            .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? Long.valueOf((400 + i * 100) * 100L) : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, i < 4 ? "EUR" : null)
+            .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? Long.valueOf((600 + i * 200) * 100L) : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, i < 3 ? "EUR" : null)
+            .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, i < 3 ? currency : null)
             .set(
                 PROPERTIES.ANNUAL_MANAGEMENT_FEE,
                 i < 2 ? Long.valueOf((1800 + i * 600) * 100L) : null)
-            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? "EUR" : null)
+            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? currency : null)
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? Long.valueOf(500_00L) : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? "EUR" : null)
+            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
             .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
             .set(PROPERTIES.LAND_VALUE, i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)
-            .set(PROPERTIES.LAND_VALUE_CURRENCY, i < 3 ? "EUR" : null)
+            .set(PROPERTIES.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
             .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(PROPERTIES.UPDATED_AT, now)
             .set(PROPERTIES.CREATED_BY, createdBy)

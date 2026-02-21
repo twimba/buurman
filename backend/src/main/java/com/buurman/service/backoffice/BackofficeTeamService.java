@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
-import com.buurman.domain.TeamSettings;
+import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
@@ -24,6 +24,7 @@ import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.MemberIn
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.SettingsInfo;
 import com.buurman.dto.response.backoffice.BackofficeTeamResponse;
 import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.repository.backoffice.BackofficeTeamStatsRepository;
@@ -41,6 +42,7 @@ public class BackofficeTeamService {
   private final TeamRepository teamRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final UserRepository userRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final BackofficeTeamStatsRepository statsRepository;
 
   @Transactional(readOnly = true)
@@ -82,12 +84,10 @@ public class BackofficeTeamService {
     DataCounts dataCounts = statsRepository.countEntitiesForTeam(team.getId());
 
     // Financial snapshot — derive currency from actual contract data
-    TeamSettings settings = team.getSettings() != null ? team.getSettings() : new TeamSettings();
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
     var activeRent = statsRepository.sumActiveRentForTeam(team.getId());
     String currency =
-        activeRent.getValue() != null
-            ? activeRent.getValue()
-            : settings.getRegional().getDefaultCurrency();
+        activeRent.getValue() != null ? activeRent.getValue() : prefs.getDefaultCurrency();
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
@@ -101,13 +101,13 @@ public class BackofficeTeamService {
     // Settings
     SettingsInfo settingsInfo =
         new SettingsInfo(
-            settings.getPayments().getPaymentsAheadCount(),
-            settings.getPayments().getAutoGenerationEnabled(),
-            settings.getRegional().getDefaultCurrency(),
-            settings.getRegional().getDefaultCountry(),
-            settings.getRegional().getTimezone(),
-            settings.getRegional().getDateFormat(),
-            settings.getRegional().getFiscalYearStartMonth());
+            prefs.getPaymentsAheadCount(),
+            prefs.isAutoGenerationEnabled(),
+            prefs.getDefaultCurrency(),
+            prefs.getDefaultCountry(),
+            prefs.getTimezone(),
+            prefs.getDateFormat(),
+            prefs.getFiscalYearStartMonth());
 
     return new BackofficeTeamDetailResponse(
         team.getIdentifier(),

@@ -178,7 +178,7 @@ export const getTeamSettings = async (
 export const updateTeamSettings = async (
   teamId: string,
   data: UpdateTeamSettingsRequest
-): Promise<TeamResponse> => {
+): Promise<TeamSettingsResponse> => {
   const response = await client.put(`/teams/${teamId}/settings`, data);
   return response.data;
 };

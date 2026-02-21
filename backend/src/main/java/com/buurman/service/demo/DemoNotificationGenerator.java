@@ -67,6 +67,7 @@ public class DemoNotificationGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      String teamCurrency = ctx.getCurrencyForTeam(teamKey);
 
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
@@ -185,7 +186,7 @@ public class DemoNotificationGenerator {
         String currency =
             contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null
                 ? contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY)
-                : "EUR";
+                : teamCurrency;
         BigDecimal rentAmount =
             CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
 
@@ -277,9 +278,14 @@ public class DemoNotificationGenerator {
 
           String paymentStatus = payment.get(PAYMENTS.STATUS);
           if ("PENDING".equals(paymentStatus) || "OVERDUE".equals(paymentStatus)) {
+            String payCurrency =
+                payment.get(PAYMENTS.CURRENCY) != null
+                    ? payment.get(PAYMENTS.CURRENCY)
+                    : teamCurrency;
             String amount =
-                "EUR "
-                    + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), "EUR")
+                payCurrency
+                    + " "
+                    + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), payCurrency)
                         .toPlainString();
             String dueDate = payment.get(PAYMENTS.DUE_DATE).toString();
 
@@ -365,9 +371,15 @@ public class DemoNotificationGenerator {
             continue;
           }
 
+          String rcptCurrency =
+              payment.get(PAYMENTS.CURRENCY) != null
+                  ? payment.get(PAYMENTS.CURRENCY)
+                  : teamCurrency;
           String amount =
-              "EUR "
-                  + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), "EUR").toPlainString();
+              rcptCurrency
+                  + " "
+                  + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), rcptCurrency)
+                      .toPlainString();
           var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
           Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
           String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
@@ -490,7 +502,7 @@ public class DemoNotificationGenerator {
               Map.of(
                   "userName", tenantName,
                   "propertyName", propertyName,
-                  "amount", "EUR 1200.00",
+                  "amount", teamCurrency + " 1200.00",
                   "dueDate", LocalDate.now(clock).minusDays(15).toString(),
                   "baseUrl", baseUrl);
 

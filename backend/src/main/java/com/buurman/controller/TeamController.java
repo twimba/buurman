@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.TeamSettings;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
@@ -24,6 +23,7 @@ import com.buurman.dto.request.UpdateTeamRequest;
 import com.buurman.dto.request.UpdateTeamSettingsRequest;
 import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
+import com.buurman.dto.response.TeamPreferencesResponse;
 import com.buurman.dto.response.TeamResponse;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.TeamService;
@@ -119,18 +119,18 @@ public class TeamController {
       summary = "Update team settings",
       description = "Update team configuration settings (Admin only)")
   @PutMapping("/{teamIdentifier}/settings")
-  public TeamResponse updateTeamSettings(
+  public TeamPreferencesResponse updateTeamSettings(
       @PathVariable String teamIdentifier,
       @Valid @RequestBody UpdateTeamSettingsRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return teamService.updateTeamSettings(teamIdentifier, request, principal);
+    return teamService.updateTeamPreferences(teamIdentifier, request, principal);
   }
 
   @Operation(summary = "Get team settings", description = "Get team configuration settings")
   @GetMapping("/{teamIdentifier}/settings")
-  public TeamSettings getTeamSettings(
+  public TeamPreferencesResponse getTeamSettings(
       @PathVariable String teamIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-    return teamService.getTeamSettings(teamIdentifier, principal);
+    return teamService.getTeamPreferences(teamIdentifier, principal);
   }
 
   @Operation(
