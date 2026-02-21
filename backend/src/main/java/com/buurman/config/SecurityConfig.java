@@ -67,12 +67,7 @@ public class SecurityConfig {
   @Order(0)
   public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/actuator/**")
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated());
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
     return http.build();
   }
 
