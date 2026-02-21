@@ -133,15 +133,18 @@ public class PropertyDashboardService {
     // Annual NOI = income - recorded expenses - property-level operating costs (excluding mortgage)
     BigDecimal annualNoi = annualIncome.subtract(annualExpenses).subtract(annualOperatingCosts);
 
-    // Monthly Cash Flow = avg monthly income - avg monthly expenses - mortgage payment
+    // Monthly Cash Flow = avg monthly income - avg monthly expenses - operating costs/12 - mortgage
     BigDecimal avgMonthlyIncome = divideOrNull(annualIncome, BigDecimal.valueOf(MONTHS_LOOKBACK));
     BigDecimal avgMonthlyExpenses =
         divideOrNull(annualExpenses, BigDecimal.valueOf(MONTHS_LOOKBACK));
+    BigDecimal monthlyOperatingCosts =
+        annualOperatingCosts.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     BigDecimal monthlyCashFlow = null;
     if (avgMonthlyIncome != null) {
       monthlyCashFlow =
           avgMonthlyIncome
               .subtract(avgMonthlyExpenses != null ? avgMonthlyExpenses : ZERO)
+              .subtract(monthlyOperatingCosts)
               .subtract(monthlyMortgage != null ? monthlyMortgage : ZERO);
     }
 
@@ -225,6 +228,17 @@ public class PropertyDashboardService {
       List<Payment> payments, List<Expense> expenses, Property property, LocalDate now) {
     BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
 
+    // Monthly share of property-level annual operating costs (tax, insurance, HOA, etc.)
+    BigDecimal monthlyOperatingCosts =
+        sumAmounts(
+                java.util.Arrays.asList(
+                    property.getAnnualPropertyTax(),
+                    property.getAnnualInsurance(),
+                    property.getAnnualHoaFee(),
+                    property.getAnnualManagementFee(),
+                    property.getAnnualMaintenanceReserve()))
+            .divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+
     Map<YearMonth, BigDecimal> incomeByMonth =
         payments.stream()
             .filter(p -> p.getPaymentDate() != null)
@@ -245,7 +259,7 @@ public class PropertyDashboardService {
     for (int i = MONTHS_LOOKBACK - 1; i >= 0; i--) {
       YearMonth ym = YearMonth.from(now.minusMonths(i));
       BigDecimal income = incomeByMonth.getOrDefault(ym, ZERO);
-      BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO);
+      BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO).add(monthlyOperatingCosts);
       BigDecimal mort = monthlyMortgage != null ? monthlyMortgage : ZERO;
       BigDecimal net = income.subtract(exp).subtract(mort);
       months.add(new MonthlyDataPoint(ym.toString(), income, exp, mort, net));

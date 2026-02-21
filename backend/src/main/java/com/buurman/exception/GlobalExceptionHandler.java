@@ -188,6 +188,9 @@ public class GlobalExceptionHandler {
     if (lower.contains("chk_cpi_dates")) {
       return "The effective date range conflicts with an existing payment instruction";
     }
+    if (lower.contains("chk_mortgage_dates_valid")) {
+      return "Mortgage end date must be after the start date";
+    }
     if (lower.contains("chk_cpi_custom_method") || lower.contains("chk_pi_payment_method")) {
       return "The selected payment method is not supported";
     }

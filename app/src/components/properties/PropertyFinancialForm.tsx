@@ -250,6 +250,11 @@ export const PropertyFinancialForm = ({
               className={inputCls}
               disabled={isMortgageNone}
             />
+            {errors?.mortgageEndDate && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.mortgageEndDate}
+              </p>
+            )}
           </div>
         </div>
       </CollapsibleSection>

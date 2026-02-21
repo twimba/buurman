@@ -474,6 +474,15 @@ export const PropertyForm = ({
       'Land value'
     );
 
+    // Validate mortgage date ordering
+    if (
+      formData.mortgageStartDate &&
+      formData.mortgageEndDate &&
+      formData.mortgageEndDate <= formData.mortgageStartDate
+    ) {
+      newErrors.mortgageEndDate = 'End date must be after start date';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
