@@ -1,18 +1,48 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
+import { createPayment } from '@/api/payments';
 import { useCreatePayment } from '@/hooks/usePaymentHooks';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
 import { ContractSelector } from '@/components/common/ContractSelector';
+import {
+  BulkDataGrid,
+  type ColumnDef,
+  type RowData,
+} from '@/components/common/BulkDataGrid';
+import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { CreatePaymentRequest } from '@/types/payment';
 import { ArrowLeft, AlertTriangle, CheckCircle } from 'lucide-react';
+import { getErrorMessage } from '@/utils/errorMessages';
+
+type Mode = 'single' | 'bulk';
+
+const BULK_COLUMNS: ColumnDef[] = [
+  {
+    key: 'date',
+    label: 'Date',
+    type: 'date',
+    required: true,
+    placeholder: 'YYYY-MM-DD',
+  },
+  {
+    key: 'amount',
+    label: 'Amount',
+    type: 'number',
+    required: true,
+    placeholder: '0.00',
+  },
+];
 
 export const PaymentCreatePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const createPaymentMutation = useCreatePayment();
+  const { defaultCurrency } = useTeamDefaults();
 
   const prefilledContractId = searchParams.get('contractId') || '';
   const registerMode = searchParams.get('register') === 'true';
@@ -35,8 +65,10 @@ export const PaymentCreatePage = () => {
   const [continueAdding, setContinueAdding] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [addedCount, setAddedCount] = useState(0);
+  const [mode, setMode] = useState<Mode>('single');
+  const [bulkCurrency, setBulkCurrency] = useState(defaultCurrency || '');
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
 
-  // Effective contract ID: clear if prefill is invalid and user hasn't picked a new one
   const effectiveContractId =
     isPrefillInvalid && selectedContractId === prefilledContractId
       ? ''
@@ -55,6 +87,59 @@ export const PaymentCreatePage = () => {
   const handleCancel = () => {
     navigate('/payments');
   };
+
+  const handleBulkSubmit = useCallback(
+    (
+      rows: RowData[],
+      callbacks: {
+        onRowStart: (index: number) => void;
+        onRowSuccess: (index: number) => void;
+        onRowError: (index: number, error: string) => void;
+        onComplete: () => void;
+      }
+    ) => {
+      const currency = bulkCurrency || defaultCurrency || '';
+      setBulkSubmitting(true);
+
+      (async () => {
+        for (let i = 0; i < rows.length; i++) {
+          callbacks.onRowStart(i);
+          try {
+            const req: CreatePaymentRequest = {
+              contractIdentifier: effectiveContractId,
+              amount: parseFloat(rows[i].amount),
+              currency,
+              dueDate: rows[i].date,
+              markAsPaid: registerMode ? true : undefined,
+            };
+            await createPayment(req);
+            callbacks.onRowSuccess(i);
+          } catch (e) {
+            callbacks.onRowError(i, getErrorMessage(e));
+          }
+        }
+
+        // Invalidate caches once
+        queryClient.invalidateQueries({ queryKey: ['payments'] });
+        queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
+        queryClient.invalidateQueries({ queryKey: ['contracts'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+        queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+
+        setBulkSubmitting(false);
+        callbacks.onComplete();
+      })();
+    },
+    [
+      effectiveContractId,
+      bulkCurrency,
+      defaultCurrency,
+      registerMode,
+      queryClient,
+    ]
+  );
 
   const showWarning = isPrefillInvalid && !dismissedWarning;
 
@@ -83,6 +168,24 @@ export const PaymentCreatePage = () => {
           </div>
         </div>
 
+        {/* Mode toggle */}
+        <div className="flex gap-1 mb-4 p-1 bg-[#e8ecf4] dark:bg-[#1e2130] rounded-lg w-fit">
+          {(['single', 'bulk'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                mode === m
+                  ? 'bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
+              }`}
+            >
+              {m === 'single' ? 'Single' : 'Bulk'}
+            </button>
+          ))}
+        </div>
+
         {/* Form */}
         <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
           {showWarning && (
@@ -105,7 +208,7 @@ export const PaymentCreatePage = () => {
                 setSelectedContractId(id);
                 setDismissedWarning(true);
               }}
-              disabled={createPaymentMutation.isPending}
+              disabled={createPaymentMutation.isPending || bulkSubmitting}
             />
             {!effectiveContractId && !showWarning && (
               <p className="mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
@@ -114,39 +217,63 @@ export const PaymentCreatePage = () => {
             )}
           </div>
 
-          {/* Continue adding checkbox */}
-          {effectiveContractId && (
-            <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={continueAdding}
-                onChange={(e) => setContinueAdding(e.target.checked)}
-                className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
-              />
-              <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                Continue adding more
-              </span>
-            </label>
+          {effectiveContractId && mode === 'single' && (
+            <>
+              {/* Continue adding checkbox */}
+              <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={continueAdding}
+                  onChange={(e) => setContinueAdding(e.target.checked)}
+                  className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+                />
+                <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                  Continue adding more
+                </span>
+              </label>
+
+              {registerMode ? (
+                <RegisterPaymentForm
+                  onSubmit={handleSubmit}
+                  onCancel={handleCancel}
+                  isLoading={createPaymentMutation.isPending}
+                  contractIdentifier={effectiveContractId}
+                  resetKey={resetKey}
+                />
+              ) : (
+                <PaymentForm
+                  onSubmit={handleSubmit}
+                  onCancel={handleCancel}
+                  isLoading={createPaymentMutation.isPending}
+                  contractIdentifier={effectiveContractId}
+                  resetKey={resetKey}
+                />
+              )}
+            </>
           )}
 
-          {effectiveContractId &&
-            (registerMode ? (
-              <RegisterPaymentForm
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-                isLoading={createPaymentMutation.isPending}
-                contractIdentifier={effectiveContractId}
-                resetKey={resetKey}
+          {effectiveContractId && mode === 'bulk' && (
+            <>
+              {/* Currency selector for bulk */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+                  Currency <span className="text-red-500">*</span>
+                </label>
+                <CurrencySelector
+                  value={bulkCurrency || defaultCurrency || ''}
+                  onChange={setBulkCurrency}
+                  disabled={bulkSubmitting}
+                />
+              </div>
+
+              <BulkDataGrid
+                columns={BULK_COLUMNS}
+                onSubmit={handleBulkSubmit}
+                isSubmitting={bulkSubmitting}
+                disabled={!effectiveContractId || !(bulkCurrency || defaultCurrency)}
               />
-            ) : (
-              <PaymentForm
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-                isLoading={createPaymentMutation.isPending}
-                contractIdentifier={effectiveContractId}
-                resetKey={resetKey}
-              />
-            ))}
+            </>
+          )}
         </div>
       </div>
     </div>
