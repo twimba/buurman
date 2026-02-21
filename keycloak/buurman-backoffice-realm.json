@@ -46,12 +46,21 @@
       {
         "name": "BACKOFFICE_ADMIN",
         "description": "Full access to the Buurman backoffice administration panel",
-        "composite": false,
-        "clientRole": false
+        "composite": true,
+        "clientRole": false,
+        "composites": {
+          "realm": ["MONITORING_ACCESS"]
+        }
       },
       {
         "name": "BACKOFFICE_SYSTEM",
         "description": "Access to system information, health checks, and actuator endpoints in the backoffice",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "MONITORING_ACCESS",
+        "description": "Access to monitoring services (Grafana, Prometheus)",
         "composite": false,
         "clientRole": false
       }
@@ -101,6 +110,64 @@
         "backchannel.logout.session.required": "true",
         "backchannel.logout.revoke.offline.tokens": "false"
       }
+    },
+    {
+      "clientId": "grafana",
+      "name": "Grafana Monitoring Dashboard",
+      "description": "OAuth2 client for Grafana SSO integration",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "grafana-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "redirectUris": [
+        "https://grafana.local.buurman.io/*",
+        "https://grafana.buurman.io/login/*"
+      ],
+      "webOrigins": [
+        "https://grafana.local.buurman.io",
+        "https://grafana.buurman.io"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "attributes": {
+        "post.logout.redirect.uris": "https://grafana.local.buurman.io/*##https://grafana.buurman.io/*",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm-roles-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
     }
   ],
   "clientScopes": [
@@ -253,7 +320,8 @@
       ],
       "realmRoles": [
         "BACKOFFICE_ADMIN",
-        "BACKOFFICE_SYSTEM"
+        "BACKOFFICE_SYSTEM",
+        "MONITORING_ACCESS"
       ]
     }
   ],
