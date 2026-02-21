@@ -45,6 +45,7 @@ public class DemoContractGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
       List<UUID> tenantIds = ctx.getTenantIdsByTeam().get(teamId);
       List<UUID> contractIds = new ArrayList<>();
@@ -132,10 +133,12 @@ public class DemoContractGenerator {
             .set(CONTRACTS.START_DATE, startDate)
             .set(CONTRACTS.END_DATE, endDate)
             .set(CONTRACTS.SIGNED_DATE, signedDate)
-            .set(CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(rentAmount, "EUR"))
-            .set(CONTRACTS.DEPOSIT_AMOUNT, CurrencyUtils.toMinorUnits(deposit, "EUR"))
-            .set(CONTRACTS.SECURITY_DEPOSIT, CurrencyUtils.toMinorUnits(securityDeposit, "EUR"))
-            .set(CONTRACTS.CURRENCY, "EUR")
+            .set(CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(rentAmount, currency))
+            .set(CONTRACTS.DEPOSIT_AMOUNT, CurrencyUtils.toMinorUnits(deposit, currency))
+            .set(CONTRACTS.SECURITY_DEPOSIT, CurrencyUtils.toMinorUnits(securityDeposit, currency))
+            .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
+            .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
+            .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
             .set(CONTRACTS.PAYMENT_FREQUENCY, "MONTHLY")
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
             .set(CONTRACTS.AUTO_RENEWAL, "INDEFINITE".equals(contractType))

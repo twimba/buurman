@@ -1,12 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, CalendarCheck } from 'lucide-react';
 import { CreatePaymentRequest } from '@/types/payment';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
-import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';
-import { useToast } from '@/context/ToastContext';
 
 interface RegisterPaymentFormProps {
   onSubmit: (data: CreatePaymentRequest) => Promise<void>;
@@ -22,41 +19,33 @@ export const RegisterPaymentForm = ({
   contractIdentifier,
 }: RegisterPaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
-  const { data: currencies } = useCurrencies();
-  const { showToast } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     amount: 0,
-    currency: defaultCurrency || 'EUR',
+    currency: defaultCurrency || '',
     paymentDate: new Date().toISOString().split('T')[0],
     notes: '',
   });
 
-  const currency = formData.currency || defaultCurrency || 'EUR';
-  const fractionalDigits = getFractionalDigits(currencies, currency);
+  useEffect(() => {
+    if (!defaultCurrency) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) =>
+      prev.currency ? prev : { ...prev, currency: defaultCurrency }
+    );
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [defaultCurrency]);
 
-  const handleCurrencyChange = (newCurrency: string) => {
-    const newDigits = getFractionalDigits(currencies, newCurrency);
-    let newAmount = formData.amount;
-
-    if (newAmount && newDigits < fractionalDigits) {
-      const factor = Math.pow(10, newDigits);
-      newAmount = Math.ceil(newAmount * factor) / factor;
-      showToast(
-        `Amount rounded to ${newAmount.toFixed(newDigits)} for ${newCurrency}`,
-        'info'
-      );
-    }
-
-    setFormData({ ...formData, currency: newCurrency, amount: newAmount });
-  };
+  const currency = formData.currency || defaultCurrency || '';
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (formData.amount <= 0)
       newErrors.amount = 'Amount must be greater than 0';
+    if (formData.amount > 0 && !currency.trim())
+      newErrors.currency = 'Currency is required';
     if (!formData.paymentDate)
       newErrors.paymentDate = 'Payment date is required';
 
@@ -103,24 +92,15 @@ export const RegisterPaymentForm = ({
           value={formData.amount || undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
+          onCurrencyChange={(c) => setFormData({ ...formData, currency: c })}
           disabled={isLoading}
-          error={!!errors.amount}
+          error={!!errors.amount || !!errors.currency}
         />
-        {errors.amount && (
-          <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+        {(errors.amount || errors.currency) && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.amount || errors.currency}
+          </p>
         )}
-      </div>
-
-      {/* Currency */}
-      <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Currency
-        </label>
-        <CurrencySelector
-          value={formData.currency || defaultCurrency || 'EUR'}
-          onChange={handleCurrencyChange}
-          disabled={isLoading}
-        />
       </div>
 
       {/* Payment Date */}

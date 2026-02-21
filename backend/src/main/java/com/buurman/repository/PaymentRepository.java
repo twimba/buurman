@@ -358,7 +358,7 @@ public class PaymentRepository {
         .limit(1)
         .fetchOptional()
         .map(r -> r.get(PAYMENTS.CURRENCY))
-        .orElse("EUR");
+        .orElse(null);
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

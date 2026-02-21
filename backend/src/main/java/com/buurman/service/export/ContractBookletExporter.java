@@ -162,7 +162,7 @@ public class ContractBookletExporter {
       Map<UUID, PaymentInstruction> piMap) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
-    String ccy = contract.getCurrency() != null ? contract.getCurrency() : "EUR";
+    String ccy = contract.getRentAmountCurrency();
 
     Tenant primaryTenant = findPrimaryTenant(parties, tenantMap);
     String primaryName =

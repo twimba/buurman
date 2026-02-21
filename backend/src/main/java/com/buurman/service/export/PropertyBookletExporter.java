@@ -253,7 +253,7 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    String currency = property.getCurrency();
+    String currency = property.getPurchasePriceCurrency();
     appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
@@ -1182,7 +1182,9 @@ public class PropertyBookletExporter {
           .append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing")
           .append("</td>");
       html.append("<td>")
-          .append(CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getCurrency()))
+          .append(
+              CurrencyUtils.formatCurrency(
+                  contract.getRentAmount(), contract.getRentAmountCurrency()))
           .append("</td>");
       html.append("<td>")
           .append(

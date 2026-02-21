@@ -10,8 +10,8 @@ public final class CurrencyUtils {
   private CurrencyUtils() {}
 
   /**
-   * Returns the currency symbol for the given ISO 4217 code (e.g. "EUR" → "€", "USD" → "$"). Falls
-   * back to the currency code itself if no symbol is found.
+   * Returns the currency symbol for the given ISO 4217 code (e.g. "USD" → "$"). Falls back to the
+   * currency code itself if no symbol is found.
    */
   public static String getCurrencySymbol(String currencyCode) {
     if (currencyCode == null || currencyCode.isBlank()) return "";

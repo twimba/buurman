@@ -38,6 +38,7 @@ public class DemoPaymentGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> contractIds = ctx.getContractIdsByTeam().get(teamId);
 
       if (contractIds == null) {
@@ -127,7 +128,7 @@ public class DemoPaymentGenerator {
               .set(PAYMENTS.TEAM_ID, teamId)
               .set(PAYMENTS.CONTRACT_ID, contractId)
               .set(PAYMENTS.AMOUNT, rentAmount)
-              .set(PAYMENTS.CURRENCY, "EUR")
+              .set(PAYMENTS.CURRENCY, currency)
               .set(PAYMENTS.DUE_DATE, dueDate)
               .set(PAYMENTS.PAYMENT_DATE, paymentDate)
               .set(PAYMENTS.STATUS, paymentStatus)
@@ -150,7 +151,7 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
-                .set(PAYMENT_RECEIVALS.CURRENCY, "EUR")
+                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
                 .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
                 .set(PAYMENT_RECEIVALS.CREATED_AT, now)
                 .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
@@ -165,7 +166,7 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)
-                .set(PAYMENT_RECEIVALS.CURRENCY, "EUR")
+                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
                 .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
                 .set(PAYMENT_RECEIVALS.CREATED_AT, now)
                 .set(PAYMENT_RECEIVALS.UPDATED_AT, now)

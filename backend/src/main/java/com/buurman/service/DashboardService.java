@@ -35,6 +35,7 @@ public class DashboardService {
   private final AuditLogRepository auditLogRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final TeamService teamService;
 
   public DashboardStatsResponse getDashboardStats(UUID teamId) {
     List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);
@@ -125,14 +126,15 @@ public class DashboardService {
     List<Record> activeContracts = contractRepository.findActiveContractIncomeByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
-      return new DashboardStatsResponse.MonthlyIncome(BigDecimal.ZERO, "EUR");
+      return new DashboardStatsResponse.MonthlyIncome(
+          BigDecimal.ZERO, teamService.getDefaultCurrency(teamId));
     }
 
     // Group by currency and calculate monthly income
     Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
 
     for (var contract : activeContracts) {
-      String currency = contract.get(CONTRACTS.CURRENCY);
+      String currency = contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY);
       BigDecimal rentAmount =
           CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
       String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);

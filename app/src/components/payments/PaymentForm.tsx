@@ -1,13 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { X, Calendar, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';
 import { useRentPeriods } from '@/hooks/useRentPeriodHooks';
-import { useToast } from '@/context/ToastContext';
 import { getCurrencySymbol } from '@/utils/currencies';
 
 interface PaymentFormProps {
@@ -28,7 +26,6 @@ export const PaymentForm = ({
   const { defaultCurrency } = useTeamDefaults();
   const { data: currencies } = useCurrencies();
   const { data: rentPeriods } = useRentPeriods(contractIdentifier || undefined);
-  const { showToast } = useToast();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<
@@ -36,7 +33,7 @@ export const PaymentForm = ({
   >({
     contractIdentifier: contractIdentifier,
     amount: payment?.amount || 0,
-    currency: payment?.currency || defaultCurrency || 'EUR',
+    currency: payment?.currency || defaultCurrency || '',
     dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
     notes: payment?.notes || '',
     paymentDate: payment?.paymentDate || '',
@@ -55,7 +52,16 @@ export const PaymentForm = ({
     });
   }
 
-  const currency = formData.currency || defaultCurrency || 'EUR';
+  useEffect(() => {
+    if (!defaultCurrency) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) =>
+      prev.currency ? prev : { ...prev, currency: defaultCurrency }
+    );
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [defaultCurrency]);
+
+  const currency = formData.currency || defaultCurrency || '';
   const fractionalDigits = getFractionalDigits(currencies, currency);
 
   const dueDate = formData.dueDate;
@@ -95,20 +101,7 @@ export const PaymentForm = ({
       rentPeriodForDate.identifier !== currentRentPeriod.identifier);
 
   const handleCurrencyChange = (newCurrency: string) => {
-    const newDigits = getFractionalDigits(currencies, newCurrency);
-    let newAmount = formData.amount;
-
-    if (newAmount && newDigits < fractionalDigits) {
-      // Ceil to the new precision
-      const factor = Math.pow(10, newDigits);
-      newAmount = Math.ceil(newAmount * factor) / factor;
-      showToast(
-        `Amount rounded to ${newAmount.toFixed(newDigits)} for ${newCurrency}`,
-        'info'
-      );
-    }
-
-    setFormData({ ...formData, currency: newCurrency, amount: newAmount });
+    setFormData({ ...formData, currency: newCurrency });
   };
 
   const validate = (): boolean => {
@@ -117,6 +110,8 @@ export const PaymentForm = ({
     if (formData.amount <= 0)
       newErrors.amount = 'Amount must be greater than 0';
     if (!formData.dueDate) newErrors.dueDate = 'Due date is required';
+    if (formData.amount > 0 && !currency.trim())
+      newErrors.currency = 'Currency is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -154,24 +149,15 @@ export const PaymentForm = ({
           value={formData.amount || undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
+          onCurrencyChange={handleCurrencyChange}
           disabled={isLoading}
-          error={!!errors.amount}
+          error={!!errors.amount || !!errors.currency}
         />
-        {errors.amount && (
-          <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+        {(errors.amount || errors.currency) && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.amount || errors.currency}
+          </p>
         )}
-      </div>
-
-      {/* Currency */}
-      <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Currency
-        </label>
-        <CurrencySelector
-          value={formData.currency || defaultCurrency || 'EUR'}
-          onChange={handleCurrencyChange}
-          disabled={isLoading}
-        />
       </div>
 
       {/* Due Date */}

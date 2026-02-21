@@ -139,7 +139,7 @@ public class PaymentService {
     }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
-      payment.setCurrency(contract.getCurrency() != null ? contract.getCurrency() : "EUR");
+      payment.setCurrency(contract.getRentAmountCurrency());
     }
 
     Payment savedPayment = paymentRepository.save(payment);
@@ -679,7 +679,7 @@ public class PaymentService {
       payment.setTeamId(teamId);
       payment.setContractId(contract.getId());
       payment.setAmount(contract.getRentAmount());
-      payment.setCurrency(contract.getCurrency());
+      payment.setCurrency(contract.getRentAmountCurrency());
       payment.setDueDate(dueDate);
       payment.setStatus(PENDING);
       payment.setNotes("Auto-generated for " + month);
@@ -804,9 +804,7 @@ public class PaymentService {
                     "tenantName",
                     tenantName,
                     "amount",
-                    (payment.getCurrency() != null ? payment.getCurrency() : "EUR")
-                        + " "
-                        + payment.getAmount(),
+                    payment.getCurrency() + " " + payment.getAmount(),
                     "paymentDate",
                     payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "N/A",
                     "baseUrl",
@@ -836,7 +834,7 @@ public class PaymentService {
         tenantName = tenant.getFirstName() + " " + tenant.getLastName();
       }
     }
-    String currency = payment.getCurrency() != null ? payment.getCurrency() : "EUR";
+    String currency = payment.getCurrency();
     BigDecimal totalReceived =
         receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);
     BigDecimal remainingBalance = payment.getAmount().subtract(totalReceived);
@@ -1055,7 +1053,7 @@ public class PaymentService {
   }
 
   private void validateCurrencyDecimals(BigDecimal amount, String currencyCode) {
-    if (amount == null || currencyCode == null) {
+    if (amount == null || currencyCode == null || currencyCode.isBlank()) {
       return;
     }
     if (!CurrencyUtils.isAmountValidForCurrency(amount, currencyCode)) {

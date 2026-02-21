@@ -10,6 +10,7 @@ import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -62,18 +63,41 @@ public class BackofficeTeamStatsRepository {
     return new DataCounts(properties, tenants, contracts, expenses, payments, documents);
   }
 
-  public BigDecimal sumActiveRentForTeam(UUID teamId, String currency) {
-    BigDecimal result =
-        dsl.select(sum(CONTRACTS.RENT_AMOUNT))
+  /**
+   * Sums active rent grouped by currency. Returns the total for the most-used currency along with
+   * that currency code. Returns (ZERO, null) when no active contracts exist.
+   */
+  public Map.Entry<BigDecimal, String> sumActiveRentForTeam(UUID teamId) {
+    var rows =
+        dsl.select(CONTRACTS.RENT_AMOUNT_CURRENCY, sum(CONTRACTS.RENT_AMOUNT))
             .from(CONTRACTS)
             .where(
                 CONTRACTS
                     .TEAM_ID
                     .eq(teamId)
                     .and(CONTRACTS.STATUS.eq("ACTIVE"))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .fetchOne(0, BigDecimal.class);
-    return CurrencyUtils.sumToMajorUnits(result, currency);
+                    .and(CONTRACTS.DELETED_AT.isNull())
+                    .and(CONTRACTS.RENT_AMOUNT_CURRENCY.isNotNull()))
+            .groupBy(CONTRACTS.RENT_AMOUNT_CURRENCY)
+            .fetch();
+
+    if (rows.isEmpty()) {
+      return new AbstractMap.SimpleEntry<>(BigDecimal.ZERO, null);
+    }
+
+    // Pick the currency group with the largest sum
+    String bestCurrency = null;
+    BigDecimal bestSum = BigDecimal.ZERO;
+    for (var row : rows) {
+      String cur = row.value1();
+      BigDecimal raw = row.value2() != null ? row.value2() : BigDecimal.ZERO;
+      BigDecimal major = CurrencyUtils.sumToMajorUnits(raw, cur);
+      if (major.compareTo(bestSum) > 0) {
+        bestSum = major;
+        bestCurrency = cur;
+      }
+    }
+    return new AbstractMap.SimpleEntry<>(bestSum, bestCurrency);
   }
 
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {

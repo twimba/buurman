@@ -46,7 +46,9 @@ public class Contract {
   private BigDecimal rentAmount;
   private BigDecimal depositAmount;
   private BigDecimal securityDeposit;
-  private String currency;
+  private String rentAmountCurrency;
+  private String depositAmountCurrency;
+  private String securityDepositCurrency;
   private PaymentFrequency paymentFrequency;
   private Integer paymentDueDay;
   private Boolean autoRenewal;

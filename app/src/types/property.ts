@@ -562,25 +562,34 @@ export interface PropertyResponse {
   accessibilityNotes: string | null;
 
   // Investment & Financial
-  currency: string | null;
   purchasePrice: number | null;
+  purchasePriceCurrency: string | null;
   purchaseDate: string | null;
   currentMarketValue: number | null;
+  currentMarketValueCurrency: string | null;
   marketValueDate: string | null;
   mortgageType: MortgageType | null;
   mortgageAmount: number | null;
+  mortgageAmountCurrency: string | null;
   mortgageInterestRate: number | null;
   mortgageStartDate: string | null;
   mortgageEndDate: string | null;
   monthlyMortgagePayment: number | null;
+  monthlyMortgagePaymentCurrency: string | null;
   annualPropertyTax: number | null;
+  annualPropertyTaxCurrency: string | null;
   annualInsurance: number | null;
+  annualInsuranceCurrency: string | null;
   annualHoaFee: number | null;
+  annualHoaFeeCurrency: string | null;
   annualManagementFee: number | null;
+  annualManagementFeeCurrency: string | null;
   annualMaintenanceReserve: number | null;
+  annualMaintenanceReserveCurrency: string | null;
   depreciationMethod: DepreciationMethod | null;
   depreciationYears: number | null;
   landValue: number | null;
+  landValueCurrency: string | null;
 
   // Category-specific details (only one is non-null based on category)
   residentialDetails: ResidentialDetailsResponse | null;
@@ -662,25 +671,34 @@ export interface CreatePropertyRequest {
   accessibilityNotes?: string | null;
 
   // Investment & Financial
-  currency?: string | null;
   purchasePrice?: number | null;
+  purchasePriceCurrency?: string | null;
   purchaseDate?: string | null;
   currentMarketValue?: number | null;
+  currentMarketValueCurrency?: string | null;
   marketValueDate?: string | null;
   mortgageType?: MortgageType | null;
   mortgageAmount?: number | null;
+  mortgageAmountCurrency?: string | null;
   mortgageInterestRate?: number | null;
   mortgageStartDate?: string | null;
   mortgageEndDate?: string | null;
   monthlyMortgagePayment?: number | null;
+  monthlyMortgagePaymentCurrency?: string | null;
   annualPropertyTax?: number | null;
+  annualPropertyTaxCurrency?: string | null;
   annualInsurance?: number | null;
+  annualInsuranceCurrency?: string | null;
   annualHoaFee?: number | null;
+  annualHoaFeeCurrency?: string | null;
   annualManagementFee?: number | null;
+  annualManagementFeeCurrency?: string | null;
   annualMaintenanceReserve?: number | null;
+  annualMaintenanceReserveCurrency?: string | null;
   depreciationMethod?: DepreciationMethod | null;
   depreciationYears?: number | null;
   landValue?: number | null;
+  landValueCurrency?: string | null;
 
   // Category-specific details (only matching category should be provided)
   residentialDetails?: ResidentialDetailsRequest | null;
@@ -754,25 +772,34 @@ export interface UpdatePropertyRequest {
   accessibilityNotes?: string | null;
 
   // Investment & Financial
-  currency?: string | null;
   purchasePrice?: number | null;
+  purchasePriceCurrency?: string | null;
   purchaseDate?: string | null;
   currentMarketValue?: number | null;
+  currentMarketValueCurrency?: string | null;
   marketValueDate?: string | null;
   mortgageType?: MortgageType | null;
   mortgageAmount?: number | null;
+  mortgageAmountCurrency?: string | null;
   mortgageInterestRate?: number | null;
   mortgageStartDate?: string | null;
   mortgageEndDate?: string | null;
   monthlyMortgagePayment?: number | null;
+  monthlyMortgagePaymentCurrency?: string | null;
   annualPropertyTax?: number | null;
+  annualPropertyTaxCurrency?: string | null;
   annualInsurance?: number | null;
+  annualInsuranceCurrency?: string | null;
   annualHoaFee?: number | null;
+  annualHoaFeeCurrency?: string | null;
   annualManagementFee?: number | null;
+  annualManagementFeeCurrency?: string | null;
   annualMaintenanceReserve?: number | null;
+  annualMaintenanceReserveCurrency?: string | null;
   depreciationMethod?: DepreciationMethod | null;
   depreciationYears?: number | null;
   landValue?: number | null;
+  landValueCurrency?: string | null;
 
   // Category-specific details (only matching category should be provided)
   // Note: propertyCategory is NOT here — it's immutable after creation

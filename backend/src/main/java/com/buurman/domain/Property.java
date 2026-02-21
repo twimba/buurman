@@ -80,31 +80,40 @@ public class Property {
   private String accessibilityNotes;
 
   // Investment & Financial
-  private String currency;
   private BigDecimal purchasePrice;
+  private String purchasePriceCurrency;
   private LocalDate purchaseDate;
   private BigDecimal currentMarketValue;
+  private String currentMarketValueCurrency;
   private LocalDate marketValueDate;
 
   // Mortgage
   private MortgageType mortgageType;
   private BigDecimal mortgageAmount;
+  private String mortgageAmountCurrency;
   private BigDecimal mortgageInterestRate;
   private LocalDate mortgageStartDate;
   private LocalDate mortgageEndDate;
   private BigDecimal monthlyMortgagePayment;
+  private String monthlyMortgagePaymentCurrency;
 
   // Operating Costs (annual)
   private BigDecimal annualPropertyTax;
+  private String annualPropertyTaxCurrency;
   private BigDecimal annualInsurance;
+  private String annualInsuranceCurrency;
   private BigDecimal annualHoaFee;
+  private String annualHoaFeeCurrency;
   private BigDecimal annualManagementFee;
+  private String annualManagementFeeCurrency;
   private BigDecimal annualMaintenanceReserve;
+  private String annualMaintenanceReserveCurrency;
 
   // Depreciation
   private DepreciationMethod depreciationMethod;
   private Integer depreciationYears;
   private BigDecimal landValue;
+  private String landValueCurrency;
 
   // Audit
   private Instant createdAt;

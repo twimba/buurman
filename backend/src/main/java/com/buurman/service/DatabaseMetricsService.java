@@ -31,9 +31,7 @@ public class DatabaseMetricsService {
 
   private final DSLContext dsl;
 
-  /** Subquery selecting team IDs where settings contains "demoData": true */
-  private static final Condition NOT_DEMO_TEAM =
-      TEAMS.SETTINGS.cast(String.class).notContains("\"demoData\"");
+  private static final Condition NOT_DEMO_TEAM = TEAMS.DEMO.isFalse();
 
   private final AtomicLong propertiesCount = new AtomicLong();
   private final AtomicLong contractsCount = new AtomicLong();

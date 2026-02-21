@@ -130,7 +130,7 @@ export const FinancialReportsPage = () => {
     dateRange.startDate,
     dateRange.endDate,
     undefined,
-    'EUR',
+    undefined,
     periodType !== 'custom' || (!!customStartDate && !!customEndDate)
   );
 
@@ -167,9 +167,16 @@ export const FinancialReportsPage = () => {
   } = useOccupancyTrend(12);
 
   const formatCurrency = (value: number) => {
+    const cur = overview?.currency || '';
+    if (!cur) {
+      return value.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
     return new Intl.NumberFormat('nl-NL', {
       style: 'currency',
-      currency: 'EUR',
+      currency: cur,
     }).format(value);
   };
 

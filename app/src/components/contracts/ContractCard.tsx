@@ -82,7 +82,7 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
             <div className="min-w-0">
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">Rent</p>
               <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                {contract.currency} {contract.rentAmount.toFixed(2)}
+                {contract.rentAmountCurrency} {contract.rentAmount.toFixed(2)}
               </p>
             </div>
           </div>

@@ -49,7 +49,7 @@ public class ContractRentPeriodRepository {
 
   public ContractRentPeriod save(ContractRentPeriod period) {
     LocalDateTime now = LocalDateTime.now(clock);
-    String currency = period.getCurrency() != null ? period.getCurrency() : "EUR";
+    String currency = period.getCurrency();
     Timestamp createdAt =
         period.getCreatedAt() != null
             ? Timestamp.from(period.getCreatedAt())
@@ -194,7 +194,7 @@ public class ContractRentPeriodRepository {
   }
 
   private ContractRentPeriod toDomain(Record record) {
-    String currency = record.get(CURRENCY) != null ? record.get(CURRENCY) : "EUR";
+    String currency = record.get(CURRENCY);
     ContractRentPeriod period = new ContractRentPeriod();
     period.setId(record.get(ID));
     period.setIdentifier(record.get(IDENTIFIER));

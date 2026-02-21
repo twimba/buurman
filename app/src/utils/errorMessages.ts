@@ -25,6 +25,10 @@ const FIELD_LABELS: Record<string, string> = {
   contractType: 'Contract type',
   paymentFrequency: 'Payment frequency',
   propertyIdentifier: 'Property',
+  currency: 'Currency',
+  rentAmountCurrency: 'Rent currency',
+  depositAmountCurrency: 'Deposit currency',
+  securityDepositCurrency: 'Security deposit currency',
 };
 
 function formatFieldName(field: string): string {

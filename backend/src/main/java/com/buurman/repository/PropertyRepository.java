@@ -167,15 +167,17 @@ public class PropertyRepository {
           .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
           .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
           // Investment & Financial
-          .set(PROPERTIES.CURRENCY, property.getCurrency())
           .set(
               PROPERTIES.PURCHASE_PRICE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getPurchasePrice(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getPurchasePrice(), property.getPurchasePriceCurrency()))
+          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency())
           .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
           .set(
               PROPERTIES.CURRENT_MARKET_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getCurrentMarketValue(), property.getCurrency()))
+                  property.getCurrentMarketValue(), property.getCurrentMarketValueCurrency()))
+          .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, property.getCurrentMarketValueCurrency())
           .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
           .set(
               PROPERTIES.MORTGAGE_TYPE,
@@ -183,33 +185,47 @@ public class PropertyRepository {
           .set(
               PROPERTIES.MORTGAGE_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMortgageAmount(), property.getCurrency()))
+                  property.getMortgageAmount(), property.getMortgageAmountCurrency()))
+          .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, property.getMortgageAmountCurrency())
           .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
           .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMonthlyMortgagePayment(), property.getCurrency()))
+                  property.getMonthlyMortgagePayment(),
+                  property.getMonthlyMortgagePaymentCurrency()))
+          .set(
+              PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
+              property.getMonthlyMortgagePaymentCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualPropertyTax(), property.getCurrency()))
+                  property.getAnnualPropertyTax(), property.getAnnualPropertyTaxCurrency()))
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, property.getAnnualPropertyTaxCurrency())
           .set(
               PROPERTIES.ANNUAL_INSURANCE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualInsurance(), property.getCurrency()))
+                  property.getAnnualInsurance(), property.getAnnualInsuranceCurrency()))
+          .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, property.getAnnualInsuranceCurrency())
           .set(
               PROPERTIES.ANNUAL_HOA_FEE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getAnnualHoaFee(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualHoaFee(), property.getAnnualHoaFeeCurrency()))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency())
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualManagementFee(), property.getCurrency()))
+                  property.getAnnualManagementFee(), property.getAnnualManagementFeeCurrency()))
+          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, property.getAnnualManagementFeeCurrency())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualMaintenanceReserve(), property.getCurrency()))
+                  property.getAnnualMaintenanceReserve(),
+                  property.getAnnualMaintenanceReserveCurrency()))
+          .set(
+              PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
+              property.getAnnualMaintenanceReserveCurrency())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -218,7 +234,9 @@ public class PropertyRepository {
           .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
           .set(
               PROPERTIES.LAND_VALUE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getLandValue(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getLandValue(), property.getLandValueCurrency()))
+          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency())
           // Audit
           .set(PROPERTIES.CREATED_AT, createdAt)
           .set(PROPERTIES.UPDATED_AT, updatedAt)
@@ -295,15 +313,17 @@ public class PropertyRepository {
           .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
           .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
           // Investment & Financial
-          .set(PROPERTIES.CURRENCY, property.getCurrency())
           .set(
               PROPERTIES.PURCHASE_PRICE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getPurchasePrice(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getPurchasePrice(), property.getPurchasePriceCurrency()))
+          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency())
           .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
           .set(
               PROPERTIES.CURRENT_MARKET_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getCurrentMarketValue(), property.getCurrency()))
+                  property.getCurrentMarketValue(), property.getCurrentMarketValueCurrency()))
+          .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, property.getCurrentMarketValueCurrency())
           .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
           .set(
               PROPERTIES.MORTGAGE_TYPE,
@@ -311,33 +331,47 @@ public class PropertyRepository {
           .set(
               PROPERTIES.MORTGAGE_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMortgageAmount(), property.getCurrency()))
+                  property.getMortgageAmount(), property.getMortgageAmountCurrency()))
+          .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, property.getMortgageAmountCurrency())
           .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
           .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMonthlyMortgagePayment(), property.getCurrency()))
+                  property.getMonthlyMortgagePayment(),
+                  property.getMonthlyMortgagePaymentCurrency()))
+          .set(
+              PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
+              property.getMonthlyMortgagePaymentCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualPropertyTax(), property.getCurrency()))
+                  property.getAnnualPropertyTax(), property.getAnnualPropertyTaxCurrency()))
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, property.getAnnualPropertyTaxCurrency())
           .set(
               PROPERTIES.ANNUAL_INSURANCE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualInsurance(), property.getCurrency()))
+                  property.getAnnualInsurance(), property.getAnnualInsuranceCurrency()))
+          .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, property.getAnnualInsuranceCurrency())
           .set(
               PROPERTIES.ANNUAL_HOA_FEE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getAnnualHoaFee(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualHoaFee(), property.getAnnualHoaFeeCurrency()))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency())
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualManagementFee(), property.getCurrency()))
+                  property.getAnnualManagementFee(), property.getAnnualManagementFeeCurrency()))
+          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, property.getAnnualManagementFeeCurrency())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualMaintenanceReserve(), property.getCurrency()))
+                  property.getAnnualMaintenanceReserve(),
+                  property.getAnnualMaintenanceReserveCurrency()))
+          .set(
+              PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
+              property.getAnnualMaintenanceReserveCurrency())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -346,7 +380,9 @@ public class PropertyRepository {
           .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
           .set(
               PROPERTIES.LAND_VALUE,
-              CurrencyUtils.toMinorUnitsOrNull(property.getLandValue(), property.getCurrency()))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getLandValue(), property.getLandValueCurrency()))
+          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency())
           // Audit
           .set(PROPERTIES.UPDATED_AT, updatedAt)
           .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())

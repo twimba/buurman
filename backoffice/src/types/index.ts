@@ -39,7 +39,7 @@ export interface DataCounts {
 
 export interface FinancialSnapshot {
   totalActiveRent: number;
-  currency: string;
+  currency: string | null;
   propertyStatusDistribution: Record<string, number>;
   propertyCategoryDistribution: Record<string, number>;
   contractStatusDistribution: Record<string, number>;

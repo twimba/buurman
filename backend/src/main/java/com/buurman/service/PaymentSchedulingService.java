@@ -21,12 +21,13 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Team;
-import com.buurman.domain.TeamSettings;
+import com.buurman.domain.TeamPreferences;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.TeamRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class PaymentSchedulingService {
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository paymentReceivalRepository;
   private final TeamRepository teamRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final AuditService auditService;
   private final Clock clock;
 
@@ -53,7 +55,8 @@ public class PaymentSchedulingService {
     log.info("Starting scheduled payment generation");
     long startTime = clock.millis();
 
-    List<Team> teams = teamRepository.findAllWithAutoGenerationEnabled();
+    List<UUID> teamIds = teamPreferencesRepository.findTeamIdsWithAutoGenerationEnabled();
+    List<Team> teams = teamIds.stream().map(teamRepository::getById).toList();
 
     if (teams.isEmpty()) {
       log.info("No teams with auto-generation enabled, skipping");
@@ -100,20 +103,12 @@ public class PaymentSchedulingService {
       return 0;
     }
 
-    Team team = teamRepository.getById(teamId);
-
-    TeamSettings settings = team.getSettings();
-    if (settings == null || settings.getPayments() == null) {
-      settings = new TeamSettings();
-    }
-
-    TeamSettings.PaymentSettings paymentSettings = settings.getPayments();
-    if (!paymentSettings.getAutoGenerationEnabled()) {
-      log.debug("Auto-generation disabled for team: {}", team.getIdentifier());
+    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(teamId);
+    if (!prefs.isAutoGenerationEnabled()) {
       return 0;
     }
 
-    int paymentsAheadCount = paymentSettings.getPaymentsAheadCount();
+    int paymentsAheadCount = prefs.getPaymentsAheadCount();
     return generatePayments(contract, teamId, userId, paymentsAheadCount, true, false, null);
   }
 
@@ -176,7 +171,7 @@ public class PaymentSchedulingService {
           paymentAmount = rentPeriod.get().getRentAmount();
         }
 
-        String currency = contract.getCurrency() != null ? contract.getCurrency() : "EUR";
+        String currency = contract.getRentAmountCurrency();
 
         Payment payment = new Payment();
         payment.setIdentifier(newPaymentId().value());

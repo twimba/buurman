@@ -236,7 +236,7 @@ export const PropertyDashboardTab = ({
             data={cashFlow}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
-            currency={summary.currency || 'EUR'}
+            currency={summary.currency || ''}
           />
         </ChartCard>
 
@@ -249,7 +249,7 @@ export const PropertyDashboardTab = ({
             cashFlow={cashFlow}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
-            currency={summary.currency || 'EUR'}
+            currency={summary.currency || ''}
           />
         </ChartCard>
 
@@ -261,7 +261,7 @@ export const PropertyDashboardTab = ({
             data={expenseBreakdown}
             tooltipStyle={tooltipStyle}
             isDark={isDark}
-            currency={summary.currency || 'EUR'}
+            currency={summary.currency || ''}
           />
         </ChartCard>
 
@@ -279,7 +279,7 @@ export const PropertyDashboardTab = ({
 // --- Summary Cards ---
 
 function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
-  const cur = metrics.currency || 'EUR';
+  const cur = metrics.currency || '';
   const fmtMoney = (val: number | null) => formatCurrency(val, cur);
   const fmtPct = (val: number | null) =>
     val != null ? `${val >= 0 ? '+' : ''}${val.toFixed(2)}%` : 'N/A';
@@ -926,7 +926,7 @@ function EquityBreakdownCard({
   data: EquityChartData;
   currency: string | null;
 }) {
-  const cur = currency || 'EUR';
+  const cur = currency || '';
   const fmt = (v: number | null) => formatCurrency(v, cur);
 
   const { purchasePrice, currentMarketValue, mortgageBalance } = data;

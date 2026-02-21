@@ -27,6 +27,7 @@ import com.buurman.dto.response.ExpenseStatsResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ExpenseMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.repository.DocumentRepository;
@@ -76,9 +77,9 @@ public class ExpenseService {
     expense.setCreatedAt(clock.instant());
     expense.setUpdatedAt(clock.instant());
 
-    // Set defaults
-    if (expense.getCurrency() == null || expense.getCurrency().isEmpty()) {
-      expense.setCurrency("EUR");
+    // Validate currency is provided
+    if (expense.getCurrency() == null || expense.getCurrency().isBlank()) {
+      throw new BadRequestException("Currency is required for expenses");
     }
 
     Expense savedExpense = expenseRepository.save(expense);
@@ -100,7 +101,7 @@ public class ExpenseService {
         property.getStreet() != null
             ? property.getStreet() + ", " + property.getCity()
             : property.getIdentifier();
-    String currency = savedExpense.getCurrency() != null ? savedExpense.getCurrency() : "EUR";
+    String currency = savedExpense.getCurrency();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(principal.getTeamId())

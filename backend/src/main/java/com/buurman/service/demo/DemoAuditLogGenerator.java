@@ -36,13 +36,15 @@ public class DemoAuditLogGenerator {
     int total = 0;
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
+      String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
+      String currency = ctx.getCurrencyForTeam(teamKey);
 
       total += generatePropertyAuditLogs(teamId);
       total += generateTenantAuditLogs(teamId);
-      total += generateContractAuditLogs(teamId);
-      total += generatePaymentAuditLogs(teamId);
-      total += generateExpenseAuditLogs(teamId);
+      total += generateContractAuditLogs(teamId, currency);
+      total += generatePaymentAuditLogs(teamId, currency);
+      total += generateExpenseAuditLogs(teamId, currency);
     }
 
     log.info("Created {} audit log entries", total);
@@ -130,7 +132,7 @@ public class DemoAuditLogGenerator {
     return records.size();
   }
 
-  private int generateContractAuditLogs(UUID teamId) {
+  private int generateContractAuditLogs(UUID teamId, String teamCurrency) {
     var records =
         dsl.select(
                 CONTRACTS.ID,
@@ -139,7 +141,7 @@ public class DemoAuditLogGenerator {
                 CONTRACTS.START_DATE,
                 CONTRACTS.END_DATE,
                 CONTRACTS.RENT_AMOUNT,
-                CONTRACTS.CURRENCY,
+                CONTRACTS.RENT_AMOUNT_CURRENCY,
                 CONTRACTS.PAYMENT_FREQUENCY,
                 CONTRACTS.DEPOSIT_AMOUNT,
                 CONTRACTS.CREATED_AT,
@@ -154,7 +156,10 @@ public class DemoAuditLogGenerator {
       values.put("status", r.get(CONTRACTS.STATUS));
       values.put("startDate", Objects.toString(r.get(CONTRACTS.START_DATE), null));
       values.put("endDate", Objects.toString(r.get(CONTRACTS.END_DATE), null));
-      String currency = r.get(CONTRACTS.CURRENCY) != null ? r.get(CONTRACTS.CURRENCY) : "EUR";
+      String currency =
+          r.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null
+              ? r.get(CONTRACTS.RENT_AMOUNT_CURRENCY)
+              : teamCurrency;
       values.put("rentAmount", CurrencyUtils.toMajorUnits(r.get(CONTRACTS.RENT_AMOUNT), currency));
       values.put("currency", currency);
       values.put("paymentFrequency", r.get(CONTRACTS.PAYMENT_FREQUENCY));
@@ -174,7 +179,7 @@ public class DemoAuditLogGenerator {
     return records.size();
   }
 
-  private int generatePaymentAuditLogs(UUID teamId) {
+  private int generatePaymentAuditLogs(UUID teamId, String teamCurrency) {
     var records =
         dsl.select(
                 PAYMENTS.ID,
@@ -191,7 +196,8 @@ public class DemoAuditLogGenerator {
 
     for (var r : records) {
       Map<String, Object> values = new LinkedHashMap<>();
-      String payCurrency = r.get(PAYMENTS.CURRENCY) != null ? r.get(PAYMENTS.CURRENCY) : "EUR";
+      String payCurrency =
+          r.get(PAYMENTS.CURRENCY) != null ? r.get(PAYMENTS.CURRENCY) : teamCurrency;
       values.put("amount", CurrencyUtils.toMajorUnits(r.get(PAYMENTS.AMOUNT), payCurrency));
       values.put("currency", payCurrency);
       values.put("dueDate", Objects.toString(r.get(PAYMENTS.DUE_DATE), null));
@@ -210,7 +216,7 @@ public class DemoAuditLogGenerator {
     return records.size();
   }
 
-  private int generateExpenseAuditLogs(UUID teamId) {
+  private int generateExpenseAuditLogs(UUID teamId, String teamCurrency) {
     var records =
         dsl.select(
                 EXPENSES.ID,
@@ -227,7 +233,8 @@ public class DemoAuditLogGenerator {
 
     for (var r : records) {
       Map<String, Object> values = new LinkedHashMap<>();
-      String expCurrency = r.get(EXPENSES.CURRENCY) != null ? r.get(EXPENSES.CURRENCY) : "EUR";
+      String expCurrency =
+          r.get(EXPENSES.CURRENCY) != null ? r.get(EXPENSES.CURRENCY) : teamCurrency;
       values.put("category", r.get(EXPENSES.CATEGORY));
       values.put("amount", CurrencyUtils.toMajorUnits(r.get(EXPENSES.AMOUNT), expCurrency));
       values.put("currency", expCurrency);

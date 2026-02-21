@@ -106,7 +106,7 @@ public class PaymentReceivalRepository {
 
   public PaymentReceival save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
-    String currency = receival.getCurrency() != null ? receival.getCurrency() : "EUR";
+    String currency = receival.getCurrency();
 
     UUID id = UUID.randomUUID();
     LocalDateTime createdAt =
@@ -165,7 +165,7 @@ public class PaymentReceivalRepository {
   }
 
   private PaymentReceival toDomain(Record record) {
-    String currency = record.get(CURRENCY) != null ? record.get(CURRENCY) : "EUR";
+    String currency = record.get(CURRENCY);
     PaymentReceival receival = new PaymentReceival();
     receival.setId(record.get(ID));
     receival.setIdentifier(record.get(IDENTIFIER));

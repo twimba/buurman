@@ -152,12 +152,17 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {new Intl.NumberFormat('nl-NL', {
-              style: 'currency',
-              currency: stats?.monthlyIncome?.currency || 'EUR',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            }).format(stats?.monthlyIncome?.amount || 0)}
+            {stats?.monthlyIncome?.currency
+              ? new Intl.NumberFormat('nl-NL', {
+                  style: 'currency',
+                  currency: stats.monthlyIncome.currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(stats?.monthlyIncome?.amount || 0)
+              : (stats?.monthlyIncome?.amount || 0).toLocaleString('nl-NL', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
           </div>
           <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
             Expected monthly revenue

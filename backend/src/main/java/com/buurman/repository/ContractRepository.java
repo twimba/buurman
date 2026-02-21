@@ -173,7 +173,6 @@ public class ContractRepository {
               ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
               : now;
 
-      String currency = contract.getCurrency();
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
           .set(CONTRACTS.IDENTIFIER, contract.getIdentifier())
@@ -184,14 +183,20 @@ public class ContractRepository {
           .set(CONTRACTS.END_DATE, contract.getEndDate())
           .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
           .set(
-              CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(contract.getRentAmount(), currency))
+              CONTRACTS.RENT_AMOUNT,
+              CurrencyUtils.toMinorUnits(
+                  contract.getRentAmount(), contract.getRentAmountCurrency()))
+          .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(contract.getDepositAmount(), currency))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
-              CurrencyUtils.toMinorUnitsOrNull(contract.getSecurityDeposit(), currency))
-          .set(CONTRACTS.CURRENCY, currency)
+              CurrencyUtils.toMinorUnitsOrNull(
+                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
+          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
@@ -217,7 +222,6 @@ public class ContractRepository {
               ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
               : now;
 
-      String currency = contract.getCurrency();
       dsl.update(CONTRACTS)
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
@@ -225,14 +229,20 @@ public class ContractRepository {
           .set(CONTRACTS.END_DATE, contract.getEndDate())
           .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
           .set(
-              CONTRACTS.RENT_AMOUNT, CurrencyUtils.toMinorUnits(contract.getRentAmount(), currency))
+              CONTRACTS.RENT_AMOUNT,
+              CurrencyUtils.toMinorUnits(
+                  contract.getRentAmount(), contract.getRentAmountCurrency()))
+          .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(contract.getDepositAmount(), currency))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
-              CurrencyUtils.toMinorUnitsOrNull(contract.getSecurityDeposit(), currency))
-          .set(CONTRACTS.CURRENCY, currency)
+              CurrencyUtils.toMinorUnitsOrNull(
+                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
+          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
@@ -311,7 +321,7 @@ public class ContractRepository {
 
   public List<Record> findActiveContractIncomeByTeamId(UUID teamId) {
     return dsl
-        .select(CONTRACTS.RENT_AMOUNT, CONTRACTS.CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
+        .select(CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
         .from(CONTRACTS)
         .where(
             CONTRACTS

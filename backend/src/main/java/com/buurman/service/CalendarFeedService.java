@@ -388,7 +388,7 @@ public class CalendarFeedService {
       Payment payment, Contract contract, Property property, Tenant tenant) {
     StringBuilder desc = new StringBuilder();
     if (payment.getAmount() != null) {
-      String currency = payment.getCurrency() != null ? payment.getCurrency() : "EUR";
+      String currency = payment.getCurrency();
       desc.append("Amount: ")
           .append(currency)
           .append(" ")

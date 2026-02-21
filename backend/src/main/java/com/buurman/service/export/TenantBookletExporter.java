@@ -399,7 +399,7 @@ public class TenantBookletExporter {
       appendField(
           html,
           "Rent Amount",
-          CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getCurrency()));
+          CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getRentAmountCurrency()));
       appendField(
           html,
           "Payment Frequency",

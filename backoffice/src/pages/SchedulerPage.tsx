@@ -276,11 +276,12 @@ export const SchedulerPage = () => {
   const [jobDropdownOpen, setJobDropdownOpen] = useState(false);
   const jobDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Initialize selected jobs: all except notificationOutboxJob
+  // Initialize selected jobs: all except notificationOutboxJob and databaseMetricsRefreshJob
   const allJobs = jobs ?? [];
   const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
   const defaultSelectedJobs = uniqueJobNames.filter(
-    (name) => name !== "notificationOutboxJob",
+    (name) =>
+      name !== "notificationOutboxJob" && name !== "databaseMetricsRefreshJob",
   );
 
   // Use default selection until user interacts

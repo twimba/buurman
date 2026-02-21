@@ -12,7 +12,6 @@ import {
 } from '@/types/contract';
 import { CreateTenantRequest } from '@/types/tenant';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
-import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { TenantSelector } from '@/components/common/TenantSelector';
@@ -240,7 +239,10 @@ export const ContractForm = ({
     rentAmount: contract?.rentAmount ?? '',
     depositAmount: contract?.depositAmount || undefined,
     securityDeposit: contract?.securityDeposit || undefined,
-    currency: contract?.currency || defaultCurrency || 'EUR',
+    rentAmountCurrency: contract?.rentAmountCurrency || defaultCurrency,
+    depositAmountCurrency: contract?.depositAmountCurrency || defaultCurrency,
+    securityDepositCurrency:
+      contract?.securityDepositCurrency || defaultCurrency,
     paymentFrequency: contract?.paymentFrequency || PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay || 1,
     autoRenewal: contract?.autoRenewal || false,
@@ -255,6 +257,28 @@ export const ContractForm = ({
     contract?.identifier
   );
 
+  // Sync currency fields when defaultCurrency loads asynchronously (create mode)
+  useEffect(() => {
+    if (!defaultCurrency || isEditing) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) => {
+      const fields = [
+        'rentAmountCurrency',
+        'depositAmountCurrency',
+        'securityDepositCurrency',
+      ] as const;
+      const needsUpdate = fields.some((f) => !prev[f]);
+      if (!needsUpdate) return prev;
+      const updated = { ...prev };
+      for (const f of fields) {
+        if (!updated[f])
+          (updated as Record<string, unknown>)[f] = defaultCurrency;
+      }
+      return updated;
+    });
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [defaultCurrency, isEditing]);
+
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     if (contract && contract.identifier !== contractIdentifier) {
@@ -268,7 +292,11 @@ export const ContractForm = ({
         rentAmount: contract.rentAmount ?? '',
         depositAmount: contract.depositAmount || undefined,
         securityDeposit: contract.securityDeposit || undefined,
-        currency: contract.currency,
+        rentAmountCurrency: contract.rentAmountCurrency,
+        depositAmountCurrency:
+          contract.depositAmountCurrency || defaultCurrency,
+        securityDepositCurrency:
+          contract.securityDepositCurrency || defaultCurrency,
         paymentFrequency: contract.paymentFrequency,
         paymentDueDay: contract.paymentDueDay || 1,
         autoRenewal: contract.autoRenewal,
@@ -280,7 +308,7 @@ export const ContractForm = ({
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [contract, contractIdentifier]);
+  }, [contract, contractIdentifier, defaultCurrency]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -303,6 +331,25 @@ export const ContractForm = ({
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.rentAmount || formData.rentAmount <= 0)
       newErrors.rentAmount = 'Rent amount must be greater than 0';
+    if (
+      formData.rentAmount &&
+      formData.rentAmount > 0 &&
+      !(formData.rentAmountCurrency || defaultCurrency || '').trim()
+    )
+      newErrors.rentAmountCurrency = 'Rent currency is required';
+    if (
+      formData.depositAmount &&
+      formData.depositAmount > 0 &&
+      !(formData.depositAmountCurrency || defaultCurrency || '').trim()
+    )
+      newErrors.depositAmountCurrency = 'Deposit currency is required';
+    if (
+      formData.securityDeposit &&
+      formData.securityDeposit > 0 &&
+      !(formData.securityDepositCurrency || defaultCurrency || '').trim()
+    )
+      newErrors.securityDepositCurrency =
+        'Security deposit currency is required';
 
     if (
       formData.contractType === ContractType.FIXED_TERM &&
@@ -805,24 +852,18 @@ export const ContractForm = ({
             <MoneyInput
               value={formData.rentAmount || undefined}
               onChange={(val) => handleChange('rentAmount', val ?? '')}
-              currency={formData.currency || 'EUR'}
+              currency={formData.rentAmountCurrency || defaultCurrency || ''}
+              onCurrencyChange={(value) =>
+                handleChange('rentAmountCurrency', value)
+              }
               disabled={isLoading}
-              error={!!errors.rentAmount}
+              error={!!errors.rentAmount || !!errors.rentAmountCurrency}
             />
-            {errors.rentAmount && (
-              <p className="text-red-600 text-sm mt-1">{errors.rentAmount}</p>
+            {(errors.rentAmount || errors.rentAmountCurrency) && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.rentAmount || errors.rentAmountCurrency}
+              </p>
             )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Currency
-            </label>
-            <CurrencySelector
-              value={formData.currency}
-              onChange={(value) => handleChange('currency', value)}
-              disabled={isLoading}
-            />
           </div>
 
           <div>
@@ -832,9 +873,18 @@ export const ContractForm = ({
             <MoneyInput
               value={formData.depositAmount || undefined}
               onChange={(val) => handleChange('depositAmount', val)}
-              currency={formData.currency || 'EUR'}
+              currency={formData.depositAmountCurrency || defaultCurrency || ''}
+              onCurrencyChange={(value) =>
+                handleChange('depositAmountCurrency', value)
+              }
               disabled={isLoading}
+              error={!!errors.depositAmountCurrency}
             />
+            {errors.depositAmountCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.depositAmountCurrency}
+              </p>
+            )}
           </div>
 
           <div>
@@ -844,9 +894,20 @@ export const ContractForm = ({
             <MoneyInput
               value={formData.securityDeposit || undefined}
               onChange={(val) => handleChange('securityDeposit', val)}
-              currency={formData.currency || 'EUR'}
+              currency={
+                formData.securityDepositCurrency || defaultCurrency || ''
+              }
+              onCurrencyChange={(value) =>
+                handleChange('securityDepositCurrency', value)
+              }
               disabled={isLoading}
+              error={!!errors.securityDepositCurrency}
             />
+            {errors.securityDepositCurrency && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.securityDepositCurrency}
+              </p>
+            )}
           </div>
         </div>
       </div>

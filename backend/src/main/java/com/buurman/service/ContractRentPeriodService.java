@@ -81,7 +81,7 @@ public class ContractRentPeriodService {
     period.setTeamId(teamId);
     period.setContractId(contract.getId());
     period.setRentAmount(request.rentAmount());
-    period.setCurrency(contract.getCurrency());
+    period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(request.effectiveFrom());
     period.setEffectiveTo(null);
     period.setNotes(request.notes());
@@ -277,7 +277,7 @@ public class ContractRentPeriodService {
     period.setTeamId(contract.getTeamId());
     period.setContractId(contract.getId());
     period.setRentAmount(contract.getRentAmount());
-    period.setCurrency(contract.getCurrency());
+    period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(contract.getStartDate());
     period.setEffectiveTo(null);
     period.setCreatedBy(principal.getUserId());
@@ -402,8 +402,8 @@ public class ContractRentPeriodService {
       vars.put("tenantName", tenantName);
       vars.put(
           "oldRentAmount",
-          oldRentAmount != null ? contract.getCurrency() + " " + oldRentAmount : "N/A");
-      vars.put("newRentAmount", contract.getCurrency() + " " + newRentAmount);
+          oldRentAmount != null ? contract.getRentAmountCurrency() + " " + oldRentAmount : "N/A");
+      vars.put("newRentAmount", contract.getRentAmountCurrency() + " " + newRentAmount);
       vars.put("effectiveFrom", effectiveFrom.toString());
       vars.put("baseUrl", appProperties.email().baseUrl());
 
