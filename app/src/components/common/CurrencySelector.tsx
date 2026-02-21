@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
 import { getCurrencyFlag } from '@/utils/currencyFlags';
@@ -23,21 +23,6 @@ export const CurrencySelector = ({
   const flag = value ? getCurrencyFlag(value) : '';
   const displayValue = value ? `${flag} ${symbol} ${value}` : '';
 
-  // Close on outside click
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [isOpen]);
-
   return (
     <div ref={containerRef} className="relative">
       <button
@@ -46,6 +31,8 @@ export const CurrencySelector = ({
           if (!disabled) setIsOpen((o) => !o);
         }}
         disabled={disabled}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#14161f] hover:border-[#5c7cfa] dark:hover:border-[#748ffc] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#1e2130] disabled:cursor-not-allowed text-sm text-[#1a1d2e] dark:text-[#eef0f6] text-left relative"
       >
         {displayValue || (
@@ -63,6 +50,7 @@ export const CurrencySelector = ({
           value={value}
           onSelect={onChange}
           onClose={() => setIsOpen(false)}
+          triggerRef={containerRef}
         />
       )}
     </div>

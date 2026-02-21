@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import {
   useCurrencies,
@@ -47,21 +47,6 @@ export const MoneyInput = ({
     useState(fractionalDigits);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const prefixRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click (desktop popover)
-  useEffect(() => {
-    if (!dropdownOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (
-        prefixRef.current &&
-        !prefixRef.current.contains(e.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [dropdownOpen]);
 
   // Sync external value → rawValue when parent changes it
   if (value !== lastEmitted) {
@@ -156,6 +141,7 @@ export const MoneyInput = ({
             value={currency}
             onSelect={onCurrencyChange}
             onClose={() => setDropdownOpen(false)}
+            triggerRef={prefixRef}
           />
         )}
       </div>
