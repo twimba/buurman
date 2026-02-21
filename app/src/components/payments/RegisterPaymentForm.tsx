@@ -10,6 +10,7 @@ interface RegisterPaymentFormProps {
   onCancel: () => void;
   isLoading: boolean;
   contractIdentifier: string;
+  resetKey?: number;
 }
 
 export const RegisterPaymentForm = ({
@@ -17,6 +18,7 @@ export const RegisterPaymentForm = ({
   onCancel,
   isLoading,
   contractIdentifier,
+  resetKey,
 }: RegisterPaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -36,6 +38,19 @@ export const RegisterPaymentForm = ({
     );
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [defaultCurrency]);
+
+  useEffect(() => {
+    if (resetKey === undefined || resetKey === 0) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) => ({
+      ...prev,
+      amount: 0,
+      paymentDate: new Date().toISOString().split('T')[0],
+      notes: '',
+    }));
+    setErrors({});
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [resetKey]);
 
   const currency = formData.currency || defaultCurrency || '';
 

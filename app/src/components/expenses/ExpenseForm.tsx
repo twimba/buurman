@@ -17,6 +17,7 @@ interface ExpenseFormProps {
   onCancel: () => void;
   isLoading: boolean;
   prefilledPropertyId?: string;
+  resetKey?: number;
 }
 
 export const ExpenseForm = ({
@@ -25,6 +26,7 @@ export const ExpenseForm = ({
   onCancel,
   isLoading,
   prefilledPropertyId,
+  resetKey,
 }: ExpenseFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -62,6 +64,20 @@ export const ExpenseForm = ({
     );
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [defaultCurrency]);
+
+  useEffect(() => {
+    if (resetKey === undefined || resetKey === 0 || expense) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) => ({
+      ...prev,
+      amount: 0,
+      expenseDate: '',
+      description: '',
+      notes: '',
+    }));
+    setErrors({});
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [resetKey, expense]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};

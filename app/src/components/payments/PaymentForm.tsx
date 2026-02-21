@@ -14,6 +14,7 @@ interface PaymentFormProps {
   onCancel: () => void;
   isLoading: boolean;
   contractIdentifier: string;
+  resetKey?: number;
 }
 
 export const PaymentForm = ({
@@ -22,6 +23,7 @@ export const PaymentForm = ({
   onCancel,
   isLoading,
   contractIdentifier,
+  resetKey,
 }: PaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const { data: currencies } = useCurrencies();
@@ -60,6 +62,19 @@ export const PaymentForm = ({
     );
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [defaultCurrency]);
+
+  useEffect(() => {
+    if (resetKey === undefined || resetKey === 0 || payment) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setFormData((prev) => ({
+      ...prev,
+      amount: 0,
+      dueDate: new Date().toISOString().split('T')[0],
+      notes: '',
+    }));
+    setErrors({});
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [resetKey, payment]);
 
   const currency = formData.currency || defaultCurrency || '';
   const fractionalDigits = getFractionalDigits(currencies, currency);

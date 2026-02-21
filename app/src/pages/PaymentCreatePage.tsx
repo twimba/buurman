@@ -7,7 +7,7 @@ import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
 import { ContractSelector } from '@/components/common/ContractSelector';
 import { CreatePaymentRequest } from '@/types/payment';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export const PaymentCreatePage = () => {
   const navigate = useNavigate();
@@ -32,6 +32,9 @@ export const PaymentCreatePage = () => {
   const [selectedContractId, setSelectedContractId] =
     useState(prefilledContractId);
   const [dismissedWarning, setDismissedWarning] = useState(false);
+  const [continueAdding, setContinueAdding] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+  const [addedCount, setAddedCount] = useState(0);
 
   // Effective contract ID: clear if prefill is invalid and user hasn't picked a new one
   const effectiveContractId =
@@ -41,7 +44,12 @@ export const PaymentCreatePage = () => {
 
   const handleSubmit = async (data: CreatePaymentRequest) => {
     await createPaymentMutation.mutateAsync(data);
-    navigate('/payments');
+    if (continueAdding) {
+      setAddedCount((c) => c + 1);
+      setResetKey((k) => k + 1);
+    } else {
+      navigate('/payments');
+    }
   };
 
   const handleCancel = () => {
@@ -61,9 +69,18 @@ export const PaymentCreatePage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {registerMode ? 'Register Payment' : 'Schedule Payment'}
-          </h1>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              {registerMode ? 'Register Payment' : 'Schedule Payment'}
+            </h1>
+            {addedCount > 0 && (
+              <p className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+                <CheckCircle className="h-3.5 w-3.5" />
+                {addedCount} payment{addedCount !== 1 ? 's' : ''}{' '}
+                {registerMode ? 'registered' : 'scheduled'} this session
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Form */}
@@ -97,6 +114,21 @@ export const PaymentCreatePage = () => {
             )}
           </div>
 
+          {/* Continue adding checkbox */}
+          {effectiveContractId && (
+            <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={continueAdding}
+                onChange={(e) => setContinueAdding(e.target.checked)}
+                className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+              />
+              <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                Continue adding more
+              </span>
+            </label>
+          )}
+
           {effectiveContractId &&
             (registerMode ? (
               <RegisterPaymentForm
@@ -104,6 +136,7 @@ export const PaymentCreatePage = () => {
                 onCancel={handleCancel}
                 isLoading={createPaymentMutation.isPending}
                 contractIdentifier={effectiveContractId}
+                resetKey={resetKey}
               />
             ) : (
               <PaymentForm
@@ -111,6 +144,7 @@ export const PaymentCreatePage = () => {
                 onCancel={handleCancel}
                 isLoading={createPaymentMutation.isPending}
                 contractIdentifier={effectiveContractId}
+                resetKey={resetKey}
               />
             ))}
         </div>
