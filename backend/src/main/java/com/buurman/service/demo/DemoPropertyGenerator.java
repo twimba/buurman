@@ -371,6 +371,16 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? currency : null)
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? Long.valueOf(500_00L) : null)
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? currency : null)
+            .set(
+                PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
+                i < 4 ? Short.valueOf((short) (new int[] {1, 4, 7, 10}[i % 4])) : null)
+            .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, i < 4 ? Short.valueOf((short) 1) : null)
+            .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, i < 3 ? Short.valueOf((short) 6) : null)
+            .set(
+                PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, i < 2 ? Short.valueOf((short) 3) : null)
+            .set(
+                PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
+                i < 4 ? Short.valueOf((short) 9) : null)
             .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
             .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
             .set(PROPERTIES.LAND_VALUE, i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)

@@ -586,6 +586,11 @@ export interface PropertyResponse {
   annualManagementFeeCurrency: string | null;
   annualMaintenanceReserve: number | null;
   annualMaintenanceReserveCurrency: string | null;
+  annualPropertyTaxDueMonth: number | null;
+  annualInsuranceDueMonth: number | null;
+  annualHoaFeeDueMonth: number | null;
+  annualManagementFeeDueMonth: number | null;
+  annualMaintenanceReserveDueMonth: number | null;
   depreciationMethod: DepreciationMethod | null;
   depreciationYears: number | null;
   landValue: number | null;
@@ -695,6 +700,11 @@ export interface CreatePropertyRequest {
   annualManagementFeeCurrency?: string | null;
   annualMaintenanceReserve?: number | null;
   annualMaintenanceReserveCurrency?: string | null;
+  annualPropertyTaxDueMonth?: number | null;
+  annualInsuranceDueMonth?: number | null;
+  annualHoaFeeDueMonth?: number | null;
+  annualManagementFeeDueMonth?: number | null;
+  annualMaintenanceReserveDueMonth?: number | null;
   depreciationMethod?: DepreciationMethod | null;
   depreciationYears?: number | null;
   landValue?: number | null;
@@ -796,6 +806,11 @@ export interface UpdatePropertyRequest {
   annualManagementFeeCurrency?: string | null;
   annualMaintenanceReserve?: number | null;
   annualMaintenanceReserveCurrency?: string | null;
+  annualPropertyTaxDueMonth?: number | null;
+  annualInsuranceDueMonth?: number | null;
+  annualHoaFeeDueMonth?: number | null;
+  annualManagementFeeDueMonth?: number | null;
+  annualMaintenanceReserveDueMonth?: number | null;
   depreciationMethod?: DepreciationMethod | null;
   depreciationYears?: number | null;
   landValue?: number | null;

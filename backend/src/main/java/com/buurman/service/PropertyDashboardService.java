@@ -228,16 +228,26 @@ public class PropertyDashboardService {
       List<Payment> payments, List<Expense> expenses, Property property, LocalDate now) {
     BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
 
-    // Monthly share of property-level annual operating costs (tax, insurance, HOA, etc.)
-    BigDecimal monthlyOperatingCosts =
-        sumAmounts(
-                java.util.Arrays.asList(
-                    property.getAnnualPropertyTax(),
-                    property.getAnnualInsurance(),
-                    property.getAnnualHoaFee(),
-                    property.getAnnualManagementFee(),
-                    property.getAnnualMaintenanceReserve()))
-            .divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+    // Build per-month operating cost map (due-month-aware)
+    Map<Integer, BigDecimal> operatingCostsByMonth = new java.util.HashMap<>();
+    addAnnualCostToMonth(
+        operatingCostsByMonth,
+        property.getAnnualPropertyTax(),
+        property.getAnnualPropertyTaxDueMonth());
+    addAnnualCostToMonth(
+        operatingCostsByMonth,
+        property.getAnnualInsurance(),
+        property.getAnnualInsuranceDueMonth());
+    addAnnualCostToMonth(
+        operatingCostsByMonth, property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
+    addAnnualCostToMonth(
+        operatingCostsByMonth,
+        property.getAnnualManagementFee(),
+        property.getAnnualManagementFeeDueMonth());
+    addAnnualCostToMonth(
+        operatingCostsByMonth,
+        property.getAnnualMaintenanceReserve(),
+        property.getAnnualMaintenanceReserveDueMonth());
 
     Map<YearMonth, BigDecimal> incomeByMonth =
         payments.stream()
@@ -259,7 +269,8 @@ public class PropertyDashboardService {
     for (int i = MONTHS_LOOKBACK - 1; i >= 0; i--) {
       YearMonth ym = YearMonth.from(now.minusMonths(i));
       BigDecimal income = incomeByMonth.getOrDefault(ym, ZERO);
-      BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO).add(monthlyOperatingCosts);
+      BigDecimal opCosts = operatingCostsByMonth.getOrDefault(ym.getMonthValue(), ZERO);
+      BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO).add(opCosts);
       BigDecimal mort = monthlyMortgage != null ? monthlyMortgage : ZERO;
       BigDecimal net = income.subtract(exp).subtract(mort);
       months.add(new MonthlyDataPoint(ym.toString(), income, exp, mort, net));
@@ -315,35 +326,80 @@ public class PropertyDashboardService {
       }
     }
 
-    // Distribute property-level annual costs evenly across months (1/12 each)
-    Map<String, BigDecimal> monthlyCosts = new java.util.LinkedHashMap<>();
-    addMonthlyShare(monthlyCosts, "PROPERTY_TAX", property.getAnnualPropertyTax());
-    addMonthlyShare(monthlyCosts, "INSURANCE", property.getAnnualInsurance());
-    addMonthlyShare(monthlyCosts, "HOA", property.getAnnualHoaFee());
-    addMonthlyShare(monthlyCosts, "MANAGEMENT", property.getAnnualManagementFee());
-    addMonthlyShare(monthlyCosts, "MAINTENANCE_RESERVE", property.getAnnualMaintenanceReserve());
+    // Distribute property-level annual costs (due-month-aware)
+    addAnnualCostToTimeline(
+        monthlyMap,
+        "PROPERTY_TAX",
+        property.getAnnualPropertyTax(),
+        property.getAnnualPropertyTaxDueMonth());
+    addAnnualCostToTimeline(
+        monthlyMap,
+        "INSURANCE",
+        property.getAnnualInsurance(),
+        property.getAnnualInsuranceDueMonth());
+    addAnnualCostToTimeline(
+        monthlyMap, "HOA", property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
+    addAnnualCostToTimeline(
+        monthlyMap,
+        "MANAGEMENT",
+        property.getAnnualManagementFee(),
+        property.getAnnualManagementFeeDueMonth());
+    addAnnualCostToTimeline(
+        monthlyMap,
+        "MAINTENANCE_RESERVE",
+        property.getAnnualMaintenanceReserve(),
+        property.getAnnualMaintenanceReserveDueMonth());
 
     List<ExpenseTimelineMonth> timeline =
         monthlyMap.entrySet().stream()
-            .map(
-                entry -> {
-                  Map<String, BigDecimal> combined =
-                      new java.util.LinkedHashMap<>(entry.getValue());
-                  monthlyCosts.forEach((k, v) -> combined.merge(k, v, BigDecimal::add));
-                  return new ExpenseTimelineMonth(entry.getKey().toString(), combined);
-                })
+            .map(entry -> new ExpenseTimelineMonth(entry.getKey().toString(), entry.getValue()))
             .toList();
 
     return new ExpenseBreakdownChartData(slices, timeline);
   }
 
-  private static void addMonthlyShare(
-      Map<String, BigDecimal> map, String key, BigDecimal annualValue) {
-    if (annualValue != null && annualValue.compareTo(ZERO) > 0) {
-      map.put(
-          key,
-          annualValue.divide(
-              BigDecimal.valueOf(MONTHS_LOOKBACK), SCALE, java.math.RoundingMode.HALF_UP));
+  /**
+   * Distributes an annual cost into a month-indexed map. If dueMonth is set, the full amount goes
+   * into that month. Otherwise, it's spread evenly across all 12 months.
+   */
+  private static void addAnnualCostToMonth(
+      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, Integer dueMonth) {
+    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
+      return;
+    }
+    if (dueMonth != null) {
+      monthMap.merge(dueMonth, annualAmount, BigDecimal::add);
+    } else {
+      BigDecimal monthly = annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+      for (int m = 1; m <= 12; m++) {
+        monthMap.merge(m, monthly, BigDecimal::add);
+      }
+    }
+  }
+
+  /**
+   * Adds an annual cost to the expense timeline. If dueMonth is set, the full amount goes into
+   * matching months in the timeline. Otherwise, it's spread evenly (÷12) across all months.
+   */
+  private static void addAnnualCostToTimeline(
+      Map<YearMonth, Map<String, BigDecimal>> timeline,
+      String category,
+      BigDecimal annualAmount,
+      Integer dueMonth) {
+    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
+      return;
+    }
+    if (dueMonth != null) {
+      for (Map.Entry<YearMonth, Map<String, BigDecimal>> entry : timeline.entrySet()) {
+        if (entry.getKey().getMonthValue() == dueMonth) {
+          entry.getValue().merge(category, annualAmount, BigDecimal::add);
+        }
+      }
+    } else {
+      BigDecimal monthly = annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+      for (Map<String, BigDecimal> monthData : timeline.values()) {
+        monthData.merge(category, monthly, BigDecimal::add);
+      }
     }
   }
 

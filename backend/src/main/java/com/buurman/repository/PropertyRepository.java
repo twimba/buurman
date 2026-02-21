@@ -227,6 +227,21 @@ public class PropertyRepository {
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
               property.getAnnualMaintenanceReserveCurrency())
           .set(
+              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
+              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
+              toShortOrNull(property.getAnnualInsuranceDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
+              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
+              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
+              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+          .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
                   ? property.getDepreciationMethod().name()
@@ -373,6 +388,21 @@ public class PropertyRepository {
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
               property.getAnnualMaintenanceReserveCurrency())
           .set(
+              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
+              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
+              toShortOrNull(property.getAnnualInsuranceDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
+              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
+              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+          .set(
+              PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
+              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+          .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
                   ? property.getDepreciationMethod().name()
@@ -458,5 +488,9 @@ public class PropertyRepository {
         .set(PROPERTIES.DELETED_AT, now)
         .where(PROPERTIES.ID.eq(id).and(PROPERTIES.TEAM_ID.eq(teamId)))
         .execute();
+  }
+
+  private static Short toShortOrNull(Integer value) {
+    return value != null ? value.shortValue() : null;
   }
 }
