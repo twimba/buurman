@@ -14,7 +14,7 @@
 
     <groupId>com.buurman</groupId>
     <artifactId>buurman-backend</artifactId>
-    <version>0.12.0</version>
+    <version>0.13.0</version>
     <name>Buurman Backend</name>
     <description>Property management backend for Buurman</description>
 
