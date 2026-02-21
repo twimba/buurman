@@ -12,6 +12,7 @@ import {
   CheckSquare,
   Square,
   Check,
+  Loader2,
 } from 'lucide-react';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
@@ -26,7 +27,6 @@ import { RichTextDisplay } from '../ui/RichTextDisplay';
 import { RichTextEditor } from '../common/RichTextEditor';
 
 interface DocumentListProps {
-  propertyId?: string;
   documents: DocumentResponse[];
   isLoading: boolean;
   error: Error | null;
@@ -244,7 +244,7 @@ export const DocumentList = ({
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
                 >
                   {bulkDownloadMutation.isPending ? (
-                    <LoadingSpinner />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Download className="h-4 w-4" />
                   )}
@@ -558,14 +558,25 @@ export const DocumentList = ({
               </button>
               <button
                 onClick={handleUpload}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="relative overflow-hidden bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
                 disabled={!!uploadProgress || selectedFiles.length === 0}
+                aria-busy={!!uploadProgress}
               >
                 {uploadProgress ? (
                   <>
-                    <LoadingSpinner />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Uploading {uploadProgress.current} of {uploadProgress.total}
                     ...
+                    <div
+                      role="progressbar"
+                      aria-valuenow={uploadProgress.current}
+                      aria-valuemin={0}
+                      aria-valuemax={uploadProgress.total}
+                      className="absolute bottom-0 left-0 h-0.5 bg-white/30 transition-all duration-300"
+                      style={{
+                        width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
+                      }}
+                    />
                   </>
                 ) : (
                   <>

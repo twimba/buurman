@@ -1258,7 +1258,6 @@ export const PropertyDetailPage = () => {
         {activeTab === 'photos' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <PhotoGallery
-              propertyId={id!}
               photos={photos}
               isLoading={photosLoading}
               error={photosError}
@@ -1274,7 +1273,6 @@ export const PropertyDetailPage = () => {
 
         {activeTab === 'documents' && (
           <DocumentList
-            propertyId={id!}
             documents={documents}
             isLoading={docsLoading}
             error={docsError}
