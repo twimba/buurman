@@ -32,6 +32,7 @@ import {
   exportPropertyDashboardCSV,
 } from '@/api/properties';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { MetricHint } from '@/components/common/MetricHint';
 import type {
   DashboardSummaryMetrics,
   CashFlowChartData,
@@ -112,7 +113,8 @@ function formatAxisValue(value: number, currencyCode: string): string {
   const symbol = getCurrencySymbol(currencyCode);
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
-  if (abs >= 1_000_000) return `${sign}${symbol}${(abs / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000_000)
+    return `${sign}${symbol}${(abs / 1_000_000).toFixed(1)}M`;
   if (abs >= 1_000) return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
   return `${sign}${symbol}${abs.toFixed(0)}`;
 }
@@ -371,7 +373,7 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
               {card.icon}
             </span>
             <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-medium">
-              {card.label}
+              <MetricHint label={card.label} />
             </span>
           </div>
           <div

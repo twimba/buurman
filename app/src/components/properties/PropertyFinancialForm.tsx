@@ -1,5 +1,6 @@
 import { CollapsibleSection } from './CollapsibleSection';
 import { MoneyInput } from '@/components/common/MoneyInput';
+import { MetricHint } from '@/components/common/MetricHint';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import {
   CreatePropertyRequest,
@@ -248,7 +249,9 @@ export const PropertyFinancialForm = ({
             />
           </div>
           <div>
-            <label className={labelCls}>HOA Fee</label>
+            <label className={labelCls}>
+              <MetricHint label="HOA Fee" />
+            </label>
             <MoneyInput
               value={formData.annualHoaFee ?? undefined}
               onChange={(val) => onChange('annualHoaFee', val ?? null)}
@@ -264,7 +267,9 @@ export const PropertyFinancialForm = ({
             />
           </div>
           <div>
-            <label className={labelCls}>Maintenance Reserve</label>
+            <label className={labelCls}>
+              <MetricHint label="Maintenance Reserve" />
+            </label>
             <MoneyInput
               value={formData.annualMaintenanceReserve ?? undefined}
               onChange={(val) =>
@@ -306,7 +311,9 @@ export const PropertyFinancialForm = ({
             </select>
           </div>
           <div>
-            <label className={labelCls}>Useful Life</label>
+            <label className={labelCls}>
+              <MetricHint label="Useful Life" />
+            </label>
             <div className="relative">
               <input
                 type="number"
@@ -327,7 +334,9 @@ export const PropertyFinancialForm = ({
             </div>
           </div>
           <div>
-            <label className={labelCls}>Land Value</label>
+            <label className={labelCls}>
+              <MetricHint label="Land Value" />
+            </label>
             <MoneyInput
               value={formData.landValue ?? undefined}
               onChange={(val) => onChange('landValue', val ?? null)}

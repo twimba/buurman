@@ -3,6 +3,7 @@ import { useDashboardStats, useRecentActivities } from '@/hooks/useDashboard';
 import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { useTeam } from '@/context/TeamContext';
 import { LoadingSpinner } from './LoadingSpinner';
+import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PropertyStatusChart } from './PropertyStatusChart';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
@@ -126,7 +127,7 @@ export const DashboardPage = () => {
         <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-[#edf0f7] dark:border-[#2a2e3f] hover:border-purple-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
-              Occupancy Rate
+              <MetricHint label="Occupancy Rate" />
             </h3>
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />

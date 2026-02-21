@@ -33,6 +33,7 @@ import {
   useOccupancyTrend,
 } from '@/hooks/useReportHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 
 export const FinancialReportsPage = () => {
@@ -338,7 +339,7 @@ export const FinancialReportsPage = () => {
                       : 'text-orange-700 dark:text-orange-400'
                   }`}
                 >
-                  Net Profit
+                  <MetricHint label="Net Profit" />
                 </p>
                 <p
                   className={`text-3xl font-bold ${
