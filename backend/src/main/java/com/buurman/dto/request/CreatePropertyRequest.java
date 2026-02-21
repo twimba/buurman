@@ -75,6 +75,27 @@ public record CreatePropertyRequest(
     Boolean hasAdaptedBathroom,
     String accessibilityNotes,
 
+    // Investment & Financial
+    String currency,
+    BigDecimal purchasePrice,
+    LocalDate purchaseDate,
+    BigDecimal currentMarketValue,
+    LocalDate marketValueDate,
+    Property.MortgageType mortgageType,
+    BigDecimal mortgageAmount,
+    BigDecimal mortgageInterestRate,
+    LocalDate mortgageStartDate,
+    LocalDate mortgageEndDate,
+    BigDecimal monthlyMortgagePayment,
+    BigDecimal annualPropertyTax,
+    BigDecimal annualInsurance,
+    BigDecimal annualHoaFee,
+    BigDecimal annualManagementFee,
+    BigDecimal annualMaintenanceReserve,
+    Property.DepreciationMethod depreciationMethod,
+    Integer depreciationYears,
+    BigDecimal landValue,
+
     // Category-specific details (only one should be provided)
     @Valid ResidentialDetailsRequest residentialDetails,
     @Valid CommercialDetailsRequest commercialDetails,

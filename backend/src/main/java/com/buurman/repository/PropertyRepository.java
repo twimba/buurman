@@ -21,6 +21,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 import com.buurman.mapper.PropertyRecordMapper;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -165,6 +166,48 @@ public class PropertyRepository {
           .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
           .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
           .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+          // Investment & Financial
+          .set(PROPERTIES.CURRENCY, property.getCurrency())
+          .set(PROPERTIES.PURCHASE_PRICE,
+              CurrencyUtils.toMinorUnitsOrNull(property.getPurchasePrice(), property.getCurrency()))
+          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
+          .set(PROPERTIES.CURRENT_MARKET_VALUE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getCurrentMarketValue(), property.getCurrency()))
+          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
+          .set(PROPERTIES.MORTGAGE_TYPE,
+              property.getMortgageType() != null ? property.getMortgageType().name() : null)
+          .set(PROPERTIES.MORTGAGE_AMOUNT,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMortgageAmount(), property.getCurrency()))
+          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
+          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
+          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
+          .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMonthlyMortgagePayment(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualPropertyTax(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_INSURANCE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualInsurance(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_HOA_FEE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualHoaFee(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualManagementFee(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualMaintenanceReserve(), property.getCurrency()))
+          .set(PROPERTIES.DEPRECIATION_METHOD,
+              property.getDepreciationMethod() != null
+                  ? property.getDepreciationMethod().name()
+                  : null)
+          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
+          .set(PROPERTIES.LAND_VALUE,
+              CurrencyUtils.toMinorUnitsOrNull(property.getLandValue(), property.getCurrency()))
           // Audit
           .set(PROPERTIES.CREATED_AT, createdAt)
           .set(PROPERTIES.UPDATED_AT, updatedAt)
@@ -240,6 +283,48 @@ public class PropertyRepository {
           .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
           .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
           .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+          // Investment & Financial
+          .set(PROPERTIES.CURRENCY, property.getCurrency())
+          .set(PROPERTIES.PURCHASE_PRICE,
+              CurrencyUtils.toMinorUnitsOrNull(property.getPurchasePrice(), property.getCurrency()))
+          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
+          .set(PROPERTIES.CURRENT_MARKET_VALUE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getCurrentMarketValue(), property.getCurrency()))
+          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
+          .set(PROPERTIES.MORTGAGE_TYPE,
+              property.getMortgageType() != null ? property.getMortgageType().name() : null)
+          .set(PROPERTIES.MORTGAGE_AMOUNT,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMortgageAmount(), property.getCurrency()))
+          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
+          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
+          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
+          .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMonthlyMortgagePayment(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualPropertyTax(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_INSURANCE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualInsurance(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_HOA_FEE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualHoaFee(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualManagementFee(), property.getCurrency()))
+          .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getAnnualMaintenanceReserve(), property.getCurrency()))
+          .set(PROPERTIES.DEPRECIATION_METHOD,
+              property.getDepreciationMethod() != null
+                  ? property.getDepreciationMethod().name()
+                  : null)
+          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
+          .set(PROPERTIES.LAND_VALUE,
+              CurrencyUtils.toMinorUnitsOrNull(property.getLandValue(), property.getCurrency()))
           // Audit
           .set(PROPERTIES.UPDATED_AT, updatedAt)
           .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())
