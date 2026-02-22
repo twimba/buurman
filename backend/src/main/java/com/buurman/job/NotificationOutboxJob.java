@@ -101,24 +101,25 @@ public class NotificationOutboxJob implements Job {
           providerMessageId);
 
     } catch (NotificationSendException e) {
+      String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
       log.warn(
           "Failed to send notification {} via {}: {}",
           entry.getNotificationId(),
           entry.getChannel(),
-          e.getMessage());
-      outboxRepository.markFailed(entry.getId(), e.getMessage(), entry.getRetryCount());
+          errorMsg);
+      outboxRepository.markFailed(entry.getId(), errorMsg, entry.getRetryCount());
 
       if (entry.getRetryCount() + 1 >= entry.getMaxRetries()) {
         notificationRepository.updateStatus(
-            entry.getNotificationId(), FAILED, null, null, e.getMessage());
+            entry.getNotificationId(), FAILED, null, null, errorMsg);
       } else {
         notificationRepository.updateStatus(
             entry.getNotificationId(), QUEUED, null, "retrying", null);
       }
     } catch (Exception e) {
-      log.error(
-          "Unexpected error processing outbox entry {}: {}", entry.getId(), e.getMessage(), e);
-      outboxRepository.markFailed(entry.getId(), e.getMessage(), entry.getRetryCount());
+      String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+      log.error("Unexpected error processing outbox entry {}: {}", entry.getId(), errorMsg, e);
+      outboxRepository.markFailed(entry.getId(), errorMsg, entry.getRetryCount());
     }
   }
 }

@@ -6,9 +6,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("StringConcatToTextBlock") // Error Prone 2.47.0 bug crashes on this file
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
   private final UserRepository userRepository;
@@ -60,13 +63,15 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     boolean emailVerified = user.getEmailVerifiedAt() != null;
 
+    String userIdentifier = Objects.requireNonNull(user.getIdentifier(), "User identifier is null");
+
     if (membership != null) {
-      String teamIdentifier =
+      @Nullable String teamIdentifier =
           teamRepository.findById(membership.getTeamId()).map(Team::getIdentifier).orElse(null);
       principal =
           new UserPrincipal(
               user.getId(),
-              user.getIdentifier(),
+              userIdentifier,
               keycloakId,
               email,
               name,
@@ -84,7 +89,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
       principal =
           new UserPrincipal(
               user.getId(),
-              user.getIdentifier(),
+              userIdentifier,
               keycloakId,
               email,
               name,
@@ -99,7 +104,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     return new UserAuthentication(principal, authorities);
   }
 
-  private TeamMember selectActiveMembership(User user, List<TeamMember> memberships) {
+  private @Nullable TeamMember selectActiveMembership(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {
       return null;
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,16 +59,17 @@ public class BackofficeFeatureFlagController {
       boolean isActive,
       Map<String, Object> flags) {}
 
-  public record UpdateFeatureFlagRequest(Boolean enabled, String value) {}
+  public record UpdateFeatureFlagRequest(@Nullable Boolean enabled, @Nullable String value) {}
 
-  public record FeatureFlagUpdateResponse(String flagName, boolean enabled, Object value) {}
+  public record FeatureFlagUpdateResponse(
+      String flagName, boolean enabled, @Nullable Object value) {}
 
-  public record SegmentFlagOverride(String flagName, boolean enabled, Object value) {}
+  public record SegmentFlagOverride(String flagName, boolean enabled, @Nullable Object value) {}
 
   public record SegmentEvaluation(
       long segmentId,
       String segmentName,
-      String description,
+      @Nullable String description,
       Map<String, SegmentFlagOverride> overrides) {}
 
   // --- Read endpoints ---
@@ -358,7 +360,7 @@ public class BackofficeFeatureFlagController {
 
   // --- Internal ---
 
-  private UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
+  private @Nullable UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {
       return null;
     }

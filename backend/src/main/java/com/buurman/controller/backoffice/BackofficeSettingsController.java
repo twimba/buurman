@@ -81,8 +81,10 @@ public class BackofficeSettingsController {
   }
 
   private BackofficePhoneNumberPolicyResponse toResponse(PhoneNumberPolicy policy) {
+    Map<String, List<String>> matrix =
+        policy.getPolicyMatrix() != null ? policy.getPolicyMatrix() : Map.of();
     return new BackofficePhoneNumberPolicyResponse(
-        policy.getPolicyMatrix(),
+        matrix,
         policy.getMaxCodesPerHour(),
         policy.getVerificationCodeExpiryMinutes(),
         policy.getUpdatedAt(),

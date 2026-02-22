@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.buurman.domain.Property;
+import com.buurman.domain.Property.PropertyCategory;
+import com.buurman.domain.Property.PropertyStatus;
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.PageRequest;
@@ -62,12 +64,12 @@ public class PropertyController {
           "Get all properties with optional status, category, and search filters with pagination")
   @GetMapping
   public PageResponse<PropertyResponse> getProperties(
-      @RequestParam(required = false) Property.PropertyStatus status,
-      @RequestParam(required = false) Property.PropertyCategory category,
-      @RequestParam(required = false) String query,
+      @RequestParam(required = false) @Nullable PropertyStatus status,
+      @RequestParam(required = false) @Nullable PropertyCategory category,
+      @RequestParam(required = false) @Nullable String query,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
@@ -111,8 +113,8 @@ public class PropertyController {
   public DocumentResponse uploadDocument(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) String title,
-      @RequestParam(required = false) String notes,
+      @RequestParam(required = false) @Nullable String title,
+      @RequestParam(required = false) @Nullable String notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return propertyService.uploadDocument(identifier, file, title, notes, principal);
   }
@@ -161,8 +163,8 @@ public class PropertyController {
   public PhotoResponse uploadPhoto(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) String title,
-      @RequestParam(required = false) String notes,
+      @RequestParam(required = false) @Nullable String title,
+      @RequestParam(required = false) @Nullable String notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return propertyService.uploadPhoto(identifier, file, title, notes, principal);
   }

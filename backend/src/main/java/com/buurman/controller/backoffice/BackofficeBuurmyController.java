@@ -3,6 +3,7 @@ package com.buurman.controller.backoffice;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +43,10 @@ public class BackofficeBuurmyController {
       description = "List Keycloak users with search and pagination")
   @GetMapping
   public PageResponse<BuurmyResponse> listBuurmies(
-      @RequestParam(required = false) String search,
+      @RequestParam(required = false) @Nullable String search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return buurmyService.listBuurmies(pageRequest, search);

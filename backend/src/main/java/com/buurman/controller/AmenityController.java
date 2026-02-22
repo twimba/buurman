@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,7 @@ public class AmenityController {
       description = "Get all available amenities grouped by category")
   @GetMapping("/amenities")
   public Map<String, List<AmenityResponse>> getAllAmenities(
-      @RequestParam(required = false) String category) {
+      @RequestParam(required = false) @Nullable String category) {
     return propertyAmenityService.getAllAmenitiesGrouped(category);
   }
 

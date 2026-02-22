@@ -3,6 +3,7 @@ package com.buurman.controller;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,7 +95,9 @@ public class UserController {
   @GetMapping("/phone-policy")
   public PhoneNumberPolicyResponse getPhonePolicy() {
     PhoneNumberPolicy policy = phoneNumberPolicyService.getPolicy();
-    return new PhoneNumberPolicyResponse(policy.getPolicyMatrix());
+    Map<String, List<String>> matrix =
+        policy.getPolicyMatrix() != null ? policy.getPolicyMatrix() : Map.of();
+    return new PhoneNumberPolicyResponse(matrix);
   }
 
   @Operation(

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.buurman.domain.Expense;
+import com.buurman.domain.Expense.ExpenseCategory;
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkCreateExpensesRequest;
 import com.buurman.dto.request.CreateExpenseRequest;
@@ -85,13 +86,13 @@ public class ExpenseController {
       description = "Get all expenses with optional filters and pagination")
   @GetMapping
   public PageResponse<ExpenseResponse> getExpenses(
-      @RequestParam(required = false) Expense.ExpenseCategory category,
-      @RequestParam(required = false) String propertyIdentifier,
-      @RequestParam(required = false) LocalDate dateFrom,
-      @RequestParam(required = false) LocalDate dateTo,
+      @RequestParam(required = false) @Nullable Expense.ExpenseCategory category,
+      @RequestParam(required = false) @Nullable String propertyIdentifier,
+      @RequestParam(required = false) @Nullable LocalDate dateFrom,
+      @RequestParam(required = false) @Nullable LocalDate dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
@@ -148,8 +149,8 @@ public class ExpenseController {
   public DocumentResponse uploadDocument(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) String title,
-      @RequestParam(required = false) String notes,
+      @RequestParam(required = false) @Nullable String title,
+      @RequestParam(required = false) @Nullable String notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.uploadExpenseDocument(identifier, file, title, notes, principal);
   }

@@ -3,15 +3,17 @@ package com.buurman.security;
 import java.security.Principal;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 public class UserPrincipal implements Principal {
   private final UUID userId;
   private final String userIdentifier; // ULID
   private final String keycloakId;
   private final String email;
   private final String name;
-  private final UUID teamId; // nullable for users without team membership
-  private final String teamIdentifier; // ULID, nullable
-  private final String role; // nullable for users without team membership
+  private final @Nullable UUID teamId; // nullable for users without team membership
+  private final @Nullable String teamIdentifier; // ULID, nullable
+  private final @Nullable String role; // nullable for users without team membership
   private final boolean isOwner;
   private final boolean emailVerified;
 
@@ -21,9 +23,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role,
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable String role,
       boolean isOwner,
       boolean emailVerified) {
     this.userId = userId;
@@ -44,9 +46,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role,
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable String role,
       boolean isOwner) {
     this(
         userId,
@@ -67,9 +69,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role) {
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable String role) {
     this(
         userId, userIdentifier, keycloakId, email, name, teamId, teamIdentifier, role, false, true);
   }
@@ -95,15 +97,15 @@ public class UserPrincipal implements Principal {
     return name;
   }
 
-  public UUID getTeamId() {
+  public @Nullable UUID getTeamId() {
     return teamId;
   }
 
-  public String getTeamIdentifier() {
+  public @Nullable String getTeamIdentifier() {
     return teamIdentifier;
   }
 
-  public String getRole() {
+  public @Nullable String getRole() {
     return role;
   }
 

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -75,8 +76,8 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
-      @RequestParam(required = false) String currency,
+      @RequestParam(required = false) @Nullable List<String> propertyIdentifiers,
+      @RequestParam(required = false) @Nullable String currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
@@ -160,8 +161,8 @@ public class ReportController {
       description = "Download transaction history as CSV file")
   @GetMapping("/export/transactions/csv")
   public ResponseEntity<byte[]> exportTransactionHistoryCSV(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate startDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] csv =
@@ -178,8 +179,8 @@ public class ReportController {
       description = "Download transaction history as PDF file")
   @GetMapping("/export/transactions/pdf")
   public ResponseEntity<byte[]> exportTransactionHistoryPDF(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate startDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =

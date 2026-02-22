@@ -7,8 +7,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -48,7 +50,7 @@ public class FlagsmithConfig {
   }
 
   @Bean
-  public FlagsmithClient flagsmithClient() {
+  public @Nullable FlagsmithClient flagsmithClient() {
     return resolveServerKey().map(this::buildClient).orElse(null);
   }
 
@@ -95,10 +97,16 @@ public class FlagsmithConfig {
       ObjectMapper mapper = new ObjectMapper();
       FlagsmithAdminApi api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
-      String token =
-          hasText(properties.apiToken())
-              ? properties.apiToken()
-              : api.login(properties.adminEmail(), properties.adminPassword());
+      String token;
+      if (hasText(properties.apiToken())) {
+        token = properties.apiToken();
+      } else {
+        // Null-safety: these are guaranteed non-null here because resolveAdminTokenForDiscovery()
+        // already verified that both are present (hasText) before reaching this code path
+        String adminEmail = Objects.requireNonNull(properties.adminEmail());
+        String adminPassword = Objects.requireNonNull(properties.adminPassword());
+        token = api.login(adminEmail, adminPassword);
+      }
 
       String envName = properties.environmentName();
       int projectId = api.findProjectId(token, properties.projectName());
@@ -115,7 +123,7 @@ public class FlagsmithConfig {
     }
   }
 
-  private String resolveAdminTokenForDiscovery() {
+  private @Nullable String resolveAdminTokenForDiscovery() {
     if (hasText(properties.apiToken())) {
       return properties.apiToken();
     }
@@ -214,7 +222,7 @@ public class FlagsmithConfig {
       return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
     }
 
-    private JsonNode post(String path, JsonNode payload, String token) throws Exception {
+    private JsonNode post(String path, JsonNode payload, @Nullable String token) throws Exception {
       HttpRequest.Builder builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
@@ -241,7 +249,7 @@ public class FlagsmithConfig {
       throw new IllegalStateException("unexpected response format");
     }
 
-    private static String text(JsonNode node, String field) {
+    private static @Nullable String text(JsonNode node, String field) {
       return node.has(field) ? node.get(field).asText() : null;
     }
   }

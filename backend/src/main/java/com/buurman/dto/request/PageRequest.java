@@ -12,7 +12,8 @@ public record PageRequest(
   public static final int DEFAULT_SIZE = 25;
   public static final int MAX_SIZE = 500;
 
-  public static PageRequest of(Integer page, Integer size, String sort, SortDirection direction) {
+  public static PageRequest of(
+      Integer page, Integer size, @Nullable String sort, SortDirection direction) {
     int p = (page != null && page >= 0) ? page : DEFAULT_PAGE;
     int s = (size != null && size > 0) ? Math.min(size, MAX_SIZE) : DEFAULT_SIZE;
     SortDirection d = direction != null ? direction : DESC;

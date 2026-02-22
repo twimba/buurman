@@ -5,6 +5,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,16 +40,16 @@ public class BackofficeNotificationController {
       description = "Get all notifications with filtering and pagination")
   @GetMapping
   public PageResponse<BackofficeNotificationResponse> listNotifications(
-      @RequestParam(required = false) String teamIdentifier,
-      @RequestParam(required = false) String type,
-      @RequestParam(required = false) String channel,
-      @RequestParam(required = false) String status,
-      @RequestParam(required = false) String recipientEmail,
-      @RequestParam(required = false) String dateFrom,
-      @RequestParam(required = false) String dateTo,
+      @RequestParam(required = false) @Nullable String teamIdentifier,
+      @RequestParam(required = false) @Nullable String type,
+      @RequestParam(required = false) @Nullable String channel,
+      @RequestParam(required = false) @Nullable String status,
+      @RequestParam(required = false) @Nullable String recipientEmail,
+      @RequestParam(required = false) @Nullable String dateFrom,
+      @RequestParam(required = false) @Nullable String dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
 
     LocalDateTime from = parseDateTime(dateFrom);
@@ -80,7 +81,7 @@ public class BackofficeNotificationController {
     return backofficeNotificationService.getStats();
   }
 
-  private LocalDateTime parseDateTime(String dateTimeStr) {
+  private @Nullable LocalDateTime parseDateTime(@Nullable String dateTimeStr) {
     if (dateTimeStr == null || dateTimeStr.isBlank()) {
       return null;
     }

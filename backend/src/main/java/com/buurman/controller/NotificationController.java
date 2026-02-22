@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,15 +43,15 @@ public class NotificationController {
       description = "Paginated list of all team notifications (Admin only)")
   @GetMapping
   public PageResponse<NotificationResponse> getNotifications(
-      @RequestParam(required = false) NotificationType type,
-      @RequestParam(required = false) NotificationChannel channel,
-      @RequestParam(required = false) NotificationStatus status,
-      @RequestParam(required = false) String recipientEmail,
-      @RequestParam(required = false) String dateFrom,
-      @RequestParam(required = false) String dateTo,
+      @RequestParam(required = false) @Nullable NotificationType type,
+      @RequestParam(required = false) @Nullable NotificationChannel channel,
+      @RequestParam(required = false) @Nullable NotificationStatus status,
+      @RequestParam(required = false) @Nullable String recipientEmail,
+      @RequestParam(required = false) @Nullable String dateFrom,
+      @RequestParam(required = false) @Nullable String dateTo,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "25") int size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 

@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,10 +46,10 @@ public class BackofficeRegistrationInvitationController {
   @GetMapping
   @Operation(summary = "List registration invitations")
   public ResponseEntity<PageResponse<RegistrationInvitationResponse>> list(
-      @RequestParam(required = false) String search,
+      @RequestParam(required = false) @Nullable String search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal BackofficePrincipal principal) {
 

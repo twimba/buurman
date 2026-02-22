@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class BackofficeLoggerController {
   @Operation(summary = "List all loggers")
   @GetMapping
   public List<LoggerConfigurationResponse> listLoggers(
-      @RequestParam(required = false) String search) {
+      @RequestParam(required = false) @Nullable String search) {
     return loggerService.listLoggers(search);
   }
 

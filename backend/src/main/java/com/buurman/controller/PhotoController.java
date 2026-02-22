@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import java.net.URL;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -45,11 +46,11 @@ public class PhotoController {
       summary = "Search and list all photos",
       description = "Search across all photos with optional filters and pagination")
   public ResponseEntity<PageResponse<PhotoResponse>> getAllPhotos(
-      @RequestParam(required = false) String search,
-      @RequestParam(required = false) String entityType,
+      @RequestParam(required = false) @Nullable String search,
+      @RequestParam(required = false) @Nullable String entityType,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 

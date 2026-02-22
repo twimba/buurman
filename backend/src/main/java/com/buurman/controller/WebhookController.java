@@ -7,6 +7,7 @@ import java.security.interfaces.ECPublicKey;
 import java.util.Map;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,9 +52,9 @@ public class WebhookController {
   public ResponseEntity<Void> handleSendGridEvents(
       @RequestBody String rawPayload,
       @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Signature", required = false)
-          String signature,
+          @Nullable String signature,
       @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Timestamp", required = false)
-          String timestamp) {
+          @Nullable String timestamp) {
     try {
       if (!verifySendGridSignature(rawPayload, signature, timestamp)) {
         log.warn("SendGrid webhook signature verification failed");
@@ -73,7 +74,8 @@ public class WebhookController {
   @PostMapping("/twilio/status")
   public ResponseEntity<String> handleTwilioStatus(
       @RequestParam Map<String, String> params,
-      @RequestHeader(value = "X-Twilio-Signature", required = false) String twilioSignature,
+      @RequestHeader(value = "X-Twilio-Signature", required = false)
+          @Nullable String twilioSignature,
       HttpServletRequest request) {
     try {
       if (!verifyTwilioSignature(request, params, twilioSignature)) {
@@ -87,7 +89,8 @@ public class WebhookController {
     return ResponseEntity.ok("<Response></Response>");
   }
 
-  private boolean verifySendGridSignature(String payload, String signature, String timestamp) {
+  private boolean verifySendGridSignature(
+      String payload, @Nullable String signature, @Nullable String timestamp) {
     String verificationKey = sendGridProperties.webhookVerificationKey();
     if (verificationKey == null || verificationKey.isBlank()) {
       return true; // Skip verification in dev
@@ -106,7 +109,7 @@ public class WebhookController {
   }
 
   private boolean verifyTwilioSignature(
-      HttpServletRequest request, Map<String, String> params, String signature) {
+      HttpServletRequest request, Map<String, String> params, @Nullable String signature) {
     String authToken = twilioProperties.authToken();
     if (authToken == null || authToken.isBlank()) {
       return true; // Skip verification in dev

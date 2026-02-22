@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,10 +38,10 @@ public class BackofficeUserController {
       description = "Get all users with optional search and pagination")
   @GetMapping
   public PageResponse<BackofficeUserResponse> listUsers(
-      @RequestParam(required = false) String search,
+      @RequestParam(required = false) @Nullable String search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) @Nullable String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeUserService.listUsers(pageRequest, search);
