@@ -431,16 +431,35 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Distributes an annual cost into a month-indexed map. If dueMonth is set, the full amount goes
-   * into that month. Otherwise, it's spread evenly across all 12 months.
+   * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers.
+   * Returns null if the input is null or blank (meaning all months).
+   */
+  private static List<Integer> parseDueMonths(String dueMonths) {
+    if (dueMonths == null || dueMonths.isBlank()) {
+      return null;
+    }
+    return java.util.Arrays.stream(dueMonths.split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .map(Integer::parseInt)
+        .toList();
+  }
+
+  /**
+   * Distributes an annual cost into a month-indexed map. If dueMonths is set, the amount is
+   * divided among those months. Otherwise, it's spread evenly across all 12 months.
    */
   private static void addAnnualCostToMonth(
-      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, Integer dueMonth) {
+      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
-    if (dueMonth != null) {
-      monthMap.merge(dueMonth, annualAmount, BigDecimal::add);
+    List<Integer> months = parseDueMonths(dueMonths);
+    if (months != null && !months.isEmpty()) {
+      BigDecimal perMonth = annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
+      for (int m : months) {
+        monthMap.merge(m, perMonth, BigDecimal::add);
+      }
     } else {
       BigDecimal monthly = annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
       for (int m = 1; m <= 12; m++) {
@@ -450,21 +469,23 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Adds an annual cost to the expense timeline. If dueMonth is set, the full amount goes into
-   * matching months in the timeline. Otherwise, it's spread evenly (÷12) across all months.
+   * Adds an annual cost to the expense timeline. If dueMonths is set, the amount is divided
+   * among matching months. Otherwise, it's spread evenly (÷12) across all months.
    */
   private static void addAnnualCostToTimeline(
       Map<YearMonth, Map<String, BigDecimal>> timeline,
       String category,
       BigDecimal annualAmount,
-      Integer dueMonth) {
+      String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
-    if (dueMonth != null) {
+    List<Integer> months = parseDueMonths(dueMonths);
+    if (months != null && !months.isEmpty()) {
+      BigDecimal perMonth = annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
       for (Map.Entry<YearMonth, Map<String, BigDecimal>> entry : timeline.entrySet()) {
-        if (entry.getKey().getMonthValue() == dueMonth) {
-          entry.getValue().merge(category, annualAmount, BigDecimal::add);
+        if (months.contains(entry.getKey().getMonthValue())) {
+          entry.getValue().merge(category, perMonth, BigDecimal::add);
         }
       }
     } else {

@@ -228,19 +228,19 @@ public class PropertyRepository {
               property.getAnnualMaintenanceReserveCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
-              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
+              property.getAnnualPropertyTaxDueMonth())
           .set(
               PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
-              toShortOrNull(property.getAnnualInsuranceDueMonth()))
+              property.getAnnualInsuranceDueMonth())
           .set(
               PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
+              property.getAnnualHoaFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+              property.getAnnualManagementFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+              property.getAnnualMaintenanceReserveDueMonth())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -389,19 +389,19 @@ public class PropertyRepository {
               property.getAnnualMaintenanceReserveCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
-              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
+              property.getAnnualPropertyTaxDueMonth())
           .set(
               PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
-              toShortOrNull(property.getAnnualInsuranceDueMonth()))
+              property.getAnnualInsuranceDueMonth())
           .set(
               PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
+              property.getAnnualHoaFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+              property.getAnnualManagementFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+              property.getAnnualMaintenanceReserveDueMonth())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -490,7 +490,4 @@ public class PropertyRepository {
         .execute();
   }
 
-  private static Short toShortOrNull(Integer value) {
-    return value != null ? value.shortValue() : null;
-  }
 }

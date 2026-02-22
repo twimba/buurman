@@ -109,12 +109,12 @@ public class Property {
   private BigDecimal annualMaintenanceReserve;
   private String annualMaintenanceReserveCurrency;
 
-  // Operating Cost Due Months (1-12)
-  private Integer annualPropertyTaxDueMonth;
-  private Integer annualInsuranceDueMonth;
-  private Integer annualHoaFeeDueMonth;
-  private Integer annualManagementFeeDueMonth;
-  private Integer annualMaintenanceReserveDueMonth;
+  // Operating Cost Due Months — comma-separated month numbers (e.g. "1,3,7"), null = all months
+  private String annualPropertyTaxDueMonth;
+  private String annualInsuranceDueMonth;
+  private String annualHoaFeeDueMonth;
+  private String annualManagementFeeDueMonth;
+  private String annualMaintenanceReserveDueMonth;
 
   // Depreciation
   private DepreciationMethod depreciationMethod;
