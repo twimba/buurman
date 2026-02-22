@@ -26,10 +26,12 @@ export const getFinancialOverview = async (
 };
 
 export const getIncomeTrend = async (
+  startDate?: string,
+  endDate?: string,
   months: number = 12
 ): Promise<IncomeTrendResponse> => {
   const response = await client.get('/reports/charts/income-trend', {
-    params: { months },
+    params: startDate && endDate ? { startDate, endDate } : { months },
   });
   return response.data;
 };
@@ -55,10 +57,12 @@ export const getPropertyComparison = async (
 };
 
 export const getOccupancyTrend = async (
+  startDate?: string,
+  endDate?: string,
   months: number = 12
 ): Promise<OccupancyTrendResponse> => {
   const response = await client.get('/reports/charts/occupancy-trend', {
-    params: { months },
+    params: startDate && endDate ? { startDate, endDate } : { months },
   });
   return response.data;
 };

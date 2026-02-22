@@ -266,6 +266,53 @@ public class ReportService {
   }
 
   @Transactional(readOnly = true)
+  public IncomeTrendResponse getIncomeTrendByDateRange(
+      LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
+
+    UUID teamId = principal.getTeamId();
+    LocalDate rangeStart = startDate.withDayOfMonth(1);
+    LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
+
+    List<Payment> allPayments =
+        paymentRepository.findByDateRange(rangeStart, rangeEnd, teamId).stream()
+            .filter(p -> p.getStatus() == PAID)
+            .toList();
+    List<Expense> allExpenses = expenseRepository.findByDateRange(rangeStart, rangeEnd, teamId);
+
+    Map<YearMonth, BigDecimal> incomeByMonth =
+        allPayments.stream()
+            .collect(
+                groupingBy(
+                    p ->
+                        YearMonth.from(
+                            p.getPaymentDate() != null ? p.getPaymentDate() : p.getDueDate()),
+                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+    Map<YearMonth, BigDecimal> expensesByMonth =
+        allExpenses.stream()
+            .collect(
+                groupingBy(
+                    e -> YearMonth.from(e.getExpenseDate()),
+                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+
+    List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
+    YearMonth start = YearMonth.from(rangeStart);
+    YearMonth end = YearMonth.from(endDate);
+
+    for (YearMonth month = start; !month.isAfter(end); month = month.plusMonths(1)) {
+      BigDecimal monthIncome = incomeByMonth.getOrDefault(month, BigDecimal.ZERO);
+      BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, BigDecimal.ZERO);
+      BigDecimal monthNetProfit = monthIncome.subtract(monthExpenses);
+
+      dataPoints.add(
+          new IncomeTrendResponse.DataPoint(
+              month.toString(), monthIncome, monthExpenses, monthNetProfit));
+    }
+
+    return new IncomeTrendResponse(
+        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()));
+  }
+
+  @Transactional(readOnly = true)
   public ExpenseBreakdownResponse getExpenseBreakdown(
       LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
 
@@ -399,6 +446,51 @@ public class ReportService {
               .count();
 
       double occupancyRate = totalProperties > 0 ? (occupiedUnits * 100.0) / totalProperties : 0.0;
+
+      dataPoints.add(
+          new OccupancyTrendResponse.DataPoint(
+              month.toString(),
+              Math.round(occupancyRate * 100.0) / 100.0,
+              totalProperties,
+              (int) occupiedUnits));
+    }
+
+    return new OccupancyTrendResponse(dataPoints);
+  }
+
+  @Transactional(readOnly = true)
+  public OccupancyTrendResponse getOccupancyTrendByDateRange(
+      LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
+
+    UUID teamId = principal.getTeamId();
+    int totalProperties = propertyRepository.findAllByTeamId(teamId).size();
+
+    List<Contract> allActiveContracts =
+        contractRepository.findAllByTeamId(teamId).stream()
+            .filter(c -> c.getStatus() == ACTIVE)
+            .toList();
+
+    List<OccupancyTrendResponse.DataPoint> dataPoints = new ArrayList<>();
+    YearMonth start = YearMonth.from(startDate.withDayOfMonth(1));
+    YearMonth end = YearMonth.from(endDate);
+
+    for (YearMonth month = start; !month.isAfter(end); month = month.plusMonths(1)) {
+      LocalDate monthStart = month.atDay(1);
+      LocalDate monthEnd = month.atEndOfMonth();
+
+      long occupiedUnits =
+          allActiveContracts.stream()
+              .filter(
+                  c -> {
+                    LocalDate contractStart = c.getStartDate();
+                    LocalDate contractEnd =
+                        c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
+                    return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
+                  })
+              .count();
+
+      double occupancyRate =
+          totalProperties > 0 ? (occupiedUnits * 100.0) / totalProperties : 0.0;
 
       dataPoints.add(
           new OccupancyTrendResponse.DataPoint(

@@ -138,7 +138,11 @@ export const FinancialReportsPage = () => {
     data: incomeTrend,
     isLoading: trendLoading,
     error: trendError,
-  } = useIncomeTrend(12);
+  } = useIncomeTrend(
+    dateRange.startDate,
+    dateRange.endDate,
+    periodType !== 'custom' || (!!customStartDate && !!customEndDate)
+  );
 
   const {
     data: expenseBreakdown,
@@ -164,7 +168,11 @@ export const FinancialReportsPage = () => {
     data: occupancyTrend,
     isLoading: occupancyLoading,
     error: occupancyError,
-  } = useOccupancyTrend(12);
+  } = useOccupancyTrend(
+    dateRange.startDate,
+    dateRange.endDate,
+    periodType !== 'custom' || (!!customStartDate && !!customEndDate)
+  );
 
   const formatCurrency = (value: number) => {
     const cur = overview?.currency;
@@ -386,7 +394,7 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Income Trend (12 Months)
+                Income Trend
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Monthly income, expenses, and net profit
@@ -641,7 +649,7 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Occupancy Trend (12 Months)
+                Occupancy Trend
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Monthly occupancy rate percentage

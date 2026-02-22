@@ -23,10 +23,15 @@ export const useFinancialOverview = (
   });
 };
 
-export const useIncomeTrend = (months: number = 12) => {
+export const useIncomeTrend = (
+  startDate?: string,
+  endDate?: string,
+  enabled: boolean = true
+) => {
   return useQuery({
-    queryKey: ['income-trend', months],
-    queryFn: () => getIncomeTrend(months),
+    queryKey: ['income-trend', startDate, endDate],
+    queryFn: () => getIncomeTrend(startDate, endDate),
+    enabled,
   });
 };
 
@@ -54,10 +59,15 @@ export const usePropertyComparison = (
   });
 };
 
-export const useOccupancyTrend = (months: number = 12) => {
+export const useOccupancyTrend = (
+  startDate?: string,
+  endDate?: string,
+  enabled: boolean = true
+) => {
   return useQuery({
-    queryKey: ['occupancy-trend', months],
-    queryFn: () => getOccupancyTrend(months),
+    queryKey: ['occupancy-trend', startDate, endDate],
+    queryFn: () => getOccupancyTrend(startDate, endDate),
+    enabled,
   });
 };
 

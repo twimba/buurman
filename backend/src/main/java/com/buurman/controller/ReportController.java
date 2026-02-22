@@ -72,12 +72,17 @@ public class ReportController {
 
   @Operation(
       summary = "Get income trend",
-      description = "Get income, expenses, and net profit trend for the last N months")
+      description = "Get income, expenses, and net profit trend for a date range or last N months")
   @GetMapping("/charts/income-trend")
   public IncomeTrendResponse getIncomeTrend(
       @RequestParam(defaultValue = "12") int months,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
+    if (startDate != null && endDate != null) {
+      return reportService.getIncomeTrendByDateRange(startDate, endDate, principal);
+    }
     return reportService.getIncomeTrend(months, principal);
   }
 
@@ -107,12 +112,17 @@ public class ReportController {
 
   @Operation(
       summary = "Get occupancy trend",
-      description = "Get occupancy rate trend for the last N months")
+      description = "Get occupancy rate trend for a date range or last N months")
   @GetMapping("/charts/occupancy-trend")
   public OccupancyTrendResponse getOccupancyTrend(
       @RequestParam(defaultValue = "12") int months,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
+    if (startDate != null && endDate != null) {
+      return reportService.getOccupancyTrendByDateRange(startDate, endDate, principal);
+    }
     return reportService.getOccupancyTrend(months, principal);
   }
 
