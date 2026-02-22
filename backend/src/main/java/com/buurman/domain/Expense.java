@@ -8,11 +8,13 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Expense {

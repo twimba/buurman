@@ -136,24 +136,26 @@ public class TenantAddressService {
 
     // Store old values for audit
     TenantAddress oldAddress =
-        new TenantAddress(
-            address.getId(),
-            address.getTenantId(),
-            address.getTeamId(),
-            address.getStreet(),
-            address.getCity(),
-            address.getPostalCode(),
-            address.getCountry(),
-            address.getAddressType(),
-            address.getStatus(),
-            address.getLatitude(),
-            address.getLongitude(),
-            address.getGeocodeAccuracy(),
-            address.getCreatedAt(),
-            address.getUpdatedAt(),
-            address.getCreatedBy(),
-            address.getUpdatedBy(),
-            address.getDeletedAt());
+        TenantAddress.builder()
+            .id(address.getId())
+            .identifier(address.getIdentifier())
+            .tenantId(address.getTenantId())
+            .teamId(address.getTeamId())
+            .street(address.getStreet())
+            .city(address.getCity())
+            .postalCode(address.getPostalCode())
+            .country(address.getCountry())
+            .addressType(address.getAddressType())
+            .status(address.getStatus())
+            .latitude(address.getLatitude())
+            .longitude(address.getLongitude())
+            .geocodeAccuracy(address.getGeocodeAccuracy())
+            .createdAt(address.getCreatedAt())
+            .updatedAt(address.getUpdatedAt())
+            .createdBy(address.getCreatedBy())
+            .updatedBy(address.getUpdatedBy())
+            .deletedAt(address.getDeletedAt())
+            .build();
 
     // Check for unique ACTIVE CURRENT address constraint
     if (request.addressType() == TenantAddress.AddressType.CURRENT

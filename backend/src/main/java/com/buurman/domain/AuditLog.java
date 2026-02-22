@@ -5,11 +5,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuditLog {

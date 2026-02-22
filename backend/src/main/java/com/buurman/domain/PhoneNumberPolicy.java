@@ -7,18 +7,22 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class PhoneNumberPolicy {
 
   private UUID id;
   private @Nullable Map<String, List<String>> policyMatrix; // country code -> allowed number types
-  private int maxCodesPerHour = 3;
-  private int verificationCodeExpiryMinutes = 10;
+  @Builder.Default private int maxCodesPerHour = 3;
+  @Builder.Default private int verificationCodeExpiryMinutes = 10;
   private @Nullable Instant updatedAt;
   private @Nullable String updatedBy;
 
