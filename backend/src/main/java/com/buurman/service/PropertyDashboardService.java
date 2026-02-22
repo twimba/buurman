@@ -155,7 +155,8 @@ public class PropertyDashboardService {
     ExpenseBreakdownChartData expenseBreakdown =
         buildExpenseBreakdown(expenses, property, now, effectiveMonths);
     OccupancyChartData occupancy = buildOccupancyChart(contracts, now, effectiveMonths);
-    DataCompleteness completeness = buildDataCompleteness(property, contracts, payments, expenses);
+    DataCompleteness completeness =
+        buildDataCompleteness(property, contracts, property.getTeamId());
 
     return new PropertyDashboardResponse(
         summary, cashFlow, equity, expenseBreakdown, occupancy, completeness);
@@ -548,7 +549,7 @@ public class PropertyDashboardService {
   }
 
   private DataCompleteness buildDataCompleteness(
-      Property property, List<Contract> contracts, List<Payment> payments, List<Expense> expenses) {
+      Property property, List<Contract> contracts, UUID teamId) {
 
     boolean hasPurchasePrice = property.getPurchasePrice() != null;
     boolean hasMarketValue = property.getCurrentMarketValue() != null;
@@ -556,8 +557,15 @@ public class PropertyDashboardService {
     boolean hasOperatingCosts =
         property.getAnnualPropertyTax() != null || property.getAnnualInsurance() != null;
     boolean hasContracts = !contracts.isEmpty();
-    boolean hasPayments = !payments.isEmpty();
-    boolean hasExpenses = !expenses.isEmpty();
+    // Use all-time checks for payments/expenses (independent of period filter)
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    boolean hasPayments =
+        !contractIds.isEmpty()
+            && !paymentRepository
+                .findPaidByContractIdsAndDateRange(
+                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now())
+                .isEmpty();
+    boolean hasExpenses = !expenseRepository.findByPropertyId(property.getId(), teamId).isEmpty();
 
     int filled = 0;
     int total = 7;
