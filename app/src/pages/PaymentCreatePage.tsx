@@ -80,12 +80,12 @@ export const PaymentCreatePage = () => {
       setAddedCount((c) => c + 1);
       setResetKey((k) => k + 1);
     } else {
-      navigate('/payments');
+      navigate(-1);
     }
   };
 
   const handleCancel = () => {
-    navigate('/payments');
+    navigate(-1);
   };
 
   const handleBulkSubmit = (
@@ -131,7 +131,7 @@ export const PaymentCreatePage = () => {
 
       setBulkSubmitting(false);
       callbacks.onComplete();
-      if (!hasErrors) navigate('/payments');
+      if (!hasErrors) navigate(-1);
     })();
   };
 
@@ -143,7 +143,7 @@ export const PaymentCreatePage = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
-            onClick={() => navigate('/payments')}
+            onClick={() => navigate(-1)}
             className="p-2 hover:bg-[#e8ecf4] dark:bg-[#1e2130] rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

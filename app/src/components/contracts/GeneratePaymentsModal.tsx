@@ -41,7 +41,7 @@ export default function GeneratePaymentsModal({
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-4 text-[#1a1d2e] dark:text-[#eef0f6]">
-          Schedule Payments
+          Generate Future Payments
         </h3>
 
         <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
@@ -50,7 +50,7 @@ export default function GeneratePaymentsModal({
               htmlFor="count"
               className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1"
             >
-              Number of payments to schedule
+              Number of payments to generate
             </label>
             <input
               type="number"
@@ -67,8 +67,8 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             />
             <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-              Payments will be scheduled for the next {count} period(s) based on
-              the contract&apos;s payment frequency.
+              Will generate {count} future payment(s) based on the
+              contract&apos;s payment frequency.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             >
               <Calendar className="h-4 w-4" />
-              Schedule
+              Generate
             </button>
             <button
               type="button"
@@ -96,7 +96,7 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             >
               <CalendarCheck className="h-4 w-4" />
-              {isLoading ? 'Scheduling...' : 'Schedule & Mark Paid'}
+              {isLoading ? 'Generating...' : 'Generate & Mark Paid'}
             </button>
           </div>
         </form>

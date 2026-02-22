@@ -702,16 +702,26 @@ export const ContractDetailPage = () => {
                     onClick={() => setShowGeneratePaymentsModal(true)}
                     disabled={!canEditData}
                   >
-                    Schedule Payments
+                    Generate Future Payments
                   </Button>
                 )}
                 <Button
-                  variant="primary"
-                  leftIcon={<Plus />}
+                  variant="secondary"
+                  leftIcon={<Calendar />}
                   onClick={() => navigate(`/payments/new?contractId=${id}`)}
                   disabled={!canEditData}
                 >
-                  Add Payment
+                  Schedule Payment
+                </Button>
+                <Button
+                  variant="primary"
+                  leftIcon={<Plus />}
+                  onClick={() =>
+                    navigate(`/payments/new?contractId=${id}&register=true`)
+                  }
+                  disabled={!canEditData}
+                >
+                  Register Payments
                 </Button>
               </div>
             </div>
@@ -1202,7 +1212,7 @@ export const ContractDetailPage = () => {
         />
       )}
 
-      {/* Schedule Payments Modal */}
+      {/* Generate Future Payments Modal */}
       <GeneratePaymentsModal
         isOpen={showGeneratePaymentsModal}
         onClose={() => setShowGeneratePaymentsModal(false)}
