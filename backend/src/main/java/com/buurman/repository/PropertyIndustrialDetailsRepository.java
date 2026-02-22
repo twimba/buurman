@@ -134,8 +134,8 @@ public class PropertyIndustrialDetailsRepository {
     d.setYardAreaValue(record.getYardAreaValue());
     d.setYardAreaUnit(record.getYardAreaUnit());
     d.setZoningClassification(record.getZoningClassification());
-    d.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    d.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    d.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    d.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     d.setCreatedBy(record.getCreatedBy());
     d.setUpdatedBy(record.getUpdatedBy());
     return d;

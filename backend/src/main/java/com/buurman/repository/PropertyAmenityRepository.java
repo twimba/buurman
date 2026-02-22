@@ -119,8 +119,8 @@ public class PropertyAmenityRepository {
     pa.setAmenityId(record.getAmenityId());
     pa.setTeamId(record.getTeamId());
     pa.setNotes(record.getNotes());
-    pa.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    pa.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    pa.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    pa.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     pa.setCreatedBy(record.getCreatedBy());
     pa.setUpdatedBy(record.getUpdatedBy());
     pa.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));

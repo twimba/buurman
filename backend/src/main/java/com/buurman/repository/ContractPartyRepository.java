@@ -176,10 +176,14 @@ public class ContractPartyRepository {
     party.setRole(ContractPartyRole.valueOf(record.get(ROLE)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
-    party.setCreatedAt(createdAtVal != null ? createdAtVal.toInstant() : null);
+    if (createdAtVal != null) {
+      party.setCreatedAt(createdAtVal.toInstant());
+    }
 
     Timestamp updatedAtVal = record.get(UPDATED_AT);
-    party.setUpdatedAt(updatedAtVal != null ? updatedAtVal.toInstant() : null);
+    if (updatedAtVal != null) {
+      party.setUpdatedAt(updatedAtVal.toInstant());
+    }
 
     party.setCreatedBy(record.get(CREATED_BY));
     party.setUpdatedBy(record.get(UPDATED_BY));

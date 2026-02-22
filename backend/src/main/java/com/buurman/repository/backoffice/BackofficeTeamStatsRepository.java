@@ -31,36 +31,41 @@ public class BackofficeTeamStatsRepository {
 
   public DataCounts countEntitiesForTeam(UUID teamId) {
     long properties =
-        dsl.selectCount()
-            .from(PROPERTIES)
-            .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(PROPERTIES)
+                .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
     long tenants =
-        dsl.selectCount()
-            .from(TENANTS)
-            .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(TENANTS)
+                .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull())));
     long contracts =
-        dsl.selectCount()
-            .from(CONTRACTS)
-            .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(CONTRACTS)
+                .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull())));
     long expenses =
-        dsl.selectCount()
-            .from(EXPENSES)
-            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(EXPENSES)
+                .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull())));
     long payments =
-        dsl.selectCount()
-            .from(PAYMENTS)
-            .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(PAYMENTS)
+                .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull())));
     long documents =
-        dsl.selectCount()
-            .from(DOCUMENTS)
-            .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
+        fetchCount(
+            dsl.selectCount()
+                .from(DOCUMENTS)
+                .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull())));
     return new DataCounts(properties, tenants, contracts, expenses, payments, documents);
+  }
+
+  private static long fetchCount(org.jooq.SelectConditionStep<?> query) {
+    Long result = query.fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   /**

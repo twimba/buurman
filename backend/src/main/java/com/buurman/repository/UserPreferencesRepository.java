@@ -90,8 +90,8 @@ public class UserPreferencesRepository {
     prefs.setEmailNotifications(record.getEmailNotifications());
     prefs.setInAppNotifications(record.getInAppNotifications());
     prefs.setSmsNotifications(record.getSmsNotifications());
-    prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    prefs.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     return prefs;
   }
 }

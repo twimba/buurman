@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.User;
@@ -199,7 +200,7 @@ public class UserRepository {
         .execute();
   }
 
-  public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, String search) {
+  public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, @Nullable String search) {
     Condition condition = USERS.DELETED_AT.isNull();
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search + "%";
@@ -243,7 +244,7 @@ public class UserRepository {
         .orElseThrow(() -> new NotFoundException("User not found"));
   }
 
-  public void updateDisabledAt(UUID userId, LocalDateTime disabledAt) {
+  public void updateDisabledAt(UUID userId, @Nullable LocalDateTime disabledAt) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.DISABLED_AT, disabledAt)
@@ -253,13 +254,17 @@ public class UserRepository {
   }
 
   public long countAll() {
-    return dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()).fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()).fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   public long countDisabled() {
-    return dsl.selectCount()
-        .from(USERS)
-        .where(USERS.DELETED_AT.isNull().and(USERS.DISABLED_AT.isNotNull()))
-        .fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount()
+            .from(USERS)
+            .where(USERS.DELETED_AT.isNull().and(USERS.DISABLED_AT.isNotNull()))
+            .fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 }

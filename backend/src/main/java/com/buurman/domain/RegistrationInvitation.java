@@ -17,7 +17,7 @@ public class RegistrationInvitation {
   private String code;
   private @Nullable Integer maxUsages;
   private int usageCount;
-  private Instant expiresAt;
+  private @Nullable Instant expiresAt;
   private @Nullable Instant revokedAt;
   private @Nullable String revokedBy;
   private Instant createdAt;

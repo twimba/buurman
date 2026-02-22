@@ -4,6 +4,7 @@ import static java.time.ZoneOffset.UTC;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Notification;
@@ -18,11 +19,12 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("NullAway.Init")
 public class NotificationRecordMapper {
 
   private final ObjectMapper objectMapper;
 
-  public Notification toDomain(NotificationsRecord record) {
+  public @Nullable Notification toDomain(@Nullable NotificationsRecord record) {
     if (record == null) {
       return null;
     }
@@ -65,8 +67,9 @@ public class NotificationRecordMapper {
         record.getFirstClickedAt() != null ? record.getFirstClickedAt().toInstant(UTC) : null);
     notification.setResentFromId(record.getResentFromId());
     notification.setResendReason(record.getResendReason());
-    notification.setCreatedAt(
-        record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
+    if (record.getCreatedAt() != null) {
+      notification.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    }
     notification.setCreatedBy(record.getCreatedBy());
 
     return notification;

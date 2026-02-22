@@ -2,6 +2,7 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.NotificationChannel;
@@ -12,7 +13,7 @@ import com.buurman.jooq.generated.tables.records.NotificationOutboxRecord;
 @Component
 public class NotificationOutboxRecordMapper {
 
-  public NotificationOutbox toDomain(NotificationOutboxRecord record) {
+  public @Nullable NotificationOutbox toDomain(@Nullable NotificationOutboxRecord record) {
     if (record == null) {
       return null;
     }
@@ -21,15 +22,19 @@ public class NotificationOutboxRecordMapper {
     outbox.setId(record.getId());
     outbox.setNotificationId(record.getNotificationId());
     outbox.setChannel(NotificationChannel.valueOf(record.getChannel()));
-    outbox.setPayload(record.getPayload() != null ? record.getPayload().data() : null);
+    if (record.getPayload() != null) {
+      outbox.setPayload(record.getPayload().data());
+    }
     outbox.setStatus(OutboxStatus.valueOf(record.getStatus()));
     outbox.setRetryCount(record.getRetryCount());
     outbox.setMaxRetries(record.getMaxRetries());
-    outbox.setNextRetryAt(
-        record.getNextRetryAt() != null ? record.getNextRetryAt().toInstant(UTC) : null);
+    if (record.getNextRetryAt() != null) {
+      outbox.setNextRetryAt(record.getNextRetryAt().toInstant(UTC));
+    }
     outbox.setLastError(record.getLastError());
-    outbox.setCreatedAt(
-        record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
+    if (record.getCreatedAt() != null) {
+      outbox.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    }
     outbox.setProcessedAt(
         record.getProcessedAt() != null ? record.getProcessedAt().toInstant(UTC) : null);
 

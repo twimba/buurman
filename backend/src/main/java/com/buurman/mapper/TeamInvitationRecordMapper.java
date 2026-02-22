@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -28,11 +29,11 @@ public interface TeamInvitationRecordMapper {
 
   List<TeamInvitation> toDomainList(List<TeamInvitationsRecord> records);
 
-  default Instant toInstant(LocalDateTime localDateTime) {
+  default @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {
     return localDateTime == null ? null : localDateTime.toInstant(UTC);
   }
 
-  default LocalDateTime toLocalDateTime(Instant instant) {
+  default @Nullable LocalDateTime toLocalDateTime(@Nullable Instant instant) {
     return instant == null ? null : LocalDateTime.ofInstant(instant, UTC);
   }
 }

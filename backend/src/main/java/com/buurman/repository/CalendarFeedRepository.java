@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.CalendarFeed;
@@ -70,9 +71,9 @@ public class CalendarFeedRepository {
 
   public Optional<CalendarFeed> findExistingFeed(
       CalendarFeed.FeedType feedType,
-      UUID contractId,
-      UUID propertyId,
-      UUID tenantId,
+      @Nullable UUID contractId,
+      @Nullable UUID propertyId,
+      @Nullable UUID tenantId,
       UUID userId,
       UUID teamId) {
     var condition =

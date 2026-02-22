@@ -20,6 +20,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentReceival;
@@ -95,12 +96,16 @@ public class PaymentReceivalRepository {
         .map(this::toDomain);
   }
 
-  public BigDecimal sumByPaymentIdAndTeamId(UUID paymentId, UUID teamId, String currency) {
-    BigDecimal sum =
+  public BigDecimal sumByPaymentIdAndTeamId(
+      UUID paymentId, UUID teamId, @Nullable String currency) {
+    @Nullable BigDecimal sum =
         dsl.select(coalesce(sum(AMOUNT), 0L))
             .from(TABLE)
             .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
             .fetchOneInto(BigDecimal.class);
+    if (currency == null) {
+      return sum != null ? sum : BigDecimal.ZERO;
+    }
     return CurrencyUtils.sumToMajorUnits(sum, currency);
   }
 
@@ -145,7 +150,7 @@ public class PaymentReceivalRepository {
       UUID teamId,
       BigDecimal amount,
       LocalDate receivalDate,
-      String notes,
+      @Nullable String notes,
       UUID updatedBy,
       String currency) {
     LocalDateTime now = LocalDateTime.now(clock);
@@ -181,17 +186,26 @@ public class PaymentReceivalRepository {
     receival.setPaymentId(record.get(PAYMENT_ID));
     receival.setAmount(CurrencyUtils.toMajorUnits(record.get(AMOUNT), currency));
     receival.setCurrency(currency);
-    receival.setReceivalDate(toLocalDate(record.get("receival_date")));
+    LocalDate receivalDate = toLocalDate(record.get("receival_date"));
+    if (receivalDate != null) {
+      receival.setReceivalDate(receivalDate);
+    }
     receival.setNotes(record.get(NOTES));
-    receival.setCreatedAt(toInstant(record.get("created_at")));
-    receival.setUpdatedAt(toInstant(record.get("updated_at")));
+    Instant createdAt = toInstant(record.get("created_at"));
+    if (createdAt != null) {
+      receival.setCreatedAt(createdAt);
+    }
+    Instant updatedAt = toInstant(record.get("updated_at"));
+    if (updatedAt != null) {
+      receival.setUpdatedAt(updatedAt);
+    }
     receival.setCreatedBy(record.get(CREATED_BY));
     receival.setUpdatedBy(record.get(UPDATED_BY));
     receival.setDeletedAt(toInstant(record.get("deleted_at")));
     return receival;
   }
 
-  private static LocalDate toLocalDate(Object val) {
+  private static @Nullable LocalDate toLocalDate(@Nullable Object val) {
     if (val instanceof LocalDate ld) {
       return ld;
     }
@@ -201,7 +215,7 @@ public class PaymentReceivalRepository {
     return null;
   }
 
-  private static Instant toInstant(Object val) {
+  private static @Nullable Instant toInstant(@Nullable Object val) {
     if (val instanceof LocalDateTime ldt) {
       return ldt.toInstant(UTC);
     }

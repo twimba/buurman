@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PhoneNumberPolicy;
@@ -81,7 +82,7 @@ public class PhoneNumberPolicyRepository {
     return policy;
   }
 
-  private JSONB toJsonbMap(Map<String, List<String>> map) {
+  private JSONB toJsonbMap(@Nullable Map<String, List<String>> map) {
     try {
       return JSONB.valueOf(objectMapper.writeValueAsString(map != null ? map : Map.of()));
     } catch (Exception e) {

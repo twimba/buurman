@@ -18,6 +18,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
@@ -265,7 +266,11 @@ public class ContractRepository {
   }
 
   public PaginatedResult<Contract> findAllByTeamIdPaginated(
-      UUID teamId, String status, UUID propertyId, UUID tenantId, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String status,
+      @Nullable UUID propertyId,
+      @Nullable UUID tenantId,
+      PageRequest pageRequest) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       condition = condition.and(CONTRACTS.STATUS.eq(status));

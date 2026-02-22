@@ -17,6 +17,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
@@ -189,18 +190,27 @@ public class ContractPaymentInstructionRepository {
     cpi.setCustomRoutingNumber(record.get(CUSTOM_ROUTING_NUMBER));
     cpi.setCustomPaymentReference(record.get(CUSTOM_PAYMENT_REFERENCE));
     cpi.setCustomAdditionalDetails(record.get(CUSTOM_ADDITIONAL_DETAILS));
-    cpi.setEffectiveFrom(toLocalDate(record.get("effective_from")));
+    LocalDate effectiveFrom = toLocalDate(record.get("effective_from"));
+    if (effectiveFrom != null) {
+      cpi.setEffectiveFrom(effectiveFrom);
+    }
     cpi.setEffectiveTo(toLocalDate(record.get("effective_to")));
     cpi.setNotes(record.get(NOTES));
-    cpi.setCreatedAt(toInstant(record.get("created_at")));
-    cpi.setUpdatedAt(toInstant(record.get("updated_at")));
+    Instant createdAt = toInstant(record.get("created_at"));
+    if (createdAt != null) {
+      cpi.setCreatedAt(createdAt);
+    }
+    Instant updatedAt = toInstant(record.get("updated_at"));
+    if (updatedAt != null) {
+      cpi.setUpdatedAt(updatedAt);
+    }
     cpi.setCreatedBy(record.get(CREATED_BY));
     cpi.setUpdatedBy(record.get(UPDATED_BY));
     cpi.setDeletedAt(toInstant(record.get("deleted_at")));
     return cpi;
   }
 
-  private static LocalDate toLocalDate(Object val) {
+  private static @Nullable LocalDate toLocalDate(@Nullable Object val) {
     if (val instanceof LocalDate ld) {
       return ld;
     }
@@ -210,7 +220,7 @@ public class ContractPaymentInstructionRepository {
     return null;
   }
 
-  private static Instant toInstant(Object val) {
+  private static @Nullable Instant toInstant(@Nullable Object val) {
     if (val instanceof LocalDateTime ldt) {
       return ldt.toInstant(UTC);
     }

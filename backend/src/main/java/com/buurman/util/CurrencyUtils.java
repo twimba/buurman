@@ -75,8 +75,8 @@ public final class CurrencyUtils {
 
   /** Null-safe variant of {@link #toMinorUnits}. */
   public static @Nullable Long toMinorUnitsOrNull(
-      @Nullable BigDecimal amount, String currencyCode) {
-    return amount == null ? null : toMinorUnits(amount, currencyCode);
+      @Nullable BigDecimal amount, @Nullable String currencyCode) {
+    return (amount == null || currencyCode == null) ? null : toMinorUnits(amount, currencyCode);
   }
 
   /** Converts a minor-unit long to major-unit BigDecimal (e.g. 10012, EUR → 100.12). */
@@ -87,8 +87,10 @@ public final class CurrencyUtils {
 
   /** Null-safe variant of {@link #toMajorUnits}. */
   public static @Nullable BigDecimal toMajorUnitsOrNull(
-      @Nullable Long minorUnits, String currencyCode) {
-    return minorUnits == null ? null : toMajorUnits(minorUnits, currencyCode);
+      @Nullable Long minorUnits, @Nullable String currencyCode) {
+    return (minorUnits == null || currencyCode == null)
+        ? null
+        : toMajorUnits(minorUnits, currencyCode);
   }
 
   /**

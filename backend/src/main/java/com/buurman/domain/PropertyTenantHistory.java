@@ -19,7 +19,7 @@ public class PropertyTenantHistory {
   private UUID teamId;
   private UUID propertyId;
   private UUID tenantId;
-  private Instant movedInAt;
+  private @Nullable Instant movedInAt;
   private @Nullable Instant movedOutAt;
   private ActionType actionType;
   private UUID performedBy;

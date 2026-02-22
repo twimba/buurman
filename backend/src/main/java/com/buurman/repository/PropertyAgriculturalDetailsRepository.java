@@ -125,8 +125,8 @@ public class PropertyAgriculturalDetailsRepository {
     d.setOutbuildingDetails(record.getOutbuildingDetails());
     d.setCurrentUse(record.getCurrentUse());
     d.setZoningClassification(record.getZoningClassification());
-    d.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    d.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    d.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    d.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     d.setCreatedBy(record.getCreatedBy());
     d.setUpdatedBy(record.getUpdatedBy());
     return d;

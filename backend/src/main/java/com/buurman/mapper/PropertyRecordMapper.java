@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -112,51 +113,51 @@ public interface PropertyRecordMapper {
     property.setLandValueCurrency(record.getLandValueCurrency());
   }
 
-  default Instant toInstant(LocalDateTime localDateTime) {
+  default @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {
     return localDateTime == null ? null : localDateTime.toInstant(UTC);
   }
 
-  default LocalDateTime toLocalDateTime(Instant instant) {
+  default @Nullable LocalDateTime toLocalDateTime(@Nullable Instant instant) {
     return instant == null ? null : LocalDateTime.ofInstant(instant, UTC);
   }
 
-  default Property.PropertyCategory toPropertyCategory(String value) {
+  default Property.@Nullable PropertyCategory toPropertyCategory(@Nullable String value) {
     return value == null ? null : Property.PropertyCategory.valueOf(value);
   }
 
-  default String fromPropertyCategory(Property.PropertyCategory category) {
+  default @Nullable String fromPropertyCategory(Property.@Nullable PropertyCategory category) {
     return category == null ? null : category.name();
   }
 
-  default Property.PropertyType toPropertyType(String value) {
+  default Property.@Nullable PropertyType toPropertyType(@Nullable String value) {
     return value == null ? null : Property.PropertyType.valueOf(value);
   }
 
-  default String fromPropertyType(Property.PropertyType type) {
+  default @Nullable String fromPropertyType(Property.@Nullable PropertyType type) {
     return type == null ? null : type.name();
   }
 
-  default Property.PropertyStatus toPropertyStatus(String value) {
+  default Property.@Nullable PropertyStatus toPropertyStatus(@Nullable String value) {
     return value == null ? null : Property.PropertyStatus.valueOf(value);
   }
 
-  default String fromPropertyStatus(Property.PropertyStatus status) {
+  default @Nullable String fromPropertyStatus(Property.@Nullable PropertyStatus status) {
     return status == null ? null : status.name();
   }
 
-  default Property.MortgageType toMortgageType(String value) {
+  default Property.@Nullable MortgageType toMortgageType(@Nullable String value) {
     return value == null ? null : Property.MortgageType.valueOf(value);
   }
 
-  default String fromMortgageType(Property.MortgageType type) {
+  default @Nullable String fromMortgageType(Property.@Nullable MortgageType type) {
     return type == null ? null : type.name();
   }
 
-  default Property.DepreciationMethod toDepreciationMethod(String value) {
+  default Property.@Nullable DepreciationMethod toDepreciationMethod(@Nullable String value) {
     return value == null ? null : Property.DepreciationMethod.valueOf(value);
   }
 
-  default String fromDepreciationMethod(Property.DepreciationMethod method) {
+  default @Nullable String fromDepreciationMethod(Property.@Nullable DepreciationMethod method) {
     return method == null ? null : method.name();
   }
 }

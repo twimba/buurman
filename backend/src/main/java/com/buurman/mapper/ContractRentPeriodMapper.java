@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.ContractRentPeriod;
@@ -12,7 +13,8 @@ import com.buurman.dto.response.RentPeriodResponse;
 @Component
 public class ContractRentPeriodMapper {
 
-  public RentPeriodResponse toResponse(ContractRentPeriod period, BigDecimal previousRentAmount) {
+  public RentPeriodResponse toResponse(
+      ContractRentPeriod period, @Nullable BigDecimal previousRentAmount) {
     BigDecimal percentageChange = null;
     if (previousRentAmount != null && previousRentAmount.compareTo(BigDecimal.ZERO) > 0) {
       percentageChange =

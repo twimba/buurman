@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Photo;
@@ -162,7 +163,7 @@ public class PhotoRepository {
   }
 
   public PaginatedResult<Photo> findAllByTeamIdPaginated(
-      UUID teamId, String search, String entityType, PageRequest pageRequest) {
+      UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
     Condition condition = PHOTOS.TEAM_ID.eq(teamId).and(PHOTOS.DELETED_AT.isNull());
     if (search != null && !search.trim().isEmpty()) {
       String searchPattern = "%" + search.toLowerCase() + "%";

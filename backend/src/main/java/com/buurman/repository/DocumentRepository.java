@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Document;
@@ -159,7 +160,8 @@ public class DocumentRepository {
         .execute();
   }
 
-  public List<Document> searchDocuments(String searchTerm, String entityType, UUID teamId) {
+  public List<Document> searchDocuments(
+      @Nullable String searchTerm, @Nullable String entityType, UUID teamId) {
     var query =
         dsl.selectFrom(DOCUMENTS)
             .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull()));
@@ -202,7 +204,7 @@ public class DocumentRepository {
   }
 
   public PaginatedResult<Document> findAllByTeamIdPaginated(
-      UUID teamId, String search, String entityType, PageRequest pageRequest) {
+      UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
     Condition condition = DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull());
     if (search != null && !search.trim().isEmpty()) {
       String searchPattern = "%" + search.toLowerCase() + "%";

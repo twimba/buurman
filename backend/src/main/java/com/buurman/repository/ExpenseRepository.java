@@ -21,6 +21,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record2;
 import org.jooq.Record3;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Expense;
@@ -178,10 +179,10 @@ public class ExpenseRepository {
 
   public PaginatedResult<Expense> findAllByTeamIdPaginated(
       UUID teamId,
-      String category,
-      UUID propertyId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String category,
+      @Nullable UUID propertyId,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     Condition condition = EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull());
     if (category != null && !category.isEmpty()) {
@@ -212,7 +213,7 @@ public class ExpenseRepository {
         r -> mapper.toDomain((ExpensesRecord) r));
   }
 
-  public Record2<Integer, BigDecimal> getTotalStats(UUID teamId) {
+  public @Nullable Record2<Integer, BigDecimal> getTotalStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
@@ -245,7 +246,7 @@ public class ExpenseRepository {
         .fetch();
   }
 
-  public String findCurrencyByTeamId(UUID teamId) {
+  public @Nullable String findCurrencyByTeamId(UUID teamId) {
     return dsl.select(EXPENSES.CURRENCY)
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))

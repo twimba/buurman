@@ -102,8 +102,8 @@ public class TeamPreferencesRepository {
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
-    prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    prefs.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     return prefs;
   }
 }

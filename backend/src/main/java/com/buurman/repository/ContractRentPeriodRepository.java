@@ -16,6 +16,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractRentPeriod;
@@ -168,7 +169,7 @@ public class ContractRentPeriodRepository {
         .fetchOptional(this::toDomain);
   }
 
-  public void setEffectiveTo(UUID periodId, UUID teamId, LocalDate effectiveTo) {
+  public void setEffectiveTo(UUID periodId, UUID teamId, @Nullable LocalDate effectiveTo) {
     Timestamp now = Timestamp.valueOf(LocalDateTime.now(clock));
     dsl.update(TABLE)
         .set(EFFECTIVE_TO, effectiveTo != null ? Date.valueOf(effectiveTo) : null)
@@ -204,7 +205,9 @@ public class ContractRentPeriodRepository {
     period.setCurrency(currency);
 
     Date effectiveFromVal = record.get(EFFECTIVE_FROM);
-    period.setEffectiveFrom(effectiveFromVal != null ? effectiveFromVal.toLocalDate() : null);
+    if (effectiveFromVal != null) {
+      period.setEffectiveFrom(effectiveFromVal.toLocalDate());
+    }
 
     Date effectiveToVal = record.get(EFFECTIVE_TO);
     period.setEffectiveTo(effectiveToVal != null ? effectiveToVal.toLocalDate() : null);
@@ -212,10 +215,14 @@ public class ContractRentPeriodRepository {
     period.setNotes(record.get(NOTES));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
-    period.setCreatedAt(createdAtVal != null ? createdAtVal.toInstant() : null);
+    if (createdAtVal != null) {
+      period.setCreatedAt(createdAtVal.toInstant());
+    }
 
     Timestamp updatedAtVal = record.get(UPDATED_AT);
-    period.setUpdatedAt(updatedAtVal != null ? updatedAtVal.toInstant() : null);
+    if (updatedAtVal != null) {
+      period.setUpdatedAt(updatedAtVal.toInstant());
+    }
 
     period.setCreatedBy(record.get(CREATED_BY));
     period.setUpdatedBy(record.get(UPDATED_BY));

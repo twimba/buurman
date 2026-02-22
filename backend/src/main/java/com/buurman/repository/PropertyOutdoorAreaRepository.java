@@ -122,8 +122,8 @@ public class PropertyOutdoorAreaRepository {
     area.setType(record.getType());
     area.setAreaValue(record.getAreaValue());
     area.setAreaUnit(record.getAreaUnit());
-    area.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    area.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    area.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    area.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     area.setCreatedBy(record.getCreatedBy());
     area.setUpdatedBy(record.getUpdatedBy());
     area.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));

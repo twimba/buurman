@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Tenant;
@@ -173,7 +174,7 @@ public class TenantRepository {
   }
 
   public PaginatedResult<Tenant> findAllByTeamIdPaginated(
-      UUID teamId, String search, PageRequest pageRequest) {
+      UUID teamId, @Nullable String search, PageRequest pageRequest) {
     Condition condition = TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull());
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search.toLowerCase() + "%";

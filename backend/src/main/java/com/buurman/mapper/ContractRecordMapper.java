@@ -2,6 +2,7 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
@@ -11,7 +12,7 @@ import com.buurman.util.CurrencyUtils;
 @Component
 public class ContractRecordMapper {
 
-  public Contract toDomain(ContractsRecord record) {
+  public @Nullable Contract toDomain(@Nullable ContractsRecord record) {
     if (record == null) {
       return null;
     }
@@ -28,13 +29,18 @@ public class ContractRecordMapper {
     contract.setRentAmount(
         CurrencyUtils.toMajorUnits(record.getRentAmount(), record.getRentAmountCurrency()));
     contract.setRentAmountCurrency(record.getRentAmountCurrency());
-    contract.setDepositAmount(
-        CurrencyUtils.toMajorUnitsOrNull(
-            record.getDepositAmount(), record.getDepositAmountCurrency()));
-    contract.setDepositAmountCurrency(record.getDepositAmountCurrency());
-    contract.setSecurityDeposit(
-        CurrencyUtils.toMajorUnitsOrNull(
-            record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
+    Long depositAmount = record.getDepositAmount();
+    String depositCurrency = record.getDepositAmountCurrency();
+    if (depositAmount != null && depositCurrency != null) {
+      contract.setDepositAmount(CurrencyUtils.toMajorUnits(depositAmount, depositCurrency));
+    }
+    contract.setDepositAmountCurrency(depositCurrency);
+    Long securityDeposit = record.getSecurityDeposit();
+    String securityDepositCurrency = record.getSecurityDepositCurrency();
+    if (securityDeposit != null && securityDepositCurrency != null) {
+      contract.setSecurityDeposit(
+          CurrencyUtils.toMajorUnits(securityDeposit, securityDepositCurrency));
+    }
     contract.setSecurityDepositCurrency(record.getSecurityDepositCurrency());
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(record.getPaymentDueDay());
@@ -45,10 +51,12 @@ public class ContractRecordMapper {
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
     contract.setTermsAndConditions(record.getTermsAndConditions());
     contract.setNotes(record.getNotes());
-    contract.setCreatedAt(
-        record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    contract.setUpdatedAt(
-        record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    if (record.getCreatedAt() != null) {
+      contract.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    }
+    if (record.getUpdatedAt() != null) {
+      contract.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
+    }
     contract.setCreatedBy(record.getCreatedBy());
     contract.setUpdatedBy(record.getUpdatedBy());
     contract.setDeletedAt(

@@ -22,6 +22,7 @@ import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.Record;
 import org.jooq.SortField;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.request.PageRequest;
@@ -41,9 +42,9 @@ public class AuditLogRepository {
       String entityType,
       UUID entityId,
       String action,
-      JSONB changedFields,
-      JSONB oldValues,
-      JSONB newValues,
+      @Nullable JSONB changedFields,
+      @Nullable JSONB oldValues,
+      @Nullable JSONB newValues,
       UUID userId,
       LocalDateTime timestamp) {
     dsl.insertInto(AUDIT_LOG)
@@ -91,7 +92,7 @@ public class AuditLogRepository {
   }
 
   public List<Record> findAllByTeamId(
-      UUID teamId, String entityType, String action, String search) {
+      UUID teamId, @Nullable String entityType, @Nullable String action, @Nullable String search) {
     var query =
         dsl.select(
                 AUDIT_LOG.ID,
@@ -161,7 +162,11 @@ public class AuditLogRepository {
   }
 
   public PaginatedResult<Record> findAllByTeamIdPaginated(
-      UUID teamId, String entityType, String action, String search, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String entityType,
+      @Nullable String action,
+      @Nullable String search,
+      PageRequest pageRequest) {
     Condition condition = AUDIT_LOG.TEAM_ID.eq(teamId);
 
     if (entityType != null && !entityType.isEmpty()) {
@@ -205,7 +210,7 @@ public class AuditLogRepository {
     SortField<?> orderBy =
         "asc".equals(pageRequest.direction()) ? sortField.asc() : sortField.desc();
 
-    long totalElements =
+    Long totalCount =
         dsl.selectCount()
             .from(AUDIT_LOG)
             .leftJoin(USERS)
@@ -221,7 +226,8 @@ public class AuditLogRepository {
             .leftJoin(EXPENSES)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("EXPENSE").and(AUDIT_LOG.ENTITY_ID.eq(EXPENSES.ID)))
             .where(condition)
-            .fetchOne(0, long.class);
+            .fetchOne(0, Long.class);
+    long totalElements = totalCount != null ? totalCount : 0L;
 
     List<Record> items =
         dsl

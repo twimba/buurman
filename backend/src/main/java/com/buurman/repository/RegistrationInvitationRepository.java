@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.RegistrationInvitation;
@@ -96,7 +97,7 @@ public class RegistrationInvitationRepository {
   }
 
   public PaginationHelper.PaginatedResult<RegistrationInvitation> findAllPaginated(
-      PageRequest pageRequest, String search) {
+      PageRequest pageRequest, @Nullable String search) {
     Condition condition = org.jooq.impl.DSL.trueCondition();
 
     if (search != null && !search.isBlank()) {
@@ -179,14 +180,14 @@ public class RegistrationInvitationRepository {
     inv.setExpiresAt(toInstant(record.get(REGISTRATION_INVITATIONS.EXPIRES_AT)));
     inv.setRevokedAt(toInstant(record.get(REGISTRATION_INVITATIONS.REVOKED_AT)));
     inv.setRevokedBy(record.get(REGISTRATION_INVITATIONS.REVOKED_BY));
-    inv.setCreatedAt(toInstant(record.get(REGISTRATION_INVITATIONS.CREATED_AT)));
-    inv.setUpdatedAt(toInstant(record.get(REGISTRATION_INVITATIONS.UPDATED_AT)));
+    inv.setCreatedAt(record.get(REGISTRATION_INVITATIONS.CREATED_AT).toInstant(UTC));
+    inv.setUpdatedAt(record.get(REGISTRATION_INVITATIONS.UPDATED_AT).toInstant(UTC));
     inv.setCreatedBy(record.get(REGISTRATION_INVITATIONS.CREATED_BY));
     inv.setNote(record.get(REGISTRATION_INVITATIONS.NOTE));
     return inv;
   }
 
-  private static java.time.Instant toInstant(LocalDateTime ldt) {
+  private static java.time.@Nullable Instant toInstant(@Nullable LocalDateTime ldt) {
     return ldt != null ? ldt.toInstant(UTC) : null;
   }
 }

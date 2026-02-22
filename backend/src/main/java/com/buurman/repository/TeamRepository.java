@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Team;
@@ -103,7 +104,7 @@ public class TeamRepository {
    * Platform-wide paginated query for backoffice. No team_id filter. Only returns teams where
    * deleted_at IS NULL.
    */
-  public PaginatedResult<Team> findAllPaginated(PageRequest pageRequest, String search) {
+  public PaginatedResult<Team> findAllPaginated(PageRequest pageRequest, @Nullable String search) {
     Condition condition = TEAMS.DELETED_AT.isNull();
     if (search != null && !search.isBlank()) {
       condition = condition.and(TEAMS.NAME.likeIgnoreCase("%" + search + "%"));
@@ -137,6 +138,8 @@ public class TeamRepository {
   }
 
   public long countAll() {
-    return dsl.selectCount().from(TEAMS).where(TEAMS.DELETED_AT.isNull()).fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount().from(TEAMS).where(TEAMS.DELETED_AT.isNull()).fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 }

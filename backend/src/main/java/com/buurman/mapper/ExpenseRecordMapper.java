@@ -2,6 +2,7 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Expense;
@@ -11,7 +12,7 @@ import com.buurman.util.CurrencyUtils;
 @Component
 public class ExpenseRecordMapper {
 
-  public Expense toDomain(ExpensesRecord record) {
+  public @Nullable Expense toDomain(@Nullable ExpensesRecord record) {
     if (record == null) {
       return null;
     }
@@ -27,10 +28,12 @@ public class ExpenseRecordMapper {
     expense.setExpenseDate(record.getExpenseDate());
     expense.setDescription(record.getDescription());
     expense.setNotes(record.getNotes());
-    expense.setCreatedAt(
-        record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    expense.setUpdatedAt(
-        record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    if (record.getCreatedAt() != null) {
+      expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    }
+    if (record.getUpdatedAt() != null) {
+      expense.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
+    }
     expense.setCreatedBy(record.getCreatedBy());
     expense.setUpdatedBy(record.getUpdatedBy());
     expense.setDeletedAt(

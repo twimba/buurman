@@ -18,6 +18,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Notification;
@@ -116,12 +117,12 @@ public class NotificationRepository {
 
   public PaginatedResult<Notification> findAllByTeamIdPaginated(
       UUID teamId,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo,
       PageRequest pageRequest) {
 
     Condition condition = NOTIFICATIONS.TEAM_ID.eq(teamId);
@@ -167,9 +168,9 @@ public class NotificationRepository {
   public void updateStatus(
       UUID id,
       NotificationStatus status,
-      String providerMessageId,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerMessageId,
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.STATUS, status.name())
@@ -184,8 +185,8 @@ public class NotificationRepository {
   public void updateStatusByProviderMessageId(
       String providerMessageId,
       NotificationStatus status,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.STATUS, status.name())
@@ -235,20 +236,22 @@ public class NotificationRepository {
   }
 
   public long countByTeamId(UUID teamId) {
-    return dsl.selectCount()
-        .from(NOTIFICATIONS)
-        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-        .fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount()
+            .from(NOTIFICATIONS)
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   public PaginatedResult<Notification> findAllPaginatedUnscoped(
-      UUID teamId,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo,
+      @Nullable UUID teamId,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo,
       PageRequest pageRequest) {
 
     Condition condition = trueCondition();
@@ -309,7 +312,8 @@ public class NotificationRepository {
   }
 
   public long countAll() {
-    return dsl.selectCount().from(NOTIFICATIONS).fetchOne(0, long.class);
+    Long result = dsl.selectCount().from(NOTIFICATIONS).fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   public List<Record2<String, Integer>> countGroupedByStatus() {

@@ -16,6 +16,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentInstruction;
@@ -185,15 +186,21 @@ public class PaymentInstructionRepository {
     pi.setPaymentReference(record.get(PAYMENT_REFERENCE));
     pi.setAdditionalDetails(record.get(ADDITIONAL_DETAILS));
     pi.setIsDefault(record.get(IS_DEFAULT));
-    pi.setCreatedAt(toInstant(record.get("created_at")));
-    pi.setUpdatedAt(toInstant(record.get("updated_at")));
+    Instant createdAt = toInstant(record.get("created_at"));
+    if (createdAt != null) {
+      pi.setCreatedAt(createdAt);
+    }
+    Instant updatedAt = toInstant(record.get("updated_at"));
+    if (updatedAt != null) {
+      pi.setUpdatedAt(updatedAt);
+    }
     pi.setCreatedBy(record.get(CREATED_BY));
     pi.setUpdatedBy(record.get(UPDATED_BY));
     pi.setDeletedAt(toInstant(record.get("deleted_at")));
     return pi;
   }
 
-  private static Instant toInstant(Object val) {
+  private static @Nullable Instant toInstant(@Nullable Object val) {
     if (val instanceof LocalDateTime ldt) {
       return ldt.toInstant(UTC);
     }

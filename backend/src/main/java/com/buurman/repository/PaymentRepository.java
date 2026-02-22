@@ -25,6 +25,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Payment;
@@ -278,11 +279,11 @@ public class PaymentRepository {
 
   public PaginatedResult<Payment> findAllByTeamIdPaginated(
       UUID teamId,
-      String status,
-      UUID contractId,
-      UUID propertyId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String status,
+      @Nullable UUID contractId,
+      @Nullable UUID propertyId,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
@@ -332,7 +333,7 @@ public class PaymentRepository {
         r -> mapper.toDomain((PaymentsRecord) r));
   }
 
-  public Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
+  public @Nullable Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -345,7 +346,7 @@ public class PaymentRepository {
         .fetchOne();
   }
 
-  public Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
+  public @Nullable Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -377,7 +378,7 @@ public class PaymentRepository {
         .fetch();
   }
 
-  public String findCurrencyByTeamId(UUID teamId) {
+  public @Nullable String findCurrencyByTeamId(UUID teamId) {
     return dsl.select(PAYMENTS.CURRENCY)
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))

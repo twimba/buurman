@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Property;
@@ -421,7 +422,11 @@ public class PropertyRepository {
   }
 
   public PaginatedResult<Property> findAllByTeamIdPaginated(
-      UUID teamId, String status, String category, String query, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String status,
+      @Nullable String category,
+      @Nullable String query,
+      PageRequest pageRequest) {
     Condition condition = PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       condition = condition.and(PROPERTIES.STATUS.eq(status));
@@ -484,7 +489,7 @@ public class PropertyRepository {
         .execute();
   }
 
-  private static boolean isVariablePayment(java.math.BigDecimal value) {
+  private static boolean isVariablePayment(@Nullable java.math.BigDecimal value) {
     return value != null && value.compareTo(Property.VARIABLE_PAYMENT_SENTINEL) == 0;
   }
 }
