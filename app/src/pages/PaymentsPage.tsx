@@ -32,7 +32,6 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { getCurrencySymbol } from '@/utils/currencies';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 
 const statusFilters = [
@@ -79,7 +78,19 @@ export const PaymentsPage = () => {
 
   const { data: paymentStats } = usePaymentStats();
 
-  const currencySymbol = getCurrencySymbol(paymentStats?.currency ?? '');
+  const statsCurrency = paymentStats?.currency ?? '';
+
+  const fmtMoney = (value: number, currency: string) => {
+    if (!currency) return value.toFixed(2);
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency,
+      }).format(value);
+    } catch {
+      return `${currency} ${value.toFixed(2)}`;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -149,7 +160,7 @@ export const PaymentsPage = () => {
                 <Clock className="h-5 w-5 text-yellow-500" />
               </div>
               <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                {currencySymbol} {paymentStats.pendingAmount.toFixed(2)}
+                {fmtMoney(paymentStats.pendingAmount, statsCurrency)}
               </p>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 {paymentStats.pendingCount} payment
@@ -184,7 +195,7 @@ export const PaymentsPage = () => {
               {paymentStats.overdueCount > 0 ? (
                 <>
                   <p className="text-3xl font-bold text-red-600 dark:text-red-400">
-                    {currencySymbol} {paymentStats.overdueAmount.toFixed(2)}
+                    {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
                   <p className="text-sm text-red-700 dark:text-red-300 mt-1 font-medium">
                     {paymentStats.overdueCount} payment
@@ -197,7 +208,7 @@ export const PaymentsPage = () => {
               ) : (
                 <>
                   <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    {currencySymbol} 0.00
+                    {fmtMoney(0, statsCurrency)}
                   </p>
                   <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                     All caught up!
@@ -235,7 +246,7 @@ export const PaymentsPage = () => {
                   <Tooltip
                     formatter={(value: number | undefined) => [
                       value !== undefined
-                        ? `${currencySymbol} ${value.toFixed(2)}`
+                        ? fmtMoney(value, statsCurrency)
                         : 'N/A',
                       'Received',
                     ]}
@@ -382,14 +393,16 @@ export const PaymentsPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div>
                           <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                            {getCurrencySymbol(payment.currency)}{' '}
-                            {payment.amount.toFixed(2)}
+                            {fmtMoney(payment.amount, payment.currency)}
                           </span>
                           {payment.receivedAmount > 0 &&
                             payment.status !== PaymentStatus.PAID && (
                               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                                Balance: {getCurrencySymbol(payment.currency)}{' '}
-                                {(payment.balance ?? 0).toFixed(2)}
+                                Balance:{' '}
+                                {fmtMoney(
+                                  payment.balance ?? 0,
+                                  payment.currency
+                                )}
                               </p>
                             )}
                         </div>

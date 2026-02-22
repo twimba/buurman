@@ -749,17 +749,6 @@ function CashFlowChart({
           shape={mortgageBarShape}
           isAnimationActive={false}
         />
-        <Line
-          dataKey="net"
-          name="Net Cash Flow"
-          type="monotone"
-          stroke={COLORS.net}
-          strokeWidth={1.5}
-          strokeDasharray="6 3"
-          dot={{ r: 2.5, fill: COLORS.net, strokeWidth: 0 }}
-          activeDot={{ r: 4 }}
-          isAnimationActive={false}
-        />
       </ComposedChart>
     </ResponsiveContainer>
   );

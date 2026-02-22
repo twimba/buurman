@@ -82,7 +82,19 @@ export const ExpensesPage = () => {
 
   const { data: expenseStats } = useExpenseStats();
 
-  const currencySymbol = expenseStats?.currency ?? '';
+  const statsCurrency = expenseStats?.currency ?? '';
+
+  const fmtMoney = (value: number, currency: string) => {
+    if (!currency) return value.toFixed(2);
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency,
+      }).format(value);
+    } catch {
+      return `${currency} ${value.toFixed(2)}`;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -144,7 +156,7 @@ export const ExpensesPage = () => {
                 <DollarSign className="h-5 w-5 text-red-500" />
               </div>
               <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                {currencySymbol} {expenseStats.totalAmount.toFixed(2)}
+                {fmtMoney(expenseStats.totalAmount, statsCurrency)}
               </p>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
                 {categoryFilter &&
@@ -181,7 +193,7 @@ export const ExpensesPage = () => {
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {currencySymbol} {cat.total.toFixed(0)}
+                      {fmtMoney(cat.total, statsCurrency)}
                     </span>
                   </div>
                 ))}
@@ -225,7 +237,7 @@ export const ExpensesPage = () => {
                   <Tooltip
                     formatter={(value: number | undefined) => [
                       value !== undefined
-                        ? `${currencySymbol} ${value.toFixed(2)}`
+                        ? fmtMoney(value, statsCurrency)
                         : 'N/A',
                       'Expenses',
                     ]}
@@ -377,7 +389,7 @@ export const ExpensesPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                          {expense.currency} {expense.amount.toFixed(2)}
+                          {fmtMoney(expense.amount, expense.currency)}
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right">
