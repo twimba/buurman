@@ -10,7 +10,8 @@ public record PropertyDashboardResponse(
     EquityChartData equity,
     ExpenseBreakdownChartData expenseBreakdown,
     OccupancyChartData occupancy,
-    DataCompleteness dataCompleteness) {
+    DataCompleteness dataCompleteness,
+    FutureTrendData futureTrend) {
 
   public record SummaryMetrics(
       BigDecimal totalRoiPercent,
@@ -53,4 +54,12 @@ public record PropertyDashboardResponse(
       boolean hasPayments,
       boolean hasExpenses,
       int completenessPercent) {}
+
+  public record FutureTrendData(List<FutureMonthDataPoint> months) {}
+
+  public record FutureMonthDataPoint(
+      String month,
+      BigDecimal expectedIncome,
+      BigDecimal expectedExpenses,
+      BigDecimal expectedNet) {}
 }

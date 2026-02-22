@@ -876,6 +876,18 @@ export interface PropertyDashboardResponse {
   expenseBreakdown: ExpenseBreakdownChartData;
   occupancy: OccupancyChartData;
   dataCompleteness: DashboardDataCompleteness;
+  futureTrend: FutureTrendData;
+}
+
+export interface FutureTrendData {
+  months: FutureMonthDataPoint[];
+}
+
+export interface FutureMonthDataPoint {
+  month: string;
+  expectedIncome: number;
+  expectedExpenses: number;
+  expectedNet: number;
 }
 
 export interface DashboardSummaryMetrics {

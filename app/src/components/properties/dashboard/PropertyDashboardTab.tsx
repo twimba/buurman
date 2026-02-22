@@ -42,7 +42,9 @@ import type {
   ExpenseBreakdownChartData,
   OccupancyChartData,
   DashboardDataCompleteness,
+  FutureTrendData,
 } from '@/types/property';
+import { Area, AreaChart } from 'recharts';
 
 const COLORS = {
   income: '#10B981',
@@ -261,6 +263,7 @@ export const PropertyDashboardTab = ({
     expenseBreakdown,
     occupancy,
     dataCompleteness,
+    futureTrend,
   } = dashboard;
 
   return (
@@ -376,6 +379,20 @@ export const PropertyDashboardTab = ({
             currency={summary.currency || ''}
           />
         </ChartCard>
+
+        {futureTrend && futureTrend.months.length > 0 && (
+          <ChartCard
+            title="6-Month Projection"
+            icon={<TrendingUp className="h-5 w-5" />}
+          >
+            <FutureTrendChart
+              data={futureTrend}
+              tooltipStyle={tooltipStyle}
+              isDark={isDark}
+              currency={summary.currency || ''}
+            />
+          </ChartCard>
+        )}
 
         <ChartCard
           title="Equity Overview"
@@ -1193,6 +1210,84 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
 }
 
 // --- Empty Chart State ---
+
+// --- Future Trend Chart ---
+
+function FutureTrendChart({
+  data,
+  tooltipStyle,
+  isDark,
+  currency,
+}: {
+  data: FutureTrendData;
+  tooltipStyle: React.CSSProperties;
+  isDark: boolean;
+  currency: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-2 font-medium">
+        Projected income & expenses based on active contracts and operating costs
+      </p>
+      <ResponsiveContainer width="100%" height={280}>
+        <AreaChart
+          data={data.months}
+          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+          />
+          <XAxis
+            dataKey="month"
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={formatMonthTick}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={(v) => formatAxisValue(v, currency)}
+          />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            labelFormatter={(label) => formatMonthTick(String(label))}
+            formatter={(value?: number | string, name?: string) => [
+              formatCurrency(Number(value ?? 0), currency),
+              name,
+            ]}
+          />
+          <Legend />
+          <Area
+            type="monotone"
+            dataKey="expectedIncome"
+            name="Expected Income"
+            stroke="#10B981"
+            fill="#10B981"
+            fillOpacity={0.15}
+            strokeWidth={2}
+          />
+          <Area
+            type="monotone"
+            dataKey="expectedExpenses"
+            name="Expected Expenses"
+            stroke="#EF4444"
+            fill="#EF4444"
+            fillOpacity={0.15}
+            strokeWidth={2}
+          />
+          <Line
+            type="monotone"
+            dataKey="expectedNet"
+            name="Expected Net"
+            stroke="#3B82F6"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ fill: '#3B82F6', r: 3 }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 function EmptyChart({ message }: { message: string }) {
   return (
