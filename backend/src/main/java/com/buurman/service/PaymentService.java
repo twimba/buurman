@@ -202,16 +202,28 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public PageResponse<PaymentResponse> getPaymentsPaginated(
-      UserPrincipal principal, String status, String contractIdentifier, PageRequest pageRequest) {
+      UserPrincipal principal,
+      String status,
+      String contractIdentifier,
+      String propertyIdentifier,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      PageRequest pageRequest) {
     UUID contractId = null;
     if (contractIdentifier != null) {
       Contract contract =
           contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
       contractId = contract.getId();
     }
+    UUID propertyId = null;
+    if (propertyIdentifier != null) {
+      var property =
+          propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+      propertyId = property.getId();
+    }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, contractId, pageRequest);
+            principal.getTeamId(), status, contractId, propertyId, dateFrom, dateTo, pageRequest);
 
     LocalDate today = LocalDate.now(clock);
     result.items().forEach(payment -> updatePaymentStatus(payment, today));

@@ -34,8 +34,8 @@ export const TeamPreferencesSection = () => {
   });
 
   // Sync team name from server
-  if (team?.name && !teamNameSynced) {
-    setTeamName(team.name);
+  if (team?.teamName && !teamNameSynced) {
+    setTeamName(team.teamName);
     setTeamNameSynced(true);
   }
 
@@ -79,7 +79,7 @@ export const TeamPreferencesSection = () => {
         },
       });
 
-    const nameChanged = teamName.trim() && teamName.trim() !== team?.name;
+    const nameChanged = teamName.trim() && teamName.trim() !== team?.teamName;
     const saveTeamName = nameChanged
       ? () => updateTeamMutation.mutateAsync({ name: teamName.trim() })
       : () => Promise.resolve();

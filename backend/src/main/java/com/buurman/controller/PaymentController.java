@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +81,9 @@ public class PaymentController {
   public PageResponse<PaymentResponse> getPayments(
       @RequestParam(required = false) Payment.PaymentStatus status,
       @RequestParam(required = false) String contractIdentifier,
+      @RequestParam(required = false) String propertyIdentifier,
+      @RequestParam(required = false) LocalDate dateFrom,
+      @RequestParam(required = false) LocalDate dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
       @RequestParam(required = false) String sort,
@@ -88,7 +92,13 @@ public class PaymentController {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return paymentService.getPaymentsPaginated(
-        principal, status != null ? status.name() : null, contractIdentifier, pageRequest);
+        principal,
+        status != null ? status.name() : null,
+        contractIdentifier,
+        propertyIdentifier,
+        dateFrom,
+        dateTo,
+        pageRequest);
   }
 
   @Operation(

@@ -89,4 +89,7 @@ export interface BulkGeneratePaymentsRequest {
 export interface GetPaymentsParams {
   status?: PaymentStatus | 'OVERDUE';
   contractIdentifier?: string;
+  propertyIdentifier?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }

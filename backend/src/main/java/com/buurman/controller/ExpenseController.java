@@ -4,8 +4,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,23 +72,23 @@ public class ExpenseController {
   public PageResponse<ExpenseResponse> getExpenses(
       @RequestParam(required = false) Expense.ExpenseCategory category,
       @RequestParam(required = false) String propertyIdentifier,
+      @RequestParam(required = false) LocalDate dateFrom,
+      @RequestParam(required = false) LocalDate dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
       @RequestParam(required = false) String sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    // When filtering by propertyIdentifier, use existing non-paginated method wrapped in
-    // PageResponse
-    if (propertyIdentifier != null) {
-      List<ExpenseResponse> results =
-          expenseService.getExpensesByProperty(propertyIdentifier, principal);
-      return PageResponse.of(results, 0, results.size(), results.size());
-    }
-
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    UUID propertyId = null;
+    if (propertyIdentifier != null) {
+      var property =
+          expenseService.resolvePropertyId(propertyIdentifier, principal.getTeamId());
+      propertyId = property;
+    }
     return expenseService.getExpensesPaginated(
-        principal, category != null ? category.name() : null, null, pageRequest);
+        principal, category != null ? category.name() : null, propertyId, dateFrom, dateTo, pageRequest);
   }
 
   @Operation(summary = "Get expense stats", description = "Get expense statistics for the team")

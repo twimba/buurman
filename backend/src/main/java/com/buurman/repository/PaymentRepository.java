@@ -3,6 +3,7 @@ package com.buurman.repository;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.count;
@@ -275,7 +276,13 @@ public class PaymentRepository {
   }
 
   public PaginatedResult<Payment> findAllByTeamIdPaginated(
-      UUID teamId, String status, UUID contractId, PageRequest pageRequest) {
+      UUID teamId,
+      String status,
+      UUID contractId,
+      UUID propertyId,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      PageRequest pageRequest) {
     Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       if ("OVERDUE".equalsIgnoreCase(status)) {
@@ -289,6 +296,21 @@ public class PaymentRepository {
     }
     if (contractId != null) {
       condition = condition.and(PAYMENTS.CONTRACT_ID.eq(contractId));
+    }
+    if (propertyId != null) {
+      condition =
+          condition.and(
+              PAYMENTS.CONTRACT_ID.in(
+                  dsl.select(CONTRACTS.ID)
+                      .from(CONTRACTS)
+                      .where(
+                          CONTRACTS.PROPERTY_ID.eq(propertyId).and(CONTRACTS.DELETED_AT.isNull()))));
+    }
+    if (dateFrom != null) {
+      condition = condition.and(PAYMENTS.DUE_DATE.ge(dateFrom));
+    }
+    if (dateTo != null) {
+      condition = condition.and(PAYMENTS.DUE_DATE.le(dateTo));
     }
     Map<String, Field<?>> sortableFields =
         Map.of(
