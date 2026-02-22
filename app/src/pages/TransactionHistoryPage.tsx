@@ -15,11 +15,13 @@ import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RefreshButton } from '@/components/ui/RefreshButton';
+import { Pagination } from '@/components/ui/Pagination';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
 
@@ -38,14 +40,15 @@ export const TransactionHistoryPage = () => {
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { isEnabled } = useFeatureFlags();
+  const { defaultCurrency } = useTeamDefaults();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType>('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortField, setSortField] = useState<'date' | 'amount'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
 
   const {
     data: paymentsData,
@@ -168,15 +171,15 @@ export const TransactionHistoryPage = () => {
 
   // Pagination
   const paginatedTransactions = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
+    const startIndex = currentPage * pageSize;
     return filteredAndSortedTransactions.slice(
       startIndex,
-      startIndex + itemsPerPage
+      startIndex + pageSize
     );
-  }, [filteredAndSortedTransactions, currentPage]);
+  }, [filteredAndSortedTransactions, currentPage, pageSize]);
 
   const totalPages = Math.ceil(
-    filteredAndSortedTransactions.length / itemsPerPage
+    filteredAndSortedTransactions.length / pageSize
   );
 
   // Calculate totals
@@ -210,7 +213,7 @@ export const TransactionHistoryPage = () => {
       setSortField(field);
       setSortOrder('desc');
     }
-    setCurrentPage(1);
+    setCurrentPage(0);
   };
 
   const handleRowClick = (transaction: Transaction) => {
@@ -326,7 +329,7 @@ export const TransactionHistoryPage = () => {
                 Total Income
               </p>
               <p className="text-2xl font-bold text-green-900">
-                {formatCurrency(totals.income)}
+                {formatCurrency(totals.income, defaultCurrency)}
               </p>
             </div>
             <TrendingUp className="h-8 w-8 text-green-500" />
@@ -340,7 +343,7 @@ export const TransactionHistoryPage = () => {
                 Total Expenses
               </p>
               <p className="text-2xl font-bold text-red-900">
-                {formatCurrency(totals.expenses)}
+                {formatCurrency(totals.expenses, defaultCurrency)}
               </p>
             </div>
             <TrendingDown className="h-8 w-8 text-red-500" />
@@ -368,7 +371,7 @@ export const TransactionHistoryPage = () => {
                   totals.net >= 0 ? 'text-blue-900' : 'text-orange-900'
                 }`}
               >
-                {formatCurrency(totals.net)}
+                {formatCurrency(totals.net, defaultCurrency)}
               </p>
             </div>
             <ArrowUpDown
@@ -392,7 +395,7 @@ export const TransactionHistoryPage = () => {
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
-                setCurrentPage(1);
+                setCurrentPage(0);
               }}
               className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -405,7 +408,7 @@ export const TransactionHistoryPage = () => {
               value={typeFilter}
               onChange={(e) => {
                 setTypeFilter(e.target.value as TransactionType);
-                setCurrentPage(1);
+                setCurrentPage(0);
               }}
               className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
@@ -423,7 +426,7 @@ export const TransactionHistoryPage = () => {
               value={startDate}
               onChange={(e) => {
                 setStartDate(e.target.value);
-                setCurrentPage(1);
+                setCurrentPage(0);
               }}
               className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -437,7 +440,7 @@ export const TransactionHistoryPage = () => {
               value={endDate}
               onChange={(e) => {
                 setEndDate(e.target.value);
-                setCurrentPage(1);
+                setCurrentPage(0);
               }}
               className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -542,37 +545,19 @@ export const TransactionHistoryPage = () => {
           </table>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
-              <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
-                {Math.min(
-                  currentPage * itemsPerPage,
-                  filteredAndSortedTransactions.length
-                )}{' '}
-                of {filteredAndSortedTransactions.length} transactions
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14]"
-                >
-                  Previous
-                </button>
-                <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14]"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="mt-4">
+            <Pagination
+              page={currentPage}
+              totalPages={totalPages}
+              totalElements={filteredAndSortedTransactions.length}
+              size={pageSize}
+              onPageChange={setCurrentPage}
+              onSizeChange={(s) => {
+                setPageSize(s);
+                setCurrentPage(0);
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
