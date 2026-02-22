@@ -79,6 +79,7 @@ export const RegisterPaymentForm = ({
       amount: formData.amount,
       currency: formData.currency,
       dueDate: formData.paymentDate,
+      paymentDate: formData.paymentDate,
       notes: formData.notes || undefined,
       markAsPaid: true,
     });

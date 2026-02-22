@@ -80,8 +80,10 @@ const MONTH_NAMES = [
   'Dec',
 ];
 function formatMonthTick(v: string): string {
-  const [, m] = v.split('-');
-  return MONTH_NAMES[parseInt(m, 10) - 1] || v;
+  const [y, m] = v.split('-');
+  const month = MONTH_NAMES[parseInt(m, 10) - 1];
+  if (!month) return v;
+  return `${month} '${y.slice(2)}`;
 }
 
 function getCurrencySymbol(currencyCode: string): string {

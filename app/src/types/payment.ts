@@ -54,6 +54,7 @@ export interface CreatePaymentRequest {
   dueDate: string;
   notes?: string;
   markAsPaid?: boolean;
+  paymentDate?: string;
 }
 
 export interface UpdatePaymentRequest {

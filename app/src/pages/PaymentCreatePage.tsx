@@ -111,6 +111,7 @@ export const PaymentCreatePage = () => {
             currency,
             dueDate: rows[i].date,
             markAsPaid: registerMode ? true : undefined,
+            paymentDate: registerMode ? rows[i].date : undefined,
           };
           await createPayment(req);
           callbacks.onRowSuccess(i);
