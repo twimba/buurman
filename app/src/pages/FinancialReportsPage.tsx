@@ -34,6 +34,9 @@ import {
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
+import { useQuery } from '@tanstack/react-query';
+import { getProperties } from '@/api/properties';
+import { ChevronDown, ChevronUp, Filter, Check } from 'lucide-react';
 
 export const FinancialReportsPage = () => {
   const navigate = useNavigate();
@@ -48,6 +51,21 @@ export const FinancialReportsPage = () => {
   };
   const [expenseChartType, setExpenseChartType] = useState<'pie' | 'bar'>('pie');
   const [incomeChartType, setIncomeChartType] = useState<'line' | 'bar'>('line');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
+
+  const { data: propertiesData } = useQuery({
+    queryKey: ['properties'],
+    queryFn: () => getProperties(),
+  });
+  const allProperties = propertiesData?.content ?? [];
+
+  const toggleProperty = (id: string) => {
+    setSelectedPropertyIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
+
   const [periodType, setPeriodType] = useState<
     'month' | 'quarter' | 'year' | 'all' | 'custom'
   >('month');
@@ -130,7 +148,7 @@ export const FinancialReportsPage = () => {
   } = useFinancialOverview(
     dateRange.startDate,
     dateRange.endDate,
-    undefined,
+    selectedPropertyIds.length > 0 ? selectedPropertyIds : undefined,
     undefined,
     periodType !== 'custom' || (!!customStartDate && !!customEndDate)
   );
@@ -302,6 +320,68 @@ export const FinancialReportsPage = () => {
                 className="px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               />
             </div>
+          </div>
+
+          {/* Advanced Filters Toggle */}
+          <div className="border-t border-[#edf0f7] dark:border-[#2a2e3f] pt-3 mt-3">
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center gap-2 text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] transition-colors"
+            >
+              <Filter className="h-4 w-4" />
+              Advanced Filters
+              {selectedPropertyIds.length > 0 && (
+                <span className="bg-[#5c7cfa] text-white text-xs px-1.5 py-0.5 rounded-full">
+                  {selectedPropertyIds.length}
+                </span>
+              )}
+              {showAdvancedFilters ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+
+            {showAdvancedFilters && (
+              <div className="mt-3 space-y-3">
+                {/* Property Filter */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">Properties</label>
+                    {selectedPropertyIds.length > 0 && (
+                      <button
+                        onClick={() => setSelectedPropertyIds([])}
+                        className="text-xs text-[#5c7cfa] hover:underline"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {allProperties.map((p) => {
+                      const isSelected = selectedPropertyIds.includes(p.identifier);
+                      return (
+                        <button
+                          key={p.identifier}
+                          onClick={() => toggleProperty(p.identifier)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                            isSelected
+                              ? 'bg-[#5c7cfa]/10 border-[#5c7cfa] text-[#5c7cfa] dark:bg-[#5c7cfa]/20 dark:text-[#748ffc]'
+                              : 'border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] hover:border-[#5c7cfa]/50'
+                          }`}
+                        >
+                          {isSelected && <Check className="h-3 w-3" />}
+                          {p.street}, {p.city}
+                        </button>
+                      );
+                    })}
+                    {allProperties.length === 0 && (
+                      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">No properties found</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
