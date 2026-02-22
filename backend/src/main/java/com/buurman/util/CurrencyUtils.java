@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 /** Utility methods for currency validation and formatting using {@link java.util.Currency}. */
 public final class CurrencyUtils {
 
@@ -13,7 +15,7 @@ public final class CurrencyUtils {
    * Returns the currency symbol for the given ISO 4217 code (e.g. "USD" → "$"). Falls back to the
    * currency code itself if no symbol is found.
    */
-  public static String getCurrencySymbol(String currencyCode) {
+  public static String getCurrencySymbol(@Nullable String currencyCode) {
     if (currencyCode == null || currencyCode.isBlank()) return "";
     try {
       Currency currency = Currency.getInstance(currencyCode);
@@ -40,7 +42,7 @@ public final class CurrencyUtils {
   /**
    * Formats an amount with its currency symbol (e.g. "€1,234.56"). Returns "N/A" if amount is null.
    */
-  public static String formatCurrency(BigDecimal amount, String currencyCode) {
+  public static String formatCurrency(@Nullable BigDecimal amount, String currencyCode) {
     if (amount == null) return "N/A";
     String symbol = getCurrencySymbol(currencyCode);
     return symbol + String.format("%,.2f", amount);
@@ -72,7 +74,8 @@ public final class CurrencyUtils {
   }
 
   /** Null-safe variant of {@link #toMinorUnits}. */
-  public static Long toMinorUnitsOrNull(BigDecimal amount, String currencyCode) {
+  public static @Nullable Long toMinorUnitsOrNull(
+      @Nullable BigDecimal amount, String currencyCode) {
     return amount == null ? null : toMinorUnits(amount, currencyCode);
   }
 
@@ -83,7 +86,8 @@ public final class CurrencyUtils {
   }
 
   /** Null-safe variant of {@link #toMajorUnits}. */
-  public static BigDecimal toMajorUnitsOrNull(Long minorUnits, String currencyCode) {
+  public static @Nullable BigDecimal toMajorUnitsOrNull(
+      @Nullable Long minorUnits, String currencyCode) {
     return minorUnits == null ? null : toMajorUnits(minorUnits, currencyCode);
   }
 
@@ -91,7 +95,7 @@ public final class CurrencyUtils {
    * Converts a SUM(BIGINT) result (returned as BigDecimal by JOOQ) back to major units. Returns
    * {@link BigDecimal#ZERO} when the sum is null.
    */
-  public static BigDecimal sumToMajorUnits(BigDecimal sumResult, String currencyCode) {
+  public static BigDecimal sumToMajorUnits(@Nullable BigDecimal sumResult, String currencyCode) {
     if (sumResult == null) return BigDecimal.ZERO;
     return toMajorUnits(sumResult.longValueExact(), currencyCode);
   }

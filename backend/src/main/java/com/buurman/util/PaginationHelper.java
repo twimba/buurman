@@ -34,7 +34,7 @@ public final class PaginationHelper {
 
     SortField<?> orderBy = pageRequest.direction() == ASC ? sortField.asc() : sortField.desc();
 
-    long totalElements = dsl.selectCount().from(table).where(condition).fetchOne(0, long.class);
+    long totalElements = dsl.fetchCount(table, condition);
 
     List<T> items =
         dsl.selectFrom(table)
