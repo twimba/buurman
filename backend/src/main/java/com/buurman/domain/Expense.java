@@ -27,6 +27,7 @@ public class Expense {
     PROPERTY_MANAGEMENT,
     FEES,
     PROPERTY_TAX,
+    MORTGAGE_PAYMENT,
     OTHER
   }
 
