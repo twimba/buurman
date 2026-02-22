@@ -50,6 +50,9 @@ const categoryFilters = [
   { value: ExpenseCategory.CLEANING, label: 'Cleaning' },
   { value: ExpenseCategory.LANDSCAPING, label: 'Landscaping' },
   { value: ExpenseCategory.PROPERTY_MANAGEMENT, label: 'Property Management' },
+  { value: ExpenseCategory.FEES, label: 'Fees' },
+  { value: ExpenseCategory.PROPERTY_TAX, label: 'Property Taxes' },
+  { value: ExpenseCategory.MORTGAGE_PAYMENT, label: 'Mortgage Payment' },
   { value: ExpenseCategory.OTHER, label: 'Other' },
 ];
 
@@ -156,20 +159,23 @@ export const ExpensesPage = () => {
         {expenseStats && (
           <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Total Expenses */}
-            <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+            <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
                   Total Expenses
                 </h3>
                 <DollarSign className="h-5 w-5 text-red-500" />
               </div>
-              <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                {fmtMoney(expenseStats.totalAmount, statsCurrency)}
-              </p>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                {categoryFilter &&
-                  `in ${formatExpenseCategory(categoryFilter)}`}
-              </p>
+              <div className="flex-1 flex flex-col justify-center">
+                <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  {fmtMoney(expenseStats.totalAmount, statsCurrency)}
+                </p>
+                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  {categoryFilter
+                    ? `in ${formatExpenseCategory(categoryFilter)}`
+                    : `across ${expenseStats.topCategories.length} categories`}
+                </p>
+              </div>
             </div>
 
             {/* Top Categories */}
