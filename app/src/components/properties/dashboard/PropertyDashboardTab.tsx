@@ -12,6 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Brush,
 } from 'recharts';
 import type { BarShapeProps } from 'recharts';
 import {
@@ -751,6 +752,15 @@ function CashFlowChart({
           shape={mortgageBarShape}
           isAnimationActive={false}
         />
+        {chartData.length > 6 && (
+          <Brush
+            dataKey="month"
+            height={20}
+            stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+            fill={isDark ? '#14161f' : '#f8f9fc'}
+            tickFormatter={formatMonthTick}
+          />
+        )}
       </ComposedChart>
     </ResponsiveContainer>
   );
@@ -899,6 +909,15 @@ function OccupancyAndTrendChart({
                 activeDot={{ r: 5 }}
                 isAnimationActive={false}
               />
+              {cashFlow.months.length > 6 && (
+                <Brush
+                  dataKey="month"
+                  height={20}
+                  stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+                  fill={isDark ? '#14161f' : '#f8f9fc'}
+                  tickFormatter={formatMonthTick}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -1007,6 +1026,15 @@ function ExpenseTimelineChart({
               />
             );
           })}
+          {chartData.length > 6 && (
+            <Brush
+              dataKey="month"
+              height={20}
+              stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+              fill={isDark ? '#14161f' : '#f8f9fc'}
+              tickFormatter={formatMonthTick}
+            />
+          )}
         </BarChart>
       </ResponsiveContainer>
       </div>
