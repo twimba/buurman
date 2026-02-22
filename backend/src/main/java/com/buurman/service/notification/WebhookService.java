@@ -58,6 +58,18 @@ public class WebhookService {
                 ? sgMessageId.substring(0, sgMessageId.indexOf("."))
                 : sgMessageId;
 
+        // Handle engagement events (open/click) separately from delivery status
+        if ("open".equals(eventType)) {
+          notificationRepository.incrementOpenCount(messageId);
+          log.debug("SendGrid open event for message {}", messageId);
+          continue;
+        }
+        if ("click".equals(eventType)) {
+          notificationRepository.incrementClickCount(messageId);
+          log.debug("SendGrid click event for message {}", messageId);
+          continue;
+        }
+
         NotificationStatus status = mapSendGridStatus(eventType);
         String reason = (String) event.get("reason");
 

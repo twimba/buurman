@@ -7,6 +7,8 @@ import {
   RefreshCw,
   Smartphone,
   Loader2,
+  Eye,
+  MousePointerClick,
 } from 'lucide-react';
 import {
   NotificationResponse,
@@ -254,6 +256,36 @@ export const NotificationDetailModal = ({
                   <dt className="text-[#6b7194] dark:text-[#8b90a8]">Error</dt>
                   <dd className="font-medium text-red-600 dark:text-red-400">
                     {notification.providerError}
+                  </dd>
+                </div>
+              )}
+
+              {notification.channel === NotificationChannel.EMAIL && (notification.openCount > 0 || notification.clickCount > 0) && (
+                <div>
+                  <dt className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    Engagement
+                  </dt>
+                  <dd className="flex items-center gap-4">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <Eye className="h-3.5 w-3.5 text-[#5c7cfa]" />
+                      {notification.openCount} {notification.openCount === 1 ? 'open' : 'opens'}
+                      {notification.firstOpenedAt && (
+                        <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] ml-1">
+                          (first: {formatDate(notification.firstOpenedAt)})
+                        </span>
+                      )}
+                    </span>
+                    {notification.clickCount > 0 && (
+                      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <MousePointerClick className="h-3.5 w-3.5 text-emerald-500" />
+                        {notification.clickCount} {notification.clickCount === 1 ? 'click' : 'clicks'}
+                        {notification.firstClickedAt && (
+                          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] ml-1">
+                            (first: {formatDate(notification.firstClickedAt)})
+                          </span>
+                        )}
+                      </span>
+                    )}
                   </dd>
                 </div>
               )}
