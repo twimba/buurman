@@ -36,7 +36,8 @@ import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
 import { getProperties } from '@/api/properties';
-import { ChevronDown, ChevronUp, Filter, Check } from 'lucide-react';
+import { exportTransactionsCSV, exportTransactionsPDF } from '@/api/reports';
+import { ChevronDown, ChevronUp, Filter, Check, Download, FileText } from 'lucide-react';
 
 export const FinancialReportsPage = () => {
   const navigate = useNavigate();
@@ -258,13 +259,51 @@ export const FinancialReportsPage = () => {
             Comprehensive financial overview and analytics
           </p>
         </div>
-        <button
-          onClick={() => navigate('/reports/transactions')}
-          className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
-        >
-          <List className="h-5 w-5" />
-          View Transaction History
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportTransactionsCSV(dateRange.startDate, dateRange.endDate);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'transactions.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch { /* ignore */ }
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+            title="Download CSV"
+          >
+            <Download className="h-4 w-4" />
+            CSV
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportTransactionsPDF(dateRange.startDate, dateRange.endDate);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'financial-report.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch { /* ignore */ }
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+            title="Download PDF"
+          >
+            <FileText className="h-4 w-4" />
+            PDF
+          </button>
+          <button
+            onClick={() => navigate('/reports/transactions')}
+            className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors text-sm"
+          >
+            <List className="h-5 w-5" />
+            Transactions
+          </button>
+        </div>
       </div>
 
       {/* Period Selector */}

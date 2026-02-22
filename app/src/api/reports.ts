@@ -75,3 +75,25 @@ export const getTaxSummary = async (
   });
   return response.data;
 };
+
+export const exportTransactionsCSV = async (
+  startDate?: string,
+  endDate?: string
+): Promise<Blob> => {
+  const response = await client.get('/reports/export/transactions/csv', {
+    params: { startDate, endDate },
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
+export const exportTransactionsPDF = async (
+  startDate?: string,
+  endDate?: string
+): Promise<Blob> => {
+  const response = await client.get('/reports/export/transactions/pdf', {
+    params: { startDate, endDate },
+    responseType: 'blob',
+  });
+  return response.data;
+};
