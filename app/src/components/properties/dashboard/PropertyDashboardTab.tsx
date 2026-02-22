@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ComposedChart,
   BarChart,
@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   RefreshCw,
   Download,
+  Calendar,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
@@ -119,6 +120,56 @@ function formatAxisValue(value: number, currencyCode: string): string {
   return `${sign}${symbol}${abs.toFixed(0)}`;
 }
 
+type PeriodType = 'ytd' | '3' | '6' | '12' | '24' | '36' | 'all' | 'custom';
+
+const PERIOD_OPTIONS: { value: PeriodType; label: string }[] = [
+  { value: 'ytd', label: 'YTD' },
+  { value: '3', label: '3M' },
+  { value: '6', label: '6M' },
+  { value: '12', label: '12M' },
+  { value: '24', label: '24M' },
+  { value: '36', label: '36M' },
+  { value: 'all', label: 'All Time' },
+  { value: 'custom', label: 'Custom' },
+];
+
+function computeMonths(
+  periodType: PeriodType,
+  customStartDate: string,
+  customEndDate: string
+): number {
+  const today = new Date();
+  switch (periodType) {
+    case 'ytd': {
+      const jan1 = new Date(today.getFullYear(), 0, 1);
+      return (
+        (today.getFullYear() - jan1.getFullYear()) * 12 +
+        (today.getMonth() - jan1.getMonth()) +
+        1
+      );
+    }
+    case '3':
+    case '6':
+    case '12':
+    case '24':
+    case '36':
+      return parseInt(periodType, 10);
+    case 'all':
+      return 0;
+    case 'custom': {
+      if (!customStartDate || !customEndDate) return 12;
+      const start = new Date(customStartDate);
+      const end = new Date(customEndDate);
+      return Math.max(
+        (end.getFullYear() - start.getFullYear()) * 12 +
+          (end.getMonth() - start.getMonth()) +
+          1,
+        1
+      );
+    }
+  }
+}
+
 interface PropertyDashboardTabProps {
   propertyId: string;
 }
@@ -126,16 +177,29 @@ interface PropertyDashboardTabProps {
 export const PropertyDashboardTab = ({
   propertyId,
 }: PropertyDashboardTabProps) => {
+  const [periodType, setPeriodType] = useState<PeriodType>('12');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
+
+  const months = useMemo(
+    () => computeMonths(periodType, customStartDate, customEndDate),
+    [periodType, customStartDate, customEndDate]
+  );
+
   const {
     data: dashboard,
     isLoading,
     error,
     refetch,
-  } = usePropertyDashboard(propertyId);
+  } = usePropertyDashboard(propertyId, months);
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
   const [exporting, setExporting] = useState<'pdf' | 'csv' | null>(null);
+
+  const handlePeriodChange = useCallback((type: PeriodType) => {
+    setPeriodType(type);
+  }, []);
 
   const tooltipStyle = useMemo(
     () => ({
@@ -153,8 +217,8 @@ export const PropertyDashboardTab = ({
     try {
       const blob =
         format === 'pdf'
-          ? await exportPropertyDashboardPDF(propertyId)
-          : await exportPropertyDashboardCSV(propertyId);
+          ? await exportPropertyDashboardPDF(propertyId, months)
+          : await exportPropertyDashboardCSV(propertyId, months);
       const mimeType = format === 'pdf' ? 'application/pdf' : 'text/csv';
       const file = new Blob([blob], { type: mimeType });
       const url = window.URL.createObjectURL(file);
@@ -198,24 +262,69 @@ export const PropertyDashboardTab = ({
 
   return (
     <div className="space-y-6">
-      {/* Export buttons */}
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => handleExport('csv')}
-          disabled={exporting !== null}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-        >
-          <Download className="h-3.5 w-3.5" />
-          {exporting === 'csv' ? 'Exporting...' : 'CSV'}
-        </button>
-        <button
-          onClick={() => handleExport('pdf')}
-          disabled={exporting !== null}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-        >
-          <Download className="h-3.5 w-3.5" />
-          {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
-        </button>
+      {/* Toolbar: period selector + export buttons */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Calendar className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8] shrink-0" />
+          <div className="flex gap-1 flex-wrap">
+            {PERIOD_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handlePeriodChange(opt.value)}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  periodType === opt.value
+                    ? 'bg-[#5c7cfa] text-white'
+                    : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {periodType === 'custom' && (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={(e) => {
+                  setCustomStartDate(e.target.value);
+                  setPeriodType('custom');
+                }}
+                className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              />
+              <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                to
+              </span>
+              <input
+                type="date"
+                value={customEndDate}
+                onChange={(e) => {
+                  setCustomEndDate(e.target.value);
+                  setPeriodType('custom');
+                }}
+                className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              />
+            </div>
+          )}
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => handleExport('csv')}
+            disabled={exporting !== null}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" />
+            {exporting === 'csv' ? 'Exporting...' : 'CSV'}
+          </button>
+          <button
+            onClick={() => handleExport('pdf')}
+            disabled={exporting !== null}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" />
+            {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
+          </button>
+        </div>
       </div>
 
       {/* Data Completeness Banner */}

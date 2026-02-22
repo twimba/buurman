@@ -157,7 +157,7 @@ public class PropertyBookletExporter {
     PropertyDashboardResponse dashboard = null;
     if (featureFlagService.isEnabled(FeatureFlags.REPORTS)) {
       try {
-        dashboard = propertyDashboardService.getDashboardData(propertyIdentifier, teamId);
+        dashboard = propertyDashboardService.getDashboardData(propertyIdentifier, 0, teamId);
       } catch (Exception e) {
         // Non-critical: booklet still generates without dashboard section
       }
@@ -1224,21 +1224,27 @@ public class PropertyBookletExporter {
 
     // Cash flow table
     if (!dashboard.cashFlow().months().isEmpty()) {
-      appendSectionTitle(html, "Monthly Cash Flow (Last 12 Months)");
+      appendSectionTitle(html, "Monthly Cash Flow");
       html.append("<table class='payment-table'><thead><tr>");
       html.append("<th>Month</th><th>Income</th><th>Expenses</th><th>Mortgage</th><th>Net</th>");
       html.append("</tr></thead><tbody>");
       for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
         html.append("<tr>");
         html.append("<td>").append(escapeHtml(m.month())).append("</td>");
-        html.append("<td style='text-align:right;'>").append(fmtNum(m.income())).append("</td>");
-        html.append("<td style='text-align:right;'>").append(fmtNum(m.expenses())).append("</td>");
-        html.append("<td style='text-align:right;'>").append(fmtNum(m.mortgage())).append("</td>");
+        html.append("<td style='text-align:right;'>")
+            .append(fmtMoney(m.income(), currency))
+            .append("</td>");
+        html.append("<td style='text-align:right;'>")
+            .append(fmtMoney(m.expenses(), currency))
+            .append("</td>");
+        html.append("<td style='text-align:right;'>")
+            .append(fmtMoney(m.mortgage(), currency))
+            .append("</td>");
         String netColor = m.net().signum() >= 0 ? "#059669" : "#dc2626";
         html.append("<td style='text-align:right;color:")
             .append(netColor)
             .append(";font-weight:600;'>")
-            .append(fmtNum(m.net()))
+            .append(fmtMoney(m.net(), currency))
             .append("</td>");
         html.append("</tr>");
       }

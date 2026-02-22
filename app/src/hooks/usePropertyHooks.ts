@@ -348,10 +348,13 @@ export const useAddPropertyAmenity = (propertyId: string) => {
 
 // --- Property Dashboard ---
 
-export const usePropertyDashboard = (propertyId: string | undefined) => {
+export const usePropertyDashboard = (
+  propertyId: string | undefined,
+  months?: number
+) => {
   return useQuery({
-    queryKey: ['propertyDashboard', propertyId],
-    queryFn: () => propertiesApi.getPropertyDashboard(propertyId!),
+    queryKey: ['propertyDashboard', propertyId, months],
+    queryFn: () => propertiesApi.getPropertyDashboard(propertyId!, months),
     enabled: !!propertyId,
     staleTime: 60_000,
   });

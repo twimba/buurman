@@ -222,28 +222,33 @@ export const removePropertyAmenity = async (
 // --- Property Dashboard ---
 
 export const getPropertyDashboard = async (
-  propertyId: string
+  propertyId: string,
+  months?: number
 ): Promise<PropertyDashboardResponse> => {
-  const response = await client.get(`/properties/${propertyId}/dashboard`);
+  const response = await client.get(`/properties/${propertyId}/dashboard`, {
+    params: months != null ? { months } : undefined,
+  });
   return response.data;
 };
 
 export const exportPropertyDashboardPDF = async (
-  propertyId: string
+  propertyId: string,
+  months?: number
 ): Promise<Blob> => {
   const response = await client.get(
     `/properties/${propertyId}/dashboard/export/pdf`,
-    { responseType: 'blob' }
+    { responseType: 'blob', params: months != null ? { months } : undefined }
   );
   return response.data;
 };
 
 export const exportPropertyDashboardCSV = async (
-  propertyId: string
+  propertyId: string,
+  months?: number
 ): Promise<Blob> => {
   const response = await client.get(
     `/properties/${propertyId}/dashboard/export/csv`,
-    { responseType: 'blob' }
+    { responseType: 'blob', params: months != null ? { months } : undefined }
   );
   return response.data;
 };

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -51,15 +52,20 @@ public class PropertyDashboardController {
           "Returns financial metrics, cash flow, equity, expense breakdown, and occupancy data")
   @GetMapping
   public PropertyDashboardResponse getDashboard(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
-    return dashboardService.getDashboard(identifier, principal);
+      @PathVariable String identifier,
+      @RequestParam(required = false) Integer months,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return dashboardService.getDashboard(identifier, months, principal);
   }
 
   @Operation(summary = "Export dashboard as PDF")
   @GetMapping("/export/pdf")
   public ResponseEntity<byte[]> exportPdf(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
-    PropertyDashboardResponse dashboard = dashboardService.getDashboard(identifier, principal);
+      @PathVariable String identifier,
+      @RequestParam(required = false) Integer months,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    PropertyDashboardResponse dashboard =
+        dashboardService.getDashboard(identifier, months, principal);
     byte[] pdf = exportService.generatePropertyDashboardPDF(dashboard);
     return ResponseEntity.ok()
         .header(
@@ -71,8 +77,11 @@ public class PropertyDashboardController {
   @Operation(summary = "Export dashboard as CSV")
   @GetMapping("/export/csv")
   public ResponseEntity<byte[]> exportCsv(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
-    PropertyDashboardResponse dashboard = dashboardService.getDashboard(identifier, principal);
+      @PathVariable String identifier,
+      @RequestParam(required = false) Integer months,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    PropertyDashboardResponse dashboard =
+        dashboardService.getDashboard(identifier, months, principal);
     byte[] csv = exportService.generatePropertyDashboardCSV(dashboard);
     return ResponseEntity.ok()
         .header(

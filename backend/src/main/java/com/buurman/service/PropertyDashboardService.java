@@ -1,8 +1,10 @@
 package com.buurman.service;
 
+import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MONTHS;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,7 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class PropertyDashboardService {
 
   private static final int SCALE = 2;
-  private static final int MONTHS_LOOKBACK = 12;
+  private static final int DEFAULT_MONTHS = 12;
   public static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
   private final PropertyRepository propertyRepository;
@@ -57,13 +59,15 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyDashboardResponse getDashboard(
-      String propertyIdentifier, UserPrincipal principal) {
-    return getDashboardData(propertyIdentifier, principal.getTeamId());
+      String propertyIdentifier, Integer months, UserPrincipal principal) {
+    int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
+    return getDashboardData(propertyIdentifier, effectiveMonths, principal.getTeamId());
   }
 
   /** Internal method for use by other services (authorization handled by caller). */
   @Transactional(readOnly = true)
-  public PropertyDashboardResponse getDashboardData(String propertyIdentifier, UUID teamId) {
+  public PropertyDashboardResponse getDashboardData(
+      String propertyIdentifier, int months, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
@@ -71,12 +75,51 @@ public class PropertyDashboardService {
 
     String currency = property.getPurchasePriceCurrency();
     LocalDate now = LocalDate.now();
-    LocalDate twelveMonthsAgo = now.minusMonths(MONTHS_LOOKBACK);
 
-    // Fetch payments for all contracts of this property in the last 12 months (single query)
+    LocalDate startDate;
+    if (months <= 0) {
+      // All time: fetch everything first, then derive start from earliest data
+      List<Payment> unfilteredPayments =
+          paymentRepository
+              .findPaidByContractIdsAndDateRange(contractIds, teamId, LocalDate.of(1970, 1, 1), now)
+              .stream()
+              .filter(p -> currency == null || currency.equals(p.getCurrency()))
+              .toList();
+
+      List<Expense> unfilteredExpenses =
+          expenseRepository.findByPropertyId(property.getId(), teamId).stream()
+              .filter(e -> e.getExpenseDate() != null && !e.getExpenseDate().isAfter(now))
+              .filter(e -> currency == null || currency.equals(e.getCurrency()))
+              .toList();
+
+      // Earliest date across purchase date, payments, and expenses
+      LocalDate earliest = now;
+      if (property.getPurchaseDate() != null) {
+        earliest = property.getPurchaseDate();
+      }
+      for (Payment p : unfilteredPayments) {
+        if (p.getPaymentDate() != null && p.getPaymentDate().isBefore(earliest)) {
+          earliest = p.getPaymentDate();
+        }
+      }
+      for (Expense e : unfilteredExpenses) {
+        if (e.getExpenseDate().isBefore(earliest)) {
+          earliest = e.getExpenseDate();
+        }
+      }
+      startDate = earliest;
+
+      // Data is already fully fetched — assign directly and skip the queries below
+      return buildDashboardFromData(
+          property, contracts, unfilteredPayments, unfilteredExpenses, startDate, now);
+    } else {
+      startDate = now.minusMonths(months);
+    }
+
+    // Fetch payments for all contracts of this property in the period (single query)
     List<Payment> allPayments =
         paymentRepository
-            .findPaidByContractIdsAndDateRange(contractIds, teamId, twelveMonthsAgo, now)
+            .findPaidByContractIdsAndDateRange(contractIds, teamId, startDate, now)
             .stream()
             .filter(p -> currency == null || currency.equals(p.getCurrency()))
             .toList();
@@ -86,24 +129,44 @@ public class PropertyDashboardService {
             .filter(
                 e ->
                     e.getExpenseDate() != null
-                        && !e.getExpenseDate().isBefore(twelveMonthsAgo)
+                        && !e.getExpenseDate().isBefore(startDate)
                         && !e.getExpenseDate().isAfter(now))
             .filter(e -> currency == null || currency.equals(e.getCurrency()))
             .toList();
-    SummaryMetrics summary = buildSummaryMetrics(property, contracts, allPayments, allExpenses);
-    CashFlowChartData cashFlow = buildCashFlowChart(allPayments, allExpenses, property, now);
+
+    return buildDashboardFromData(property, contracts, allPayments, allExpenses, startDate, now);
+  }
+
+  private PropertyDashboardResponse buildDashboardFromData(
+      Property property,
+      List<Contract> contracts,
+      List<Payment> payments,
+      List<Expense> expenses,
+      LocalDate startDate,
+      LocalDate now) {
+
+    int effectiveMonths = (int) MONTHS.between(YearMonth.from(startDate), YearMonth.from(now)) + 1;
+
+    SummaryMetrics summary =
+        buildSummaryMetrics(property, contracts, payments, expenses, effectiveMonths);
+    CashFlowChartData cashFlow =
+        buildCashFlowChart(payments, expenses, property, now, effectiveMonths);
     EquityChartData equity = buildEquityChart(property);
-    ExpenseBreakdownChartData expenseBreakdown = buildExpenseBreakdown(allExpenses, property, now);
-    OccupancyChartData occupancy = buildOccupancyChart(contracts, now);
-    DataCompleteness completeness =
-        buildDataCompleteness(property, contracts, allPayments, allExpenses);
+    ExpenseBreakdownChartData expenseBreakdown =
+        buildExpenseBreakdown(expenses, property, now, effectiveMonths);
+    OccupancyChartData occupancy = buildOccupancyChart(contracts, now, effectiveMonths);
+    DataCompleteness completeness = buildDataCompleteness(property, contracts, payments, expenses);
 
     return new PropertyDashboardResponse(
         summary, cashFlow, equity, expenseBreakdown, occupancy, completeness);
   }
 
   private SummaryMetrics buildSummaryMetrics(
-      Property property, List<Contract> contracts, List<Payment> payments, List<Expense> expenses) {
+      Property property,
+      List<Contract> contracts,
+      List<Payment> payments,
+      List<Expense> expenses,
+      int months) {
 
     BigDecimal purchasePrice = property.getPurchasePrice();
     BigDecimal marketValue = property.getCurrentMarketValue();
@@ -114,9 +177,13 @@ public class PropertyDashboardService {
     BigDecimal totalIncome = sumAmounts(payments.stream().map(Payment::getAmount).toList());
     BigDecimal totalExpenses = sumAmounts(expenses.stream().map(Expense::getAmount).toList());
 
-    // Annual projections from 12-month data
-    BigDecimal annualIncome = totalIncome;
-    BigDecimal annualExpenses = totalExpenses;
+    // Annualize from period data
+    BigDecimal annualFactor =
+        months >= 12
+            ? ONE
+            : BigDecimal.valueOf(12).divide(BigDecimal.valueOf(Math.max(months, 1)), 4, HALF_UP);
+    BigDecimal annualIncome = totalIncome.multiply(annualFactor);
+    BigDecimal annualExpenses = totalExpenses.multiply(annualFactor);
     BigDecimal annualMortgage =
         monthlyMortgage != null ? monthlyMortgage.multiply(BigDecimal.valueOf(12)) : ZERO;
 
@@ -134,9 +201,10 @@ public class PropertyDashboardService {
     BigDecimal annualNoi = annualIncome.subtract(annualExpenses).subtract(annualOperatingCosts);
 
     // Monthly Cash Flow = avg monthly income - avg monthly expenses - operating costs/12 - mortgage
-    BigDecimal avgMonthlyIncome = divideOrNull(annualIncome, BigDecimal.valueOf(MONTHS_LOOKBACK));
+    BigDecimal avgMonthlyIncome =
+        divideOrNull(totalIncome, BigDecimal.valueOf(Math.max(months, 1)));
     BigDecimal avgMonthlyExpenses =
-        divideOrNull(annualExpenses, BigDecimal.valueOf(MONTHS_LOOKBACK));
+        divideOrNull(totalExpenses, BigDecimal.valueOf(Math.max(months, 1)));
     BigDecimal monthlyOperatingCosts =
         annualOperatingCosts.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     BigDecimal monthlyCashFlow = null;
@@ -201,8 +269,8 @@ public class PropertyDashboardService {
       }
     }
 
-    // Occupancy Rate (last 12 months)
-    BigDecimal occupancyRatePercent = calculateOccupancyRate(contracts, LocalDate.now());
+    // Occupancy Rate over the selected period
+    BigDecimal occupancyRatePercent = calculateOccupancyRate(contracts, LocalDate.now(), months);
 
     // Gross Rent Multiplier = market value / annual gross rent
     BigDecimal grossRentMultiplier = null;
@@ -225,7 +293,11 @@ public class PropertyDashboardService {
   }
 
   private CashFlowChartData buildCashFlowChart(
-      List<Payment> payments, List<Expense> expenses, Property property, LocalDate now) {
+      List<Payment> payments,
+      List<Expense> expenses,
+      Property property,
+      LocalDate now,
+      int months) {
     BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
 
     // Build per-month operating cost map (due-month-aware)
@@ -265,17 +337,17 @@ public class PropertyDashboardService {
                     e -> YearMonth.from(e.getExpenseDate()),
                     Collectors.reducing(ZERO, Expense::getAmount, BigDecimal::add)));
 
-    List<MonthlyDataPoint> months = new ArrayList<>();
-    for (int i = MONTHS_LOOKBACK - 1; i >= 0; i--) {
+    List<MonthlyDataPoint> dataPoints = new ArrayList<>();
+    for (int i = months - 1; i >= 0; i--) {
       YearMonth ym = YearMonth.from(now.minusMonths(i));
       BigDecimal income = incomeByMonth.getOrDefault(ym, ZERO);
       BigDecimal opCosts = operatingCostsByMonth.getOrDefault(ym.getMonthValue(), ZERO);
       BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO).add(opCosts);
       BigDecimal mort = monthlyMortgage != null ? monthlyMortgage : ZERO;
       BigDecimal net = income.subtract(exp).subtract(mort);
-      months.add(new MonthlyDataPoint(ym.toString(), income, exp, mort, net));
+      dataPoints.add(new MonthlyDataPoint(ym.toString(), income, exp, mort, net));
     }
-    return new CashFlowChartData(months);
+    return new CashFlowChartData(dataPoints);
   }
 
   private EquityChartData buildEquityChart(Property property) {
@@ -286,7 +358,7 @@ public class PropertyDashboardService {
   }
 
   private ExpenseBreakdownChartData buildExpenseBreakdown(
-      List<Expense> expenses, Property property, LocalDate now) {
+      List<Expense> expenses, Property property, LocalDate now, int months) {
     Map<String, BigDecimal> byCategory =
         new java.util.LinkedHashMap<>(
             expenses.stream()
@@ -309,16 +381,16 @@ public class PropertyDashboardService {
             .toList();
 
     // Build monthly timeline grouped by category
-    java.time.YearMonth startMonth = java.time.YearMonth.from(now.minusMonths(MONTHS_LOOKBACK - 1));
-    java.time.YearMonth endMonth = java.time.YearMonth.from(now);
+    YearMonth startMonth = YearMonth.from(now.minusMonths(months - 1));
+    YearMonth endMonth = YearMonth.from(now);
 
     // Group recorded expenses by month + category
-    Map<java.time.YearMonth, Map<String, BigDecimal>> monthlyMap = new java.util.LinkedHashMap<>();
-    for (java.time.YearMonth ym = startMonth; !ym.isAfter(endMonth); ym = ym.plusMonths(1)) {
+    Map<YearMonth, Map<String, BigDecimal>> monthlyMap = new java.util.LinkedHashMap<>();
+    for (YearMonth ym = startMonth; !ym.isAfter(endMonth); ym = ym.plusMonths(1)) {
       monthlyMap.put(ym, new java.util.LinkedHashMap<>());
     }
     for (Expense e : expenses) {
-      java.time.YearMonth ym = java.time.YearMonth.from(e.getExpenseDate());
+      YearMonth ym = YearMonth.from(e.getExpenseDate());
       Map<String, BigDecimal> monthMap = monthlyMap.get(ym);
       if (monthMap != null) {
         String cat = e.getCategory() != null ? e.getCategory().name() : "OTHER";
@@ -409,7 +481,8 @@ public class PropertyDashboardService {
     }
   }
 
-  private OccupancyChartData buildOccupancyChart(List<Contract> contracts, LocalDate now) {
+  private OccupancyChartData buildOccupancyChart(
+      List<Contract> contracts, LocalDate now, int months) {
     // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
     // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
     List<Contract> occupiedContracts =
@@ -421,8 +494,8 @@ public class PropertyDashboardService {
                         || c.getStatus() == ContractStatus.TERMINATED)
             .toList();
 
-    List<OccupancyDataPoint> months = new ArrayList<>();
-    for (int i = MONTHS_LOOKBACK - 1; i >= 0; i--) {
+    List<OccupancyDataPoint> dataPoints = new ArrayList<>();
+    for (int i = months - 1; i >= 0; i--) {
       YearMonth ym = YearMonth.from(now.minusMonths(i));
       LocalDate monthStart = ym.atDay(1);
       LocalDate monthEnd = ym.atEndOfMonth();
@@ -448,9 +521,9 @@ public class PropertyDashboardService {
           BigDecimal.valueOf(occupiedDays)
               .multiply(ONE_HUNDRED)
               .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
-      months.add(new OccupancyDataPoint(ym.toString(), pct));
+      dataPoints.add(new OccupancyDataPoint(ym.toString(), pct));
     }
-    return new OccupancyChartData(months);
+    return new OccupancyChartData(dataPoints);
   }
 
   private DataCompleteness buildDataCompleteness(
@@ -489,8 +562,8 @@ public class PropertyDashboardService {
         percent);
   }
 
-  private BigDecimal calculateOccupancyRate(List<Contract> contracts, LocalDate now) {
-    LocalDate start = now.minusMonths(MONTHS_LOOKBACK);
+  private BigDecimal calculateOccupancyRate(List<Contract> contracts, LocalDate now, int months) {
+    LocalDate start = now.minusMonths(months);
     long totalDays = DAYS.between(start, now);
     if (totalDays <= 0) {
       return null;

@@ -167,7 +167,7 @@ export const FinancialReportsPage = () => {
   } = useOccupancyTrend(12);
 
   const formatCurrency = (value: number) => {
-    const cur = overview?.currency || '';
+    const cur = overview?.currency;
     if (!cur) {
       return value.toLocaleString('nl-NL', {
         minimumFractionDigits: 2,
@@ -177,6 +177,22 @@ export const FinancialReportsPage = () => {
     return new Intl.NumberFormat('nl-NL', {
       style: 'currency',
       currency: cur,
+    }).format(value);
+  };
+
+  const formatYAxis = (value: number) => {
+    const cur = overview?.currency;
+    if (!cur) {
+      return new Intl.NumberFormat('nl-NL', {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      }).format(value);
+    }
+    return new Intl.NumberFormat('nl-NL', {
+      style: 'currency',
+      currency: cur,
+      notation: 'compact',
+      maximumFractionDigits: 1,
     }).format(value);
   };
 
@@ -397,6 +413,7 @@ export const FinancialReportsPage = () => {
                 <YAxis
                   tick={{ fontSize: 12 }}
                   stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  tickFormatter={formatYAxis}
                 />
                 <Tooltip
                   formatter={(value: number | undefined) =>
@@ -588,6 +605,7 @@ export const FinancialReportsPage = () => {
                 <YAxis
                   tick={{ fontSize: 12 }}
                   stroke={isDark ? '#5c6180' : '#6B7280'}
+                  tickFormatter={formatYAxis}
                 />
                 <Tooltip
                   formatter={(value: number | undefined) =>
