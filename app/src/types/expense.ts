@@ -66,6 +66,8 @@ export interface CategoryTotal {
 export interface GetExpensesParams {
   category?: ExpenseCategory;
   propertyIdentifier?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export const formatExpenseCategory = (category: ExpenseCategory): string => {
