@@ -114,20 +114,21 @@ public class JobExecutionHistoryRepository {
             .fetch();
 
     List<JobExecutionHistoryResponse> items =
-        records.map(
-            r -> {
-              String startedAt = formatTimestamp(r.get(STARTED_AT));
-              return new JobExecutionHistoryResponse(
-                  r.get(ID).toString(),
-                  r.get(JOB_NAME),
-                  r.get(JOB_GROUP),
-                  startedAt != null ? startedAt : "",
-                  formatTimestamp(r.get(ENDED_AT)),
-                  r.get(DURATION_MS),
-                  r.get(STATUS),
-                  r.get(ERROR_MESSAGE),
-                  r.get(NODE_ID));
-            });
+        List.copyOf(
+            records.map(
+                r -> {
+                  String startedAt = formatTimestamp(r.get(STARTED_AT));
+                  return new JobExecutionHistoryResponse(
+                      r.get(ID).toString(),
+                      r.get(JOB_NAME),
+                      r.get(JOB_GROUP),
+                      startedAt != null ? startedAt : "",
+                      formatTimestamp(r.get(ENDED_AT)),
+                      r.get(DURATION_MS),
+                      r.get(STATUS),
+                      r.get(ERROR_MESSAGE),
+                      r.get(NODE_ID));
+                }));
 
     return PageResponse.of(items, pageRequest.page(), pageRequest.size(), total);
   }

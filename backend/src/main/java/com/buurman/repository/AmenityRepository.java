@@ -23,10 +23,11 @@ public class AmenityRepository {
   private final DSLContext dsl;
 
   public List<Amenity> findAll() {
-    return dsl.selectFrom(AMENITIES)
-        .orderBy(AMENITIES.CATEGORY, AMENITIES.NAME)
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(AMENITIES)
+            .orderBy(AMENITIES.CATEGORY, AMENITIES.NAME)
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<Amenity> findByIdentifier(String identifier) {
@@ -42,21 +43,23 @@ public class AmenityRepository {
   }
 
   public List<Amenity> findByCategory(String category) {
-    return dsl.selectFrom(AMENITIES)
-        .where(AMENITIES.CATEGORY.eq(category))
-        .orderBy(AMENITIES.NAME)
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(AMENITIES)
+            .where(AMENITIES.CATEGORY.eq(category))
+            .orderBy(AMENITIES.NAME)
+            .fetch()
+            .map(this::toDomain));
   }
 
   public List<Amenity> findByApplicableCategory(String propertyCategory) {
     Condition condition =
         DSL.condition("{0} = ANY({1})", DSL.val(propertyCategory), AMENITIES.APPLICABLE_CATEGORIES);
-    return dsl.selectFrom(AMENITIES)
-        .where(condition)
-        .orderBy(AMENITIES.CATEGORY, AMENITIES.NAME)
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(AMENITIES)
+            .where(condition)
+            .orderBy(AMENITIES.CATEGORY, AMENITIES.NAME)
+            .fetch()
+            .map(this::toDomain));
   }
 
   private Amenity toDomain(com.buurman.jooq.generated.tables.records.AmenitiesRecord record) {

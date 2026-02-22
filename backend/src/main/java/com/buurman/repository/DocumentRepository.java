@@ -58,15 +58,16 @@ public class DocumentRepository {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .IDENTIFIER
-                .in(identifiers)
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .IDENTIFIER
+                    .in(identifiers)
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<Document> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -82,17 +83,18 @@ public class DocumentRepository {
   }
 
   public List<Document> findByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(DOCUMENTS.ENTITY_ID.eq(entityId))
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .orderBy(DOCUMENTS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .orderBy(DOCUMENTS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Document save(Document document) {
@@ -182,7 +184,7 @@ public class DocumentRepository {
       query = query.and(DOCUMENTS.ENTITY_TYPE.eq(entityType));
     }
 
-    return query.orderBy(DOCUMENTS.UPLOADED_AT.desc()).fetch().map(mapper::toDomain);
+    return List.copyOf(query.orderBy(DOCUMENTS.UPLOADED_AT.desc()).fetch().map(mapper::toDomain));
   }
 
   public List<Document> findByEntityTypeAndEntityIdsAndTeamId(
@@ -190,17 +192,18 @@ public class DocumentRepository {
     if (entityIds == null || entityIds.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(DOCUMENTS.ENTITY_ID.in(entityIds))
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .orderBy(DOCUMENTS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(DOCUMENTS.ENTITY_ID.in(entityIds))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .orderBy(DOCUMENTS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public PaginatedResult<Document> findAllByTeamIdPaginated(
@@ -235,14 +238,15 @@ public class DocumentRepository {
   }
 
   public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ID
-                .in(ids)
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ID
+                    .in(ids)
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 }

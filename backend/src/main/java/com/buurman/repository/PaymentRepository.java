@@ -78,97 +78,104 @@ public class PaymentRepository {
   }
 
   public List<Payment> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.DUE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findByContractId(UUID contractId, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .CONTRACT_ID
-                .eq(contractId)
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .eq(contractId)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.DUE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findPaidByContractIdsAndDateRange(
       Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
     if (contractIds.isEmpty()) return List.of();
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .CONTRACT_ID
-                .in(contractIds)
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.STATUS.eq(PAID.name()))
-                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                .and(PAYMENTS.PAYMENT_DATE.between(from, to))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.PAYMENT_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .in(contractIds)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.eq(PAID.name()))
+                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                    .and(PAYMENTS.PAYMENT_DATE.between(from, to))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.PAYMENT_DATE.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findByStatus(Payment.PaymentStatus status, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .STATUS
-                .eq(status.name())
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .STATUS
+                    .eq(status.name())
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.DUE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findOverduePayments(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.lt(today))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.STATUS.eq(PENDING.name()))
+                    .and(PAYMENTS.DUE_DATE.lt(today))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.DUE_DATE.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findByDueDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.DUE_DATE.between(startDate, endDate))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.DUE_DATE.between(startDate, endDate))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.DUE_DATE.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findByDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                .and(PAYMENTS.PAYMENT_DATE.between(startDate, endDate))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.PAYMENT_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                    .and(PAYMENTS.PAYMENT_DATE.between(startDate, endDate))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .orderBy(PAYMENTS.PAYMENT_DATE.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Payment save(Payment payment) {
@@ -249,32 +256,34 @@ public class PaymentRepository {
 
   public List<Payment> findPendingByContractIdFromDate(
       UUID contractId, UUID teamId, LocalDate fromDate) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .CONTRACT_ID
-                .eq(contractId)
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.ge(fromDate))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .eq(contractId)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.eq(PENDING.name()))
+                    .and(PAYMENTS.DUE_DATE.ge(fromDate))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Payment> findFuturePendingByContractId(UUID contractId, UUID teamId) {
     LocalDate today = LocalDate.now(clock);
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .CONTRACT_ID
-                .eq(contractId)
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.STATUS.eq(PENDING.name()))
-                .and(PAYMENTS.DUE_DATE.gt(today))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .eq(contractId)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.eq(PENDING.name()))
+                    .and(PAYMENTS.DUE_DATE.gt(today))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public PaginatedResult<Payment> findAllByTeamIdPaginated(
@@ -333,7 +342,7 @@ public class PaymentRepository {
         r -> mapper.toDomain((PaymentsRecord) r));
   }
 
-  public @Nullable Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
+  public Optional<Record2<Integer, BigDecimal>> getPendingStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -343,10 +352,10 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name()))
                 .and(PAYMENTS.DUE_DATE.ge(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOne();
+        .fetchOptional();
   }
 
-  public @Nullable Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
+  public Optional<Record2<Integer, BigDecimal>> getOverdueStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -356,36 +365,36 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.eq(PENDING.name()))
                 .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOne();
+        .fetchOptional();
   }
 
   public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
     LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
-    return dsl.select(
-            field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
-            sum(PAYMENTS.AMOUNT).as("total"))
-        .from(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.STATUS.eq(PAID.name()))
-                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
-        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
-        .fetch();
+    return List.copyOf(
+        dsl.select(
+                field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
+                sum(PAYMENTS.AMOUNT).as("total"))
+            .from(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.STATUS.eq(PAID.name()))
+                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                    .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
+            .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
+            .fetch());
   }
 
-  public @Nullable String findCurrencyByTeamId(UUID teamId) {
+  public Optional<String> findCurrencyByTeamId(UUID teamId) {
     return dsl.select(PAYMENTS.CURRENCY)
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
         .limit(1)
         .fetchOptional()
-        .map(r -> r.get(PAYMENTS.CURRENCY))
-        .orElse(null);
+        .map(r -> r.get(PAYMENTS.CURRENCY));
   }
 
   public LocalDate findEarliestPaymentDate(UUID teamId) {

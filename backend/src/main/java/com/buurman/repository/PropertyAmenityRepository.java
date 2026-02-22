@@ -25,16 +25,17 @@ public class PropertyAmenityRepository {
   private final Clock clock;
 
   public List<PropertyAmenity> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_AMENITIES)
-        .where(
-            PROPERTY_AMENITIES
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_AMENITIES.TEAM_ID.eq(teamId))
-                .and(PROPERTY_AMENITIES.DELETED_AT.isNull()))
-        .orderBy(PROPERTY_AMENITIES.CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_AMENITIES)
+            .where(
+                PROPERTY_AMENITIES
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(PROPERTY_AMENITIES.TEAM_ID.eq(teamId))
+                    .and(PROPERTY_AMENITIES.DELETED_AT.isNull()))
+            .orderBy(PROPERTY_AMENITIES.CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PropertyAmenity> findByPropertyIdAndAmenityIdAndTeamId(

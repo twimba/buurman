@@ -364,7 +364,7 @@
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>--should-stop=ifError=FLOW</arg>
                         <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
-                        <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -Xep:NullAway:ERROR -Xep:UnusedVariable:OFF -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepExcludedPaths:.*/target/generated-sources/.*</arg>
+                        <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -Xep:NullAway:ERROR -Xep:UnusedVariable:OFF -Xep:StringConcatToTextBlock:OFF -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true -XepExcludedPaths:.*/target/generated-sources/.*</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <!-- Lombok MUST come first -->

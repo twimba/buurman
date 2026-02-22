@@ -58,15 +58,16 @@ public class PhotoRepository {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(PHOTOS)
-        .where(
-            PHOTOS
-                .IDENTIFIER
-                .in(identifiers)
-                .and(PHOTOS.TEAM_ID.eq(teamId))
-                .and(PHOTOS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .IDENTIFIER
+                    .in(identifiers)
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<Photo> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -82,17 +83,18 @@ public class PhotoRepository {
   }
 
   public List<Photo> findByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
-    return dsl.selectFrom(PHOTOS)
-        .where(
-            PHOTOS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(PHOTOS.ENTITY_ID.eq(entityId))
-                .and(PHOTOS.TEAM_ID.eq(teamId))
-                .and(PHOTOS.DELETED_AT.isNull()))
-        .orderBy(PHOTOS.IS_MAIN_PHOTO.desc(), PHOTOS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(PHOTOS.ENTITY_ID.eq(entityId))
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .orderBy(PHOTOS.IS_MAIN_PHOTO.desc(), PHOTOS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Photo save(Photo photo) {
@@ -194,17 +196,18 @@ public class PhotoRepository {
   }
 
   public List<Photo> findWithoutThumbnail(int limit) {
-    return dsl.selectFrom(PHOTOS)
-        .where(
-            PHOTOS
-                .THUMBNAIL_FILE_KEY
-                .isNull()
-                .and(PHOTOS.DELETED_AT.isNull())
-                .and(PHOTOS.MIME_TYPE.startsWith("image/")))
-        .orderBy(PHOTOS.UPLOADED_AT.asc())
-        .limit(limit)
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .THUMBNAIL_FILE_KEY
+                    .isNull()
+                    .and(PHOTOS.DELETED_AT.isNull())
+                    .and(PHOTOS.MIME_TYPE.startsWith("image/")))
+            .orderBy(PHOTOS.UPLOADED_AT.asc())
+            .limit(limit)
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Photo> findByEntityTypeAndEntityIdsAndTeamId(
@@ -212,16 +215,17 @@ public class PhotoRepository {
     if (entityIds == null || entityIds.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(PHOTOS)
-        .where(
-            PHOTOS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(PHOTOS.ENTITY_ID.in(entityIds))
-                .and(PHOTOS.TEAM_ID.eq(teamId))
-                .and(PHOTOS.DELETED_AT.isNull()))
-        .orderBy(PHOTOS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(PHOTOS.ENTITY_ID.in(entityIds))
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .orderBy(PHOTOS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 }

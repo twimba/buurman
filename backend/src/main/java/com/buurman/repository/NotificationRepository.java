@@ -223,19 +223,21 @@ public class NotificationRepository {
   }
 
   public List<Record2<String, Integer>> countByTeamIdGroupedByStatus(UUID teamId) {
-    return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
-        .from(NOTIFICATIONS)
-        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-        .groupBy(NOTIFICATIONS.STATUS)
-        .fetch();
+    return List.copyOf(
+        dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
+            .from(NOTIFICATIONS)
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .groupBy(NOTIFICATIONS.STATUS)
+            .fetch());
   }
 
   public List<Record2<String, Integer>> countByTeamIdGroupedByChannel(UUID teamId) {
-    return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
-        .from(NOTIFICATIONS)
-        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-        .groupBy(NOTIFICATIONS.CHANNEL)
-        .fetch();
+    return List.copyOf(
+        dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
+            .from(NOTIFICATIONS)
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .groupBy(NOTIFICATIONS.CHANNEL)
+            .fetch());
   }
 
   public long countByTeamId(UUID teamId) {
@@ -320,16 +322,18 @@ public class NotificationRepository {
   }
 
   public List<Record2<String, Integer>> countGroupedByStatus() {
-    return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
-        .from(NOTIFICATIONS)
-        .groupBy(NOTIFICATIONS.STATUS)
-        .fetch();
+    return List.copyOf(
+        dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
+            .from(NOTIFICATIONS)
+            .groupBy(NOTIFICATIONS.STATUS)
+            .fetch());
   }
 
   public List<Record2<String, Integer>> countGroupedByChannel() {
-    return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
-        .from(NOTIFICATIONS)
-        .groupBy(NOTIFICATIONS.CHANNEL)
-        .fetch();
+    return List.copyOf(
+        dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
+            .from(NOTIFICATIONS)
+            .groupBy(NOTIFICATIONS.CHANNEL)
+            .fetch());
   }
 }

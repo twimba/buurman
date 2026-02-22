@@ -102,11 +102,12 @@ public class ContractRentPeriodRepository {
   }
 
   public List<ContractRentPeriod> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return dsl.select()
-        .from(TABLE)
-        .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(EFFECTIVE_FROM.desc())
-        .fetch(this::toDomain);
+    return List.copyOf(
+        dsl.select()
+            .from(TABLE)
+            .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(EFFECTIVE_FROM.desc())
+            .fetch(this::toDomain));
   }
 
   public Optional<ContractRentPeriod> findByIdentifierAndTeamId(String identifier, UUID teamId) {

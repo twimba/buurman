@@ -71,24 +71,26 @@ public class PropertyRepository {
   }
 
   public List<Property> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(PROPERTIES)
-        .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
-        .orderBy(PROPERTIES.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTIES)
+            .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull()))
+            .orderBy(PROPERTIES.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Property> findByTeamIdAndStatus(UUID teamId, Property.PropertyStatus status) {
-    return dsl.selectFrom(PROPERTIES)
-        .where(
-            PROPERTIES
-                .TEAM_ID
-                .eq(teamId)
-                .and(PROPERTIES.STATUS.eq(status.name()))
-                .and(PROPERTIES.DELETED_AT.isNull()))
-        .orderBy(PROPERTIES.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTIES)
+            .where(
+                PROPERTIES
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PROPERTIES.STATUS.eq(status.name()))
+                    .and(PROPERTIES.DELETED_AT.isNull()))
+            .orderBy(PROPERTIES.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Property save(Property property) {
@@ -470,15 +472,16 @@ public class PropertyRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(PROPERTIES)
-        .where(
-            PROPERTIES
-                .ID
-                .in(ids)
-                .and(PROPERTIES.TEAM_ID.eq(teamId))
-                .and(PROPERTIES.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTIES)
+            .where(
+                PROPERTIES
+                    .ID
+                    .in(ids)
+                    .and(PROPERTIES.TEAM_ID.eq(teamId))
+                    .and(PROPERTIES.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

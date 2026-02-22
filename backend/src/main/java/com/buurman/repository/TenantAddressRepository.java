@@ -101,14 +101,15 @@ public class TenantAddressRepository {
   }
 
   public List<TenantAddress> findByTenantId(UUID tenantId, UUID teamId) {
-    return dsl.selectFrom(TENANT_ADDRESSES)
-        .where(
-            TENANT_ADDRESSES
-                .TENANT_ID
-                .eq(tenantId)
-                .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
-                .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
-        .fetchInto(TenantAddress.class);
+    return List.copyOf(
+        dsl.selectFrom(TENANT_ADDRESSES)
+            .where(
+                TENANT_ADDRESSES
+                    .TENANT_ID
+                    .eq(tenantId)
+                    .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
+                    .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
+            .fetchInto(TenantAddress.class));
   }
 
   public Optional<TenantAddress> findByIdentifierAndTeamId(String identifier, UUID teamId) {

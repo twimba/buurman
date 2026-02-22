@@ -25,16 +25,17 @@ public class PropertyOutdoorAreaRepository {
   private final Clock clock;
 
   public List<PropertyOutdoorArea> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
-        .where(
-            PROPERTY_OUTDOOR_AREAS
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(teamId))
-                .and(PROPERTY_OUTDOOR_AREAS.DELETED_AT.isNull()))
-        .orderBy(PROPERTY_OUTDOOR_AREAS.CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
+            .where(
+                PROPERTY_OUTDOOR_AREAS
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(teamId))
+                    .and(PROPERTY_OUTDOOR_AREAS.DELETED_AT.isNull()))
+            .orderBy(PROPERTY_OUTDOOR_AREAS.CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(String identifier, UUID teamId) {

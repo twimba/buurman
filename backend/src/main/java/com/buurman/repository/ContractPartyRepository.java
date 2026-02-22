@@ -76,22 +76,24 @@ public class ContractPartyRepository {
   }
 
   public List<ContractParty> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return dsl.select()
-        .from(CONTRACT_PARTIES)
-        .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(ROLE.asc(), CREATED_AT.asc())
-        .fetch(this::toDomain);
+    return List.copyOf(
+        dsl.select()
+            .from(CONTRACT_PARTIES)
+            .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(ROLE.asc(), CREATED_AT.asc())
+            .fetch(this::toDomain));
   }
 
   public List<ContractParty> findByContractIdsAndTeamId(Collection<UUID> contractIds, UUID teamId) {
     if (contractIds == null || contractIds.isEmpty()) {
       return List.of();
     }
-    return dsl.select()
-        .from(CONTRACT_PARTIES)
-        .where(CONTRACT_ID.in(contractIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(CONTRACT_ID.asc(), ROLE.asc(), CREATED_AT.asc())
-        .fetch(this::toDomain);
+    return List.copyOf(
+        dsl.select()
+            .from(CONTRACT_PARTIES)
+            .where(CONTRACT_ID.in(contractIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(CONTRACT_ID.asc(), ROLE.asc(), CREATED_AT.asc())
+            .fetch(this::toDomain));
   }
 
   public ContractParty getByIdentifierAndTeamId(String identifier, UUID teamId) {

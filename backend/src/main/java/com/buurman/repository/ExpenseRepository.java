@@ -69,50 +69,54 @@ public class ExpenseRepository {
   }
 
   public List<Expense> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(EXPENSES)
-        .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-        .orderBy(EXPENSES.EXPENSE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(EXPENSES)
+            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
+            .orderBy(EXPENSES.EXPENSE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Expense> findByPropertyId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(EXPENSES)
-        .where(
-            EXPENSES
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(EXPENSES.TEAM_ID.eq(teamId))
-                .and(EXPENSES.DELETED_AT.isNull()))
-        .orderBy(EXPENSES.EXPENSE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(EXPENSES)
+            .where(
+                EXPENSES
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(EXPENSES.TEAM_ID.eq(teamId))
+                    .and(EXPENSES.DELETED_AT.isNull()))
+            .orderBy(EXPENSES.EXPENSE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Expense> findByCategory(Expense.ExpenseCategory category, UUID teamId) {
-    return dsl.selectFrom(EXPENSES)
-        .where(
-            EXPENSES
-                .CATEGORY
-                .eq(category.name())
-                .and(EXPENSES.TEAM_ID.eq(teamId))
-                .and(EXPENSES.DELETED_AT.isNull()))
-        .orderBy(EXPENSES.EXPENSE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(EXPENSES)
+            .where(
+                EXPENSES
+                    .CATEGORY
+                    .eq(category.name())
+                    .and(EXPENSES.TEAM_ID.eq(teamId))
+                    .and(EXPENSES.DELETED_AT.isNull()))
+            .orderBy(EXPENSES.EXPENSE_DATE.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Expense> findByDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl.selectFrom(EXPENSES)
-        .where(
-            EXPENSES
-                .TEAM_ID
-                .eq(teamId)
-                .and(EXPENSES.EXPENSE_DATE.between(startDate, endDate))
-                .and(EXPENSES.DELETED_AT.isNull()))
-        .orderBy(EXPENSES.EXPENSE_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(EXPENSES)
+            .where(
+                EXPENSES
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(EXPENSES.EXPENSE_DATE.between(startDate, endDate))
+                    .and(EXPENSES.DELETED_AT.isNull()))
+            .orderBy(EXPENSES.EXPENSE_DATE.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Expense save(Expense expense) {
@@ -213,47 +217,48 @@ public class ExpenseRepository {
         r -> mapper.toDomain((ExpensesRecord) r));
   }
 
-  public @Nullable Record2<Integer, BigDecimal> getTotalStats(UUID teamId) {
+  public Optional<Record2<Integer, BigDecimal>> getTotalStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-        .fetchOne();
+        .fetchOptional();
   }
 
   public List<Record3<String, Integer, BigDecimal>> getCategoryBreakdown(UUID teamId) {
-    return dsl.select(EXPENSES.CATEGORY, count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
-        .from(EXPENSES)
-        .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-        .groupBy(EXPENSES.CATEGORY)
-        .orderBy(sum(EXPENSES.AMOUNT).desc())
-        .fetch();
+    return List.copyOf(
+        dsl.select(EXPENSES.CATEGORY, count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
+            .from(EXPENSES)
+            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
+            .groupBy(EXPENSES.CATEGORY)
+            .orderBy(sum(EXPENSES.AMOUNT).desc())
+            .fetch());
   }
 
   public List<Record2<String, BigDecimal>> getMonthlyExpenseTrend(UUID teamId, int months) {
     LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
-    return dsl.select(
-            field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
-            sum(EXPENSES.AMOUNT).as("total"))
-        .from(EXPENSES)
-        .where(
-            EXPENSES
-                .TEAM_ID
-                .eq(teamId)
-                .and(EXPENSES.EXPENSE_DATE.ge(startDate))
-                .and(EXPENSES.DELETED_AT.isNull()))
-        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
-        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
-        .fetch();
+    return List.copyOf(
+        dsl.select(
+                field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
+                sum(EXPENSES.AMOUNT).as("total"))
+            .from(EXPENSES)
+            .where(
+                EXPENSES
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(EXPENSES.EXPENSE_DATE.ge(startDate))
+                    .and(EXPENSES.DELETED_AT.isNull()))
+            .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
+            .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
+            .fetch());
   }
 
-  public @Nullable String findCurrencyByTeamId(UUID teamId) {
+  public Optional<String> findCurrencyByTeamId(UUID teamId) {
     return dsl.select(EXPENSES.CURRENCY)
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
         .limit(1)
         .fetchOptional()
-        .map(r -> r.get(EXPENSES.CURRENCY))
-        .orElse(null);
+        .map(r -> r.get(EXPENSES.CURRENCY));
   }
 
   public LocalDate findEarliestExpenseDate(UUID teamId) {

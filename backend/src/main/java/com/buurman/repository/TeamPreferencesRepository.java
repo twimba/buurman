@@ -79,10 +79,11 @@ public class TeamPreferencesRepository {
 
   /** Find all team IDs where auto payment generation is enabled. */
   public List<UUID> findTeamIdsWithAutoGenerationEnabled() {
-    return dsl.select(TEAM_PREFERENCES.TEAM_ID)
-        .from(TEAM_PREFERENCES)
-        .where(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED.isTrue())
-        .fetch(TEAM_PREFERENCES.TEAM_ID);
+    return List.copyOf(
+        dsl.select(TEAM_PREFERENCES.TEAM_ID)
+            .from(TEAM_PREFERENCES)
+            .where(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED.isTrue())
+            .fetch(TEAM_PREFERENCES.TEAM_ID));
   }
 
   private TeamPreferences createDefaults(UUID teamId) {

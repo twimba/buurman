@@ -111,11 +111,12 @@ public class ContractPaymentInstructionRepository {
   }
 
   public List<ContractPaymentInstruction> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return dsl.selectFrom(TABLE)
-        .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(EFFECTIVE_FROM.desc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(EFFECTIVE_FROM.desc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<ContractPaymentInstruction> findCurrentByContractIdAndTeamId(

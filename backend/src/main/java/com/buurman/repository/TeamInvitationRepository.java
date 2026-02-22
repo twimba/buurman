@@ -96,11 +96,12 @@ public class TeamInvitationRepository {
   }
 
   public List<TeamInvitation> findByTeamIdAndAcceptedAtIsNull(UUID teamId) {
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<TeamInvitation> findPendingByEmailAndTeamId(String email, UUID teamId) {
@@ -117,25 +118,27 @@ public class TeamInvitationRepository {
 
   public List<TeamInvitation> findPendingByTeamId(UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
-        .and(TEAM_INVITATIONS.DELETED_AT.isNull())
-        .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
+            .and(TEAM_INVITATIONS.DELETED_AT.isNull())
+            .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<TeamInvitation> findPendingByEmail(String email) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
-        .and(TEAM_INVITATIONS.DELETED_AT.isNull())
-        .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
+            .and(TEAM_INVITATIONS.DELETED_AT.isNull())
+            .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 }

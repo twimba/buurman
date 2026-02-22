@@ -52,22 +52,24 @@ public class PaymentReceivalRepository {
   private final Clock clock;
 
   public List<PaymentReceival> findByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
-    return dsl.selectFrom(TABLE)
-        .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(RECEIVAL_DATE.desc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(RECEIVAL_DATE.desc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public List<PaymentReceival> findByPaymentIdsAndTeamId(Collection<UUID> paymentIds, UUID teamId) {
     if (paymentIds == null || paymentIds.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(TABLE)
-        .where(PAYMENT_ID.in(paymentIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(RECEIVAL_DATE.desc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(PAYMENT_ID.in(paymentIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(RECEIVAL_DATE.desc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PaymentReceival> findByIdentifierAndPaymentIdAndTeamId(

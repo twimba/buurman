@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -205,8 +206,8 @@ public class ExpenseService {
   public ExpenseStatsResponse getExpenseStats(UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    Record2<Integer, BigDecimal> totalStats = expenseRepository.getTotalStats(teamId);
-    String currency = expenseRepository.findCurrencyByTeamId(teamId);
+    Optional<Record2<Integer, BigDecimal>> totalStats = expenseRepository.getTotalStats(teamId);
+    @Nullable String currency = expenseRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<ExpenseStatsResponse.CategoryTotal> topCategories =
         expenseRepository.getCategoryBreakdown(teamId).stream()
@@ -228,9 +229,9 @@ public class ExpenseService {
 
     String effectiveCurrency = java.util.Objects.requireNonNullElse(currency, "EUR");
     return new ExpenseStatsResponse(
-        totalStats != null
-            ? CurrencyUtils.sumToMajorUnits(totalStats.value2(), effectiveCurrency)
-            : BigDecimal.ZERO,
+        totalStats
+            .map(s -> CurrencyUtils.sumToMajorUnits(s.value2(), effectiveCurrency))
+            .orElse(BigDecimal.ZERO),
         effectiveCurrency,
         topCategories,
         monthlyTrend);

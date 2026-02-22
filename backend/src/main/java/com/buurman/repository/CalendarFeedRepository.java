@@ -40,16 +40,17 @@ public class CalendarFeedRepository {
   }
 
   public List<CalendarFeed> findByUserIdAndTeamId(UUID userId, UUID teamId) {
-    return dsl.selectFrom(CALENDAR_FEEDS)
-        .where(
-            CALENDAR_FEEDS
-                .USER_ID
-                .eq(userId)
-                .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
-                .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
-        .orderBy(CALENDAR_FEEDS.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(CALENDAR_FEEDS)
+            .where(
+                CALENDAR_FEEDS
+                    .USER_ID
+                    .eq(userId)
+                    .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
+                    .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
+            .orderBy(CALENDAR_FEEDS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<CalendarFeed> findByIdentifierAndTeamId(String identifier, UUID teamId) {

@@ -66,42 +66,45 @@ public class TenantRepository {
   }
 
   public List<Tenant> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(TENANTS)
-        .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull()))
-        .orderBy(TENANTS.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull()))
+            .orderBy(TENANTS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Tenant> searchByTeamId(UUID teamId, String searchTerm) {
     String searchPattern = "%" + searchTerm.toLowerCase() + "%";
-    return dsl.selectFrom(TENANTS)
-        .where(
-            TENANTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(TENANTS.DELETED_AT.isNull())
-                .and(
-                    lower(TENANTS.FIRST_NAME)
-                        .like(searchPattern)
-                        .or(lower(TENANTS.LAST_NAME).like(searchPattern))
-                        .or(lower(TENANTS.EMAIL).like(searchPattern))
-                        .or(TENANTS.PHONE.like(searchPattern))))
-        .orderBy(TENANTS.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(TENANTS.DELETED_AT.isNull())
+                    .and(
+                        lower(TENANTS.FIRST_NAME)
+                            .like(searchPattern)
+                            .or(lower(TENANTS.LAST_NAME).like(searchPattern))
+                            .or(lower(TENANTS.EMAIL).like(searchPattern))
+                            .or(TENANTS.PHONE.like(searchPattern))))
+            .orderBy(TENANTS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Tenant> findByCurrentPropertyId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(TENANTS)
-        .where(
-            TENANTS
-                .CURRENT_PROPERTY_ID
-                .eq(propertyId)
-                .and(TENANTS.TEAM_ID.eq(teamId))
-                .and(TENANTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS
+                    .CURRENT_PROPERTY_ID
+                    .eq(propertyId)
+                    .and(TENANTS.TEAM_ID.eq(teamId))
+                    .and(TENANTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<Tenant> findByEmailAndTeamId(String email, UUID teamId) {
@@ -206,10 +209,12 @@ public class TenantRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(TENANTS)
-        .where(TENANTS.ID.in(ids).and(TENANTS.TEAM_ID.eq(teamId)).and(TENANTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS.ID.in(ids).and(TENANTS.TEAM_ID.eq(teamId)).and(TENANTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

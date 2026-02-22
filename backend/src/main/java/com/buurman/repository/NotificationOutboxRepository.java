@@ -55,21 +55,22 @@ public class NotificationOutboxRepository {
 
   public List<NotificationOutbox> findPendingBatch(int batchSize) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(NOTIFICATION_OUTBOX)
-        .where(
-            NOTIFICATION_OUTBOX
-                .STATUS
-                .in(OutboxStatus.PENDING.name(), OutboxStatus.FAILED.name())
-                .and(NOTIFICATION_OUTBOX.RETRY_COUNT.lt(NOTIFICATION_OUTBOX.MAX_RETRIES))
-                .and(
-                    NOTIFICATION_OUTBOX
-                        .NEXT_RETRY_AT
-                        .isNull()
-                        .or(NOTIFICATION_OUTBOX.NEXT_RETRY_AT.le(now))))
-        .orderBy(NOTIFICATION_OUTBOX.CREATED_AT.asc())
-        .limit(batchSize)
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(NOTIFICATION_OUTBOX)
+            .where(
+                NOTIFICATION_OUTBOX
+                    .STATUS
+                    .in(OutboxStatus.PENDING.name(), OutboxStatus.FAILED.name())
+                    .and(NOTIFICATION_OUTBOX.RETRY_COUNT.lt(NOTIFICATION_OUTBOX.MAX_RETRIES))
+                    .and(
+                        NOTIFICATION_OUTBOX
+                            .NEXT_RETRY_AT
+                            .isNull()
+                            .or(NOTIFICATION_OUTBOX.NEXT_RETRY_AT.le(now))))
+            .orderBy(NOTIFICATION_OUTBOX.CREATED_AT.asc())
+            .limit(batchSize)
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public void markProcessing(UUID id) {

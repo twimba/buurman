@@ -25,10 +25,11 @@ public class UserNotificationTypePreferenceRepository {
   private final Clock clock;
 
   public List<UserNotificationTypePreference> findByUserId(UUID userId) {
-    return dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
-        .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
+            .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<UserNotificationTypePreference> findByUserIdAndType(

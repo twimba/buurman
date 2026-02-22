@@ -63,32 +63,33 @@ public class AuditLogRepository {
 
   public List<Record> findByTeamIdAndEntityTypeAndEntityId(
       UUID teamId, String entityType, UUID entityId) {
-    return dsl
-        .select(
-            AUDIT_LOG.ID,
-            AUDIT_LOG.ENTITY_TYPE,
-            AUDIT_LOG.ENTITY_ID,
-            AUDIT_LOG.ACTION,
-            AUDIT_LOG.TIMESTAMP,
-            AUDIT_LOG.CHANGED_FIELDS,
-            AUDIT_LOG.OLD_VALUES,
-            AUDIT_LOG.NEW_VALUES,
-            USERS.FIRST_NAME,
-            USERS.LAST_NAME)
-        .from(AUDIT_LOG)
-        .leftJoin(USERS)
-        .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
-        .where(
-            AUDIT_LOG
-                .TEAM_ID
-                .eq(teamId)
-                .and(AUDIT_LOG.ENTITY_TYPE.eq(entityType))
-                .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
-        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-        .fetch()
-        .stream()
-        .map(r -> (Record) r)
-        .toList();
+    return List.copyOf(
+        dsl
+            .select(
+                AUDIT_LOG.ID,
+                AUDIT_LOG.ENTITY_TYPE,
+                AUDIT_LOG.ENTITY_ID,
+                AUDIT_LOG.ACTION,
+                AUDIT_LOG.TIMESTAMP,
+                AUDIT_LOG.CHANGED_FIELDS,
+                AUDIT_LOG.OLD_VALUES,
+                AUDIT_LOG.NEW_VALUES,
+                USERS.FIRST_NAME,
+                USERS.LAST_NAME)
+            .from(AUDIT_LOG)
+            .leftJoin(USERS)
+            .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
+            .where(
+                AUDIT_LOG
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(AUDIT_LOG.ENTITY_TYPE.eq(entityType))
+                    .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
+            .orderBy(AUDIT_LOG.TIMESTAMP.desc())
+            .fetch()
+            .stream()
+            .map(r -> (Record) r)
+            .toList());
   }
 
   public List<Record> findAllByTeamId(
@@ -158,7 +159,8 @@ public class AuditLogRepository {
                   .or(lower(EXPENSES.DESCRIPTION).like(searchPattern)));
     }
 
-    return query.orderBy(AUDIT_LOG.TIMESTAMP.desc()).fetch().stream().map(r -> (Record) r).toList();
+    return List.copyOf(
+        query.orderBy(AUDIT_LOG.TIMESTAMP.desc()).fetch().stream().map(r -> (Record) r).toList());
   }
 
   public PaginatedResult<Record> findAllByTeamIdPaginated(
@@ -268,25 +270,26 @@ public class AuditLogRepository {
   }
 
   public List<Record> findRecentByTeamId(UUID teamId, int limit) {
-    return dsl
-        .select(
-            AUDIT_LOG.ID,
-            AUDIT_LOG.ENTITY_TYPE,
-            AUDIT_LOG.ENTITY_ID,
-            AUDIT_LOG.ACTION,
-            AUDIT_LOG.TIMESTAMP,
-            USERS.FIRST_NAME,
-            USERS.LAST_NAME)
-        .from(AUDIT_LOG)
-        .leftJoin(USERS)
-        .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
-        .where(AUDIT_LOG.TEAM_ID.eq(teamId))
-        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-        .limit(limit)
-        .fetch()
-        .stream()
-        .map(r -> (Record) r)
-        .toList();
+    return List.copyOf(
+        dsl
+            .select(
+                AUDIT_LOG.ID,
+                AUDIT_LOG.ENTITY_TYPE,
+                AUDIT_LOG.ENTITY_ID,
+                AUDIT_LOG.ACTION,
+                AUDIT_LOG.TIMESTAMP,
+                USERS.FIRST_NAME,
+                USERS.LAST_NAME)
+            .from(AUDIT_LOG)
+            .leftJoin(USERS)
+            .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
+            .where(AUDIT_LOG.TEAM_ID.eq(teamId))
+            .orderBy(AUDIT_LOG.TIMESTAMP.desc())
+            .limit(limit)
+            .fetch()
+            .stream()
+            .map(r -> (Record) r)
+            .toList());
   }
 
   public Optional<String> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {

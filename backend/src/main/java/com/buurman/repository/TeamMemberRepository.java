@@ -81,11 +81,12 @@ public class TeamMemberRepository {
   }
 
   public List<TeamMember> findAllByUserId(UUID userId) {
-    return dsl.selectFrom(TEAM_MEMBERS)
-        .where(TEAM_MEMBERS.USER_ID.eq(userId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
-        .orderBy(TEAM_MEMBERS.INVITED_AT.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.USER_ID.eq(userId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
+            .orderBy(TEAM_MEMBERS.INVITED_AT.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<TeamMember> findByUserIdAndTeamId(UUID userId, UUID teamId) {
@@ -118,10 +119,11 @@ public class TeamMemberRepository {
   }
 
   public List<TeamMember> findByTeamId(UUID teamId) {
-    return dsl.selectFrom(TEAM_MEMBERS)
-        .where(TEAM_MEMBERS.TEAM_ID.eq(teamId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.TEAM_ID.eq(teamId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public boolean existsByTeamIdAndUserId(UUID teamId, UUID userId) {

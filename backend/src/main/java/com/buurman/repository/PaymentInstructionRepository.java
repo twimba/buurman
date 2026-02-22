@@ -117,11 +117,12 @@ public class PaymentInstructionRepository {
   }
 
   public List<PaymentInstruction> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(TABLE)
-        .where(TEAM_ID.eq(teamId).and(DELETED_AT.isNull()))
-        .orderBy(CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(TEAM_ID.eq(teamId).and(DELETED_AT.isNull()))
+            .orderBy(CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PaymentInstruction> findByIdentifierAndTeamId(String identifier, UUID teamId) {

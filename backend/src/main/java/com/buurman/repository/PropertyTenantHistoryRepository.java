@@ -23,49 +23,55 @@ public class PropertyTenantHistoryRepository {
   private final Clock clock;
 
   public List<PropertyTenantHistory> findByTenantId(UUID tenantId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_TENANT_HISTORY)
-        .where(
-            PROPERTY_TENANT_HISTORY
-                .TENANT_ID
-                .eq(tenantId)
-                .and(PROPERTY_TENANT_HISTORY.TEAM_ID.eq(teamId)))
-        .orderBy(PROPERTY_TENANT_HISTORY.PERFORMED_AT.desc())
-        .fetch()
-        .map(
-            record ->
-                new PropertyTenantHistory(
-                    record.getId(),
-                    record.getTeamId(),
-                    record.getPropertyId(),
-                    record.getTenantId(),
-                    record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
-                    record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(UTC) : null,
-                    PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
-                    record.getPerformedBy(),
-                    record.getPerformedAt().toInstant(UTC)));
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_TENANT_HISTORY)
+            .where(
+                PROPERTY_TENANT_HISTORY
+                    .TENANT_ID
+                    .eq(tenantId)
+                    .and(PROPERTY_TENANT_HISTORY.TEAM_ID.eq(teamId)))
+            .orderBy(PROPERTY_TENANT_HISTORY.PERFORMED_AT.desc())
+            .fetch()
+            .map(
+                record ->
+                    new PropertyTenantHistory(
+                        record.getId(),
+                        record.getTeamId(),
+                        record.getPropertyId(),
+                        record.getTenantId(),
+                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
+                        record.getMovedOutAt() != null
+                            ? record.getMovedOutAt().toInstant(UTC)
+                            : null,
+                        PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
+                        record.getPerformedBy(),
+                        record.getPerformedAt().toInstant(UTC))));
   }
 
   public List<PropertyTenantHistory> findByPropertyId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_TENANT_HISTORY)
-        .where(
-            PROPERTY_TENANT_HISTORY
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_TENANT_HISTORY.TEAM_ID.eq(teamId)))
-        .orderBy(PROPERTY_TENANT_HISTORY.PERFORMED_AT.desc())
-        .fetch()
-        .map(
-            record ->
-                new PropertyTenantHistory(
-                    record.getId(),
-                    record.getTeamId(),
-                    record.getPropertyId(),
-                    record.getTenantId(),
-                    record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
-                    record.getMovedOutAt() != null ? record.getMovedOutAt().toInstant(UTC) : null,
-                    PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
-                    record.getPerformedBy(),
-                    record.getPerformedAt().toInstant(UTC)));
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_TENANT_HISTORY)
+            .where(
+                PROPERTY_TENANT_HISTORY
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(PROPERTY_TENANT_HISTORY.TEAM_ID.eq(teamId)))
+            .orderBy(PROPERTY_TENANT_HISTORY.PERFORMED_AT.desc())
+            .fetch()
+            .map(
+                record ->
+                    new PropertyTenantHistory(
+                        record.getId(),
+                        record.getTeamId(),
+                        record.getPropertyId(),
+                        record.getTenantId(),
+                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
+                        record.getMovedOutAt() != null
+                            ? record.getMovedOutAt().toInstant(UTC)
+                            : null,
+                        PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
+                        record.getPerformedBy(),
+                        record.getPerformedAt().toInstant(UTC))));
   }
 
   public void save(PropertyTenantHistory history) {

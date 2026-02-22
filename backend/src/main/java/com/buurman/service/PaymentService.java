@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -292,9 +293,9 @@ public class PaymentService {
   public PaymentStatsResponse getPaymentStats(UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    @Nullable Record2<Integer, BigDecimal> pending = paymentRepository.getPendingStats(teamId);
-    @Nullable Record2<Integer, BigDecimal> overdue = paymentRepository.getOverdueStats(teamId);
-    @Nullable String currency = paymentRepository.findCurrencyByTeamId(teamId);
+    Optional<Record2<Integer, BigDecimal>> pending = paymentRepository.getPendingStats(teamId);
+    Optional<Record2<Integer, BigDecimal>> overdue = paymentRepository.getOverdueStats(teamId);
+    @Nullable String currency = paymentRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<PaymentStatsResponse.MonthlyTrend> monthlyTrend =
         paymentRepository.getMonthlyPaidTrend(teamId, 12).stream()
@@ -305,10 +306,10 @@ public class PaymentService {
             .toList();
 
     return new PaymentStatsResponse(
-        pending != null ? pending.value1() : 0,
-        CurrencyUtils.sumToMajorUnits(pending != null ? pending.value2() : null, currency),
-        overdue != null ? overdue.value1() : 0,
-        CurrencyUtils.sumToMajorUnits(overdue != null ? overdue.value2() : null, currency),
+        pending.map(Record2::value1).orElse(0),
+        CurrencyUtils.sumToMajorUnits(pending.map(Record2::value2).orElse(null), currency),
+        overdue.map(Record2::value1).orElse(0),
+        CurrencyUtils.sumToMajorUnits(overdue.map(Record2::value2).orElse(null), currency),
         currency,
         monthlyTrend);
   }

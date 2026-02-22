@@ -58,6 +58,34 @@ final class BookletHelper {
     return Boolean.TRUE.equals(value);
   }
 
+  // ── Null-safe display utilities ───────────────────────────────────
+
+  static String displayOrDash(@Nullable Object value) {
+    return value != null ? value.toString() : "—";
+  }
+
+  static String displayBool(@Nullable Boolean value) {
+    if (value == null) return "—";
+    return value ? "Yes" : "No";
+  }
+
+  static String displayBoolWithDetail(@Nullable Boolean value, @Nullable String detail) {
+    if (value == null) return "—";
+    if (!value) return "No";
+    return detail != null ? "Yes — " + detail : "Yes";
+  }
+
+  static String displayWithUnit(@Nullable Number value, String unit) {
+    if (value == null) return "—";
+    return value + " " + unit;
+  }
+
+  static String displayEnum(@Nullable Enum<?> value) {
+    if (value == null) return "—";
+    return value.name().replace('_', ' ').substring(0, 1).toUpperCase()
+        + value.name().replace('_', ' ').substring(1).toLowerCase();
+  }
+
   // ── Document structure ──────────────────────────────────────────
 
   static void appendDocumentStart(StringBuilder html, String css) {

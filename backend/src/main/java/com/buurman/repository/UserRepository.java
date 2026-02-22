@@ -137,7 +137,7 @@ public class UserRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(USERS).where(USERS.ID.in(ids)).fetch().map(mapper::toDomain);
+    return List.copyOf(dsl.selectFrom(USERS).where(USERS.ID.in(ids)).fetch().map(mapper::toDomain));
   }
 
   public Optional<User> findByKeycloakId(String keycloakId) {
