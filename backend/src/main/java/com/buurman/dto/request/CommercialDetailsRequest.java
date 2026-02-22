@@ -2,20 +2,22 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 
+import org.jspecify.annotations.Nullable;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 
 public record CommercialDetailsRequest(
-    @Positive(message = "Usable area must be positive") BigDecimal usableAreaValue,
-    String usableAreaUnit,
-    @Positive(message = "Common area must be positive") BigDecimal commonAreaValue,
-    String commonAreaUnit,
-    Integer floorLevel,
-    @Positive(message = "Ceiling height must be positive") BigDecimal ceilingHeightM,
-    Boolean hasStorefront,
-    Boolean hasSignageRights,
-    String zoningClassification,
-    @Positive(message = "Max occupancy must be positive") Integer maxOccupancy,
-    @Min(value = 0, message = "Restroom count must be non-negative") Integer restroomCount,
-    Boolean hasKitchenFacility,
-    Boolean accessibilityCompliant) {}
+    @Nullable @Positive(message = "Usable area must be positive") BigDecimal usableAreaValue,
+    @Nullable String usableAreaUnit,
+    @Nullable @Positive(message = "Common area must be positive") BigDecimal commonAreaValue,
+    @Nullable String commonAreaUnit,
+    @Nullable Integer floorLevel,
+    @Nullable @Positive(message = "Ceiling height must be positive") BigDecimal ceilingHeightM,
+    @Nullable Boolean hasStorefront,
+    @Nullable Boolean hasSignageRights,
+    @Nullable String zoningClassification,
+    @Nullable @Positive(message = "Max occupancy must be positive") Integer maxOccupancy,
+    @Nullable @Min(value = 0, message = "Restroom count must be non-negative") Integer restroomCount,
+    @Nullable Boolean hasKitchenFacility,
+    @Nullable Boolean accessibilityCompliant) {}

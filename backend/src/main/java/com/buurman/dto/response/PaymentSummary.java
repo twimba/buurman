@@ -3,6 +3,8 @@ package com.buurman.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.Payment;
 
 public record PaymentSummary(
@@ -10,5 +12,5 @@ public record PaymentSummary(
     BigDecimal amount,
     String currency,
     LocalDate dueDate,
-    LocalDate paymentDate,
+    @Nullable LocalDate paymentDate,
     Payment.PaymentStatus status) {}

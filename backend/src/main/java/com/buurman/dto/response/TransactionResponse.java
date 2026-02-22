@@ -4,13 +4,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 public record TransactionResponse(
     String id,
     LocalDate date,
     TransactionType type,
-    String description,
-    PropertySummary property,
-    String category,
+    @Nullable String description,
+    @Nullable PropertySummary property,
+    @Nullable String category,
     BigDecimal amount,
     String currency,
     List<DocumentResponse> documents) {

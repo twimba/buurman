@@ -5,31 +5,33 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.Contract;
 
 public record ContractResponse(
     String identifier,
     PropertySummary property,
     List<ContractPartyResponse> parties,
-    TenantSummary primaryTenant,
+    @Nullable TenantSummary primaryTenant,
     Contract.ContractType contractType,
     LocalDate startDate,
-    LocalDate endDate,
-    LocalDate signedDate,
+    @Nullable LocalDate endDate,
+    @Nullable LocalDate signedDate,
     BigDecimal rentAmount,
-    BigDecimal depositAmount,
-    BigDecimal securityDeposit,
+    @Nullable BigDecimal depositAmount,
+    @Nullable BigDecimal securityDeposit,
     String rentAmountCurrency,
-    String depositAmountCurrency,
-    String securityDepositCurrency,
+    @Nullable String depositAmountCurrency,
+    @Nullable String securityDepositCurrency,
     Contract.PaymentFrequency paymentFrequency,
-    Integer paymentDueDay,
-    Boolean autoRenewal,
-    Integer renewalNoticeDays,
-    Integer terminationNoticeDays,
-    BigDecimal lateFeePercentage,
+    @Nullable Integer paymentDueDay,
+    @Nullable Boolean autoRenewal,
+    @Nullable Integer renewalNoticeDays,
+    @Nullable Integer terminationNoticeDays,
+    @Nullable BigDecimal lateFeePercentage,
     Contract.ContractStatus status,
-    String termsAndConditions,
-    String notes,
+    @Nullable String termsAndConditions,
+    @Nullable String notes,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

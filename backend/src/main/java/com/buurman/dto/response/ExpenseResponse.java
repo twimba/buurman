@@ -5,17 +5,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.Expense;
 
 public record ExpenseResponse(
     String identifier,
-    PropertySummary property,
+    @Nullable PropertySummary property,
     Expense.ExpenseCategory category,
     BigDecimal amount,
     String currency,
     LocalDate expenseDate,
-    String description,
-    String notes,
+    @Nullable String description,
+    @Nullable String notes,
     List<DocumentResponse> documents,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

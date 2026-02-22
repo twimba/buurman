@@ -5,19 +5,21 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 public record BackofficeTeamDetailResponse(
     String identifier,
     String teamName,
     Instant createdAt,
-    Instant updatedAt,
+    @Nullable Instant updatedAt,
     List<MemberInfo> members,
     DataCounts dataCounts,
     FinancialSnapshot financialSnapshot,
-    SettingsInfo settings) {
+    @Nullable SettingsInfo settings) {
   public record MemberInfo(
       String email,
-      String firstName,
-      String lastName,
+      @Nullable String firstName,
+      @Nullable String lastName,
       String role,
       boolean isOwner,
       Instant joinedAt,
@@ -32,19 +34,19 @@ public record BackofficeTeamDetailResponse(
       long documents) {}
 
   public record FinancialSnapshot(
-      BigDecimal totalActiveRent,
-      String currency,
+      @Nullable BigDecimal totalActiveRent,
+      @Nullable String currency,
       Map<String, Long> propertyStatusDistribution,
       Map<String, Long> propertyCategoryDistribution,
       Map<String, Long> contractStatusDistribution,
       Map<String, Long> paymentStatusDistribution) {}
 
   public record SettingsInfo(
-      Integer paymentsAheadCount,
+      @Nullable Integer paymentsAheadCount,
       boolean autoGenerationEnabled,
-      String defaultCurrency,
-      String defaultCountry,
-      String timezone,
-      String dateFormat,
-      String fiscalYearStartMonth) {}
+      @Nullable String defaultCurrency,
+      @Nullable String defaultCountry,
+      @Nullable String timezone,
+      @Nullable String dateFormat,
+      @Nullable String fiscalYearStartMonth) {}
 }

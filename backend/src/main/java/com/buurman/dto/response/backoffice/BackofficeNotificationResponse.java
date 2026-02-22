@@ -2,24 +2,26 @@ package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 public record BackofficeNotificationResponse(
     String identifier,
     String teamIdentifier,
     String teamName,
     String notificationType,
     String channel,
-    String subject,
-    String body,
-    String recipientEmail,
-    String recipientPhone,
+    @Nullable String subject,
+    @Nullable String body,
+    @Nullable String recipientEmail,
+    @Nullable String recipientPhone,
     String status,
-    String providerStatus,
-    String providerError,
+    @Nullable String providerStatus,
+    @Nullable String providerError,
     int openCount,
     int clickCount,
-    Instant firstOpenedAt,
-    Instant firstClickedAt,
-    String resentFromIdentifier,
-    String resendReason,
+    @Nullable Instant firstOpenedAt,
+    @Nullable Instant firstClickedAt,
+    @Nullable String resentFromIdentifier,
+    @Nullable String resendReason,
     Instant createdAt,
-    Instant statusUpdatedAt) {}
+    @Nullable Instant statusUpdatedAt) {}

@@ -1,12 +1,14 @@
 package com.buurman.dto.request;
 
+import org.jspecify.annotations.Nullable;
+
 import jakarta.validation.constraints.Pattern;
 
 public record UpdateUserPreferencesRequest(
-    @Pattern(regexp = "light|dark|system") String theme,
-    @Pattern(regexp = "[a-z]{2}") String language,
-    String timezone,
-    String dateFormat,
-    String currencyFormat,
-    Boolean emailNotifications,
-    Boolean smsNotifications) {}
+    @Nullable @Pattern(regexp = "light|dark|system") String theme,
+    @Nullable @Pattern(regexp = "[a-z]{2}") String language,
+    @Nullable String timezone,
+    @Nullable String dateFormat,
+    @Nullable String currencyFormat,
+    @Nullable Boolean emailNotifications,
+    @Nullable Boolean smsNotifications) {}

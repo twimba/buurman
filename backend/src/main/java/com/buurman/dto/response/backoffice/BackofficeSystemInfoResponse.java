@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 public record BackofficeSystemInfoResponse(
     BuildInfo build,
     RuntimeInfo runtime,
@@ -15,12 +17,12 @@ public record BackofficeSystemInfoResponse(
 
   public record BuildInfo(
       String version,
-      String gitCommit,
-      String gitCommitFull,
-      String gitBranch,
-      Instant gitCommitTime,
+      @Nullable String gitCommit,
+      @Nullable String gitCommitFull,
+      @Nullable String gitBranch,
+      @Nullable Instant gitCommitTime,
       boolean gitDirty,
-      Instant buildTime) {}
+      @Nullable Instant buildTime) {}
 
   public record RuntimeInfo(
       String javaVersion,
@@ -43,7 +45,7 @@ public record BackofficeSystemInfoResponse(
   public record GcInfo(String name, long collectionCount, long collectionTimeMs) {}
 
   public record MigrationInfo(
-      String currentVersion,
+      @Nullable String currentVersion,
       int appliedCount,
       int pendingCount,
       int failedCount,
@@ -53,12 +55,16 @@ public record BackofficeSystemInfoResponse(
       String version,
       String description,
       String state,
-      Instant installedOn,
-      Integer executionTimeMs,
+      @Nullable Instant installedOn,
+      @Nullable Integer executionTimeMs,
       String script) {}
 
   public record ServiceHealth(
-      String name, Status status, Long latencyMs, String details, String error) {
+      String name,
+      Status status,
+      @Nullable Long latencyMs,
+      @Nullable String details,
+      @Nullable String error) {
 
     public enum Status {
       UP,
@@ -73,7 +79,7 @@ public record BackofficeSystemInfoResponse(
   public record MetricsSnapshot(
       long httpRequestCount,
       double httpRequestTotalTimeSeconds,
-      HttpLatencyStats httpLatency,
+      @Nullable HttpLatencyStats httpLatency,
       List<MetricEntry> custom) {}
 
   public record HttpLatencyStats(

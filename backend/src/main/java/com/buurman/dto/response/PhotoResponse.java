@@ -2,17 +2,19 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 public record PhotoResponse(
     String identifier,
     String entityType,
     String entityIdentifier,
     String fileKey,
     String fileName,
-    Long fileSize,
-    String mimeType,
-    String title,
-    String notes,
-    Boolean isMainPhoto,
+    @Nullable Long fileSize,
+    @Nullable String mimeType,
+    @Nullable String title,
+    @Nullable String notes,
+    @Nullable Boolean isMainPhoto,
     Instant uploadedAt,
-    String downloadUrl,
-    String thumbnailUrl) {}
+    @Nullable String downloadUrl,
+    @Nullable String thumbnailUrl) {}

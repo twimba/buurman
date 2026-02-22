@@ -2,6 +2,8 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.TenantAddress;
 
 public record TenantAddressResponse(
@@ -12,8 +14,8 @@ public record TenantAddressResponse(
     String country,
     TenantAddress.AddressType addressType,
     TenantAddress.AddressStatus status,
-    Double latitude,
-    Double longitude,
-    String geocodeAccuracy,
+    @Nullable Double latitude,
+    @Nullable Double longitude,
+    @Nullable String geocodeAccuracy,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 public record PropertyDashboardResponse(
     SummaryMetrics summary,
     CashFlowChartData cashFlow,
@@ -14,17 +16,17 @@ public record PropertyDashboardResponse(
     FutureTrendData futureTrend) {
 
   public record SummaryMetrics(
-      BigDecimal totalRoiPercent,
-      BigDecimal annualizedRoiPercent,
-      BigDecimal capRatePercent,
-      BigDecimal cashOnCashPercent,
-      BigDecimal monthlyCashFlow,
-      BigDecimal annualNoi,
-      BigDecimal totalEquity,
-      BigDecimal equityGrowthPercent,
-      BigDecimal occupancyRatePercent,
-      BigDecimal grossRentMultiplier,
-      String currency) {}
+      @Nullable BigDecimal totalRoiPercent,
+      @Nullable BigDecimal annualizedRoiPercent,
+      @Nullable BigDecimal capRatePercent,
+      @Nullable BigDecimal cashOnCashPercent,
+      @Nullable BigDecimal monthlyCashFlow,
+      @Nullable BigDecimal annualNoi,
+      @Nullable BigDecimal totalEquity,
+      @Nullable BigDecimal equityGrowthPercent,
+      @Nullable BigDecimal occupancyRatePercent,
+      @Nullable BigDecimal grossRentMultiplier,
+      @Nullable String currency) {}
 
   public record CashFlowChartData(List<MonthlyDataPoint> months) {}
 
@@ -32,7 +34,9 @@ public record PropertyDashboardResponse(
       String month, BigDecimal income, BigDecimal expenses, BigDecimal mortgage, BigDecimal net) {}
 
   public record EquityChartData(
-      BigDecimal purchasePrice, BigDecimal currentMarketValue, BigDecimal mortgageBalance) {}
+      @Nullable BigDecimal purchasePrice,
+      @Nullable BigDecimal currentMarketValue,
+      @Nullable BigDecimal mortgageBalance) {}
 
   public record ExpenseBreakdownChartData(
       List<CategorySlice> categories, List<ExpenseTimelineMonth> timeline) {}

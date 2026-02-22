@@ -2,19 +2,21 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 public record PaymentInstructionResponse(
     String identifier,
     String name,
-    String description,
+    @Nullable String description,
     String paymentMethod,
-    String bankName,
-    String accountHolderName,
-    String iban,
-    String bicSwift,
-    String accountNumber,
-    String routingNumber,
-    String paymentReference,
-    String additionalDetails,
-    Boolean isDefault,
+    @Nullable String bankName,
+    @Nullable String accountHolderName,
+    @Nullable String iban,
+    @Nullable String bicSwift,
+    @Nullable String accountNumber,
+    @Nullable String routingNumber,
+    @Nullable String paymentReference,
+    @Nullable String additionalDetails,
+    @Nullable Boolean isDefault,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

@@ -3,14 +3,16 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 public record BuurmyResponse(
     String id,
     String username,
     String email,
-    String firstName,
-    String lastName,
+    @Nullable String firstName,
+    @Nullable String lastName,
     boolean enabled,
     boolean emailVerified,
     Instant createdAt,
-    Instant lastLogin,
+    @Nullable Instant lastLogin,
     List<String> requiredActions) {}

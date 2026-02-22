@@ -3,23 +3,25 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import org.jspecify.annotations.Nullable;
+
 public record ContractPaymentInstructionResponse(
     String identifier,
-    String paymentInstructionIdentifier,
-    Boolean isCustom,
+    @Nullable String paymentInstructionIdentifier,
+    @Nullable Boolean isCustom,
     String name,
-    String description,
+    @Nullable String description,
     String paymentMethod,
-    String bankName,
-    String accountHolderName,
-    String iban,
-    String bicSwift,
-    String accountNumber,
-    String routingNumber,
-    String paymentReference,
-    String additionalDetails,
-    LocalDate effectiveFrom,
-    LocalDate effectiveTo,
-    String notes,
+    @Nullable String bankName,
+    @Nullable String accountHolderName,
+    @Nullable String iban,
+    @Nullable String bicSwift,
+    @Nullable String accountNumber,
+    @Nullable String routingNumber,
+    @Nullable String paymentReference,
+    @Nullable String additionalDetails,
+    @Nullable LocalDate effectiveFrom,
+    @Nullable LocalDate effectiveTo,
+    @Nullable String notes,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

@@ -1,12 +1,14 @@
 package com.buurman.dto.response.backoffice;
 
+import org.jspecify.annotations.Nullable;
+
 public record JobExecutionHistoryResponse(
     String id,
     String jobName,
     String jobGroup,
     String startedAt,
-    String endedAt,
-    Long durationMs,
+    @Nullable String endedAt,
+    @Nullable Long durationMs,
     String status,
-    String errorMessage,
-    String nodeId) {}
+    @Nullable String errorMessage,
+    @Nullable String nodeId) {}

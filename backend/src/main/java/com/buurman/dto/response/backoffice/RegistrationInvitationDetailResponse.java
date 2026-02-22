@@ -3,20 +3,22 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 public record RegistrationInvitationDetailResponse(
     String identifier,
     String code,
-    Integer maxUsages,
+    @Nullable Integer maxUsages,
     int usageCount,
-    Instant expiresAt,
+    @Nullable Instant expiresAt,
     boolean revoked,
-    String revokedBy,
-    Instant revokedAt,
+    @Nullable String revokedBy,
+    @Nullable Instant revokedAt,
     String status,
     String createdBy,
     Instant createdAt,
-    Instant updatedAt,
-    String note,
+    @Nullable Instant updatedAt,
+    @Nullable String note,
     List<UsageRecord> usages) {
-  public record UsageRecord(String userEmail, String userName, Instant usedAt) {}
+  public record UsageRecord(String userEmail, @Nullable String userName, Instant usedAt) {}
 }

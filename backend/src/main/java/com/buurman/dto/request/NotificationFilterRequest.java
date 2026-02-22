@@ -1,9 +1,11 @@
 package com.buurman.dto.request;
 
+import org.jspecify.annotations.Nullable;
+
 public record NotificationFilterRequest(
-    String type,
-    String channel,
-    String status,
-    String recipientEmail,
-    String dateFrom,
-    String dateTo) {}
+    @Nullable String type,
+    @Nullable String channel,
+    @Nullable String status,
+    @Nullable String recipientEmail,
+    @Nullable String dateFrom,
+    @Nullable String dateTo) {}

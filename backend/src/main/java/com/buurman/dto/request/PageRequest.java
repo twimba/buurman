@@ -2,9 +2,12 @@ package com.buurman.dto.request;
 
 import static com.buurman.domain.SortDirection.DESC;
 
+import org.jspecify.annotations.Nullable;
+
 import com.buurman.domain.SortDirection;
 
-public record PageRequest(int page, int size, String sort, SortDirection direction) {
+public record PageRequest(
+    int page, int size, @Nullable String sort, @Nullable SortDirection direction) {
   public static final int DEFAULT_PAGE = 0;
   public static final int DEFAULT_SIZE = 25;
   public static final int MAX_SIZE = 500;

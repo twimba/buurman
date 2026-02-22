@@ -1,3 +1,5 @@
 package com.buurman.dto.request;
 
-public record UpdatePhotoRequest(String title, String notes) {}
+import org.jspecify.annotations.Nullable;
+
+public record UpdatePhotoRequest(@Nullable String title, @Nullable String notes) {}

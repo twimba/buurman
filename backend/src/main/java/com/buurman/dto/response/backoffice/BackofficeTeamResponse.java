@@ -2,10 +2,12 @@ package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 public record BackofficeTeamResponse(
     String identifier,
     String teamName,
     long memberCount,
-    String ownerEmail,
+    @Nullable String ownerEmail,
     Instant createdAt,
-    Instant updatedAt) {}
+    @Nullable Instant updatedAt) {}

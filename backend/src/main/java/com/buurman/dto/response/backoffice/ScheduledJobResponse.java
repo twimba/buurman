@@ -1,5 +1,7 @@
 package com.buurman.dto.response.backoffice;
 
+import org.jspecify.annotations.Nullable;
+
 public record ScheduledJobResponse(
     String jobName,
     String jobGroup,
@@ -7,7 +9,7 @@ public record ScheduledJobResponse(
     String triggerName,
     String triggerGroup,
     String triggerType,
-    String scheduleExpression,
+    @Nullable String scheduleExpression,
     String triggerState,
-    String nextFireTime,
-    String previousFireTime) {}
+    @Nullable String nextFireTime,
+    @Nullable String previousFireTime) {}

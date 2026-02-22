@@ -3,14 +3,16 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 public record RecentActivityResponse(
     String entityType,
     String entityIdentifier,
     String entityName,
     String action,
-    String userName,
+    @Nullable String userName,
     Instant timestamp,
-    String description,
+    @Nullable String description,
     Map<String, Object> changedFields,
     Map<String, Object> oldValues,
     Map<String, Object> newValues) {
