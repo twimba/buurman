@@ -6,7 +6,6 @@ import {
   DollarSign,
   Calendar,
   Building2,
-  PieChart as PieChartIcon,
   BarChart3,
   List,
 } from 'lucide-react';
@@ -47,6 +46,8 @@ export const FinancialReportsPage = () => {
     fontSize: '12px',
     color: isDark ? '#eef0f6' : '#1a1d2e',
   };
+  const [expenseChartType, setExpenseChartType] = useState<'pie' | 'bar'>('pie');
+  const [incomeChartType, setIncomeChartType] = useState<'line' | 'bar'>('line');
   const [periodType, setPeriodType] = useState<
     'month' | 'quarter' | 'year' | 'all' | 'custom'
   >('month');
@@ -400,7 +401,28 @@ export const FinancialReportsPage = () => {
                 Monthly income, expenses, and net profit
               </p>
             </div>
-            <BarChart3 className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <div className="flex items-center gap-1 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-md p-0.5">
+              <button
+                onClick={() => setIncomeChartType('line')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  incomeChartType === 'line'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Line
+              </button>
+              <button
+                onClick={() => setIncomeChartType('bar')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  incomeChartType === 'bar'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Bar
+              </button>
+            </div>
           </div>
           {trendLoading ? (
             <div className="flex justify-center py-12">
@@ -408,6 +430,7 @@ export const FinancialReportsPage = () => {
             </div>
           ) : incomeTrend ? (
             <ResponsiveContainer width="100%" height={300}>
+              {incomeChartType === 'line' ? (
               <LineChart data={incomeTrend.dataPoints}>
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -455,6 +478,34 @@ export const FinancialReportsPage = () => {
                   dot={{ fill: '#3B82F6', r: 4 }}
                 />
               </LineChart>
+              ) : (
+              <BarChart data={incomeTrend.dataPoints}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
+                <XAxis
+                  dataKey="period"
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  tickFormatter={formatYAxis}
+                />
+                <Tooltip
+                  formatter={(value: number | undefined) =>
+                    value !== undefined ? formatCurrency(value) : 'N/A'
+                  }
+                  contentStyle={tooltipStyle}
+                />
+                <Legend />
+                <Bar dataKey="income" fill="#10B981" name="Income" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="expenses" fill="#EF4444" name="Expenses" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="netProfit" fill="#3B82F6" name="Net Profit" radius={[4, 4, 0, 0]} />
+              </BarChart>
+              )}
             </ResponsiveContainer>
           ) : null}
         </div>
@@ -470,13 +521,35 @@ export const FinancialReportsPage = () => {
                 By category for selected period
               </p>
             </div>
-            <PieChartIcon className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <div className="flex items-center gap-1 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-md p-0.5">
+              <button
+                onClick={() => setExpenseChartType('pie')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  expenseChartType === 'pie'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Pie
+              </button>
+              <button
+                onClick={() => setExpenseChartType('bar')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  expenseChartType === 'bar'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Bar
+              </button>
+            </div>
           </div>
           {breakdownLoading ? (
             <div className="flex justify-center py-12">
               <LoadingSpinner />
             </div>
           ) : expenseBreakdown && expenseBreakdown.categories.length > 0 ? (
+            expenseChartType === 'pie' ? (
             <div className="flex flex-col lg:flex-row items-center gap-6">
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -532,6 +605,40 @@ export const FinancialReportsPage = () => {
                 </div>
               </div>
             </div>
+            ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={expenseBreakdown.categories} layout="vertical">
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                />
+                <XAxis
+                  type="number"
+                  tick={{ fontSize: 12 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  tickFormatter={formatYAxis}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tick={{ fontSize: 11 }}
+                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  width={120}
+                />
+                <Tooltip
+                  formatter={(value: number | undefined) =>
+                    value !== undefined ? formatCurrency(value) : 'N/A'
+                  }
+                  contentStyle={tooltipStyle}
+                />
+                <Bar dataKey="value" name="Amount" radius={[0, 4, 4, 0]}>
+                  {expenseBreakdown.categories.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            )
           ) : (
             <div className="text-center py-12 text-[#6b7194] dark:text-[#8b90a8]">
               No expense data for selected period
