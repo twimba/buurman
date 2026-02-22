@@ -3,8 +3,11 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 public class UserPreferences {
 
@@ -14,7 +17,7 @@ public class UserPreferences {
   private String language = "en";
   private String timezone = "UTC";
   private String dateFormat = "DD/MM/YYYY";
-  private String currencyFormat;
+  private @Nullable String currencyFormat;
   private boolean emailNotifications = true;
   private boolean inAppNotifications = true;
   private boolean smsNotifications = false;

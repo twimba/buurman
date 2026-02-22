@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PropertyCommercialDetails {
@@ -14,19 +17,19 @@ public class PropertyCommercialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private BigDecimal usableAreaValue;
-  private String usableAreaUnit;
-  private BigDecimal commonAreaValue;
-  private String commonAreaUnit;
-  private Integer floorLevel;
-  private BigDecimal ceilingHeightM;
-  private Boolean hasStorefront;
-  private Boolean hasSignageRights;
-  private String zoningClassification;
-  private Integer maxOccupancy;
-  private Integer restroomCount;
-  private Boolean hasKitchenFacility;
-  private Boolean accessibilityCompliant;
+  private @Nullable BigDecimal usableAreaValue;
+  private @Nullable String usableAreaUnit;
+  private @Nullable BigDecimal commonAreaValue;
+  private @Nullable String commonAreaUnit;
+  private @Nullable Integer floorLevel;
+  private @Nullable BigDecimal ceilingHeightM;
+  private @Nullable Boolean hasStorefront;
+  private @Nullable Boolean hasSignageRights;
+  private @Nullable String zoningClassification;
+  private @Nullable Integer maxOccupancy;
+  private @Nullable Integer restroomCount;
+  private @Nullable Boolean hasKitchenFacility;
+  private @Nullable Boolean accessibilityCompliant;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

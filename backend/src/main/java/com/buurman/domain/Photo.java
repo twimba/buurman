@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class Photo {
@@ -16,16 +19,16 @@ public class Photo {
   private String entityType;
   private UUID entityId;
   private String fileKey;
-  private String thumbnailFileKey;
+  private @Nullable String thumbnailFileKey;
   private String fileName;
   private Long fileSize;
   private String mimeType;
-  private String title;
-  private String notes;
-  private Boolean isMainPhoto;
+  private @Nullable String title;
+  private @Nullable String notes;
+  private @Nullable Boolean isMainPhoto;
   private UUID uploadedBy;
   private Instant uploadedAt;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 
   public Photo(
       UUID id,

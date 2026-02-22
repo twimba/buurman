@@ -5,10 +5,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,8 +44,8 @@ public class Contract {
   private UUID propertyId;
   private ContractType contractType;
   private LocalDate startDate;
-  private LocalDate endDate;
-  private LocalDate signedDate;
+  private @Nullable LocalDate endDate;
+  private @Nullable LocalDate signedDate;
   private BigDecimal rentAmount;
   private BigDecimal depositAmount;
   private BigDecimal securityDeposit;
@@ -51,16 +54,16 @@ public class Contract {
   private String securityDepositCurrency;
   private PaymentFrequency paymentFrequency;
   private Integer paymentDueDay;
-  private Boolean autoRenewal;
-  private Integer renewalNoticeDays;
-  private Integer terminationNoticeDays;
-  private BigDecimal lateFeePercentage;
+  private @Nullable Boolean autoRenewal;
+  private @Nullable Integer renewalNoticeDays;
+  private @Nullable Integer terminationNoticeDays;
+  private @Nullable BigDecimal lateFeePercentage;
   private ContractStatus status;
   private String termsAndConditions;
-  private String notes;
+  private @Nullable String notes;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 }

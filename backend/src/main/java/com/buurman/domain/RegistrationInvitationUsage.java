@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class RegistrationInvitationUsage {

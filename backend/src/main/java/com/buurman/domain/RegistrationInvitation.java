@@ -3,20 +3,23 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class RegistrationInvitation {
   private UUID id;
   private String identifier;
   private String code;
-  private Integer maxUsages;
+  private @Nullable Integer maxUsages;
   private int usageCount;
   private Instant expiresAt;
-  private Instant revokedAt;
-  private String revokedBy;
+  private @Nullable Instant revokedAt;
+  private @Nullable String revokedBy;
   private Instant createdAt;
   private Instant updatedAt;
   private String createdBy;

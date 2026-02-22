@@ -5,19 +5,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PhoneNumberPolicy {
 
   private UUID id;
-  private Map<String, List<String>> policyMatrix; // country code -> allowed number types
+  private @Nullable Map<String, List<String>> policyMatrix; // country code -> allowed number types
   private int maxCodesPerHour = 3;
   private int verificationCodeExpiryMinutes = 10;
-  private Instant updatedAt;
-  private String updatedBy;
+  private @Nullable Instant updatedAt;
+  private @Nullable String updatedBy;
 
   public boolean isAllowed(String countryCode, String numberType) {
     if (policyMatrix == null) {

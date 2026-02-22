@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PropertyResidentialDetails {
@@ -13,10 +16,10 @@ public class PropertyResidentialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private Integer bedrooms;
-  private Integer bathrooms;
-  private Boolean furnished;
-  private String petPolicy;
+  private @Nullable Integer bedrooms;
+  private @Nullable Integer bathrooms;
+  private @Nullable Boolean furnished;
+  private @Nullable String petPolicy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

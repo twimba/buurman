@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class CalendarFeed {
@@ -23,13 +26,13 @@ public class CalendarFeed {
   private UUID userId;
   private String feedToken;
   private FeedType feedType;
-  private UUID contractId;
-  private UUID propertyId;
-  private UUID tenantId;
-  private Boolean enabled;
+  private @Nullable UUID contractId;
+  private @Nullable UUID propertyId;
+  private @Nullable UUID tenantId;
+  private @Nullable Boolean enabled;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 }

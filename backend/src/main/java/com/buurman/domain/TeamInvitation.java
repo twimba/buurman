@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class TeamInvitation {
@@ -18,14 +21,14 @@ public class TeamInvitation {
   private Instant expiresAt;
   private UUID invitedBy;
   private Instant invitedAt;
-  private Instant acceptedAt;
-  private UUID acceptedBy;
-  private Instant emailSentAt;
-  private String emailError;
-  private String pendingFirstName;
-  private String pendingLastName;
-  private Instant resentAt;
-  private Integer resentCount;
+  private @Nullable Instant acceptedAt;
+  private @Nullable UUID acceptedBy;
+  private @Nullable Instant emailSentAt;
+  private @Nullable String emailError;
+  private @Nullable String pendingFirstName;
+  private @Nullable String pendingLastName;
+  private @Nullable Instant resentAt;
+  private @Nullable Integer resentCount;
 
   public TeamInvitation(
       UUID id,

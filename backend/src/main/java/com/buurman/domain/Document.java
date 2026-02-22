@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class Document {
@@ -20,10 +23,10 @@ public class Document {
   private Long fileSize;
   private String mimeType;
   private String title;
-  private String notes;
+  private @Nullable String notes;
   private UUID uploadedBy;
   private Instant uploadedAt;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 
   public Document(
       UUID id,

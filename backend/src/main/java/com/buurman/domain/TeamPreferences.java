@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class TeamPreferences {
@@ -18,7 +21,7 @@ public class TeamPreferences {
   private boolean autoGenerationEnabled = true;
 
   // Regional settings
-  private String defaultCurrency;
+  private @Nullable String defaultCurrency;
   private String defaultCountry = "Netherlands";
   private String timezone = "Europe/Amsterdam";
   private String dateFormat = "DD/MM/YYYY";

@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PaymentInstruction {
@@ -27,18 +30,18 @@ public class PaymentInstruction {
   private String name;
   private String description;
   private PaymentMethod paymentMethod;
-  private String bankName;
-  private String accountHolderName;
-  private String iban;
-  private String bicSwift;
-  private String accountNumber;
-  private String routingNumber;
-  private String paymentReference;
-  private String additionalDetails;
-  private Boolean isDefault;
+  private @Nullable String bankName;
+  private @Nullable String accountHolderName;
+  private @Nullable String iban;
+  private @Nullable String bicSwift;
+  private @Nullable String accountNumber;
+  private @Nullable String routingNumber;
+  private @Nullable String paymentReference;
+  private @Nullable String additionalDetails;
+  private @Nullable Boolean isDefault;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 }

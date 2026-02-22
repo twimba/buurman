@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PropertyOutdoorArea {
@@ -22,5 +25,5 @@ public class PropertyOutdoorArea {
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 }

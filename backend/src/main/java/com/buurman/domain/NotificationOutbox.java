@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class NotificationOutbox {
@@ -18,7 +21,7 @@ public class NotificationOutbox {
   private int retryCount;
   private int maxRetries;
   private Instant nextRetryAt;
-  private String lastError;
+  private @Nullable String lastError;
   private Instant createdAt;
-  private Instant processedAt;
+  private @Nullable Instant processedAt;
 }

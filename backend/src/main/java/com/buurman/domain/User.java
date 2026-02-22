@@ -3,25 +3,28 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class User {
 
   private UUID id;
-  private String identifier;
+  private @Nullable String identifier;
   private String keycloakId;
   private String email;
   private String firstName;
   private String lastName;
-  private UUID defaultTeamId;
-  private UUID activeTeamId;
-  private String phone;
-  private Instant emailVerifiedAt;
-  private Instant phoneVerifiedAt;
-  private Instant disabledAt;
+  private @Nullable UUID defaultTeamId;
+  private @Nullable UUID activeTeamId;
+  private @Nullable String phone;
+  private @Nullable Instant emailVerifiedAt;
+  private @Nullable Instant phoneVerifiedAt;
+  private @Nullable Instant disabledAt;
   private Instant createdAt;
   private Instant updatedAt;
 

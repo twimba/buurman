@@ -3,9 +3,12 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class TenantAddress {
@@ -33,14 +36,14 @@ public class TenantAddress {
   private String country;
   private AddressType addressType;
   private AddressStatus status;
-  private Double latitude;
-  private Double longitude;
-  private String geocodeAccuracy;
+  private @Nullable Double latitude;
+  private @Nullable Double longitude;
+  private @Nullable String geocodeAccuracy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 
   public TenantAddress(
       UUID id,

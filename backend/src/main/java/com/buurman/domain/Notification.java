@@ -4,9 +4,12 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class Notification {
@@ -17,24 +20,24 @@ public class Notification {
   private NotificationType notificationType;
   private String subject;
   private String body;
-  private String recipientEmail;
-  private String recipientPhone;
-  private UUID recipientUserId;
-  private UUID recipientTenantId;
+  private @Nullable String recipientEmail;
+  private @Nullable String recipientPhone;
+  private @Nullable UUID recipientUserId;
+  private @Nullable UUID recipientTenantId;
   private NotificationChannel channel;
-  private String contentTemplate;
-  private Map<String, Object> contentVariables;
+  private @Nullable String contentTemplate;
+  private @Nullable Map<String, Object> contentVariables;
   private NotificationStatus status;
-  private String providerMessageId;
-  private String providerStatus;
-  private String providerError;
-  private Instant statusUpdatedAt;
+  private @Nullable String providerMessageId;
+  private @Nullable String providerStatus;
+  private @Nullable String providerError;
+  private @Nullable Instant statusUpdatedAt;
   private int openCount;
   private int clickCount;
-  private Instant firstOpenedAt;
-  private Instant firstClickedAt;
-  private UUID resentFromId;
-  private String resendReason;
+  private @Nullable Instant firstOpenedAt;
+  private @Nullable Instant firstClickedAt;
+  private @Nullable UUID resentFromId;
+  private @Nullable String resendReason;
   private Instant createdAt;
   private UUID createdBy;
 }

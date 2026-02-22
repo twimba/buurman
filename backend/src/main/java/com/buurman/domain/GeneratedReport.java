@@ -3,10 +3,13 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,16 +41,16 @@ public class GeneratedReport {
   private UUID teamId;
   private ReportType reportType;
   private ReportFormat format;
-  private String parameters; // JSONB stored as string
+  private @Nullable String parameters; // JSONB stored as string
   private ReportStatus status;
-  private Integer progress;
-  private String fileKey;
-  private String error;
+  private @Nullable Integer progress;
+  private @Nullable String fileKey;
+  private @Nullable String error;
   private UUID createdBy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID updatedBy;
-  private Instant completedAt;
-  private Instant expiresAt;
-  private Instant deletedAt;
+  private @Nullable Instant completedAt;
+  private @Nullable Instant expiresAt;
+  private @Nullable Instant deletedAt;
 }

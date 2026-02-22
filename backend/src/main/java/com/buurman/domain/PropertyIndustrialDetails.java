@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PropertyIndustrialDetails {
@@ -14,20 +17,20 @@ public class PropertyIndustrialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private BigDecimal clearHeightM;
-  private Integer loadingDocks;
-  private Integer driveInDoors;
-  private BigDecimal floorLoadCapacityKgSqm;
-  private Integer powerCapacityKva;
-  private Boolean hasThreePhasePower;
-  private Boolean hasCrane;
-  private BigDecimal craneCapacityTons;
-  private Boolean hasHazmatCertification;
-  private Boolean hasVentilationSystem;
-  private Boolean hasClimateControl;
-  private BigDecimal yardAreaValue;
-  private String yardAreaUnit;
-  private String zoningClassification;
+  private @Nullable BigDecimal clearHeightM;
+  private @Nullable Integer loadingDocks;
+  private @Nullable Integer driveInDoors;
+  private @Nullable BigDecimal floorLoadCapacityKgSqm;
+  private @Nullable Integer powerCapacityKva;
+  private @Nullable Boolean hasThreePhasePower;
+  private @Nullable Boolean hasCrane;
+  private @Nullable BigDecimal craneCapacityTons;
+  private @Nullable Boolean hasHazmatCertification;
+  private @Nullable Boolean hasVentilationSystem;
+  private @Nullable Boolean hasClimateControl;
+  private @Nullable BigDecimal yardAreaValue;
+  private @Nullable String yardAreaUnit;
+  private @Nullable String zoningClassification;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

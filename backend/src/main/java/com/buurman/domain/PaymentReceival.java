@@ -5,9 +5,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
 @NoArgsConstructor
 public class PaymentReceival {
@@ -19,10 +22,10 @@ public class PaymentReceival {
   private BigDecimal amount;
   private String currency;
   private LocalDate receivalDate;
-  private String notes;
+  private @Nullable String notes;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  private @Nullable Instant deletedAt;
 }
