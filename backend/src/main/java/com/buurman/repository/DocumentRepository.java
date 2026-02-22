@@ -145,6 +145,20 @@ public class DocumentRepository {
         .execute();
   }
 
+  public void softDeleteByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(DOCUMENTS)
+        .set(DOCUMENTS.DELETED_AT, now)
+        .where(
+            DOCUMENTS
+                .ENTITY_TYPE
+                .eq(entityType)
+                .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                .and(DOCUMENTS.DELETED_AT.isNull()))
+        .execute();
+  }
+
   public List<Document> searchDocuments(String searchTerm, String entityType, UUID teamId) {
     var query =
         dsl.selectFrom(DOCUMENTS)

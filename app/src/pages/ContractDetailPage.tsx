@@ -12,7 +12,11 @@ import {
   useDuplicateContract,
   useGenerateContractPayments,
 } from '@/hooks/useContractHooks';
-import { usePaymentsByContract } from '@/hooks/usePaymentHooks';
+import {
+  usePaymentsByContract,
+  useDeletePayment,
+} from '@/hooks/usePaymentHooks';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
 import { CalendarFeedType } from '@/types/calendarFeed';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
@@ -68,6 +72,10 @@ export const ContractDetailPage = () => {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showGeneratePaymentsModal, setShowGeneratePaymentsModal] =
     useState(false);
+  const [deletePaymentTarget, setDeletePaymentTarget] = useState<string | null>(
+    null
+  );
+  const deletePaymentMutation = useDeletePayment();
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -828,6 +836,9 @@ export const ContractDetailPage = () => {
                               ))}
                           </div>
                         </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
@@ -876,6 +887,20 @@ export const ContractDetailPage = () => {
                               {payment.paymentDate
                                 ? formatDate(payment.paymentDate)
                                 : '-'}
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-right">
+                              {canEditData && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeletePaymentTarget(payment.identifier);
+                                  }}
+                                  className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  title="Delete payment"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))
@@ -1221,6 +1246,21 @@ export const ContractDetailPage = () => {
         }}
         isLoading={generatePaymentsMutation.isPending}
       />
+
+      {deletePaymentTarget && (
+        <ConfirmDialog
+          title="Delete Payment"
+          message="Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deletePaymentMutation.isPending}
+          onConfirm={async () => {
+            await deletePaymentMutation.mutateAsync(deletePaymentTarget);
+            setDeletePaymentTarget(null);
+          }}
+          onCancel={() => setDeletePaymentTarget(null)}
+        />
+      )}
     </div>
   );
 };

@@ -454,7 +454,7 @@ export const PaymentDetailPage = () => {
   }
 
   const canEdit = true;
-  const canDelete = payment.status !== PaymentStatus.PAID;
+  const canDelete = true;
   const canMarkPaid =
     payment.status === PaymentStatus.PENDING ||
     payment.status === PaymentStatus.PARTIALLY_PAID ||

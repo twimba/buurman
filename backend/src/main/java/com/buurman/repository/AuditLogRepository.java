@@ -365,4 +365,15 @@ public class AuditLogRepository {
       default -> Optional.empty();
     };
   }
+
+  public void deleteByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
+    dsl.deleteFrom(AUDIT_LOG)
+        .where(
+            AUDIT_LOG
+                .ENTITY_TYPE
+                .equalIgnoreCase(entityType)
+                .and(AUDIT_LOG.ENTITY_ID.eq(entityId))
+                .and(AUDIT_LOG.TEAM_ID.eq(teamId)))
+        .execute();
+  }
 }

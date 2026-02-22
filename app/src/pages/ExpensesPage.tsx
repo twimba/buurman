@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
-import { useExpenses, useExpenseStats } from '@/hooks/useExpenseHooks';
+import {
+  useExpenses,
+  useExpenseStats,
+  useDeleteExpense,
+} from '@/hooks/useExpenseHooks';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components/ui/Pagination';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
@@ -17,6 +22,7 @@ import {
   DollarSign,
   PieChart,
   Eye,
+  Trash2,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -51,6 +57,8 @@ export const ExpensesPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
+  const deleteExpenseMutation = useDeleteExpense();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<
     ExpenseCategory | undefined
   >(undefined);
@@ -393,16 +401,30 @@ export const ExpensesPage = () => {
                         </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/expenses/${expense.identifier}`);
-                          }}
-                          className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
-                          title="View expense"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/expenses/${expense.identifier}`);
+                            }}
+                            className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
+                            title="View expense"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          {canEditData && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget(expense.identifier);
+                              }}
+                              className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              title="Delete expense"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -445,6 +467,21 @@ export const ExpensesPage = () => {
           </div>
         )}
       </div>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete Expense"
+          message="Are you sure you want to delete this expense? All related documents will also be deleted. This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deleteExpenseMutation.isPending}
+          onConfirm={async () => {
+            await deleteExpenseMutation.mutateAsync(deleteTarget);
+            setDeleteTarget(null);
+          }}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 };

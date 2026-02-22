@@ -57,6 +57,8 @@ public class ExpenseService {
   private final com.buurman.mapper.DocumentMapper documentMapper;
   private final MetricsService metricsService;
   private final NotificationService notificationService;
+  private final S3StorageService s3StorageService;
+  private final com.buurman.repository.AuditLogRepository auditLogRepository;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -244,14 +246,27 @@ public class ExpenseService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteExpense(String identifier, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    UUID teamId = principal.getTeamId();
+    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, teamId);
+    UUID expenseId = expense.getId();
 
-    expenseRepository.softDeleteByIdAndTeamId(expense.getId(), principal.getTeamId());
+    // Cascade: delete documents and S3 files
+    List<com.buurman.domain.Document> docs =
+        documentRepository.findByEntityAndTeamId("EXPENSE", expenseId, teamId);
+    for (com.buurman.domain.Document doc : docs) {
+      s3StorageService.deleteFile(doc.getFileKey());
+    }
+    documentRepository.softDeleteByEntityAndTeamId("EXPENSE", expenseId, teamId);
+
+    // Clean up audit logs
+    auditLogRepository.deleteByEntityAndTeamId("EXPENSE", expenseId, teamId);
+
+    // Soft-delete the expense itself
+    expenseRepository.softDeleteByIdAndTeamId(expenseId, teamId);
 
     log.info("Deleted expense {} by user {}", expense.getIdentifier(), principal.getUserId());
 
-    auditService.logDelete(
-        principal.getTeamId(), "EXPENSE", expense.getId(), principal.getUserId(), expense);
+    auditService.logDelete(teamId, "EXPENSE", expenseId, principal.getUserId(), expense);
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")

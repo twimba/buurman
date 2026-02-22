@@ -98,6 +98,8 @@ public class PaymentService {
   private final com.buurman.mapper.DocumentMapper documentMapper;
   private final MetricsService metricsService;
   private final NotificationService notificationService;
+  private final S3StorageService s3StorageService;
+  private final com.buurman.repository.AuditLogRepository auditLogRepository;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -629,18 +631,29 @@ public class PaymentService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deletePayment(String identifier, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
-
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
+    UUID paymentId = payment.getId();
 
-    if (payment.getStatus() == PAID) {
-      throw new BusinessRuleException("Cannot delete a paid payment. Please cancel it instead.");
+    // Cascade: soft-delete receivals
+    receivalRepository.softDeleteByPaymentIdAndTeamId(paymentId, teamId);
+
+    // Cascade: delete documents and S3 files
+    List<com.buurman.domain.Document> docs =
+        documentRepository.findByEntityAndTeamId("PAYMENT", paymentId, teamId);
+    for (com.buurman.domain.Document doc : docs) {
+      s3StorageService.deleteFile(doc.getFileKey());
     }
+    documentRepository.softDeleteByEntityAndTeamId("PAYMENT", paymentId, teamId);
 
-    paymentRepository.softDeleteByIdAndTeamId(payment.getId(), teamId);
+    // Clean up audit logs
+    auditLogRepository.deleteByEntityAndTeamId("PAYMENT", paymentId, teamId);
+
+    // Soft-delete the payment itself
+    paymentRepository.softDeleteByIdAndTeamId(paymentId, teamId);
 
     log.info("Deleted payment {} by user {}", payment.getIdentifier(), principal.getUserId());
 
-    auditService.logDelete(teamId, "PAYMENT", payment.getId(), principal.getUserId(), payment);
+    auditService.logDelete(teamId, "PAYMENT", paymentId, principal.getUserId(), payment);
   }
 
   @Transactional

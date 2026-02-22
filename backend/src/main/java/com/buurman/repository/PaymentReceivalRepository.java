@@ -164,6 +164,14 @@ public class PaymentReceivalRepository {
     dsl.update(TABLE).set(DELETED_AT, now).where(ID.eq(id).and(TEAM_ID.eq(teamId))).execute();
   }
 
+  public void softDeleteByPaymentIdAndTeamId(UUID paymentId, UUID teamId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(TABLE)
+        .set(DELETED_AT, now)
+        .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .execute();
+  }
+
   private PaymentReceival toDomain(Record record) {
     String currency = record.get(CURRENCY);
     PaymentReceival receival = new PaymentReceival();

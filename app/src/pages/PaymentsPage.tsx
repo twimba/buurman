@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PaymentStatus } from '@/types/payment';
-import { usePayments, usePaymentStats } from '@/hooks/usePaymentHooks';
+import {
+  usePayments,
+  usePaymentStats,
+  useDeletePayment,
+} from '@/hooks/usePaymentHooks';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { usePagination } from '@/hooks/usePagination';
 import { Pagination } from '@/components/ui/Pagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
@@ -20,6 +25,7 @@ import {
   CheckCircle,
   TrendingUp,
   Eye,
+  Trash2,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -47,6 +53,8 @@ export const PaymentsPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
+  const deletePaymentMutation = useDeletePayment();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | undefined>(
     undefined
   );
@@ -411,16 +419,30 @@ export const PaymentsPage = () => {
                         <PaymentStatusBadge status={payment.status} />
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/payments/${payment.identifier}`);
-                          }}
-                          className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
-                          title="View payment"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/payments/${payment.identifier}`);
+                            }}
+                            className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
+                            title="View payment"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          {canEditData && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget(payment.identifier);
+                              }}
+                              className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              title="Delete payment"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -473,6 +495,21 @@ export const PaymentsPage = () => {
           </div>
         )}
       </div>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete Payment"
+          message="Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deletePaymentMutation.isPending}
+          onConfirm={async () => {
+            await deletePaymentMutation.mutateAsync(deleteTarget);
+            setDeleteTarget(null);
+          }}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 };
