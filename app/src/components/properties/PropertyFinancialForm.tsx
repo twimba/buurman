@@ -227,20 +227,55 @@ export const PropertyFinancialForm = ({
           </div>
           <div>
             <label className={labelCls}>Monthly Payment</label>
-            <MoneyInput
-              value={formData.monthlyMortgagePayment ?? undefined}
-              onChange={(val) =>
-                onChange('monthlyMortgagePayment', val ?? null)
-              }
-              currency={
-                formData.monthlyMortgagePaymentCurrency || currencyFallback
-              }
-              onCurrencyChange={(v) =>
-                onChange('monthlyMortgagePaymentCurrency', v)
-              }
-              disabled={isMortgageNone}
-              error={!!errors?.monthlyMortgagePaymentCurrency}
-            />
+            <div className="flex items-center gap-2 mb-2">
+              <label className="inline-flex items-center gap-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] cursor-pointer">
+                <input
+                  type="radio"
+                  name="mortgagePaymentType"
+                  checked={formData.monthlyMortgagePayment !== -1}
+                  onChange={() => {
+                    if (formData.monthlyMortgagePayment === -1) {
+                      onChange('monthlyMortgagePayment', null);
+                    }
+                  }}
+                  disabled={isMortgageNone}
+                  className="text-[#5c7cfa]"
+                />
+                Fixed amount
+              </label>
+              <label className="inline-flex items-center gap-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] cursor-pointer">
+                <input
+                  type="radio"
+                  name="mortgagePaymentType"
+                  checked={formData.monthlyMortgagePayment === -1}
+                  onChange={() => onChange('monthlyMortgagePayment', -1)}
+                  disabled={isMortgageNone}
+                  className="text-[#5c7cfa]"
+                />
+                Variable
+              </label>
+            </div>
+            {formData.monthlyMortgagePayment !== -1 && (
+              <MoneyInput
+                value={formData.monthlyMortgagePayment ?? undefined}
+                onChange={(val) =>
+                  onChange('monthlyMortgagePayment', val ?? null)
+                }
+                currency={
+                  formData.monthlyMortgagePaymentCurrency || currencyFallback
+                }
+                onCurrencyChange={(v) =>
+                  onChange('monthlyMortgagePaymentCurrency', v)
+                }
+                disabled={isMortgageNone}
+                error={!!errors?.monthlyMortgagePaymentCurrency}
+              />
+            )}
+            {formData.monthlyMortgagePayment === -1 && (
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] italic">
+                Payment amount varies — will not be used for fixed projections
+              </p>
+            )}
             {errors?.monthlyMortgagePaymentCurrency && (
               <p className="text-red-600 text-sm mt-1">
                 {errors.monthlyMortgagePaymentCurrency}
