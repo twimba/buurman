@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import org.jooq.JSONB;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.ContractPartyRole;
@@ -70,7 +71,7 @@ public class AuditService {
       String entityType,
       UUID entityId,
       UUID userId,
-      Object oldEntity,
+      @Nullable Object oldEntity,
       Object newEntity,
       Map<String, Object> changedFields) {
     try {
@@ -122,7 +123,8 @@ public class AuditService {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> objectToMap(Object obj) {
+  private Map<String, Object> objectToMap(@Nullable Object obj) {
+    if (obj == null) return Map.of();
     return objectMapper.convertValue(obj, Map.class);
   }
 
@@ -168,7 +170,11 @@ public class AuditService {
   }
 
   public PageResponse<RecentActivityResponse> getAllAuditLogsPaginated(
-      UUID teamId, String entityType, String action, String search, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String entityType,
+      @Nullable String action,
+      @Nullable String search,
+      PageRequest pageRequest) {
     PaginatedResult<Record> result =
         auditLogRepository.findAllByTeamIdPaginated(
             teamId, entityType, action, search, pageRequest);
@@ -183,7 +189,7 @@ public class AuditService {
   }
 
   public List<RecentActivityResponse> getAllAuditLogs(
-      UUID teamId, String entityType, String action, String search) {
+      UUID teamId, @Nullable String entityType, @Nullable String action, @Nullable String search) {
     return auditLogRepository.findAllByTeamId(teamId, entityType, action, search).stream()
         .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
         .toList();
@@ -325,7 +331,10 @@ public class AuditService {
     return String.format("%s %s this %s", userName, actionText, entityType.toLowerCase());
   }
 
-  private String formatRole(String role) {
+  private String formatRole(@Nullable String role) {
+    if (role == null) {
+      return "Unknown";
+    }
     return Arrays.stream(ContractPartyRole.values())
         .filter(r -> r.name().equals(role))
         .findFirst()

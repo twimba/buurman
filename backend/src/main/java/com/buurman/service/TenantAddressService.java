@@ -40,13 +40,13 @@ public class TenantAddressService {
   public TenantAddressResponse createAddress(
       UUID tenantId, CreateTenantAddressRequest request, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
+    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     // Check for unique ACTIVE CURRENT address constraint
     if (request.addressType() == TenantAddress.AddressType.CURRENT
         && (request.status() == null || request.status() == TenantAddress.AddressStatus.ACTIVE)) {
       List<TenantAddress> existingAddresses =
-          addressRepository.findByTenantId(tenantId, principal.getTeamId());
+          addressRepository.findByTenantId(tenantId, principal.requireTeamId());
       boolean hasActiveCurrent =
           existingAddresses.stream()
               .anyMatch(
@@ -62,7 +62,7 @@ public class TenantAddressService {
 
     TenantAddress address = addressMapper.toEntity(request);
     address.setTenantId(tenantId);
-    address.setTeamId(principal.getTeamId());
+    address.setTeamId(principal.requireTeamId());
     address.setCreatedBy(principal.getUserId());
     address.setUpdatedBy(principal.getUserId());
     address.setCreatedAt(clock.instant());
@@ -90,14 +90,14 @@ public class TenantAddressService {
     log.info(
         "Address created for tenant {} in team {}: {} - {}, {}",
         tenantId,
-        principal.getTeamId(),
+        principal.requireTeamId(),
         savedAddress.getStreet(),
         savedAddress.getCity(),
         savedAddress.getCountry());
 
     // Log to audit trail
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "TENANT_ADDRESS",
         savedAddress.getId(),
         principal.getUserId(),
@@ -108,15 +108,16 @@ public class TenantAddressService {
 
   public List<TenantAddressResponse> getAddresses(UUID tenantId, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
+    tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     List<TenantAddress> addresses =
-        addressRepository.findByTenantId(tenantId, principal.getTeamId());
+        addressRepository.findByTenantId(tenantId, principal.requireTeamId());
     return addresses.stream().map(addressMapper::toResponse).toList();
   }
 
   public TenantAddressResponse getAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
@@ -127,7 +128,8 @@ public class TenantAddressService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantAddressResponse updateAddress(
       UUID tenantId, UUID addressId, UpdateTenantAddressRequest request, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
@@ -160,7 +162,7 @@ public class TenantAddressService {
       if (address.getAddressType() != TenantAddress.AddressType.CURRENT
           || address.getStatus() != TenantAddress.AddressStatus.ACTIVE) {
         List<TenantAddress> existingAddresses =
-            addressRepository.findByTenantId(address.getTenantId(), principal.getTeamId());
+            addressRepository.findByTenantId(address.getTenantId(), principal.requireTeamId());
         boolean hasOtherActiveCurrent =
             existingAddresses.stream()
                 .anyMatch(
@@ -211,7 +213,7 @@ public class TenantAddressService {
         "Address updated: {} for tenant {} in team {}",
         addressId,
         address.getTenantId(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     // Determine changed fields for audit
     Map<String, Object> changedFields = new HashMap<>();
@@ -242,7 +244,7 @@ public class TenantAddressService {
 
     // Log to audit trail
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "TENANT_ADDRESS",
         updatedAddress.getId(),
         principal.getUserId(),
@@ -256,20 +258,21 @@ public class TenantAddressService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
 
-    addressRepository.softDeleteByIdAndTeamId(addressId, principal.getTeamId());
+    addressRepository.softDeleteByIdAndTeamId(addressId, principal.requireTeamId());
     log.info(
         "Address soft deleted: {} for tenant {} in team {}",
         addressId,
         address.getTenantId(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     // Log to audit trail
     auditService.logDelete(
-        principal.getTeamId(), "TENANT_ADDRESS", addressId, principal.getUserId(), address);
+        principal.requireTeamId(), "TENANT_ADDRESS", addressId, principal.getUserId(), address);
   }
 }

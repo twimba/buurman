@@ -11,7 +11,7 @@ import com.buurman.domain.Contract;
 
 public record ContractResponse(
     String identifier,
-    PropertySummary property,
+    @Nullable PropertySummary property,
     List<ContractPartyResponse> parties,
     @Nullable TenantSummary primaryTenant,
     Contract.ContractType contractType,

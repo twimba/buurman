@@ -82,6 +82,9 @@ public class DemoExpenseGenerator {
         for (int i = 0; i < expenseCount; i++) {
           String category = CATEGORIES[random.nextInt(CATEGORIES.length)];
           ExpenseTemplate template = TEMPLATES.get(category);
+          if (template == null) {
+            continue;
+          }
 
           BigDecimal amount =
               BigDecimal.valueOf(random.nextInt(template.minAmount(), template.maxAmount() + 1));

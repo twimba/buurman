@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class ContractPaymentInstructionService {
       String contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     List<ContractPaymentInstruction> history =
-        cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.getTeamId());
+        cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.requireTeamId());
 
     // Batch-load templates to avoid N+1
     List<UUID> templateIds =
@@ -59,29 +60,29 @@ public class ContractPaymentInstructionService {
     Map<UUID, PaymentInstruction> templateMap =
         templateIds.isEmpty()
             ? Map.of()
-            : piRepository.findAllByTeamId(principal.getTeamId()).stream()
+            : piRepository.findAllByTeamId(principal.requireTeamId()).stream()
                 .filter(pi -> templateIds.contains(pi.getId()))
                 .collect(toMap(PaymentInstruction::getId, identity()));
 
     return history.stream().map(cpi -> toResolvedResponse(cpi, templateMap)).toList();
   }
 
-  public ContractPaymentInstructionResponse getCurrent(
+  public @Nullable ContractPaymentInstructionResponse getCurrent(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     return cpiRepository
-        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
         .map(
             cpi -> {
               Map<UUID, PaymentInstruction> templateMap = Map.of();
               if (!Boolean.TRUE.equals(cpi.getIsCustom())
                   && cpi.getPaymentInstructionId() != null) {
                 piRepository
-                    .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+                    .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
                     .ifPresent(pi -> {});
                 PaymentInstruction template =
                     piRepository
-                        .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+                        .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
                         .orElse(null);
                 if (template != null) {
                   templateMap = Map.of(template.getId(), template);
@@ -104,12 +105,12 @@ public class ContractPaymentInstructionService {
 
     // Auto-close or replace current entry if one exists
     cpiRepository
-        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
         .ifPresent(
             current -> {
               if (!current.getEffectiveFrom().isBefore(request.effectiveFrom())) {
                 // Current entry hasn't started yet or starts same day — replace it
-                cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.getTeamId());
+                cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.requireTeamId());
                 log.info(
                     "Replaced future payment instruction {} for contract {}",
                     current.getIdentifier(),
@@ -117,7 +118,7 @@ public class ContractPaymentInstructionService {
               } else {
                 cpiRepository.setEffectiveTo(
                     current.getId(),
-                    principal.getTeamId(),
+                    principal.requireTeamId(),
                     request.effectiveFrom().minusDays(1),
                     principal.getUserId());
                 log.info(
@@ -133,10 +134,10 @@ public class ContractPaymentInstructionService {
         "Contract payment instruction created: {} for contract {} in team {}",
         saved.getIdentifier(),
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         saved.getId(),
         principal.getUserId(),
@@ -157,7 +158,7 @@ public class ContractPaymentInstructionService {
     validateEffectiveFrom(request.effectiveFrom(), contract);
 
     ContractPaymentInstruction existing =
-        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
 
     if (!existing.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -167,18 +168,18 @@ public class ContractPaymentInstructionService {
     // Close or replace the existing entry
     if (!existing.getEffectiveFrom().isBefore(request.effectiveFrom())) {
       // Existing entry hasn't started yet or starts same day — replace it
-      cpiRepository.softDeleteByIdAndTeamId(existing.getId(), principal.getTeamId());
+      cpiRepository.softDeleteByIdAndTeamId(existing.getId(), principal.requireTeamId());
     } else {
       cpiRepository.setEffectiveTo(
           existing.getId(),
-          principal.getTeamId(),
+          principal.requireTeamId(),
           request.effectiveFrom().minusDays(1),
           principal.getUserId());
     }
 
     // Create a new entry (append-only history)
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-    cpi.setTeamId(principal.getTeamId());
+    cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
     cpi.setNotes(request.notes());
@@ -191,7 +192,7 @@ public class ContractPaymentInstructionService {
         && !Boolean.TRUE.equals(request.isCustom())) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier(), principal.getTeamId());
+              request.paymentInstructionIdentifier(), principal.requireTeamId());
       cpi.setPaymentInstructionId(template.getId());
       cpi.setIsCustom(false);
     } else {
@@ -214,10 +215,10 @@ public class ContractPaymentInstructionService {
         "Contract payment instruction updated (new entry): {} for contract {} in team {}",
         saved.getIdentifier(),
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         saved.getId(),
         principal.getUserId(),
@@ -232,7 +233,7 @@ public class ContractPaymentInstructionService {
       String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
-        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
 
     if (!cpi.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -246,15 +247,15 @@ public class ContractPaymentInstructionService {
           "Cannot delete a payment instruction that was already effective");
     }
 
-    cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.getTeamId());
+    cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.requireTeamId());
     log.info(
         "Contract payment instruction deleted: {} for contract {} in team {}",
         instructionIdentifier,
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         cpi.getId(),
         principal.getUserId(),
@@ -262,7 +263,8 @@ public class ContractPaymentInstructionService {
   }
 
   private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
-    return contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+    return contractRepository.getByIdentifierAndTeamId(
+        contractIdentifier, principal.requireTeamId());
   }
 
   private void validateEffectiveFrom(LocalDate effectiveFrom, Contract contract) {
@@ -285,7 +287,7 @@ public class ContractPaymentInstructionService {
       CreateContractPaymentInstructionRequest request, Contract contract, UserPrincipal principal) {
 
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-    cpi.setTeamId(principal.getTeamId());
+    cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
     cpi.setNotes(request.notes());
@@ -298,7 +300,7 @@ public class ContractPaymentInstructionService {
         && !Boolean.TRUE.equals(request.isCustom())) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier(), principal.getTeamId());
+              request.paymentInstructionIdentifier(), principal.requireTeamId());
       cpi.setPaymentInstructionId(template.getId());
       cpi.setIsCustom(false);
     } else {
@@ -323,7 +325,7 @@ public class ContractPaymentInstructionService {
       ContractPaymentInstruction cpi, UserPrincipal principal) {
     if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
       return piRepository
-          .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+          .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
           .map(pi -> Map.of(pi.getId(), pi))
           .orElse(Map.of());
     }

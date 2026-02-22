@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ public class BackofficeBuurmyService {
 
   private final KeycloakService keycloakService;
 
-  public PageResponse<BuurmyResponse> listBuurmies(PageRequest pageRequest, String search) {
+  public PageResponse<BuurmyResponse> listBuurmies(
+      PageRequest pageRequest, @Nullable String search) {
     int totalElements = keycloakService.countRealmUsers(search);
 
     if (totalElements == 0) {
@@ -179,7 +181,7 @@ public class BackofficeBuurmyService {
         user.getRequiredActions() != null ? user.getRequiredActions() : List.of());
   }
 
-  private Instant toInstant(Long epochMillis) {
+  private @Nullable Instant toInstant(@Nullable Long epochMillis) {
     return epochMillis != null && epochMillis > 0 ? Instant.ofEpochMilli(epochMillis) : null;
   }
 

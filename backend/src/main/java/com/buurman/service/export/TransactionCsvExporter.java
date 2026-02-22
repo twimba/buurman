@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.exception.ExternalServiceException;
@@ -18,7 +19,7 @@ public class TransactionCsvExporter {
 
   private final TransactionDataLoader dataLoader;
 
-  public byte[] generate(LocalDate startDate, LocalDate endDate, UUID teamId) {
+  public byte[] generate(@Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
     List<TransactionRecord> transactions = dataLoader.load(startDate, endDate, teamId);
 
     try (StringWriter sw = new StringWriter();

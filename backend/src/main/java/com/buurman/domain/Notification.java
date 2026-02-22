@@ -16,9 +16,9 @@ public class Notification {
 
   private UUID id;
   private String identifier;
-  private UUID teamId;
+  private @Nullable UUID teamId;
   private NotificationType notificationType;
-  private String subject;
+  private @Nullable String subject;
   private String body;
   private @Nullable String recipientEmail;
   private @Nullable String recipientPhone;
@@ -39,5 +39,5 @@ public class Notification {
   private @Nullable UUID resentFromId;
   private @Nullable String resendReason;
   private Instant createdAt;
-  private UUID createdBy;
+  private @Nullable UUID createdBy;
 }

@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -128,12 +129,12 @@ public class ExpenseService {
       CreateExpenseRequest request, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(
-            request.propertyIdentifier(), principal.getTeamId());
+            request.propertyIdentifier(), principal.requireTeamId());
 
     Expense expense = expenseMapper.toEntity(request);
     expense.setPropertyId(property.getId());
     expense.setIdentifier(newExpenseId().value());
-    expense.setTeamId(principal.getTeamId());
+    expense.setTeamId(principal.requireTeamId());
     expense.setCreatedBy(principal.getUserId());
     expense.setUpdatedBy(principal.getUserId());
     expense.setCreatedAt(clock.instant());
@@ -152,7 +153,7 @@ public class ExpenseService {
         principal.getUserId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "EXPENSE",
         savedExpense.getId(),
         principal.getUserId(),
@@ -163,34 +164,35 @@ public class ExpenseService {
 
   @Transactional(readOnly = true)
   public ExpenseResponse getExpense(String identifier, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return enrichExpenseResponse(expense, principal.getTeamId());
+    return enrichExpenseResponse(expense, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
   public List<ExpenseResponse> getAllExpenses(UserPrincipal principal) {
-    List<Expense> expenses = expenseRepository.findAllByTeamId(principal.getTeamId());
+    List<Expense> expenses = expenseRepository.findAllByTeamId(principal.requireTeamId());
 
     return expenses.stream()
-        .map(expense -> enrichExpenseResponse(expense, principal.getTeamId()))
+        .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))
         .toList();
   }
 
   @Transactional(readOnly = true)
   public PageResponse<ExpenseResponse> getExpensesPaginated(
       UserPrincipal principal,
-      String category,
-      UUID propertyId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String category,
+      @Nullable UUID propertyId,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     PaginatedResult<Expense> result =
         expenseRepository.findAllByTeamIdPaginated(
             principal.getTeamId(), category, propertyId, dateFrom, dateTo, pageRequest);
     List<ExpenseResponse> responses =
         result.items().stream()
-            .map(expense -> enrichExpenseResponse(expense, principal.getTeamId()))
+            .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -201,7 +203,7 @@ public class ExpenseService {
   }
 
   public ExpenseStatsResponse getExpenseStats(UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Record2<Integer, BigDecimal> totalStats = expenseRepository.getTotalStats(teamId);
     String currency = expenseRepository.findCurrencyByTeamId(teamId);
@@ -224,9 +226,12 @@ public class ExpenseService {
                         r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
             .toList();
 
+    String effectiveCurrency = java.util.Objects.requireNonNullElse(currency, "EUR");
     return new ExpenseStatsResponse(
-        CurrencyUtils.sumToMajorUnits(totalStats.value2(), currency),
-        currency,
+        totalStats != null
+            ? CurrencyUtils.sumToMajorUnits(totalStats.value2(), effectiveCurrency)
+            : BigDecimal.ZERO,
+        effectiveCurrency,
         topCategories,
         monthlyTrend);
   }
@@ -236,23 +241,23 @@ public class ExpenseService {
       String propertyIdentifier, UserPrincipal principal) {
     // Resolve property identifier to UUID
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
     List<Expense> expenses =
-        expenseRepository.findByPropertyId(property.getId(), principal.getTeamId());
+        expenseRepository.findByPropertyId(property.getId(), principal.requireTeamId());
 
     return expenses.stream()
-        .map(expense -> enrichExpenseResponse(expense, principal.getTeamId()))
+        .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))
         .toList();
   }
 
   @Transactional(readOnly = true)
   public List<ExpenseResponse> getExpensesByCategory(
       Expense.ExpenseCategory category, UserPrincipal principal) {
-    List<Expense> expenses = expenseRepository.findByCategory(category, principal.getTeamId());
+    List<Expense> expenses = expenseRepository.findByCategory(category, principal.requireTeamId());
 
     return expenses.stream()
-        .map(expense -> enrichExpenseResponse(expense, principal.getTeamId()))
+        .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))
         .toList();
   }
 
@@ -260,22 +265,23 @@ public class ExpenseService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ExpenseResponse updateExpense(
       String identifier, UpdateExpenseRequest request, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    ExpenseResponse oldState = enrichExpenseResponse(expense, principal.getTeamId());
+    ExpenseResponse oldState = enrichExpenseResponse(expense, principal.requireTeamId());
 
     expenseMapper.updateEntity(expense, request);
     expense.setUpdatedBy(principal.getUserId());
     expense.setUpdatedAt(clock.instant());
 
     Expense updatedExpense = expenseRepository.save(expense);
-    ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.getTeamId());
+    ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());
 
     log.info(
         "Updated expense {} by user {}", updatedExpense.getIdentifier(), principal.getUserId());
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "EXPENSE",
         updatedExpense.getId(),
         principal.getUserId(),
@@ -289,7 +295,7 @@ public class ExpenseService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteExpense(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID expenseId = expense.getId();
 
@@ -314,24 +320,31 @@ public class ExpenseService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadExpenseDocument(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return documentService.uploadDocument(
         file, "EXPENSE", expense.getId(), expense.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getExpenseDocuments(String identifier, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return documentService.getDocuments("EXPENSE", expense.getId(), principal);
   }
 
   public List<RecentActivityResponse> getExpenseAuditLog(
       String identifier, UserPrincipal principal) {
-    Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Expense expense =
+        expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return auditService.getEntityAuditLog(principal.getTeamId(), "EXPENSE", expense.getId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "EXPENSE", expense.getId());
   }
 
   // Notification helpers

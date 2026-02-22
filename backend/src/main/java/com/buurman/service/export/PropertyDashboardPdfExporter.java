@@ -4,6 +4,7 @@ import static com.buurman.service.export.BookletHelper.escapeHtml;
 
 import java.math.BigDecimal;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -27,7 +28,7 @@ public class PropertyDashboardPdfExporter {
 
   private String buildHtml(PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency();
+    @Nullable String currency = s.currency();
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");
@@ -104,21 +105,22 @@ public class PropertyDashboardPdfExporter {
         .append("</div></div>");
   }
 
-  private void equityRow(StringBuilder html, String label, BigDecimal value, String currency) {
+  private void equityRow(
+      StringBuilder html, String label, @Nullable BigDecimal value, @Nullable String currency) {
     html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
     html.append("<td class='right'>").append(fmtMoney(value, currency)).append("</td></tr>");
   }
 
-  private static String fmtPct(BigDecimal value) {
+  private static String fmtPct(@Nullable BigDecimal value) {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currencyCode) {
-    return CurrencyUtils.formatCurrency(value, currencyCode);
+  private static String fmtMoney(@Nullable BigDecimal value, @Nullable String currencyCode) {
+    return CurrencyUtils.formatCurrency(value, currencyCode != null ? currencyCode : "EUR");
   }
 
-  private static String humanize(String enumValue) {
-    if (enumValue == null || enumValue.isBlank()) return enumValue;
+  private static String humanize(@Nullable String enumValue) {
+    if (enumValue == null || enumValue.isBlank()) return enumValue != null ? enumValue : "";
     String[] words = enumValue.split("_");
     StringBuilder sb = new StringBuilder();
     for (String w : words) {

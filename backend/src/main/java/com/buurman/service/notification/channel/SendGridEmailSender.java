@@ -69,6 +69,9 @@ public class SendGridEmailSender implements NotificationChannelSender {
 
       if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
         String messageId = response.getHeaders().get("X-Message-Id");
+        if (messageId == null) {
+          messageId = "";
+        }
         log.info("SendGrid email sent to {}, message ID: {}", request.recipientEmail(), messageId);
         metricsService.recordNotificationSend(start, "email", "sendgrid", "success");
         return messageId;

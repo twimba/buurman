@@ -1,8 +1,10 @@
 package com.buurman.service.export;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -71,7 +73,7 @@ public class PropertyDashboardCsvExporter {
     }
   }
 
-  private static String[] row(String label, java.math.BigDecimal value) {
+  private static String[] row(String label, @Nullable BigDecimal value) {
     return new String[] {label, value != null ? value.toPlainString() : "N/A"};
   }
 }

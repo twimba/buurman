@@ -10,6 +10,7 @@ import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.UlidGenerator.newContractId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +87,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse createContract(CreateContractRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     // Resolve property by identifier
     Property property =
@@ -188,23 +190,23 @@ public class ContractService {
   }
 
   public List<ContractResponse> getAllContracts(UserPrincipal principal) {
-    List<Contract> contracts = contractRepository.findAllByTeamId(principal.getTeamId());
-    return toResponses(contracts, principal.getTeamId());
+    List<Contract> contracts = contractRepository.findAllByTeamId(principal.requireTeamId());
+    return toResponses(contracts, principal.requireTeamId());
   }
 
   public PageResponse<ContractResponse> getContractsPaginated(
-      UserPrincipal principal, String status, PageRequest pageRequest) {
+      UserPrincipal principal, @Nullable String status, PageRequest pageRequest) {
     PaginatedResult<Contract> result =
         contractRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, null, null, pageRequest);
-    List<ContractResponse> responses = toResponses(result.items(), principal.getTeamId());
+            principal.requireTeamId(), status, null, null, pageRequest);
+    List<ContractResponse> responses = toResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public List<ContractResponse> getContractsByProperty(
       String propertyIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -214,7 +216,7 @@ public class ContractService {
 
   public List<ContractResponse> getContractsByTenant(
       String tenantIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
@@ -224,21 +226,21 @@ public class ContractService {
 
   public List<ContractResponse> getContractsByStatus(
       Contract.ContractStatus status, UserPrincipal principal) {
-    List<Contract> contracts = contractRepository.findByStatus(status, principal.getTeamId());
-    return toResponses(contracts, principal.getTeamId());
+    List<Contract> contracts = contractRepository.findByStatus(status, principal.requireTeamId());
+    return toResponses(contracts, principal.requireTeamId());
   }
 
   public ContractResponse getContract(String identifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    return toResponse(contract, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return toResponse(contract, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse updateContract(
       String identifier, UpdateContractRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -361,7 +363,7 @@ public class ContractService {
         oldContract.getPaymentDueDay(), updatedContract.getPaymentDueDay())) {
       changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay());
     }
-    if (!oldContract.getAutoRenewal().equals(updatedContract.getAutoRenewal())) {
+    if (!java.util.Objects.equals(oldContract.getAutoRenewal(), updatedContract.getAutoRenewal())) {
       changedFields.put("autoRenewal", updatedContract.getAutoRenewal());
     }
     if (!java.util.Objects.equals(
@@ -400,7 +402,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -422,7 +424,7 @@ public class ContractService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse changeContractStatus(
       String identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -552,7 +554,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse reopenContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -655,11 +657,12 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse duplicateContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Create new contract with same data (without tenantId)
+    @SuppressWarnings("NullAway") // ID is null for new entities, assigned by repository on save
     Contract newContract =
         new Contract(
             null, // New ID will be generated
@@ -720,44 +723,44 @@ public class ContractService {
   public DocumentResponse uploadDocument(
       String contractIdentifier,
       MultipartFile file,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "CONTRACT", contract.getId(), contract.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.getDocuments("CONTRACT", contract.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", contract.getId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "CONTRACT", contract.getId());
   }
 
   public Map<String, Object> generatePayments(
       String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
     LocalDate paymentDate =
         markAsPaid
@@ -766,7 +769,7 @@ public class ContractService {
     int generated =
         paymentSchedulingService.generatePaymentsManually(
             contract.getId(),
-            principal.getTeamId(),
+            principal.requireTeamId(),
             principal.getUserId(),
             request.count(),
             markAsPaid,
@@ -929,7 +932,7 @@ public class ContractService {
         .toList();
   }
 
-  private void validateCurrencyRequired(String currency, java.math.BigDecimal amount) {
+  private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {
     if (currency != null && !currency.isBlank()) {
       try {
         java.util.Currency.getInstance(currency);
@@ -943,7 +946,7 @@ public class ContractService {
     }
   }
 
-  private static boolean bigDecimalEquals(java.math.BigDecimal a, java.math.BigDecimal b) {
+  private static boolean bigDecimalEquals(@Nullable BigDecimal a, @Nullable BigDecimal b) {
     if (a == null && b == null) {
       return true;
     }
@@ -959,7 +962,7 @@ public class ContractService {
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
     Property property =
-        propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId()).orElse(null);
+        propertyRepository.findByIdAndTeamId(propertyId, principal.requireTeamId()).orElse(null);
 
     if (property == null) {
       log.warn("Property {} not found for contract status update", propertyId);
@@ -973,7 +976,7 @@ public class ContractService {
     } else if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
       boolean hasOtherActiveContracts =
           contractRepository
-              .findActiveContractByPropertyId(propertyId, principal.getTeamId())
+              .findActiveContractByPropertyId(propertyId, principal.requireTeamId())
               .isPresent();
 
       if (!hasOtherActiveContracts) {

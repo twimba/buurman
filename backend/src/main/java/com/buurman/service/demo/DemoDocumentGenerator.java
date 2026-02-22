@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,7 @@ public class DemoDocumentGenerator {
   /** PDF files loaded from classpath, keyed by filename. */
   private final Map<String, byte[]> pdfPool;
 
-  private record DocTemplate(String title, String pdfResource, String notes) {}
+  private record DocTemplate(String title, String pdfResource, @Nullable String notes) {}
 
   // --- Residential property documents ---
   private static final List<DocTemplate> RESIDENTIAL_PROPERTY_DOCS =
@@ -187,6 +188,9 @@ public class DemoDocumentGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
+      if (uploadedBy == null) {
+        continue;
+      }
       int teamDocuments = 0;
 
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
@@ -333,7 +337,7 @@ public class DemoDocumentGenerator {
       String title,
       String fileName,
       String pdfResource,
-      String notes) {
+      @Nullable String notes) {
     byte[] pdfData = pdfPool.getOrDefault(pdfResource, pdfPool.values().iterator().next());
 
     try {
@@ -373,14 +377,14 @@ public class DemoDocumentGenerator {
 
   // --- helpers ---
 
-  private String fetchPropertyStreet(UUID propertyId) {
+  private @Nullable String fetchPropertyStreet(UUID propertyId) {
     return dsl.select(PROPERTIES.STREET)
         .from(PROPERTIES)
         .where(PROPERTIES.ID.eq(propertyId))
         .fetchOne(PROPERTIES.STREET);
   }
 
-  private String fetchTenantName(UUID tenantId) {
+  private @Nullable String fetchTenantName(UUID tenantId) {
     Record r =
         dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
             .from(TENANTS)

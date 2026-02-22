@@ -100,7 +100,7 @@ public class PhoneVerificationService {
     user.setPhoneVerifiedAt(clock.instant());
 
     return new UserProfileResponse(
-        user.getIdentifier(),
+        java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
@@ -126,7 +126,7 @@ public class PhoneVerificationService {
     user.setPhoneVerifiedAt(null);
 
     return new UserProfileResponse(
-        user.getIdentifier(),
+        java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
@@ -139,7 +139,7 @@ public class PhoneVerificationService {
 
     PhoneVerificationCode verificationCode = new PhoneVerificationCode();
     verificationCode.setUserId(user.getId());
-    verificationCode.setPhone(user.getPhone());
+    verificationCode.setPhone(java.util.Objects.requireNonNull(user.getPhone()));
     verificationCode.setCode(code);
     verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
     verificationCodeRepository.save(verificationCode);

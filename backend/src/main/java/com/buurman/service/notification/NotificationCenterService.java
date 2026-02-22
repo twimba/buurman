@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +34,12 @@ public class NotificationCenterService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public PaginatedResult<NotificationResponse> getNotifications(
       UserPrincipal principal,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      String dateFrom,
-      String dateTo,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable String dateFrom,
+      @Nullable String dateTo,
       PageRequest pageRequest) {
 
     LocalDateTime from = parseDateTime(dateFrom);
@@ -46,7 +47,14 @@ public class NotificationCenterService {
 
     PaginatedResult<Notification> result =
         notificationRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), type, channel, status, recipientEmail, from, to, pageRequest);
+            principal.requireTeamId(),
+            type,
+            channel,
+            status,
+            recipientEmail,
+            from,
+            to,
+            pageRequest);
 
     List<NotificationResponse> responses = result.items().stream().map(this::toResponse).toList();
 
@@ -56,7 +64,7 @@ public class NotificationCenterService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationResponse getNotification(UserPrincipal principal, String identifier) {
     Notification notification =
-        notificationRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return toResponse(notification);
   }
@@ -64,10 +72,10 @@ public class NotificationCenterService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationStatsResponse getStats(UserPrincipal principal) {
     List<Record2<String, Integer>> statusCounts =
-        notificationRepository.countByTeamIdGroupedByStatus(principal.getTeamId());
+        notificationRepository.countByTeamIdGroupedByStatus(principal.requireTeamId());
     List<Record2<String, Integer>> channelCounts =
-        notificationRepository.countByTeamIdGroupedByChannel(principal.getTeamId());
-    long totalCount = notificationRepository.countByTeamId(principal.getTeamId());
+        notificationRepository.countByTeamIdGroupedByChannel(principal.requireTeamId());
+    long totalCount = notificationRepository.countByTeamId(principal.requireTeamId());
 
     long pendingCount = 0, sentCount = 0, deliveredCount = 0, failedCount = 0;
     for (Record2<String, Integer> record : statusCounts) {
@@ -94,7 +102,7 @@ public class NotificationCenterService {
   @Transactional
   public NotificationResponse resendNotification(UserPrincipal principal, String identifier) {
     Notification resent =
-        notificationService.resend(principal.getTeamId(), identifier, principal.getUserId());
+        notificationService.resend(principal.requireTeamId(), identifier, principal.getUserId());
     return toResponse(resent);
   }
 
@@ -102,7 +110,7 @@ public class NotificationCenterService {
   public NotificationResponse refreshNotificationStatus(
       UserPrincipal principal, String identifier) {
     Notification notification =
-        notificationRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     Notification updated = deliveryStatusLookupService.refreshStatus(notification);
     return toResponse(updated);
@@ -139,7 +147,7 @@ public class NotificationCenterService {
         notification.getStatusUpdatedAt());
   }
 
-  private LocalDateTime parseDateTime(String dateTimeStr) {
+  private @Nullable LocalDateTime parseDateTime(@Nullable String dateTimeStr) {
     if (dateTimeStr == null || dateTimeStr.isBlank()) {
       return null;
     }

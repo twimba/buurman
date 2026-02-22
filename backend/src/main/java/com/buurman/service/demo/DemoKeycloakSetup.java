@@ -2,6 +2,7 @@ package com.buurman.service.demo;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -113,7 +114,7 @@ public class DemoKeycloakSetup {
     }
   }
 
-  private String findExistingKeycloakUser(String email) {
+  private @Nullable String findExistingKeycloakUser(String email) {
     try {
       List<UserRepresentation> users = keycloak.realm(realm).users().searchByEmail(email, true);
       if (users != null && !users.isEmpty()) {

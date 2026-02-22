@@ -55,14 +55,14 @@ public class TenantAddress {
       String country,
       AddressType addressType,
       AddressStatus status,
-      Double latitude,
-      Double longitude,
-      String geocodeAccuracy,
+      @Nullable Double latitude,
+      @Nullable Double longitude,
+      @Nullable String geocodeAccuracy,
       Instant createdAt,
       Instant updatedAt,
       UUID createdBy,
       UUID updatedBy,
-      Instant deletedAt) {
+      @Nullable Instant deletedAt) {
     this.id = id;
     this.tenantId = tenantId;
     this.teamId = teamId;

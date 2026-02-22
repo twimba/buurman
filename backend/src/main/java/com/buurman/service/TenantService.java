@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +78,7 @@ public class TenantService {
   public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
     if (request.email() != null && !request.email().isBlank()) {
       tenantRepository
-          .findByEmailAndTeamId(request.email(), principal.getTeamId())
+          .findByEmailAndTeamId(request.email(), principal.requireTeamId())
           .ifPresent(
               existing -> {
                 throw new IllegalArgumentException(
@@ -87,7 +88,7 @@ public class TenantService {
 
     Tenant tenant = tenantMapper.toEntity(request);
     tenant.setIdentifier(newTenantId().value());
-    tenant.setTeamId(principal.getTeamId());
+    tenant.setTeamId(principal.requireTeamId());
     tenant.setCreatedBy(principal.getUserId());
     tenant.setUpdatedBy(principal.getUserId());
 
@@ -95,51 +96,60 @@ public class TenantService {
 
     metricsService.incrementCounter("tenant.total");
 
-    log.info("Tenant created: {} for team {}", savedTenant.getIdentifier(), principal.getTeamId());
+    log.info(
+        "Tenant created: {} for team {}", savedTenant.getIdentifier(), principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(), "TENANT", savedTenant.getId(), principal.getUserId(), savedTenant);
+        principal.requireTeamId(),
+        "TENANT",
+        savedTenant.getId(),
+        principal.getUserId(),
+        savedTenant);
 
-    return toResponse(savedTenant, principal.getTeamId());
+    return toResponse(savedTenant, principal.requireTeamId());
   }
 
   public List<TenantResponse> getAllTenants(UserPrincipal principal) {
-    List<Tenant> tenants = tenantRepository.findAllByTeamId(principal.getTeamId());
-    return tenants.stream().map(tenant -> toResponse(tenant, principal.getTeamId())).toList();
+    List<Tenant> tenants = tenantRepository.findAllByTeamId(principal.requireTeamId());
+    return tenants.stream().map(tenant -> toResponse(tenant, principal.requireTeamId())).toList();
   }
 
   public List<TenantResponse> searchTenants(String searchTerm, UserPrincipal principal) {
-    List<Tenant> tenants = tenantRepository.searchByTeamId(principal.getTeamId(), searchTerm);
-    return tenants.stream().map(tenant -> toResponse(tenant, principal.getTeamId())).toList();
+    List<Tenant> tenants = tenantRepository.searchByTeamId(principal.requireTeamId(), searchTerm);
+    return tenants.stream().map(tenant -> toResponse(tenant, principal.requireTeamId())).toList();
   }
 
   public PageResponse<TenantResponse> getTenantsPaginated(
-      UserPrincipal principal, String search, PageRequest pageRequest) {
+      UserPrincipal principal, @Nullable String search, PageRequest pageRequest) {
     PaginatedResult<Tenant> result =
-        tenantRepository.findAllByTeamIdPaginated(principal.getTeamId(), search, pageRequest);
+        tenantRepository.findAllByTeamIdPaginated(principal.requireTeamId(), search, pageRequest);
     List<TenantResponse> responses =
-        result.items().stream().map(tenant -> toResponse(tenant, principal.getTeamId())).toList();
+        result.items().stream()
+            .map(tenant -> toResponse(tenant, principal.requireTeamId()))
+            .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public TenantResponse getTenant(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return toResponse(tenant, principal.getTeamId());
+    return toResponse(tenant, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse updateTenant(
       String identifier, UpdateTenantRequest request, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     if (request.email() != null
         && !request.email().isBlank()
         && !Objects.equals(tenant.getEmail(), request.email())) {
       tenantRepository
-          .findByEmailAndTeamId(request.email(), principal.getTeamId())
+          .findByEmailAndTeamId(request.email(), principal.requireTeamId())
           .ifPresent(
               existing -> {
                 if (!existing.getId().equals(tenant.getId())) {
@@ -155,10 +165,10 @@ public class TenantService {
 
     Tenant updatedTenant = tenantRepository.save(tenant);
     log.info(
-        "Tenant updated: {} for team {}", updatedTenant.getIdentifier(), principal.getTeamId());
+        "Tenant updated: {} for team {}", updatedTenant.getIdentifier(), principal.requireTeamId());
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "TENANT",
         updatedTenant.getId(),
         principal.getUserId(),
@@ -166,41 +176,43 @@ public class TenantService {
         updatedTenant,
         auditService.getChangedFields(oldTenant, updatedTenant));
 
-    return toResponse(updatedTenant, principal.getTeamId());
+    return toResponse(updatedTenant, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteTenant(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     if (tenant.getCurrentPropertyId() != null) {
       unlinkTenantInternal(tenant.getId(), principal);
     }
 
-    tenantRepository.softDeleteByIdAndTeamId(tenant.getId(), principal.getTeamId());
-    log.info("Tenant deleted: {} for team {}", identifier, principal.getTeamId());
+    tenantRepository.softDeleteByIdAndTeamId(tenant.getId(), principal.requireTeamId());
+    log.info("Tenant deleted: {} for team {}", identifier, principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(), "TENANT", tenant.getId(), principal.getUserId(), tenant);
+        principal.requireTeamId(), "TENANT", tenant.getId(), principal.getUserId(), tenant);
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse linkTenantToProperty(
       String identifier, LinkTenantToPropertyRequest request, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(
-            request.propertyIdentifier(), principal.getTeamId());
+            request.propertyIdentifier(), principal.requireTeamId());
 
     if (tenant.getCurrentPropertyId() != null) {
       throw new IllegalArgumentException("Tenant is already linked to a property. Unlink first.");
     }
 
     List<Tenant> existingTenants =
-        tenantRepository.findByCurrentPropertyId(property.getId(), principal.getTeamId());
+        tenantRepository.findByCurrentPropertyId(property.getId(), principal.requireTeamId());
     if (!existingTenants.isEmpty()) {
       throw new IllegalArgumentException("Property already has a tenant assigned");
     }
@@ -210,7 +222,7 @@ public class TenantService {
     Tenant updatedTenant = tenantRepository.save(tenant);
 
     PropertyTenantHistory history = new PropertyTenantHistory();
-    history.setTeamId(principal.getTeamId());
+    history.setTeamId(principal.requireTeamId());
     history.setPropertyId(property.getId());
     history.setTenantId(tenant.getId());
     history.setMovedInAt(request.movedInAt() != null ? request.movedInAt() : clock.instant());
@@ -225,22 +237,23 @@ public class TenantService {
         "Tenant {} linked to property {} for team {}",
         identifier,
         property.getIdentifier(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY_TENANT_LINK",
         history.getId(),
         principal.getUserId(),
         history);
 
-    return toResponse(updatedTenant, principal.getTeamId());
+    return toResponse(updatedTenant, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse unlinkTenantFromProperty(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     if (tenant.getCurrentPropertyId() == null) {
       throw new IllegalArgumentException("Tenant is not linked to any property");
@@ -253,7 +266,7 @@ public class TenantService {
     Tenant updatedTenant = tenantRepository.save(tenant);
 
     PropertyTenantHistory history = new PropertyTenantHistory();
-    history.setTeamId(principal.getTeamId());
+    history.setTeamId(principal.requireTeamId());
     history.setPropertyId(propertyId);
     history.setTenantId(tenant.getId());
     history.setMovedOutAt(clock.instant());
@@ -268,41 +281,49 @@ public class TenantService {
         "Tenant {} unlinked from property {} for team {}",
         identifier,
         propertyId,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY_TENANT_UNLINK",
         history.getId(),
         principal.getUserId(),
         history);
 
-    return toResponse(updatedTenant, principal.getTeamId());
+    return toResponse(updatedTenant, principal.requireTeamId());
   }
 
   public List<PropertyTenantHistoryResponse> getTenantHistory(
       String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     List<PropertyTenantHistory> history =
-        historyRepository.findByTenantId(tenant.getId(), principal.getTeamId());
-    return history.stream().map(h -> toHistoryResponse(h, principal.getTeamId())).toList();
+        historyRepository.findByTenantId(tenant.getId(), principal.requireTeamId());
+    return history.stream().map(h -> toHistoryResponse(h, principal.requireTeamId())).toList();
   }
 
   public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "TENANT", tenant.getId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "TENANT", tenant.getId());
   }
 
   public DocumentResponse uploadDocument(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("TENANT", tenant.getId(), principal);
   }
 
@@ -316,44 +337,52 @@ public class TenantService {
   }
 
   public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("TENANT", tenant.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
         file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
   }
 
   public PhotoResponse setMainPhoto(
       String identifier, String photoIdentifier, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    Photo photo = photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.getTeamId());
+    Tenant tenant =
+        tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    Photo photo =
+        photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.requireTeamId());
     return photoService.setMainPhoto(photo.getId(), "TENANT", tenant.getId(), principal);
   }
 
   public TenantAddressResponse createAddress(
       String tenantIdentifier, CreateTenantAddressRequest request, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     return addressService.createAddress(tenant.getId(), request, principal);
   }
 
   public List<TenantAddressResponse> getAddresses(
       String tenantIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     return addressService.getAddresses(tenant.getId(), principal);
   }
 
   public TenantAddressResponse getAddress(
       String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     TenantAddress address =
-        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.requireTeamId());
     return addressService.getAddress(tenant.getId(), address.getId(), principal);
   }
 
@@ -363,18 +392,18 @@ public class TenantService {
       UpdateTenantAddressRequest request,
       UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     TenantAddress address =
-        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.requireTeamId());
     return addressService.updateAddress(tenant.getId(), address.getId(), request, principal);
   }
 
   public void deleteAddress(
       String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
-        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+        tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     TenantAddress address =
-        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.getTeamId());
+        addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.requireTeamId());
     addressService.deleteAddress(tenant.getId(), address.getId(), principal);
   }
 
@@ -386,12 +415,12 @@ public class TenantService {
     Optional<Photo> mainPhoto =
         photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
 
-    String mainPhotoUrl =
+    @Nullable String mainPhotoUrl =
         mainPhoto
             .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
             .orElse(null);
 
-    String mainPhotoThumbnailUrl =
+    @Nullable String mainPhotoThumbnailUrl =
         mainPhoto
             .map(
                 photo -> {
@@ -410,10 +439,10 @@ public class TenantService {
 
     List<TenantPropertyAssignment> activeProperties = new java.util.ArrayList<>();
     for (Contract contract : activeContracts) {
-      Property property =
+      @Nullable Property property =
           propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
       if (property != null) {
-        String role =
+        @Nullable String role =
             contractPartyRepository
                 .findByTenantIdAndContractIdAndTeamId(tenant.getId(), contract.getId(), teamId)
                 .map(party -> party.getRole().name())
@@ -478,7 +507,7 @@ public class TenantService {
 
   /** Internal method for unlinking by UUID (used during delete). */
   private void unlinkTenantInternal(UUID tenantId, UserPrincipal principal) {
-    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
+    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     if (tenant.getCurrentPropertyId() == null) {
       return;
@@ -491,7 +520,7 @@ public class TenantService {
     tenantRepository.save(tenant);
 
     PropertyTenantHistory history = new PropertyTenantHistory();
-    history.setTeamId(principal.getTeamId());
+    history.setTeamId(principal.requireTeamId());
     history.setPropertyId(propertyId);
     history.setTenantId(tenantId);
     history.setMovedOutAt(clock.instant());
@@ -501,7 +530,7 @@ public class TenantService {
     historyRepository.save(history);
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY_TENANT_UNLINK",
         history.getId(),
         principal.getUserId(),

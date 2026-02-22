@@ -22,7 +22,7 @@ public class Document {
   private String fileName;
   private Long fileSize;
   private String mimeType;
-  private String title;
+  private @Nullable String title;
   private @Nullable String notes;
   private UUID uploadedBy;
   private Instant uploadedAt;

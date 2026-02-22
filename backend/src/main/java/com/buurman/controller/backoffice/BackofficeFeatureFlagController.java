@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -64,11 +65,12 @@ public class BackofficeFeatureFlagController {
   public record FeatureFlagUpdateResponse(
       String flagName, boolean enabled, @Nullable Object value) {}
 
-  public record SegmentFlagOverride(String flagName, boolean enabled, @Nullable Object value) {}
+  public record SegmentFlagOverride(
+      @Nullable String flagName, boolean enabled, @Nullable Object value) {}
 
   public record SegmentEvaluation(
       long segmentId,
-      String segmentName,
+      @Nullable String segmentName,
       @Nullable String description,
       Map<String, SegmentFlagOverride> overrides) {}
 
@@ -115,7 +117,9 @@ public class BackofficeFeatureFlagController {
       }
 
       String identity =
-          FlagsmithAdminService.buildIdentity(team.getIdentifier(), user.getIdentifier());
+          FlagsmithAdminService.buildIdentity(
+              Objects.requireNonNull(team.getIdentifier()),
+              Objects.requireNonNull(user.getIdentifier()));
 
       Map<String, Object> traits = new HashMap<>();
       traits.put("team", team.getIdentifier());

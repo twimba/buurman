@@ -29,7 +29,7 @@ public class PropertyOutdoorAreaService {
       String propertyIdentifier, UserPrincipal principal) {
     Property property = resolveProperty(propertyIdentifier, principal);
     return outdoorAreaRepository
-        .findByPropertyIdAndTeamId(property.getId(), principal.getTeamId())
+        .findByPropertyIdAndTeamId(property.getId(), principal.requireTeamId())
         .stream()
         .map(this::toResponse)
         .toList();
@@ -45,7 +45,7 @@ public class PropertyOutdoorAreaService {
     PropertyOutdoorArea area = new PropertyOutdoorArea();
     area.setIdentifier(newPropertyOutdoorAreaId().value());
     area.setPropertyId(property.getId());
-    area.setTeamId(principal.getTeamId());
+    area.setTeamId(principal.requireTeamId());
     area.setType(request.type());
     area.setAreaValue(request.areaValue());
     area.setAreaUnit(request.areaUnit() != null ? request.areaUnit() : "sqm");
@@ -67,7 +67,7 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.requireTeamId());
 
     area.setType(request.type());
     area.setAreaValue(request.areaValue());
@@ -88,13 +88,14 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.requireTeamId());
 
-    outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.getTeamId());
+    outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.requireTeamId());
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
-    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+    return propertyRepository.getByIdentifierAndTeamId(
+        propertyIdentifier, principal.requireTeamId());
   }
 
   private PropertyOutdoorAreaResponse toResponse(PropertyOutdoorArea area) {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,7 @@ public class ContractRentPeriodService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse addRentPeriod(
       String contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateEffectiveFrom(contract, request.effectiveFrom());
@@ -137,18 +138,18 @@ public class ContractRentPeriodService {
 
   public List<RentPeriodResponse> getRentTimeline(
       String contractIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     return rentPeriodMapper.toResponses(periods);
   }
 
-  public ContractRentPeriod getCurrentRent(UUID contractId, UUID teamId) {
+  public @Nullable ContractRentPeriod getCurrentRent(UUID contractId, UUID teamId) {
     return rentPeriodRepository.findCurrentByContractIdAndTeamId(contractId, teamId).orElse(null);
   }
 
-  public ContractRentPeriod getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
+  public @Nullable ContractRentPeriod getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
     return rentPeriodRepository
         .findAtDateByContractIdAndTeamId(contractId, teamId, date)
         .orElse(null);
@@ -161,7 +162,7 @@ public class ContractRentPeriodService {
       String periodIdentifier,
       UpdateRentPeriodRequest request,
       UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -229,7 +230,7 @@ public class ContractRentPeriodService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteRentPeriod(
       String contractIdentifier, String periodIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -381,7 +382,7 @@ public class ContractRentPeriodService {
   private void sendRentAdjustedNotification(
       Contract contract,
       UUID teamId,
-      BigDecimal oldRentAmount,
+      @Nullable BigDecimal oldRentAmount,
       BigDecimal newRentAmount,
       LocalDate effectiveFrom,
       UUID userId) {

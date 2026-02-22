@@ -155,7 +155,7 @@ public class UserRepository {
     return dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.EMAIL.eq(email)));
   }
 
-  public void updateActiveTeamId(UUID userId, UUID teamId) {
+  public void updateActiveTeamId(UUID userId, @Nullable UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.ACTIVE_TEAM_ID, teamId)
@@ -191,7 +191,7 @@ public class UserRepository {
         .execute();
   }
 
-  public void updateDefaultTeamId(UUID userId, UUID teamId) {
+  public void updateDefaultTeamId(UUID userId, @Nullable UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.DEFAULT_TEAM_ID, teamId)

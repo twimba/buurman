@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,6 +146,9 @@ public class NotificationService {
 
   @Transactional
   public List<Notification> sendToTeam(SendNotificationRequest request) {
+    if (request.teamId() == null) {
+      return List.of();
+    }
     List<Notification> allNotifications = new ArrayList<>();
     List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId());
     for (TeamMember member : members) {
@@ -174,7 +178,8 @@ public class NotificationService {
   }
 
   @Transactional
-  public Notification resend(UUID teamId, String notificationIdentifier, UUID userId) {
+  public Notification resend(
+      @Nullable UUID teamId, String notificationIdentifier, @Nullable UUID userId) {
     Notification original =
         notificationRepository.getByIdentifierAndTeamId(notificationIdentifier, teamId);
 
@@ -183,8 +188,14 @@ public class NotificationService {
       throw new ExternalServiceException("No sender for channel: " + original.getChannel());
     }
 
-    RenderedContent content =
-        sender.render(original.getContentTemplate(), original.getContentVariables());
+    String contentTemplate = original.getContentTemplate();
+    Map<String, Object> contentVariables = original.getContentVariables();
+    if (contentTemplate == null || contentVariables == null) {
+      throw new ExternalServiceException(
+          "Cannot resend notification without content template and variables");
+    }
+
+    RenderedContent content = sender.render(contentTemplate, contentVariables);
 
     Notification resent = new Notification();
     resent.setTeamId(original.getTeamId());

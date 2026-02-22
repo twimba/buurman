@@ -33,7 +33,7 @@ public class DashboardController {
   @GetMapping("/stats")
   public DashboardStatsResponse getDashboardStats(
       @AuthenticationPrincipal UserPrincipal principal) {
-    return dashboardService.getDashboardStats(principal.getTeamId());
+    return dashboardService.getDashboardStats(principal.requireTeamId());
   }
 
   @Operation(summary = "Get recent activities", description = "Get recent audit trail activities")
@@ -41,6 +41,6 @@ public class DashboardController {
   public List<RecentActivityResponse> getRecentActivities(
       @AuthenticationPrincipal UserPrincipal principal,
       @RequestParam(defaultValue = "10") int limit) {
-    return dashboardService.getRecentActivities(principal.getTeamId(), limit);
+    return dashboardService.getRecentActivities(principal.requireTeamId(), limit);
   }
 }

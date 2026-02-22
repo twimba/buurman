@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationState;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.info.BuildProperties;
@@ -103,7 +104,7 @@ public class BackofficeSystemInfoService {
         build != null ? build.getTime() : null);
   }
 
-  private String resolveGitBranch(GitProperties git) {
+  private @Nullable String resolveGitBranch(GitProperties git) {
     String branch = git.getBranch();
     // Detached HEAD (e.g. tag checkout in CI) returns the commit SHA as branch
     if (branch != null && branch.matches("[0-9a-f]{40}")) {

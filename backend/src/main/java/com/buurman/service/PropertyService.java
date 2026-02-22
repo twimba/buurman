@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,7 +157,7 @@ public class PropertyService {
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
-    property.setTeamId(principal.getTeamId());
+    property.setTeamId(principal.requireTeamId());
     property.setCreatedBy(principal.getUserId());
     property.setUpdatedBy(principal.getUserId());
 
@@ -178,7 +179,7 @@ public class PropertyService {
     saveDetailsForCategory(
         request.propertyCategory(),
         savedProperty.getId(),
-        principal.getTeamId(),
+        principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
         request.commercialDetails(),
@@ -191,10 +192,10 @@ public class PropertyService {
         "Property created: {} ({}) for team {}",
         savedProperty.getIdentifier(),
         request.propertyCategory(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY",
         savedProperty.getId(),
         principal.getUserId(),
@@ -206,7 +207,7 @@ public class PropertyService {
             : savedProperty.getIdentifier();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId())
+            .teamId(principal.requireTeamId())
             .notificationType(NotificationType.PROPERTY_CREATED)
             .templateName("property-created")
             .templateVariables(
@@ -224,35 +225,35 @@ public class PropertyService {
             .createdBy(principal.getUserId())
             .build());
 
-    return toResponseWithMainPhoto(savedProperty, principal.getTeamId(), true);
+    return toResponseWithMainPhoto(savedProperty, principal.requireTeamId(), true);
   }
 
   public List<PropertyResponse> getProperties(
-      UserPrincipal principal, Property.PropertyStatus status) {
+      UserPrincipal principal, Property.@Nullable PropertyStatus status) {
     List<Property> properties;
     if (status != null) {
-      properties = propertyRepository.findByTeamIdAndStatus(principal.getTeamId(), status);
+      properties = propertyRepository.findByTeamIdAndStatus(principal.requireTeamId(), status);
     } else {
-      properties = propertyRepository.findAllByTeamId(principal.getTeamId());
+      properties = propertyRepository.findAllByTeamId(principal.requireTeamId());
     }
 
     return properties.stream()
-        .map(property -> toResponseWithMainPhoto(property, principal.getTeamId(), false))
+        .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
         .toList();
   }
 
   public PageResponse<PropertyResponse> getPropertiesPaginated(
       UserPrincipal principal,
-      String status,
-      String category,
-      String query,
+      @Nullable String status,
+      @Nullable String category,
+      @Nullable String query,
       PageRequest pageRequest) {
     PaginatedResult<Property> result =
         propertyRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, category, query, pageRequest);
+            principal.requireTeamId(), status, category, query, pageRequest);
     List<PropertyResponse> responses =
         result.items().stream()
-            .map(property -> toResponseWithMainPhoto(property, principal.getTeamId(), false))
+            .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -260,9 +261,9 @@ public class PropertyService {
 
   public PropertyResponse getProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return toResponseWithMainPhoto(property, principal.getTeamId(), true);
+    return toResponseWithMainPhoto(property, principal.requireTeamId(), true);
   }
 
   @Transactional
@@ -271,9 +272,9 @@ public class PropertyService {
       String identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId(), true);
+    PropertyResponse oldState = toResponseWithMainPhoto(property, principal.requireTeamId(), true);
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
@@ -324,7 +325,7 @@ public class PropertyService {
     updateDetailsForCategory(
         property.getPropertyCategory(),
         property.getId(),
-        principal.getTeamId(),
+        principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
         request.commercialDetails(),
@@ -332,12 +333,12 @@ public class PropertyService {
         request.agriculturalDetails());
 
     PropertyResponse newState =
-        toResponseWithMainPhoto(updatedProperty, principal.getTeamId(), true);
+        toResponseWithMainPhoto(updatedProperty, principal.requireTeamId(), true);
 
-    log.info("Property updated: {} for team {}", identifier, principal.getTeamId());
+    log.info("Property updated: {} for team {}", identifier, principal.requireTeamId());
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY",
         updatedProperty.getId(),
         principal.getUserId(),
@@ -352,26 +353,30 @@ public class PropertyService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.getTeamId());
-    log.info("Property deleted: {} for team {}", identifier, principal.getTeamId());
+    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.requireTeamId());
+    log.info("Property deleted: {} for team {}", identifier, principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);
+        principal.requireTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);
   }
 
   public DocumentResponse uploadDocument(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
@@ -386,20 +391,24 @@ public class PropertyService {
 
   public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "PROPERTY", property.getId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
   }
 
   public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
@@ -407,8 +416,9 @@ public class PropertyService {
   public PhotoResponse setMainPhoto(
       String identifier, String photoIdentifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    Photo photo = photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    Photo photo =
+        photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.requireTeamId());
     return photoService.setMainPhoto(photo.getId(), "PROPERTY", property.getId(), principal);
   }
 
@@ -422,7 +432,8 @@ public class PropertyService {
     }
   }
 
-  private void validateCurrencyRequired(String currency, java.math.BigDecimal... monetaryFields) {
+  private void validateCurrencyRequired(
+      @Nullable String currency, java.math.@Nullable BigDecimal... monetaryFields) {
     if (currency != null && !currency.isBlank()) {
       try {
         java.util.Currency.getInstance(currency);
@@ -443,10 +454,10 @@ public class PropertyService {
       UUID propertyId,
       UUID teamId,
       UUID userId,
-      ResidentialDetailsRequest residential,
-      CommercialDetailsRequest commercial,
-      IndustrialDetailsRequest industrial,
-      AgriculturalDetailsRequest agricultural) {
+      @Nullable ResidentialDetailsRequest residential,
+      @Nullable CommercialDetailsRequest commercial,
+      @Nullable IndustrialDetailsRequest industrial,
+      @Nullable AgriculturalDetailsRequest agricultural) {
     switch (category) {
       case RESIDENTIAL -> {
         if (residential != null) {
@@ -559,10 +570,10 @@ public class PropertyService {
       UUID propertyId,
       UUID teamId,
       UUID userId,
-      ResidentialDetailsRequest residential,
-      CommercialDetailsRequest commercial,
-      IndustrialDetailsRequest industrial,
-      AgriculturalDetailsRequest agricultural) {
+      @Nullable ResidentialDetailsRequest residential,
+      @Nullable CommercialDetailsRequest commercial,
+      @Nullable IndustrialDetailsRequest industrial,
+      @Nullable AgriculturalDetailsRequest agricultural) {
     switch (category) {
       case RESIDENTIAL -> {
         if (residential != null) {
@@ -686,7 +697,8 @@ public class PropertyService {
     }
   }
 
-  private ResidentialDetailsResponse buildResidentialResponse(UUID propertyId, UUID teamId) {
+  private @Nullable ResidentialDetailsResponse buildResidentialResponse(
+      UUID propertyId, UUID teamId) {
     return residentialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -696,7 +708,8 @@ public class PropertyService {
         .orElse(null);
   }
 
-  private CommercialDetailsResponse buildCommercialResponse(UUID propertyId, UUID teamId) {
+  private @Nullable CommercialDetailsResponse buildCommercialResponse(
+      UUID propertyId, UUID teamId) {
     return commercialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -718,7 +731,8 @@ public class PropertyService {
         .orElse(null);
   }
 
-  private IndustrialDetailsResponse buildIndustrialResponse(UUID propertyId, UUID teamId) {
+  private @Nullable IndustrialDetailsResponse buildIndustrialResponse(
+      UUID propertyId, UUID teamId) {
     return industrialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -741,7 +755,8 @@ public class PropertyService {
         .orElse(null);
   }
 
-  private AgriculturalDetailsResponse buildAgriculturalResponse(UUID propertyId, UUID teamId) {
+  private @Nullable AgriculturalDetailsResponse buildAgriculturalResponse(
+      UUID propertyId, UUID teamId) {
     return agriculturalDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -773,12 +788,12 @@ public class PropertyService {
     Optional<Photo> mainPhoto =
         photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
 
-    String mainPhotoUrl =
+    @Nullable String mainPhotoUrl =
         mainPhoto
             .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
             .orElse(null);
 
-    String mainPhotoThumbnailUrl =
+    @Nullable String mainPhotoThumbnailUrl =
         mainPhoto
             .map(
                 photo -> {
@@ -790,7 +805,7 @@ public class PropertyService {
                 })
             .orElse(null);
 
-    List<PropertyOutdoorAreaResponse> outdoorAreas =
+    @Nullable List<PropertyOutdoorAreaResponse> outdoorAreas =
         includeNestedCollections
             ? outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
                 .map(
@@ -805,16 +820,16 @@ public class PropertyService {
                 .toList()
             : null;
 
-    List<PropertyAmenityResponse> amenities =
+    @Nullable List<PropertyAmenityResponse> amenities =
         includeNestedCollections
             ? propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId)
             : null;
 
     // Build category-specific detail responses
-    ResidentialDetailsResponse residentialDetails = null;
-    CommercialDetailsResponse commercialDetails = null;
-    IndustrialDetailsResponse industrialDetails = null;
-    AgriculturalDetailsResponse agriculturalDetails = null;
+    @Nullable ResidentialDetailsResponse residentialDetails = null;
+    @Nullable CommercialDetailsResponse commercialDetails = null;
+    @Nullable IndustrialDetailsResponse industrialDetails = null;
+    @Nullable AgriculturalDetailsResponse agriculturalDetails = null;
 
     if (property.getPropertyCategory() != null) {
       switch (property.getPropertyCategory()) {

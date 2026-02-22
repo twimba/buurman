@@ -3,6 +3,7 @@ package com.buurman.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,8 +42,8 @@ public class UserTeamService {
       UpdateUserProfileRequest request, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
-    String oldPhone = user.getPhone();
-    String newPhone = request.phone();
+    @Nullable String oldPhone = user.getPhone();
+    @Nullable String newPhone = request.phone();
 
     // Validate phone against policy before saving
     if (newPhone != null && !newPhone.isBlank()) {
@@ -71,7 +72,7 @@ public class UserTeamService {
 
   private UserProfileResponse toProfileResponse(User user) {
     return new UserProfileResponse(
-        user.getIdentifier(),
+        java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
@@ -178,13 +179,13 @@ public class UserTeamService {
         teamMemberRepository.findAllByUserId(principal.getUserId());
 
     if (team.getId().equals(user.getActiveTeamId())) {
-      UUID newActiveTeamId =
+      @Nullable UUID newActiveTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
       userRepository.updateActiveTeamId(principal.getUserId(), newActiveTeamId);
     }
 
     if (team.getId().equals(user.getDefaultTeamId())) {
-      UUID newDefaultTeamId =
+      @Nullable UUID newDefaultTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
       userRepository.updateDefaultTeamId(principal.getUserId(), newDefaultTeamId);
     }

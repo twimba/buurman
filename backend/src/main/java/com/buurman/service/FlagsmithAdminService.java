@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -42,12 +43,12 @@ public class FlagsmithAdminService {
   private static final String SERVER_KEY_NAME = "Backend";
 
   // Cached admin session state
-  private String adminToken;
+  private @Nullable String adminToken;
   private Instant tokenExpiresAt = Instant.MIN;
-  private Integer projectId;
-  private Integer environmentId;
-  private String environmentClientKey;
-  private String serverSideKey;
+  private @Nullable Integer projectId;
+  private @Nullable Integer environmentId;
+  private @Nullable String environmentClientKey;
+  private @Nullable String serverSideKey;
 
   public FlagsmithAdminService(FlagsmithProperties properties) {
     this.properties = properties;
@@ -59,22 +60,34 @@ public class FlagsmithAdminService {
   // --- Public records ---
 
   public record FeatureStateInfo(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
   public record IdentityInfo(long id, String identifier) {}
 
   public record IdentityOverrideInfo(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      @Nullable String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
-  public record SegmentInfo(long id, String name, String description) {}
+  public record SegmentInfo(long id, @Nullable String name, @Nullable String description) {}
 
   public record SegmentOverrideState(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      @Nullable String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
   public record SegmentWithOverrides(
       long segmentId,
-      String segmentName,
-      String description,
+      @Nullable String segmentName,
+      @Nullable String description,
       List<SegmentOverrideState> overrides) {}
 
   // --- Global feature state operations ---
@@ -95,7 +108,8 @@ public class FlagsmithAdminService {
     return result;
   }
 
-  public FeatureStateInfo updateFeatureState(long featureStateId, Boolean enabled, String value) {
+  public FeatureStateInfo updateFeatureState(
+      long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     if (enabled != null) {
@@ -128,7 +142,7 @@ public class FlagsmithAdminService {
    * be updated through /features/featurestates/{id}/.
    */
   public FeatureStateInfo updateSegmentOverrideState(
-      long featureStateId, Boolean enabled, String value) {
+      long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
 
     // The top-level /features/featurestates/ uses FeatureStateSerializerFull which
@@ -198,7 +212,7 @@ public class FlagsmithAdminService {
   }
 
   /** Finds a feature state node in the environment document by its django_id/id. */
-  private JsonNode findFeatureStateInEnvDocument(long featureStateId) {
+  private @Nullable JsonNode findFeatureStateInEnvDocument(long featureStateId) {
     JsonNode doc = getEnvironmentDocument();
     JsonNode project = doc.get("project");
     if (project == null) {
@@ -265,7 +279,10 @@ public class FlagsmithAdminService {
     JsonNode resp = get("/projects/" + projectId + "/features/", adminToken);
     Map<Long, String> names = new HashMap<>();
     for (JsonNode f : asArray(resp)) {
-      names.put(f.get("id").asLong(), text(f, "name"));
+      String name = text(f, "name");
+      if (name != null) {
+        names.put(f.get("id").asLong(), name);
+      }
     }
     return names;
   }
@@ -312,7 +329,7 @@ public class FlagsmithAdminService {
   }
 
   public IdentityOverrideInfo createIdentityOverride(
-      long identityId, long featureId, boolean enabled, String value) {
+      long identityId, long featureId, boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     body.put("feature", featureId);
@@ -335,7 +352,7 @@ public class FlagsmithAdminService {
   }
 
   public IdentityOverrideInfo updateIdentityOverride(
-      long identityId, long featureStateId, Boolean enabled, String value) {
+      long identityId, long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     if (enabled != null) {
@@ -674,16 +691,14 @@ public class FlagsmithAdminService {
 
   // --- Internal: HTTP helpers ---
 
-  private JsonNode get(String path, String token) {
+  private JsonNode get(String path, @Nullable String token) {
     try {
-      var req =
-          HttpRequest.newBuilder()
-              .uri(URI.create(baseUrl + path))
-              .header("Authorization", "Token " + token)
-              .GET()
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+      var builder =
+          HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).GET().timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "GET", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -694,7 +709,7 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode post(String path, JsonNode payload, String token) {
+  private JsonNode post(String path, JsonNode payload, @Nullable String token) {
     try {
       var builder =
           HttpRequest.newBuilder()
@@ -716,17 +731,18 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode put(String path, JsonNode payload, String token) {
+  private JsonNode put(String path, JsonNode payload, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Content-Type", "application/json")
-              .header("Authorization", "Token " + token)
               .PUT(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PUT", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -737,18 +753,19 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode patch(String path, JsonNode payload, String token) {
+  private JsonNode patch(String path, JsonNode payload, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Content-Type", "application/json")
-              .header("Authorization", "Token " + token)
               .method(
                   "PATCH", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PATCH", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -759,16 +776,17 @@ public class FlagsmithAdminService {
     }
   }
 
-  private void delete(String path, String token) {
+  private void delete(String path, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
-              .header("Authorization", "Token " + token)
               .DELETE()
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "DELETE", path);
     } catch (ExternalServiceException e) {
       throw e;
@@ -826,7 +844,7 @@ public class FlagsmithAdminService {
     return featureNode.isObject() ? featureNode.get("id").asLong() : featureNode.asLong();
   }
 
-  private Object extractValue(JsonNode fs) {
+  private @Nullable Object extractValue(JsonNode fs) {
     JsonNode val = fs.get("feature_state_value");
     if (val == null || val.isNull()) {
       return null;
@@ -874,7 +892,7 @@ public class FlagsmithAdminService {
     throw new IllegalStateException("Unexpected Flagsmith response format");
   }
 
-  private static String text(JsonNode node, String field) {
+  private static @Nullable String text(JsonNode node, String field) {
     return node.has(field) && !node.get(field).isNull() ? node.get(field).asText() : null;
   }
 

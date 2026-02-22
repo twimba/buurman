@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
@@ -796,7 +797,8 @@ public class ContractBookletExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private Tenant findPrimaryTenant(List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private @Nullable Tenant findPrimaryTenant(
+      List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
@@ -836,7 +838,7 @@ public class ContractBookletExporter {
     return agg;
   }
 
-  private String formatPaymentMethod(String value) {
+  private String formatPaymentMethod(@Nullable String value) {
     if (value == null) return "";
     return PAYMENT_METHOD_LABELS.getOrDefault(value, formatEnumValue(value));
   }

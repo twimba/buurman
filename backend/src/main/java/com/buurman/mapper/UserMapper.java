@@ -1,5 +1,6 @@
 package com.buurman.mapper;
 
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,5 +18,5 @@ public interface UserMapper {
   @Mapping(target = "teamIdentifier", source = "teamIdentifier")
   @Mapping(target = "role", source = "role")
   @Mapping(target = "emailVerified", expression = "java(user.getEmailVerifiedAt() != null)")
-  UserResponse toResponse(User user, String teamIdentifier, String role);
+  UserResponse toResponse(User user, @Nullable String teamIdentifier, @Nullable String role);
 }

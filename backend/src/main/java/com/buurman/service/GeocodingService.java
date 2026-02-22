@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.config.models.GoogleMapsProperties;
@@ -44,7 +45,10 @@ public class GeocodingService {
 
   /** Geocode with progressive fallback: full address → city+country → country only. */
   public Optional<GeocodingResult> geocode(
-      String street, String city, String postalCode, String country) {
+      @Nullable String street,
+      @Nullable String city,
+      @Nullable String postalCode,
+      @Nullable String country) {
     if (properties.apiKey() == null || properties.apiKey().isBlank()) {
       log.debug("Google Maps API key not configured, skipping geocoding");
       return Optional.empty();

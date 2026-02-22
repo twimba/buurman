@@ -52,8 +52,8 @@ public record BackofficeSystemInfoResponse(
       List<MigrationEntry> entries) {}
 
   public record MigrationEntry(
-      String version,
-      String description,
+      @Nullable String version,
+      @Nullable String description,
       String state,
       @Nullable Instant installedOn,
       @Nullable Integer executionTimeMs,

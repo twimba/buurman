@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,13 +85,16 @@ public class ReportService {
   public FinancialOverviewResponse getFinancialOverview(
       LocalDate startDate,
       LocalDate endDate,
-      List<UUID> propertyIds,
-      String currency,
+      @Nullable List<UUID> propertyIds,
+      @Nullable String currency,
       UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     String activeCurrency =
-        currency != null ? currency : teamService.getDefaultCurrency(principal.getTeamId());
+        currency != null
+            ? currency
+            : Objects.requireNonNullElse(
+                teamService.getDefaultCurrency(principal.requireTeamId()), "EUR");
 
     // Pre-fetch all contracts for the team to resolve payment→property mapping
     Map<UUID, Contract> contractsById =
@@ -222,7 +226,7 @@ public class ReportService {
   public IncomeTrendResponse getIncomeTrend(
       int months, List<UUID> propertyIds, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     LocalDate endDate = LocalDate.now(clock);
     LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
     LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
@@ -273,7 +277,9 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()));
+        dataPoints,
+        Objects.requireNonNullElse(
+            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -335,7 +341,7 @@ public class ReportService {
   public ExpenseBreakdownResponse getExpenseBreakdown(
       LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     List<Expense> expenses =
         expenseRepository.findByDateRange(startDate, endDate, teamId).stream()
@@ -364,14 +370,17 @@ public class ReportService {
             .toList();
 
     return new ExpenseBreakdownResponse(
-        categories, total, teamService.getDefaultCurrency(principal.getTeamId()));
+        categories,
+        total,
+        Objects.requireNonNullElse(
+            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
   }
 
   @Transactional(readOnly = true)
   public PropertyComparisonResponse getPropertyComparison(
       LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     // Pre-fetch all contracts for payment→property mapping
     Map<UUID, Contract> contractsById =
@@ -435,13 +444,15 @@ public class ReportService {
             .toList();
 
     return new PropertyComparisonResponse(
-        propertyData, teamService.getDefaultCurrency(principal.getTeamId()));
+        propertyData,
+        Objects.requireNonNullElse(
+            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
   }
 
   @Transactional(readOnly = true)
   public OccupancyTrendResponse getOccupancyTrend(int months, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     LocalDate endDate = LocalDate.now(clock);
     LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
 
@@ -530,7 +541,7 @@ public class ReportService {
   @Transactional(readOnly = true)
   public TaxSummaryResponse getTaxSummary(int year, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     LocalDate startDate = LocalDate.of(year, 1, 1);
     LocalDate endDate = LocalDate.of(year, 12, 31);
 
@@ -620,7 +631,8 @@ public class ReportService {
         netIncome,
         expensesByCategory,
         properties,
-        teamService.getDefaultCurrency(principal.getTeamId()));
+        Objects.requireNonNullElse(
+            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -652,8 +664,9 @@ public class ReportService {
 
   // Helper methods
 
-  private UUID getPropertyIdFromContract(UUID contractId, Map<UUID, Contract> contractsById) {
-    Contract contract = contractsById.get(contractId);
+  private @Nullable UUID getPropertyIdFromContract(
+      UUID contractId, Map<UUID, Contract> contractsById) {
+    @Nullable Contract contract = contractsById.get(contractId);
     return contract != null ? contract.getPropertyId() : null;
   }
 
@@ -685,7 +698,7 @@ public class ReportService {
               return new CategoryExpenseSummary(
                   entry.getKey().name(),
                   entry.getValue(),
-                  countsByCategory.get(entry.getKey()).intValue(),
+                  countsByCategory.getOrDefault(entry.getKey(), 0L).intValue(),
                   Math.round(percentage * 100.0) / 100.0);
             })
         .sorted(Comparator.comparing(CategoryExpenseSummary::total).reversed())

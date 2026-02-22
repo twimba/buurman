@@ -22,7 +22,7 @@ public class PhoneNumberPolicy {
   private @Nullable Instant updatedAt;
   private @Nullable String updatedBy;
 
-  public boolean isAllowed(String countryCode, String numberType) {
+  public boolean isAllowed(@Nullable String countryCode, @Nullable String numberType) {
     if (policyMatrix == null) {
       return false;
     }

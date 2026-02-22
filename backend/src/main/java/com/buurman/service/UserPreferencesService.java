@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,7 +105,7 @@ public class UserPreferencesService {
 
     List<NotificationTypePreferencesResponse.Entry> entries = new ArrayList<>();
     for (NotificationType type : NotificationType.configurableTypes()) {
-      UserNotificationTypePreference pref = savedMap.get(type);
+      @Nullable UserNotificationTypePreference pref = savedMap.get(type);
       entries.add(
           new NotificationTypePreferencesResponse.Entry(
               type.name(),

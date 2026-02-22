@@ -19,7 +19,7 @@ public class PropertyOutdoorArea {
   private UUID propertyId;
   private UUID teamId;
   private String type;
-  private BigDecimal areaValue;
+  private @Nullable BigDecimal areaValue;
   private String areaUnit;
   private Instant createdAt;
   private Instant updatedAt;

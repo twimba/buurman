@@ -6,8 +6,8 @@ import org.jspecify.annotations.Nullable;
 
 public record BackofficeNotificationResponse(
     String identifier,
-    String teamIdentifier,
-    String teamName,
+    @Nullable String teamIdentifier,
+    @Nullable String teamName,
     String notificationType,
     String channel,
     @Nullable String subject,

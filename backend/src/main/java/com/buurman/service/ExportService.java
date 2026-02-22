@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -34,12 +35,14 @@ public class ExportService {
   private final MetricsService metricsService;
   private final Clock clock;
 
-  public byte[] generateTransactionHistoryCSV(LocalDate startDate, LocalDate endDate, UUID teamId) {
+  public byte[] generateTransactionHistoryCSV(
+      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
     return withMetrics(
         "transaction_csv", () -> transactionCsvExporter.generate(startDate, endDate, teamId));
   }
 
-  public byte[] generateTransactionHistoryPDF(LocalDate startDate, LocalDate endDate, UUID teamId) {
+  public byte[] generateTransactionHistoryPDF(
+      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
     return withMetrics(
         "transaction_pdf", () -> transactionPdfExporter.generate(startDate, endDate, teamId));
   }

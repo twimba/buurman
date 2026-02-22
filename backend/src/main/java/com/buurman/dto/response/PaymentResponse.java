@@ -11,7 +11,7 @@ import com.buurman.domain.Payment;
 
 public record PaymentResponse(
     String identifier,
-    ContractSummary contract,
+    @Nullable ContractSummary contract,
     @Nullable TenantSummary tenant,
     @Nullable PropertySummary property,
     BigDecimal amount,

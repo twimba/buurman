@@ -56,8 +56,8 @@ public class LocalEmailSender implements NotificationChannelSender {
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
       helper.setFrom(fromEmail, fromName);
-      helper.setTo(request.recipientEmail());
-      helper.setSubject(request.subject());
+      helper.setTo(java.util.Objects.requireNonNull(request.recipientEmail(), "recipientEmail"));
+      helper.setSubject(java.util.Objects.requireNonNull(request.subject(), "subject"));
       helper.setText(request.body(), true);
 
       mailSender.send(message);

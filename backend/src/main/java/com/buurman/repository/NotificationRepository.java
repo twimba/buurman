@@ -89,23 +89,26 @@ public class NotificationRepository {
     return notification;
   }
 
-  public Optional<Notification> findByIdentifierAndTeamId(String identifier, UUID teamId) {
-    return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.IDENTIFIER.eq(identifier).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
-        .fetchOptional()
-        .map(mapper::toDomain);
+  public Optional<Notification> findByIdentifierAndTeamId(
+      String identifier, @Nullable UUID teamId) {
+    Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);
+    if (teamId != null) {
+      condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
+    }
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().map(mapper::toDomain);
   }
 
-  public Notification getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Notification getByIdentifierAndTeamId(String identifier, @Nullable UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
-  public Optional<Notification> findByIdAndTeamId(UUID id, UUID teamId) {
-    return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.ID.eq(id).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
-        .fetchOptional()
-        .map(mapper::toDomain);
+  public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
+    Condition condition = NOTIFICATIONS.ID.eq(id);
+    if (teamId != null) {
+      condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
+    }
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().map(mapper::toDomain);
   }
 
   public Optional<Notification> findByProviderMessageId(String providerMessageId) {

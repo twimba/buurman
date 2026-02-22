@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -197,11 +198,12 @@ public class BackofficeConfigInspector {
         obfuscate("password", environment.getProperty("spring.mail.password")));
   }
 
-  private void addEntry(List<ConfigEntry> entries, String category, String key, String value) {
+  private void addEntry(
+      List<ConfigEntry> entries, String category, String key, @Nullable String value) {
     entries.add(new ConfigEntry(category, key, value != null ? value : "\u2014"));
   }
 
-  private String obfuscate(String fieldName, String value) {
+  private String obfuscate(String fieldName, @Nullable String value) {
     if (value == null || value.isBlank()) {
       return "\u2014";
     }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +75,8 @@ public class RegistrationInvitationService {
     invitation.setMaxUsages(request.maxUsages());
     invitation.setExpiresAt(request.expiresAt());
     invitation.setNote(request.note());
-    invitation.setCreatedBy(principal.getEmail());
+    String principalEmail = principal.getEmail() != null ? principal.getEmail() : "unknown";
+    invitation.setCreatedBy(principalEmail);
 
     invitation = invitationRepository.save(invitation);
 
@@ -85,7 +87,8 @@ public class RegistrationInvitationService {
   }
 
   @Transactional(readOnly = true)
-  public PageResponse<RegistrationInvitationResponse> list(PageRequest pageRequest, String search) {
+  public PageResponse<RegistrationInvitationResponse> list(
+      PageRequest pageRequest, @Nullable String search) {
     PaginationHelper.PaginatedResult<RegistrationInvitation> result =
         invitationRepository.findAllPaginated(pageRequest, search);
 
@@ -113,12 +116,10 @@ public class RegistrationInvitationService {
       throw new BusinessRuleException("Invitation is already revoked");
     }
 
-    invitationRepository.revoke(invitation.getId(), principal.getEmail());
+    String revokerEmail = principal.getEmail() != null ? principal.getEmail() : "unknown";
+    invitationRepository.revoke(invitation.getId(), revokerEmail);
     metricsService.incrementCounter("registration.invitation.revoked.total");
-    log.info(
-        "Registration invitation revoked: code={}, by={}",
-        invitation.getCode(),
-        principal.getEmail());
+    log.info("Registration invitation revoked: code={}, by={}", invitation.getCode(), revokerEmail);
   }
 
   public ValidateInvitationCodeResponse validateCode(String code) {
@@ -208,7 +209,7 @@ public class RegistrationInvitationService {
       String recipientEmail,
       String registerUrl,
       BackofficePrincipal principal) {
-    NotificationChannelSender emailSender = channelSenders.get(NotificationChannel.EMAIL);
+    @Nullable NotificationChannelSender emailSender = channelSenders.get(NotificationChannel.EMAIL);
     if (emailSender == null) {
       throw new BusinessRuleException("Email sending is not configured");
     }
@@ -231,7 +232,7 @@ public class RegistrationInvitationService {
 
   private void sendViaSms(
       RegistrationInvitation invitation, String recipientPhone, String registerUrl) {
-    NotificationChannelSender smsSender = channelSenders.get(NotificationChannel.SMS);
+    @Nullable NotificationChannelSender smsSender = channelSenders.get(NotificationChannel.SMS);
     if (smsSender == null) {
       throw new BusinessRuleException("SMS sending is not configured");
     }

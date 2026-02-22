@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,8 @@ public class BackofficeUserService {
   private final Clock clock;
 
   @Transactional(readOnly = true)
-  public PageResponse<BackofficeUserResponse> listUsers(PageRequest pageRequest, String search) {
+  public PageResponse<BackofficeUserResponse> listUsers(
+      PageRequest pageRequest, @Nullable String search) {
     PaginatedResult<User> result = userRepository.findAllPaginated(pageRequest, search);
 
     Map<UUID, Integer> teamCountMap =
@@ -74,11 +76,12 @@ public class BackofficeUserService {
   public BackofficeUserResponse getUser(String identifier) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
-    long teamCount =
+    Long teamCountResult =
         dsl.selectCount()
             .from(TEAM_MEMBERS)
             .where(TEAM_MEMBERS.USER_ID.eq(user.getId()).and(TEAM_MEMBERS.DELETED_AT.isNull()))
             .fetchOne(0, long.class);
+    long teamCount = teamCountResult != null ? teamCountResult : 0L;
 
     boolean online = false;
     try {
@@ -134,7 +137,7 @@ public class BackofficeUserService {
 
   private BackofficeUserResponse toResponse(User user, long teamCount, boolean online) {
     return new BackofficeUserResponse(
-        user.getIdentifier(),
+        java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),

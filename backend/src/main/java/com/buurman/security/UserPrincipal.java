@@ -120,4 +120,20 @@ public class UserPrincipal implements Principal {
   public boolean hasTeam() {
     return teamId != null;
   }
+
+  /** Returns team ID, throwing if the user has no active team membership. */
+  public UUID requireTeamId() {
+    if (teamId == null) {
+      throw new IllegalStateException("User has no active team membership");
+    }
+    return teamId;
+  }
+
+  /** Returns team identifier (ULID), throwing if the user has no active team membership. */
+  public String requireTeamIdentifier() {
+    if (teamIdentifier == null) {
+      throw new IllegalStateException("User has no active team membership");
+    }
+    return teamIdentifier;
+  }
 }

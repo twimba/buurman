@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,8 +54,9 @@ public class CalendarFeedService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public List<CalendarFeedResponse> getUserFeeds(UserPrincipal principal) {
     List<CalendarFeed> feeds =
-        calendarFeedRepository.findByUserIdAndTeamId(principal.getUserId(), principal.getTeamId());
-    return feeds.stream().map(f -> toResponse(f, principal.getTeamId())).toList();
+        calendarFeedRepository.findByUserIdAndTeamId(
+            principal.getUserId(), principal.requireTeamId());
+    return feeds.stream().map(f -> toResponse(f, principal.requireTeamId())).toList();
   }
 
   @Transactional
@@ -73,7 +75,7 @@ public class CalendarFeedService {
         }
         Contract contract =
             contractRepository.getByIdentifierAndTeamId(
-                request.contractIdentifier(), principal.getTeamId());
+                request.contractIdentifier(), principal.requireTeamId());
         contractId = contract.getId();
       }
       case PROPERTY_PAYMENTS -> {
@@ -83,7 +85,7 @@ public class CalendarFeedService {
         }
         Property property =
             propertyRepository.getByIdentifierAndTeamId(
-                request.propertyIdentifier(), principal.getTeamId());
+                request.propertyIdentifier(), principal.requireTeamId());
         propertyId = property.getId();
       }
       case TENANT_PAYMENTS -> {
@@ -93,7 +95,7 @@ public class CalendarFeedService {
         }
         Tenant tenant =
             tenantRepository.getByIdentifierAndTeamId(
-                request.tenantIdentifier(), principal.getTeamId());
+                request.tenantIdentifier(), principal.requireTeamId());
         tenantId = tenant.getId();
       }
       case ALL_PAYMENTS -> {
@@ -109,14 +111,14 @@ public class CalendarFeedService {
             propertyId,
             tenantId,
             principal.getUserId(),
-            principal.getTeamId());
+            principal.requireTeamId());
     if (existing.isPresent()) {
-      return toResponse(existing.get(), principal.getTeamId());
+      return toResponse(existing.get(), principal.requireTeamId());
     }
 
     CalendarFeed feed = new CalendarFeed();
     feed.setIdentifier(newCalendarFeedId().value());
-    feed.setTeamId(principal.getTeamId());
+    feed.setTeamId(principal.requireTeamId());
     feed.setUserId(principal.getUserId());
     feed.setFeedToken(newToken().value() + newToken().value());
     feed.setFeedType(request.feedType());
@@ -128,37 +130,37 @@ public class CalendarFeedService {
     feed.setUpdatedBy(principal.getUserId());
 
     CalendarFeed saved = calendarFeedRepository.save(feed);
-    return toResponse(saved, principal.getTeamId());
+    return toResponse(saved, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public CalendarFeedResponse rotateFeedToken(String identifier, UserPrincipal principal) {
     CalendarFeed feed =
-        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     verifyOwnership(feed, principal);
 
     feed.setFeedToken(newToken().value() + newToken().value());
     feed.setUpdatedBy(principal.getUserId());
-    feed.setUpdatedAt(null); // let repository set current time
+    feed.setUpdatedAt(java.time.Instant.now()); // repository will override with DB timestamp
 
     CalendarFeed saved = calendarFeedRepository.save(feed);
-    return toResponse(saved, principal.getTeamId());
+    return toResponse(saved, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteFeed(String identifier, UserPrincipal principal) {
     CalendarFeed feed =
-        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     verifyOwnership(feed, principal);
 
     calendarFeedRepository.softDeleteByIdAndTeamId(feed.getId(), feed.getTeamId());
   }
 
-  public String generateICalFeed(String feedToken) {
+  public @Nullable String generateICalFeed(String feedToken) {
     Optional<CalendarFeed> feedOpt = calendarFeedRepository.findByFeedToken(feedToken);
     if (feedOpt.isEmpty()) {
       return null;
@@ -312,10 +314,13 @@ public class CalendarFeedService {
   private List<Payment> loadPayments(CalendarFeed feed, UUID teamId) {
     return switch (feed.getFeedType()) {
       case ALL_PAYMENTS -> paymentRepository.findAllByTeamId(teamId);
-      case CONTRACT -> paymentRepository.findByContractId(feed.getContractId(), teamId);
+      case CONTRACT ->
+          paymentRepository.findByContractId(
+              java.util.Objects.requireNonNull(feed.getContractId()), teamId);
       case PROPERTY_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByPropertyId(feed.getPropertyId(), teamId);
+            contractRepository.findByPropertyId(
+                java.util.Objects.requireNonNull(feed.getPropertyId()), teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -324,7 +329,8 @@ public class CalendarFeedService {
       }
       case TENANT_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByTenantIdViaParties(feed.getTenantId(), teamId);
+            contractRepository.findByTenantIdViaParties(
+                java.util.Objects.requireNonNull(feed.getTenantId()), teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -343,29 +349,27 @@ public class CalendarFeedService {
       case ALL_PAYMENTS -> "Buurman - All Payment Due Dates";
       case CONTRACT -> "Buurman - Contract Calendar";
       case PROPERTY_PAYMENTS -> {
+        UUID propertyId = java.util.Objects.requireNonNull(feed.getPropertyId());
         Property p =
-            feed.getPropertyId() != null
-                ? propertyMap.values().stream()
-                    .filter(prop -> prop.getId().equals(feed.getPropertyId()))
-                    .findFirst()
-                    .orElse(null)
-                : null;
+            propertyMap.values().stream()
+                .filter(prop -> prop.getId().equals(propertyId))
+                .findFirst()
+                .orElse(null);
         if (p == null) {
-          p = propertyRepository.findByIdAndTeamId(feed.getPropertyId(), teamId).orElse(null);
+          p = propertyRepository.findByIdAndTeamId(propertyId, teamId).orElse(null);
         }
         String name = p != null && p.getStreet() != null ? p.getStreet() : "Property";
         yield "Buurman - " + name + " Payments";
       }
       case TENANT_PAYMENTS -> {
+        UUID tenantIdVal = java.util.Objects.requireNonNull(feed.getTenantId());
         Tenant t =
-            feed.getTenantId() != null
-                ? tenantMap.values().stream()
-                    .filter(tn -> tn.getId().equals(feed.getTenantId()))
-                    .findFirst()
-                    .orElse(null)
-                : null;
+            tenantMap.values().stream()
+                .filter(tn -> tn.getId().equals(tenantIdVal))
+                .findFirst()
+                .orElse(null);
         if (t == null) {
-          t = tenantRepository.findByIdAndTeamId(feed.getTenantId(), teamId).orElse(null);
+          t = tenantRepository.findByIdAndTeamId(tenantIdVal, teamId).orElse(null);
         }
         String name = t != null ? t.getFirstName() + " " + t.getLastName() : "Tenant";
         yield "Buurman - " + name + " Payments";
@@ -373,7 +377,7 @@ public class CalendarFeedService {
     };
   }
 
-  private String buildSummary(Property property) {
+  private String buildSummary(@Nullable Property property) {
     if (property != null && property.getStreet() != null) {
       String summary = "Rent Due - " + property.getStreet();
       if (property.getCity() != null) {
@@ -385,7 +389,10 @@ public class CalendarFeedService {
   }
 
   private String buildDescription(
-      Payment payment, Contract contract, Property property, Tenant tenant) {
+      Payment payment,
+      @Nullable Contract contract,
+      @Nullable Property property,
+      @Nullable Tenant tenant) {
     StringBuilder desc = new StringBuilder();
     if (payment.getAmount() != null) {
       String currency = payment.getCurrency();
@@ -480,7 +487,7 @@ public class CalendarFeedService {
         propertyIdentifier,
         tenantIdentifier,
         entityLabel,
-        feed.getEnabled(),
+        Boolean.TRUE.equals(feed.getEnabled()),
         feedUrl,
         feed.getCreatedAt(),
         feed.getUpdatedAt());

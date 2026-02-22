@@ -53,7 +53,7 @@ public class AuditController {
       @AuthenticationPrincipal UserPrincipal principal) {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return auditService.getAllAuditLogsPaginated(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         entityType != null ? entityType.name() : null,
         action != null ? action.name() : null,
         search,

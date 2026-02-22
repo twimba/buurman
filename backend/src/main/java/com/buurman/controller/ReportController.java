@@ -166,7 +166,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] csv =
-        exportService.generateTransactionHistoryCSV(startDate, endDate, principal.getTeamId());
+        exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
@@ -184,7 +184,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
-        exportService.generateTransactionHistoryPDF(startDate, endDate, principal.getTeamId());
+        exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")

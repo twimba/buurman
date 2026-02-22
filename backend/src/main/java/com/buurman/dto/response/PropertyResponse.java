@@ -121,7 +121,7 @@ public record PropertyResponse(
     @Nullable AgriculturalDetailsResponse agriculturalDetails,
 
     // Nested collections
-    List<PropertyOutdoorAreaResponse> outdoorAreas,
-    List<PropertyAmenityResponse> amenities,
+    @Nullable List<PropertyOutdoorAreaResponse> outdoorAreas,
+    @Nullable List<PropertyAmenityResponse> amenities,
     Instant createdAt,
     @Nullable Instant updatedAt) {}

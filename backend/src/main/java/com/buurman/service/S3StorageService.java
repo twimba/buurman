@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,7 +51,8 @@ public class S3StorageService {
     this.s3Client = s3Client;
     this.s3Presigner = s3Presigner;
     this.bucketName = s3Properties.bucketName();
-    this.s3PublicEndpoint = s3Properties.publicEndpoint();
+    @Nullable String endpoint = s3Properties.publicEndpoint();
+    this.s3PublicEndpoint = endpoint != null ? endpoint : "";
     this.usePresignedUrls = s3Properties.usePresignedUrls();
     this.metricsService = metricsService;
     this.clock = clock;
@@ -64,7 +66,7 @@ public class S3StorageService {
       MultipartFile file, String teamIdentifier, String entityType, String entityIdentifier) {
     Instant start = clock.instant();
     try {
-      String originalFilename = file.getOriginalFilename();
+      @Nullable String originalFilename = file.getOriginalFilename();
       String fileKey =
           generateFileKey(teamIdentifier, entityType, entityIdentifier, originalFilename);
 
@@ -277,8 +279,12 @@ public class S3StorageService {
    * {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
    */
   private String generateFileKey(
-      String teamIdentifier, String entityType, String entityIdentifier, String filename) {
-    String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+      String teamIdentifier,
+      String entityType,
+      String entityIdentifier,
+      @Nullable String filename) {
+    String sanitizedFilename =
+        (filename != null ? filename : "unnamed").replaceAll("[^a-zA-Z0-9._-]", "_");
     String uniqueId = UUID.randomUUID().toString();
     return String.format(
         "%s/%s/%s/%s_%s",

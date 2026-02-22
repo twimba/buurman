@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,9 +62,9 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyDashboardResponse getDashboard(
-      String propertyIdentifier, Integer months, UserPrincipal principal) {
+      String propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
     int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
-    return getDashboardData(propertyIdentifier, effectiveMonths, principal.getTeamId());
+    return getDashboardData(propertyIdentifier, effectiveMonths, principal.requireTeamId());
   }
 
   /** Internal method for use by other services (authorization handled by caller). */
@@ -445,7 +446,9 @@ public class PropertyDashboardService {
    * among those months. Otherwise, it's spread evenly across all 12 months.
    */
   private static void addAnnualCostToMonth(
-      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, String dueMonths) {
+      Map<Integer, BigDecimal> monthMap,
+      @Nullable BigDecimal annualAmount,
+      @Nullable String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
@@ -470,8 +473,8 @@ public class PropertyDashboardService {
   private static void addAnnualCostToTimeline(
       Map<YearMonth, Map<String, BigDecimal>> timeline,
       String category,
-      BigDecimal annualAmount,
-      String dueMonths) {
+      @Nullable BigDecimal annualAmount,
+      @Nullable String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
@@ -491,7 +494,8 @@ public class PropertyDashboardService {
     }
   }
 
-  private static void addIfNotNull(Map<String, BigDecimal> map, String key, BigDecimal value) {
+  private static void addIfNotNull(
+      Map<String, BigDecimal> map, String key, @Nullable BigDecimal value) {
     if (value != null && value.compareTo(ZERO) > 0) {
       map.merge(key, value, BigDecimal::add);
     }
@@ -674,7 +678,8 @@ public class PropertyDashboardService {
         percent);
   }
 
-  private BigDecimal calculateOccupancyRate(List<Contract> contracts, LocalDate now, int months) {
+  private @Nullable BigDecimal calculateOccupancyRate(
+      List<Contract> contracts, LocalDate now, int months) {
     LocalDate start = now.minusMonths(months);
     long totalDays = DAYS.between(start, now);
     if (totalDays <= 0) {
@@ -710,14 +715,16 @@ public class PropertyDashboardService {
     return amounts.stream().filter(java.util.Objects::nonNull).reduce(ZERO, BigDecimal::add);
   }
 
-  private static BigDecimal divideOrNull(BigDecimal numerator, BigDecimal denominator) {
+  private static @Nullable BigDecimal divideOrNull(
+      @Nullable BigDecimal numerator, BigDecimal denominator) {
     if (numerator == null || denominator == null || denominator.compareTo(ZERO) == 0) {
       return null;
     }
     return numerator.divide(denominator, SCALE, HALF_UP);
   }
 
-  private static BigDecimal percentChange(BigDecimal from, BigDecimal to) {
+  private static @Nullable BigDecimal percentChange(
+      @Nullable BigDecimal from, @Nullable BigDecimal to) {
     if (from == null || to == null || from.compareTo(ZERO) == 0) {
       return null;
     }

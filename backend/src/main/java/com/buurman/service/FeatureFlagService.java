@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.security.UserPrincipal;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FeatureFlagService {
 
-  private final FlagsmithClient flagsmithClient;
+  private final @Nullable FlagsmithClient flagsmithClient;
 
   public FeatureFlagService(Optional<FlagsmithClient> flagsmithClient) {
     this.flagsmithClient = flagsmithClient.orElse(null);
@@ -66,7 +67,7 @@ public class FeatureFlagService {
   }
 
   /** Get remote config value for a flag (global). */
-  public Object getValue(String flagKey) {
+  public @Nullable Object getValue(String flagKey) {
     if (flagsmithClient == null) {
       return null;
     }
@@ -80,7 +81,7 @@ public class FeatureFlagService {
   }
 
   /** Get remote config value for a flag (identity-aware). */
-  public Object getValue(String flagKey, UserPrincipal principal) {
+  public @Nullable Object getValue(String flagKey, UserPrincipal principal) {
     if (flagsmithClient == null) {
       return null;
     }

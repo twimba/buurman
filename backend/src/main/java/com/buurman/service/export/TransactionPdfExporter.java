@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.util.CurrencyUtils;
@@ -23,7 +24,7 @@ public class TransactionPdfExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(LocalDate startDate, LocalDate endDate, UUID teamId) {
+  public byte[] generate(@Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
     List<TransactionRecord> transactions = dataLoader.load(startDate, endDate, teamId);
 
     BigDecimal totalIncome =
@@ -46,8 +47,8 @@ public class TransactionPdfExporter {
 
   private String buildHtml(
       List<TransactionRecord> transactions,
-      LocalDate startDate,
-      LocalDate endDate,
+      @Nullable LocalDate startDate,
+      @Nullable LocalDate endDate,
       BigDecimal totalIncome,
       BigDecimal totalExpenses,
       BigDecimal netTotal) {

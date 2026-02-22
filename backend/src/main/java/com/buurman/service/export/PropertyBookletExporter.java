@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Amenity;
@@ -188,11 +189,11 @@ public class PropertyBookletExporter {
 
   private String buildHtml(
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       List<Contract> contracts,
       List<Payment> payments,
       List<Expense> expenses,
@@ -202,7 +203,7 @@ public class PropertyBookletExporter {
       List<PropertyAmenity> propertyAmenities,
       List<Amenity> allAmenities,
       List<Photo> photos,
-      PropertyDashboardResponse dashboard) {
+      @Nullable PropertyDashboardResponse dashboard) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     Map<UUID, Amenity> amenityMap =
@@ -271,11 +272,11 @@ public class PropertyBookletExporter {
   private void appendCoverPage(
       StringBuilder html,
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       String generatedDate,
       String location,
       String area) {
@@ -451,11 +452,11 @@ public class PropertyBookletExporter {
   private void appendPropertyOverviewPage(
       StringBuilder html,
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       String area) {
     appendPageStart(html, "Property Overview");
 
@@ -982,7 +983,8 @@ public class PropertyBookletExporter {
 
   // ── Page: Safety & Accessibility ────────────────────────────────
 
-  private void appendSafetyPage(StringBuilder html, Property property, PropertyCategory category) {
+  private void appendSafetyPage(
+      StringBuilder html, Property property, @Nullable PropertyCategory category) {
     boolean hasSafetyData =
         isTrue(property.getHasSmokeDetectors())
             || isTrue(property.getHasCoDetectors())
@@ -1103,8 +1105,11 @@ public class PropertyBookletExporter {
   // ── Page: Financial Overview ────────────────────────────────────
 
   private void appendFinancialOverviewPage(
-      StringBuilder html, Map<Integer, FinancialYearSummary> yearSummaries, String currency) {
+      StringBuilder html,
+      Map<Integer, FinancialYearSummary> yearSummaries,
+      @Nullable String currency) {
     if (yearSummaries.isEmpty()) return;
+    String ccy = currency != null ? currency : "EUR";
 
     appendPageStart(html, "Financial Overview");
 
@@ -1122,21 +1127,21 @@ public class PropertyBookletExporter {
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Income</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>")
-          .append(CurrencyUtils.formatCurrency(summary.income, currency))
+          .append(CurrencyUtils.formatCurrency(summary.income, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Expenses</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>")
-          .append(CurrencyUtils.formatCurrency(summary.expenses, currency))
+          .append(CurrencyUtils.formatCurrency(summary.expenses, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;'>Net"
                   + " Profit</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>")
-          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), currency))
+          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), ccy))
           .append("</div></td>");
       html.append("</tr></table>");
       html.append("</div>");
@@ -1294,22 +1299,22 @@ public class PropertyBookletExporter {
   }
 
   private void appendEquityRow(
-      StringBuilder html, String label, BigDecimal value, String currency) {
+      StringBuilder html, String label, @Nullable BigDecimal value, String currency) {
     html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
     html.append("<td style='text-align:right;'>")
         .append(fmtMoney(value, currency))
         .append("</td></tr>");
   }
 
-  private static String fmtPct(BigDecimal value) {
+  private static String fmtPct(@Nullable BigDecimal value) {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currencyCode) {
+  private static String fmtMoney(@Nullable BigDecimal value, String currencyCode) {
     return CurrencyUtils.formatCurrency(value, currencyCode);
   }
 
-  private static String fmtNum(BigDecimal value) {
+  private static String fmtNum(@Nullable BigDecimal value) {
     return value != null ? String.format("%,.2f", value) : "N/A";
   }
 
@@ -1333,12 +1338,12 @@ public class PropertyBookletExporter {
     return property.getAreaValue() + " " + unit;
   }
 
-  private String buildAreaDisplay(BigDecimal value, String unit) {
+  private String buildAreaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
     if (value == null) return "—";
     return value + " " + (unit != null ? unit : "sqm");
   }
 
-  private String photoToBase64DataUri(Photo photo) {
+  private @Nullable String photoToBase64DataUri(Photo photo) {
     String fileKey =
         photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
     try (InputStream is = s3StorageService.downloadFile(fileKey)) {
@@ -1369,7 +1374,7 @@ public class PropertyBookletExporter {
     return summaries;
   }
 
-  private String getEnergyRatingColor(String rating) {
+  private String getEnergyRatingColor(@Nullable String rating) {
     if (rating == null) return "#6b7280";
     return switch (rating) {
       case "A++" -> "#065f46";

@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +57,7 @@ public class AuthService {
   private final MetricsService metricsService;
   private final Clock clock;
 
+  @SuppressWarnings("NullAway.Init")
   @org.springframework.beans.factory.annotation.Value("${app.email.base-url}")
   private String baseUrl;
 
@@ -201,14 +203,14 @@ public class AuthService {
     return userMapper.toResponse(user, teamIdentifier, member != null ? member.getRole() : null);
   }
 
-  private String resolveTeamIdentifier(TeamMember member) {
+  private @Nullable String resolveTeamIdentifier(@Nullable TeamMember member) {
     if (member == null) {
       return null;
     }
     return teamRepository.findById(member.getTeamId()).map(Team::getIdentifier).orElse(null);
   }
 
-  private TeamMember getActiveMembership(User user) {
+  private @Nullable TeamMember getActiveMembership(User user) {
     java.util.List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
     if (memberships.isEmpty()) {
       return null;
@@ -255,16 +257,19 @@ public class AuthService {
 
     // Send welcome notification now that email is verified
     user.setEmailVerifiedAt(clock.instant());
-    notificationService.send(
-        SendNotificationRequest.builder()
-            .teamId(user.getActiveTeamId())
-            .notificationType(NotificationType.WELCOME)
-            .recipientUserId(user.getId())
-            .recipientEmail(user.getEmail())
-            .recipientPhone(user.getPhone())
-            .templateName("welcome")
-            .templateVariables(Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
-            .build());
+    UUID welcomeTeamId = user.getActiveTeamId();
+    if (welcomeTeamId != null) {
+      notificationService.send(
+          SendNotificationRequest.builder()
+              .teamId(welcomeTeamId)
+              .notificationType(NotificationType.WELCOME)
+              .recipientUserId(user.getId())
+              .recipientEmail(user.getEmail())
+              .recipientPhone(user.getPhone())
+              .templateName("welcome")
+              .templateVariables(Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
+              .build());
+    }
 
     TeamMember member = getActiveMembership(user);
     String teamIdentifier = resolveTeamIdentifier(member);
@@ -298,23 +303,26 @@ public class AuthService {
     verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
     verificationCodeRepository.save(verificationCode);
 
-    notificationService.send(
-        SendNotificationRequest.builder()
-            .teamId(user.getActiveTeamId())
-            .notificationType(NotificationType.VERIFICATION_CODE)
-            .recipientUserId(user.getId())
-            .recipientEmail(user.getEmail())
-            .recipientPhone(user.getPhone())
-            .templateName("verification-code")
-            .templateVariables(
-                Map.of(
-                    "userName",
-                    user.getFirstName(),
-                    "verificationCode",
-                    code,
-                    "expiresMinutes",
-                    15))
-            .build());
+    UUID verificationTeamId = user.getActiveTeamId();
+    if (verificationTeamId != null) {
+      notificationService.send(
+          SendNotificationRequest.builder()
+              .teamId(verificationTeamId)
+              .notificationType(NotificationType.VERIFICATION_CODE)
+              .recipientUserId(user.getId())
+              .recipientEmail(user.getEmail())
+              .recipientPhone(user.getPhone())
+              .templateName("verification-code")
+              .templateVariables(
+                  Map.of(
+                      "userName",
+                      user.getFirstName(),
+                      "verificationCode",
+                      code,
+                      "expiresMinutes",
+                      15))
+              .build());
+    }
   }
 
   private void acceptInvitationForNewUser(String token, User user) {

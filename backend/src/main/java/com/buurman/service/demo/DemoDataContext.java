@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 /** Mutable context passed between demo data generators to share generated IDs. */
 public class DemoDataContext {
 
@@ -193,7 +195,7 @@ public class DemoDataContext {
   }
 
   /** Get the "admin" user UUID for a given team key (used as created_by/updated_by). */
-  public UUID getAdminUserForTeam(String teamKey) {
+  public @Nullable UUID getAdminUserForTeam(String teamKey) {
     return switch (teamKey) {
       case "demo-team" -> userIds.get("demo.user@demo.buurman.io");
       case "team-alpha" -> userIds.get("admin@demo.buurman.io");

@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -550,19 +551,19 @@ public class DemoNotificationGenerator {
   /** Renders the Thymeleaf email template, derives the subject, and inserts the notification. */
   private void insertRenderedNotification(
       UUID teamId,
-      UUID createdBy,
+      @Nullable UUID createdBy,
       LocalDateTime createdAt,
       String type,
       String channel,
       String template,
       Map<String, Object> templateVars,
-      String recipientEmail,
-      String recipientPhone,
-      UUID recipientUserId,
-      UUID recipientTenantId,
+      @Nullable String recipientEmail,
+      @Nullable String recipientPhone,
+      @Nullable UUID recipientUserId,
+      @Nullable UUID recipientTenantId,
       String status,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     String subject = deriveSubject(template, templateVars);
     String body = renderTemplate(template, templateVars);
     String varsJson = toJson(templateVars);
@@ -589,17 +590,17 @@ public class DemoNotificationGenerator {
   /** Inserts an SMS notification with a simple text body (no Thymeleaf rendering). */
   private void insertSmsNotification(
       UUID teamId,
-      UUID createdBy,
+      @Nullable UUID createdBy,
       LocalDateTime createdAt,
       String type,
       String template,
       Map<String, Object> templateVars,
       String recipientPhone,
-      UUID recipientUserId,
-      UUID recipientTenantId,
+      @Nullable UUID recipientUserId,
+      @Nullable UUID recipientTenantId,
       String status,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     String smsBody = renderSmsBody(template, templateVars);
     String varsJson = toJson(templateVars);
 
@@ -678,7 +679,7 @@ public class DemoNotificationGenerator {
     }
   }
 
-  private UUID findPrimaryTenantId(UUID contractId) {
+  private @Nullable UUID findPrimaryTenantId(UUID contractId) {
     return dsl.select(field("tenant_id", UUID.class))
         .from(table("contract_parties"))
         .where(field("contract_id", UUID.class).eq(contractId))
@@ -688,7 +689,7 @@ public class DemoNotificationGenerator {
         .orElse(null);
   }
 
-  private UUID findPrimaryTenantIdForTenant(UUID tenantId, UUID teamId) {
+  private @Nullable UUID findPrimaryTenantIdForTenant(UUID tenantId, UUID teamId) {
     // Find a contract for this tenant via contract_parties
     return dsl.select(field("contract_id", UUID.class))
         .from(table("contract_parties"))
@@ -701,21 +702,21 @@ public class DemoNotificationGenerator {
 
   private void insertNotification(
       UUID teamId,
-      UUID createdBy,
+      @Nullable UUID createdBy,
       LocalDateTime createdAt,
       String type,
       String channel,
       String template,
-      String subject,
+      @Nullable String subject,
       String body,
-      String recipientEmail,
-      String recipientPhone,
-      UUID recipientUserId,
-      UUID recipientTenantId,
-      String contentVariablesJson,
+      @Nullable String recipientEmail,
+      @Nullable String recipientPhone,
+      @Nullable UUID recipientUserId,
+      @Nullable UUID recipientTenantId,
+      @Nullable String contentVariablesJson,
       String status,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
 
     dsl.insertInto(NOTIFICATIONS)

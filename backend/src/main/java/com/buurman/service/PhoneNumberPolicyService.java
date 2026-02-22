@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class PhoneNumberPolicyService {
 
   private final PhoneNumberPolicyRepository policyRepository;
 
-  private volatile PhoneNumberPolicy cachedPolicy;
+  private volatile @Nullable PhoneNumberPolicy cachedPolicy;
 
   public PhoneNumberPolicy getPolicy() {
     PhoneNumberPolicy policy = cachedPolicy;
@@ -41,7 +42,9 @@ public class PhoneNumberPolicyService {
 
   @Transactional
   public PhoneNumberPolicy updatePolicy(PhoneNumberPolicy policy) {
-    CountryGroups.validateMatrix(policy.getPolicyMatrix());
+    if (policy.getPolicyMatrix() != null) {
+      CountryGroups.validateMatrix(policy.getPolicyMatrix());
+    }
     PhoneNumberPolicy saved = policyRepository.save(policy);
     cachedPolicy = saved;
     log.info("Phone number policy updated by {}", policy.getUpdatedBy());
@@ -80,7 +83,7 @@ public class PhoneNumberPolicyService {
     }
   }
 
-  private String mapNumberType(PhoneNumberUtil.PhoneNumberType type) {
+  private @Nullable String mapNumberType(PhoneNumberUtil.PhoneNumberType type) {
     return switch (type) {
       case FIXED_LINE -> "FIXED_LINE";
       case MOBILE -> "MOBILE";
@@ -97,7 +100,7 @@ public class PhoneNumberPolicyService {
     };
   }
 
-  private String humanReadableType(String type) {
+  private String humanReadableType(@Nullable String type) {
     if (type == null) {
       return "UNKNOWN";
     }

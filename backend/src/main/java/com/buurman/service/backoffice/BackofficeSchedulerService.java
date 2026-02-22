@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
@@ -140,11 +141,13 @@ public class BackofficeSchedulerService {
   }
 
   public PageResponse<JobExecutionHistoryResponse> getExecutionHistory(
-      PageRequest pageRequest, List<String> jobNameFilter, String statusFilter) {
+      PageRequest pageRequest,
+      @Nullable List<String> jobNameFilter,
+      @Nullable String statusFilter) {
     return executionHistoryRepository.findAll(pageRequest, jobNameFilter, statusFilter);
   }
 
-  private String formatDate(Date date) {
+  private @Nullable String formatDate(@Nullable Date date) {
     if (date == null) {
       return null;
     }

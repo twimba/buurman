@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -69,6 +70,9 @@ public class DemoPhotoGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
+      if (uploadedBy == null) {
+        continue;
+      }
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
       if (propertyIds == null) {
         continue;
@@ -182,7 +186,8 @@ public class DemoPhotoGenerator {
     return count;
   }
 
-  private byte[] pickRandom(String category) {
+  @SuppressWarnings("NullAway")
+  private byte @Nullable [] pickRandom(String category) {
     List<byte[]> pool = photoPool.get(category);
     if (pool == null || pool.isEmpty()) {
       pool = photoPool.values().stream().filter(l -> !l.isEmpty()).findFirst().orElse(null);

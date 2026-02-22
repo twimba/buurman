@@ -2,6 +2,7 @@ package com.buurman.service.backoffice;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -19,7 +20,7 @@ public class BackofficeLoggerService {
 
   private final LoggingSystem loggingSystem;
 
-  public List<LoggerConfigurationResponse> listLoggers(String search) {
+  public List<LoggerConfigurationResponse> listLoggers(@Nullable String search) {
     return loggingSystem.getLoggerConfigurations().stream()
         .filter(config -> config.getEffectiveLevel() != null)
         .filter(
@@ -31,13 +32,13 @@ public class BackofficeLoggerService {
         .toList();
   }
 
-  public LoggerConfigurationResponse setLogLevel(String loggerName, String level) {
+  public LoggerConfigurationResponse setLogLevel(String loggerName, @Nullable String level) {
     LogLevel logLevel = level != null ? LogLevel.valueOf(level.toUpperCase()) : null;
     loggingSystem.setLogLevel(loggerName, logLevel);
     log.info("Set log level for '{}' to '{}'", loggerName, level);
 
     LoggerConfiguration config = loggingSystem.getLoggerConfiguration(loggerName);
-    return toResponse(config);
+    return toResponse(java.util.Objects.requireNonNull(config));
   }
 
   public void resetAll() {

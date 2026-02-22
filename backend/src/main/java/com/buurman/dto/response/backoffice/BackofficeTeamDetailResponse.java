@@ -17,7 +17,7 @@ public record BackofficeTeamDetailResponse(
     FinancialSnapshot financialSnapshot,
     @Nullable SettingsInfo settings) {
   public record MemberInfo(
-      String email,
+      @Nullable String email,
       @Nullable String firstName,
       @Nullable String lastName,
       String role,

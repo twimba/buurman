@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -60,7 +61,7 @@ public class ContractPartyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse addParty(
       String contractIdentifier, AddContractPartyRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -119,7 +120,7 @@ public class ContractPartyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void removeParty(
       String contractIdentifier, String partyIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -140,7 +141,10 @@ public class ContractPartyService {
     log.info("Party removed from contract {}: {}", contractIdentifier, partyIdentifier);
 
     // Audit log
-    Tenant tenant = tenantRepository.findByIdAndTeamId(party.getTenantId(), teamId).orElse(null);
+    @Nullable Tenant tenant =
+        party.getTenantId() != null
+            ? tenantRepository.findByIdAndTeamId(party.getTenantId(), teamId).orElse(null)
+            : null;
     String tenantName =
         tenant != null ? tenant.getFirstName() + " " + tenant.getLastName() : "Unknown";
     Map<String, Object> changedFields = new HashMap<>();
@@ -160,7 +164,7 @@ public class ContractPartyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse changePrimaryTenant(
       String contractIdentifier, ChangePrimaryTenantRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -173,12 +177,14 @@ public class ContractPartyService {
     ContractParty currentPrimary =
         contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId);
 
-    if (currentPrimary.getTenantId().equals(newTenant.getId())) {
+    if (newTenant.getId().equals(currentPrimary.getTenantId())) {
       throw new IllegalArgumentException("This tenant is already the primary tenant");
     }
 
-    Tenant oldTenant =
-        tenantRepository.findByIdAndTeamId(currentPrimary.getTenantId(), teamId).orElse(null);
+    @Nullable Tenant oldTenant =
+        currentPrimary.getTenantId() != null
+            ? tenantRepository.findByIdAndTeamId(currentPrimary.getTenantId(), teamId).orElse(null)
+            : null;
     String oldTenantName =
         oldTenant != null ? oldTenant.getFirstName() + " " + oldTenant.getLastName() : "Unknown";
     String newTenantName = newTenant.getFirstName() + " " + newTenant.getLastName();
@@ -187,7 +193,7 @@ public class ContractPartyService {
     List<ContractParty> existingParties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     existingParties.stream()
-        .filter(p -> p.getTenantId().equals(newTenant.getId()))
+        .filter(p -> newTenant.getId().equals(p.getTenantId()))
         .findFirst()
         .ifPresent(
             existing -> contractPartyRepository.softDeleteByIdAndTeamId(existing.getId(), teamId));
@@ -235,7 +241,7 @@ public class ContractPartyService {
   @Transactional(propagation = Propagation.MANDATORY)
   public void createPartiesForContract(
       UUID contractId, List<ContractPartyRequest> parties, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     UUID userId = principal.getUserId();
     Set<UUID> seenTenantIds = new HashSet<>();
 
@@ -294,7 +300,10 @@ public class ContractPartyService {
   public Tenant getPrimaryTenantForContract(UUID contractId, UUID teamId) {
     ContractParty primary =
         contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contractId, teamId);
-    return tenantRepository.getByIdAndTeamId(primary.getTenantId(), teamId);
+    UUID tenantId =
+        java.util.Objects.requireNonNull(
+            primary.getTenantId(), "Primary tenant party has no tenant ID");
+    return tenantRepository.getByIdAndTeamId(tenantId, teamId);
   }
 
   /** Get all parties for a contract. */
@@ -314,17 +323,26 @@ public class ContractPartyService {
   public List<ContractPartyResponse> buildPartyResponses(List<ContractParty> parties, UUID teamId) {
     if (parties.isEmpty()) return List.of();
 
-    List<UUID> tenantIds = parties.stream().map(ContractParty::getTenantId).distinct().toList();
+    List<UUID> tenantIds =
+        parties.stream()
+            .map(ContractParty::getTenantId)
+            .filter(id -> id != null)
+            .distinct()
+            .toList();
     List<Tenant> tenants = tenantRepository.findByIdsAndTeamId(tenantIds, teamId);
     Map<UUID, Tenant> tenantMap = tenants.stream().collect(Collectors.toMap(Tenant::getId, t -> t));
 
     return parties.stream()
         .map(
             party -> {
-              Tenant tenant = tenantMap.get(party.getTenantId());
-              TenantSummary summary = tenant != null ? tenantMapper.toSummary(tenant) : null;
+              @Nullable UUID tenantId = party.getTenantId();
+              if (tenantId == null) return null;
+              @Nullable Tenant tenant = tenantMap.get(tenantId);
+              if (tenant == null) return null;
+              TenantSummary summary = tenantMapper.toSummary(tenant);
               return contractPartyMapper.toResponse(party, summary);
             })
+        .filter(r -> r != null)
         .toList();
   }
 
@@ -332,7 +350,11 @@ public class ContractPartyService {
   public Optional<Tenant> findPrimaryTenantForContract(UUID contractId, UUID teamId) {
     return contractPartyRepository
         .findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
-        .flatMap(party -> tenantRepository.findByIdAndTeamId(party.getTenantId(), teamId));
+        .filter(party -> party.getTenantId() != null)
+        .flatMap(
+            party ->
+                tenantRepository.findByIdAndTeamId(
+                    java.util.Objects.requireNonNull(party.getTenantId()), teamId));
   }
 
   /** Batch-load primary tenants for multiple contracts. Returns contractId → Tenant map. */
@@ -349,8 +371,10 @@ public class ContractPartyService {
                 .findFirst()
                 .ifPresent(
                     p -> {
-                      contractToTenantId.put(cId, p.getTenantId());
-                      tenantIds.add(p.getTenantId());
+                      if (p.getTenantId() != null) {
+                        contractToTenantId.put(cId, p.getTenantId());
+                        tenantIds.add(p.getTenantId());
+                      }
                     }));
     if (tenantIds.isEmpty()) return Map.of();
     Map<UUID, Tenant> tenantsById =
@@ -366,13 +390,16 @@ public class ContractPartyService {
   }
 
   private Tenant resolveOrCreateTenant(
-      String tenantIdentifier, CreateTenantRequest newTenant, UserPrincipal principal) {
+      @Nullable String tenantIdentifier,
+      @Nullable CreateTenantRequest newTenant,
+      UserPrincipal principal) {
     if (tenantIdentifier != null && !tenantIdentifier.isBlank()) {
-      return tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.getTeamId());
+      return tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     }
     if (newTenant != null) {
       TenantResponse created = tenantService.createTenant(newTenant, principal);
-      return tenantRepository.getByIdentifierAndTeamId(created.identifier(), principal.getTeamId());
+      return tenantRepository.getByIdentifierAndTeamId(
+          created.identifier(), principal.requireTeamId());
     }
     throw new IllegalArgumentException("Either tenantIdentifier or newTenant must be provided");
   }

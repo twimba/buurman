@@ -13,6 +13,6 @@ public record BuurmyResponse(
     @Nullable String lastName,
     boolean enabled,
     boolean emailVerified,
-    Instant createdAt,
+    @Nullable Instant createdAt,
     @Nullable Instant lastLogin,
     List<String> requiredActions) {}

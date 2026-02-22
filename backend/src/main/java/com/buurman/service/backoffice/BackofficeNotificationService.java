@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,13 +37,13 @@ public class BackofficeNotificationService {
   @Transactional(readOnly = true)
   public PageResponse<BackofficeNotificationResponse> listNotifications(
       PageRequest pageRequest,
-      String teamIdentifier,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo) {
+      @Nullable String teamIdentifier,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo) {
 
     UUID teamId = null;
     if (teamIdentifier != null && !teamIdentifier.isBlank()) {

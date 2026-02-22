@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -583,7 +584,7 @@ public class DemoPropertyGenerator {
       BigDecimal area,
       int bedrooms,
       int bathrooms,
-      UUID createdBy,
+      @Nullable UUID createdBy,
       LocalDateTime now) {
     switch (category) {
       case "RESIDENTIAL" -> {

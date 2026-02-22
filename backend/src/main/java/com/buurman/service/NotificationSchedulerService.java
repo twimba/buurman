@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -196,7 +197,7 @@ public class NotificationSchedulerService {
     }
   }
 
-  private String formatDate(LocalDate date) {
+  private String formatDate(@Nullable LocalDate date) {
     return date != null ? date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) : "";
   }
 

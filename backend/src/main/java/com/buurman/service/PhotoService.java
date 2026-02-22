@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,8 +68,8 @@ public class PhotoService {
       String entityType,
       UUID entityId,
       String entityIdentifier,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
 
     // Validate file size
@@ -104,10 +105,10 @@ public class PhotoService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, principal.getTeamIdentifier(), entityType, entityIdentifier);
+            file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
 
     // Generate and upload thumbnail
-    String thumbnailFileKey = null;
+    @Nullable String thumbnailFileKey = null;
     try (InputStream thumbInput = file.getInputStream()) {
       var thumbnailData = thumbnailService.generateThumbnail(thumbInput);
       if (thumbnailData.isPresent()) {
@@ -115,7 +116,7 @@ public class PhotoService {
             s3StorageService.uploadFile(
                 thumbnailData.get(),
                 "image/jpeg",
-                principal.getTeamIdentifier(),
+                principal.requireTeamIdentifier(),
                 entityType,
                 entityIdentifier,
                 "thumb_" + file.getOriginalFilename());
@@ -127,11 +128,12 @@ public class PhotoService {
 
     // Save photo metadata
     Photo photo = new Photo();
-    photo.setTeamId(principal.getTeamId());
+    photo.setTeamId(principal.requireTeamId());
     photo.setEntityType(entityType);
     photo.setEntityId(entityId);
     photo.setFileKey(fileKey);
-    photo.setFileName(file.getOriginalFilename());
+    @Nullable String originalFilename = file.getOriginalFilename();
+    photo.setFileName(originalFilename != null ? originalFilename : "unnamed");
     photo.setFileSize(file.getSize());
     photo.setMimeType(mimeType);
     photo.setTitle(title);
@@ -156,7 +158,7 @@ public class PhotoService {
     }
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         entityType.toUpperCase(),
         entityId,
         principal.getUserId(),
@@ -169,17 +171,17 @@ public class PhotoService {
 
   public List<PhotoResponse> getPhotos(String entityType, UUID entityId, UserPrincipal principal) {
     List<Photo> photos =
-        photoRepository.findByEntityAndTeamId(entityType, entityId, principal.getTeamId());
+        photoRepository.findByEntityAndTeamId(entityType, entityId, principal.requireTeamId());
     return photos.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
   public PhotoResponse getPhoto(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(photo);
   }
 
   public URL getDownloadUrl(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     metricsService.incrementCounter("photo.download.total", "entity_type", photo.getEntityType());
 
@@ -188,10 +190,10 @@ public class PhotoService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deletePhoto(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Soft delete in database
-    photoRepository.softDeleteByIdAndTeamId(photo.getId(), principal.getTeamId());
+    photoRepository.softDeleteByIdAndTeamId(photo.getId(), principal.requireTeamId());
 
     // Delete from S3
     s3StorageService.deleteFile(photo.getFileKey());
@@ -211,7 +213,7 @@ public class PhotoService {
     }
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         photo.getEntityType().toUpperCase(),
         photo.getEntityId(),
         principal.getUserId(),
@@ -223,7 +225,7 @@ public class PhotoService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse updatePhoto(
       String identifier, UpdatePhotoRequest request, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     String oldTitle = photo.getTitle();
     String oldNotes = photo.getNotes();
@@ -256,7 +258,7 @@ public class PhotoService {
       newValues.put("fileName", photo.getFileName());
 
       auditService.logUpdate(
-          principal.getTeamId(),
+          principal.requireTeamId(),
           photo.getEntityType().toUpperCase(),
           photo.getEntityId(),
           principal.getUserId(),
@@ -272,7 +274,7 @@ public class PhotoService {
   public PhotoResponse setMainPhoto(
       UUID photoId, String entityType, UUID entityId, UserPrincipal principal) {
     // Verify the photo exists and belongs to the team
-    Photo photo = photoRepository.getByIdAndTeamId(photoId, principal.getTeamId());
+    Photo photo = photoRepository.getByIdAndTeamId(photoId, principal.requireTeamId());
 
     // Verify it belongs to the correct entity
     if (!entityType.equals(photo.getEntityType()) || !entityId.equals(photo.getEntityId())) {
@@ -280,7 +282,7 @@ public class PhotoService {
     }
 
     // Unset any existing main photo for this entity
-    photoRepository.unsetMainPhotoForEntity(entityType, entityId, principal.getTeamId());
+    photoRepository.unsetMainPhotoForEntity(entityType, entityId, principal.requireTeamId());
 
     // Set this photo as main
     photo.setIsMainPhoto(true);
@@ -292,10 +294,13 @@ public class PhotoService {
   }
 
   public PageResponse<PhotoResponse> searchPhotosPaginated(
-      String search, String entityType, UserPrincipal principal, PageRequest pageRequest) {
+      @Nullable String search,
+      @Nullable String entityType,
+      UserPrincipal principal,
+      PageRequest pageRequest) {
     PaginatedResult<Photo> result =
         photoRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), search, entityType, pageRequest);
+            principal.requireTeamId(), search, entityType, pageRequest);
     List<PhotoResponse> responses =
         result.items().stream().map(this::toResponseWithDownloadUrl).toList();
     return PageResponse.of(
@@ -306,7 +311,7 @@ public class PhotoService {
     PhotoResponse response = photoMapper.toResponse(photo);
     String downloadUrl = s3StorageService.generatePresignedUrl(photo.getFileKey()).toString();
 
-    String thumbnailUrl = null;
+    @Nullable String thumbnailUrl = null;
     if (photo.getThumbnailFileKey() != null) {
       thumbnailUrl = s3StorageService.generatePresignedUrl(photo.getThumbnailFileKey()).toString();
     }
@@ -334,7 +339,7 @@ public class PhotoService {
 
     // Fetch all photos by identifiers
     List<Photo> photos =
-        photoRepository.findByIdentifiersAndTeamId(photoIdentifiers, principal.getTeamId());
+        photoRepository.findByIdentifiersAndTeamId(photoIdentifiers, principal.requireTeamId());
 
     if (photos.isEmpty()) {
       throw new IllegalArgumentException("No photos found");
@@ -373,7 +378,9 @@ public class PhotoService {
       zos.finish();
       metricsService.incrementCounter("photo.bulk.download.total");
       log.info(
-          "Created zip archive with {} photos for team {}", photos.size(), principal.getTeamId());
+          "Created zip archive with {} photos for team {}",
+          photos.size(),
+          principal.requireTeamId());
       return baos.toByteArray();
 
     } catch (Exception e) {

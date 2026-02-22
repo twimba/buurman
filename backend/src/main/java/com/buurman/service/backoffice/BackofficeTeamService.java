@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,8 @@ public class BackofficeTeamService {
   private final BackofficeTeamStatsRepository statsRepository;
 
   @Transactional(readOnly = true)
-  public PageResponse<BackofficeTeamResponse> listTeams(PageRequest pageRequest, String search) {
+  public PageResponse<BackofficeTeamResponse> listTeams(
+      PageRequest pageRequest, @Nullable String search) {
     PaginatedResult<Team> result = teamRepository.findAllPaginated(pageRequest, search);
     List<BackofficeTeamResponse> responses =
         result.items().stream().map(this::toListResponse).toList();

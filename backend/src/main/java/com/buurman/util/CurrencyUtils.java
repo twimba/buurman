@@ -97,8 +97,9 @@ public final class CurrencyUtils {
    * Converts a SUM(BIGINT) result (returned as BigDecimal by JOOQ) back to major units. Returns
    * {@link BigDecimal#ZERO} when the sum is null.
    */
-  public static BigDecimal sumToMajorUnits(@Nullable BigDecimal sumResult, String currencyCode) {
-    if (sumResult == null) return BigDecimal.ZERO;
+  public static BigDecimal sumToMajorUnits(
+      @Nullable BigDecimal sumResult, @Nullable String currencyCode) {
+    if (sumResult == null || currencyCode == null) return BigDecimal.ZERO;
     return toMajorUnits(sumResult.longValueExact(), currencyCode);
   }
 }

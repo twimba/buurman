@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -166,7 +167,7 @@ public class PaymentService {
     validateCurrencyDecimals(request.amount(), request.currency());
 
     boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
-    LocalDate paymentDate =
+    @Nullable LocalDate paymentDate =
         markAsPaid
             ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now(clock))
             : null;
@@ -198,7 +199,7 @@ public class PaymentService {
       receival.setPaymentId(savedPayment.getId());
       receival.setAmount(savedPayment.getAmount());
       receival.setCurrency(savedPayment.getCurrency());
-      receival.setReceivalDate(paymentDate);
+      receival.setReceivalDate(paymentDate != null ? paymentDate : LocalDate.now(clock));
       receival.setCreatedBy(principal.getUserId());
       receival.setUpdatedBy(principal.getUserId());
       receival.setCreatedAt(clock.instant());
@@ -237,34 +238,36 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
-    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Payment payment =
+        paymentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return enrichPaymentResponse(payment, principal.getTeamId());
+    return enrichPaymentResponse(payment, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
   public List<PaymentResponse> getAllPayments(UserPrincipal principal) {
-    List<Payment> payments = paymentRepository.findAllByTeamId(principal.getTeamId());
+    List<Payment> payments = paymentRepository.findAllByTeamId(principal.requireTeamId());
 
     LocalDate today = LocalDate.now(clock);
     payments.forEach(payment -> updatePaymentStatus(payment, today));
 
-    return enrichPaymentResponses(payments, principal.getTeamId());
+    return enrichPaymentResponses(payments, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
   public PageResponse<PaymentResponse> getPaymentsPaginated(
       UserPrincipal principal,
-      String status,
-      String contractIdentifier,
-      String propertyIdentifier,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String status,
+      @Nullable String contractIdentifier,
+      @Nullable String propertyIdentifier,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
-    UUID contractId = null;
+    @Nullable UUID contractId = null;
     if (contractIdentifier != null) {
       Contract contract =
-          contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+          contractRepository.getByIdentifierAndTeamId(
+              contractIdentifier, principal.requireTeamId());
       contractId = contract.getId();
     }
     UUID propertyId = null;
@@ -280,17 +283,18 @@ public class PaymentService {
     LocalDate today = LocalDate.now(clock);
     result.items().forEach(payment -> updatePaymentStatus(payment, today));
 
-    List<PaymentResponse> responses = enrichPaymentResponses(result.items(), principal.getTeamId());
+    List<PaymentResponse> responses =
+        enrichPaymentResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public PaymentStatsResponse getPaymentStats(UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
-    Record2<Integer, BigDecimal> pending = paymentRepository.getPendingStats(teamId);
-    Record2<Integer, BigDecimal> overdue = paymentRepository.getOverdueStats(teamId);
-    String currency = paymentRepository.findCurrencyByTeamId(teamId);
+    @Nullable Record2<Integer, BigDecimal> pending = paymentRepository.getPendingStats(teamId);
+    @Nullable Record2<Integer, BigDecimal> overdue = paymentRepository.getOverdueStats(teamId);
+    @Nullable String currency = paymentRepository.findCurrencyByTeamId(teamId);
 
     List<PaymentStatsResponse.MonthlyTrend> monthlyTrend =
         paymentRepository.getMonthlyPaidTrend(teamId, 12).stream()
@@ -301,10 +305,10 @@ public class PaymentService {
             .toList();
 
     return new PaymentStatsResponse(
-        pending.value1(),
-        CurrencyUtils.sumToMajorUnits(pending.value2(), currency),
-        overdue.value1(),
-        CurrencyUtils.sumToMajorUnits(overdue.value2(), currency),
+        pending != null ? pending.value1() : 0,
+        CurrencyUtils.sumToMajorUnits(pending != null ? pending.value2() : null, currency),
+        overdue != null ? overdue.value1() : 0,
+        CurrencyUtils.sumToMajorUnits(overdue != null ? overdue.value2() : null, currency),
         currency,
         monthlyTrend);
   }
@@ -312,7 +316,7 @@ public class PaymentService {
   @Transactional(readOnly = true)
   public List<PaymentResponse> getPaymentsByContract(
       String contractIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -326,16 +330,16 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public List<PaymentResponse> getOverduePayments(UserPrincipal principal) {
-    List<Payment> payments = paymentRepository.findOverduePayments(principal.getTeamId());
+    List<Payment> payments = paymentRepository.findOverduePayments(principal.requireTeamId());
 
-    return enrichPaymentResponses(payments, principal.getTeamId());
+    return enrichPaymentResponses(payments, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse updatePayment(
       String identifier, UpdatePaymentRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -381,7 +385,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse markPaymentAsPaid(
       String identifier, MarkPaidRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -459,7 +463,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse registerReceival(
       String paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -535,7 +539,7 @@ public class PaymentService {
   @Transactional(readOnly = true)
   public List<PaymentReceivalResponse> getReceivalsForPayment(
       String paymentIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -551,7 +555,7 @@ public class PaymentService {
       String receivalIdentifier,
       UpdatePaymentReceivalRequest request,
       UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -614,7 +618,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse deleteReceival(
       String paymentIdentifier, String receivalIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -653,7 +657,7 @@ public class PaymentService {
     String currency = payment.getCurrency();
     BigDecimal totalReceived =
         receivalRepository.sumByPaymentIdAndTeamId(
-            payment.getId(), principal.getTeamId(), currency);
+            payment.getId(), principal.requireTeamId(), currency);
     BigDecimal balance = payment.getAmount().subtract(totalReceived);
 
     Payment.PaymentStatus newStatus;
@@ -661,7 +665,7 @@ public class PaymentService {
       newStatus = PAID;
       // Set payment date to the latest receival date
       List<PaymentReceival> receivals =
-          receivalRepository.findByPaymentIdAndTeamId(payment.getId(), principal.getTeamId());
+          receivalRepository.findByPaymentIdAndTeamId(payment.getId(), principal.requireTeamId());
       if (!receivals.isEmpty()) {
         LocalDate latestDate =
             receivals.stream()
@@ -694,7 +698,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deletePayment(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID paymentId = payment.getId();
 
@@ -724,7 +728,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<PaymentResponse> bulkGeneratePayments(
       BulkGeneratePaymentsRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     YearMonth month = YearMonth.parse(request.forMonth());
 
     List<Contract> activeContracts = contractRepository.findByStatus(ACTIVE, teamId);
@@ -795,44 +799,44 @@ public class PaymentService {
   public DocumentResponse uploadDocument(
       String paymentIdentifier,
       MultipartFile file,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "PAYMENT", payment.getId(), payment.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.getDocuments("PAYMENT", payment.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", payment.getId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "PAYMENT", payment.getId());
   }
 
   // --- Helper methods ---
 
   private LocalDate calculateDueDate(YearMonth month, Contract contract) {
-    Integer paymentDueDay = contract.getPaymentDueDay();
+    @Nullable Integer paymentDueDay = contract.getPaymentDueDay();
     if (paymentDueDay == null) {
       paymentDueDay = 1;
     }
@@ -850,14 +854,14 @@ public class PaymentService {
   }
 
   private void sendPaymentPaidNotification(Payment payment, UUID teamId, UserPrincipal principal) {
-    Contract contract =
+    @Nullable Contract contract =
         contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
     String propertyName = "N/A";
     String tenantName = "N/A";
     if (contract != null) {
-      Property property =
+      @Nullable Property property =
           propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      Tenant tenant =
+      @Nullable Tenant tenant =
           contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
       if (property != null) {
         propertyName =
@@ -892,14 +896,14 @@ public class PaymentService {
 
   private void sendReceivalNotification(
       Payment payment, BigDecimal receivalAmount, UUID teamId, UserPrincipal principal) {
-    Contract contract =
+    @Nullable Contract contract =
         contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
     String propertyName = "N/A";
     String tenantName = "N/A";
     if (contract != null) {
-      Property property =
+      @Nullable Property property =
           propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      Tenant tenant =
+      @Nullable Tenant tenant =
           contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
       if (property != null) {
         propertyName =
@@ -989,16 +993,16 @@ public class PaymentService {
       List<PaymentReceivalResponse> receivalResponses =
           receivals.stream().map(receivalMapper::toResponse).toList();
 
-      Contract contract = contractsById.get(payment.getContractId());
-      ContractSummary contractSummary =
+      @Nullable Contract contract = contractsById.get(payment.getContractId());
+      @Nullable ContractSummary contractSummary =
           contract != null ? contractMapper.toSummary(contract) : null;
-      PropertySummary propertySummary = null;
-      TenantSummary tenantSummary = null;
+      @Nullable PropertySummary propertySummary = null;
+      @Nullable TenantSummary tenantSummary = null;
 
       if (contract != null) {
-        com.buurman.domain.Property property =
+        com.buurman.domain.@Nullable Property property =
             contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
-        com.buurman.domain.Tenant tenant = primaryTenantByContract.get(contract.getId());
+        com.buurman.domain.@Nullable Tenant tenant = primaryTenantByContract.get(contract.getId());
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
         }
@@ -1009,13 +1013,13 @@ public class PaymentService {
 
       List<com.buurman.domain.Document> paymentDocs =
           docsByPaymentId.getOrDefault(payment.getId(), List.of());
-      DocumentResponse proofOfPayment =
+      @Nullable DocumentResponse proofOfPayment =
           paymentDocs.stream()
               .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
-      DocumentResponse receipt =
+      @Nullable DocumentResponse receipt =
           paymentDocs.stream()
               .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
               .findFirst()
@@ -1057,32 +1061,32 @@ public class PaymentService {
     List<PaymentReceivalResponse> receivalResponses =
         receivals.stream().map(receivalMapper::toResponse).toList();
 
-    Contract contract =
+    @Nullable Contract contract =
         contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
 
     if (contract != null) {
       ContractSummary contractSummary = contractMapper.toSummary(contract);
 
-      PropertySummary propertySummary =
+      @Nullable PropertySummary propertySummary =
           propertyRepository
               .findByIdAndTeamId(contract.getPropertyId(), teamId)
               .map(propertyMapper::toSummary)
               .orElse(null);
 
-      TenantSummary tenantSummary =
+      @Nullable TenantSummary tenantSummary =
           contractPartyService
               .findPrimaryTenantForContract(contract.getId(), teamId)
               .map(tenantMapper::toSummary)
               .orElse(null);
 
-      DocumentResponse proofOfPayment =
+      @Nullable DocumentResponse proofOfPayment =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
               .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
 
-      DocumentResponse receipt =
+      @Nullable DocumentResponse receipt =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
               .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
               .findFirst()
@@ -1129,7 +1133,8 @@ public class PaymentService {
         response.updatedAt());
   }
 
-  private void validateCurrencyDecimals(BigDecimal amount, String currencyCode) {
+  private void validateCurrencyDecimals(
+      @Nullable BigDecimal amount, @Nullable String currencyCode) {
     if (amount == null || currencyCode == null || currencyCode.isBlank()) {
       return;
     }

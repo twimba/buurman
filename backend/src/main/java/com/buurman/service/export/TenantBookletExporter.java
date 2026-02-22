@@ -86,7 +86,7 @@ public class TenantBookletExporter {
     Map<UUID, ContractPartyRole> contractRoles = new HashMap<>();
     for (Contract contract : contracts) {
       contractPartyService.getPartiesForContract(contract.getId(), teamId).stream()
-          .filter(p -> p.getTenantId().equals(tenant.getId()))
+          .filter(p -> tenant.getId().equals(p.getTenantId()))
           .findFirst()
           .ifPresent(p -> contractRoles.put(contract.getId(), p.getRole()));
     }
