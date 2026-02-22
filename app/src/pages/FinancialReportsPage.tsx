@@ -646,15 +646,15 @@ export const FinancialReportsPage = () => {
           )}
         </div>
 
-        {/* Property Comparison Bar Chart */}
+        {/* Property Performance Table */}
         <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Property Comparison
+                Property Performance
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Income vs expenses by property
+                Income, expenses & net profit per property
               </p>
             </div>
             <Building2 className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
@@ -664,86 +664,68 @@ export const FinancialReportsPage = () => {
               <LoadingSpinner />
             </div>
           ) : propertyComparison && propertyComparison.properties.length > 0 ? (
-            <ResponsiveContainer width="100%" height={450}>
-              <BarChart
-                data={propertyComparison.properties.map((p) => ({
-                  street: p.property.street,
-                  city: p.property.city,
-                  income: p.income,
-                  expenses: p.expenses,
-                  netProfit: p.netProfit,
-                }))}
-                margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-                />
-                <XAxis
-                  dataKey="street"
-                  tick={(props: {
-                    x: string | number;
-                    y: string | number;
-                    index: number;
-                  }) => {
-                    const { x, y, index } = props;
-                    const data = propertyComparison.properties[index];
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[#edf0f7] dark:border-[#2a2e3f]">
+                    <th className="text-left py-2 pr-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">Property</th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">Income</th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">Expenses</th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">Net Profit</th>
+                    <th className="text-right py-2 pl-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">Margin</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {propertyComparison.properties.map((p) => {
+                    const margin = p.income > 0 ? ((p.netProfit / p.income) * 100) : 0;
                     return (
-                      <g transform={`translate(${x},${y})`}>
-                        <text
-                          x={0}
-                          y={0}
-                          dy={24}
-                          textAnchor="middle"
-                          fill={isDark ? '#8b90a8' : '#6B7280'}
-                          fontSize={11}
-                        >
-                          <tspan x={0} dy={0}>
-                            {data.property.street}
-                          </tspan>
-                          <tspan
-                            x={0}
-                            dy={14}
-                            fontSize={10}
-                            fill={isDark ? '#5c6180' : '#9CA3AF'}
-                          >
-                            {data.property.city}
-                          </tspan>
-                        </text>
-                      </g>
+                      <tr
+                        key={p.property.identifier}
+                        className="border-b border-[#edf0f7] dark:border-[#2a2e3f] last:border-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1e2130] cursor-pointer"
+                        onClick={() => navigate(`/properties/${p.property.identifier}`)}
+                      >
+                        <td className="py-3 pr-4">
+                          <div className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">{p.property.street}</div>
+                          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">{p.property.city}</div>
+                        </td>
+                        <td className="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">{formatCurrency(p.income)}</td>
+                        <td className="py-3 px-4 text-right font-medium text-red-600 dark:text-red-400">{formatCurrency(p.expenses)}</td>
+                        <td className={`py-3 px-4 text-right font-semibold ${p.netProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {formatCurrency(p.netProfit)}
+                        </td>
+                        <td className="py-3 pl-4 text-right">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            margin >= 50 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
+                            margin >= 20 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                            margin >= 0 ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' :
+                            'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                          }`}>
+                            {margin.toFixed(1)}%
+                          </span>
+                        </td>
+                      </tr>
                     );
-                  }}
-                  height={60}
-                  interval={0}
-                  stroke={isDark ? '#5c6180' : '#6B7280'}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  stroke={isDark ? '#5c6180' : '#6B7280'}
-                  tickFormatter={formatYAxis}
-                />
-                <Tooltip
-                  formatter={(value: number | undefined) =>
-                    value !== undefined ? formatCurrency(value) : 'N/A'
-                  }
-                  labelFormatter={(label, payload) => {
-                    if (
-                      Array.isArray(payload) &&
-                      payload.length > 0 &&
-                      payload[0].payload?.fullName
-                    ) {
-                      return payload[0].payload.fullName;
-                    }
-                    return label;
-                  }}
-                  contentStyle={tooltipStyle}
-                />
-                <Legend />
-                <Bar dataKey="income" fill="#10B981" name="Income" />
-                <Bar dataKey="expenses" fill="#EF4444" name="Expenses" />
-                <Bar dataKey="netProfit" fill="#3B82F6" name="Net Profit" />
-              </BarChart>
-            </ResponsiveContainer>
+                  })}
+                </tbody>
+                {propertyComparison.properties.length > 1 && (
+                  <tfoot>
+                    <tr className="border-t-2 border-[#c9cfd9] dark:border-[#3a3f54]">
+                      <td className="py-3 pr-4 font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">Total</td>
+                      <td className="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">
+                        {formatCurrency(propertyComparison.properties.reduce((s, p) => s + p.income, 0))}
+                      </td>
+                      <td className="py-3 px-4 text-right font-semibold text-red-600 dark:text-red-400">
+                        {formatCurrency(propertyComparison.properties.reduce((s, p) => s + p.expenses, 0))}
+                      </td>
+                      <td className="py-3 px-4 text-right font-semibold text-blue-600 dark:text-blue-400">
+                        {formatCurrency(propertyComparison.properties.reduce((s, p) => s + p.netProfit, 0))}
+                      </td>
+                      <td className="py-3 pl-4"></td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
           ) : (
             <div className="text-center py-12 text-[#6b7194] dark:text-[#8b90a8]">
               No property data for selected period
