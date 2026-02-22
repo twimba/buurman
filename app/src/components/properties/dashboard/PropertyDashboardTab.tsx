@@ -785,27 +785,54 @@ function OccupancyAndTrendChart({
           <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1.5 font-medium">
             Occupancy
           </p>
-          <div className="flex gap-0.5">
+          <div className="flex h-6 rounded overflow-hidden">
             {occupancy.months.map((m) => {
               const occupied = m.occupancyPercent > 0;
               return (
                 <div
                   key={m.month}
-                  className="flex-1 flex flex-col items-center"
-                >
-                  <div
-                    className="w-full h-6 rounded-sm"
-                    style={{
-                      backgroundColor: occupied ? COLORS.income : vacantColor,
-                    }}
-                    title={`${formatMonthTick(m.month)}: ${occupied ? 'Occupied' : 'Vacant'}`}
-                  />
-                  <span className="text-[10px] text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
-                    {formatMonthTick(m.month)}
-                  </span>
-                </div>
+                  className="flex-1 min-w-0"
+                  style={{
+                    backgroundColor: occupied ? COLORS.income : vacantColor,
+                  }}
+                  title={`${formatMonthTick(m.month)}: ${occupied ? 'Occupied' : 'Vacant'}`}
+                />
               );
             })}
+          </div>
+          {/* Labels: show first, last, and evenly spaced ticks */}
+          <div className="flex justify-between mt-0.5">
+            {(() => {
+              const months = occupancy.months;
+              const len = months.length;
+              if (len <= 12) {
+                return months.map((m) => (
+                  <span
+                    key={m.month}
+                    className="text-[10px] text-[#6b7194] dark:text-[#8b90a8] flex-1 text-center"
+                  >
+                    {formatMonthTick(m.month)}
+                  </span>
+                ));
+              }
+              // For large ranges, show ~6 evenly spaced labels
+              const tickCount = Math.min(6, len);
+              const indices = Array.from({ length: tickCount }, (_, i) =>
+                Math.round((i * (len - 1)) / (tickCount - 1))
+              );
+              return (
+                <div className="flex w-full justify-between">
+                  {indices.map((idx) => (
+                    <span
+                      key={months[idx].month}
+                      className="text-[10px] text-[#6b7194] dark:text-[#8b90a8]"
+                    >
+                      {formatMonthTick(months[idx].month)}
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
           <div className="flex gap-3 mt-1.5">
             <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
