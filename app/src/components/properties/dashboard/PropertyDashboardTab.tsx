@@ -955,14 +955,19 @@ function ExpenseTimelineChart({
 
   const enabledCategories = allCategories.filter((c) => enabled.has(c));
 
+  // Use a wider chart when there are many months to prevent ultra-thin bars
+  const barCount = chartData.length;
+  const minChartWidth = Math.max(barCount * 40, 320);
+
   return (
     <div>
       {/* Stacked bar chart */}
-      <ResponsiveContainer width="100%" height={320}>
+      <div style={{ overflowX: barCount > 12 ? 'auto' : undefined }}>
+      <ResponsiveContainer width="100%" height={320} minWidth={minChartWidth}>
         <BarChart
           data={chartData}
           margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-          barCategoryGap="20%"
+          barCategoryGap={barCount > 18 ? '8%' : barCount > 12 ? '12%' : '20%'}
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -1004,6 +1009,7 @@ function ExpenseTimelineChart({
           })}
         </BarChart>
       </ResponsiveContainer>
+      </div>
 
       {/* Clickable legend — styled like Recharts default legend */}
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
