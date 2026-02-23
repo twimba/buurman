@@ -19,7 +19,7 @@
     "@tiptap/extension-text-align": "^3.18.0",
     "@tiptap/extension-underline": "^3.18.0",
     "@tiptap/extensions": "^3.19.0",
-    "@tiptap/pm": "^3.18.0",
+    "@tiptap/pm": "^3.20.0",
     "@tiptap/react": "^3.18.0",
     "@tiptap/starter-kit": "^3.18.0",
     "axios": "1.13.4",
