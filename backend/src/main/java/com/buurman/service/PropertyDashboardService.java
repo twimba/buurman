@@ -433,7 +433,7 @@ public class PropertyDashboardService {
    * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers. Returns null
    * if the input is null or blank (meaning all months).
    */
-  private static List<Integer> parseDueMonths(String dueMonths) {
+  private static @Nullable List<Integer> parseDueMonths(@Nullable String dueMonths) {
     if (dueMonths == null || dueMonths.isBlank()) {
       return null;
     }
@@ -624,17 +624,19 @@ public class PropertyDashboardService {
    * months.
    */
   private BigDecimal getMonthlyShareOfAnnualCost(
-      BigDecimal annualAmount, String dueMonths, int currentMonth) {
+      @Nullable BigDecimal annualAmount, @Nullable String dueMonths, int currentMonth) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) return ZERO;
     if (dueMonths == null || dueMonths.isBlank()) {
       // If no due months specified, spread evenly across 12 months
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }
-    List<Integer> months = parseDueMonths(dueMonths);
-    if (months.isEmpty()) {
+    @Nullable List<Integer> months = parseDueMonths(dueMonths);
+    if (months == null || months.isEmpty()) {
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }
-    if (!months.contains(currentMonth)) return ZERO;
+    if (!months.contains(currentMonth)) {
+      return ZERO;
+    }
     return annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
   }
 

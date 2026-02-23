@@ -80,7 +80,8 @@ public class ReportController {
       @RequestParam(required = false) @Nullable String currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
     return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
   }
 
@@ -95,7 +96,8 @@ public class ReportController {
       @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
     if (startDate != null && endDate != null) {
       return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
     }
@@ -112,7 +114,8 @@ public class ReportController {
       @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
@@ -126,7 +129,8 @@ public class ReportController {
       @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
@@ -192,7 +196,8 @@ public class ReportController {
         .body(pdf);
   }
 
-  private List<UUID> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
+  private @Nullable List<UUID> resolvePropertyIdentifiers(
+      @Nullable List<String> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
       return null;
     }

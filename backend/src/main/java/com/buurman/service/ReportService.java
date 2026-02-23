@@ -226,7 +226,7 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public IncomeTrendResponse getIncomeTrend(
-      int months, List<UUID> propertyIds, UserPrincipal principal) {
+      int months, @Nullable List<UUID> propertyIds, UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
     LocalDate endDate = LocalDate.now(clock);
@@ -284,9 +284,10 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public IncomeTrendResponse getIncomeTrendByDateRange(
-      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     LocalDate rangeStart = startDate.withDayOfMonth(1);
     LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
 
@@ -334,12 +335,13 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()).orElse("EUR"));
+        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
   public ExpenseBreakdownResponse getExpenseBreakdown(
-      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
 
@@ -375,7 +377,8 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public PropertyComparisonResponse getPropertyComparison(
-      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
 
@@ -495,7 +498,7 @@ public class ReportService {
   public OccupancyTrendResponse getOccupancyTrendByDateRange(
       LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
 
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     int totalProperties = propertyRepository.findAllByTeamId(teamId).size();
 
     List<Contract> allActiveContracts =
@@ -633,24 +636,24 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public DataDateRangeResponse getDataDateRange(UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
-    LocalDate earliest = null;
+    @Nullable LocalDate earliest = null;
 
     // Earliest payment date
-    LocalDate earliestPayment = paymentRepository.findEarliestPaymentDate(teamId);
+    @Nullable LocalDate earliestPayment = paymentRepository.findEarliestPaymentDate(teamId);
     if (earliestPayment != null && (earliest == null || earliestPayment.isBefore(earliest))) {
       earliest = earliestPayment;
     }
 
     // Earliest expense date
-    LocalDate earliestExpense = expenseRepository.findEarliestExpenseDate(teamId);
+    @Nullable LocalDate earliestExpense = expenseRepository.findEarliestExpenseDate(teamId);
     if (earliestExpense != null && (earliest == null || earliestExpense.isBefore(earliest))) {
       earliest = earliestExpense;
     }
 
     // Earliest contract start date
-    LocalDate earliestContract = contractRepository.findEarliestStartDate(teamId);
+    @Nullable LocalDate earliestContract = contractRepository.findEarliestStartDate(teamId);
     if (earliestContract != null && (earliest == null || earliestContract.isBefore(earliest))) {
       earliest = earliestContract;
     }
@@ -701,7 +704,7 @@ public class ReportService {
   }
 
   private boolean matchesPropertyFilter(
-      Payment payment, List<UUID> propertyIds, Map<UUID, Contract> contractsById) {
+      Payment payment, @Nullable List<UUID> propertyIds, Map<UUID, Contract> contractsById) {
     if (propertyIds == null || propertyIds.isEmpty()) {
       return true;
     }
@@ -710,7 +713,7 @@ public class ReportService {
         .orElse(false);
   }
 
-  private boolean matchesPropertyFilter(Expense expense, List<UUID> propertyIds) {
+  private boolean matchesPropertyFilter(Expense expense, @Nullable List<UUID> propertyIds) {
     if (propertyIds == null || propertyIds.isEmpty()) {
       return true;
     }

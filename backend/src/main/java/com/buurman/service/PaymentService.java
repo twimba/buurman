@@ -154,7 +154,7 @@ public class PaymentService {
 
   private PaymentResponse performCreatePayment(
       CreatePaymentRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
@@ -274,12 +274,14 @@ public class PaymentService {
     UUID propertyId = null;
     if (propertyIdentifier != null) {
       var property =
-          propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+          propertyRepository.getByIdentifierAndTeamId(
+              propertyIdentifier, principal.requireTeamId());
       propertyId = property.getId();
     }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, contractId, propertyId, dateFrom, dateTo, pageRequest);
+            principal.requireTeamId(), status, contractId, propertyId, dateFrom, dateTo,
+            pageRequest);
 
     LocalDate today = LocalDate.now(clock);
     result.items().forEach(payment -> updatePaymentStatus(payment, today));

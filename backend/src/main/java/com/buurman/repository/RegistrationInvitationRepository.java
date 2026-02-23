@@ -161,7 +161,7 @@ public class RegistrationInvitationRepository {
         .execute();
   }
 
-  public void updateNote(UUID id, String note) {
+  public void updateNote(UUID id, @Nullable String note) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(REGISTRATION_INVITATIONS)
         .set(REGISTRATION_INVITATIONS.NOTE, note)

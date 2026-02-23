@@ -160,7 +160,7 @@ public class ExpenseService {
         principal.getUserId(),
         savedExpense);
 
-    return enrichExpenseResponse(savedExpense, principal.getTeamId());
+    return enrichExpenseResponse(savedExpense, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
@@ -190,7 +190,7 @@ public class ExpenseService {
       PageRequest pageRequest) {
     PaginatedResult<Expense> result =
         expenseRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), category, propertyId, dateFrom, dateTo, pageRequest);
+            principal.requireTeamId(), category, propertyId, dateFrom, dateTo, pageRequest);
     List<ExpenseResponse> responses =
         result.items().stream()
             .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))

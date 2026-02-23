@@ -99,7 +99,7 @@ public class ExpenseController {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     UUID propertyId = null;
     if (propertyIdentifier != null) {
-      var property = expenseService.resolvePropertyId(propertyIdentifier, principal.getTeamId());
+      var property = expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());
       propertyId = property;
     }
     return expenseService.getExpensesPaginated(

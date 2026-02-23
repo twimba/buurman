@@ -273,7 +273,7 @@ public class ExpenseRepository {
         .map(r -> r.get(EXPENSES.CURRENCY));
   }
 
-  public LocalDate findEarliestExpenseDate(UUID teamId) {
+  public @Nullable LocalDate findEarliestExpenseDate(UUID teamId) {
     return dsl.select(min(EXPENSES.EXPENSE_DATE))
         .from(EXPENSES)
         .where(

@@ -424,7 +424,7 @@ public class PaymentRepository {
         .map(r -> r.get(PAYMENTS.CURRENCY));
   }
 
-  public LocalDate findEarliestPaymentDate(UUID teamId) {
+  public @Nullable LocalDate findEarliestPaymentDate(UUID teamId) {
     return dsl.select(min(PAYMENTS.PAYMENT_DATE))
         .from(PAYMENTS)
         .where(

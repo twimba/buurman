@@ -2,4 +2,6 @@ package com.buurman.dto.response;
 
 import java.time.LocalDate;
 
-public record DataDateRangeResponse(LocalDate earliestDate) {}
+import org.jspecify.annotations.Nullable;
+
+public record DataDateRangeResponse(@Nullable LocalDate earliestDate) {}

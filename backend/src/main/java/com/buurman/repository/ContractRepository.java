@@ -385,7 +385,7 @@ public class ContractRepository {
         .toList();
   }
 
-  public LocalDate findEarliestStartDate(UUID teamId) {
+  public @Nullable LocalDate findEarliestStartDate(UUID teamId) {
     return dsl.select(min(CONTRACTS.START_DATE))
         .from(CONTRACTS)
         .where(
