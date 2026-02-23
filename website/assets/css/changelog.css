@@ -1,0 +1,239 @@
+/* ══════════════════════════════════════════════════
+   Buurman — Changelog Page (changelog.html)
+   ══════════════════════════════════════════════════ */
+
+/* ── Hero ────────────────────────────────────────── */
+.changelog-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(92, 124, 250, 0.10), transparent),
+        linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+    padding: 5rem 0 4rem;
+    text-align: center;
+}
+
+.changelog-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(92, 124, 250, 0.2), transparent);
+}
+
+.changelog-hero h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--bg-dark);
+    margin-bottom: 1rem;
+}
+
+.changelog-hero p {
+    font-size: 1.1875rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+    .changelog-hero { padding: 3rem 0 2.5rem; }
+}
+
+/* ── Timeline ───────────────────────────────────── */
+.changelog-feed {
+    padding: 3rem 0 5rem;
+    background: var(--bg);
+}
+
+/* ── Week Entry ─────────────────────────────────── */
+.week-entry {
+    position: relative;
+    margin-bottom: 4rem;
+}
+
+.week-entry:last-child { margin-bottom: 0; }
+
+.week-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.week-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.week-date svg { color: var(--primary); flex-shrink: 0; }
+
+.week-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+}
+
+.week-version {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
+/* ── Feature Cards ──────────────────────────────── */
+.features-list {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.feature-entry {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 2rem 2.25rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.feature-entry:hover {
+    border-color: var(--primary-100);
+    box-shadow: 0 12px 32px rgba(92, 124, 250, 0.08);
+    transform: translateY(-2px);
+}
+
+.feature-entry-header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+.feature-entry-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-entry h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    flex: 1;
+}
+
+.feature-entry p {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* Category badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 1rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.badge-new {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-dark);
+}
+
+.badge-improved {
+    background: rgba(92, 124, 250, 0.1);
+    color: var(--primary-dark);
+}
+
+.badge-fixed {
+    background: rgba(252, 196, 25, 0.15);
+    color: #b45309;
+}
+
+/* ── Compact list (for smaller items) ───────────── */
+.compact-group {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.compact-group:hover {
+    border-color: var(--primary-100);
+    box-shadow: 0 12px 32px rgba(92, 124, 250, 0.08);
+}
+
+.compact-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1.5rem 2.25rem 0;
+}
+
+.compact-group-header h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+.compact-list {
+    list-style: none;
+    padding: 1rem 2.25rem 1.75rem;
+}
+
+.compact-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.compact-list li + li {
+    border-top: 1px solid var(--border-light);
+}
+
+.compact-list li svg {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.compact-list strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ── Responsive tweaks ──────────────────────────── */
+@media (max-width: 768px) {
+    .feature-entry { padding: 1.5rem; }
+    .compact-group-header { padding: 1.25rem 1.5rem 0; }
+    .compact-list { padding: 1rem 1.5rem 1.5rem; }
+}

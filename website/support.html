@@ -21,131 +21,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #5c7cfa; --primary-dark: #4263eb; --primary-light: #748ffc;
-            --primary-lighter: #91a7ff; --primary-50: #edf2ff; --primary-100: #dbe4ff;
-            --accent: #fcc419; --success: #10b981;
-            --bg: #f8f9fc; --bg-dark: #0c0d14; --surface: #ffffff; --surface-dark: #14161f;
-            --text: #1a1d2e; --text-secondary: #6b7194; --text-muted: #9ca0b8; --text-light: #3d4463;
-            --border: #e2e6f0; --border-light: #f1f3f9; --radius: 0.75rem; --radius-lg: 1.25rem;
-        }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; color: var(--text); line-height: 1.6; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; }
-
-        .header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-        .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
-        .logo-link { display: flex; align-items: center; text-decoration: none; transition: opacity 0.2s; }
-        .logo-link:hover { opacity: 0.85; }
-        .logo-link img { height: 40px; width: auto; }
-        .nav-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: all 0.2s; }
-        .nav-link:hover { color: var(--primary); background: var(--primary-50); }
-
-        main { flex: 1; display: flex; align-items: center; justify-content: center; }
-
-        .coming-soon {
-            text-align: center;
-            max-width: 480px;
-            padding: 4rem 2rem;
-        }
-
-        .coming-soon-illustration {
-            margin-bottom: 2.5rem;
-        }
-
-        .coming-soon h1 {
-            font-size: clamp(2rem, 5vw, 2.75rem);
-            font-weight: 900;
-            letter-spacing: -0.02em;
-            color: var(--text);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .coming-soon .subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            margin-bottom: 0.75rem;
-        }
-
-        .coming-soon .description {
-            font-size: 1rem;
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin-bottom: 2.5rem;
-        }
-
-        .coming-soon-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            border-radius: var(--radius-lg);
-            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-            box-shadow: 0 4px 14px rgba(92,124,250,0.35);
-        }
-        .coming-soon-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(92,124,250,0.45);
-        }
-
-        .coming-soon-note {
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        /* Construction house animation */
-        @keyframes hammer {
-            0%, 70%, 100% { transform: rotate(0deg); }
-            80% { transform: rotate(-20deg); }
-            90% { transform: rotate(5deg); }
-        }
-        @keyframes bounce-gentle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-        .hammer-group { animation: hammer 2s ease-in-out infinite; transform-origin: 170px 70px; }
-        .house-group { animation: bounce-gentle 4s ease-in-out infinite; }
-        .sparkle-1 { animation: sparkle 2s ease-in-out infinite; }
-        .sparkle-2 { animation: sparkle 2s ease-in-out 0.5s infinite; }
-        .sparkle-3 { animation: sparkle 2s ease-in-out 1s infinite; }
-
-        @media (prefers-reduced-motion: reduce) {
-            .hammer-group, .house-group { animation: none; }
-            .sparkle-1, .sparkle-2, .sparkle-3 { animation: none; opacity: 0.6; }
-        }
-
-        .footer { background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%); color: #8b90a8; padding: 4rem 0 2rem; position: relative; margin-top: auto; }
-        .footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(92,124,250,0.4), transparent); }
-        .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-        .footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #eef0f6; margin-bottom: 0.75rem; }
-        .footer-tagline { font-size: 0.9375rem; color: #a0a4b8; line-height: 1.7; }
-        .footer-col h4 { color: #eef0f6; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.25rem; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 0.625rem; }
-        .footer-links a { color: #8b90a8; text-decoration: none; font-size: 0.9375rem; transition: color 0.2s; }
-        .footer-links a:hover { color: var(--primary-lighter); }
-        .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .footer-copy { font-size: 0.875rem; color: #6b7194; }
-        .footer-contact a { font-size: 0.875rem; color: #6b7194; text-decoration: none; transition: color 0.2s; }
-        .footer-contact a:hover { color: var(--primary-lighter); }
-
-        @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
-        @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; text-align: center; } .header-inner { height: 64px; } }
-    </style>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/pages.css">
 </head>
 <body>
     <header class="header">
@@ -155,7 +32,7 @@
         </div>
     </header>
 
-    <main>
+    <main class="main-centered">
         <div class="coming-soon">
             <div class="coming-soon-illustration">
                 <svg width="220" height="180" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg">
