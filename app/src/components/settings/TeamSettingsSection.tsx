@@ -5,8 +5,6 @@ import {
   Mail,
   Trash2,
   Edit3,
-  Save,
-  X,
   Shield,
   Crown,
   Loader2,
@@ -22,7 +20,6 @@ import {
   useRemoveMember,
   useUpdateMemberRole,
   useTransferOwnership,
-  useUpdateTeam,
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -37,13 +34,11 @@ export const TeamSettingsSection = () => {
     team?.identifier
   );
 
-  const [isEditingTeamName, setIsEditingTeamName] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-  const [teamName, setTeamName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<Role>('TEAM_VIEWER');
   const [newRole, setNewRole] = useState<Role>('TEAM_VIEWER');
@@ -52,7 +47,6 @@ export const TeamSettingsSection = () => {
     team?.identifier
   );
 
-  const updateTeamMutation = useUpdateTeam(team?.identifier || '');
   const createInvitationMutation = useCreateInvitation(team?.identifier || '');
   const resendInvitationMutation = useResendInvitation(team?.identifier || '');
   const removeMemberMutation = useRemoveMember(team?.identifier || '');
@@ -85,21 +79,6 @@ export const TeamSettingsSection = () => {
   const selectedMember = members?.find(
     (m) => m.userIdentifier === selectedMemberId
   );
-
-  const handleStartEditTeamName = () => {
-    setTeamName(team?.teamName || '');
-    setIsEditingTeamName(true);
-  };
-
-  const handleSaveTeamName = () => {
-    if (!teamName.trim()) return;
-    updateTeamMutation.mutate(
-      { name: teamName },
-      {
-        onSuccess: () => setIsEditingTeamName(false),
-      }
-    );
-  };
 
   const handleInviteMember = () => {
     if (!inviteEmail.trim()) return;
@@ -158,75 +137,6 @@ export const TeamSettingsSection = () => {
 
   return (
     <div className="space-y-6">
-      {/* Team Name Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Team Settings
-          </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-            Manage your team name and basic information
-          </p>
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                Team Name
-              </label>
-              {isEditingTeamName ? (
-                <input
-                  type="text"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              ) : (
-                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {team?.teamName}
-                </p>
-              )}
-            </div>
-            {canManageMembers && (
-              <>
-                {isEditingTeamName ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setIsEditingTeamName(false)}
-                      className="px-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
-                    >
-                      <X className="h-4 w-4" />
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSaveTeamName}
-                      disabled={updateTeamMutation.isPending}
-                      className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50"
-                    >
-                      {updateTeamMutation.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                      Save
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleStartEditTeamName}
-                    className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2"
-                  >
-                    <Edit3 className="h-4 w-4" />
-                    Edit
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Team Members Card */}
       <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
         <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
