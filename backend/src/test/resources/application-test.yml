@@ -3,6 +3,7 @@ spring:
     url: jdbc:tc:postgresql:18:///buurman?TC_REUSABLE=true
     username: buurman
     password: buurman
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
 
   security:
     oauth2:
@@ -72,15 +73,17 @@ notification:
     batch-size: 10
     max-retries: 1
 
+# Scheduling Configuration
 scheduling:
+  notifications:
+    outbox-push-cron: "*/30 * * * * ?"
   payment-generation:
-    cron: "-"
+    cron: "0 0 * * * ?"
   notification-reminders:
-    contract-expiry-cron: "-"
-    payment-reminder-cron: "-"
+    contract-expiry-cron: "0 0 0 * * ?"
+    payment-reminder-cron: "0 0 0 * * ?"
   metrics:
-    fixed-rate-ms: 3600000
-    initial-delay-ms: 3600000
+    metrics-push-cron: "0 */15 * * * ?"
 
 buurman:
   demo:

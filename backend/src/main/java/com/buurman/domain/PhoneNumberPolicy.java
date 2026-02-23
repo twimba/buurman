@@ -23,13 +23,17 @@ public class PhoneNumberPolicy {
     if (policyMatrix == null) {
       return false;
     }
+
     List<String> allowedTypes = policyMatrix.get(countryCode);
+
     if (allowedTypes == null || allowedTypes.isEmpty()) {
       return false;
     }
+
     if (numberType == null) {
       return true; // type unknown but country is allowed
     }
+
     return allowedTypes.contains(numberType);
   }
 }

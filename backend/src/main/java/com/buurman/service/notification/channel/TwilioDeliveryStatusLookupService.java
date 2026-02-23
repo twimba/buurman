@@ -5,8 +5,15 @@ import static com.buurman.domain.NotificationStatus.DELIVERED;
 import static com.buurman.domain.NotificationStatus.FAILED;
 import static com.buurman.domain.NotificationStatus.QUEUED;
 import static com.buurman.domain.NotificationStatus.SENT;
-
-import java.util.Locale;
+import static com.twilio.rest.api.v2010.account.Message.Status.ACCEPTED;
+import static com.twilio.rest.api.v2010.account.Message.Status.CANCELED;
+import static com.twilio.rest.api.v2010.account.Message.Status.PARTIALLY_DELIVERED;
+import static com.twilio.rest.api.v2010.account.Message.Status.READ;
+import static com.twilio.rest.api.v2010.account.Message.Status.RECEIVED;
+import static com.twilio.rest.api.v2010.account.Message.Status.RECEIVING;
+import static com.twilio.rest.api.v2010.account.Message.Status.SCHEDULED;
+import static com.twilio.rest.api.v2010.account.Message.Status.SENDING;
+import static com.twilio.rest.api.v2010.account.Message.Status.UNDELIVERED;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -92,12 +99,11 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
       return QUEUED;
     }
 
-    return switch (status.toString().toUpperCase(Locale.ROOT)) {
-      case "QUEUED", "SENDING", "RECEIVING", "ACCEPTED", "SCHEDULED" -> QUEUED;
-      case "SENT" -> SENT;
-      case "DELIVERED", "RECEIVED", "READ", "PARTIALLY_DELIVERED" -> DELIVERED;
-      case "FAILED", "UNDELIVERED", "CANCELED" -> FAILED;
-      default -> QUEUED;
+    return switch (status) {
+      case QUEUED, SENDING, RECEIVING, ACCEPTED, SCHEDULED -> QUEUED;
+      case SENT -> SENT;
+      case DELIVERED, RECEIVED, READ, PARTIALLY_DELIVERED -> DELIVERED;
+      case FAILED, UNDELIVERED, CANCELED -> FAILED;
     };
   }
 }

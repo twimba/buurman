@@ -1,5 +1,7 @@
 package com.buurman.config;
 
+import static org.springframework.util.StringUtils.hasText;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -9,12 +11,13 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flagsmith.FlagsmithClient;
+import com.flagsmith.models.DefaultFlag;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +35,9 @@ public class FlagsmithConfig {
 
   @PostConstruct
   public void logFlagsmithAdminStatus() {
-    if (StringUtils.hasText(properties.apiToken())) {
+    if (hasText(properties.apiToken())) {
       log.info("Flagsmith admin: configured via API token");
-    } else if (StringUtils.hasText(properties.adminEmail())
-        && StringUtils.hasText(properties.adminPassword())) {
+    } else if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
       log.info("Flagsmith admin: configured via email/password login");
     } else {
       log.warn(
@@ -61,7 +63,7 @@ public class FlagsmithConfig {
   private FlagsmithClient buildClient(String apiKey) {
     log.info("Initialising Flagsmith client (url={})", properties.apiUrl());
 
-    var config =
+    com.flagsmith.config.FlagsmithConfig config =
         com.flagsmith.config.FlagsmithConfig.newBuilder()
             .baseUri(properties.apiUrl())
             .withEnableAnalytics(properties.enableAnalytics())
@@ -71,6 +73,7 @@ public class FlagsmithConfig {
     return FlagsmithClient.newBuilder()
         .setApiKey(apiKey)
         .withConfiguration(config)
+        .setDefaultFlagValueFunction(FlagsmithConfig::defaultFlagHandler)
         .build();
   }
 
@@ -88,25 +91,23 @@ public class FlagsmithConfig {
     }
 
     try {
-      var http = HttpClient.newBuilder().connectTimeout(REQUEST_TIMEOUT).build();
-      var mapper = new ObjectMapper();
-      var api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
+      HttpClient http = HttpClient.newBuilder().connectTimeout(REQUEST_TIMEOUT).build();
+      ObjectMapper mapper = new ObjectMapper();
+      FlagsmithAdminApi api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
-      String token;
-      if (StringUtils.hasText(properties.apiToken())) {
-        token = properties.apiToken();
-      } else {
-        token = api.login(properties.adminEmail(), properties.adminPassword());
-      }
+      String token =
+          hasText(properties.apiToken())
+              ? properties.apiToken()
+              : api.login(properties.adminEmail(), properties.adminPassword());
 
+      String envName = properties.environmentName();
       int projectId = api.findProjectId(token, properties.projectName());
-      String clientKey =
-          api.findEnvironmentClientKey(token, projectId, properties.environmentName());
+
+      String clientKey = api.findEnvironmentClientKey(token, projectId, envName);
       String serverKey = api.findOrCreateServerKey(token, clientKey);
 
-      log.info(
-          "Flagsmith auto-discovery: resolved server-side key for env '{}'",
-          properties.environmentName());
+      log.info("Flagsmith auto-discovery: resolved server-side key for env '{}'", envName);
+
       return Optional.of(serverKey);
     } catch (Exception e) {
       log.warn("Flagsmith auto-discovery failed — feature flags disabled: {}", e.getMessage(), e);
@@ -115,19 +116,27 @@ public class FlagsmithConfig {
   }
 
   private String resolveAdminTokenForDiscovery() {
-    if (StringUtils.hasText(properties.apiToken())) {
+    if (hasText(properties.apiToken())) {
       return properties.apiToken();
     }
-    if (StringUtils.hasText(properties.adminEmail())
-        && StringUtils.hasText(properties.adminPassword())) {
+
+    if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
       return "credentials";
     }
+
     return null;
   }
 
   private String resolveBaseUrl() {
     String url = properties.apiUrl().replaceAll("/+$", "");
     return url.contains("/api/v1") ? url : url + "/api/v1";
+  }
+
+  private static DefaultFlag defaultFlagHandler(String featureName) {
+    DefaultFlag flag = new DefaultFlag();
+    flag.setEnabled(false);
+    flag.setValue(null);
+    return flag;
   }
 
   /**
@@ -147,7 +156,7 @@ public class FlagsmithConfig {
     }
 
     String login(String email, String password) throws Exception {
-      var body = mapper.createObjectNode().put("email", email).put("password", password);
+      ObjectNode body = mapper.createObjectNode().put("email", email).put("password", password);
 
       JsonNode resp = post("/auth/login/", body, null);
       if (!resp.has("key")) {
@@ -185,7 +194,7 @@ public class FlagsmithConfig {
         }
       }
 
-      var body = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
+      ObjectNode body = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
       JsonNode created = post(path, body, token);
       if (!created.has("key")) {
         throw new IllegalStateException("failed to create server-side key");
@@ -194,18 +203,19 @@ public class FlagsmithConfig {
     }
 
     private JsonNode get(String path, String token) throws Exception {
-      var req =
+      HttpRequest req =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Authorization", "Token " + token)
               .GET()
               .timeout(REQUEST_TIMEOUT)
               .build();
+
       return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
     }
 
     private JsonNode post(String path, JsonNode payload, String token) throws Exception {
-      var builder =
+      HttpRequest.Builder builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Content-Type", "application/json")
@@ -214,6 +224,7 @@ public class FlagsmithConfig {
       if (token != null) {
         builder.header("Authorization", "Token " + token);
       }
+
       return mapper.readTree(
           http.send(builder.build(), HttpResponse.BodyHandlers.ofString()).body());
     }
@@ -222,9 +233,11 @@ public class FlagsmithConfig {
       if (node.isArray()) {
         return node;
       }
+
       if (node.has("results")) {
         return node.get("results");
       }
+
       throw new IllegalStateException("unexpected response format");
     }
 

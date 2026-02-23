@@ -93,15 +93,15 @@ public class PhoneNumberPolicyService {
       case PAGER -> "PAGER";
       case UAN -> "UAN";
       case VOICEMAIL -> "VOICEMAIL";
-      case UNKNOWN -> null;
-      default -> null;
+      case UNKNOWN -> "UNKNOWN";
     };
   }
 
   private String humanReadableType(String type) {
     if (type == null) {
-      return "unknown";
+      return "UNKNOWN";
     }
+
     return switch (type) {
       case "FIXED_LINE" -> "fixed line";
       case "MOBILE" -> "mobile";
