@@ -264,7 +264,7 @@ services:
   grafana:
     build:
       context: ./grafana
-    image: grafana/grafana:12.3.2
+    image: grafana/grafana:12.3.3
     container_name: buurman-grafana
     environment:
       # --- Server ---
