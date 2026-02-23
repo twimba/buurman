@@ -2083,14 +2083,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.13.4":
-  version: 1.13.4
-  resolution: "axios@npm:1.13.4"
+"axios@npm:1.13.5":
+  version: 1.13.5
+  resolution: "axios@npm:1.13.5"
   dependencies:
-    follow-redirects: "npm:^1.15.6"
-    form-data: "npm:^4.0.4"
+    follow-redirects: "npm:^1.15.11"
+    form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/474c00b7d71f4de4ad562589dae6b615149df7c2583bbc5ebba96229f3f85bfb0775d23705338df072f12e48d3e85685c065a3cf6855d58968a672d19214c728
+  checksum: 10c0/abf468c34f2d145f3dc7dbc0f1be67e520630624307bda69a41bbe8d386bd672d87b4405c4ee77f9ff54b235ab02f96a9968fb00e75b13ce64706e352a3068fd
   languageName: node
   linkType: hard
 
@@ -2172,7 +2172,7 @@ __metadata:
     "@types/react-is": "npm:19.2.0"
     "@vis.gl/react-google-maps": "npm:^0.5.1"
     "@vitejs/plugin-react": "npm:5.1.2"
-    axios: "npm:1.13.4"
+    axios: "npm:1.13.5"
     date-fns: "npm:4.1.0"
     dompurify: "npm:^3.3.1"
     eslint: "npm:9.39.2"
@@ -2215,7 +2215,7 @@ __metadata:
     "@types/react": "npm:19.2.10"
     "@types/react-dom": "npm:19.2.3"
     "@vitejs/plugin-react": "npm:5.1.2"
-    axios: "npm:1.13.4"
+    axios: "npm:1.13.5"
     cronstrue: "npm:3.12.0"
     date-fns: "npm:4.1.0"
     dompurify: "npm:^3.3.1"
@@ -3183,7 +3183,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.11":
   version: 1.15.11
   resolution: "follow-redirects@npm:1.15.11"
   peerDependenciesMeta:
@@ -3202,7 +3202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.4":
+"form-data@npm:^4.0.5":
   version: 4.0.5
   resolution: "form-data@npm:4.0.5"
   dependencies:
