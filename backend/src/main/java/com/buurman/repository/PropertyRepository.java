@@ -117,142 +117,175 @@ public class PropertyRepository {
           .set(PROPERTIES.CITY, property.getCity())
           .set(PROPERTIES.POSTAL_CODE, property.getPostalCode())
           .set(PROPERTIES.COUNTRY, property.getCountry())
-          .set(PROPERTIES.LATITUDE, property.getLatitude())
-          .set(PROPERTIES.LONGITUDE, property.getLongitude())
-          .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy())
-          .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
-          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
+          .set(PROPERTIES.LATITUDE, property.getLatitude().orElse(null))
+          .set(PROPERTIES.LONGITUDE, property.getLongitude().orElse(null))
+          .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy().orElse(null))
+          .set(PROPERTIES.AREA_VALUE, property.getAreaValue().orElse(null))
+          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit().orElse(null))
           .set(PROPERTIES.PROPERTY_CATEGORY, property.getPropertyCategory().name())
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
           .set(PROPERTIES.STATUS, property.getStatus().name())
           // Construction & Structure
-          .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt())
-          .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated())
-          .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType())
-          .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType())
-          .set(PROPERTIES.ROOF_TYPE, property.getRoofType())
-          .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction())
-          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType())
-          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType())
-          .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors())
-          .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes())
+          .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt().orElse(null))
+          .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated().orElse(null))
+          .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType().orElse(null))
+          .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType().orElse(null))
+          .set(PROPERTIES.ROOF_TYPE, property.getRoofType().orElse(null))
+          .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction().orElse(null))
+          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType().orElse(null))
+          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType().orElse(null))
+          .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors().orElse(null))
+          .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes().orElse(null))
           // Energy & Climate
-          .set(PROPERTIES.ENERGY_EFFICIENCY_RATING, property.getEnergyEfficiencyRating())
-          .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, property.getEnergyCertificateExpiryDate())
-          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType())
-          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType())
-          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem())
-          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes())
+          .set(
+              PROPERTIES.ENERGY_EFFICIENCY_RATING,
+              property.getEnergyEfficiencyRating().orElse(null))
+          .set(
+              PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
+              property.getEnergyCertificateExpiryDate().orElse(null))
+          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType().orElse(null))
+          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType().orElse(null))
+          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem().orElse(null))
+          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes().orElse(null))
           // Utilities & Connections
-          .set(PROPERTIES.ELECTRICITY_CONNECTION_TYPE, property.getElectricityConnectionType())
-          .set(PROPERTIES.ELECTRICITY_CAPACITY_AMPS, property.getElectricityCapacityAmps())
-          .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType())
-          .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection())
-          .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType())
-          .set(PROPERTIES.INTERNET_CONNECTION_TYPE, property.getInternetConnectionType())
-          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps())
-          .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus())
+          .set(
+              PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
+              property.getElectricityConnectionType().orElse(null))
+          .set(
+              PROPERTIES.ELECTRICITY_CAPACITY_AMPS,
+              property.getElectricityCapacityAmps().orElse(null))
+          .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType().orElse(null))
+          .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection().orElse(null))
+          .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType().orElse(null))
+          .set(
+              PROPERTIES.INTERNET_CONNECTION_TYPE,
+              property.getInternetConnectionType().orElse(null))
+          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps().orElse(null))
+          .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus().orElse(null))
           // Parking
-          .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces())
-          .set(PROPERTIES.PARKING_TYPE, property.getParkingType())
+          .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
+          .set(PROPERTIES.PARKING_TYPE, property.getParkingType().orElse(null))
           // Safety & Security
-          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors())
-          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors())
-          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher())
-          .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem())
-          .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem())
-          .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras())
-          .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry())
-          .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes())
+          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors().orElse(null))
+          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors().orElse(null))
+          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher().orElse(null))
+          .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem().orElse(null))
+          .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem().orElse(null))
+          .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras().orElse(null))
+          .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry().orElse(null))
+          .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes().orElse(null))
           // Accessibility
-          .set(PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE, property.getIsWheelchairAccessible())
-          .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator())
-          .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
-          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
-          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+          .set(
+              PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE,
+              property.getIsWheelchairAccessible().orElse(null))
+          .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator().orElse(null))
+          .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance().orElse(null))
+          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom().orElse(null))
+          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes().orElse(null))
           // Investment & Financial
           .set(
               PROPERTIES.PURCHASE_PRICE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getPurchasePrice(), property.getPurchasePriceCurrency()))
-          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency())
-          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
+                  property.getPurchasePrice().orElse(null),
+                  property.getPurchasePriceCurrency().orElse(null)))
+          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency().orElse(null))
+          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate().orElse(null))
           .set(
               PROPERTIES.CURRENT_MARKET_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getCurrentMarketValue(), property.getCurrentMarketValueCurrency()))
-          .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, property.getCurrentMarketValueCurrency())
-          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
+                  property.getCurrentMarketValue().orElse(null),
+                  property.getCurrentMarketValueCurrency().orElse(null)))
+          .set(
+              PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY,
+              property.getCurrentMarketValueCurrency().orElse(null))
+          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate().orElse(null))
           .set(
               PROPERTIES.MORTGAGE_TYPE,
-              property.getMortgageType() != null ? property.getMortgageType().name() : null)
+              property.getMortgageType().map(Property.MortgageType::name).orElse(null))
           .set(
               PROPERTIES.MORTGAGE_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMortgageAmount(), property.getMortgageAmountCurrency()))
-          .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, property.getMortgageAmountCurrency())
-          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
-          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
-          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
+                  property.getMortgageAmount().orElse(null),
+                  property.getMortgageAmountCurrency().orElse(null)))
+          .set(
+              PROPERTIES.MORTGAGE_AMOUNT_CURRENCY,
+              property.getMortgageAmountCurrency().orElse(null))
+          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate().orElse(null))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              isVariablePayment(property.getMonthlyMortgagePayment())
+              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
                   ? Property.VARIABLE_PAYMENT_SENTINEL_DB
                   : CurrencyUtils.toMinorUnitsOrNull(
-                      property.getMonthlyMortgagePayment(),
-                      property.getMonthlyMortgagePaymentCurrency()))
+                      property.getMonthlyMortgagePayment().orElse(null),
+                      property.getMonthlyMortgagePaymentCurrency().orElse(null)))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              isVariablePayment(property.getMonthlyMortgagePayment())
+              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
                   ? null
-                  : property.getMonthlyMortgagePaymentCurrency())
+                  : property.getMonthlyMortgagePaymentCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualPropertyTax(), property.getAnnualPropertyTaxCurrency()))
-          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, property.getAnnualPropertyTaxCurrency())
+                  property.getAnnualPropertyTax().orElse(null),
+                  property.getAnnualPropertyTaxCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY,
+              property.getAnnualPropertyTaxCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_INSURANCE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualInsurance(), property.getAnnualInsuranceCurrency()))
-          .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, property.getAnnualInsuranceCurrency())
+                  property.getAnnualInsurance().orElse(null),
+                  property.getAnnualInsuranceCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_CURRENCY,
+              property.getAnnualInsuranceCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_HOA_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualHoaFee(), property.getAnnualHoaFeeCurrency()))
-          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency())
+                  property.getAnnualHoaFee().orElse(null),
+                  property.getAnnualHoaFeeCurrency().orElse(null)))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualManagementFee(), property.getAnnualManagementFeeCurrency()))
-          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, property.getAnnualManagementFeeCurrency())
+                  property.getAnnualManagementFee().orElse(null),
+                  property.getAnnualManagementFeeCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY,
+              property.getAnnualManagementFeeCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualMaintenanceReserve(),
-                  property.getAnnualMaintenanceReserveCurrency()))
+                  property.getAnnualMaintenanceReserve().orElse(null),
+                  property.getAnnualMaintenanceReserveCurrency().orElse(null)))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
-              property.getAnnualMaintenanceReserveCurrency())
-          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH, property.getAnnualPropertyTaxDueMonth())
-          .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, property.getAnnualInsuranceDueMonth())
-          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth())
+              property.getAnnualMaintenanceReserveCurrency().orElse(null))
           .set(
-              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, property.getAnnualManagementFeeDueMonth())
+              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
+              property.getAnnualPropertyTaxDueMonth().orElse(null))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
+              property.getAnnualInsuranceDueMonth().orElse(null))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth().orElse(null))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
+              property.getAnnualManagementFeeDueMonth().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              property.getAnnualMaintenanceReserveDueMonth())
+              property.getAnnualMaintenanceReserveDueMonth().orElse(null))
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
-              property.getDepreciationMethod() != null
-                  ? property.getDepreciationMethod().name()
-                  : null)
-          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
+              property.getDepreciationMethod().map(Property.DepreciationMethod::name).orElse(null))
+          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears().orElse(null))
           .set(
               PROPERTIES.LAND_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getLandValue(), property.getLandValueCurrency()))
-          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency())
+                  property.getLandValue().orElse(null),
+                  property.getLandValueCurrency().orElse(null)))
+          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency().orElse(null))
           // Audit
           .set(PROPERTIES.CREATED_AT, createdAt)
           .set(PROPERTIES.UPDATED_AT, updatedAt)
@@ -275,142 +308,175 @@ public class PropertyRepository {
           .set(PROPERTIES.CITY, property.getCity())
           .set(PROPERTIES.POSTAL_CODE, property.getPostalCode())
           .set(PROPERTIES.COUNTRY, property.getCountry())
-          .set(PROPERTIES.LATITUDE, property.getLatitude())
-          .set(PROPERTIES.LONGITUDE, property.getLongitude())
-          .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy())
-          .set(PROPERTIES.AREA_VALUE, property.getAreaValue())
-          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit())
+          .set(PROPERTIES.LATITUDE, property.getLatitude().orElse(null))
+          .set(PROPERTIES.LONGITUDE, property.getLongitude().orElse(null))
+          .set(PROPERTIES.GEOCODE_ACCURACY, property.getGeocodeAccuracy().orElse(null))
+          .set(PROPERTIES.AREA_VALUE, property.getAreaValue().orElse(null))
+          .set(PROPERTIES.AREA_UNIT, property.getAreaUnit().orElse(null))
           .set(PROPERTIES.PROPERTY_TYPE, property.getPropertyType().name())
           .set(PROPERTIES.STATUS, property.getStatus().name())
           // Note: property_category is NOT updated (immutable)
           // Construction & Structure
-          .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt())
-          .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated())
-          .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType())
-          .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType())
-          .set(PROPERTIES.ROOF_TYPE, property.getRoofType())
-          .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction())
-          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType())
-          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType())
-          .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors())
-          .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes())
+          .set(PROPERTIES.YEAR_BUILT, property.getYearBuilt().orElse(null))
+          .set(PROPERTIES.YEAR_LAST_RENOVATED, property.getYearLastRenovated().orElse(null))
+          .set(PROPERTIES.CONSTRUCTION_TYPE, property.getConstructionType().orElse(null))
+          .set(PROPERTIES.FOUNDATION_TYPE, property.getFoundationType().orElse(null))
+          .set(PROPERTIES.ROOF_TYPE, property.getRoofType().orElse(null))
+          .set(PROPERTIES.WALL_CONSTRUCTION, property.getWallConstruction().orElse(null))
+          .set(PROPERTIES.FLOORING_TYPE, property.getFlooringType().orElse(null))
+          .set(PROPERTIES.WINDOW_TYPE, property.getWindowType().orElse(null))
+          .set(PROPERTIES.NUMBER_OF_FLOORS, property.getNumberOfFloors().orElse(null))
+          .set(PROPERTIES.STRUCTURAL_NOTES, property.getStructuralNotes().orElse(null))
           // Energy & Climate
-          .set(PROPERTIES.ENERGY_EFFICIENCY_RATING, property.getEnergyEfficiencyRating())
-          .set(PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE, property.getEnergyCertificateExpiryDate())
-          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType())
-          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType())
-          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem())
-          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes())
+          .set(
+              PROPERTIES.ENERGY_EFFICIENCY_RATING,
+              property.getEnergyEfficiencyRating().orElse(null))
+          .set(
+              PROPERTIES.ENERGY_CERTIFICATE_EXPIRY_DATE,
+              property.getEnergyCertificateExpiryDate().orElse(null))
+          .set(PROPERTIES.HEATING_TYPE, property.getHeatingType().orElse(null))
+          .set(PROPERTIES.COOLING_TYPE, property.getCoolingType().orElse(null))
+          .set(PROPERTIES.HOT_WATER_SYSTEM, property.getHotWaterSystem().orElse(null))
+          .set(PROPERTIES.INSULATION_NOTES, property.getInsulationNotes().orElse(null))
           // Utilities & Connections
-          .set(PROPERTIES.ELECTRICITY_CONNECTION_TYPE, property.getElectricityConnectionType())
-          .set(PROPERTIES.ELECTRICITY_CAPACITY_AMPS, property.getElectricityCapacityAmps())
-          .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType())
-          .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection())
-          .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType())
-          .set(PROPERTIES.INTERNET_CONNECTION_TYPE, property.getInternetConnectionType())
-          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps())
-          .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus())
+          .set(
+              PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
+              property.getElectricityConnectionType().orElse(null))
+          .set(
+              PROPERTIES.ELECTRICITY_CAPACITY_AMPS,
+              property.getElectricityCapacityAmps().orElse(null))
+          .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType().orElse(null))
+          .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection().orElse(null))
+          .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType().orElse(null))
+          .set(
+              PROPERTIES.INTERNET_CONNECTION_TYPE,
+              property.getInternetConnectionType().orElse(null))
+          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps().orElse(null))
+          .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus().orElse(null))
           // Parking
-          .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces())
-          .set(PROPERTIES.PARKING_TYPE, property.getParkingType())
+          .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
+          .set(PROPERTIES.PARKING_TYPE, property.getParkingType().orElse(null))
           // Safety & Security
-          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors())
-          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors())
-          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher())
-          .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem())
-          .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem())
-          .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras())
-          .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry())
-          .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes())
+          .set(PROPERTIES.HAS_SMOKE_DETECTORS, property.getHasSmokeDetectors().orElse(null))
+          .set(PROPERTIES.HAS_CO_DETECTORS, property.getHasCoDetectors().orElse(null))
+          .set(PROPERTIES.HAS_FIRE_EXTINGUISHER, property.getHasFireExtinguisher().orElse(null))
+          .set(PROPERTIES.HAS_SPRINKLER_SYSTEM, property.getHasSprinklerSystem().orElse(null))
+          .set(PROPERTIES.HAS_ALARM_SYSTEM, property.getHasAlarmSystem().orElse(null))
+          .set(PROPERTIES.HAS_SECURITY_CAMERAS, property.getHasSecurityCameras().orElse(null))
+          .set(PROPERTIES.HAS_SECURE_ENTRY, property.getHasSecureEntry().orElse(null))
+          .set(PROPERTIES.SAFETY_NOTES, property.getSafetyNotes().orElse(null))
           // Accessibility
-          .set(PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE, property.getIsWheelchairAccessible())
-          .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator())
-          .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance())
-          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom())
-          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes())
+          .set(
+              PROPERTIES.IS_WHEELCHAIR_ACCESSIBLE,
+              property.getIsWheelchairAccessible().orElse(null))
+          .set(PROPERTIES.HAS_ELEVATOR, property.getHasElevator().orElse(null))
+          .set(PROPERTIES.HAS_STEP_FREE_ENTRANCE, property.getHasStepFreeEntrance().orElse(null))
+          .set(PROPERTIES.HAS_ADAPTED_BATHROOM, property.getHasAdaptedBathroom().orElse(null))
+          .set(PROPERTIES.ACCESSIBILITY_NOTES, property.getAccessibilityNotes().orElse(null))
           // Investment & Financial
           .set(
               PROPERTIES.PURCHASE_PRICE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getPurchasePrice(), property.getPurchasePriceCurrency()))
-          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency())
-          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate())
+                  property.getPurchasePrice().orElse(null),
+                  property.getPurchasePriceCurrency().orElse(null)))
+          .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, property.getPurchasePriceCurrency().orElse(null))
+          .set(PROPERTIES.PURCHASE_DATE, property.getPurchaseDate().orElse(null))
           .set(
               PROPERTIES.CURRENT_MARKET_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getCurrentMarketValue(), property.getCurrentMarketValueCurrency()))
-          .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, property.getCurrentMarketValueCurrency())
-          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate())
+                  property.getCurrentMarketValue().orElse(null),
+                  property.getCurrentMarketValueCurrency().orElse(null)))
+          .set(
+              PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY,
+              property.getCurrentMarketValueCurrency().orElse(null))
+          .set(PROPERTIES.MARKET_VALUE_DATE, property.getMarketValueDate().orElse(null))
           .set(
               PROPERTIES.MORTGAGE_TYPE,
-              property.getMortgageType() != null ? property.getMortgageType().name() : null)
+              property.getMortgageType().map(Property.MortgageType::name).orElse(null))
           .set(
               PROPERTIES.MORTGAGE_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMortgageAmount(), property.getMortgageAmountCurrency()))
-          .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, property.getMortgageAmountCurrency())
-          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate())
-          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate())
-          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
+                  property.getMortgageAmount().orElse(null),
+                  property.getMortgageAmountCurrency().orElse(null)))
+          .set(
+              PROPERTIES.MORTGAGE_AMOUNT_CURRENCY,
+              property.getMortgageAmountCurrency().orElse(null))
+          .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate().orElse(null))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              isVariablePayment(property.getMonthlyMortgagePayment())
+              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
                   ? Property.VARIABLE_PAYMENT_SENTINEL_DB
                   : CurrencyUtils.toMinorUnitsOrNull(
-                      property.getMonthlyMortgagePayment(),
-                      property.getMonthlyMortgagePaymentCurrency()))
+                      property.getMonthlyMortgagePayment().orElse(null),
+                      property.getMonthlyMortgagePaymentCurrency().orElse(null)))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              isVariablePayment(property.getMonthlyMortgagePayment())
+              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
                   ? null
-                  : property.getMonthlyMortgagePaymentCurrency())
+                  : property.getMonthlyMortgagePaymentCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualPropertyTax(), property.getAnnualPropertyTaxCurrency()))
-          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, property.getAnnualPropertyTaxCurrency())
+                  property.getAnnualPropertyTax().orElse(null),
+                  property.getAnnualPropertyTaxCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY,
+              property.getAnnualPropertyTaxCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_INSURANCE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualInsurance(), property.getAnnualInsuranceCurrency()))
-          .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, property.getAnnualInsuranceCurrency())
+                  property.getAnnualInsurance().orElse(null),
+                  property.getAnnualInsuranceCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_CURRENCY,
+              property.getAnnualInsuranceCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_HOA_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualHoaFee(), property.getAnnualHoaFeeCurrency()))
-          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency())
+                  property.getAnnualHoaFee().orElse(null),
+                  property.getAnnualHoaFeeCurrency().orElse(null)))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, property.getAnnualHoaFeeCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MANAGEMENT_FEE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualManagementFee(), property.getAnnualManagementFeeCurrency()))
-          .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, property.getAnnualManagementFeeCurrency())
+                  property.getAnnualManagementFee().orElse(null),
+                  property.getAnnualManagementFeeCurrency().orElse(null)))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY,
+              property.getAnnualManagementFeeCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getAnnualMaintenanceReserve(),
-                  property.getAnnualMaintenanceReserveCurrency()))
+                  property.getAnnualMaintenanceReserve().orElse(null),
+                  property.getAnnualMaintenanceReserveCurrency().orElse(null)))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
-              property.getAnnualMaintenanceReserveCurrency())
-          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH, property.getAnnualPropertyTaxDueMonth())
-          .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, property.getAnnualInsuranceDueMonth())
-          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth())
+              property.getAnnualMaintenanceReserveCurrency().orElse(null))
           .set(
-              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, property.getAnnualManagementFeeDueMonth())
+              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
+              property.getAnnualPropertyTaxDueMonth().orElse(null))
+          .set(
+              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
+              property.getAnnualInsuranceDueMonth().orElse(null))
+          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth().orElse(null))
+          .set(
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
+              property.getAnnualManagementFeeDueMonth().orElse(null))
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              property.getAnnualMaintenanceReserveDueMonth())
+              property.getAnnualMaintenanceReserveDueMonth().orElse(null))
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
-              property.getDepreciationMethod() != null
-                  ? property.getDepreciationMethod().name()
-                  : null)
-          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears())
+              property.getDepreciationMethod().map(Property.DepreciationMethod::name).orElse(null))
+          .set(PROPERTIES.DEPRECIATION_YEARS, property.getDepreciationYears().orElse(null))
           .set(
               PROPERTIES.LAND_VALUE,
               CurrencyUtils.toMinorUnitsOrNull(
-                  property.getLandValue(), property.getLandValueCurrency()))
-          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency())
+                  property.getLandValue().orElse(null),
+                  property.getLandValueCurrency().orElse(null)))
+          .set(PROPERTIES.LAND_VALUE_CURRENCY, property.getLandValueCurrency().orElse(null))
           // Audit
           .set(PROPERTIES.UPDATED_AT, updatedAt)
           .set(PROPERTIES.UPDATED_BY, property.getUpdatedBy())

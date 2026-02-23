@@ -161,16 +161,16 @@ public class PropertyService {
     property.setCreatedBy(principal.getUserId());
     property.setUpdatedBy(principal.getUserId());
 
-    if (property.getLatitude() == null || property.getLongitude() == null) {
+    if (property.getLatitude().isEmpty() || property.getLongitude().isEmpty()) {
       geocodingService
           .geocode(
               request.street(), request.city(),
               request.postalCode(), request.country())
           .ifPresent(
               result -> {
-                property.setLatitude(result.latitude());
-                property.setLongitude(result.longitude());
-                property.setGeocodeAccuracy(result.accuracy());
+                property.setLatitude(Optional.of(result.latitude()));
+                property.setLongitude(Optional.of(result.longitude()));
+                property.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 
@@ -307,16 +307,16 @@ public class PropertyService {
             || !Objects.equals(oldPostalCode, property.getPostalCode())
             || !Objects.equals(oldCountry, property.getCountry());
 
-    if (addressChanged && (property.getLatitude() == null || property.getLongitude() == null)) {
+    if (addressChanged && (property.getLatitude().isEmpty() || property.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               property.getStreet(), property.getCity(),
               property.getPostalCode(), property.getCountry())
           .ifPresent(
               result -> {
-                property.setLatitude(result.latitude());
-                property.setLongitude(result.longitude());
-                property.setGeocodeAccuracy(result.accuracy());
+                property.setLatitude(Optional.of(result.latitude()));
+                property.setLongitude(Optional.of(result.longitude()));
+                property.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 

@@ -3,9 +3,8 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,115 +33,115 @@ public class Property {
   private String city;
   private String postalCode;
   private String country;
-  private @Nullable BigDecimal latitude;
-  private @Nullable BigDecimal longitude;
-  private @Nullable String geocodeAccuracy;
-  private @Nullable BigDecimal areaValue;
-  private @Nullable String areaUnit;
+  @Builder.Default private Optional<BigDecimal> latitude = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> longitude = Optional.empty();
+  @Builder.Default private Optional<String> geocodeAccuracy = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> areaValue = Optional.empty();
+  @Builder.Default private Optional<String> areaUnit = Optional.empty();
   private PropertyCategory propertyCategory;
   private PropertyType propertyType;
   private PropertyStatus status;
 
   // Construction & Structure
-  private @Nullable Integer yearBuilt;
-  private @Nullable Integer yearLastRenovated;
-  private @Nullable String constructionType;
-  private @Nullable String foundationType;
-  private @Nullable String roofType;
-  private @Nullable String wallConstruction;
-  private @Nullable String flooringType;
-  private @Nullable String windowType;
-  private @Nullable Integer numberOfFloors;
-  private @Nullable String structuralNotes;
+  @Builder.Default private Optional<Integer> yearBuilt = Optional.empty();
+  @Builder.Default private Optional<Integer> yearLastRenovated = Optional.empty();
+  @Builder.Default private Optional<String> constructionType = Optional.empty();
+  @Builder.Default private Optional<String> foundationType = Optional.empty();
+  @Builder.Default private Optional<String> roofType = Optional.empty();
+  @Builder.Default private Optional<String> wallConstruction = Optional.empty();
+  @Builder.Default private Optional<String> flooringType = Optional.empty();
+  @Builder.Default private Optional<String> windowType = Optional.empty();
+  @Builder.Default private Optional<Integer> numberOfFloors = Optional.empty();
+  @Builder.Default private Optional<String> structuralNotes = Optional.empty();
 
   // Energy & Climate
-  private @Nullable String energyEfficiencyRating;
-  private @Nullable LocalDate energyCertificateExpiryDate;
-  private @Nullable String heatingType;
-  private @Nullable String coolingType;
-  private @Nullable String hotWaterSystem;
-  private @Nullable String insulationNotes;
+  @Builder.Default private Optional<String> energyEfficiencyRating = Optional.empty();
+  @Builder.Default private Optional<LocalDate> energyCertificateExpiryDate = Optional.empty();
+  @Builder.Default private Optional<String> heatingType = Optional.empty();
+  @Builder.Default private Optional<String> coolingType = Optional.empty();
+  @Builder.Default private Optional<String> hotWaterSystem = Optional.empty();
+  @Builder.Default private Optional<String> insulationNotes = Optional.empty();
 
   // Utilities & Connections
-  private @Nullable String electricityConnectionType;
-  private @Nullable Integer electricityCapacityAmps;
-  private @Nullable String waterConnectionType;
-  private @Nullable Boolean hasGasConnection;
-  private @Nullable String sewageType;
-  private @Nullable String internetConnectionType;
-  private @Nullable Integer internetMaxSpeedMbps;
-  private @Nullable String internetStatus;
+  @Builder.Default private Optional<String> electricityConnectionType = Optional.empty();
+  @Builder.Default private Optional<Integer> electricityCapacityAmps = Optional.empty();
+  @Builder.Default private Optional<String> waterConnectionType = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasGasConnection = Optional.empty();
+  @Builder.Default private Optional<String> sewageType = Optional.empty();
+  @Builder.Default private Optional<String> internetConnectionType = Optional.empty();
+  @Builder.Default private Optional<Integer> internetMaxSpeedMbps = Optional.empty();
+  @Builder.Default private Optional<String> internetStatus = Optional.empty();
 
   // Parking
-  private @Nullable Integer parkingSpaces;
-  private @Nullable String parkingType;
+  @Builder.Default private Optional<Integer> parkingSpaces = Optional.empty();
+  @Builder.Default private Optional<String> parkingType = Optional.empty();
 
   // Safety & Security
-  private @Nullable Boolean hasSmokeDetectors;
-  private @Nullable Boolean hasCoDetectors;
-  private @Nullable Boolean hasFireExtinguisher;
-  private @Nullable Boolean hasSprinklerSystem;
-  private @Nullable Boolean hasAlarmSystem;
-  private @Nullable Boolean hasSecurityCameras;
-  private @Nullable Boolean hasSecureEntry;
-  private @Nullable String safetyNotes;
+  @Builder.Default private Optional<Boolean> hasSmokeDetectors = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasCoDetectors = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasFireExtinguisher = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasSprinklerSystem = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasAlarmSystem = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasSecurityCameras = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasSecureEntry = Optional.empty();
+  @Builder.Default private Optional<String> safetyNotes = Optional.empty();
 
   // Accessibility
-  private @Nullable Boolean isWheelchairAccessible;
-  private @Nullable Boolean hasElevator;
-  private @Nullable Boolean hasStepFreeEntrance;
-  private @Nullable Boolean hasAdaptedBathroom;
-  private @Nullable String accessibilityNotes;
+  @Builder.Default private Optional<Boolean> isWheelchairAccessible = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasElevator = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasStepFreeEntrance = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasAdaptedBathroom = Optional.empty();
+  @Builder.Default private Optional<String> accessibilityNotes = Optional.empty();
 
   // Investment & Financial
-  private @Nullable BigDecimal purchasePrice;
-  private @Nullable String purchasePriceCurrency;
-  private @Nullable LocalDate purchaseDate;
-  private @Nullable BigDecimal currentMarketValue;
-  private @Nullable String currentMarketValueCurrency;
-  private @Nullable LocalDate marketValueDate;
+  @Builder.Default private Optional<BigDecimal> purchasePrice = Optional.empty();
+  @Builder.Default private Optional<String> purchasePriceCurrency = Optional.empty();
+  @Builder.Default private Optional<LocalDate> purchaseDate = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> currentMarketValue = Optional.empty();
+  @Builder.Default private Optional<String> currentMarketValueCurrency = Optional.empty();
+  @Builder.Default private Optional<LocalDate> marketValueDate = Optional.empty();
 
   // Mortgage
-  private @Nullable MortgageType mortgageType;
-  private @Nullable BigDecimal mortgageAmount;
-  private @Nullable String mortgageAmountCurrency;
-  private @Nullable BigDecimal mortgageInterestRate;
-  private @Nullable LocalDate mortgageStartDate;
-  private @Nullable LocalDate mortgageEndDate;
-  private @Nullable BigDecimal monthlyMortgagePayment;
-  private @Nullable String monthlyMortgagePaymentCurrency;
+  @Builder.Default private Optional<MortgageType> mortgageType = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> mortgageAmount = Optional.empty();
+  @Builder.Default private Optional<String> mortgageAmountCurrency = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> mortgageInterestRate = Optional.empty();
+  @Builder.Default private Optional<LocalDate> mortgageStartDate = Optional.empty();
+  @Builder.Default private Optional<LocalDate> mortgageEndDate = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> monthlyMortgagePayment = Optional.empty();
+  @Builder.Default private Optional<String> monthlyMortgagePaymentCurrency = Optional.empty();
 
   // Operating Costs (annual)
-  private @Nullable BigDecimal annualPropertyTax;
-  private @Nullable String annualPropertyTaxCurrency;
-  private @Nullable BigDecimal annualInsurance;
-  private @Nullable String annualInsuranceCurrency;
-  private @Nullable BigDecimal annualHoaFee;
-  private @Nullable String annualHoaFeeCurrency;
-  private @Nullable BigDecimal annualManagementFee;
-  private @Nullable String annualManagementFeeCurrency;
-  private @Nullable BigDecimal annualMaintenanceReserve;
-  private @Nullable String annualMaintenanceReserveCurrency;
+  @Builder.Default private Optional<BigDecimal> annualPropertyTax = Optional.empty();
+  @Builder.Default private Optional<String> annualPropertyTaxCurrency = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> annualInsurance = Optional.empty();
+  @Builder.Default private Optional<String> annualInsuranceCurrency = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> annualHoaFee = Optional.empty();
+  @Builder.Default private Optional<String> annualHoaFeeCurrency = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> annualManagementFee = Optional.empty();
+  @Builder.Default private Optional<String> annualManagementFeeCurrency = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> annualMaintenanceReserve = Optional.empty();
+  @Builder.Default private Optional<String> annualMaintenanceReserveCurrency = Optional.empty();
 
-  // Operating Cost Due Months — comma-separated month numbers (e.g. "1,3,7"), null = all months
-  private @Nullable String annualPropertyTaxDueMonth;
-  private @Nullable String annualInsuranceDueMonth;
-  private @Nullable String annualHoaFeeDueMonth;
-  private @Nullable String annualManagementFeeDueMonth;
-  private @Nullable String annualMaintenanceReserveDueMonth;
+  // Operating Cost Due Months — comma-separated month numbers (e.g. "1,3,7"), empty = all months
+  @Builder.Default private Optional<String> annualPropertyTaxDueMonth = Optional.empty();
+  @Builder.Default private Optional<String> annualInsuranceDueMonth = Optional.empty();
+  @Builder.Default private Optional<String> annualHoaFeeDueMonth = Optional.empty();
+  @Builder.Default private Optional<String> annualManagementFeeDueMonth = Optional.empty();
+  @Builder.Default private Optional<String> annualMaintenanceReserveDueMonth = Optional.empty();
 
   // Depreciation
-  private @Nullable DepreciationMethod depreciationMethod;
-  private @Nullable Integer depreciationYears;
-  private @Nullable BigDecimal landValue;
-  private @Nullable String landValueCurrency;
+  @Builder.Default private Optional<DepreciationMethod> depreciationMethod = Optional.empty();
+  @Builder.Default private Optional<Integer> depreciationYears = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> landValue = Optional.empty();
+  @Builder.Default private Optional<String> landValueCurrency = Optional.empty();
 
   // Audit
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
   public enum PropertyCategory {
     RESIDENTIAL,
