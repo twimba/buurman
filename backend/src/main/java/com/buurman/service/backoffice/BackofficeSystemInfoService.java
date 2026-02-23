@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationState;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.info.BuildProperties;
@@ -167,7 +166,10 @@ public class BackofficeSystemInfoService {
     var info = flyway.get().info();
     var current = info.current();
     int failedCount =
-        (int) Arrays.stream(info.all()).filter(m -> m.getState() == MigrationState.FAILED).count();
+        (int)
+            Arrays.stream(info.all())
+                .filter(m -> m.getState() != null && "FAILED".equalsIgnoreCase(m.getState().name()))
+                .count();
 
     List<MigrationEntry> entries =
         Arrays.stream(info.all())
