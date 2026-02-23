@@ -94,6 +94,7 @@ public class PhoneNumberPolicyService {
       case UAN -> "UAN";
       case VOICEMAIL -> "VOICEMAIL";
       case UNKNOWN -> null;
+      default -> null;
     };
   }
 
