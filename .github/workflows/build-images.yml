@@ -516,6 +516,20 @@ jobs:
             echo "range=$RANGE"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Install scc
+        run: |
+          curl -sSL https://github.com/boyter/scc/releases/download/v3.5.0/scc_Linux_x86_64.tar.gz | tar -xz -C /usr/local/bin scc
+
+      - name: Code statistics
+        run: |
+          SCC_OUTPUT=$(make scc)
+          {
+            echo "## Code Statistics"
+            echo "<pre>"
+            echo "$SCC_OUTPUT"
+            echo "</pre>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Summary
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<EOF
