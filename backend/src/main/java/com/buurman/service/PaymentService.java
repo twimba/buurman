@@ -280,7 +280,12 @@ public class PaymentService {
     }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), status, contractId, propertyId, dateFrom, dateTo,
+            principal.requireTeamId(),
+            status,
+            contractId,
+            propertyId,
+            dateFrom,
+            dateTo,
             pageRequest);
 
     LocalDate today = LocalDate.now(clock);

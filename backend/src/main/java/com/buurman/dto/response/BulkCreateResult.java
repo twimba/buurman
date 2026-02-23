@@ -1,7 +1,8 @@
 package com.buurman.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.jspecify.annotations.Nullable;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record BulkCreateResult<T>(int index, @Nullable T result, @Nullable String error) {

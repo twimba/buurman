@@ -284,7 +284,9 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public IncomeTrendResponse getIncomeTrendByDateRange(
-      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      LocalDate startDate,
+      LocalDate endDate,
+      @Nullable List<UUID> propertyIds,
       UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
@@ -340,7 +342,9 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public ExpenseBreakdownResponse getExpenseBreakdown(
-      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      LocalDate startDate,
+      LocalDate endDate,
+      @Nullable List<UUID> propertyIds,
       UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
@@ -377,7 +381,9 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public PropertyComparisonResponse getPropertyComparison(
-      LocalDate startDate, LocalDate endDate, @Nullable List<UUID> propertyIds,
+      LocalDate startDate,
+      LocalDate endDate,
+      @Nullable List<UUID> propertyIds,
       UserPrincipal principal) {
 
     UUID teamId = principal.requireTeamId();
