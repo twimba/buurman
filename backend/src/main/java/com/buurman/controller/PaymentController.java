@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Payment;
 import com.buurman.domain.SortDirection;
+import com.buurman.dto.request.BulkCreatePaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
@@ -30,6 +31,7 @@ import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PaymentReceivalResponse;
@@ -61,6 +63,19 @@ public class PaymentController {
       @Valid @RequestBody CreatePaymentRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.createPayment(request, principal);
+  }
+
+  @Operation(
+      summary = "Bulk create payments",
+      description =
+          "Create multiple payments in a single request with per-item error handling"
+              + " (Admin/Editor)")
+  @PostMapping("/bulk")
+  @ResponseStatus(CREATED)
+  public List<BulkCreateResult<PaymentResponse>> bulkCreatePayments(
+      @Valid @RequestBody BulkCreatePaymentsRequest request,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return paymentService.bulkCreatePayments(request.items(), principal);
   }
 
   @Operation(

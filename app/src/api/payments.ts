@@ -11,7 +11,12 @@ import {
   GetPaymentsParams,
 } from '../types/payment';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
-import { PageResponse, PageParams, PaymentStatsResponse } from '@/types/common';
+import {
+  PageResponse,
+  PageParams,
+  PaymentStatsResponse,
+  BulkCreateResult,
+} from '@/types/common';
 
 export const getPayments = async (
   params?: GetPaymentsParams & PageParams
@@ -34,6 +39,13 @@ export const createPayment = async (
   data: CreatePaymentRequest
 ): Promise<PaymentResponse> => {
   const response = await client.post('/payments', data);
+  return response.data;
+};
+
+export const bulkCreatePayments = async (
+  items: CreatePaymentRequest[]
+): Promise<BulkCreateResult<PaymentResponse>[]> => {
+  const response = await client.post('/payments/bulk', { items });
   return response.data;
 };
 

@@ -24,9 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Expense;
 import com.buurman.domain.SortDirection;
+import com.buurman.dto.request.BulkCreateExpensesRequest;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
+import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.ExpenseResponse;
 import com.buurman.dto.response.ExpenseStatsResponse;
@@ -63,6 +65,19 @@ public class ExpenseController {
       @Valid @RequestBody CreateExpenseRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.createExpense(request, principal);
+  }
+
+  @Operation(
+      summary = "Bulk create expenses",
+      description =
+          "Create multiple expenses in a single request with per-item error handling"
+              + " (Admin/Editor)")
+  @PostMapping("/bulk")
+  @ResponseStatus(CREATED)
+  public List<BulkCreateResult<ExpenseResponse>> bulkCreateExpenses(
+      @Valid @RequestBody BulkCreateExpensesRequest request,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return expenseService.bulkCreateExpenses(request.items(), principal);
   }
 
   @Operation(

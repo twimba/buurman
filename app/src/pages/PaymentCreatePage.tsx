@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
-import { createPayment } from '@/api/payments';
+import { bulkCreatePayments } from '@/api/payments';
 import { useCreatePayment } from '@/hooks/usePaymentHooks';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
@@ -100,40 +100,47 @@ export const PaymentCreatePage = () => {
     const currency = bulkCurrency || defaultCurrency || '';
     setBulkSubmitting(true);
 
-    (async () => {
-      let hasErrors = false;
-      for (let i = 0; i < rows.length; i++) {
-        callbacks.onRowStart(i);
-        try {
-          const req: CreatePaymentRequest = {
-            contractIdentifier: effectiveContractId,
-            amount: parseFloat(rows[i].amount),
-            currency,
-            dueDate: rows[i].date,
-            markAsPaid: registerMode ? true : undefined,
-            paymentDate: registerMode ? rows[i].date : undefined,
-          };
-          await createPayment(req);
-          callbacks.onRowSuccess(i);
-        } catch (e) {
-          hasErrors = true;
-          callbacks.onRowError(i, getErrorMessage(e));
+    const items: CreatePaymentRequest[] = rows.map((row) => ({
+      contractIdentifier: effectiveContractId,
+      amount: parseFloat(row.amount),
+      currency,
+      dueDate: row.date,
+      markAsPaid: registerMode ? true : undefined,
+      paymentDate: registerMode ? row.date : undefined,
+    }));
+
+    // Mark all rows as submitting
+    rows.forEach((_, i) => callbacks.onRowStart(i));
+
+    bulkCreatePayments(items)
+      .then((results) => {
+        let hasErrors = false;
+        for (const result of results) {
+          if (result.error) {
+            hasErrors = true;
+            callbacks.onRowError(result.index, result.error);
+          } else {
+            callbacks.onRowSuccess(result.index);
+          }
         }
-      }
 
-      // Invalidate caches once
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
-      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+        queryClient.invalidateQueries({ queryKey: ['payments'] });
+        queryClient.invalidateQueries({ queryKey: ['paymentStats'] });
+        queryClient.invalidateQueries({ queryKey: ['contracts'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+        queryClient.invalidateQueries({ queryKey: ['income-trend'] });
 
-      setBulkSubmitting(false);
-      callbacks.onComplete();
-      if (!hasErrors) navigate(-1);
-    })();
+        setBulkSubmitting(false);
+        callbacks.onComplete();
+        if (!hasErrors) navigate(-1);
+      })
+      .catch((e) => {
+        rows.forEach((_, i) => callbacks.onRowError(i, getErrorMessage(e)));
+        setBulkSubmitting(false);
+        callbacks.onComplete();
+      });
   };
 
   const showWarning = isPrefillInvalid && !dismissedWarning;

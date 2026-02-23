@@ -7,7 +7,12 @@ import {
   GetExpensesParams,
 } from '../types/expense';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
-import { PageResponse, PageParams, ExpenseStatsResponse } from '@/types/common';
+import {
+  PageResponse,
+  PageParams,
+  ExpenseStatsResponse,
+  BulkCreateResult,
+} from '@/types/common';
 
 export const getExpenses = async (
   params?: GetExpensesParams & PageParams
@@ -30,6 +35,13 @@ export const createExpense = async (
   data: CreateExpenseRequest
 ): Promise<ExpenseResponse> => {
   const response = await client.post('/expenses', data);
+  return response.data;
+};
+
+export const bulkCreateExpenses = async (
+  items: CreateExpenseRequest[]
+): Promise<BulkCreateResult<ExpenseResponse>[]> => {
+  const response = await client.post('/expenses/bulk', { items });
   return response.data;
 };
 

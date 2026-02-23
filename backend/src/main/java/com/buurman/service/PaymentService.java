@@ -10,6 +10,7 @@ import static com.buurman.util.UlidGenerator.newPaymentId;
 import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -28,7 +29,9 @@ import java.util.UUID;
 import org.jooq.Record2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
@@ -46,6 +49,7 @@ import com.buurman.dto.request.MarkPaidRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePaymentReceivalRequest;
 import com.buurman.dto.request.UpdatePaymentRequest;
+import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.ContractSummary;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
@@ -73,6 +77,8 @@ import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -102,13 +108,52 @@ public class PaymentService {
   private final com.buurman.repository.AuditLogRepository auditLogRepository;
   private final AppProperties appProperties;
   private final Clock clock;
+  private final PlatformTransactionManager transactionManager;
+  private final Validator validator;
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse createPayment(CreatePaymentRequest request, UserPrincipal principal) {
+    return performCreatePayment(request, principal);
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<BulkCreateResult<PaymentResponse>> bulkCreatePayments(
+      List<CreatePaymentRequest> requests, UserPrincipal principal) {
+    TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+    List<BulkCreateResult<PaymentResponse>> results = new ArrayList<>();
+
+    for (int i = 0; i < requests.size(); i++) {
+      final int index = i;
+      CreatePaymentRequest request = requests.get(i);
+
+      Set<ConstraintViolation<CreatePaymentRequest>> violations = validator.validate(request);
+      if (!violations.isEmpty()) {
+        String errorMsg =
+            violations.stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(joining(", "));
+        results.add(BulkCreateResult.error(index, errorMsg));
+        continue;
+      }
+
+      try {
+        PaymentResponse response =
+            txTemplate.execute(status -> performCreatePayment(request, principal));
+        results.add(BulkCreateResult.success(index, response));
+      } catch (Exception e) {
+        log.warn("Bulk payment creation failed for item {}: {}", index, e.getMessage());
+        results.add(BulkCreateResult.error(index, extractPaymentErrorMessage(e)));
+      }
+    }
+
+    return results;
+  }
+
+  private PaymentResponse performCreatePayment(
+      CreatePaymentRequest request, UserPrincipal principal) {
     UUID teamId = principal.getTeamId();
 
-    // Resolve contract by identifier
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
 
@@ -146,7 +191,6 @@ public class PaymentService {
 
     Payment savedPayment = paymentRepository.save(payment);
 
-    // Create receival record when marking as paid
     if (markAsPaid) {
       PaymentReceival receival = new PaymentReceival();
       receival.setIdentifier(newPaymentReceivalId().value());
@@ -181,6 +225,14 @@ public class PaymentService {
         teamId, "PAYMENT", savedPayment.getId(), principal.getUserId(), savedPayment);
 
     return enrichPaymentResponse(savedPayment, teamId);
+  }
+
+  private String extractPaymentErrorMessage(Exception e) {
+    String message = e.getMessage();
+    if (message == null || message.isBlank()) {
+      return "An unexpected error occurred";
+    }
+    return message;
   }
 
   @Transactional(readOnly = true)

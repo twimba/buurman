@@ -45,6 +45,12 @@ export interface ExpenseStatsResponse {
   monthlyTrend: MonthlyTrend[];
 }
 
+export interface BulkCreateResult<T> {
+  index: number;
+  result?: T;
+  error?: string;
+}
+
 export interface MonthlyTrend {
   month: string;
   total: number;

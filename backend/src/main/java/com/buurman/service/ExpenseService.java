@@ -1,18 +1,24 @@
 package com.buurman.service;
 
 import static com.buurman.util.UlidGenerator.newExpenseId;
+import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.Record2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
@@ -22,6 +28,7 @@ import com.buurman.domain.Property;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
+import com.buurman.dto.response.BulkCreateResult;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.ExpenseResponse;
 import com.buurman.dto.response.ExpenseStatsResponse;
@@ -40,6 +47,8 @@ import com.buurman.service.notification.SendNotificationRequest;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,11 +71,61 @@ public class ExpenseService {
   private final com.buurman.repository.AuditLogRepository auditLogRepository;
   private final AppProperties appProperties;
   private final Clock clock;
+  private final PlatformTransactionManager transactionManager;
+  private final Validator validator;
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ExpenseResponse createExpense(CreateExpenseRequest request, UserPrincipal principal) {
-    // Resolve property by identifier
+    ExpenseResponse response = performCreateExpense(request, principal);
+    sendExpenseCreatedNotification(response, principal);
+    return response;
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
+  public List<BulkCreateResult<ExpenseResponse>> bulkCreateExpenses(
+      List<CreateExpenseRequest> requests, UserPrincipal principal) {
+    TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+    List<BulkCreateResult<ExpenseResponse>> results = new ArrayList<>();
+
+    for (int i = 0; i < requests.size(); i++) {
+      final int index = i;
+      CreateExpenseRequest request = requests.get(i);
+
+      // Per-item validation
+      Set<ConstraintViolation<CreateExpenseRequest>> violations = validator.validate(request);
+      if (!violations.isEmpty()) {
+        String errorMsg =
+            violations.stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(joining(", "));
+        results.add(BulkCreateResult.error(index, errorMsg));
+        continue;
+      }
+
+      try {
+        ExpenseResponse response =
+            txTemplate.execute(status -> performCreateExpense(request, principal));
+        results.add(BulkCreateResult.success(index, response));
+      } catch (Exception e) {
+        log.warn("Bulk expense creation failed for item {}: {}", index, e.getMessage());
+        results.add(BulkCreateResult.error(index, extractErrorMessage(e)));
+      }
+    }
+
+    // Single summary notification for all successful items
+    List<ExpenseResponse> successes =
+        results.stream().filter(BulkCreateResult::isSuccess).map(BulkCreateResult::result).toList();
+
+    if (!successes.isEmpty()) {
+      sendBulkExpenseNotification(successes, principal);
+    }
+
+    return results;
+  }
+
+  private ExpenseResponse performCreateExpense(
+      CreateExpenseRequest request, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(
             request.propertyIdentifier(), principal.getTeamId());
@@ -80,7 +139,6 @@ public class ExpenseService {
     expense.setCreatedAt(clock.instant());
     expense.setUpdatedAt(clock.instant());
 
-    // Validate currency is provided
     if (expense.getCurrency() == null || expense.getCurrency().isBlank()) {
       throw new BadRequestException("Currency is required for expenses");
     }
@@ -99,31 +157,6 @@ public class ExpenseService {
         savedExpense.getId(),
         principal.getUserId(),
         savedExpense);
-
-    String propertyName =
-        property.getStreet() != null
-            ? property.getStreet() + ", " + property.getCity()
-            : property.getIdentifier();
-    String currency = savedExpense.getCurrency();
-    notificationService.sendToTeam(
-        SendNotificationRequest.builder()
-            .teamId(principal.getTeamId())
-            .notificationType(NotificationType.EXPENSE_CREATED)
-            .templateName("expense-created")
-            .templateVariables(
-                Map.of(
-                    "propertyName",
-                    propertyName,
-                    "category",
-                    savedExpense.getCategory() != null ? savedExpense.getCategory().name() : "N/A",
-                    "amount",
-                    currency + " " + savedExpense.getAmount(),
-                    "description",
-                    savedExpense.getDescription() != null ? savedExpense.getDescription() : "",
-                    "baseUrl",
-                    appProperties.email().baseUrl()))
-            .createdBy(principal.getUserId())
-            .build());
 
     return enrichExpenseResponse(savedExpense, principal.getTeamId());
   }
@@ -299,6 +332,74 @@ public class ExpenseService {
     Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
 
     return auditService.getEntityAuditLog(principal.getTeamId(), "EXPENSE", expense.getId());
+  }
+
+  // Notification helpers
+
+  private void sendExpenseCreatedNotification(ExpenseResponse response, UserPrincipal principal) {
+    String propertyName = formatPropertyName(response.property());
+    notificationService.sendToTeam(
+        SendNotificationRequest.builder()
+            .teamId(principal.getTeamId())
+            .notificationType(NotificationType.EXPENSE_CREATED)
+            .templateName("expense-created")
+            .templateVariables(
+                Map.of(
+                    "propertyName",
+                    propertyName,
+                    "category",
+                    response.category() != null ? response.category().name() : "N/A",
+                    "amount",
+                    response.currency() + " " + response.amount(),
+                    "description",
+                    response.description() != null ? response.description() : "",
+                    "baseUrl",
+                    appProperties.email().baseUrl()))
+            .createdBy(principal.getUserId())
+            .build());
+  }
+
+  private void sendBulkExpenseNotification(
+      List<ExpenseResponse> successes, UserPrincipal principal) {
+    int count = successes.size();
+    BigDecimal totalAmount =
+        successes.stream().map(ExpenseResponse::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
+    String currency = successes.stream().map(ExpenseResponse::currency).findFirst().orElse("");
+    String propertyNames =
+        successes.stream()
+            .map(e -> formatPropertyName(e.property()))
+            .distinct()
+            .collect(joining(", "));
+
+    Map<String, Object> vars = new HashMap<>();
+    vars.put("count", count);
+    vars.put("totalAmount", currency + " " + totalAmount);
+    vars.put("propertyNames", propertyNames);
+    vars.put("baseUrl", appProperties.email().baseUrl());
+
+    notificationService.sendToTeam(
+        SendNotificationRequest.builder()
+            .teamId(principal.getTeamId())
+            .notificationType(NotificationType.EXPENSE_CREATED)
+            .templateName("expenses-bulk-created")
+            .templateVariables(vars)
+            .createdBy(principal.getUserId())
+            .build());
+  }
+
+  private static String formatPropertyName(PropertySummary property) {
+    if (property == null) return "N/A";
+    return property.street() != null
+        ? property.street() + ", " + property.city()
+        : property.identifier();
+  }
+
+  private String extractErrorMessage(Exception e) {
+    String message = e.getMessage();
+    if (message == null || message.isBlank()) {
+      return "An unexpected error occurred";
+    }
+    return message;
   }
 
   // Helper methods

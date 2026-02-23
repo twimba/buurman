@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { createExpense } from '@/api/expenses';
+import { bulkCreateExpenses } from '@/api/expenses';
 import { useCreateExpense } from '@/hooks/useExpenseHooks';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -104,43 +104,50 @@ export const ExpenseCreatePage = () => {
     const currency = bulkCurrency || defaultCurrency || '';
     setBulkSubmitting(true);
 
-    (async () => {
-      let hasErrors = false;
-      for (let i = 0; i < rows.length; i++) {
-        callbacks.onRowStart(i);
-        try {
-          const req: CreateExpenseRequest = {
-            propertyIdentifier: bulkPropertyId,
-            category:
-              (rows[i].category as ExpenseCategory) ||
-              ExpenseCategory.MAINTENANCE,
-            amount: parseFloat(rows[i].amount),
-            currency,
-            expenseDate: rows[i].date,
-            description: rows[i].description,
-          };
-          await createExpense(req);
-          callbacks.onRowSuccess(i);
-        } catch (e) {
-          hasErrors = true;
-          callbacks.onRowError(i, getErrorMessage(e));
+    const items: CreateExpenseRequest[] = rows.map((row) => ({
+      propertyIdentifier: bulkPropertyId,
+      category:
+        (row.category as ExpenseCategory) || ExpenseCategory.MAINTENANCE,
+      amount: parseFloat(row.amount),
+      currency,
+      expenseDate: row.date,
+      description: row.description,
+    }));
+
+    // Mark all rows as submitting
+    rows.forEach((_, i) => callbacks.onRowStart(i));
+
+    bulkCreateExpenses(items)
+      .then((results) => {
+        let hasErrors = false;
+        for (const result of results) {
+          if (result.error) {
+            hasErrors = true;
+            callbacks.onRowError(result.index, result.error);
+          } else {
+            callbacks.onRowSuccess(result.index);
+          }
         }
-      }
 
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
-      queryClient.invalidateQueries({ queryKey: ['income-trend'] });
-      queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
-      queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
+        queryClient.invalidateQueries({ queryKey: ['expenses'] });
+        queryClient.invalidateQueries({ queryKey: ['expenseStats'] });
+        queryClient.invalidateQueries({ queryKey: ['properties'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+        queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
+        queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+        queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
+        queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
 
-      setBulkSubmitting(false);
-      callbacks.onComplete();
-      if (!hasErrors) navigate('/expenses');
-    })();
+        setBulkSubmitting(false);
+        callbacks.onComplete();
+        if (!hasErrors) navigate('/expenses');
+      })
+      .catch((e) => {
+        rows.forEach((_, i) => callbacks.onRowError(i, getErrorMessage(e)));
+        setBulkSubmitting(false);
+        callbacks.onComplete();
+      });
   };
 
   return (
