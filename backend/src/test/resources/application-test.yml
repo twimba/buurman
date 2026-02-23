@@ -3,7 +3,6 @@ spring:
     url: jdbc:tc:postgresql:18:///buurman?TC_REUSABLE=true
     username: buurman
     password: buurman
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
 
   security:
     oauth2:
