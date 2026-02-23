@@ -37,16 +37,9 @@ ps:
 certs:
 	bash scripts/setup-local-certs.sh
 
-scc:
-	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --overhead 1.05  --avg-wage 70000 --sloccount-format
-
 stats:
-	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
+	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --overhead 1.05  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-lifecycle,1.6,1.02,2.5,0.5"
 
-stats-by-file:
-	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
-
-## Move the 'prod' tag to latest main and push to GitHub
 deploy-prod:
 	git fetch origin main
 	git tag -f prod origin/main
