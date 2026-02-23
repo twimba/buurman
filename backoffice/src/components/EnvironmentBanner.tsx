@@ -31,7 +31,9 @@ export function EnvironmentBanner() {
   const environment = getEnvironment();
 
   useEffect(() => {
-    if (environment === "production") { return; }
+    if (environment === "production") {
+      return;
+    }
 
     // Set CSS variable so fixed-position elements (sidebar) can offset themselves
     document.documentElement.style.setProperty(
@@ -49,7 +51,9 @@ export function EnvironmentBanner() {
     };
   }, [environment]);
 
-  if (environment === "production") { return null; }
+  if (environment === "production") {
+    return null;
+  }
 
   const config = CONFIG[environment];
 

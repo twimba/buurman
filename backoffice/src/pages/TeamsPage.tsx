@@ -29,7 +29,9 @@ export const TeamsPage = () => {
   };
 
   const handleDelete = () => {
-    if (!deleteIdentifier) { return; }
+    if (!deleteIdentifier) {
+      return;
+    }
     deleteTeam.mutate(deleteIdentifier, {
       onSuccess: () => setDeleteIdentifier(null),
     });
