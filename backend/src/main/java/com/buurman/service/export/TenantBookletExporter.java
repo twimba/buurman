@@ -396,9 +396,7 @@ public class TenantBookletExporter {
           "Start Date",
           contract.getStartDate() != null ? contract.getStartDate().format(shortFmt) : "—");
       appendField(
-          html,
-          "End Date",
-          contract.getEndDate() != null ? contract.getEndDate().format(shortFmt) : "Ongoing");
+          html, "End Date", contract.getEndDate().map(d -> d.format(shortFmt)).orElse("Ongoing"));
       html.append("</tr><tr>");
       appendField(
           html,

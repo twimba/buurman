@@ -536,9 +536,9 @@ public class PropertyDashboardService {
         }
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
         LocalDate cEnd =
-            (c.getEndDate() == null || c.getEndDate().isAfter(monthEnd))
+            (c.getEndDate().isEmpty() || c.getEndDate().get().isAfter(monthEnd))
                 ? monthEnd
-                : c.getEndDate();
+                : c.getEndDate().get();
         if (!cStart.isAfter(cEnd)) {
           occupiedDays += DAYS.between(cStart, cEnd) + 1;
         }
@@ -571,7 +571,8 @@ public class PropertyDashboardService {
                   c ->
                       c.getStatus() == ContractStatus.ACTIVE
                           && !c.getStartDate().isAfter(monthEnd)
-                          && (c.getEndDate() == null || !c.getEndDate().isBefore(monthStart)))
+                          && (c.getEndDate().isEmpty()
+                              || !c.getEndDate().get().isBefore(monthStart)))
               .map(c -> c.getRentAmount() != null ? c.getRentAmount() : ZERO)
               .reduce(ZERO, BigDecimal::add);
 
@@ -713,7 +714,9 @@ public class PropertyDashboardService {
 
       LocalDate cStart = c.getStartDate().isBefore(start) ? start : c.getStartDate();
       LocalDate cEnd =
-          (c.getEndDate() == null || c.getEndDate().isAfter(now)) ? now : c.getEndDate();
+          (c.getEndDate().isEmpty() || c.getEndDate().get().isAfter(now))
+              ? now
+              : c.getEndDate().get();
       if (!cStart.isAfter(cEnd)) {
         occupiedDays += DAYS.between(cStart, cEnd) + 1;
       }

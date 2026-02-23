@@ -3,9 +3,8 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,26 +45,26 @@ public class Contract {
   private UUID propertyId;
   private ContractType contractType;
   private LocalDate startDate;
-  private @Nullable LocalDate endDate;
-  private @Nullable LocalDate signedDate;
+  @Builder.Default private Optional<LocalDate> endDate = Optional.empty();
+  @Builder.Default private Optional<LocalDate> signedDate = Optional.empty();
   private BigDecimal rentAmount;
-  private BigDecimal depositAmount;
-  private BigDecimal securityDeposit;
+  @Builder.Default private Optional<BigDecimal> depositAmount = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> securityDeposit = Optional.empty();
   private String rentAmountCurrency;
-  private String depositAmountCurrency;
-  private String securityDepositCurrency;
+  @Builder.Default private Optional<String> depositAmountCurrency = Optional.empty();
+  @Builder.Default private Optional<String> securityDepositCurrency = Optional.empty();
   private PaymentFrequency paymentFrequency;
-  private @Nullable Integer paymentDueDay;
+  @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
   @Builder.Default private Boolean autoRenewal = false;
   @Builder.Default private Integer renewalNoticeDays = 30;
   @Builder.Default private Integer terminationNoticeDays = 30;
-  private @Nullable BigDecimal lateFeePercentage;
+  @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
   private ContractStatus status;
-  private String termsAndConditions;
-  private @Nullable String notes;
+  @Builder.Default private Optional<String> termsAndConditions = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

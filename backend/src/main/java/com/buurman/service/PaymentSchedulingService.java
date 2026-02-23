@@ -147,11 +147,11 @@ public class PaymentSchedulingService {
     for (int i = 0; i < count; i++) {
       LocalDate nextDueDate = calculateNextDueDate(currentDate, i, contract);
 
-      if (contract.getEndDate() != null && nextDueDate.isAfter(contract.getEndDate())) {
+      if (contract.getEndDate().isPresent() && nextDueDate.isAfter(contract.getEndDate().get())) {
         log.debug(
             "Stopping payment generation: next due date {} is after contract end date {}",
             nextDueDate,
-            contract.getEndDate());
+            contract.getEndDate().get());
         break;
       }
 
@@ -253,7 +253,7 @@ public class PaymentSchedulingService {
         break;
     }
 
-    int paymentDueDay = contract.getPaymentDueDay() != null ? contract.getPaymentDueDay() : 1;
+    int paymentDueDay = contract.getPaymentDueDay().orElse(1);
     int daysInMonth = nextDueDate.lengthOfMonth();
     int actualDay = Math.min(paymentDueDay, daysInMonth);
 

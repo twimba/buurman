@@ -202,8 +202,8 @@ public class ContractRepository {
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
-          .set(CONTRACTS.END_DATE, contract.getEndDate())
-          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+          .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
+          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
           .set(
               CONTRACTS.RENT_AMOUNT,
               CurrencyUtils.toMinorUnits(
@@ -212,22 +212,26 @@ public class ContractRepository {
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
+                  contract.getDepositAmount().orElse(null),
+                  contract.getDepositAmountCurrency().orElse(null)))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
-          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
+                  contract.getSecurityDeposit().orElse(null),
+                  contract.getSecurityDepositCurrency().orElse(null)))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+              contract.getSecurityDepositCurrency().orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
-          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
           .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
           .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
-          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
           .set(CONTRACTS.STATUS, contract.getStatus().name())
-          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
-          .set(CONTRACTS.NOTES, contract.getNotes())
+          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
+          .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
           .set(CONTRACTS.CREATED_AT, createdAt)
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -248,8 +252,8 @@ public class ContractRepository {
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
-          .set(CONTRACTS.END_DATE, contract.getEndDate())
-          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+          .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
+          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
           .set(
               CONTRACTS.RENT_AMOUNT,
               CurrencyUtils.toMinorUnits(
@@ -258,22 +262,26 @@ public class ContractRepository {
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
+                  contract.getDepositAmount().orElse(null),
+                  contract.getDepositAmountCurrency().orElse(null)))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
-          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
+                  contract.getSecurityDeposit().orElse(null),
+                  contract.getSecurityDepositCurrency().orElse(null)))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+              contract.getSecurityDepositCurrency().orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
-          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
           .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
           .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
-          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
           .set(CONTRACTS.STATUS, contract.getStatus().name())
-          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
-          .set(CONTRACTS.NOTES, contract.getNotes())
+          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
+          .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
           .where(CONTRACTS.ID.eq(contract.getId()).and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))

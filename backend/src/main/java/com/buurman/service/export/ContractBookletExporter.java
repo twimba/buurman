@@ -226,9 +226,7 @@ public class ContractBookletExporter {
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
-            + (contract.getEndDate() != null
-                ? formatDate(contract.getEndDate(), dateFmt)
-                : "Indefinite");
+            + contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite");
     appendCoverCell(html, "Contract Period", period);
     html.append("</tr><tr>");
     appendCoverCell(
@@ -273,22 +271,24 @@ public class ContractBookletExporter {
     appendField(
         html,
         "Signed Date",
-        contract.getSignedDate() != null
-            ? formatDate(contract.getSignedDate(), dateFmt)
-            : "Not signed");
+        contract.getSignedDate().map(d -> formatDate(d, dateFmt)).orElse("Not signed"));
     html.append("</tr><tr>");
     appendField(html, "Start Date", formatDate(contract.getStartDate(), dateFmt));
     appendField(
         html,
         "End Date",
-        contract.getEndDate() != null ? formatDate(contract.getEndDate(), dateFmt) : "Indefinite");
+        contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
     html.append("</tr><tr>");
     appendField(html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount(), ccy));
     appendField(
-        html, "Deposit Amount", CurrencyUtils.formatCurrency(contract.getDepositAmount(), ccy));
+        html,
+        "Deposit Amount",
+        CurrencyUtils.formatCurrency(contract.getDepositAmount().orElse(null), ccy));
     html.append("</tr><tr>");
     appendField(
-        html, "Security Deposit", CurrencyUtils.formatCurrency(contract.getSecurityDeposit(), ccy));
+        html,
+        "Security Deposit",
+        CurrencyUtils.formatCurrency(contract.getSecurityDeposit().orElse(null), ccy));
     appendField(html, "Currency", CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
     html.append("</tr><tr>");
     appendField(
@@ -299,9 +299,7 @@ public class ContractBookletExporter {
     appendField(
         html,
         "Payment Due Day",
-        contract.getPaymentDueDay() != null
-            ? "Day " + contract.getPaymentDueDay() + " of month"
-            : "—");
+        contract.getPaymentDueDay().map(d -> "Day " + d + " of month").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -318,26 +316,29 @@ public class ContractBookletExporter {
         contract.getTerminationNoticeDays() != null
             ? contract.getTerminationNoticeDays() + " days"
             : "—");
-    appendField(
-        html,
-        "Late Fee",
-        contract.getLateFeePercentage() != null ? contract.getLateFeePercentage() + "%" : "—");
+    appendField(html, "Late Fee", contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
     html.append("</tr>");
     html.append("</table>");
 
     // Rich text sections
-    if (contract.getTermsAndConditions() != null && !contract.getTermsAndConditions().isBlank()) {
-      appendSectionTitle(html, "Terms &amp; Conditions");
-      html.append("<div class='text-block'>")
-          .append(sanitizeRichText(contract.getTermsAndConditions()))
-          .append("</div>");
-    }
-    if (contract.getNotes() != null && !contract.getNotes().isBlank()) {
-      appendSectionTitle(html, "Notes");
-      html.append("<div class='text-block'>")
-          .append(sanitizeRichText(contract.getNotes()))
-          .append("</div>");
-    }
+    contract
+        .getTermsAndConditions()
+        .filter(s -> !s.isBlank())
+        .ifPresent(
+            tc -> {
+              appendSectionTitle(html, "Terms &amp; Conditions");
+              html.append("<div class='text-block'>").append(sanitizeRichText(tc)).append("</div>");
+            });
+    contract
+        .getNotes()
+        .filter(s -> !s.isBlank())
+        .ifPresent(
+            notes -> {
+              appendSectionTitle(html, "Notes");
+              html.append("<div class='text-block'>")
+                  .append(sanitizeRichText(notes))
+                  .append("</div>");
+            });
 
     // Rent History section
     if (rentPeriods.size() > 1) {

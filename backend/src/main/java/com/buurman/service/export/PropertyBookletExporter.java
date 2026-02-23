@@ -1104,7 +1104,7 @@ public class PropertyBookletExporter {
       html.append("<td>").append(escapeHtml(tenantName)).append("</td>");
       html.append("<td>").append(contract.getStartDate()).append("</td>");
       html.append("<td>")
-          .append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing")
+          .append(contract.getEndDate().map(Object::toString).orElse("Ongoing"))
           .append("</td>");
       html.append("<td>")
           .append(

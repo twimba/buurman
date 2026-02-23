@@ -482,7 +482,7 @@ public class ReportService {
               .filter(
                   c -> {
                     LocalDate contractStart = c.getStartDate();
-                    LocalDate contractEnd = c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
+                    LocalDate contractEnd = c.getEndDate().orElse(LocalDate.MAX);
                     return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                   })
               .count();
@@ -525,7 +525,7 @@ public class ReportService {
               .filter(
                   c -> {
                     LocalDate contractStart = c.getStartDate();
-                    LocalDate contractEnd = c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
+                    LocalDate contractEnd = c.getEndDate().orElse(LocalDate.MAX);
                     return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                   })
               .count();
@@ -735,7 +735,7 @@ public class ReportService {
       }
 
       LocalDate contractStart = contract.getStartDate();
-      LocalDate contractEnd = contract.getEndDate() != null ? contract.getEndDate() : LocalDate.MAX;
+      LocalDate contractEnd = contract.getEndDate().orElse(LocalDate.MAX);
 
       // Calculate overlap
       LocalDate overlapStart = contractStart.isBefore(startDate) ? startDate : contractStart;

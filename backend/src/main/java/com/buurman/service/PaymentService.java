@@ -844,10 +844,7 @@ public class PaymentService {
   // --- Helper methods ---
 
   private LocalDate calculateDueDate(YearMonth month, Contract contract) {
-    @Nullable Integer paymentDueDay = contract.getPaymentDueDay();
-    if (paymentDueDay == null) {
-      paymentDueDay = 1;
-    }
+    int paymentDueDay = contract.getPaymentDueDay().orElse(1);
 
     int maxDayInMonth = month.lengthOfMonth();
     int actualDay = Math.min(paymentDueDay, maxDayInMonth);

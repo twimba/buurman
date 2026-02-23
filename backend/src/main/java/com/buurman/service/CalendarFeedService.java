@@ -259,11 +259,11 @@ public class CalendarFeedService {
         sb.append("END:VEVENT\r\n");
       }
 
-      if (contract.getEndDate() != null) {
+      if (contract.getEndDate().isPresent()) {
         sb.append("BEGIN:VEVENT\r\n");
         appendFolded(sb, "UID:contract-end-" + contract.getIdentifier() + "@buurman.app");
         sb.append("DTSTART;VALUE=DATE:")
-            .append(contract.getEndDate().format(DATE_FORMAT))
+            .append(contract.getEndDate().get().format(DATE_FORMAT))
             .append("\r\n");
         appendFolded(sb, "SUMMARY:" + escapeText("Contract End - " + propertyLabel));
         appendFolded(
@@ -273,11 +273,11 @@ public class CalendarFeedService {
         sb.append("END:VEVENT\r\n");
       }
 
-      if (contract.getSignedDate() != null) {
+      if (contract.getSignedDate().isPresent()) {
         sb.append("BEGIN:VEVENT\r\n");
         appendFolded(sb, "UID:contract-signed-" + contract.getIdentifier() + "@buurman.app");
         sb.append("DTSTART;VALUE=DATE:")
-            .append(contract.getSignedDate().format(DATE_FORMAT))
+            .append(contract.getSignedDate().get().format(DATE_FORMAT))
             .append("\r\n");
         appendFolded(sb, "SUMMARY:" + escapeText("Contract Signed - " + propertyLabel));
         appendFolded(

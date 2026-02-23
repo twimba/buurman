@@ -126,8 +126,11 @@ public class ContractService {
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
-    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
-    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
+    validateCurrencyRequired(
+        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+    validateCurrencyRequired(
+        contract.getSecurityDepositCurrency().orElse(null),
+        contract.getSecurityDeposit().orElse(null));
 
     Contract savedContract = contractRepository.save(contract);
 
@@ -170,8 +173,7 @@ public class ContractService {
     contractVars.put(
         "rentAmount", savedContract.getRentAmountCurrency() + " " + savedContract.getRentAmount());
     contractVars.put("startDate", savedContract.getStartDate().toString());
-    contractVars.put(
-        "endDate", savedContract.getEndDate() != null ? savedContract.getEndDate().toString() : "");
+    contractVars.put("endDate", savedContract.getEndDate().map(LocalDate::toString).orElse(""));
     contractVars.put("baseUrl", appProperties.email().baseUrl());
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
@@ -301,8 +303,11 @@ public class ContractService {
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
-    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
-    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
+    validateCurrencyRequired(
+        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+    validateCurrencyRequired(
+        contract.getSecurityDepositCurrency().orElse(null),
+        contract.getSecurityDeposit().orElse(null));
 
     Contract updatedContract = contractRepository.save(contract);
 
@@ -325,39 +330,44 @@ public class ContractService {
     if (!oldContract.getStartDate().equals(updatedContract.getStartDate())) {
       changedFields.put("startDate", updatedContract.getStartDate());
     }
-    if (!java.util.Objects.equals(oldContract.getEndDate(), updatedContract.getEndDate())) {
-      changedFields.put("endDate", updatedContract.getEndDate());
+    if (!oldContract.getEndDate().equals(updatedContract.getEndDate())) {
+      changedFields.put("endDate", updatedContract.getEndDate().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getSignedDate(), updatedContract.getSignedDate())) {
-      changedFields.put("signedDate", updatedContract.getSignedDate());
+    if (!oldContract.getSignedDate().equals(updatedContract.getSignedDate())) {
+      changedFields.put("signedDate", updatedContract.getSignedDate().orElse(null));
     }
     if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0) {
       changedFields.put("rentAmount", updatedContract.getRentAmount());
     }
-    if (!bigDecimalEquals(oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
-      changedFields.put("depositAmount", updatedContract.getDepositAmount());
+    if (!optionalBigDecimalEquals(
+        oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
+      changedFields.put("depositAmount", updatedContract.getDepositAmount().orElse(null));
     }
-    if (!bigDecimalEquals(oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
-      changedFields.put("securityDeposit", updatedContract.getSecurityDeposit());
+    if (!optionalBigDecimalEquals(
+        oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
+      changedFields.put("securityDeposit", updatedContract.getSecurityDeposit().orElse(null));
     }
     if (!java.util.Objects.equals(
         oldContract.getRentAmountCurrency(), updatedContract.getRentAmountCurrency())) {
       changedFields.put("rentAmountCurrency", updatedContract.getRentAmountCurrency());
     }
-    if (!java.util.Objects.equals(
-        oldContract.getDepositAmountCurrency(), updatedContract.getDepositAmountCurrency())) {
-      changedFields.put("depositAmountCurrency", updatedContract.getDepositAmountCurrency());
+    if (!oldContract
+        .getDepositAmountCurrency()
+        .equals(updatedContract.getDepositAmountCurrency())) {
+      changedFields.put(
+          "depositAmountCurrency", updatedContract.getDepositAmountCurrency().orElse(null));
     }
-    if (!java.util.Objects.equals(
-        oldContract.getSecurityDepositCurrency(), updatedContract.getSecurityDepositCurrency())) {
-      changedFields.put("securityDepositCurrency", updatedContract.getSecurityDepositCurrency());
+    if (!oldContract
+        .getSecurityDepositCurrency()
+        .equals(updatedContract.getSecurityDepositCurrency())) {
+      changedFields.put(
+          "securityDepositCurrency", updatedContract.getSecurityDepositCurrency().orElse(null));
     }
     if (!oldContract.getPaymentFrequency().equals(updatedContract.getPaymentFrequency())) {
       changedFields.put("paymentFrequency", updatedContract.getPaymentFrequency());
     }
-    if (!java.util.Objects.equals(
-        oldContract.getPaymentDueDay(), updatedContract.getPaymentDueDay())) {
-      changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay());
+    if (!oldContract.getPaymentDueDay().equals(updatedContract.getPaymentDueDay())) {
+      changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay().orElse(null));
     }
     if (!java.util.Objects.equals(oldContract.getAutoRenewal(), updatedContract.getAutoRenewal())) {
       changedFields.put("autoRenewal", updatedContract.getAutoRenewal());
@@ -370,16 +380,15 @@ public class ContractService {
         oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
       changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
     }
-    if (!bigDecimalEquals(
+    if (!optionalBigDecimalEquals(
         oldContract.getLateFeePercentage(), updatedContract.getLateFeePercentage())) {
-      changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage());
+      changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage().orElse(null));
     }
-    if (!java.util.Objects.equals(
-        oldContract.getTermsAndConditions(), updatedContract.getTermsAndConditions())) {
-      changedFields.put("termsAndConditions", updatedContract.getTermsAndConditions());
+    if (!oldContract.getTermsAndConditions().equals(updatedContract.getTermsAndConditions())) {
+      changedFields.put("termsAndConditions", updatedContract.getTermsAndConditions().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getNotes(), updatedContract.getNotes())) {
-      changedFields.put("notes", updatedContract.getNotes());
+    if (!oldContract.getNotes().equals(updatedContract.getNotes())) {
+      changedFields.put("notes", updatedContract.getNotes().orElse(null));
     }
 
     // Log to audit trail
@@ -823,23 +832,23 @@ public class ContractService {
         primaryTenant,
         contract.getContractType(),
         contract.getStartDate(),
-        Optional.ofNullable(contract.getEndDate()),
-        Optional.ofNullable(contract.getSignedDate()),
+        contract.getEndDate(),
+        contract.getSignedDate(),
         contract.getRentAmount(),
-        Optional.ofNullable(contract.getDepositAmount()),
-        Optional.ofNullable(contract.getSecurityDeposit()),
+        contract.getDepositAmount(),
+        contract.getSecurityDeposit(),
         contract.getRentAmountCurrency(),
-        Optional.ofNullable(contract.getDepositAmountCurrency()),
-        Optional.ofNullable(contract.getSecurityDepositCurrency()),
+        contract.getDepositAmountCurrency(),
+        contract.getSecurityDepositCurrency(),
         contract.getPaymentFrequency(),
-        Optional.ofNullable(contract.getPaymentDueDay()),
+        contract.getPaymentDueDay(),
         contract.getAutoRenewal(),
         contract.getRenewalNoticeDays(),
         contract.getTerminationNoticeDays(),
-        Optional.ofNullable(contract.getLateFeePercentage()),
+        contract.getLateFeePercentage(),
         contract.getStatus(),
-        Optional.ofNullable(contract.getTermsAndConditions()),
-        Optional.ofNullable(contract.getNotes()),
+        contract.getTermsAndConditions(),
+        contract.getNotes(),
         contract.getCreatedAt(),
         Optional.ofNullable(contract.getUpdatedAt()));
   }
@@ -907,23 +916,23 @@ public class ContractService {
                   primaryTenant,
                   contract.getContractType(),
                   contract.getStartDate(),
-                  Optional.ofNullable(contract.getEndDate()),
-                  Optional.ofNullable(contract.getSignedDate()),
+                  contract.getEndDate(),
+                  contract.getSignedDate(),
                   contract.getRentAmount(),
-                  Optional.ofNullable(contract.getDepositAmount()),
-                  Optional.ofNullable(contract.getSecurityDeposit()),
+                  contract.getDepositAmount(),
+                  contract.getSecurityDeposit(),
                   contract.getRentAmountCurrency(),
-                  Optional.ofNullable(contract.getDepositAmountCurrency()),
-                  Optional.ofNullable(contract.getSecurityDepositCurrency()),
+                  contract.getDepositAmountCurrency(),
+                  contract.getSecurityDepositCurrency(),
                   contract.getPaymentFrequency(),
-                  Optional.ofNullable(contract.getPaymentDueDay()),
+                  contract.getPaymentDueDay(),
                   contract.getAutoRenewal(),
                   contract.getRenewalNoticeDays(),
                   contract.getTerminationNoticeDays(),
-                  Optional.ofNullable(contract.getLateFeePercentage()),
+                  contract.getLateFeePercentage(),
                   contract.getStatus(),
-                  Optional.ofNullable(contract.getTermsAndConditions()),
-                  Optional.ofNullable(contract.getNotes()),
+                  contract.getTermsAndConditions(),
+                  contract.getNotes(),
                   contract.getCreatedAt(),
                   Optional.ofNullable(contract.getUpdatedAt()));
             })
@@ -944,14 +953,14 @@ public class ContractService {
     }
   }
 
-  private static boolean bigDecimalEquals(@Nullable BigDecimal a, @Nullable BigDecimal b) {
-    if (a == null && b == null) {
+  private static boolean optionalBigDecimalEquals(Optional<BigDecimal> a, Optional<BigDecimal> b) {
+    if (a.isEmpty() && b.isEmpty()) {
       return true;
     }
-    if (a == null || b == null) {
+    if (a.isEmpty() || b.isEmpty()) {
       return false;
     }
-    return a.compareTo(b) == 0;
+    return a.get().compareTo(b.get()) == 0;
   }
 
   private void updatePropertyStatusBasedOnContract(

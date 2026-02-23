@@ -26,35 +26,36 @@ public class ContractRecordMapper {
     contract.setPropertyId(record.getPropertyId());
     contract.setContractType(Contract.ContractType.valueOf(record.getContractType()));
     contract.setStartDate(record.getStartDate());
-    contract.setEndDate(record.getEndDate());
-    contract.setSignedDate(record.getSignedDate());
+    contract.setEndDate(Optional.ofNullable(record.getEndDate()));
+    contract.setSignedDate(Optional.ofNullable(record.getSignedDate()));
     contract.setRentAmount(
         CurrencyUtils.toMajorUnits(record.getRentAmount(), record.getRentAmountCurrency()));
     contract.setRentAmountCurrency(record.getRentAmountCurrency());
     Long depositAmount = record.getDepositAmount();
     String depositCurrency = record.getDepositAmountCurrency();
     if (depositAmount != null && depositCurrency != null) {
-      contract.setDepositAmount(CurrencyUtils.toMajorUnits(depositAmount, depositCurrency));
+      contract.setDepositAmount(
+          Optional.of(CurrencyUtils.toMajorUnits(depositAmount, depositCurrency)));
     }
-    contract.setDepositAmountCurrency(depositCurrency);
+    contract.setDepositAmountCurrency(Optional.ofNullable(depositCurrency));
     Long securityDeposit = record.getSecurityDeposit();
     String securityDepositCurrency = record.getSecurityDepositCurrency();
     if (securityDeposit != null && securityDepositCurrency != null) {
       contract.setSecurityDeposit(
-          CurrencyUtils.toMajorUnits(securityDeposit, securityDepositCurrency));
+          Optional.of(CurrencyUtils.toMajorUnits(securityDeposit, securityDepositCurrency)));
     }
-    contract.setSecurityDepositCurrency(record.getSecurityDepositCurrency());
+    contract.setSecurityDepositCurrency(Optional.ofNullable(record.getSecurityDepositCurrency()));
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
-    contract.setPaymentDueDay(record.getPaymentDueDay());
+    contract.setPaymentDueDay(Optional.ofNullable(record.getPaymentDueDay()));
     contract.setAutoRenewal(record.getAutoRenewal() != null ? record.getAutoRenewal() : false);
     contract.setRenewalNoticeDays(
         record.getRenewalNoticeDays() != null ? record.getRenewalNoticeDays() : 30);
     contract.setTerminationNoticeDays(
         record.getTerminationNoticeDays() != null ? record.getTerminationNoticeDays() : 30);
-    contract.setLateFeePercentage(record.getLateFeePercentage());
+    contract.setLateFeePercentage(Optional.ofNullable(record.getLateFeePercentage()));
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
-    contract.setTermsAndConditions(record.getTermsAndConditions());
-    contract.setNotes(record.getNotes());
+    contract.setTermsAndConditions(Optional.ofNullable(record.getTermsAndConditions()));
+    contract.setNotes(Optional.ofNullable(record.getNotes()));
     if (record.getCreatedAt() != null) {
       contract.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     }
@@ -63,8 +64,7 @@ public class ContractRecordMapper {
     }
     contract.setCreatedBy(record.getCreatedBy());
     contract.setUpdatedBy(record.getUpdatedBy());
-    contract.setDeletedAt(
-        record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
+    contract.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(contract);
   }

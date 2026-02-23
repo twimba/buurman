@@ -310,7 +310,7 @@ public class ContractRentPeriodService {
     if (effectiveFrom.isBefore(contract.getStartDate())) {
       throw new BusinessRuleException("Effective date cannot be before the contract start date");
     }
-    if (contract.getEndDate() != null && effectiveFrom.isAfter(contract.getEndDate())) {
+    if (contract.getEndDate().isPresent() && effectiveFrom.isAfter(contract.getEndDate().get())) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
     }
   }

@@ -266,8 +266,12 @@ public class ContractPaymentInstructionService {
     LocalDate minDate;
     if (contract.getStatus() == Contract.ContractStatus.DRAFT) {
       minDate =
-          Stream.of(LocalDate.now(clock), contract.getStartDate(), contract.getSignedDate())
-              .filter(d -> d != null)
+          Stream.of(
+                  Optional.of(LocalDate.now(clock)),
+                  Optional.of(contract.getStartDate()),
+                  contract.getSignedDate())
+              .filter(Optional::isPresent)
+              .map(Optional::get)
               .min(LocalDate::compareTo)
               .orElse(LocalDate.now(clock));
     } else {

@@ -67,7 +67,11 @@ public class NotificationSchedulerService {
                 contractRepository.findExpiringContracts(team.getId(), thirtyDaysFromNow);
 
             for (Contract contract : expiringContracts) {
-              int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), contract.getEndDate());
+              if (contract.getEndDate().isEmpty()) {
+                continue;
+              }
+              LocalDate endDate = contract.getEndDate().get();
+              int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), endDate);
 
               if (daysUntilExpiry != 30
                   && daysUntilExpiry != 14
@@ -95,7 +99,7 @@ public class NotificationSchedulerService {
                                       "userName", user.getFirstName(),
                                       "propertyName", propertyName,
                                       "daysUntilExpiry", daysUntilExpiry,
-                                      "expiryDate", formatDate(contract.getEndDate()),
+                                      "expiryDate", formatDate(endDate),
                                       "baseUrl", appProperties.email().baseUrl()))
                               .build()));
             }
