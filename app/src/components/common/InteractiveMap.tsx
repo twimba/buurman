@@ -94,6 +94,19 @@ function getCountryCenter(countryCode?: string): { lat: number; lng: number } {
   return COUNTRY_CENTERS[countryCode.toUpperCase()] ?? DEFAULT_CENTER;
 }
 
+function parseGoogleMapsChannel(value: string): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const channel = Number(value);
+  if (!Number.isInteger(channel) || channel < 0 || channel > 999) {
+    return undefined;
+  }
+
+  return channel;
+}
+
 export const InteractiveMap = ({
   street,
   city,
@@ -106,8 +119,20 @@ export const InteractiveMap = ({
   defaultCountry,
 }: InteractiveMapProps) => {
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
+  const mapsChannel = parseGoogleMapsChannel(env('VITE_GOOGLE_MAPS_CHANNEL'));
   const [clickToPlaceActive, setClickToPlaceActive] = useState(false);
+  const [mapsApiLoadError, setMapsApiLoadError] = useState(false);
   const isInteractive = !!onLocationChange;
+
+  const handleMapsApiError = useCallback((error: unknown) => {
+    console.error('Failed to load Google Maps API', error);
+    setMapsApiLoadError(true);
+  }, []);
+
+  const apiProviderProps =
+    mapsChannel == null
+      ? { apiKey, onError: handleMapsApiError }
+      : { apiKey, onError: handleMapsApiError, channel: mapsChannel };
 
   const handleDragEnd = useCallback(
     (event: google.maps.MapMouseEvent) => {
@@ -162,6 +187,24 @@ export const InteractiveMap = ({
     );
   }
 
+  // Maps API failed to load
+  if (mapsApiLoadError) {
+    return (
+      <div className={`${height} ${placeholderCls}`}>
+        <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mb-3" />
+        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+          Map Preview Unavailable
+        </p>
+        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          Could not load Google Maps right now
+        </p>
+        <div className="mt-3 text-xs text-[#9ca0b8] dark:text-[#5c6180] bg-[#f1f3f9] dark:bg-[#1e2130] rounded p-2 font-mono">
+          {street}, {city}
+        </div>
+      </div>
+    );
+  }
+
   // Click-to-place mode (no coordinates, user activated manual placement)
   if (clickToPlaceActive && latitude == null && longitude == null) {
     const center = getCountryCenter(defaultCountry);
@@ -170,7 +213,7 @@ export const InteractiveMap = ({
         <div
           className={`w-full ${height} rounded-lg overflow-hidden border border-[#e2e6f0] dark:border-[#2a2e3f]`}
         >
-          <APIProvider apiKey={apiKey}>
+          <APIProvider {...apiProviderProps}>
             <Map
               center={center}
               zoom={5}
@@ -242,7 +285,7 @@ export const InteractiveMap = ({
       <div
         className={`w-full ${height} rounded-lg overflow-hidden border border-[#e2e6f0] dark:border-[#2a2e3f]`}
       >
-        <APIProvider apiKey={apiKey}>
+        <APIProvider {...apiProviderProps}>
           <Map
             center={coordinates}
             zoom={zoom}
