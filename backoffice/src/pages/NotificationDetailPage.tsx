@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Mail, Phone, Smartphone, RefreshCw, Eye, MousePointerClick } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Smartphone,
+  RefreshCw,
+  Eye,
+  MousePointerClick,
+} from "lucide-react";
 import { PageHeader, Button, ConfirmDialog } from "@buurman/ui";
 import {
   useNotification,
@@ -329,53 +336,62 @@ export const NotificationDetailPage = () => {
       )}
 
       {/* Engagement Tracking */}
-      {notif.channel === "EMAIL" && (notif.openCount > 0 || notif.clickCount > 0) && (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6 mb-6">
-          <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
-            Engagement Tracking
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-[#f8f9fc] dark:bg-[#1a1d2e]">
-              <div className="p-2 rounded-full bg-blue-50 dark:bg-blue-900/30">
-                <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {notif.openCount}
-                </p>
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                  {notif.openCount === 1 ? "Open" : "Opens"}
-                  {notif.firstOpenedAt && (
-                    <span className="ml-1">
-                      &middot; First: {format(new Date(notif.firstOpenedAt), "dd MMM yyyy HH:mm")}
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-            {notif.clickCount > 0 && (
+      {notif.channel === "EMAIL" &&
+        (notif.openCount > 0 || notif.clickCount > 0) && (
+          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6 mb-6">
+            <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              Engagement Tracking
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-[#f8f9fc] dark:bg-[#1a1d2e]">
-                <div className="p-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-                  <MousePointerClick className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <div className="p-2 rounded-full bg-blue-50 dark:bg-blue-900/30">
+                  <Eye className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {notif.clickCount}
+                    {notif.openCount}
                   </p>
                   <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                    {notif.clickCount === 1 ? "Click" : "Clicks"}
-                    {notif.firstClickedAt && (
+                    {notif.openCount === 1 ? "Open" : "Opens"}
+                    {notif.firstOpenedAt && (
                       <span className="ml-1">
-                        &middot; First: {format(new Date(notif.firstClickedAt), "dd MMM yyyy HH:mm")}
+                        &middot; First:{" "}
+                        {format(
+                          new Date(notif.firstOpenedAt),
+                          "dd MMM yyyy HH:mm",
+                        )}
                       </span>
                     )}
                   </p>
                 </div>
               </div>
-            )}
+              {notif.clickCount > 0 && (
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-[#f8f9fc] dark:bg-[#1a1d2e]">
+                  <div className="p-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
+                    <MousePointerClick className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {notif.clickCount}
+                    </p>
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      {notif.clickCount === 1 ? "Click" : "Clicks"}
+                      {notif.firstClickedAt && (
+                        <span className="ml-1">
+                          &middot; First:{" "}
+                          {format(
+                            new Date(notif.firstClickedAt),
+                            "dd MMM yyyy HH:mm",
+                          )}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Resent Info */}
       {(notif.resentFromIdentifier || notif.resendReason) && (

@@ -535,7 +535,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6 overflow-hidden">
       <div className="flex items-center gap-2 mb-4">
         <span className="text-[#9ca0b8] dark:text-[#5c6180]">{icon}</span>
         <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -991,69 +991,69 @@ function ExpenseTimelineChart({
 
   const enabledCategories = allCategories.filter((c) => enabled.has(c));
 
-  // Use a wider chart when there are many months to prevent ultra-thin bars
   const barCount = chartData.length;
-  const minChartWidth = Math.max(barCount * 40, 320);
 
   return (
     <div>
       {/* Stacked bar chart */}
-      <div style={{ overflowX: barCount > 12 ? 'auto' : undefined }}>
-      <ResponsiveContainer width="100%" height={320} minWidth={minChartWidth}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-          barCategoryGap={barCount > 18 ? '8%' : barCount > 12 ? '12%' : '20%'}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-          />
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={formatMonthTick}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={(v) => formatAxisValue(v, currency)}
-          />
-          <Tooltip
-            contentStyle={tooltipStyle}
-            labelFormatter={(label) => formatMonthTick(String(label))}
-            formatter={(value?: number | string, name?: string) => [
-              formatCurrency(Number(value ?? 0), currency),
-              humanizeCategory(name ?? ''),
-            ]}
-          />
-          {enabledCategories.map((cat, i) => {
-            const colorIndex = allCategories.indexOf(cat);
-            const isLast = i === enabledCategories.length - 1;
-            return (
-              <Bar
-                key={cat}
-                dataKey={cat}
-                name={cat}
-                stackId="expenses"
-                fill={PIE_COLORS[colorIndex % PIE_COLORS.length]}
-                fillOpacity={0.85}
-                isAnimationActive={false}
-                radius={isLast ? [4, 4, 0, 0] : undefined}
-              />
-            );
-          })}
-          {chartData.length > 6 && (
-            <Brush
+      <div style={{ overflowX: 'auto' }}>
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+            barCategoryGap={
+              barCount > 18 ? '8%' : barCount > 12 ? '12%' : '20%'
+            }
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+            />
+            <XAxis
               dataKey="month"
-              height={20}
-              stroke={isDark ? '#3a3f54' : '#c9cfd9'}
-              fill={isDark ? '#14161f' : '#f8f9fc'}
+              tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
               tickFormatter={formatMonthTick}
             />
-          )}
-        </BarChart>
-      </ResponsiveContainer>
+            <YAxis
+              tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+              tickFormatter={(v) => formatAxisValue(v, currency)}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelFormatter={(label) => formatMonthTick(String(label))}
+              formatter={(value?: number | string, name?: string) => [
+                formatCurrency(Number(value ?? 0), currency),
+                humanizeCategory(name ?? ''),
+              ]}
+            />
+            {enabledCategories.map((cat, i) => {
+              const colorIndex = allCategories.indexOf(cat);
+              const isLast = i === enabledCategories.length - 1;
+              return (
+                <Bar
+                  key={cat}
+                  dataKey={cat}
+                  name={cat}
+                  stackId="expenses"
+                  fill={PIE_COLORS[colorIndex % PIE_COLORS.length]}
+                  fillOpacity={0.85}
+                  isAnimationActive={false}
+                  radius={isLast ? [4, 4, 0, 0] : undefined}
+                />
+              );
+            })}
+            {chartData.length > 6 && (
+              <Brush
+                dataKey="month"
+                height={20}
+                stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+                fill={isDark ? '#14161f' : '#f8f9fc'}
+                tickFormatter={formatMonthTick}
+              />
+            )}
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Clickable legend — styled like Recharts default legend */}
@@ -1227,7 +1227,8 @@ function FutureTrendChart({
   return (
     <div>
       <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-2 font-medium">
-        Projected income & expenses based on active contracts and operating costs
+        Projected income & expenses based on active contracts and operating
+        costs
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart

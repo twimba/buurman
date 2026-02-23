@@ -8,6 +8,15 @@ import {
   TaxSummaryResponse,
 } from '../types/report';
 
+export interface DataDateRangeResponse {
+  earliestDate: string | null;
+}
+
+export const getDataDateRange = async (): Promise<DataDateRangeResponse> => {
+  const response = await client.get('/reports/date-range');
+  return response.data;
+};
+
 export const getFinancialOverview = async (
   startDate: string,
   endDate: string,
@@ -28,30 +37,44 @@ export const getFinancialOverview = async (
 export const getIncomeTrend = async (
   startDate?: string,
   endDate?: string,
-  months: number = 12
+  months: number = 12,
+  propertyIdentifiers?: string[]
 ): Promise<IncomeTrendResponse> => {
   const response = await client.get('/reports/charts/income-trend', {
-    params: startDate && endDate ? { startDate, endDate } : { months },
+    params: {
+      ...(startDate && endDate ? { startDate, endDate } : { months }),
+      propertyIdentifiers: propertyIdentifiers?.join(','),
+    },
   });
   return response.data;
 };
 
 export const getExpenseBreakdown = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  propertyIdentifiers?: string[]
 ): Promise<ExpenseBreakdownResponse> => {
   const response = await client.get('/reports/charts/expense-breakdown', {
-    params: { startDate, endDate },
+    params: {
+      startDate,
+      endDate,
+      propertyIdentifiers: propertyIdentifiers?.join(','),
+    },
   });
   return response.data;
 };
 
 export const getPropertyComparison = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  propertyIdentifiers?: string[]
 ): Promise<PropertyComparisonResponse> => {
   const response = await client.get('/reports/charts/property-comparison', {
-    params: { startDate, endDate },
+    params: {
+      startDate,
+      endDate,
+      propertyIdentifiers: propertyIdentifiers?.join(','),
+    },
   });
   return response.data;
 };

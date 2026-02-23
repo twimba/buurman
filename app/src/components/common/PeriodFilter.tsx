@@ -96,7 +96,11 @@ function computeDateRange(
       startDate = '1982-07-24';
       break;
     case 'custom':
-      startDate = customStart || new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+      startDate =
+        customStart ||
+        new Date(today.getFullYear(), today.getMonth(), 1)
+          .toISOString()
+          .split('T')[0];
       return {
         startDate,
         endDate: customEnd || endDate,
@@ -179,9 +183,7 @@ export function PeriodFilter({
             onChange={(e) => handleCustomStartChange(e.target.value)}
             className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
           />
-          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-            to
-          </span>
+          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">to</span>
           <input
             type="date"
             value={customEndDate}

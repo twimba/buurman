@@ -388,7 +388,10 @@ export const PropertyDetailPage = () => {
       .replace(/\bDsl\b/g, 'DSL');
   };
 
-  const formatMoney = (amount: number | null, currency: string | null): string => {
+  const formatMoney = (
+    amount: number | null,
+    currency: string | null
+  ): string => {
     if (amount == null) return 'N/A';
     try {
       return new Intl.NumberFormat(undefined, {
@@ -1256,20 +1259,23 @@ export const PropertyDetailPage = () => {
             {/* Investment & Financial */}
             {(property.purchasePrice != null ||
               property.currentMarketValue != null ||
-              (property.mortgageType && property.mortgageType !== MortgageType.NONE) ||
+              (property.mortgageType &&
+                property.mortgageType !== MortgageType.NONE) ||
               property.annualPropertyTax != null ||
               property.annualInsurance != null ||
               property.annualHoaFee != null ||
               property.annualManagementFee != null ||
               property.annualMaintenanceReserve != null ||
-              (property.depreciationMethod && property.depreciationMethod !== DepreciationMethod.NONE)) && (
+              (property.depreciationMethod &&
+                property.depreciationMethod !== DepreciationMethod.NONE)) && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide">
                   Investment &amp; Financial
                 </h3>
 
                 {/* Purchase & Valuation */}
-                {(property.purchasePrice != null || property.currentMarketValue != null) && (
+                {(property.purchasePrice != null ||
+                  property.currentMarketValue != null) && (
                   <div>
                     <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
                       Purchase &amp; Valuation
@@ -1281,7 +1287,10 @@ export const PropertyDetailPage = () => {
                             Purchase Price
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.purchasePrice, property.purchasePriceCurrency)}
+                            {formatMoney(
+                              property.purchasePrice,
+                              property.purchasePriceCurrency
+                            )}
                           </div>
                         </div>
                       )}
@@ -1301,7 +1310,10 @@ export const PropertyDetailPage = () => {
                             Market Value
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.currentMarketValue, property.currentMarketValueCurrency)}
+                            {formatMoney(
+                              property.currentMarketValue,
+                              property.currentMarketValueCurrency
+                            )}
                           </div>
                         </div>
                       )}
@@ -1320,75 +1332,82 @@ export const PropertyDetailPage = () => {
                 )}
 
                 {/* Mortgage */}
-                {property.mortgageType && property.mortgageType !== MortgageType.NONE && (
-                  <div>
-                    <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                      Mortgage
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      <div>
-                        <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                          Type
-                        </div>
-                        <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                          {formatEnumValue(property.mortgageType)}
-                        </div>
+                {property.mortgageType &&
+                  property.mortgageType !== MortgageType.NONE && (
+                    <div>
+                      <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
+                        Mortgage
                       </div>
-                      {property.mortgageAmount != null && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div>
                           <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Amount
+                            Type
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.mortgageAmount, property.mortgageAmountCurrency)}
+                            {formatEnumValue(property.mortgageType)}
                           </div>
                         </div>
-                      )}
-                      {property.mortgageInterestRate != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Interest Rate
+                        {property.mortgageAmount != null && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Amount
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {formatMoney(
+                                property.mortgageAmount,
+                                property.mortgageAmountCurrency
+                              )}
+                            </div>
                           </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {property.mortgageInterestRate}%
+                        )}
+                        {property.mortgageInterestRate != null && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Interest Rate
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {property.mortgageInterestRate}%
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {property.monthlyMortgagePayment != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Monthly Payment
+                        )}
+                        {property.monthlyMortgagePayment != null && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Monthly Payment
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {property.monthlyMortgagePayment === -1
+                                ? 'Variable'
+                                : formatMoney(
+                                    property.monthlyMortgagePayment,
+                                    property.monthlyMortgagePaymentCurrency
+                                  )}
+                            </div>
                           </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {property.monthlyMortgagePayment === -1
-                              ? 'Variable'
-                              : formatMoney(property.monthlyMortgagePayment, property.monthlyMortgagePaymentCurrency)}
+                        )}
+                        {property.mortgageStartDate && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Start Date
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {formatDate(property.mortgageStartDate)}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {property.mortgageStartDate && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Start Date
+                        )}
+                        {property.mortgageEndDate && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              End Date
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {formatDate(property.mortgageEndDate)}
+                            </div>
                           </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatDate(property.mortgageStartDate)}
-                          </div>
-                        </div>
-                      )}
-                      {property.mortgageEndDate && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            End Date
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatDate(property.mortgageEndDate)}
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Annual Operating Costs */}
                 {(property.annualPropertyTax != null ||
@@ -1407,8 +1426,14 @@ export const PropertyDetailPage = () => {
                             Property Tax
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.annualPropertyTax, property.annualPropertyTaxCurrency)}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]"> /yr</span>
+                            {formatMoney(
+                              property.annualPropertyTax,
+                              property.annualPropertyTaxCurrency
+                            )}
+                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                              {' '}
+                              /yr
+                            </span>
                           </div>
                         </div>
                       )}
@@ -1418,8 +1443,14 @@ export const PropertyDetailPage = () => {
                             Insurance
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.annualInsurance, property.annualInsuranceCurrency)}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]"> /yr</span>
+                            {formatMoney(
+                              property.annualInsurance,
+                              property.annualInsuranceCurrency
+                            )}
+                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                              {' '}
+                              /yr
+                            </span>
                           </div>
                         </div>
                       )}
@@ -1429,8 +1460,14 @@ export const PropertyDetailPage = () => {
                             HOA Fee
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.annualHoaFee, property.annualHoaFeeCurrency)}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]"> /yr</span>
+                            {formatMoney(
+                              property.annualHoaFee,
+                              property.annualHoaFeeCurrency
+                            )}
+                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                              {' '}
+                              /yr
+                            </span>
                           </div>
                         </div>
                       )}
@@ -1440,8 +1477,14 @@ export const PropertyDetailPage = () => {
                             Management Fee
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.annualManagementFee, property.annualManagementFeeCurrency)}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]"> /yr</span>
+                            {formatMoney(
+                              property.annualManagementFee,
+                              property.annualManagementFeeCurrency
+                            )}
+                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                              {' '}
+                              /yr
+                            </span>
                           </div>
                         </div>
                       )}
@@ -1451,8 +1494,14 @@ export const PropertyDetailPage = () => {
                             Maintenance Reserve
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.annualMaintenanceReserve, property.annualMaintenanceReserveCurrency)}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]"> /yr</span>
+                            {formatMoney(
+                              property.annualMaintenanceReserve,
+                              property.annualMaintenanceReserveCurrency
+                            )}
+                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                              {' '}
+                              /yr
+                            </span>
                           </div>
                         </div>
                       )}
@@ -1461,43 +1510,47 @@ export const PropertyDetailPage = () => {
                 )}
 
                 {/* Depreciation */}
-                {property.depreciationMethod && property.depreciationMethod !== DepreciationMethod.NONE && (
-                  <div>
-                    <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                      Depreciation
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      <div>
-                        <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                          Method
-                        </div>
-                        <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                          {formatEnumValue(property.depreciationMethod)}
-                        </div>
+                {property.depreciationMethod &&
+                  property.depreciationMethod !== DepreciationMethod.NONE && (
+                    <div>
+                      <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
+                        Depreciation
                       </div>
-                      {property.depreciationYears != null && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div>
                           <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Useful Life
+                            Method
                           </div>
                           <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {property.depreciationYears} years
+                            {formatEnumValue(property.depreciationMethod)}
                           </div>
                         </div>
-                      )}
-                      {property.landValue != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Land Value
+                        {property.depreciationYears != null && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Useful Life
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {property.depreciationYears} years
+                            </div>
                           </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(property.landValue, property.landValueCurrency)}
+                        )}
+                        {property.landValue != null && (
+                          <div>
+                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                              Land Value
+                            </div>
+                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                              {formatMoney(
+                                property.landValue,
+                                property.landValueCurrency
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             )}
 

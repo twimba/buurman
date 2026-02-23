@@ -49,7 +49,7 @@ services:
   keycloak:
     build:
       context: ./keycloak
-    image: buurman-keycloak:local
+    image: buurman-keycloak:26.5.4
     container_name: buurman-keycloak
     env_file: .env
     environment:

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  getDataDateRange,
   getFinancialOverview,
   getIncomeTrend,
   getExpenseBreakdown,
@@ -7,6 +8,14 @@ import {
   getOccupancyTrend,
   getTaxSummary,
 } from '@/api/reports';
+
+export const useDataDateRange = () => {
+  return useQuery({
+    queryKey: ['data-date-range'],
+    queryFn: getDataDateRange,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
 export const useFinancialOverview = (
   startDate: string,
@@ -26,11 +35,12 @@ export const useFinancialOverview = (
 export const useIncomeTrend = (
   startDate?: string,
   endDate?: string,
+  propertyIds?: string[],
   enabled: boolean = true
 ) => {
   return useQuery({
-    queryKey: ['income-trend', startDate, endDate],
-    queryFn: () => getIncomeTrend(startDate, endDate),
+    queryKey: ['income-trend', startDate, endDate, propertyIds],
+    queryFn: () => getIncomeTrend(startDate, endDate, 12, propertyIds),
     enabled,
   });
 };
@@ -38,11 +48,12 @@ export const useIncomeTrend = (
 export const useExpenseBreakdown = (
   startDate: string,
   endDate: string,
+  propertyIds?: string[],
   enabled: boolean = true
 ) => {
   return useQuery({
-    queryKey: ['expense-breakdown', startDate, endDate],
-    queryFn: () => getExpenseBreakdown(startDate, endDate),
+    queryKey: ['expense-breakdown', startDate, endDate, propertyIds],
+    queryFn: () => getExpenseBreakdown(startDate, endDate, propertyIds),
     enabled,
   });
 };
@@ -50,11 +61,12 @@ export const useExpenseBreakdown = (
 export const usePropertyComparison = (
   startDate: string,
   endDate: string,
+  propertyIds?: string[],
   enabled: boolean = true
 ) => {
   return useQuery({
-    queryKey: ['property-comparison', startDate, endDate],
-    queryFn: () => getPropertyComparison(startDate, endDate),
+    queryKey: ['property-comparison', startDate, endDate, propertyIds],
+    queryFn: () => getPropertyComparison(startDate, endDate, propertyIds),
     enabled,
   });
 };

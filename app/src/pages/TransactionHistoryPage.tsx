@@ -178,9 +178,7 @@ export const TransactionHistoryPage = () => {
     );
   }, [filteredAndSortedTransactions, currentPage, pageSize]);
 
-  const totalPages = Math.ceil(
-    filteredAndSortedTransactions.length / pageSize
-  );
+  const totalPages = Math.ceil(filteredAndSortedTransactions.length / pageSize);
 
   // Calculate totals
   const totals = useMemo(() => {

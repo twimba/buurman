@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Property;
+import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
 import com.buurman.dto.response.FinancialOverviewResponse;
 import com.buurman.dto.response.IncomeTrendResponse;
@@ -26,6 +28,7 @@ import com.buurman.dto.response.OccupancyTrendResponse;
 import com.buurman.dto.response.PropertyComparisonResponse;
 import com.buurman.dto.response.TaxSummaryResponse;
 import com.buurman.exception.ForbiddenException;
+import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.FeatureFlagService;
@@ -46,12 +49,21 @@ public class ReportController {
   private final ReportService reportService;
   private final ExportService exportService;
   private final FeatureFlagService featureFlagService;
+  private final PropertyRepository propertyRepository;
 
   @ModelAttribute
   public void checkReportsEnabled(@AuthenticationPrincipal UserPrincipal principal) {
     if (featureFlagService.isDisabled(REPORTS, principal)) {
       throw new ForbiddenException("Reports feature is not available");
     }
+  }
+
+  @Operation(
+      summary = "Get data date range",
+      description = "Get the earliest date across all financial data for the team")
+  @GetMapping("/date-range")
+  public DataDateRangeResponse getDataDateRange(@AuthenticationPrincipal UserPrincipal principal) {
+    return reportService.getDataDateRange(principal);
   }
 
   @Operation(
@@ -63,10 +75,11 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<UUID> propertyIds,
+      @RequestParam(required = false) List<String> propertyIdentifiers,
       @RequestParam(required = false) String currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
+    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
     return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
   }
 
@@ -78,12 +91,14 @@ public class ReportController {
       @RequestParam(defaultValue = "12") int months,
       @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
+    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
     if (startDate != null && endDate != null) {
-      return reportService.getIncomeTrendByDateRange(startDate, endDate, principal);
+      return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
     }
-    return reportService.getIncomeTrend(months, principal);
+    return reportService.getIncomeTrend(months, propertyIds, principal);
   }
 
   @Operation(
@@ -93,9 +108,11 @@ public class ReportController {
   public ExpenseBreakdownResponse getExpenseBreakdown(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    return reportService.getExpenseBreakdown(startDate, endDate, principal);
+    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
   @Operation(
@@ -105,9 +122,11 @@ public class ReportController {
   public PropertyComparisonResponse getPropertyComparison(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam(required = false) List<String> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    return reportService.getPropertyComparison(startDate, endDate, principal);
+    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
   @Operation(
@@ -170,5 +189,15 @@ public class ReportController {
         .header(CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")
         .contentType(APPLICATION_PDF)
         .body(pdf);
+  }
+
+  private List<UUID> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
+    if (identifiers == null || identifiers.isEmpty()) {
+      return null;
+    }
+    return identifiers.stream()
+        .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
+        .map(Property::getId)
+        .toList();
   }
 }

@@ -30,9 +30,9 @@ import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.DataCompleteness;
 import com.buurman.dto.response.PropertyDashboardResponse.EquityChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.ExpenseBreakdownChartData;
+import com.buurman.dto.response.PropertyDashboardResponse.ExpenseTimelineMonth;
 import com.buurman.dto.response.PropertyDashboardResponse.FutureMonthDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.FutureTrendData;
-import com.buurman.dto.response.PropertyDashboardResponse.ExpenseTimelineMonth;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
@@ -372,12 +372,12 @@ public class PropertyDashboardService {
                         e -> e.getCategory() != null ? e.getCategory().name() : "OTHER",
                         Collectors.reducing(ZERO, Expense::getAmount, BigDecimal::add))));
 
-    // Add property-level annual operating costs to breakdown
+    // Add property-level annual operating costs to breakdown.
+    // MANAGEMENT and MAINTENANCE_RESERVE are excluded — they are budget allocations,
+    // not actual incurred expenses recorded against the property.
     addIfNotNull(byCategory, "PROPERTY_TAX", property.getAnnualPropertyTax());
     addIfNotNull(byCategory, "INSURANCE", property.getAnnualInsurance());
     addIfNotNull(byCategory, "HOA", property.getAnnualHoaFee());
-    addIfNotNull(byCategory, "MANAGEMENT", property.getAnnualManagementFee());
-    addIfNotNull(byCategory, "MAINTENANCE_RESERVE", property.getAnnualMaintenanceReserve());
 
     List<CategorySlice> slices =
         byCategory.entrySet().stream()
@@ -416,16 +416,6 @@ public class PropertyDashboardService {
         property.getAnnualInsuranceDueMonth());
     addAnnualCostToTimeline(
         monthlyMap, "HOA", property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
-    addAnnualCostToTimeline(
-        monthlyMap,
-        "MANAGEMENT",
-        property.getAnnualManagementFee(),
-        property.getAnnualManagementFeeDueMonth());
-    addAnnualCostToTimeline(
-        monthlyMap,
-        "MAINTENANCE_RESERVE",
-        property.getAnnualMaintenanceReserve(),
-        property.getAnnualMaintenanceReserveDueMonth());
 
     List<ExpenseTimelineMonth> timeline =
         monthlyMap.entrySet().stream()
@@ -436,8 +426,8 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers.
-   * Returns null if the input is null or blank (meaning all months).
+   * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers. Returns null
+   * if the input is null or blank (meaning all months).
    */
   private static List<Integer> parseDueMonths(String dueMonths) {
     if (dueMonths == null || dueMonths.isBlank()) {
@@ -451,8 +441,8 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Distributes an annual cost into a month-indexed map. If dueMonths is set, the amount is
-   * divided among those months. Otherwise, it's spread evenly across all 12 months.
+   * Distributes an annual cost into a month-indexed map. If dueMonths is set, the amount is divided
+   * among those months. Otherwise, it's spread evenly across all 12 months.
    */
   private static void addAnnualCostToMonth(
       Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, String dueMonths) {
@@ -474,8 +464,8 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Adds an annual cost to the expense timeline. If dueMonths is set, the amount is divided
-   * among matching months. Otherwise, it's spread evenly (÷12) across all months.
+   * Adds an annual cost to the expense timeline. If dueMonths is set, the amount is divided among
+   * matching months. Otherwise, it's spread evenly (÷12) across all months.
    */
   private static void addAnnualCostToTimeline(
       Map<YearMonth, Map<String, BigDecimal>> timeline,
@@ -586,11 +576,15 @@ public class PropertyDashboardService {
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualPropertyTax(), property.getAnnualPropertyTaxDueMonth(), monthNumber));
+                  property.getAnnualPropertyTax(),
+                  property.getAnnualPropertyTaxDueMonth(),
+                  monthNumber));
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualInsurance(), property.getAnnualInsuranceDueMonth(), monthNumber));
+                  property.getAnnualInsurance(),
+                  property.getAnnualInsuranceDueMonth(),
+                  monthNumber));
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
@@ -635,17 +629,6 @@ public class PropertyDashboardService {
     }
     if (!months.contains(currentMonth)) return ZERO;
     return annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
-  }
-
-  private List<Integer> parseDueMonths(String dueMonths) {
-    List<Integer> result = new ArrayList<>();
-    for (String s : dueMonths.split(",")) {
-      try {
-        result.add(Integer.parseInt(s.trim()));
-      } catch (NumberFormatException ignored) {
-      }
-    }
-    return result;
   }
 
   private DataCompleteness buildDataCompleteness(

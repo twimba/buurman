@@ -49,7 +49,7 @@ public class NotificationSchedulerService {
   private final AppProperties appProperties;
   private final Clock clock;
 
-  @Transactional(readOnly = true)
+  @Transactional
   public void checkContractExpiry() {
     log.info("Running contract expiry check...");
 
@@ -117,7 +117,7 @@ public class NotificationSchedulerService {
     log.info("Contract expiry check completed");
   }
 
-  @Transactional(readOnly = true)
+  @Transactional
   public void checkPaymentReminders() {
     log.info("Running payment reminder check...");
 

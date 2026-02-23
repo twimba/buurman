@@ -83,12 +83,16 @@ public class ExpenseController {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     UUID propertyId = null;
     if (propertyIdentifier != null) {
-      var property =
-          expenseService.resolvePropertyId(propertyIdentifier, principal.getTeamId());
+      var property = expenseService.resolvePropertyId(propertyIdentifier, principal.getTeamId());
       propertyId = property;
     }
     return expenseService.getExpensesPaginated(
-        principal, category != null ? category.name() : null, propertyId, dateFrom, dateTo, pageRequest);
+        principal,
+        category != null ? category.name() : null,
+        propertyId,
+        dateFrom,
+        dateTo,
+        pageRequest);
   }
 
   @Operation(summary = "Get expense stats", description = "Get expense statistics for the team")

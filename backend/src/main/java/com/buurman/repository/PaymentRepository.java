@@ -8,6 +8,7 @@ import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
 import java.math.BigDecimal;
@@ -304,7 +305,10 @@ public class PaymentRepository {
                   dsl.select(CONTRACTS.ID)
                       .from(CONTRACTS)
                       .where(
-                          CONTRACTS.PROPERTY_ID.eq(propertyId).and(CONTRACTS.DELETED_AT.isNull()))));
+                          CONTRACTS
+                              .PROPERTY_ID
+                              .eq(propertyId)
+                              .and(CONTRACTS.DELETED_AT.isNull()))));
     }
     if (dateFrom != null) {
       condition = condition.and(PAYMENTS.DUE_DATE.ge(dateFrom));
@@ -381,6 +385,19 @@ public class PaymentRepository {
         .fetchOptional()
         .map(r -> r.get(PAYMENTS.CURRENCY))
         .orElse(null);
+  }
+
+  public LocalDate findEarliestPaymentDate(UUID teamId) {
+    return dsl.select(min(PAYMENTS.PAYMENT_DATE))
+        .from(PAYMENTS)
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.DELETED_AT.isNull())
+                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                .and(PAYMENTS.STATUS.eq(PAID.name())))
+        .fetchOne(min(PAYMENTS.PAYMENT_DATE));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

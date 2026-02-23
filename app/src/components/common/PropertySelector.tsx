@@ -273,12 +273,16 @@ export const PropertySelector = ({
             </div>
           ) : (
             <>
-              {clearable && value && !search && (
+              {clearable && (
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelect('')}
-                  className="w-full text-left px-3 py-2.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  className={`w-full text-left px-3 py-2.5 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f] ${
+                    !value
+                      ? 'text-[#1a1d2e] dark:text-[#eef0f6] font-medium'
+                      : 'text-[#6b7194] dark:text-[#8b90a8]'
+                  }`}
                 >
                   All Properties
                 </button>

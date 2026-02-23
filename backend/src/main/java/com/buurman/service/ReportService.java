@@ -31,6 +31,7 @@ import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.dto.response.CategoryExpenseSummary;
+import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
 import com.buurman.dto.response.FinancialOverviewResponse;
 import com.buurman.dto.response.IncomeTrendResponse;
@@ -218,19 +219,29 @@ public class ReportService {
   }
 
   @Transactional(readOnly = true)
-  public IncomeTrendResponse getIncomeTrend(int months, UserPrincipal principal) {
+  public IncomeTrendResponse getIncomeTrend(
+      int months, List<UUID> propertyIds, UserPrincipal principal) {
 
     UUID teamId = principal.getTeamId();
     LocalDate endDate = LocalDate.now(clock);
     LocalDate startDate = endDate.minusMonths(months - 1).withDayOfMonth(1);
     LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
 
+    // Pre-fetch contracts for payment→property mapping (needed for property filtering)
+    Map<UUID, Contract> contractsById =
+        contractRepository.findAllByTeamId(teamId).stream()
+            .collect(toMap(Contract::getId, identity()));
+
     // Fetch full range once
     List<Payment> allPayments =
         paymentRepository.findByDateRange(startDate, rangeEnd, teamId).stream()
             .filter(p -> p.getStatus() == PAID)
+            .filter(p -> matchesPropertyFilter(p, propertyIds, contractsById))
             .toList();
-    List<Expense> allExpenses = expenseRepository.findByDateRange(startDate, rangeEnd, teamId);
+    List<Expense> allExpenses =
+        expenseRepository.findByDateRange(startDate, rangeEnd, teamId).stream()
+            .filter(e -> matchesPropertyFilter(e, propertyIds))
+            .toList();
 
     // Group by month
     Map<YearMonth, BigDecimal> incomeByMonth =
@@ -267,17 +278,25 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public IncomeTrendResponse getIncomeTrendByDateRange(
-      LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
 
     UUID teamId = principal.getTeamId();
     LocalDate rangeStart = startDate.withDayOfMonth(1);
     LocalDate rangeEnd = YearMonth.from(endDate).atEndOfMonth();
 
+    Map<UUID, Contract> contractsById =
+        contractRepository.findAllByTeamId(teamId).stream()
+            .collect(toMap(Contract::getId, identity()));
+
     List<Payment> allPayments =
         paymentRepository.findByDateRange(rangeStart, rangeEnd, teamId).stream()
             .filter(p -> p.getStatus() == PAID)
+            .filter(p -> matchesPropertyFilter(p, propertyIds, contractsById))
             .toList();
-    List<Expense> allExpenses = expenseRepository.findByDateRange(rangeStart, rangeEnd, teamId);
+    List<Expense> allExpenses =
+        expenseRepository.findByDateRange(rangeStart, rangeEnd, teamId).stream()
+            .filter(e -> matchesPropertyFilter(e, propertyIds))
+            .toList();
 
     Map<YearMonth, BigDecimal> incomeByMonth =
         allPayments.stream()
@@ -314,11 +333,14 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public ExpenseBreakdownResponse getExpenseBreakdown(
-      LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
 
     UUID teamId = principal.getTeamId();
 
-    List<Expense> expenses = expenseRepository.findByDateRange(startDate, endDate, teamId);
+    List<Expense> expenses =
+        expenseRepository.findByDateRange(startDate, endDate, teamId).stream()
+            .filter(e -> matchesPropertyFilter(e, propertyIds))
+            .toList();
 
     BigDecimal total =
         expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -347,7 +369,7 @@ public class ReportService {
 
   @Transactional(readOnly = true)
   public PropertyComparisonResponse getPropertyComparison(
-      LocalDate startDate, LocalDate endDate, UserPrincipal principal) {
+      LocalDate startDate, LocalDate endDate, List<UUID> propertyIds, UserPrincipal principal) {
 
     UUID teamId = principal.getTeamId();
 
@@ -360,9 +382,13 @@ public class ReportService {
     List<Payment> payments =
         paymentRepository.findByDateRange(startDate, endDate, teamId).stream()
             .filter(p -> p.getStatus() == PAID)
+            .filter(p -> matchesPropertyFilter(p, propertyIds, contractsById))
             .toList();
 
-    List<Expense> expenses = expenseRepository.findByDateRange(startDate, endDate, teamId);
+    List<Expense> expenses =
+        expenseRepository.findByDateRange(startDate, endDate, teamId).stream()
+            .filter(e -> matchesPropertyFilter(e, propertyIds))
+            .toList();
 
     // Group by property
     Map<UUID, BigDecimal> incomeByProperty =
@@ -483,14 +509,12 @@ public class ReportService {
               .filter(
                   c -> {
                     LocalDate contractStart = c.getStartDate();
-                    LocalDate contractEnd =
-                        c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
+                    LocalDate contractEnd = c.getEndDate() != null ? c.getEndDate() : LocalDate.MAX;
                     return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                   })
               .count();
 
-      double occupancyRate =
-          totalProperties > 0 ? (occupiedUnits * 100.0) / totalProperties : 0.0;
+      double occupancyRate = totalProperties > 0 ? (occupiedUnits * 100.0) / totalProperties : 0.0;
 
       dataPoints.add(
           new OccupancyTrendResponse.DataPoint(
@@ -599,6 +623,33 @@ public class ReportService {
         teamService.getDefaultCurrency(principal.getTeamId()));
   }
 
+  @Transactional(readOnly = true)
+  public DataDateRangeResponse getDataDateRange(UserPrincipal principal) {
+    UUID teamId = principal.getTeamId();
+
+    LocalDate earliest = null;
+
+    // Earliest payment date
+    LocalDate earliestPayment = paymentRepository.findEarliestPaymentDate(teamId);
+    if (earliestPayment != null && (earliest == null || earliestPayment.isBefore(earliest))) {
+      earliest = earliestPayment;
+    }
+
+    // Earliest expense date
+    LocalDate earliestExpense = expenseRepository.findEarliestExpenseDate(teamId);
+    if (earliestExpense != null && (earliest == null || earliestExpense.isBefore(earliest))) {
+      earliest = earliestExpense;
+    }
+
+    // Earliest contract start date
+    LocalDate earliestContract = contractRepository.findEarliestStartDate(teamId);
+    if (earliestContract != null && (earliest == null || earliestContract.isBefore(earliest))) {
+      earliest = earliestContract;
+    }
+
+    return new DataDateRangeResponse(earliest);
+  }
+
   // Helper methods
 
   private UUID getPropertyIdFromContract(UUID contractId, Map<UUID, Contract> contractsById) {
@@ -639,6 +690,21 @@ public class ReportService {
             })
         .sorted(Comparator.comparing(CategoryExpenseSummary::total).reversed())
         .toList();
+  }
+
+  private boolean matchesPropertyFilter(
+      Payment payment, List<UUID> propertyIds, Map<UUID, Contract> contractsById) {
+    if (propertyIds == null || propertyIds.isEmpty()) {
+      return true;
+    }
+    return propertyIds.contains(getPropertyIdFromContract(payment.getContractId(), contractsById));
+  }
+
+  private boolean matchesPropertyFilter(Expense expense, List<UUID> propertyIds) {
+    if (propertyIds == null || propertyIds.isEmpty()) {
+      return true;
+    }
+    return propertyIds.contains(expense.getPropertyId());
   }
 
   private int calculateOccupancyDays(

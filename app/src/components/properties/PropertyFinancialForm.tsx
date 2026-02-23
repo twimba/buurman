@@ -523,7 +523,9 @@ export const PropertyFinancialForm = ({
             <label className={`${labelCls} mt-2`}>Due Months</label>
             <MonthMultiSelect
               value={formData.annualMaintenanceReserveDueMonth}
-              onChange={(val) => onChange('annualMaintenanceReserveDueMonth', val)}
+              onChange={(val) =>
+                onChange('annualMaintenanceReserveDueMonth', val)
+              }
               disabled={!formData.annualMaintenanceReserve}
             />
           </div>

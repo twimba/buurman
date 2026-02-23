@@ -57,7 +57,10 @@ export function MetricHint({
   if (!resolved) return <>{label}</>;
 
   return (
-    <span className="relative group/tip cursor-help" onMouseEnter={handleMouseEnter}>
+    <span
+      className="relative group/tip cursor-help"
+      onMouseEnter={handleMouseEnter}
+    >
       <span className="underline decoration-dotted decoration-[#9ca0b8] dark:decoration-[#5c6180] underline-offset-2 decoration-1">
         {label}
       </span>

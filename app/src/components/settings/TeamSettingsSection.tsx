@@ -421,13 +421,19 @@ export const TeamSettingsSection = () => {
           <span className="font-medium">Roles:</span>
           {Object.entries(roleLabels).map(([role, label]) => (
             <span key={role} className="inline-flex items-center gap-1">
-              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${roleColors[role as Role]}`}>
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${roleColors[role as Role]}`}
+              >
                 {label}
               </span>
               <span className="text-[#9ca0b8] dark:text-[#5c6180]">
                 {roleDescriptions[role as Role]}
               </span>
-              {role !== 'TEAM_VIEWER' && <span className="text-[#c9cfd9] dark:text-[#3a3f54] mx-1">&middot;</span>}
+              {role !== 'TEAM_VIEWER' && (
+                <span className="text-[#c9cfd9] dark:text-[#3a3f54] mx-1">
+                  &middot;
+                </span>
+              )}
             </span>
           ))}
         </div>
