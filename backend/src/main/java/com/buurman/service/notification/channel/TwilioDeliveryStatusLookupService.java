@@ -6,6 +6,8 @@ import static com.buurman.domain.NotificationStatus.FAILED;
 import static com.buurman.domain.NotificationStatus.QUEUED;
 import static com.buurman.domain.NotificationStatus.SENT;
 
+import java.util.Locale;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +55,7 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
       Message message = Message.fetcher(notification.getProviderMessageId()).fetch();
 
       NotificationStatus newStatus = mapTwilioStatus(message.getStatus());
-      String providerStatus = message.getStatus().toString();
+      String providerStatus = message.getStatus() != null ? message.getStatus().toString() : null;
       String providerError =
           message.getErrorCode() != null
               ? message.getErrorCode() + ": " + message.getErrorMessage()
@@ -86,20 +88,16 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
   }
 
   private NotificationStatus mapTwilioStatus(Message.Status status) {
-    return switch (status) {
-      case QUEUED -> QUEUED;
-      case SENDING -> QUEUED;
-      case SENT -> SENT;
-      case FAILED -> DELIVERED;
-      case DELIVERED -> DELIVERED;
-      case UNDELIVERED -> FAILED;
-      case RECEIVING -> QUEUED;
-      case RECEIVED -> DELIVERED;
-      case ACCEPTED -> QUEUED;
-      case SCHEDULED -> QUEUED;
-      case READ -> DELIVERED;
-      case PARTIALLY_DELIVERED -> DELIVERED;
-      case CANCELED -> FAILED;
+    if (status == null) {
+      return QUEUED;
+    }
+
+    return switch (status.toString().toUpperCase(Locale.ROOT)) {
+      case "QUEUED", "SENDING", "RECEIVING", "ACCEPTED", "SCHEDULED" -> QUEUED;
+      case "SENT" -> SENT;
+      case "DELIVERED", "RECEIVED", "READ", "PARTIALLY_DELIVERED" -> DELIVERED;
+      case "FAILED", "UNDELIVERED", "CANCELED" -> FAILED;
+      default -> QUEUED;
     };
   }
 }
