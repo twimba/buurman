@@ -522,7 +522,7 @@ jobs:
 
       - name: Code statistics
         run: |
-          SCC_OUTPUT=$(make scc)
+          SCC_OUTPUT=$(make stats)
           {
             echo "## Code Statistics"
             echo "<pre>"
