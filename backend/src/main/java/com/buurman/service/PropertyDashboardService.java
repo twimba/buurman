@@ -288,17 +288,17 @@ public class PropertyDashboardService {
     }
 
     return new SummaryMetrics(
-        totalRoiPercent,
-        annualizedRoiPercent,
-        capRatePercent,
-        cashOnCashPercent,
-        monthlyCashFlow,
-        annualNoi,
-        totalEquity,
-        equityGrowthPercent,
-        occupancyRatePercent,
-        grossRentMultiplier,
-        currency);
+        Optional.ofNullable(totalRoiPercent),
+        Optional.ofNullable(annualizedRoiPercent),
+        Optional.ofNullable(capRatePercent),
+        Optional.ofNullable(cashOnCashPercent),
+        Optional.ofNullable(monthlyCashFlow),
+        Optional.ofNullable(annualNoi),
+        Optional.ofNullable(totalEquity),
+        Optional.ofNullable(equityGrowthPercent),
+        Optional.ofNullable(occupancyRatePercent),
+        Optional.ofNullable(grossRentMultiplier),
+        Optional.ofNullable(currency));
   }
 
   private CashFlowChartData buildCashFlowChart(
@@ -361,9 +361,9 @@ public class PropertyDashboardService {
 
   private EquityChartData buildEquityChart(Property property) {
     return new EquityChartData(
-        property.getPurchasePrice(),
-        property.getCurrentMarketValue(),
-        property.getMortgageAmount());
+        Optional.ofNullable(property.getPurchasePrice()),
+        Optional.ofNullable(property.getCurrentMarketValue()),
+        Optional.ofNullable(property.getMortgageAmount()));
   }
 
   private ExpenseBreakdownChartData buildExpenseBreakdown(

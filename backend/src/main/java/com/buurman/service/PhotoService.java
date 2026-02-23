@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -328,8 +329,8 @@ public class PhotoService {
         response.notes(),
         response.isMainPhoto(),
         response.uploadedAt(),
-        downloadUrl,
-        thumbnailUrl);
+        Optional.of(downloadUrl),
+        Optional.ofNullable(thumbnailUrl));
   }
 
   public byte[] bulkDownload(List<String> photoIdentifiers, UserPrincipal principal) {

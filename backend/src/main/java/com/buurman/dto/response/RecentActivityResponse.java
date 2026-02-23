@@ -2,17 +2,16 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record RecentActivityResponse(
     String entityType,
     String entityIdentifier,
     String entityName,
     String action,
-    @Nullable String userName,
+    Optional<String> userName,
     Instant timestamp,
-    @Nullable String description,
+    Optional<String> description,
     Map<String, Object> changedFields,
     Map<String, Object> oldValues,
     Map<String, Object> newValues) {
@@ -29,9 +28,9 @@ public record RecentActivityResponse(
         entityIdentifier,
         entityName,
         action,
-        userName,
+        Optional.ofNullable(userName),
         timestamp,
-        description,
+        Optional.ofNullable(description),
         Map.of(),
         Map.of(),
         Map.of());

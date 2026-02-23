@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
@@ -130,21 +131,21 @@ public class NotificationCenterService {
         notification.getIdentifier(),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
-        notification.getSubject(),
-        notification.getBody(),
-        notification.getRecipientEmail(),
-        notification.getRecipientPhone(),
+        Optional.ofNullable(notification.getSubject()),
+        Optional.ofNullable(notification.getBody()),
+        Optional.ofNullable(notification.getRecipientEmail()),
+        Optional.ofNullable(notification.getRecipientPhone()),
         notification.getStatus().name(),
-        notification.getProviderStatus(),
-        notification.getProviderError(),
+        Optional.ofNullable(notification.getProviderStatus()),
+        Optional.ofNullable(notification.getProviderError()),
         notification.getOpenCount(),
         notification.getClickCount(),
-        notification.getFirstOpenedAt(),
-        notification.getFirstClickedAt(),
-        resentFromIdentifier,
-        notification.getResendReason(),
+        Optional.ofNullable(notification.getFirstOpenedAt()),
+        Optional.ofNullable(notification.getFirstClickedAt()),
+        Optional.ofNullable(resentFromIdentifier),
+        Optional.ofNullable(notification.getResendReason()),
         notification.getCreatedAt(),
-        notification.getStatusUpdatedAt());
+        Optional.ofNullable(notification.getStatusUpdatedAt()));
   }
 
   private @Nullable LocalDateTime parseDateTime(@Nullable String dateTimeStr) {

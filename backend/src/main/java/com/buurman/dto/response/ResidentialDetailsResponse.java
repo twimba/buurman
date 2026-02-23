@@ -1,9 +1,9 @@
 package com.buurman.dto.response;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record ResidentialDetailsResponse(
-    @Nullable Integer bedrooms,
-    @Nullable Integer bathrooms,
-    @Nullable Boolean furnished,
-    @Nullable String petPolicy) {}
+    Optional<Integer> bedrooms,
+    Optional<Integer> bathrooms,
+    Optional<Boolean> furnished,
+    Optional<String> petPolicy) {}

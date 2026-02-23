@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -81,7 +82,7 @@ public class BackofficeBuurmyService {
         response.enabled(),
         response.emailVerified(),
         response.createdAt(),
-        lastLogin,
+        Optional.ofNullable(lastLogin),
         response.requiredActions());
   }
 
@@ -172,12 +173,12 @@ public class BackofficeBuurmyService {
         user.getId(),
         user.getUsername(),
         user.getEmail(),
-        user.getFirstName(),
-        user.getLastName(),
+        Optional.ofNullable(user.getFirstName()),
+        Optional.ofNullable(user.getLastName()),
         user.isEnabled(),
         Boolean.TRUE.equals(user.isEmailVerified()),
-        toInstant(user.getCreatedTimestamp()),
-        null,
+        Optional.ofNullable(toInstant(user.getCreatedTimestamp())),
+        Optional.empty(),
         user.getRequiredActions() != null ? user.getRequiredActions() : List.of());
   }
 

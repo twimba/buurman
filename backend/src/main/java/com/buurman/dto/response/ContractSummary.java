@@ -2,16 +2,15 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 import com.buurman.domain.Contract;
 
 public record ContractSummary(
     String identifier,
     PropertySummary property,
-    @Nullable TenantSummary primaryTenant,
+    Optional<TenantSummary> primaryTenant,
     LocalDate startDate,
-    @Nullable LocalDate endDate,
+    Optional<LocalDate> endDate,
     BigDecimal rentAmount,
     Contract.ContractStatus status) {}

@@ -7,6 +7,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -139,14 +140,14 @@ public class BackofficeUserService {
     return new BackofficeUserResponse(
         java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
-        user.getFirstName(),
-        user.getLastName(),
-        user.getPhone(),
+        Optional.ofNullable(user.getFirstName()),
+        Optional.ofNullable(user.getLastName()),
+        Optional.ofNullable(user.getPhone()),
         user.getEmailVerifiedAt() != null,
         user.getDisabledAt() != null,
         online,
         teamCount,
         user.getCreatedAt(),
-        user.getUpdatedAt());
+        Optional.ofNullable(user.getUpdatedAt()));
   }
 }

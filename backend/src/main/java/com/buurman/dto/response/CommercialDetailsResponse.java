@@ -1,20 +1,19 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record CommercialDetailsResponse(
-    @Nullable BigDecimal usableAreaValue,
-    @Nullable String usableAreaUnit,
-    @Nullable BigDecimal commonAreaValue,
-    @Nullable String commonAreaUnit,
-    @Nullable Integer floorLevel,
-    @Nullable BigDecimal ceilingHeightM,
-    @Nullable Boolean hasStorefront,
-    @Nullable Boolean hasSignageRights,
-    @Nullable String zoningClassification,
-    @Nullable Integer maxOccupancy,
-    @Nullable Integer restroomCount,
-    @Nullable Boolean hasKitchenFacility,
-    @Nullable Boolean accessibilityCompliant) {}
+    Optional<BigDecimal> usableAreaValue,
+    Optional<String> usableAreaUnit,
+    Optional<BigDecimal> commonAreaValue,
+    Optional<String> commonAreaUnit,
+    Optional<Integer> floorLevel,
+    Optional<BigDecimal> ceilingHeightM,
+    Optional<Boolean> hasStorefront,
+    Optional<Boolean> hasSignageRights,
+    Optional<String> zoningClassification,
+    Optional<Integer> maxOccupancy,
+    Optional<Integer> restroomCount,
+    Optional<Boolean> hasKitchenFacility,
+    Optional<Boolean> accessibilityCompliant) {}

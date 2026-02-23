@@ -1,5 +1,5 @@
 package com.buurman.dto.response;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
-public record TenantPropertyAssignment(PropertySummary property, @Nullable String role) {}
+public record TenantPropertyAssignment(PropertySummary property, Optional<String> role) {}

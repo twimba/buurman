@@ -2,13 +2,12 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record PropertyOutdoorAreaResponse(
     String identifier,
     String type,
-    @Nullable BigDecimal areaValue,
-    @Nullable String areaUnit,
+    Optional<BigDecimal> areaValue,
+    Optional<String> areaUnit,
     Instant createdAt,
-    @Nullable Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

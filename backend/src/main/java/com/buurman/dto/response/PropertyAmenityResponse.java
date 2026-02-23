@@ -1,10 +1,10 @@
 package com.buurman.dto.response;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record PropertyAmenityResponse(
     String amenityIdentifier,
     String amenityName,
     String amenityCategory,
-    @Nullable String amenityIcon,
-    @Nullable String notes) {}
+    Optional<String> amenityIcon,
+    Optional<String> notes) {}

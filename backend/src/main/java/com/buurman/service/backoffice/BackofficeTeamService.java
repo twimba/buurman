@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -72,9 +73,9 @@ public class BackofficeTeamService {
                 m -> {
                   User u = usersById.get(m.getUserId());
                   return new MemberInfo(
-                      u != null ? u.getEmail() : null,
-                      u != null ? u.getFirstName() : null,
-                      u != null ? u.getLastName() : null,
+                      Optional.ofNullable(u != null ? u.getEmail() : null),
+                      Optional.ofNullable(u != null ? u.getFirstName() : null),
+                      Optional.ofNullable(u != null ? u.getLastName() : null),
                       m.getRole(),
                       m.isOwner(),
                       m.getJoinedAt(),
@@ -93,8 +94,8 @@ public class BackofficeTeamService {
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
-            activeRent.getKey(),
-            currency,
+            Optional.ofNullable(activeRent.getKey()),
+            Optional.ofNullable(currency),
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),
             statsRepository.contractStatusDistribution(team.getId()),
@@ -103,23 +104,23 @@ public class BackofficeTeamService {
     // Settings
     SettingsInfo settingsInfo =
         new SettingsInfo(
-            prefs.getPaymentsAheadCount(),
+            Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
-            prefs.getDefaultCurrency(),
-            prefs.getDefaultCountry(),
-            prefs.getTimezone(),
-            prefs.getDateFormat(),
-            prefs.getFiscalYearStartMonth());
+            Optional.ofNullable(prefs.getDefaultCurrency()),
+            Optional.ofNullable(prefs.getDefaultCountry()),
+            Optional.ofNullable(prefs.getTimezone()),
+            Optional.ofNullable(prefs.getDateFormat()),
+            Optional.ofNullable(prefs.getFiscalYearStartMonth()));
 
     return new BackofficeTeamDetailResponse(
         team.getIdentifier(),
         team.getName(),
         team.getCreatedAt(),
-        team.getUpdatedAt(),
+        Optional.ofNullable(team.getUpdatedAt()),
         memberInfos,
         dataCounts,
         financialSnapshot,
-        settingsInfo);
+        Optional.of(settingsInfo));
   }
 
   @Transactional
@@ -166,8 +167,8 @@ public class BackofficeTeamService {
         team.getIdentifier(),
         team.getName(),
         memberCount,
-        ownerEmail,
+        Optional.ofNullable(ownerEmail),
         team.getCreatedAt(),
-        team.getUpdatedAt());
+        Optional.ofNullable(team.getUpdatedAt()));
   }
 }

@@ -7,6 +7,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class PhoneVerificationService {
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        user.getPhone(),
+        Optional.ofNullable(user.getPhone()),
         true);
   }
 
@@ -130,7 +131,7 @@ public class PhoneVerificationService {
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        user.getPhone(),
+        Optional.ofNullable(user.getPhone()),
         false);
   }
 

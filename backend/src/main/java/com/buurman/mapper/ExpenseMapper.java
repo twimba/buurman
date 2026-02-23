@@ -11,7 +11,7 @@ import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
 import com.buurman.dto.response.ExpenseResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface ExpenseMapper {
 
   @Mapping(target = "id", ignore = true)

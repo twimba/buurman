@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.quartz.CronScheduleBuilder;
@@ -52,13 +53,13 @@ public class BackofficeSchedulerService {
                   jobKey.getName(),
                   jobKey.getGroup(),
                   detail.getJobClass().getSimpleName(),
-                  null,
-                  null,
-                  null,
-                  null,
+                  Optional.empty(),
+                  Optional.empty(),
+                  Optional.empty(),
+                  Optional.empty(),
                   "NONE",
-                  null,
-                  null));
+                  Optional.empty(),
+                  Optional.empty()));
           continue;
         }
 
@@ -84,13 +85,13 @@ public class BackofficeSchedulerService {
                   jobKey.getName(),
                   jobKey.getGroup(),
                   detail.getJobClass().getSimpleName(),
-                  trigger.getKey().getName(),
-                  trigger.getKey().getGroup(),
-                  triggerType,
-                  scheduleExpression,
+                  Optional.of(trigger.getKey().getName()),
+                  Optional.of(trigger.getKey().getGroup()),
+                  Optional.of(triggerType),
+                  Optional.of(scheduleExpression),
                   state.name(),
-                  formatDate(trigger.getNextFireTime()),
-                  formatDate(trigger.getPreviousFireTime())));
+                  Optional.ofNullable(formatDate(trigger.getNextFireTime())),
+                  Optional.ofNullable(formatDate(trigger.getPreviousFireTime()))));
         }
       }
     }

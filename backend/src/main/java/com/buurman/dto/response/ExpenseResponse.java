@@ -4,20 +4,19 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 import com.buurman.domain.Expense;
 
 public record ExpenseResponse(
     String identifier,
-    @Nullable PropertySummary property,
+    Optional<PropertySummary> property,
     Expense.ExpenseCategory category,
     BigDecimal amount,
     String currency,
     LocalDate expenseDate,
-    @Nullable String description,
-    @Nullable String notes,
+    Optional<String> description,
+    Optional<String> notes,
     List<DocumentResponse> documents,
     Instant createdAt,
-    @Nullable Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

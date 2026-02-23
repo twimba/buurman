@@ -1,6 +1,7 @@
 package com.buurman.service.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.logging.LogLevel;
@@ -51,7 +52,8 @@ public class BackofficeLoggerService {
   private LoggerConfigurationResponse toResponse(LoggerConfiguration config) {
     return new LoggerConfigurationResponse(
         config.getName(),
-        config.getConfiguredLevel() != null ? config.getConfiguredLevel().name() : null,
+        Optional.ofNullable(
+            config.getConfiguredLevel() != null ? config.getConfiguredLevel().name() : null),
         config.getEffectiveLevel().name());
   }
 }

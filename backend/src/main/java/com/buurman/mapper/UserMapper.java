@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 import com.buurman.domain.User;
 import com.buurman.dto.response.UserResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface UserMapper {
 
   @Mapping(target = "identifier", source = "user.identifier")

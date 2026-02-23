@@ -1,8 +1,7 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record GeocodeResponse(
-    @Nullable BigDecimal latitude, @Nullable BigDecimal longitude, @Nullable String accuracy) {}
+    Optional<BigDecimal> latitude, Optional<BigDecimal> longitude, Optional<String> accuracy) {}

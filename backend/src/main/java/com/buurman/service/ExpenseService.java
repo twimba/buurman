@@ -366,7 +366,7 @@ public class ExpenseService {
                     "amount",
                     response.currency() + " " + response.amount(),
                     "description",
-                    response.description() != null ? response.description() : "",
+                    response.description().orElse(""),
                     "baseUrl",
                     appProperties.email().baseUrl()))
             .createdBy(principal.getUserId())
@@ -401,11 +401,10 @@ public class ExpenseService {
             .build());
   }
 
-  private static String formatPropertyName(PropertySummary property) {
-    if (property == null) return "N/A";
-    return property.street() != null
-        ? property.street() + ", " + property.city()
-        : property.identifier();
+  private static String formatPropertyName(Optional<PropertySummary> property) {
+    return property
+        .map(p -> p.street() != null ? p.street() + ", " + p.city() : p.identifier())
+        .orElse("N/A");
   }
 
   private String extractErrorMessage(Exception e) {
@@ -436,7 +435,7 @@ public class ExpenseService {
 
     return new ExpenseResponse(
         response.identifier(),
-        propertySummary,
+        Optional.ofNullable(propertySummary),
         response.category(),
         response.amount(),
         response.currency(),

@@ -4,22 +4,21 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record BackofficeTeamDetailResponse(
     String identifier,
     String teamName,
     Instant createdAt,
-    @Nullable Instant updatedAt,
+    Optional<Instant> updatedAt,
     List<MemberInfo> members,
     DataCounts dataCounts,
     FinancialSnapshot financialSnapshot,
-    @Nullable SettingsInfo settings) {
+    Optional<SettingsInfo> settings) {
   public record MemberInfo(
-      @Nullable String email,
-      @Nullable String firstName,
-      @Nullable String lastName,
+      Optional<String> email,
+      Optional<String> firstName,
+      Optional<String> lastName,
       String role,
       boolean isOwner,
       Instant joinedAt,
@@ -34,19 +33,19 @@ public record BackofficeTeamDetailResponse(
       long documents) {}
 
   public record FinancialSnapshot(
-      @Nullable BigDecimal totalActiveRent,
-      @Nullable String currency,
+      Optional<BigDecimal> totalActiveRent,
+      Optional<String> currency,
       Map<String, Long> propertyStatusDistribution,
       Map<String, Long> propertyCategoryDistribution,
       Map<String, Long> contractStatusDistribution,
       Map<String, Long> paymentStatusDistribution) {}
 
   public record SettingsInfo(
-      @Nullable Integer paymentsAheadCount,
+      Optional<Integer> paymentsAheadCount,
       boolean autoGenerationEnabled,
-      @Nullable String defaultCurrency,
-      @Nullable String defaultCountry,
-      @Nullable String timezone,
-      @Nullable String dateFormat,
-      @Nullable String fiscalYearStartMonth) {}
+      Optional<String> defaultCurrency,
+      Optional<String> defaultCountry,
+      Optional<String> timezone,
+      Optional<String> dateFormat,
+      Optional<String> fiscalYearStartMonth) {}
 }

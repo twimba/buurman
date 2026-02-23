@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -256,7 +257,7 @@ public class DocumentService {
         response.title(),
         response.notes(),
         response.uploadedAt(),
-        downloadUrl);
+        Optional.of(downloadUrl));
   }
 
   public PageResponse<DocumentResponse> searchDocumentsPaginated(

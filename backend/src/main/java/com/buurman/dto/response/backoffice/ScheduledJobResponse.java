@@ -1,15 +1,15 @@
 package com.buurman.dto.response.backoffice;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record ScheduledJobResponse(
     String jobName,
     String jobGroup,
     String jobClass,
-    @Nullable String triggerName,
-    @Nullable String triggerGroup,
-    @Nullable String triggerType,
-    @Nullable String scheduleExpression,
+    Optional<String> triggerName,
+    Optional<String> triggerGroup,
+    Optional<String> triggerType,
+    Optional<String> scheduleExpression,
     String triggerState,
-    @Nullable String nextFireTime,
-    @Nullable String previousFireTime) {}
+    Optional<String> nextFireTime,
+    Optional<String> previousFireTime) {}

@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -256,9 +257,9 @@ public class RegistrationInvitationService {
     return new RegistrationInvitationResponse(
         inv.getIdentifier(),
         inv.getCode(),
-        inv.getMaxUsages(),
+        Optional.ofNullable(inv.getMaxUsages()),
         inv.getUsageCount(),
-        inv.getExpiresAt(),
+        Optional.ofNullable(inv.getExpiresAt()),
         inv.getRevokedAt() != null,
         inv.getStatus(),
         inv.getCreatedBy(),
@@ -274,23 +275,23 @@ public class RegistrationInvitationService {
             .map(
                 u ->
                     new RegistrationInvitationDetailResponse.UsageRecord(
-                        u.getUserEmail(), u.getUserName(), u.getUsedAt()))
+                        u.getUserEmail(), Optional.ofNullable(u.getUserName()), u.getUsedAt()))
             .toList();
 
     return new RegistrationInvitationDetailResponse(
         inv.getIdentifier(),
         inv.getCode(),
-        inv.getMaxUsages(),
+        Optional.ofNullable(inv.getMaxUsages()),
         inv.getUsageCount(),
-        inv.getExpiresAt(),
+        Optional.ofNullable(inv.getExpiresAt()),
         inv.getRevokedAt() != null,
-        inv.getRevokedBy(),
-        inv.getRevokedAt(),
+        Optional.ofNullable(inv.getRevokedBy()),
+        Optional.ofNullable(inv.getRevokedAt()),
         inv.getStatus(),
         inv.getCreatedBy(),
         inv.getCreatedAt(),
-        inv.getUpdatedAt(),
-        inv.getNote(),
+        Optional.ofNullable(inv.getUpdatedAt()),
+        Optional.ofNullable(inv.getNote()),
         usageRecords);
   }
 }

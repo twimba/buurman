@@ -1207,7 +1207,7 @@ public class PropertyBookletExporter {
 
   private void appendDashboardPage(StringBuilder html, PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency() != null ? escapeHtml(s.currency()) : "";
+    String currency = s.currency().map(BookletHelper::escapeHtml).orElse("");
 
     appendPageStart(html, "Investment Dashboard");
 
@@ -1215,15 +1215,16 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Key Metrics");
     html.append("<table style='width:100%;border-collapse:collapse;margin-bottom:16px;'>");
     html.append("<tr>");
-    appendMetricCell(html, "Total ROI", fmtPct(s.totalRoiPercent()));
-    appendMetricCell(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent()));
-    appendMetricCell(html, "Cap Rate", fmtPct(s.capRatePercent()));
-    appendMetricCell(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent()));
+    appendMetricCell(html, "Total ROI", fmtPct(s.totalRoiPercent().orElse(null)));
+    appendMetricCell(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent().orElse(null)));
+    appendMetricCell(html, "Cap Rate", fmtPct(s.capRatePercent().orElse(null)));
+    appendMetricCell(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent().orElse(null)));
     html.append("</tr><tr>");
-    appendMetricCell(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
-    appendMetricCell(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
-    appendMetricCell(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
-    appendMetricCell(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
+    appendMetricCell(
+        html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow().orElse(null), currency));
+    appendMetricCell(html, "Annual NOI", fmtMoney(s.annualNoi().orElse(null), currency));
+    appendMetricCell(html, "Total Equity", fmtMoney(s.totalEquity().orElse(null), currency));
+    appendMetricCell(html, "Occupancy", fmtPct(s.occupancyRatePercent().orElse(null)));
     html.append("</tr>");
     html.append("</table>");
 
@@ -1278,10 +1279,15 @@ public class PropertyBookletExporter {
     html.append("<table class='payment-table'><thead><tr>");
     html.append("<th>Item</th><th>Amount</th>");
     html.append("</tr></thead><tbody>");
-    appendEquityRow(html, "Purchase Price", dashboard.equity().purchasePrice(), currency);
     appendEquityRow(
-        html, "Current Market Value", dashboard.equity().currentMarketValue(), currency);
-    appendEquityRow(html, "Mortgage Balance", dashboard.equity().mortgageBalance(), currency);
+        html, "Purchase Price", dashboard.equity().purchasePrice().orElse(null), currency);
+    appendEquityRow(
+        html,
+        "Current Market Value",
+        dashboard.equity().currentMarketValue().orElse(null),
+        currency);
+    appendEquityRow(
+        html, "Mortgage Balance", dashboard.equity().mortgageBalance().orElse(null), currency);
     html.append("</tbody></table>");
 
     appendPageEnd(html);

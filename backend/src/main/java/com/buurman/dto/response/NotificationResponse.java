@@ -1,25 +1,24 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record NotificationResponse(
     String identifier,
     String notificationType,
     String channel,
-    @Nullable String subject,
-    @Nullable String body,
-    @Nullable String recipientEmail,
-    @Nullable String recipientPhone,
+    Optional<String> subject,
+    Optional<String> body,
+    Optional<String> recipientEmail,
+    Optional<String> recipientPhone,
     String status,
-    @Nullable String providerStatus,
-    @Nullable String providerError,
+    Optional<String> providerStatus,
+    Optional<String> providerError,
     int openCount,
     int clickCount,
-    @Nullable Instant firstOpenedAt,
-    @Nullable Instant firstClickedAt,
-    @Nullable String resentFromIdentifier,
-    @Nullable String resendReason,
+    Optional<Instant> firstOpenedAt,
+    Optional<Instant> firstClickedAt,
+    Optional<String> resentFromIdentifier,
+    Optional<String> resendReason,
     Instant createdAt,
-    @Nullable Instant statusUpdatedAt) {}
+    Optional<Instant> statusUpdatedAt) {}

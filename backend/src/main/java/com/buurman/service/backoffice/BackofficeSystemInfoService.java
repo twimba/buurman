@@ -96,12 +96,12 @@ public class BackofficeSystemInfoService {
 
     return new BuildInfo(
         appProperties.version(),
-        git != null ? git.getShortCommitId() : null,
-        git != null ? git.get("commit.id.full") : null,
-        git != null ? resolveGitBranch(git) : null,
-        git != null ? git.getCommitTime() : null,
+        Optional.ofNullable(git != null ? git.getShortCommitId() : null),
+        Optional.ofNullable(git != null ? git.get("commit.id.full") : null),
+        Optional.ofNullable(git != null ? resolveGitBranch(git) : null),
+        Optional.ofNullable(git != null ? git.getCommitTime() : null),
         git != null && Boolean.parseBoolean(git.get("dirty")),
-        build != null ? build.getTime() : null);
+        Optional.ofNullable(build != null ? build.getTime() : null));
   }
 
   private @Nullable String resolveGitBranch(GitProperties git) {
@@ -162,7 +162,7 @@ public class BackofficeSystemInfoService {
 
   private BackofficeSystemInfoResponse.MigrationInfo getMigrationInfo() {
     if (flyway.isEmpty()) {
-      return new BackofficeSystemInfoResponse.MigrationInfo(null, 0, 0, 0, List.of());
+      return new BackofficeSystemInfoResponse.MigrationInfo(Optional.empty(), 0, 0, 0, List.of());
     }
 
     var info = flyway.get().info();
@@ -175,16 +175,18 @@ public class BackofficeSystemInfoService {
             .map(
                 m ->
                     new MigrationEntry(
-                        m.getVersion() != null ? m.getVersion().getVersion() : null,
-                        m.getDescription(),
+                        Optional.ofNullable(
+                            m.getVersion() != null ? m.getVersion().getVersion() : null),
+                        Optional.ofNullable(m.getDescription()),
                         m.getState().name(),
-                        m.getInstalledOn() != null ? m.getInstalledOn().toInstant() : null,
-                        m.getExecutionTime(),
+                        Optional.ofNullable(
+                            m.getInstalledOn() != null ? m.getInstalledOn().toInstant() : null),
+                        Optional.ofNullable(m.getExecutionTime()),
                         m.getScript()))
             .toList();
 
     return new BackofficeSystemInfoResponse.MigrationInfo(
-        current != null ? current.getVersion().getVersion() : null,
+        Optional.ofNullable(current != null ? current.getVersion().getVersion() : null),
         info.applied().length,
         info.pending().length,
         failedCount,
@@ -289,7 +291,7 @@ public class BackofficeSystemInfoService {
       }
     }
 
-    return new MetricsSnapshot(httpCount, httpTotalTimeSec, httpLatency, custom);
+    return new MetricsSnapshot(httpCount, httpTotalTimeSec, Optional.of(httpLatency), custom);
   }
 
   // --- Sessions ---

@@ -4,34 +4,33 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 import com.buurman.domain.Contract;
 
 public record ContractResponse(
     String identifier,
-    @Nullable PropertySummary property,
+    Optional<PropertySummary> property,
     List<ContractPartyResponse> parties,
-    @Nullable TenantSummary primaryTenant,
+    Optional<TenantSummary> primaryTenant,
     Contract.ContractType contractType,
     LocalDate startDate,
-    @Nullable LocalDate endDate,
-    @Nullable LocalDate signedDate,
+    Optional<LocalDate> endDate,
+    Optional<LocalDate> signedDate,
     BigDecimal rentAmount,
-    @Nullable BigDecimal depositAmount,
-    @Nullable BigDecimal securityDeposit,
+    Optional<BigDecimal> depositAmount,
+    Optional<BigDecimal> securityDeposit,
     String rentAmountCurrency,
-    @Nullable String depositAmountCurrency,
-    @Nullable String securityDepositCurrency,
+    Optional<String> depositAmountCurrency,
+    Optional<String> securityDepositCurrency,
     Contract.PaymentFrequency paymentFrequency,
-    @Nullable Integer paymentDueDay,
+    Optional<Integer> paymentDueDay,
     Boolean autoRenewal,
     Integer renewalNoticeDays,
     Integer terminationNoticeDays,
-    @Nullable BigDecimal lateFeePercentage,
+    Optional<BigDecimal> lateFeePercentage,
     Contract.ContractStatus status,
-    @Nullable String termsAndConditions,
-    @Nullable String notes,
+    Optional<String> termsAndConditions,
+    Optional<String> notes,
     Instant createdAt,
-    @Nullable Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

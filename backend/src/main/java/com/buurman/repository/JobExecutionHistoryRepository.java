@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.Condition;
@@ -123,11 +124,11 @@ public class JobExecutionHistoryRepository {
                       r.get(JOB_NAME),
                       r.get(JOB_GROUP),
                       startedAt != null ? startedAt : "",
-                      formatTimestamp(r.get(ENDED_AT)),
-                      r.get(DURATION_MS),
+                      Optional.ofNullable(formatTimestamp(r.get(ENDED_AT))),
+                      Optional.ofNullable(r.get(DURATION_MS)),
                       r.get(STATUS),
-                      r.get(ERROR_MESSAGE),
-                      r.get(NODE_ID));
+                      Optional.ofNullable(r.get(ERROR_MESSAGE)),
+                      Optional.ofNullable(r.get(NODE_ID)));
                 }));
 
     return PageResponse.of(items, pageRequest.page(), pageRequest.size(), total);

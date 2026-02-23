@@ -1,15 +1,14 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 import com.buurman.domain.PropertyTenantHistory;
 
 public record PropertyTenantHistoryResponse(
     PropertySummary property,
-    @Nullable Instant movedInAt,
-    @Nullable Instant movedOutAt,
+    Optional<Instant> movedInAt,
+    Optional<Instant> movedOutAt,
     PropertyTenantHistory.ActionType actionType,
-    @Nullable String performedBy,
+    Optional<String> performedBy,
     Instant performedAt) {}

@@ -456,7 +456,7 @@ public class TenantService {
                 property.getPropertyCategory(),
                 property.getPropertyType(),
                 property.getStatus());
-        activeProperties.add(new TenantPropertyAssignment(summary, role));
+        activeProperties.add(new TenantPropertyAssignment(summary, Optional.ofNullable(role)));
       }
     }
 
@@ -469,8 +469,8 @@ public class TenantService {
         response.taxNumber(),
         response.idNumber(),
         response.additionalInfo(),
-        mainPhotoUrl,
-        mainPhotoThumbnailUrl,
+        Optional.ofNullable(mainPhotoUrl),
+        Optional.ofNullable(mainPhotoThumbnailUrl),
         activeProperties,
         response.createdAt(),
         response.updatedAt());
@@ -498,10 +498,10 @@ public class TenantService {
 
     return new PropertyTenantHistoryResponse(
         propertySummary,
-        history.getMovedInAt(),
-        history.getMovedOutAt(),
+        Optional.ofNullable(history.getMovedInAt()),
+        Optional.ofNullable(history.getMovedOutAt()),
         history.getActionType(),
-        userName,
+        Optional.of(userName),
         history.getPerformedAt());
   }
 

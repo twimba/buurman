@@ -12,7 +12,7 @@ import com.buurman.dto.request.UpdateTenantRequest;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.dto.response.TenantSummary;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface TenantMapper {
 
   @Mapping(target = "activeProperties", ignore = true)

@@ -704,7 +704,10 @@ public class PropertyService {
         .map(
             d ->
                 new ResidentialDetailsResponse(
-                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
+                    Optional.ofNullable(d.getBedrooms()),
+                    Optional.ofNullable(d.getBathrooms()),
+                    Optional.ofNullable(d.getFurnished()),
+                    Optional.ofNullable(d.getPetPolicy())));
   }
 
   private Optional<CommercialDetailsResponse> buildCommercialResponse(
@@ -714,19 +717,19 @@ public class PropertyService {
         .map(
             d ->
                 new CommercialDetailsResponse(
-                    d.getUsableAreaValue(),
-                    d.getUsableAreaUnit(),
-                    d.getCommonAreaValue(),
-                    d.getCommonAreaUnit(),
-                    d.getFloorLevel(),
-                    d.getCeilingHeightM(),
-                    d.getHasStorefront(),
-                    d.getHasSignageRights(),
-                    d.getZoningClassification(),
-                    d.getMaxOccupancy(),
-                    d.getRestroomCount(),
-                    d.getHasKitchenFacility(),
-                    d.getAccessibilityCompliant()));
+                    Optional.ofNullable(d.getUsableAreaValue()),
+                    Optional.ofNullable(d.getUsableAreaUnit()),
+                    Optional.ofNullable(d.getCommonAreaValue()),
+                    Optional.ofNullable(d.getCommonAreaUnit()),
+                    Optional.ofNullable(d.getFloorLevel()),
+                    Optional.ofNullable(d.getCeilingHeightM()),
+                    Optional.ofNullable(d.getHasStorefront()),
+                    Optional.ofNullable(d.getHasSignageRights()),
+                    Optional.ofNullable(d.getZoningClassification()),
+                    Optional.ofNullable(d.getMaxOccupancy()),
+                    Optional.ofNullable(d.getRestroomCount()),
+                    Optional.ofNullable(d.getHasKitchenFacility()),
+                    Optional.ofNullable(d.getAccessibilityCompliant())));
   }
 
   private Optional<IndustrialDetailsResponse> buildIndustrialResponse(
@@ -736,20 +739,20 @@ public class PropertyService {
         .map(
             d ->
                 new IndustrialDetailsResponse(
-                    d.getClearHeightM(),
-                    d.getLoadingDocks(),
-                    d.getDriveInDoors(),
-                    d.getFloorLoadCapacityKgSqm(),
-                    d.getPowerCapacityKva(),
-                    d.getHasThreePhasePower(),
-                    d.getHasCrane(),
-                    d.getCraneCapacityTons(),
-                    d.getHasHazmatCertification(),
-                    d.getHasVentilationSystem(),
-                    d.getHasClimateControl(),
-                    d.getYardAreaValue(),
-                    d.getYardAreaUnit(),
-                    d.getZoningClassification()));
+                    Optional.ofNullable(d.getClearHeightM()),
+                    Optional.ofNullable(d.getLoadingDocks()),
+                    Optional.ofNullable(d.getDriveInDoors()),
+                    Optional.ofNullable(d.getFloorLoadCapacityKgSqm()),
+                    Optional.ofNullable(d.getPowerCapacityKva()),
+                    Optional.ofNullable(d.getHasThreePhasePower()),
+                    Optional.ofNullable(d.getHasCrane()),
+                    Optional.ofNullable(d.getCraneCapacityTons()),
+                    Optional.ofNullable(d.getHasHazmatCertification()),
+                    Optional.ofNullable(d.getHasVentilationSystem()),
+                    Optional.ofNullable(d.getHasClimateControl()),
+                    Optional.ofNullable(d.getYardAreaValue()),
+                    Optional.ofNullable(d.getYardAreaUnit()),
+                    Optional.ofNullable(d.getZoningClassification())));
   }
 
   private Optional<AgriculturalDetailsResponse> buildAgriculturalResponse(
@@ -759,19 +762,19 @@ public class PropertyService {
         .map(
             d ->
                 new AgriculturalDetailsResponse(
-                    d.getTotalLandAreaValue(),
-                    d.getTotalLandAreaUnit(),
-                    d.getArableAreaValue(),
-                    d.getArableAreaUnit(),
-                    d.getSoilType(),
-                    d.getHasWaterRights(),
-                    d.getWaterSource(),
-                    d.getIrrigationType(),
-                    d.getFencingType(),
-                    d.getHasOutbuildings(),
-                    d.getOutbuildingDetails(),
-                    d.getCurrentUse(),
-                    d.getZoningClassification()));
+                    Optional.ofNullable(d.getTotalLandAreaValue()),
+                    Optional.ofNullable(d.getTotalLandAreaUnit()),
+                    Optional.ofNullable(d.getArableAreaValue()),
+                    Optional.ofNullable(d.getArableAreaUnit()),
+                    Optional.ofNullable(d.getSoilType()),
+                    Optional.ofNullable(d.getHasWaterRights()),
+                    Optional.ofNullable(d.getWaterSource()),
+                    Optional.ofNullable(d.getIrrigationType()),
+                    Optional.ofNullable(d.getFencingType()),
+                    Optional.ofNullable(d.getHasOutbuildings()),
+                    Optional.ofNullable(d.getOutbuildingDetails()),
+                    Optional.ofNullable(d.getCurrentUse()),
+                    Optional.ofNullable(d.getZoningClassification())));
   }
 
   private PropertyResponse toResponseWithMainPhoto(
@@ -784,59 +787,55 @@ public class PropertyService {
     Optional<Photo> mainPhoto =
         photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
 
-    @Nullable String mainPhotoUrl =
-        mainPhoto
-            .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
-            .orElse(null);
+    Optional<String> mainPhotoUrl =
+        mainPhoto.map(
+            photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString());
 
-    @Nullable String mainPhotoThumbnailUrl =
-        mainPhoto
-            .map(
-                photo -> {
-                  String key =
-                      photo.getThumbnailFileKey() != null
-                          ? photo.getThumbnailFileKey()
-                          : photo.getFileKey();
-                  return s3StorageService.generatePresignedUrl(key).toString();
-                })
-            .orElse(null);
+    Optional<String> mainPhotoThumbnailUrl =
+        mainPhoto.map(
+            photo -> {
+              String key =
+                  photo.getThumbnailFileKey() != null
+                      ? photo.getThumbnailFileKey()
+                      : photo.getFileKey();
+              return s3StorageService.generatePresignedUrl(key).toString();
+            });
 
-    @Nullable List<PropertyOutdoorAreaResponse> outdoorAreas =
+    Optional<List<PropertyOutdoorAreaResponse>> outdoorAreas =
         includeNestedCollections
-            ? outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
-                .map(
-                    a ->
-                        new PropertyOutdoorAreaResponse(
-                            a.getIdentifier(),
-                            a.getType(),
-                            a.getAreaValue(),
-                            a.getAreaUnit(),
-                            a.getCreatedAt(),
-                            a.getUpdatedAt()))
-                .toList()
-            : null;
+            ? Optional.of(
+                outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
+                    .map(
+                        a ->
+                            new PropertyOutdoorAreaResponse(
+                                a.getIdentifier(),
+                                a.getType(),
+                                Optional.ofNullable(a.getAreaValue()),
+                                Optional.ofNullable(a.getAreaUnit()),
+                                a.getCreatedAt(),
+                                Optional.ofNullable(a.getUpdatedAt())))
+                    .toList())
+            : Optional.empty();
 
-    @Nullable List<PropertyAmenityResponse> amenities =
+    Optional<List<PropertyAmenityResponse>> amenities =
         includeNestedCollections
-            ? propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId)
-            : null;
+            ? Optional.of(
+                propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId))
+            : Optional.empty();
 
     // Build category-specific detail responses
-    @Nullable ResidentialDetailsResponse residentialDetails = null;
-    @Nullable CommercialDetailsResponse commercialDetails = null;
-    @Nullable IndustrialDetailsResponse industrialDetails = null;
-    @Nullable AgriculturalDetailsResponse agriculturalDetails = null;
+    Optional<ResidentialDetailsResponse> residentialDetails = Optional.empty();
+    Optional<CommercialDetailsResponse> commercialDetails = Optional.empty();
+    Optional<IndustrialDetailsResponse> industrialDetails = Optional.empty();
+    Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
     if (property.getPropertyCategory() != null) {
       switch (property.getPropertyCategory()) {
-        case RESIDENTIAL ->
-            residentialDetails = buildResidentialResponse(property.getId(), teamId).orElse(null);
-        case COMMERCIAL ->
-            commercialDetails = buildCommercialResponse(property.getId(), teamId).orElse(null);
-        case INDUSTRIAL ->
-            industrialDetails = buildIndustrialResponse(property.getId(), teamId).orElse(null);
+        case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+        case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
+        case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
         case AGRICULTURAL ->
-            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId).orElse(null);
+            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
         case MIXED_USE -> {
           // No detail table
         }

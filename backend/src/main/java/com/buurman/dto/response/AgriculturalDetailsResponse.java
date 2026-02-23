@@ -1,20 +1,19 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record AgriculturalDetailsResponse(
-    @Nullable BigDecimal totalLandAreaValue,
-    @Nullable String totalLandAreaUnit,
-    @Nullable BigDecimal arableAreaValue,
-    @Nullable String arableAreaUnit,
-    @Nullable String soilType,
-    @Nullable Boolean hasWaterRights,
-    @Nullable String waterSource,
-    @Nullable String irrigationType,
-    @Nullable String fencingType,
-    @Nullable Boolean hasOutbuildings,
-    @Nullable String outbuildingDetails,
-    @Nullable String currentUse,
-    @Nullable String zoningClassification) {}
+    Optional<BigDecimal> totalLandAreaValue,
+    Optional<String> totalLandAreaUnit,
+    Optional<BigDecimal> arableAreaValue,
+    Optional<String> arableAreaUnit,
+    Optional<String> soilType,
+    Optional<Boolean> hasWaterRights,
+    Optional<String> waterSource,
+    Optional<String> irrigationType,
+    Optional<String> fencingType,
+    Optional<Boolean> hasOutbuildings,
+    Optional<String> outbuildingDetails,
+    Optional<String> currentUse,
+    Optional<String> zoningClassification) {}

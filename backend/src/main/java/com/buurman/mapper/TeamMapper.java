@@ -13,7 +13,7 @@ import com.buurman.dto.response.InvitationResponse;
 import com.buurman.dto.response.TeamMemberResponse;
 import com.buurman.dto.response.TeamResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface TeamMapper {
 
   @Mapping(target = "identifier", source = "team.identifier")

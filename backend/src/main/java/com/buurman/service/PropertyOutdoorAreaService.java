@@ -3,6 +3,7 @@ package com.buurman.service;
 import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -102,9 +103,9 @@ public class PropertyOutdoorAreaService {
     return new PropertyOutdoorAreaResponse(
         area.getIdentifier(),
         area.getType(),
-        area.getAreaValue(),
-        area.getAreaUnit(),
+        Optional.ofNullable(area.getAreaValue()),
+        Optional.ofNullable(area.getAreaUnit()),
         area.getCreatedAt(),
-        area.getUpdatedAt());
+        Optional.ofNullable(area.getUpdatedAt()));
   }
 }

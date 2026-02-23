@@ -1,8 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record DocumentResponse(
     String identifier,
@@ -10,9 +9,9 @@ public record DocumentResponse(
     String entityIdentifier,
     String fileKey,
     String fileName,
-    @Nullable Long fileSize,
-    @Nullable String mimeType,
-    @Nullable String title,
-    @Nullable String notes,
+    Optional<Long> fileSize,
+    Optional<String> mimeType,
+    Optional<String> title,
+    Optional<String> notes,
     Instant uploadedAt,
-    @Nullable String downloadUrl) {}
+    Optional<String> downloadUrl) {}

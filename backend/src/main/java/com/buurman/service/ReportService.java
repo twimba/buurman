@@ -334,7 +334,7 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()));
+        dataPoints, teamService.getDefaultCurrency(principal.getTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -705,7 +705,9 @@ public class ReportService {
     if (propertyIds == null || propertyIds.isEmpty()) {
       return true;
     }
-    return propertyIds.contains(getPropertyIdFromContract(payment.getContractId(), contractsById));
+    return getPropertyIdFromContract(payment.getContractId(), contractsById)
+        .map(propertyIds::contains)
+        .orElse(false);
   }
 
   private boolean matchesPropertyFilter(Expense expense, List<UUID> propertyIds) {

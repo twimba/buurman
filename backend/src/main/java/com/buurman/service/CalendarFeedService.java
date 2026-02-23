@@ -483,14 +483,14 @@ public class CalendarFeedService {
     return new CalendarFeedResponse(
         feed.getIdentifier(),
         feed.getFeedType(),
-        contractIdentifier,
-        propertyIdentifier,
-        tenantIdentifier,
-        entityLabel,
+        Optional.ofNullable(contractIdentifier),
+        Optional.ofNullable(propertyIdentifier),
+        Optional.ofNullable(tenantIdentifier),
+        Optional.ofNullable(entityLabel),
         Boolean.TRUE.equals(feed.getEnabled()),
         feedUrl,
         feed.getCreatedAt(),
-        feed.getUpdatedAt());
+        Optional.ofNullable(feed.getUpdatedAt()));
   }
 
   private void verifyOwnership(CalendarFeed feed, UserPrincipal principal) {

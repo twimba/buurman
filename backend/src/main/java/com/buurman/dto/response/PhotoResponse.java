@@ -1,8 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record PhotoResponse(
     String identifier,
@@ -10,11 +9,11 @@ public record PhotoResponse(
     String entityIdentifier,
     String fileKey,
     String fileName,
-    @Nullable Long fileSize,
-    @Nullable String mimeType,
-    @Nullable String title,
-    @Nullable String notes,
+    Optional<Long> fileSize,
+    Optional<String> mimeType,
+    Optional<String> title,
+    Optional<String> notes,
     Boolean isMainPhoto,
     Instant uploadedAt,
-    @Nullable String downloadUrl,
-    @Nullable String thumbnailUrl) {}
+    Optional<String> downloadUrl,
+    Optional<String> thumbnailUrl) {}

@@ -11,7 +11,7 @@ import com.buurman.dto.request.CreatePaymentInstructionRequest;
 import com.buurman.dto.request.UpdatePaymentInstructionRequest;
 import com.buurman.dto.response.PaymentInstructionResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface PaymentInstructionMapper {
 
   @Mapping(

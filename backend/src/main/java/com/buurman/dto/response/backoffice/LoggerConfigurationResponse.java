@@ -1,6 +1,6 @@
 package com.buurman.dto.response.backoffice;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record LoggerConfigurationResponse(
-    String name, @Nullable String configuredLevel, String effectiveLevel) {}
+    String name, Optional<String> configuredLevel, String effectiveLevel) {}

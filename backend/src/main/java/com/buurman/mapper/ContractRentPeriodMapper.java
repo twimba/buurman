@@ -3,6 +3,7 @@ package com.buurman.mapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -31,9 +32,9 @@ public class ContractRentPeriodMapper {
         period.getRentAmount(),
         period.getCurrency(),
         period.getEffectiveFrom(),
-        period.getEffectiveTo(),
-        period.getNotes(),
-        percentageChange,
+        Optional.ofNullable(period.getEffectiveTo()),
+        Optional.ofNullable(period.getNotes()),
+        Optional.ofNullable(percentageChange),
         period.getCreatedAt());
   }
 

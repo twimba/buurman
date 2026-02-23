@@ -3,6 +3,7 @@ package com.buurman.repository;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -492,7 +493,7 @@ public class PropertyRepository {
         .execute();
   }
 
-  private static boolean isVariablePayment(@Nullable java.math.BigDecimal value) {
+  private static boolean isVariablePayment(@Nullable BigDecimal value) {
     return value != null && value.compareTo(Property.VARIABLE_PAYMENT_SENTINEL) == 0;
   }
 }

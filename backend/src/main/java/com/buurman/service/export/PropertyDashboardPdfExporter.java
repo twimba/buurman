@@ -28,7 +28,7 @@ public class PropertyDashboardPdfExporter {
 
   private String buildHtml(PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    @Nullable String currency = s.currency();
+    @Nullable String currency = s.currency().orElse(null);
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");
@@ -40,17 +40,16 @@ public class PropertyDashboardPdfExporter {
 
     // Summary metrics
     html.append("<div class='summary'>");
-    metricCard(html, "Total ROI", fmtPct(s.totalRoiPercent()));
-    metricCard(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent()));
-    metricCard(html, "Cap Rate", fmtPct(s.capRatePercent()));
-    metricCard(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent()));
-    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
-    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
-    metricCard(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
-    metricCard(html, "Equity Growth", fmtPct(s.equityGrowthPercent()));
-    metricCard(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
-    metricCard(
-        html, "GRM", s.grossRentMultiplier() != null ? s.grossRentMultiplier() + "x" : "N/A");
+    metricCard(html, "Total ROI", fmtPct(s.totalRoiPercent().orElse(null)));
+    metricCard(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent().orElse(null)));
+    metricCard(html, "Cap Rate", fmtPct(s.capRatePercent().orElse(null)));
+    metricCard(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent().orElse(null)));
+    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow().orElse(null), currency));
+    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi().orElse(null), currency));
+    metricCard(html, "Total Equity", fmtMoney(s.totalEquity().orElse(null), currency));
+    metricCard(html, "Equity Growth", fmtPct(s.equityGrowthPercent().orElse(null)));
+    metricCard(html, "Occupancy", fmtPct(s.occupancyRatePercent().orElse(null)));
+    metricCard(html, "GRM", s.grossRentMultiplier().map(v -> v + "x").orElse("N/A"));
     html.append("</div>");
 
     // Cash flow table
@@ -88,9 +87,14 @@ public class PropertyDashboardPdfExporter {
     // Equity
     html.append("<h2>Equity Overview</h2>");
     html.append("<table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody>");
-    equityRow(html, "Purchase Price", dashboard.equity().purchasePrice(), currency);
-    equityRow(html, "Current Market Value", dashboard.equity().currentMarketValue(), currency);
-    equityRow(html, "Mortgage Balance", dashboard.equity().mortgageBalance(), currency);
+    equityRow(html, "Purchase Price", dashboard.equity().purchasePrice().orElse(null), currency);
+    equityRow(
+        html,
+        "Current Market Value",
+        dashboard.equity().currentMarketValue().orElse(null),
+        currency);
+    equityRow(
+        html, "Mortgage Balance", dashboard.equity().mortgageBalance().orElse(null), currency);
     html.append("</tbody></table>");
 
     html.append("</body></html>");

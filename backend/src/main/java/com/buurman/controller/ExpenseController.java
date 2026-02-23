@@ -86,7 +86,7 @@ public class ExpenseController {
       description = "Get all expenses with optional filters and pagination")
   @GetMapping
   public PageResponse<ExpenseResponse> getExpenses(
-      @RequestParam(required = false) @Nullable Expense.ExpenseCategory category,
+      @RequestParam(required = false) @Nullable ExpenseCategory category,
       @RequestParam(required = false) @Nullable String propertyIdentifier,
       @RequestParam(required = false) @Nullable LocalDate dateFrom,
       @RequestParam(required = false) @Nullable LocalDate dateTo,

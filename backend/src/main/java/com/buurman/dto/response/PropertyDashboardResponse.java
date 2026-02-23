@@ -3,8 +3,7 @@ package com.buurman.dto.response;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record PropertyDashboardResponse(
     SummaryMetrics summary,
@@ -16,17 +15,17 @@ public record PropertyDashboardResponse(
     FutureTrendData futureTrend) {
 
   public record SummaryMetrics(
-      @Nullable BigDecimal totalRoiPercent,
-      @Nullable BigDecimal annualizedRoiPercent,
-      @Nullable BigDecimal capRatePercent,
-      @Nullable BigDecimal cashOnCashPercent,
-      @Nullable BigDecimal monthlyCashFlow,
-      @Nullable BigDecimal annualNoi,
-      @Nullable BigDecimal totalEquity,
-      @Nullable BigDecimal equityGrowthPercent,
-      @Nullable BigDecimal occupancyRatePercent,
-      @Nullable BigDecimal grossRentMultiplier,
-      @Nullable String currency) {}
+      Optional<BigDecimal> totalRoiPercent,
+      Optional<BigDecimal> annualizedRoiPercent,
+      Optional<BigDecimal> capRatePercent,
+      Optional<BigDecimal> cashOnCashPercent,
+      Optional<BigDecimal> monthlyCashFlow,
+      Optional<BigDecimal> annualNoi,
+      Optional<BigDecimal> totalEquity,
+      Optional<BigDecimal> equityGrowthPercent,
+      Optional<BigDecimal> occupancyRatePercent,
+      Optional<BigDecimal> grossRentMultiplier,
+      Optional<String> currency) {}
 
   public record CashFlowChartData(List<MonthlyDataPoint> months) {}
 
@@ -34,9 +33,9 @@ public record PropertyDashboardResponse(
       String month, BigDecimal income, BigDecimal expenses, BigDecimal mortgage, BigDecimal net) {}
 
   public record EquityChartData(
-      @Nullable BigDecimal purchasePrice,
-      @Nullable BigDecimal currentMarketValue,
-      @Nullable BigDecimal mortgageBalance) {}
+      Optional<BigDecimal> purchasePrice,
+      Optional<BigDecimal> currentMarketValue,
+      Optional<BigDecimal> mortgageBalance) {}
 
   public record ExpenseBreakdownChartData(
       List<CategorySlice> categories, List<ExpenseTimelineMonth> timeline) {}

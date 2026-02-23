@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +39,10 @@ public class GeocodingController {
         .map(
             result ->
                 ResponseEntity.ok(
-                    new GeocodeResponse(result.latitude(), result.longitude(), result.accuracy())))
+                    new GeocodeResponse(
+                        Optional.ofNullable(result.latitude()),
+                        Optional.ofNullable(result.longitude()),
+                        Optional.ofNullable(result.accuracy()))))
         .orElse(ResponseEntity.noContent().build());
   }
 }

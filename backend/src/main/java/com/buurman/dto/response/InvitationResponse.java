@@ -1,8 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record InvitationResponse(
     String token,
@@ -10,9 +9,9 @@ public record InvitationResponse(
     String teamIdentifier,
     String teamName,
     String role,
-    @Nullable String inviterName,
+    Optional<String> inviterName,
     Instant invitedAt,
-    @Nullable Instant expiresAt,
+    Optional<Instant> expiresAt,
     String invitationUrl,
     boolean isExpired,
     boolean isAccepted) {}

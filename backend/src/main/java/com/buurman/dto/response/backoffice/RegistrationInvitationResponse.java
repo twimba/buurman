@@ -1,15 +1,14 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record RegistrationInvitationResponse(
     String identifier,
     String code,
-    @Nullable Integer maxUsages,
+    Optional<Integer> maxUsages,
     int usageCount,
-    @Nullable Instant expiresAt,
+    Optional<Instant> expiresAt,
     boolean revoked,
     String status,
     String createdBy,

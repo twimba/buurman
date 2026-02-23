@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -133,8 +134,8 @@ public class PropertyAmenityService {
         amenity.getIdentifier(),
         amenity.getName(),
         amenity.getCategory(),
-        amenity.getIcon(),
-        pa.getNotes());
+        Optional.ofNullable(amenity.getIcon()),
+        Optional.ofNullable(pa.getNotes()));
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {

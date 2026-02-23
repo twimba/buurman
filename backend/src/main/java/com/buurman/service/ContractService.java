@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -806,41 +807,41 @@ public class ContractService {
     List<ContractPartyResponse> partyResponses =
         contractPartyService.buildPartyResponses(parties, teamId);
 
-    TenantSummary primaryTenant =
+    Optional<TenantSummary> primaryTenant =
         partyResponses.stream()
             .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
             .map(ContractPartyResponse::tenant)
-            .findFirst()
-            .orElse(null);
+            .flatMap(Optional::stream)
+            .findFirst();
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
     return new ContractResponse(
         contract.getIdentifier(),
-        propertySummary,
+        Optional.ofNullable(propertySummary),
         partyResponses,
         primaryTenant,
         contract.getContractType(),
         contract.getStartDate(),
-        contract.getEndDate(),
-        contract.getSignedDate(),
+        Optional.ofNullable(contract.getEndDate()),
+        Optional.ofNullable(contract.getSignedDate()),
         contract.getRentAmount(),
-        contract.getDepositAmount(),
-        contract.getSecurityDeposit(),
+        Optional.ofNullable(contract.getDepositAmount()),
+        Optional.ofNullable(contract.getSecurityDeposit()),
         contract.getRentAmountCurrency(),
-        contract.getDepositAmountCurrency(),
-        contract.getSecurityDepositCurrency(),
+        Optional.ofNullable(contract.getDepositAmountCurrency()),
+        Optional.ofNullable(contract.getSecurityDepositCurrency()),
         contract.getPaymentFrequency(),
-        contract.getPaymentDueDay(),
+        Optional.ofNullable(contract.getPaymentDueDay()),
         contract.getAutoRenewal(),
         contract.getRenewalNoticeDays(),
         contract.getTerminationNoticeDays(),
-        contract.getLateFeePercentage(),
+        Optional.ofNullable(contract.getLateFeePercentage()),
         contract.getStatus(),
-        contract.getTermsAndConditions(),
-        contract.getNotes(),
+        Optional.ofNullable(contract.getTermsAndConditions()),
+        Optional.ofNullable(contract.getNotes()),
         contract.getCreatedAt(),
-        contract.getUpdatedAt());
+        Optional.ofNullable(contract.getUpdatedAt()));
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and tenants). */
@@ -873,8 +874,8 @@ public class ContractService {
         .map(
             contract -> {
               Property property = propertyMap.get(contract.getPropertyId());
-              PropertySummary propertySummary =
-                  property != null ? propertyMapper.toSummary(property) : null;
+              Optional<PropertySummary> propertySummary =
+                  Optional.ofNullable(property).map(propertyMapper::toSummary);
 
               List<ContractParty> parties =
                   partiesByContract.getOrDefault(contract.getId(), List.of());
@@ -883,19 +884,19 @@ public class ContractService {
                       .map(
                           party -> {
                             Tenant tenant = tenantMap.get(party.getTenantId());
-                            TenantSummary summary =
-                                tenant != null ? tenantMapper.toSummary(tenant) : null;
+                            Optional<TenantSummary> summary =
+                                Optional.ofNullable(tenant).map(tenantMapper::toSummary);
                             return new ContractPartyResponse(
                                 party.getIdentifier(), summary, party.getRole());
                           })
                       .toList();
 
-              TenantSummary primaryTenant =
+              Optional<TenantSummary> primaryTenant =
                   partyResponses.stream()
                       .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
                       .map(ContractPartyResponse::tenant)
-                      .findFirst()
-                      .orElse(null);
+                      .flatMap(Optional::stream)
+                      .findFirst();
 
               return new ContractResponse(
                   contract.getIdentifier(),
@@ -904,25 +905,25 @@ public class ContractService {
                   primaryTenant,
                   contract.getContractType(),
                   contract.getStartDate(),
-                  contract.getEndDate(),
-                  contract.getSignedDate(),
+                  Optional.ofNullable(contract.getEndDate()),
+                  Optional.ofNullable(contract.getSignedDate()),
                   contract.getRentAmount(),
-                  contract.getDepositAmount(),
-                  contract.getSecurityDeposit(),
+                  Optional.ofNullable(contract.getDepositAmount()),
+                  Optional.ofNullable(contract.getSecurityDeposit()),
                   contract.getRentAmountCurrency(),
-                  contract.getDepositAmountCurrency(),
-                  contract.getSecurityDepositCurrency(),
+                  Optional.ofNullable(contract.getDepositAmountCurrency()),
+                  Optional.ofNullable(contract.getSecurityDepositCurrency()),
                   contract.getPaymentFrequency(),
-                  contract.getPaymentDueDay(),
+                  Optional.ofNullable(contract.getPaymentDueDay()),
                   contract.getAutoRenewal(),
                   contract.getRenewalNoticeDays(),
                   contract.getTerminationNoticeDays(),
-                  contract.getLateFeePercentage(),
+                  Optional.ofNullable(contract.getLateFeePercentage()),
                   contract.getStatus(),
-                  contract.getTermsAndConditions(),
-                  contract.getNotes(),
+                  Optional.ofNullable(contract.getTermsAndConditions()),
+                  Optional.ofNullable(contract.getNotes()),
                   contract.getCreatedAt(),
-                  contract.getUpdatedAt());
+                  Optional.ofNullable(contract.getUpdatedAt()));
             })
         .toList();
   }

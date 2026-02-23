@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.JSONB;
@@ -223,9 +224,9 @@ public class AuditService {
         entityIdentifier,
         entityType, // entityName - can be enhanced later
         action,
-        userName,
+        Optional.ofNullable(userName),
         record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
-        description,
+        Optional.ofNullable(description),
         changedFields,
         oldValues,
         newValues);

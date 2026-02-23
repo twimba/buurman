@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -76,7 +77,7 @@ public class UserTeamService {
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        user.getPhone(),
+        Optional.ofNullable(user.getPhone()),
         user.getPhoneVerifiedAt() != null);
   }
 

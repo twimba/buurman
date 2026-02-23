@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -150,11 +151,11 @@ public class UserPreferencesService {
 
   private UserPreferencesResponse toResponse(UserPreferences prefs) {
     return new UserPreferencesResponse(
-        prefs.getTheme(),
-        prefs.getLanguage(),
-        prefs.getTimezone(),
-        prefs.getDateFormat(),
-        prefs.getCurrencyFormat(),
+        Optional.ofNullable(prefs.getTheme()),
+        Optional.ofNullable(prefs.getLanguage()),
+        Optional.ofNullable(prefs.getTimezone()),
+        Optional.ofNullable(prefs.getDateFormat()),
+        Optional.ofNullable(prefs.getCurrencyFormat()),
         prefs.isEmailNotifications(),
         prefs.isSmsNotifications());
   }

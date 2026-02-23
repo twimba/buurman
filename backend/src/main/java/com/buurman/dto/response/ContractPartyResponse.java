@@ -1,8 +1,8 @@
 package com.buurman.dto.response;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 import com.buurman.domain.ContractPartyRole;
 
 public record ContractPartyResponse(
-    String identifier, @Nullable TenantSummary tenant, ContractPartyRole role) {}
+    String identifier, Optional<TenantSummary> tenant, ContractPartyRole role) {}

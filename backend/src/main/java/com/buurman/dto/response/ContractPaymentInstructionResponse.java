@@ -2,26 +2,25 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 import java.time.LocalDate;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record ContractPaymentInstructionResponse(
     String identifier,
-    @Nullable String paymentInstructionIdentifier,
-    @Nullable Boolean isCustom,
-    @Nullable String name,
-    @Nullable String description,
-    @Nullable String paymentMethod,
-    @Nullable String bankName,
-    @Nullable String accountHolderName,
-    @Nullable String iban,
-    @Nullable String bicSwift,
-    @Nullable String accountNumber,
-    @Nullable String routingNumber,
-    @Nullable String paymentReference,
-    @Nullable String additionalDetails,
-    @Nullable LocalDate effectiveFrom,
-    @Nullable LocalDate effectiveTo,
-    @Nullable String notes,
+    Optional<String> paymentInstructionIdentifier,
+    Optional<Boolean> isCustom,
+    Optional<String> name,
+    Optional<String> description,
+    Optional<String> paymentMethod,
+    Optional<String> bankName,
+    Optional<String> accountHolderName,
+    Optional<String> iban,
+    Optional<String> bicSwift,
+    Optional<String> accountNumber,
+    Optional<String> routingNumber,
+    Optional<String> paymentReference,
+    Optional<String> additionalDetails,
+    Optional<LocalDate> effectiveFrom,
+    Optional<LocalDate> effectiveTo,
+    Optional<String> notes,
     Instant createdAt,
-    @Nullable Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

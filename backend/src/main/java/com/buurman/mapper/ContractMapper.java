@@ -12,7 +12,7 @@ import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.ContractSummary;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface ContractMapper {
 
   @Mapping(target = "id", ignore = true)

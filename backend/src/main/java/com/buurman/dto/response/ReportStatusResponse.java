@@ -1,17 +1,16 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record ReportStatusResponse(
     String reportId,
     String identifier,
     ReportStatus status,
-    @Nullable Integer progress,
-    @Nullable String downloadUrl,
-    @Nullable Instant expiresAt,
-    @Nullable String error) {
+    Optional<Integer> progress,
+    Optional<String> downloadUrl,
+    Optional<Instant> expiresAt,
+    Optional<String> error) {
   public enum ReportStatus {
     PENDING,
     PROCESSING,

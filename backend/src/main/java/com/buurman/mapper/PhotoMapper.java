@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import com.buurman.domain.Photo;
 import com.buurman.dto.response.PhotoResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface PhotoMapper {
 
   @Mapping(target = "downloadUrl", ignore = true)

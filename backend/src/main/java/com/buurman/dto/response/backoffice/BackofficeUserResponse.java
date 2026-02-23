@@ -1,18 +1,17 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public record BackofficeUserResponse(
     String identifier,
     String email,
-    @Nullable String firstName,
-    @Nullable String lastName,
-    @Nullable String phone,
+    Optional<String> firstName,
+    Optional<String> lastName,
+    Optional<String> phone,
     boolean emailVerified,
     boolean disabled,
     boolean online,
     long teamCount,
     Instant createdAt,
-    @Nullable Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

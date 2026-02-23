@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Property;
-import com.buurman.domain.Property.DepreciationMethod;
-import com.buurman.domain.Property.MortgageType;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -85,7 +83,7 @@ public record UpdatePropertyRequest(
     @Nullable BigDecimal currentMarketValue,
     @Nullable String currentMarketValueCurrency,
     @Nullable LocalDate marketValueDate,
-    @Nullable Property.MortgageType mortgageType,
+    Property.@Nullable MortgageType mortgageType,
     @Nullable BigDecimal mortgageAmount,
     @Nullable String mortgageAmountCurrency,
     @Nullable BigDecimal mortgageInterestRate,
@@ -108,7 +106,7 @@ public record UpdatePropertyRequest(
     @Nullable String annualHoaFeeDueMonth,
     @Nullable String annualManagementFeeDueMonth,
     @Nullable String annualMaintenanceReserveDueMonth,
-    @Nullable Property.DepreciationMethod depreciationMethod,
+    Property.@Nullable DepreciationMethod depreciationMethod,
     @Nullable Integer depreciationYears,
     @Nullable BigDecimal landValue,
     @Nullable String landValueCurrency,

@@ -511,11 +511,11 @@ public class TeamService {
         new TeamPreferencesResponse.PaymentSettings(
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
-            prefs.getDefaultCurrency(),
-            prefs.getDefaultCountry(),
-            prefs.getTimezone(),
-            prefs.getDateFormat(),
-            prefs.getFiscalYearStartMonth()));
+            Optional.ofNullable(prefs.getDefaultCurrency()),
+            Optional.ofNullable(prefs.getDefaultCountry()),
+            Optional.ofNullable(prefs.getTimezone()),
+            Optional.ofNullable(prefs.getDateFormat()),
+            Optional.ofNullable(prefs.getFiscalYearStartMonth())));
   }
 
   @Transactional
