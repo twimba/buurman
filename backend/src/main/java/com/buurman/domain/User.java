@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
   private UUID id;
-  private @Nullable String identifier;
+  private String identifier;
   private String keycloakId;
   private String email;
   private String firstName;

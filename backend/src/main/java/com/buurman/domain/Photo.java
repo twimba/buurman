@@ -29,7 +29,7 @@ public class Photo {
   private String mimeType;
   private @Nullable String title;
   private @Nullable String notes;
-  private @Nullable Boolean isMainPhoto;
+  @Builder.Default private Boolean isMainPhoto = false;
   private UUID uploadedBy;
   private Instant uploadedAt;
   private @Nullable Instant deletedAt;

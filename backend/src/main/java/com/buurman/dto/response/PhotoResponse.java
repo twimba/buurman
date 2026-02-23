@@ -14,7 +14,7 @@ public record PhotoResponse(
     @Nullable String mimeType,
     @Nullable String title,
     @Nullable String notes,
-    @Nullable Boolean isMainPhoto,
+    Boolean isMainPhoto,
     Instant uploadedAt,
     @Nullable String downloadUrl,
     @Nullable String thumbnailUrl) {}

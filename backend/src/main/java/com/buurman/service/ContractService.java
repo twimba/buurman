@@ -128,11 +128,6 @@ public class ContractService {
     validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
     validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
 
-    // Set defaults
-    if (contract.getAutoRenewal() == null) {
-      contract.setAutoRenewal(false);
-    }
-
     Contract savedContract = contractRepository.save(contract);
 
     // Create parties

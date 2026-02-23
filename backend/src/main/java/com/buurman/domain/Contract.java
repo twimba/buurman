@@ -55,10 +55,10 @@ public class Contract {
   private String depositAmountCurrency;
   private String securityDepositCurrency;
   private PaymentFrequency paymentFrequency;
-  private Integer paymentDueDay;
-  private @Nullable Boolean autoRenewal;
-  private @Nullable Integer renewalNoticeDays;
-  private @Nullable Integer terminationNoticeDays;
+  private @Nullable Integer paymentDueDay;
+  @Builder.Default private Boolean autoRenewal = false;
+  @Builder.Default private Integer renewalNoticeDays = 30;
+  @Builder.Default private Integer terminationNoticeDays = 30;
   private @Nullable BigDecimal lateFeePercentage;
   private ContractStatus status;
   private String termsAndConditions;

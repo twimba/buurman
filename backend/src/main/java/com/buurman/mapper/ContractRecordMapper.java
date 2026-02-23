@@ -44,9 +44,11 @@ public class ContractRecordMapper {
     contract.setSecurityDepositCurrency(record.getSecurityDepositCurrency());
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(record.getPaymentDueDay());
-    contract.setAutoRenewal(record.getAutoRenewal());
-    contract.setRenewalNoticeDays(record.getRenewalNoticeDays());
-    contract.setTerminationNoticeDays(record.getTerminationNoticeDays());
+    contract.setAutoRenewal(record.getAutoRenewal() != null ? record.getAutoRenewal() : false);
+    contract.setRenewalNoticeDays(
+        record.getRenewalNoticeDays() != null ? record.getRenewalNoticeDays() : 30);
+    contract.setTerminationNoticeDays(
+        record.getTerminationNoticeDays() != null ? record.getTerminationNoticeDays() : 30);
     contract.setLateFeePercentage(record.getLateFeePercentage());
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
     contract.setTermsAndConditions(record.getTermsAndConditions());

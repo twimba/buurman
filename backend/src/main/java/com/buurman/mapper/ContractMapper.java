@@ -25,6 +25,9 @@ public interface ContractMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "autoRenewal", defaultExpression = "java(false)")
+  @Mapping(target = "renewalNoticeDays", defaultExpression = "java(30)")
+  @Mapping(target = "terminationNoticeDays", defaultExpression = "java(30)")
   Contract toEntity(CreateContractRequest request);
 
   @Mapping(target = "property", ignore = true)

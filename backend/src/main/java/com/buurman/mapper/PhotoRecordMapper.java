@@ -18,6 +18,9 @@ public interface PhotoRecordMapper {
 
   @Mapping(target = "uploadedAt", expression = "java(toInstant(record.getUploadedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toInstant(record.getDeletedAt()))")
+  @Mapping(
+      target = "isMainPhoto",
+      expression = "java(record.getIsMainPhoto() != null ? record.getIsMainPhoto() : false)")
   Photo toDomain(PhotosRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(photo.getUploadedAt()))")
