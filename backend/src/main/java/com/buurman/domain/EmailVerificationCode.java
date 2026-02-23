@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +20,6 @@ public class EmailVerificationCode {
   private UUID userId;
   private String code;
   private Instant expiresAt;
-  private @Nullable Instant usedAt;
+  @Builder.Default private Optional<Instant> usedAt = Optional.empty();
   private Instant createdAt;
 }

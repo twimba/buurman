@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,11 +19,11 @@ public class ContractParty {
   private String identifier;
   private UUID teamId;
   private UUID contractId;
-  private @Nullable UUID tenantId;
+  @Builder.Default private Optional<UUID> tenantId = Optional.empty();
   private ContractPartyRole role;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

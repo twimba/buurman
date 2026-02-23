@@ -55,11 +55,11 @@ public class TenantAddressRepository {
           .set(TENANT_ADDRESSES.STATUS, address.getStatus().name())
           .set(
               TENANT_ADDRESSES.LATITUDE,
-              address.getLatitude() != null ? BigDecimal.valueOf(address.getLatitude()) : null)
+              address.getLatitude().map(BigDecimal::valueOf).orElse(null))
           .set(
               TENANT_ADDRESSES.LONGITUDE,
-              address.getLongitude() != null ? BigDecimal.valueOf(address.getLongitude()) : null)
-          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy())
+              address.getLongitude().map(BigDecimal::valueOf).orElse(null))
+          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy().orElse(null))
           .set(TENANT_ADDRESSES.CREATED_AT, createdAt)
           .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
           .set(TENANT_ADDRESSES.CREATED_BY, address.getCreatedBy())
@@ -83,11 +83,11 @@ public class TenantAddressRepository {
           .set(TENANT_ADDRESSES.STATUS, address.getStatus().name())
           .set(
               TENANT_ADDRESSES.LATITUDE,
-              address.getLatitude() != null ? BigDecimal.valueOf(address.getLatitude()) : null)
+              address.getLatitude().map(BigDecimal::valueOf).orElse(null))
           .set(
               TENANT_ADDRESSES.LONGITUDE,
-              address.getLongitude() != null ? BigDecimal.valueOf(address.getLongitude()) : null)
-          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy())
+              address.getLongitude().map(BigDecimal::valueOf).orElse(null))
+          .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy().orElse(null))
           .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
           .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
           .where(

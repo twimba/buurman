@@ -33,12 +33,12 @@ public class NotificationOutboxRecordMapper {
     if (record.getNextRetryAt() != null) {
       outbox.setNextRetryAt(record.getNextRetryAt().toInstant(UTC));
     }
-    outbox.setLastError(record.getLastError());
+    outbox.setLastError(Optional.ofNullable(record.getLastError()));
     if (record.getCreatedAt() != null) {
       outbox.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     }
     outbox.setProcessedAt(
-        record.getProcessedAt() != null ? record.getProcessedAt().toInstant(UTC) : null);
+        Optional.ofNullable(record.getProcessedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(outbox);
   }

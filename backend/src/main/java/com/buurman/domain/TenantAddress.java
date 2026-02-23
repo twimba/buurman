@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,12 +39,12 @@ public class TenantAddress {
   private String country;
   private AddressType addressType;
   private AddressStatus status;
-  private @Nullable Double latitude;
-  private @Nullable Double longitude;
-  private @Nullable String geocodeAccuracy;
+  @Builder.Default private Optional<Double> latitude = Optional.empty();
+  @Builder.Default private Optional<Double> longitude = Optional.empty();
+  @Builder.Default private Optional<String> geocodeAccuracy = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

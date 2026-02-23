@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +24,7 @@ public class NotificationOutbox {
   private int retryCount;
   private int maxRetries;
   private Instant nextRetryAt;
-  private @Nullable String lastError;
+  @Builder.Default private Optional<String> lastError = Optional.empty();
   private Instant createdAt;
-  private @Nullable Instant processedAt;
+  @Builder.Default private Optional<Instant> processedAt = Optional.empty();
 }

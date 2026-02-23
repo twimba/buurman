@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +22,14 @@ public class Tenant {
   private String firstName;
   private String lastName;
   private String email;
-  private @Nullable String phone;
-  private @Nullable String taxNumber;
-  private @Nullable String idNumber;
-  private @Nullable String additionalInfo;
-  private @Nullable UUID currentPropertyId;
+  @Builder.Default private Optional<String> phone = Optional.empty();
+  @Builder.Default private Optional<String> taxNumber = Optional.empty();
+  @Builder.Default private Optional<String> idNumber = Optional.empty();
+  @Builder.Default private Optional<String> additionalInfo = Optional.empty();
+  @Builder.Default private Optional<UUID> currentPropertyId = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

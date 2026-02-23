@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,14 +24,14 @@ public class TeamInvitation {
   private Instant expiresAt;
   private UUID invitedBy;
   private Instant invitedAt;
-  private @Nullable Instant acceptedAt;
-  private @Nullable UUID acceptedBy;
-  private @Nullable Instant emailSentAt;
-  private @Nullable String emailError;
-  private @Nullable String pendingFirstName;
-  private @Nullable String pendingLastName;
-  private @Nullable Instant resentAt;
-  private @Nullable Integer resentCount;
+  @Builder.Default private Optional<Instant> acceptedAt = Optional.empty();
+  @Builder.Default private Optional<UUID> acceptedBy = Optional.empty();
+  @Builder.Default private Optional<Instant> emailSentAt = Optional.empty();
+  @Builder.Default private Optional<String> emailError = Optional.empty();
+  @Builder.Default private Optional<String> pendingFirstName = Optional.empty();
+  @Builder.Default private Optional<String> pendingLastName = Optional.empty();
+  @Builder.Default private Optional<Instant> resentAt = Optional.empty();
+  @Builder.Default private Optional<Integer> resentCount = Optional.empty();
 
   public TeamInvitation(
       UUID id,
@@ -43,8 +42,8 @@ public class TeamInvitation {
       Instant expiresAt,
       UUID invitedBy,
       Instant invitedAt,
-      Instant acceptedAt,
-      UUID acceptedBy) {
+      Optional<Instant> acceptedAt,
+      Optional<UUID> acceptedBy) {
     this.id = id;
     this.teamId = teamId;
     this.email = email;

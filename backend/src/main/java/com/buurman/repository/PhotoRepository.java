@@ -117,12 +117,12 @@ public class PhotoRepository {
           .set(PHOTOS.FILE_NAME, photo.getFileName())
           .set(PHOTOS.FILE_SIZE, photo.getFileSize())
           .set(PHOTOS.MIME_TYPE, photo.getMimeType())
-          .set(PHOTOS.TITLE, photo.getTitle())
-          .set(PHOTOS.NOTES, photo.getNotes())
+          .set(PHOTOS.TITLE, photo.getTitle().orElse(null))
+          .set(PHOTOS.NOTES, photo.getNotes().orElse(null))
           .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
           .set(PHOTOS.UPLOADED_BY, photo.getUploadedBy())
           .set(PHOTOS.UPLOADED_AT, uploadedAt)
-          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey())
+          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey().orElse(null))
           .execute();
 
       photo.setId(newId);
@@ -131,10 +131,10 @@ public class PhotoRepository {
     } else {
       // UPDATE (title, notes, and isMainPhoto are updatable)
       dsl.update(PHOTOS)
-          .set(PHOTOS.TITLE, photo.getTitle())
-          .set(PHOTOS.NOTES, photo.getNotes())
+          .set(PHOTOS.TITLE, photo.getTitle().orElse(null))
+          .set(PHOTOS.NOTES, photo.getNotes().orElse(null))
           .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
-          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey())
+          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey().orElse(null))
           .where(PHOTOS.ID.eq(photo.getId()).and(PHOTOS.TEAM_ID.eq(photo.getTeamId())))
           .execute();
     }

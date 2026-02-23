@@ -2,9 +2,8 @@ package com.buurman.domain;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,25 +21,25 @@ public class ContractPaymentInstruction {
   private String identifier;
   private UUID teamId;
   private UUID contractId;
-  private @Nullable UUID paymentInstructionId;
+  @Builder.Default private Optional<UUID> paymentInstructionId = Optional.empty();
   @Builder.Default private Boolean isCustom = false;
-  private @Nullable String customName;
-  private @Nullable String customDescription;
-  private @Nullable String customPaymentMethod;
-  private @Nullable String customBankName;
-  private @Nullable String customAccountHolderName;
-  private @Nullable String customIban;
-  private @Nullable String customBicSwift;
-  private @Nullable String customAccountNumber;
-  private @Nullable String customRoutingNumber;
-  private @Nullable String customPaymentReference;
-  private @Nullable String customAdditionalDetails;
+  @Builder.Default private Optional<String> customName = Optional.empty();
+  @Builder.Default private Optional<String> customDescription = Optional.empty();
+  @Builder.Default private Optional<String> customPaymentMethod = Optional.empty();
+  @Builder.Default private Optional<String> customBankName = Optional.empty();
+  @Builder.Default private Optional<String> customAccountHolderName = Optional.empty();
+  @Builder.Default private Optional<String> customIban = Optional.empty();
+  @Builder.Default private Optional<String> customBicSwift = Optional.empty();
+  @Builder.Default private Optional<String> customAccountNumber = Optional.empty();
+  @Builder.Default private Optional<String> customRoutingNumber = Optional.empty();
+  @Builder.Default private Optional<String> customPaymentReference = Optional.empty();
+  @Builder.Default private Optional<String> customAdditionalDetails = Optional.empty();
   private LocalDate effectiveFrom;
-  private @Nullable LocalDate effectiveTo;
-  private @Nullable String notes;
+  @Builder.Default private Optional<LocalDate> effectiveTo = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

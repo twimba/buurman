@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,7 @@ public class UserPreferences {
   @Builder.Default private String language = "en";
   @Builder.Default private String timezone = "UTC";
   @Builder.Default private String dateFormat = "DD/MM/YYYY";
-  private @Nullable String currencyFormat;
+  @Builder.Default private Optional<String> currencyFormat = Optional.empty();
   @Builder.Default private boolean emailNotifications = true;
   @Builder.Default private boolean inAppNotifications = true;
   @Builder.Default private boolean smsNotifications = false;

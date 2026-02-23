@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,11 +25,11 @@ public class Document {
   private String fileName;
   private Long fileSize;
   private String mimeType;
-  private @Nullable String title;
-  private @Nullable String notes;
+  @Builder.Default private Optional<String> title = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private UUID uploadedBy;
   private Instant uploadedAt;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
   public enum EntityType {
     PROPERTY,

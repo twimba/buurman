@@ -72,14 +72,14 @@ public class PaymentInstructionRepository {
           .set(NAME, pi.getName())
           .set(DESCRIPTION, pi.getDescription())
           .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
-          .set(BANK_NAME, pi.getBankName())
-          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
-          .set(IBAN, pi.getIban())
-          .set(BIC_SWIFT, pi.getBicSwift())
-          .set(ACCOUNT_NUMBER, pi.getAccountNumber())
-          .set(ROUTING_NUMBER, pi.getRoutingNumber())
-          .set(PAYMENT_REFERENCE, pi.getPaymentReference())
-          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+          .set(BANK_NAME, pi.getBankName().orElse(null))
+          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName().orElse(null))
+          .set(IBAN, pi.getIban().orElse(null))
+          .set(BIC_SWIFT, pi.getBicSwift().orElse(null))
+          .set(ACCOUNT_NUMBER, pi.getAccountNumber().orElse(null))
+          .set(ROUTING_NUMBER, pi.getRoutingNumber().orElse(null))
+          .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
+          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
           .set(CREATED_AT, createdAt)
           .set(UPDATED_AT, updatedAt)
@@ -99,14 +99,14 @@ public class PaymentInstructionRepository {
           .set(NAME, pi.getName())
           .set(DESCRIPTION, pi.getDescription())
           .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
-          .set(BANK_NAME, pi.getBankName())
-          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
-          .set(IBAN, pi.getIban())
-          .set(BIC_SWIFT, pi.getBicSwift())
-          .set(ACCOUNT_NUMBER, pi.getAccountNumber())
-          .set(ROUTING_NUMBER, pi.getRoutingNumber())
-          .set(PAYMENT_REFERENCE, pi.getPaymentReference())
-          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+          .set(BANK_NAME, pi.getBankName().orElse(null))
+          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName().orElse(null))
+          .set(IBAN, pi.getIban().orElse(null))
+          .set(BIC_SWIFT, pi.getBicSwift().orElse(null))
+          .set(ACCOUNT_NUMBER, pi.getAccountNumber().orElse(null))
+          .set(ROUTING_NUMBER, pi.getRoutingNumber().orElse(null))
+          .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
+          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
           .set(UPDATED_AT, updatedAt)
           .set(UPDATED_BY, pi.getUpdatedBy())
@@ -178,14 +178,14 @@ public class PaymentInstructionRepository {
     pi.setName(record.get(NAME));
     pi.setDescription(record.get(DESCRIPTION));
     pi.setPaymentMethod(PaymentInstruction.PaymentMethod.valueOf(record.get(PAYMENT_METHOD)));
-    pi.setBankName(record.get(BANK_NAME));
-    pi.setAccountHolderName(record.get(ACCOUNT_HOLDER_NAME));
-    pi.setIban(record.get(IBAN));
-    pi.setBicSwift(record.get(BIC_SWIFT));
-    pi.setAccountNumber(record.get(ACCOUNT_NUMBER));
-    pi.setRoutingNumber(record.get(ROUTING_NUMBER));
-    pi.setPaymentReference(record.get(PAYMENT_REFERENCE));
-    pi.setAdditionalDetails(record.get(ADDITIONAL_DETAILS));
+    pi.setBankName(Optional.ofNullable(record.get(BANK_NAME)));
+    pi.setAccountHolderName(Optional.ofNullable(record.get(ACCOUNT_HOLDER_NAME)));
+    pi.setIban(Optional.ofNullable(record.get(IBAN)));
+    pi.setBicSwift(Optional.ofNullable(record.get(BIC_SWIFT)));
+    pi.setAccountNumber(Optional.ofNullable(record.get(ACCOUNT_NUMBER)));
+    pi.setRoutingNumber(Optional.ofNullable(record.get(ROUTING_NUMBER)));
+    pi.setPaymentReference(Optional.ofNullable(record.get(PAYMENT_REFERENCE)));
+    pi.setAdditionalDetails(Optional.ofNullable(record.get(ADDITIONAL_DETAILS)));
     pi.setIsDefault(record.get(IS_DEFAULT));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
@@ -197,7 +197,7 @@ public class PaymentInstructionRepository {
     }
     pi.setCreatedBy(record.get(CREATED_BY));
     pi.setUpdatedBy(record.get(UPDATED_BY));
-    pi.setDeletedAt(toInstant(record.get("deleted_at")));
+    pi.setDeletedAt(Optional.ofNullable(toInstant(record.get("deleted_at"))));
     return pi;
   }
 

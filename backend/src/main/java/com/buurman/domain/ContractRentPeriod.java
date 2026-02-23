@@ -3,9 +3,8 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,11 +24,11 @@ public class ContractRentPeriod {
   private BigDecimal rentAmount;
   private String currency;
   private LocalDate effectiveFrom;
-  private @Nullable LocalDate effectiveTo;
-  private @Nullable String notes;
+  @Builder.Default private Optional<LocalDate> effectiveTo = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

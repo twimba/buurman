@@ -33,45 +33,45 @@ public class NotificationRecordMapper {
     Notification notification = new Notification();
     notification.setId(record.getId());
     notification.setIdentifier(record.getIdentifier());
-    notification.setTeamId(record.getTeamId());
+    notification.setTeamId(Optional.ofNullable(record.getTeamId()));
     notification.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
-    notification.setSubject(record.getSubject());
+    notification.setSubject(Optional.ofNullable(record.getSubject()));
     notification.setBody(record.getBody());
-    notification.setRecipientEmail(record.getRecipientEmail());
-    notification.setRecipientPhone(record.getRecipientPhone());
-    notification.setRecipientUserId(record.getRecipientUserId());
-    notification.setRecipientTenantId(record.getRecipientTenantId());
+    notification.setRecipientEmail(Optional.ofNullable(record.getRecipientEmail()));
+    notification.setRecipientPhone(Optional.ofNullable(record.getRecipientPhone()));
+    notification.setRecipientUserId(Optional.ofNullable(record.getRecipientUserId()));
+    notification.setRecipientTenantId(Optional.ofNullable(record.getRecipientTenantId()));
     notification.setChannel(NotificationChannel.valueOf(record.getChannel()));
-    notification.setContentTemplate(record.getContentTemplate());
+    notification.setContentTemplate(Optional.ofNullable(record.getContentTemplate()));
 
     if (record.getContentVariables() != null) {
       try {
         Map<String, Object> variables =
             objectMapper.readValue(record.getContentVariables().data(), new TypeReference<>() {});
-        notification.setContentVariables(variables);
+        notification.setContentVariables(Optional.of(variables));
       } catch (Exception e) {
         // Log but don't fail - content variables are informational
       }
     }
 
     notification.setStatus(NotificationStatus.valueOf(record.getStatus()));
-    notification.setProviderMessageId(record.getProviderMessageId());
-    notification.setProviderStatus(record.getProviderStatus());
-    notification.setProviderError(record.getProviderError());
+    notification.setProviderMessageId(Optional.ofNullable(record.getProviderMessageId()));
+    notification.setProviderStatus(Optional.ofNullable(record.getProviderStatus()));
+    notification.setProviderError(Optional.ofNullable(record.getProviderError()));
     notification.setStatusUpdatedAt(
-        record.getStatusUpdatedAt() != null ? record.getStatusUpdatedAt().toInstant(UTC) : null);
+        Optional.ofNullable(record.getStatusUpdatedAt()).map(dt -> dt.toInstant(UTC)));
     notification.setOpenCount(record.getOpenCount() != null ? record.getOpenCount() : 0);
     notification.setClickCount(record.getClickCount() != null ? record.getClickCount() : 0);
     notification.setFirstOpenedAt(
-        record.getFirstOpenedAt() != null ? record.getFirstOpenedAt().toInstant(UTC) : null);
+        Optional.ofNullable(record.getFirstOpenedAt()).map(dt -> dt.toInstant(UTC)));
     notification.setFirstClickedAt(
-        record.getFirstClickedAt() != null ? record.getFirstClickedAt().toInstant(UTC) : null);
-    notification.setResentFromId(record.getResentFromId());
-    notification.setResendReason(record.getResendReason());
+        Optional.ofNullable(record.getFirstClickedAt()).map(dt -> dt.toInstant(UTC)));
+    notification.setResentFromId(Optional.ofNullable(record.getResentFromId()));
+    notification.setResendReason(Optional.ofNullable(record.getResendReason()));
     if (record.getCreatedAt() != null) {
       notification.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     }
-    notification.setCreatedBy(record.getCreatedBy());
+    notification.setCreatedBy(Optional.ofNullable(record.getCreatedBy()));
 
     return Optional.of(notification);
   }

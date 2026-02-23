@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +24,7 @@ public class TeamPreferences {
   @Builder.Default private boolean autoGenerationEnabled = true;
 
   // Regional settings
-  private @Nullable String defaultCurrency;
+  @Builder.Default private Optional<String> defaultCurrency = Optional.empty();
   @Builder.Default private String defaultCountry = "Netherlands";
   @Builder.Default private String timezone = "Europe/Amsterdam";
   @Builder.Default private String dateFormat = "DD/MM/YYYY";

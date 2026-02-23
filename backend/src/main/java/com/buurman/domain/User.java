@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,12 +22,12 @@ public class User {
   private String email;
   private String firstName;
   private String lastName;
-  private @Nullable UUID defaultTeamId;
-  private @Nullable UUID activeTeamId;
-  private @Nullable String phone;
-  private @Nullable Instant emailVerifiedAt;
-  private @Nullable Instant phoneVerifiedAt;
-  private @Nullable Instant disabledAt;
+  @Builder.Default private Optional<UUID> defaultTeamId = Optional.empty();
+  @Builder.Default private Optional<UUID> activeTeamId = Optional.empty();
+  @Builder.Default private Optional<String> phone = Optional.empty();
+  @Builder.Default private Optional<Instant> emailVerifiedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> phoneVerifiedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> disabledAt = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
 

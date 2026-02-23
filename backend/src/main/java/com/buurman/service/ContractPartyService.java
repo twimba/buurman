@@ -84,7 +84,7 @@ public class ContractPartyService {
     party.setIdentifier(newContractPartyId().value());
     party.setTeamId(teamId);
     party.setContractId(contract.getId());
-    party.setTenantId(tenant.getId());
+    party.setTenantId(Optional.of(tenant.getId()));
     party.setRole(request.role());
     party.setCreatedAt(clock.instant());
     party.setUpdatedAt(clock.instant());
@@ -141,12 +141,12 @@ public class ContractPartyService {
     log.info("Party removed from contract {}: {}", contractIdentifier, partyIdentifier);
 
     // Audit log
-    @Nullable Tenant tenant =
-        party.getTenantId() != null
-            ? tenantRepository.findByIdAndTeamId(party.getTenantId(), teamId).orElse(null)
-            : null;
     String tenantName =
-        tenant != null ? tenant.getFirstName() + " " + tenant.getLastName() : "Unknown";
+        party
+            .getTenantId()
+            .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
+            .map(t -> t.getFirstName() + " " + t.getLastName())
+            .orElse("Unknown");
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("partyRemoved", tenantName);
     changedFields.put("role", party.getRole().name());
@@ -177,23 +177,24 @@ public class ContractPartyService {
     ContractParty currentPrimary =
         contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId);
 
-    if (newTenant.getId().equals(currentPrimary.getTenantId())) {
+    if (currentPrimary.getTenantId().isPresent()
+        && newTenant.getId().equals(currentPrimary.getTenantId().get())) {
       throw new IllegalArgumentException("This tenant is already the primary tenant");
     }
 
-    @Nullable Tenant oldTenant =
-        currentPrimary.getTenantId() != null
-            ? tenantRepository.findByIdAndTeamId(currentPrimary.getTenantId(), teamId).orElse(null)
-            : null;
     String oldTenantName =
-        oldTenant != null ? oldTenant.getFirstName() + " " + oldTenant.getLastName() : "Unknown";
+        currentPrimary
+            .getTenantId()
+            .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
+            .map(t -> t.getFirstName() + " " + t.getLastName())
+            .orElse("Unknown");
     String newTenantName = newTenant.getFirstName() + " " + newTenant.getLastName();
 
     // If new tenant already exists as a different role on this contract, remove that entry
     List<ContractParty> existingParties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     existingParties.stream()
-        .filter(p -> newTenant.getId().equals(p.getTenantId()))
+        .filter(p -> p.getTenantId().isPresent() && newTenant.getId().equals(p.getTenantId().get()))
         .findFirst()
         .ifPresent(
             existing -> contractPartyRepository.softDeleteByIdAndTeamId(existing.getId(), teamId));
@@ -206,7 +207,7 @@ public class ContractPartyService {
     newPrimary.setIdentifier(newContractPartyId().value());
     newPrimary.setTeamId(teamId);
     newPrimary.setContractId(contract.getId());
-    newPrimary.setTenantId(newTenant.getId());
+    newPrimary.setTenantId(Optional.of(newTenant.getId()));
     newPrimary.setRole(ContractPartyRole.PRIMARY_TENANT);
     newPrimary.setCreatedAt(clock.instant());
     newPrimary.setUpdatedAt(clock.instant());
@@ -259,7 +260,7 @@ public class ContractPartyService {
       party.setIdentifier(newContractPartyId().value());
       party.setTeamId(teamId);
       party.setContractId(contractId);
-      party.setTenantId(tenant.getId());
+      party.setTenantId(Optional.of(tenant.getId()));
       party.setRole(partyReq.role());
       party.setCreatedAt(clock.instant());
       party.setUpdatedAt(clock.instant());
@@ -301,8 +302,9 @@ public class ContractPartyService {
     ContractParty primary =
         contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contractId, teamId);
     UUID tenantId =
-        java.util.Objects.requireNonNull(
-            primary.getTenantId(), "Primary tenant party has no tenant ID");
+        primary
+            .getTenantId()
+            .orElseThrow(() -> new IllegalStateException("Primary tenant party has no tenant ID"));
     return tenantRepository.getByIdAndTeamId(tenantId, teamId);
   }
 
@@ -328,27 +330,24 @@ public class ContractPartyService {
     List<UUID> tenantIds =
         parties.stream()
             .map(ContractParty::getTenantId)
-            .filter(id -> id != null)
+            .flatMap(Optional::stream)
             .distinct()
             .toList();
     List<Tenant> tenants = tenantRepository.findByIdsAndTeamId(tenantIds, teamId);
     Map<UUID, Tenant> tenantMap = tenants.stream().collect(Collectors.toMap(Tenant::getId, t -> t));
 
     return parties.stream()
-        .map(
-            party -> {
-              @Nullable UUID tenantId = party.getTenantId();
-              if (tenantId == null) {
-                return null;
-              }
-              @Nullable Tenant tenant = tenantMap.get(tenantId);
-              if (tenant == null) {
-                return null;
-              }
-              TenantSummary summary = tenantMapper.toSummary(tenant);
-              return contractPartyMapper.toResponse(party, summary);
-            })
-        .filter(r -> r != null)
+        .flatMap(
+            party ->
+                party
+                    .getTenantId()
+                    .map(tenantMap::get)
+                    .map(
+                        tenant -> {
+                          TenantSummary summary = tenantMapper.toSummary(tenant);
+                          return contractPartyMapper.toResponse(party, summary);
+                        })
+                    .stream())
         .toList();
   }
 
@@ -356,11 +355,11 @@ public class ContractPartyService {
   public Optional<Tenant> findPrimaryTenantForContract(UUID contractId, UUID teamId) {
     return contractPartyRepository
         .findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
-        .filter(party -> party.getTenantId() != null)
         .flatMap(
             party ->
-                tenantRepository.findByIdAndTeamId(
-                    java.util.Objects.requireNonNull(party.getTenantId()), teamId));
+                party
+                    .getTenantId()
+                    .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId)));
   }
 
   /** Batch-load primary tenants for multiple contracts. Returns contractId → Tenant map. */
@@ -378,12 +377,13 @@ public class ContractPartyService {
                 .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
                 .findFirst()
                 .ifPresent(
-                    p -> {
-                      if (p.getTenantId() != null) {
-                        contractToTenantId.put(cId, p.getTenantId());
-                        tenantIds.add(p.getTenantId());
-                      }
-                    }));
+                    p ->
+                        p.getTenantId()
+                            .ifPresent(
+                                tid -> {
+                                  contractToTenantId.put(cId, tid);
+                                  tenantIds.add(tid);
+                                })));
     if (tenantIds.isEmpty()) {
       return Map.of();
     }

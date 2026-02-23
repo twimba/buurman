@@ -29,7 +29,7 @@ public class ExpenseRecordMapper {
     expense.setCurrency(record.getCurrency());
     expense.setExpenseDate(record.getExpenseDate());
     expense.setDescription(record.getDescription());
-    expense.setNotes(record.getNotes());
+    expense.setNotes(Optional.ofNullable(record.getNotes()));
     if (record.getCreatedAt() != null) {
       expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     }
@@ -38,8 +38,7 @@ public class ExpenseRecordMapper {
     }
     expense.setCreatedBy(record.getCreatedBy());
     expense.setUpdatedBy(record.getUpdatedBy());
-    expense.setDeletedAt(
-        record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
+    expense.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(expense);
   }

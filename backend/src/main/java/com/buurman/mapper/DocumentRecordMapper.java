@@ -17,11 +17,23 @@ import com.buurman.jooq.generated.tables.records.DocumentsRecord;
 public interface DocumentRecordMapper {
 
   @Mapping(target = "uploadedAt", expression = "java(toInstant(record.getUploadedAt()))")
-  @Mapping(target = "deletedAt", expression = "java(toInstant(record.getDeletedAt()))")
+  @Mapping(
+      target = "deletedAt",
+      expression =
+          "java(Optional.ofNullable(record.getDeletedAt()).map(dt ->"
+              + " dt.toInstant(java.time.ZoneOffset.UTC)))")
+  @Mapping(target = "title", expression = "java(Optional.ofNullable(record.getTitle()))")
+  @Mapping(target = "notes", expression = "java(Optional.ofNullable(record.getNotes()))")
   Document toDomain(DocumentsRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(document.getUploadedAt()))")
-  @Mapping(target = "deletedAt", expression = "java(toLocalDateTime(document.getDeletedAt()))")
+  @Mapping(
+      target = "deletedAt",
+      expression =
+          "java(document.getDeletedAt().map(i -> java.time.LocalDateTime.ofInstant(i,"
+              + " java.time.ZoneOffset.UTC)).orElse(null))")
+  @Mapping(target = "title", expression = "java(document.getTitle().orElse(null))")
+  @Mapping(target = "notes", expression = "java(document.getNotes().orElse(null))")
   DocumentsRecord toRecord(Document document);
 
   List<Document> toDomainList(List<DocumentsRecord> records);

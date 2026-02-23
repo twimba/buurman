@@ -133,7 +133,7 @@ public class PaymentReceivalRepository {
         .set(AMOUNT, CurrencyUtils.toMinorUnits(receival.getAmount(), currency))
         .set(CURRENCY, currency)
         .set(RECEIVAL_DATE, receival.getReceivalDate())
-        .set(NOTES, receival.getNotes())
+        .set(NOTES, receival.getNotes().orElse(null))
         .set(CREATED_AT, createdAt)
         .set(UPDATED_AT, updatedAt)
         .set(CREATED_BY, receival.getCreatedBy())
@@ -192,7 +192,7 @@ public class PaymentReceivalRepository {
     if (receivalDate != null) {
       receival.setReceivalDate(receivalDate);
     }
-    receival.setNotes(record.get(NOTES));
+    receival.setNotes(Optional.ofNullable(record.get(NOTES)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);
@@ -203,7 +203,7 @@ public class PaymentReceivalRepository {
     }
     receival.setCreatedBy(record.get(CREATED_BY));
     receival.setUpdatedBy(record.get(UPDATED_BY));
-    receival.setDeletedAt(toInstant(record.get("deleted_at")));
+    receival.setDeletedAt(Optional.ofNullable(toInstant(record.get("deleted_at"))));
     return receival;
   }
 

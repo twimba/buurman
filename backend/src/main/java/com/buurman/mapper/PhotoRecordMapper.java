@@ -17,14 +17,32 @@ import com.buurman.jooq.generated.tables.records.PhotosRecord;
 public interface PhotoRecordMapper {
 
   @Mapping(target = "uploadedAt", expression = "java(toInstant(record.getUploadedAt()))")
-  @Mapping(target = "deletedAt", expression = "java(toInstant(record.getDeletedAt()))")
+  @Mapping(
+      target = "deletedAt",
+      expression =
+          "java(Optional.ofNullable(record.getDeletedAt()).map(dt ->"
+              + " dt.toInstant(java.time.ZoneOffset.UTC)))")
   @Mapping(
       target = "isMainPhoto",
       expression = "java(record.getIsMainPhoto() != null ? record.getIsMainPhoto() : false)")
+  @Mapping(
+      target = "thumbnailFileKey",
+      expression = "java(Optional.ofNullable(record.getThumbnailFileKey()))")
+  @Mapping(target = "title", expression = "java(Optional.ofNullable(record.getTitle()))")
+  @Mapping(target = "notes", expression = "java(Optional.ofNullable(record.getNotes()))")
   Photo toDomain(PhotosRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(photo.getUploadedAt()))")
-  @Mapping(target = "deletedAt", expression = "java(toLocalDateTime(photo.getDeletedAt()))")
+  @Mapping(
+      target = "deletedAt",
+      expression =
+          "java(photo.getDeletedAt().map(i -> java.time.LocalDateTime.ofInstant(i,"
+              + " java.time.ZoneOffset.UTC)).orElse(null))")
+  @Mapping(
+      target = "thumbnailFileKey",
+      expression = "java(photo.getThumbnailFileKey().orElse(null))")
+  @Mapping(target = "title", expression = "java(photo.getTitle().orElse(null))")
+  @Mapping(target = "notes", expression = "java(photo.getNotes().orElse(null))")
   PhotosRecord toRecord(Photo photo);
 
   List<Photo> toDomainList(List<PhotosRecord> records);

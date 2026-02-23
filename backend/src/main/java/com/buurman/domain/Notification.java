@@ -2,9 +2,8 @@ package com.buurman.domain;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,28 +19,28 @@ public class Notification {
 
   private UUID id;
   private String identifier;
-  private @Nullable UUID teamId;
+  @Builder.Default private Optional<UUID> teamId = Optional.empty();
   private NotificationType notificationType;
-  private @Nullable String subject;
+  @Builder.Default private Optional<String> subject = Optional.empty();
   private String body;
-  private @Nullable String recipientEmail;
-  private @Nullable String recipientPhone;
-  private @Nullable UUID recipientUserId;
-  private @Nullable UUID recipientTenantId;
+  @Builder.Default private Optional<String> recipientEmail = Optional.empty();
+  @Builder.Default private Optional<String> recipientPhone = Optional.empty();
+  @Builder.Default private Optional<UUID> recipientUserId = Optional.empty();
+  @Builder.Default private Optional<UUID> recipientTenantId = Optional.empty();
   private NotificationChannel channel;
-  private @Nullable String contentTemplate;
-  private @Nullable Map<String, Object> contentVariables;
+  @Builder.Default private Optional<String> contentTemplate = Optional.empty();
+  @Builder.Default private Optional<Map<String, Object>> contentVariables = Optional.empty();
   private NotificationStatus status;
-  private @Nullable String providerMessageId;
-  private @Nullable String providerStatus;
-  private @Nullable String providerError;
-  private @Nullable Instant statusUpdatedAt;
+  @Builder.Default private Optional<String> providerMessageId = Optional.empty();
+  @Builder.Default private Optional<String> providerStatus = Optional.empty();
+  @Builder.Default private Optional<String> providerError = Optional.empty();
+  @Builder.Default private Optional<Instant> statusUpdatedAt = Optional.empty();
   private int openCount;
   private int clickCount;
-  private @Nullable Instant firstOpenedAt;
-  private @Nullable Instant firstClickedAt;
-  private @Nullable UUID resentFromId;
-  private @Nullable String resendReason;
+  @Builder.Default private Optional<Instant> firstOpenedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> firstClickedAt = Optional.empty();
+  @Builder.Default private Optional<UUID> resentFromId = Optional.empty();
+  @Builder.Default private Optional<String> resendReason = Optional.empty();
   private Instant createdAt;
-  private @Nullable UUID createdBy;
+  @Builder.Default private Optional<UUID> createdBy = Optional.empty();
 }

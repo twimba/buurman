@@ -70,10 +70,8 @@ public class ContractRentPeriodRepository {
           .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
           .set(CURRENCY, currency)
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
-          .set(
-              EFFECTIVE_TO,
-              period.getEffectiveTo() != null ? Date.valueOf(period.getEffectiveTo()) : null)
-          .set(NOTES, period.getNotes())
+          .set(EFFECTIVE_TO, period.getEffectiveTo().map(Date::valueOf).orElse(null))
+          .set(NOTES, period.getNotes().orElse(null))
           .set(CREATED_AT, createdAt)
           .set(UPDATED_AT, updatedAt)
           .set(CREATED_BY, period.getCreatedBy())
@@ -87,10 +85,8 @@ public class ContractRentPeriodRepository {
       dsl.update(TABLE)
           .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
-          .set(
-              EFFECTIVE_TO,
-              period.getEffectiveTo() != null ? Date.valueOf(period.getEffectiveTo()) : null)
-          .set(NOTES, period.getNotes())
+          .set(EFFECTIVE_TO, period.getEffectiveTo().map(Date::valueOf).orElse(null))
+          .set(NOTES, period.getNotes().orElse(null))
           .set(UPDATED_AT, updatedAt)
           .set(UPDATED_BY, period.getUpdatedBy())
           .where(ID.eq(period.getId()).and(TEAM_ID.eq(period.getTeamId())).and(DELETED_AT.isNull()))
@@ -211,9 +207,9 @@ public class ContractRentPeriodRepository {
     }
 
     Date effectiveToVal = record.get(EFFECTIVE_TO);
-    period.setEffectiveTo(effectiveToVal != null ? effectiveToVal.toLocalDate() : null);
+    period.setEffectiveTo(Optional.ofNullable(effectiveToVal).map(Date::toLocalDate));
 
-    period.setNotes(record.get(NOTES));
+    period.setNotes(Optional.ofNullable(record.get(NOTES)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
     if (createdAtVal != null) {
@@ -229,7 +225,7 @@ public class ContractRentPeriodRepository {
     period.setUpdatedBy(record.get(UPDATED_BY));
 
     Timestamp deletedAtVal = record.get(DELETED_AT);
-    period.setDeletedAt(deletedAtVal != null ? deletedAtVal.toInstant() : null);
+    period.setDeletedAt(Optional.ofNullable(deletedAtVal).map(Timestamp::toInstant));
 
     return period;
   }

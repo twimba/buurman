@@ -61,7 +61,7 @@ public class ContractPartyRepository {
         .set(IDENTIFIER, party.getIdentifier())
         .set(TEAM_ID, party.getTeamId())
         .set(CONTRACT_ID, party.getContractId())
-        .set(TENANT_ID, party.getTenantId())
+        .set(TENANT_ID, party.getTenantId().orElse(null))
         .set(ROLE, party.getRole().name())
         .set(CREATED_AT, createdAt)
         .set(UPDATED_AT, updatedAt)
@@ -174,7 +174,7 @@ public class ContractPartyRepository {
     party.setIdentifier(record.get(IDENTIFIER));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
-    party.setTenantId(record.get(TENANT_ID));
+    party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));
     party.setRole(ContractPartyRole.valueOf(record.get(ROLE)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
@@ -191,7 +191,7 @@ public class ContractPartyRepository {
     party.setUpdatedBy(record.get(UPDATED_BY));
 
     Timestamp deletedAtVal = record.get(DELETED_AT);
-    party.setDeletedAt(deletedAtVal != null ? deletedAtVal.toInstant() : null);
+    party.setDeletedAt(Optional.ofNullable(deletedAtVal).map(Timestamp::toInstant));
 
     return party;
   }

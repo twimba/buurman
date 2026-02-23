@@ -52,10 +52,11 @@ public class NotificationRepository {
             : now;
 
     JSONB contentVariablesJson = null;
-    if (notification.getContentVariables() != null) {
+    if (notification.getContentVariables().isPresent()) {
       try {
         contentVariablesJson =
-            JSONB.valueOf(objectMapper.writeValueAsString(notification.getContentVariables()));
+            JSONB.valueOf(
+                objectMapper.writeValueAsString(notification.getContentVariables().get()));
       } catch (JsonProcessingException e) {
         throw new RuntimeException("Failed to serialize content variables", e);
       }
@@ -64,22 +65,22 @@ public class NotificationRepository {
     dsl.insertInto(NOTIFICATIONS)
         .set(NOTIFICATIONS.ID, id)
         .set(NOTIFICATIONS.IDENTIFIER, identifier)
-        .set(NOTIFICATIONS.TEAM_ID, notification.getTeamId())
+        .set(NOTIFICATIONS.TEAM_ID, notification.getTeamId().orElse(null))
         .set(NOTIFICATIONS.NOTIFICATION_TYPE, notification.getNotificationType().name())
-        .set(NOTIFICATIONS.SUBJECT, notification.getSubject())
+        .set(NOTIFICATIONS.SUBJECT, notification.getSubject().orElse(null))
         .set(NOTIFICATIONS.BODY, notification.getBody())
-        .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail())
-        .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone())
-        .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId())
-        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, notification.getRecipientTenantId())
+        .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, notification.getRecipientTenantId().orElse(null))
         .set(NOTIFICATIONS.CHANNEL, notification.getChannel().name())
-        .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate())
+        .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate().orElse(null))
         .set(NOTIFICATIONS.CONTENT_VARIABLES, contentVariablesJson)
         .set(NOTIFICATIONS.STATUS, notification.getStatus().name())
-        .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId())
-        .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason())
+        .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId().orElse(null))
+        .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason().orElse(null))
         .set(NOTIFICATIONS.CREATED_AT, createdAt)
-        .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy())
+        .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy().orElse(null))
         .execute();
 
     notification.setId(id);

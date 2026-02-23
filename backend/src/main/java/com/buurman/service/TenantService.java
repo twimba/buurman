@@ -185,7 +185,7 @@ public class TenantService {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    if (tenant.getCurrentPropertyId() != null) {
+    if (tenant.getCurrentPropertyId().isPresent()) {
       unlinkTenantInternal(tenant.getId(), principal);
     }
 
@@ -207,7 +207,7 @@ public class TenantService {
         propertyRepository.getByIdentifierAndTeamId(
             request.propertyIdentifier(), principal.requireTeamId());
 
-    if (tenant.getCurrentPropertyId() != null) {
+    if (tenant.getCurrentPropertyId().isPresent()) {
       throw new IllegalArgumentException("Tenant is already linked to a property. Unlink first.");
     }
 
@@ -217,7 +217,7 @@ public class TenantService {
       throw new IllegalArgumentException("Property already has a tenant assigned");
     }
 
-    tenant.setCurrentPropertyId(property.getId());
+    tenant.setCurrentPropertyId(Optional.of(property.getId()));
     tenant.setUpdatedBy(principal.getUserId());
     Tenant updatedTenant = tenantRepository.save(tenant);
 
@@ -256,13 +256,13 @@ public class TenantService {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    if (tenant.getCurrentPropertyId() == null) {
-      throw new IllegalArgumentException("Tenant is not linked to any property");
-    }
+    UUID propertyId =
+        tenant
+            .getCurrentPropertyId()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Tenant is not linked to any property"));
 
-    UUID propertyId = tenant.getCurrentPropertyId();
-
-    tenant.setCurrentPropertyId(null);
+    tenant.setCurrentPropertyId(Optional.empty());
     tenant.setUpdatedBy(principal.getUserId());
     Tenant updatedTenant = tenantRepository.save(tenant);
 
@@ -424,10 +424,7 @@ public class TenantService {
         mainPhoto
             .map(
                 photo -> {
-                  String key =
-                      photo.getThumbnailFileKey() != null
-                          ? photo.getThumbnailFileKey()
-                          : photo.getFileKey();
+                  String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
                   return s3StorageService.generatePresignedUrl(key).toString();
                 })
             .orElse(null);
@@ -509,13 +506,13 @@ public class TenantService {
   private void unlinkTenantInternal(UUID tenantId, UserPrincipal principal) {
     Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
-    if (tenant.getCurrentPropertyId() == null) {
+    if (tenant.getCurrentPropertyId().isEmpty()) {
       return;
     }
 
-    UUID propertyId = tenant.getCurrentPropertyId();
+    UUID propertyId = tenant.getCurrentPropertyId().orElseThrow();
 
-    tenant.setCurrentPropertyId(null);
+    tenant.setCurrentPropertyId(Optional.empty());
     tenant.setUpdatedBy(principal.getUserId());
     tenantRepository.save(tenant);
 
@@ -538,22 +535,23 @@ public class TenantService {
   }
 
   private Tenant cloneTenant(Tenant tenant) {
-    return new Tenant(
-        tenant.getId(),
-        tenant.getIdentifier(),
-        tenant.getTeamId(),
-        tenant.getFirstName(),
-        tenant.getLastName(),
-        tenant.getEmail(),
-        tenant.getPhone(),
-        tenant.getTaxNumber(),
-        tenant.getIdNumber(),
-        tenant.getAdditionalInfo(),
-        tenant.getCurrentPropertyId(),
-        tenant.getCreatedAt(),
-        tenant.getUpdatedAt(),
-        tenant.getCreatedBy(),
-        tenant.getUpdatedBy(),
-        tenant.getDeletedAt());
+    return Tenant.builder()
+        .id(tenant.getId())
+        .identifier(tenant.getIdentifier())
+        .teamId(tenant.getTeamId())
+        .firstName(tenant.getFirstName())
+        .lastName(tenant.getLastName())
+        .email(tenant.getEmail())
+        .phone(tenant.getPhone())
+        .taxNumber(tenant.getTaxNumber())
+        .idNumber(tenant.getIdNumber())
+        .additionalInfo(tenant.getAdditionalInfo())
+        .currentPropertyId(tenant.getCurrentPropertyId())
+        .createdAt(tenant.getCreatedAt())
+        .updatedAt(tenant.getUpdatedAt())
+        .createdBy(tenant.getCreatedBy())
+        .updatedBy(tenant.getUpdatedBy())
+        .deletedAt(tenant.getDeletedAt())
+        .build();
   }
 }

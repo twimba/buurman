@@ -119,8 +119,8 @@ public class DocumentRepository {
           .set(DOCUMENTS.FILE_NAME, document.getFileName())
           .set(DOCUMENTS.FILE_SIZE, document.getFileSize())
           .set(DOCUMENTS.MIME_TYPE, document.getMimeType())
-          .set(DOCUMENTS.TITLE, document.getTitle())
-          .set(DOCUMENTS.NOTES, document.getNotes())
+          .set(DOCUMENTS.TITLE, document.getTitle().orElse(null))
+          .set(DOCUMENTS.NOTES, document.getNotes().orElse(null))
           .set(DOCUMENTS.UPLOADED_BY, document.getUploadedBy())
           .set(DOCUMENTS.UPLOADED_AT, uploadedAt)
           .execute();
@@ -131,8 +131,8 @@ public class DocumentRepository {
     } else {
       // UPDATE (title and notes are updatable)
       dsl.update(DOCUMENTS)
-          .set(DOCUMENTS.TITLE, document.getTitle())
-          .set(DOCUMENTS.NOTES, document.getNotes())
+          .set(DOCUMENTS.TITLE, document.getTitle().orElse(null))
+          .set(DOCUMENTS.NOTES, document.getNotes().orElse(null))
           .where(DOCUMENTS.ID.eq(document.getId()).and(DOCUMENTS.TEAM_ID.eq(document.getTeamId())))
           .execute();
     }

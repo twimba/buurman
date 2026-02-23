@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,16 +42,16 @@ public class GeneratedReport {
   private UUID teamId;
   private ReportType reportType;
   private ReportFormat format;
-  private @Nullable String parameters; // JSONB stored as string
+  @Builder.Default private Optional<String> parameters = Optional.empty(); // JSONB stored as string
   private ReportStatus status;
-  private @Nullable Integer progress;
-  private @Nullable String fileKey;
-  private @Nullable String error;
+  @Builder.Default private Optional<Integer> progress = Optional.empty();
+  @Builder.Default private Optional<String> fileKey = Optional.empty();
+  @Builder.Default private Optional<String> error = Optional.empty();
   private UUID createdBy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID updatedBy;
-  private @Nullable Instant completedAt;
-  private @Nullable Instant expiresAt;
-  private @Nullable Instant deletedAt;
+  @Builder.Default private Optional<Instant> completedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> expiresAt = Optional.empty();
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }
