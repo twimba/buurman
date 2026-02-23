@@ -1266,12 +1266,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-highlight@npm:^3.18.0":
-  version: 3.19.0
-  resolution: "@tiptap/extension-highlight@npm:3.19.0"
+"@tiptap/extension-highlight@npm:^3.20.0":
+  version: 3.20.0
+  resolution: "@tiptap/extension-highlight@npm:3.20.0"
   peerDependencies:
-    "@tiptap/core": ^3.19.0
-  checksum: 10c0/54008691b6cb53d86890dd73d43bf9d7e732d86055ad2a66621dee5639c7e110081111b78be9df96a32d1611d6e2808d2c535837037f2aed7f545a106f11e85f
+    "@tiptap/core": ^3.20.0
+  checksum: 10c0/777fac4daf763c2713d5c4c7bd8c76aa9de93136e2041be0b7ebc6fbab08c28ac2ce55556776117bf7166d8c7919fb53be6e5b5cc27c2e1f58d6db6d2de51834
   languageName: node
   linkType: hard
 
@@ -2156,7 +2156,7 @@ __metadata:
     "@tanstack/react-query": "npm:5.90.20"
     "@tiptap/core": "npm:^3.18.0"
     "@tiptap/extension-font-family": "npm:^3.18.0"
-    "@tiptap/extension-highlight": "npm:^3.18.0"
+    "@tiptap/extension-highlight": "npm:^3.20.0"
     "@tiptap/extension-link": "npm:^3.18.0"
     "@tiptap/extension-placeholder": "npm:^3.19.0"
     "@tiptap/extension-text-align": "npm:^3.18.0"
@@ -2202,7 +2202,7 @@ __metadata:
     "@tailwindcss/postcss": "npm:4.1.18"
     "@tanstack/react-query": "npm:5.90.20"
     "@tiptap/core": "npm:^3.18.0"
-    "@tiptap/extension-highlight": "npm:^3.18.0"
+    "@tiptap/extension-highlight": "npm:^3.20.0"
     "@tiptap/extension-link": "npm:^3.18.0"
     "@tiptap/extension-placeholder": "npm:^3.19.0"
     "@tiptap/extension-text-align": "npm:^3.18.0"
