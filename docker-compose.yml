@@ -80,7 +80,7 @@ services:
       - buurman-network
 
   seaweedfs:
-    image: chrislusf/seaweedfs:latest
+    image: chrislusf/seaweedfs:4.13
     container_name: buurman-seaweedfs
     entrypoint: ["/bin/sh", "/etc/seaweedfs/entrypoint.sh"]
     environment:
@@ -115,7 +115,7 @@ services:
       - buurman-network
 
   seaweedfs-init:
-    image: amazon/aws-cli:latest
+    image: amazon/aws-cli:2.33.27
     container_name: buurman-seaweedfs-init
     depends_on:
       seaweedfs:
@@ -131,7 +131,7 @@ services:
       - buurman-network
 
   flagsmith:
-    image: flagsmith/flagsmith:latest
+    image: flagsmith/flagsmith:2.217.0
     container_name: buurman-flagsmith
     env_file: .env
     environment:
@@ -169,7 +169,7 @@ services:
       - buurman-network
 
   flagsmith-processor:
-    image: flagsmith/flagsmith:latest
+    image: flagsmith/flagsmith:2.217.0
     container_name: buurman-flagsmith-processor
     command: run-task-processor
     env_file: .env
