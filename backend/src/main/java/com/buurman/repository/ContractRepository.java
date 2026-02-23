@@ -49,7 +49,7 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -66,7 +66,7 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract getByIdAndTeamId(UUID id, UUID teamId) {
@@ -78,39 +78,48 @@ public class ContractRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .ID
-                    .in(ids)
-                    .and(CONTRACTS.TEAM_ID.eq(teamId))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .ID
+                .in(ids)
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findAllByTeamId(UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull()))
-            .orderBy(CONTRACTS.CREATED_AT.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByPropertyId(UUID propertyId, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .PROPERTY_ID
-                    .eq(propertyId)
-                    .and(CONTRACTS.TEAM_ID.eq(teamId))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .orderBy(CONTRACTS.START_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .PROPERTY_ID
+                .eq(propertyId)
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByTenantIdViaParties(UUID tenantId, UUID teamId) {
@@ -120,36 +129,42 @@ public class ContractRepository {
     var CP_TEAM_ID = org.jooq.impl.DSL.field("contract_parties.team_id", UUID.class);
     var CP_DELETED_AT = org.jooq.impl.DSL.field("contract_parties.deleted_at", LocalDateTime.class);
 
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .whereExists(
-                dsl.selectOne()
-                    .from(CONTRACT_PARTIES)
-                    .where(
-                        CP_CONTRACT_ID
-                            .eq(CONTRACTS.ID)
-                            .and(CP_TENANT_ID.eq(tenantId))
-                            .and(CP_TEAM_ID.eq(teamId))
-                            .and(CP_DELETED_AT.isNull())))
-            .and(CONTRACTS.TEAM_ID.eq(teamId))
-            .and(CONTRACTS.DELETED_AT.isNull())
-            .orderBy(CONTRACTS.START_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .whereExists(
+            dsl.selectOne()
+                .from(CONTRACT_PARTIES)
+                .where(
+                    CP_CONTRACT_ID
+                        .eq(CONTRACTS.ID)
+                        .and(CP_TENANT_ID.eq(tenantId))
+                        .and(CP_TEAM_ID.eq(teamId))
+                        .and(CP_DELETED_AT.isNull())))
+        .and(CONTRACTS.TEAM_ID.eq(teamId))
+        .and(CONTRACTS.DELETED_AT.isNull())
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByStatus(Contract.ContractStatus status, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .STATUS
-                    .eq(status.name())
-                    .and(CONTRACTS.TEAM_ID.eq(teamId))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .orderBy(CONTRACTS.START_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .STATUS
+                .eq(status.name())
+                .and(CONTRACTS.TEAM_ID.eq(teamId))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .orderBy(CONTRACTS.START_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Optional<Contract> findActiveContractByPropertyId(UUID propertyId, UUID teamId) {
@@ -162,7 +177,7 @@ public class ContractRepository {
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract save(Contract contract) {
@@ -315,20 +330,23 @@ public class ContractRepository {
         sortableFields,
         CONTRACTS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((ContractsRecord) r));
+        r -> mapper.toDomain((ContractsRecord) r).orElseThrow());
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Record> findActiveContractIncomeByTeamId(UUID teamId) {
@@ -350,18 +368,21 @@ public class ContractRepository {
   }
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
-    return List.copyOf(
-        dsl.selectFrom(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
-                    .and(CONTRACTS.END_DATE.isNotNull())
-                    .and(CONTRACTS.END_DATE.le(beforeDate))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CONTRACTS)
+        .where(
+            CONTRACTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
+                .and(CONTRACTS.END_DATE.isNotNull())
+                .and(CONTRACTS.END_DATE.le(beforeDate))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public LocalDate findEarliestStartDate(UUID teamId) {

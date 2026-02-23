@@ -36,21 +36,24 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.ENABLED.isTrue())
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public List<CalendarFeed> findByUserIdAndTeamId(UUID userId, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(CALENDAR_FEEDS)
-            .where(
-                CALENDAR_FEEDS
-                    .USER_ID
-                    .eq(userId)
-                    .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
-                    .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
-            .orderBy(CALENDAR_FEEDS.CREATED_AT.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(CALENDAR_FEEDS)
+        .where(
+            CALENDAR_FEEDS
+                .USER_ID
+                .eq(userId)
+                .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
+                .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
+        .orderBy(CALENDAR_FEEDS.CREATED_AT.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Optional<CalendarFeed> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -62,7 +65,7 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public CalendarFeed getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -98,7 +101,10 @@ public class CalendarFeedRepository {
             ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId))
             : condition.and(CALENDAR_FEEDS.TENANT_ID.isNull());
 
-    return dsl.selectFrom(CALENDAR_FEEDS).where(condition).fetchOptional().map(mapper::toDomain);
+    return dsl.selectFrom(CALENDAR_FEEDS)
+        .where(condition)
+        .fetchOptional()
+        .flatMap(mapper::toDomain);
   }
 
   public CalendarFeed save(CalendarFeed feed) {

@@ -160,10 +160,10 @@ public class CalendarFeedService {
     calendarFeedRepository.softDeleteByIdAndTeamId(feed.getId(), feed.getTeamId());
   }
 
-  public @Nullable String generateICalFeed(String feedToken) {
+  public Optional<String> generateICalFeed(String feedToken) {
     Optional<CalendarFeed> feedOpt = calendarFeedRepository.findByFeedToken(feedToken);
     if (feedOpt.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     CalendarFeed feed = feedOpt.get();
@@ -308,7 +308,7 @@ public class CalendarFeedService {
     }
 
     sb.append("END:VCALENDAR\r\n");
-    return sb.toString();
+    return Optional.of(sb.toString());
   }
 
   private List<Payment> loadPayments(CalendarFeed feed, UUID teamId) {

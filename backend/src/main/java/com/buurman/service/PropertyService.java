@@ -697,18 +697,17 @@ public class PropertyService {
     }
   }
 
-  private @Nullable ResidentialDetailsResponse buildResidentialResponse(
+  private Optional<ResidentialDetailsResponse> buildResidentialResponse(
       UUID propertyId, UUID teamId) {
     return residentialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
             d ->
                 new ResidentialDetailsResponse(
-                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()))
-        .orElse(null);
+                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
   }
 
-  private @Nullable CommercialDetailsResponse buildCommercialResponse(
+  private Optional<CommercialDetailsResponse> buildCommercialResponse(
       UUID propertyId, UUID teamId) {
     return commercialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
@@ -727,11 +726,10 @@ public class PropertyService {
                     d.getMaxOccupancy(),
                     d.getRestroomCount(),
                     d.getHasKitchenFacility(),
-                    d.getAccessibilityCompliant()))
-        .orElse(null);
+                    d.getAccessibilityCompliant()));
   }
 
-  private @Nullable IndustrialDetailsResponse buildIndustrialResponse(
+  private Optional<IndustrialDetailsResponse> buildIndustrialResponse(
       UUID propertyId, UUID teamId) {
     return industrialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
@@ -751,11 +749,10 @@ public class PropertyService {
                     d.getHasClimateControl(),
                     d.getYardAreaValue(),
                     d.getYardAreaUnit(),
-                    d.getZoningClassification()))
-        .orElse(null);
+                    d.getZoningClassification()));
   }
 
-  private @Nullable AgriculturalDetailsResponse buildAgriculturalResponse(
+  private Optional<AgriculturalDetailsResponse> buildAgriculturalResponse(
       UUID propertyId, UUID teamId) {
     return agriculturalDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
@@ -774,8 +771,7 @@ public class PropertyService {
                     d.getHasOutbuildings(),
                     d.getOutbuildingDetails(),
                     d.getCurrentUse(),
-                    d.getZoningClassification()))
-        .orElse(null);
+                    d.getZoningClassification()));
   }
 
   private PropertyResponse toResponseWithMainPhoto(
@@ -833,11 +829,14 @@ public class PropertyService {
 
     if (property.getPropertyCategory() != null) {
       switch (property.getPropertyCategory()) {
-        case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
-        case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
-        case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
+        case RESIDENTIAL ->
+            residentialDetails = buildResidentialResponse(property.getId(), teamId).orElse(null);
+        case COMMERCIAL ->
+            commercialDetails = buildCommercialResponse(property.getId(), teamId).orElse(null);
+        case INDUSTRIAL ->
+            industrialDetails = buildIndustrialResponse(property.getId(), teamId).orElse(null);
         case AGRICULTURAL ->
-            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
+            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId).orElse(null);
         case MIXED_USE -> {
           // No detail table
         }

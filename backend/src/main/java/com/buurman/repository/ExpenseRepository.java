@@ -52,7 +52,7 @@ public class ExpenseRepository {
                 .and(EXPENSES.TEAM_ID.eq(teamId))
                 .and(EXPENSES.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Expense getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -65,58 +65,70 @@ public class ExpenseRepository {
         .where(
             EXPENSES.ID.eq(id).and(EXPENSES.TEAM_ID.eq(teamId)).and(EXPENSES.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public List<Expense> findAllByTeamId(UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(EXPENSES)
-            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-            .orderBy(EXPENSES.EXPENSE_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(EXPENSES)
+        .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
+        .orderBy(EXPENSES.EXPENSE_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Expense> findByPropertyId(UUID propertyId, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(EXPENSES)
-            .where(
-                EXPENSES
-                    .PROPERTY_ID
-                    .eq(propertyId)
-                    .and(EXPENSES.TEAM_ID.eq(teamId))
-                    .and(EXPENSES.DELETED_AT.isNull()))
-            .orderBy(EXPENSES.EXPENSE_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(EXPENSES)
+        .where(
+            EXPENSES
+                .PROPERTY_ID
+                .eq(propertyId)
+                .and(EXPENSES.TEAM_ID.eq(teamId))
+                .and(EXPENSES.DELETED_AT.isNull()))
+        .orderBy(EXPENSES.EXPENSE_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Expense> findByCategory(Expense.ExpenseCategory category, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(EXPENSES)
-            .where(
-                EXPENSES
-                    .CATEGORY
-                    .eq(category.name())
-                    .and(EXPENSES.TEAM_ID.eq(teamId))
-                    .and(EXPENSES.DELETED_AT.isNull()))
-            .orderBy(EXPENSES.EXPENSE_DATE.desc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(EXPENSES)
+        .where(
+            EXPENSES
+                .CATEGORY
+                .eq(category.name())
+                .and(EXPENSES.TEAM_ID.eq(teamId))
+                .and(EXPENSES.DELETED_AT.isNull()))
+        .orderBy(EXPENSES.EXPENSE_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Expense> findByDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return List.copyOf(
-        dsl.selectFrom(EXPENSES)
-            .where(
-                EXPENSES
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(EXPENSES.EXPENSE_DATE.between(startDate, endDate))
-                    .and(EXPENSES.DELETED_AT.isNull()))
-            .orderBy(EXPENSES.EXPENSE_DATE.asc())
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(EXPENSES)
+        .where(
+            EXPENSES
+                .TEAM_ID
+                .eq(teamId)
+                .and(EXPENSES.EXPENSE_DATE.between(startDate, endDate))
+                .and(EXPENSES.DELETED_AT.isNull()))
+        .orderBy(EXPENSES.EXPENSE_DATE.asc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Expense save(Expense expense) {
@@ -214,7 +226,7 @@ public class ExpenseRepository {
         sortableFields,
         EXPENSES.EXPENSE_DATE,
         pageRequest,
-        r -> mapper.toDomain((ExpensesRecord) r));
+        r -> mapper.toDomain((ExpensesRecord) r).orElseThrow());
   }
 
   public Optional<Record2<Integer, BigDecimal>> getTotalStats(UUID teamId) {

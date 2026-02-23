@@ -140,8 +140,7 @@ public class DashboardService {
 
     if (activeContracts.isEmpty()) {
       return new DashboardStatsResponse.MonthlyIncome(
-          BigDecimal.ZERO,
-          java.util.Objects.requireNonNullElse(teamService.getDefaultCurrency(teamId), "EUR"));
+          BigDecimal.ZERO, teamService.getDefaultCurrency(teamId).orElse("EUR"));
     }
 
     // Group by currency and calculate monthly income

@@ -1,8 +1,8 @@
 package com.buurman.service.demo;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -37,13 +37,15 @@ public class DemoKeycloakSetup {
 
     for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
       try {
-        String keycloakId = findExistingKeycloakUser(user.email());
-        if (keycloakId == null) {
+        Optional<String> existingId = findExistingKeycloakUser(user.email());
+        String keycloakId;
+        if (existingId.isEmpty()) {
           keycloakId =
               keycloakService.createUser(
                   user.email(), user.firstName(), user.lastName(), user.password());
           log.info("Created Keycloak user: {}", user.email());
         } else {
+          keycloakId = existingId.get();
           log.info("Keycloak user already exists: {}", user.email());
         }
         ctx.getKeycloakIds().put(user.email(), keycloakId);
@@ -61,11 +63,12 @@ public class DemoKeycloakSetup {
   public void deleteUsers(DemoDataContext ctx) {
     for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
       try {
-        String keycloakId = findExistingKeycloakUser(user.email());
-        if (keycloakId != null) {
-          keycloakService.deleteUser(keycloakId);
-          log.info("Deleted Keycloak user: {}", user.email());
-        }
+        findExistingKeycloakUser(user.email())
+            .ifPresent(
+                keycloakId -> {
+                  keycloakService.deleteUser(keycloakId);
+                  log.info("Deleted Keycloak user: {}", user.email());
+                });
       } catch (Exception e) {
         log.warn("Failed to delete Keycloak user: {}", user.email(), e);
       }
@@ -104,25 +107,26 @@ public class DemoKeycloakSetup {
 
   public void logoutDemoUser() {
     try {
-      String keycloakId = findExistingKeycloakUser(DemoUsers.DEMO_USER.email());
-      if (keycloakId != null) {
-        keycloak.realm(realm).users().get(keycloakId).logout();
-        log.info("Logged out all sessions for demo user: {}", DemoUsers.DEMO_USER.email());
-      }
+      findExistingKeycloakUser(DemoUsers.DEMO_USER.email())
+          .ifPresent(
+              keycloakId -> {
+                keycloak.realm(realm).users().get(keycloakId).logout();
+                log.info("Logged out all sessions for demo user: {}", DemoUsers.DEMO_USER.email());
+              });
     } catch (Exception e) {
       log.warn("Failed to logout demo user: {}", e.getMessage());
     }
   }
 
-  private @Nullable String findExistingKeycloakUser(String email) {
+  private Optional<String> findExistingKeycloakUser(String email) {
     try {
       List<UserRepresentation> users = keycloak.realm(realm).users().searchByEmail(email, true);
       if (users != null && !users.isEmpty()) {
-        return users.get(0).getId();
+        return Optional.of(users.get(0).getId());
       }
     } catch (Exception e) {
       log.debug("Could not search for Keycloak user: {}", email, e);
     }
-    return null;
+    return Optional.empty();
   }
 }

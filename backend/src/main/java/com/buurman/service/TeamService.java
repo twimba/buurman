@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -500,12 +501,9 @@ public class TeamService {
     return toPreferencesResponse(prefs);
   }
 
-  /** Returns the team's configured default currency, or null if not configured. */
-  public @Nullable String getDefaultCurrency(UUID teamId) {
-    return teamPreferencesRepository
-        .findByTeamId(teamId)
-        .map(TeamPreferences::getDefaultCurrency)
-        .orElse(null);
+  /** Returns the team's configured default currency, or empty if not configured. */
+  public Optional<String> getDefaultCurrency(UUID teamId) {
+    return teamPreferencesRepository.findByTeamId(teamId).map(TeamPreferences::getDefaultCurrency);
   }
 
   private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {

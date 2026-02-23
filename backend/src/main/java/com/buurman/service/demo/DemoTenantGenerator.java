@@ -98,7 +98,7 @@ public class DemoTenantGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       List<UUID> tenantIds = new ArrayList<>();
 
       int businessStart = (int) (TENANTS_PER_TEAM * 0.6); // first 60% individual, rest business

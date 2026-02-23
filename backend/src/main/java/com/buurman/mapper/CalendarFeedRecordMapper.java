@@ -2,6 +2,8 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +13,9 @@ import com.buurman.jooq.generated.tables.records.CalendarFeedsRecord;
 @Component
 public class CalendarFeedRecordMapper {
 
-  public @Nullable CalendarFeed toDomain(@Nullable CalendarFeedsRecord record) {
+  public Optional<CalendarFeed> toDomain(@Nullable CalendarFeedsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     CalendarFeed feed = new CalendarFeed();
@@ -37,6 +39,6 @@ public class CalendarFeedRecordMapper {
     feed.setUpdatedBy(record.getUpdatedBy());
     feed.setDeletedAt(record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
 
-    return feed;
+    return Optional.of(feed);
   }
 }

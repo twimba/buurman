@@ -44,7 +44,7 @@ public class DemoContractGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
       List<UUID> tenantIds = ctx.getTenantIdsByTeam().get(teamId);

@@ -7,10 +7,10 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +67,7 @@ public class ContractPaymentInstructionService {
     return history.stream().map(cpi -> toResolvedResponse(cpi, templateMap)).toList();
   }
 
-  public @Nullable ContractPaymentInstructionResponse getCurrent(
+  public Optional<ContractPaymentInstructionResponse> getCurrent(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     return cpiRepository
@@ -89,8 +89,7 @@ public class ContractPaymentInstructionService {
                 }
               }
               return toResolvedResponse(cpi, templateMap);
-            })
-        .orElse(null);
+            });
   }
 
   @Transactional

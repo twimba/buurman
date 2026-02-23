@@ -147,11 +147,13 @@ public class FlagsmithAdminService {
 
     // The top-level /features/featurestates/ uses FeatureStateSerializerFull which
     // needs a complete body via PUT. We build it from the environment document.
-    JsonNode currentFs = findFeatureStateInEnvDocument(featureStateId);
-    if (currentFs == null) {
-      throw new IllegalStateException(
-          "Feature state %d not found in environment document".formatted(featureStateId));
-    }
+    JsonNode currentFs =
+        findFeatureStateInEnvDocument(featureStateId)
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "Feature state %d not found in environment document"
+                            .formatted(featureStateId)));
 
     ObjectNode body = mapper.createObjectNode();
     body.put("id", featureStateId);
@@ -212,15 +214,15 @@ public class FlagsmithAdminService {
   }
 
   /** Finds a feature state node in the environment document by its django_id/id. */
-  private @Nullable JsonNode findFeatureStateInEnvDocument(long featureStateId) {
+  private Optional<JsonNode> findFeatureStateInEnvDocument(long featureStateId) {
     JsonNode doc = getEnvironmentDocument();
     JsonNode project = doc.get("project");
     if (project == null) {
-      return null;
+      return Optional.empty();
     }
     JsonNode segments = project.get("segments");
     if (segments == null) {
-      return null;
+      return Optional.empty();
     }
     for (JsonNode segment : segments) {
       JsonNode featureStates = segment.get("feature_states");
@@ -233,11 +235,11 @@ public class FlagsmithAdminService {
                 ? fs.get("django_id").asLong()
                 : fs.get("id").asLong();
         if (id == featureStateId) {
-          return fs;
+          return Optional.of(fs);
         }
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   /** Finds which segment a feature state belongs to (from env document). */

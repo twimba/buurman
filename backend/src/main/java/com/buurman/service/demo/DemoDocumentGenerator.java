@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -187,10 +188,11 @@ public class DemoDocumentGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
-      if (uploadedBy == null) {
+      Optional<UUID> uploadedByOpt = ctx.getAdminUserForTeam(teamKey);
+      if (uploadedByOpt.isEmpty()) {
         continue;
       }
+      UUID uploadedBy = uploadedByOpt.get();
       int teamDocuments = 0;
 
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
@@ -199,8 +201,7 @@ public class DemoDocumentGenerator {
 
       // Property documents (2-3 per property, category-specific)
       for (UUID propertyId : propertyIds) {
-        String street = fetchPropertyStreet(propertyId);
-        String prefix = street != null ? slugify(street) : "property";
+        String prefix = fetchPropertyStreet(propertyId).map(this::slugify).orElse("property");
         String category = ctx.getPropertyCategory(propertyId);
         List<DocTemplate> templates = propertyDocsForCategory(category);
         for (DocTemplate doc : pickRandom(templates, random.nextInt(2, 4))) {
@@ -221,8 +222,7 @@ public class DemoDocumentGenerator {
 
       // Tenant documents (1-2 per tenant, type-specific)
       for (UUID tenantId : tenantIds) {
-        String tenantName = fetchTenantName(tenantId);
-        String prefix = tenantName != null ? slugify(tenantName) : "tenant";
+        String prefix = fetchTenantName(tenantId).map(this::slugify).orElse("tenant");
         boolean isBusiness = ctx.isBusinessTenant(tenantId);
         List<DocTemplate> templates = isBusiness ? BUSINESS_TENANT_DOCS : INDIVIDUAL_TENANT_DOCS;
         for (DocTemplate doc : pickRandom(templates, random.nextInt(1, 3))) {
@@ -377,20 +377,23 @@ public class DemoDocumentGenerator {
 
   // --- helpers ---
 
-  private @Nullable String fetchPropertyStreet(UUID propertyId) {
-    return dsl.select(PROPERTIES.STREET)
-        .from(PROPERTIES)
-        .where(PROPERTIES.ID.eq(propertyId))
-        .fetchOne(PROPERTIES.STREET);
+  private Optional<String> fetchPropertyStreet(UUID propertyId) {
+    return Optional.ofNullable(
+        dsl.select(PROPERTIES.STREET)
+            .from(PROPERTIES)
+            .where(PROPERTIES.ID.eq(propertyId))
+            .fetchOne(PROPERTIES.STREET));
   }
 
-  private @Nullable String fetchTenantName(UUID tenantId) {
+  private Optional<String> fetchTenantName(UUID tenantId) {
     Record r =
         dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
             .from(TENANTS)
             .where(TENANTS.ID.eq(tenantId))
             .fetchOne();
-    return r != null ? r.get(TENANTS.FIRST_NAME) + " " + r.get(TENANTS.LAST_NAME) : null;
+    return r != null
+        ? Optional.of(r.get(TENANTS.FIRST_NAME) + " " + r.get(TENANTS.LAST_NAME))
+        : Optional.empty();
   }
 
   private List<DocTemplate> pickRandom(List<DocTemplate> templates, int count) {

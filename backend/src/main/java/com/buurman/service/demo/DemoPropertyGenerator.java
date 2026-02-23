@@ -208,7 +208,7 @@ public class DemoPropertyGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = new ArrayList<>();
 

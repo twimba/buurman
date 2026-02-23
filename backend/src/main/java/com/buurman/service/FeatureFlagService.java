@@ -67,31 +67,31 @@ public class FeatureFlagService {
   }
 
   /** Get remote config value for a flag (global). */
-  public @Nullable Object getValue(String flagKey) {
+  public Optional<Object> getValue(String flagKey) {
     if (flagsmithClient == null) {
-      return null;
+      return Optional.empty();
     }
     try {
       Flags flags = flagsmithClient.getEnvironmentFlags();
-      return flags.getFeatureValue(flagKey);
+      return Optional.ofNullable(flags.getFeatureValue(flagKey));
     } catch (Exception e) {
-      log.warn("Failed to get value for flag '{}', returning null", flagKey, e);
-      return null;
+      log.warn("Failed to get value for flag '{}', returning empty", flagKey, e);
+      return Optional.empty();
     }
   }
 
   /** Get remote config value for a flag (identity-aware). */
-  public @Nullable Object getValue(String flagKey, UserPrincipal principal) {
+  public Optional<Object> getValue(String flagKey, UserPrincipal principal) {
     if (flagsmithClient == null) {
-      return null;
+      return Optional.empty();
     }
     try {
       Flags flags =
           flagsmithClient.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
-      return flags.getFeatureValue(flagKey);
+      return Optional.ofNullable(flags.getFeatureValue(flagKey));
     } catch (Exception e) {
-      log.warn("Failed to get value for flag '{}' for identity, returning null", flagKey, e);
-      return null;
+      log.warn("Failed to get value for flag '{}' for identity, returning empty", flagKey, e);
+      return Optional.empty();
     }
   }
 

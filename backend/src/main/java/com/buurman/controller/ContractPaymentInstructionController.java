@@ -55,7 +55,7 @@ public class ContractPaymentInstructionController {
   @GetMapping("/current")
   public @Nullable ContractPaymentInstructionResponse getCurrent(
       @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-    return service.getCurrent(contractIdentifier, principal);
+    return service.getCurrent(contractIdentifier, principal).orElse(null);
   }
 
   @Operation(

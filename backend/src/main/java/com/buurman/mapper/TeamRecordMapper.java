@@ -4,6 +4,7 @@ import static java.time.ZoneOffset.UTC;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,9 @@ import com.buurman.jooq.generated.tables.records.TeamsRecord;
 @Component
 public class TeamRecordMapper {
 
-  public @Nullable Team toDomain(@Nullable TeamsRecord record) {
+  public Optional<Team> toDomain(@Nullable TeamsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Team team = new Team();
@@ -34,7 +35,7 @@ public class TeamRecordMapper {
     team.setUpdatedBy(record.getUpdatedBy());
     team.setDeletedAt(toInstant(record.getDeletedAt()));
 
-    return team;
+    return Optional.of(team);
   }
 
   private @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {

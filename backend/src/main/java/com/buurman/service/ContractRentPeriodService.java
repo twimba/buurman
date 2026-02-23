@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -145,14 +146,12 @@ public class ContractRentPeriodService {
     return rentPeriodMapper.toResponses(periods);
   }
 
-  public @Nullable ContractRentPeriod getCurrentRent(UUID contractId, UUID teamId) {
-    return rentPeriodRepository.findCurrentByContractIdAndTeamId(contractId, teamId).orElse(null);
+  public Optional<ContractRentPeriod> getCurrentRent(UUID contractId, UUID teamId) {
+    return rentPeriodRepository.findCurrentByContractIdAndTeamId(contractId, teamId);
   }
 
-  public @Nullable ContractRentPeriod getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
-    return rentPeriodRepository
-        .findAtDateByContractIdAndTeamId(contractId, teamId, date)
-        .orElse(null);
+  public Optional<ContractRentPeriod> getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
+    return rentPeriodRepository.findAtDateByContractIdAndTeamId(contractId, teamId, date);
   }
 
   @Transactional

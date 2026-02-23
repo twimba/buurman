@@ -36,7 +36,7 @@ public class TeamRepository {
   private final Clock clock;
 
   public Optional<Team> findById(UUID id) {
-    return dsl.selectFrom(TEAMS).where(TEAMS.ID.eq(id)).fetchOptional().map(mapper::toDomain);
+    return dsl.selectFrom(TEAMS).where(TEAMS.ID.eq(id)).fetchOptional().flatMap(mapper::toDomain);
   }
 
   public Team getById(UUID id) {
@@ -97,7 +97,7 @@ public class TeamRepository {
     return dsl.selectFrom(TEAMS)
         .where(TEAMS.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   /**
@@ -121,7 +121,7 @@ public class TeamRepository {
         sortableFields,
         TEAMS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((TeamsRecord) r));
+        r -> mapper.toDomain((TeamsRecord) r).orElseThrow());
   }
 
   /** Find by identifier including soft-deleted teams. For backoffice use. */
@@ -129,7 +129,7 @@ public class TeamRepository {
     return dsl.selectFrom(TEAMS)
         .where(TEAMS.IDENTIFIER.eq(identifier).and(TEAMS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Team getByIdentifierForBackoffice(String identifier) {

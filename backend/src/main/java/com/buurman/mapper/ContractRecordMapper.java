@@ -2,6 +2,8 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +14,9 @@ import com.buurman.util.CurrencyUtils;
 @Component
 public class ContractRecordMapper {
 
-  public @Nullable Contract toDomain(@Nullable ContractsRecord record) {
+  public Optional<Contract> toDomain(@Nullable ContractsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Contract contract = new Contract();
@@ -64,6 +66,6 @@ public class ContractRecordMapper {
     contract.setDeletedAt(
         record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
 
-    return contract;
+    return Optional.of(contract);
   }
 }

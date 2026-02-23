@@ -95,7 +95,7 @@ public class NotificationRepository {
     if (teamId != null) {
       condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
     }
-    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().map(mapper::toDomain);
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
   public Notification getByIdentifierAndTeamId(String identifier, @Nullable UUID teamId) {
@@ -108,14 +108,14 @@ public class NotificationRepository {
     if (teamId != null) {
       condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
     }
-    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().map(mapper::toDomain);
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
   public Optional<Notification> findByProviderMessageId(String providerMessageId) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public PaginatedResult<Notification> findAllByTeamIdPaginated(
@@ -165,7 +165,10 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        r ->
+            mapper
+                .toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r)
+                .orElseThrow());
   }
 
   public void updateStatus(
@@ -299,14 +302,17 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        r ->
+            mapper
+                .toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r)
+                .orElseThrow());
   }
 
   public Optional<Notification> findByIdentifierUnscoped(String identifier) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .map(
+        .flatMap(
             r ->
                 mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
   }

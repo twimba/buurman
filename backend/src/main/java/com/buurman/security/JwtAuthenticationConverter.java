@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,9 +53,9 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
 
     // Select active membership based on priority: activeTeamId → defaultTeamId → first
-    TeamMember membership = selectActiveMembership(user, memberships);
+    Optional<TeamMember> membershipOpt = selectActiveMembership(user, memberships);
 
-    // Create UserPrincipal (membership can be null for users without team)
+    // Create UserPrincipal (membership can be empty for users without team)
     UserPrincipal principal;
     List<SimpleGrantedAuthority> authorities;
 
@@ -65,7 +66,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     String userIdentifier = Objects.requireNonNull(user.getIdentifier(), "User identifier is null");
 
-    if (membership != null) {
+    if (membershipOpt.isPresent()) {
+      TeamMember membership = membershipOpt.get();
       @Nullable String teamIdentifier =
           teamRepository.findById(membership.getTeamId()).map(Team::getIdentifier).orElse(null);
       principal =
@@ -104,20 +106,17 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     return new UserAuthentication(principal, authorities);
   }
 
-  private @Nullable TeamMember selectActiveMembership(User user, List<TeamMember> memberships) {
+  private Optional<TeamMember> selectActiveMembership(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     // Priority 1: User's active team
     UUID activeTeamId = user.getActiveTeamId();
     if (activeTeamId != null) {
-      TeamMember active =
-          memberships.stream()
-              .filter(m -> m.getTeamId().equals(activeTeamId))
-              .findFirst()
-              .orElse(null);
-      if (active != null) {
+      Optional<TeamMember> active =
+          memberships.stream().filter(m -> m.getTeamId().equals(activeTeamId)).findFirst();
+      if (active.isPresent()) {
         return active;
       }
     }
@@ -125,18 +124,15 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     // Priority 2: User's default team
     UUID defaultTeamId = user.getDefaultTeamId();
     if (defaultTeamId != null) {
-      TeamMember defaultMember =
-          memberships.stream()
-              .filter(m -> m.getTeamId().equals(defaultTeamId))
-              .findFirst()
-              .orElse(null);
-      if (defaultMember != null) {
+      Optional<TeamMember> defaultMember =
+          memberships.stream().filter(m -> m.getTeamId().equals(defaultTeamId)).findFirst();
+      if (defaultMember.isPresent()) {
         return defaultMember;
       }
     }
 
     // Priority 3: First membership (oldest by invited_at)
-    return memberships.get(0);
+    return Optional.of(memberships.get(0));
   }
 
   @SuppressWarnings("unchecked")

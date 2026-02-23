@@ -2,6 +2,8 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +15,9 @@ import com.buurman.jooq.generated.tables.records.NotificationOutboxRecord;
 @Component
 public class NotificationOutboxRecordMapper {
 
-  public @Nullable NotificationOutbox toDomain(@Nullable NotificationOutboxRecord record) {
+  public Optional<NotificationOutbox> toDomain(@Nullable NotificationOutboxRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     NotificationOutbox outbox = new NotificationOutbox();
@@ -38,6 +40,6 @@ public class NotificationOutboxRecordMapper {
     outbox.setProcessedAt(
         record.getProcessedAt() != null ? record.getProcessedAt().toInstant(UTC) : null);
 
-    return outbox;
+    return Optional.of(outbox);
   }
 }

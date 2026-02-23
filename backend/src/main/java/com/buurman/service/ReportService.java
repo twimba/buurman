@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -93,8 +94,7 @@ public class ReportService {
     String activeCurrency =
         currency != null
             ? currency
-            : Objects.requireNonNullElse(
-                teamService.getDefaultCurrency(principal.requireTeamId()), "EUR");
+            : teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR");
 
     // Pre-fetch all contracts for the team to resolve payment→property mapping
     Map<UUID, Contract> contractsById =
@@ -109,8 +109,9 @@ public class ReportService {
                 p ->
                     propertyIds == null
                         || propertyIds.isEmpty()
-                        || propertyIds.contains(
-                            getPropertyIdFromContract(p.getContractId(), contractsById)))
+                        || getPropertyIdFromContract(p.getContractId(), contractsById)
+                            .filter(propertyIds::contains)
+                            .isPresent())
             .toList();
 
     // Get all expenses in period
@@ -130,9 +131,10 @@ public class ReportService {
     // Calculate income by property
     Map<UUID, BigDecimal> incomeByProperty =
         payments.stream()
+            .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById),
+                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     // Calculate total expenses
@@ -277,9 +279,7 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints,
-        Objects.requireNonNullElse(
-            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
+        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -370,10 +370,7 @@ public class ReportService {
             .toList();
 
     return new ExpenseBreakdownResponse(
-        categories,
-        total,
-        Objects.requireNonNullElse(
-            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
+        categories, total, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -402,9 +399,10 @@ public class ReportService {
     // Group by property
     Map<UUID, BigDecimal> incomeByProperty =
         payments.stream()
+            .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById),
+                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
@@ -444,9 +442,7 @@ public class ReportService {
             .toList();
 
     return new PropertyComparisonResponse(
-        propertyData,
-        Objects.requireNonNullElse(
-            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
+        propertyData, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -574,9 +570,10 @@ public class ReportService {
     // Calculate by property
     Map<UUID, BigDecimal> incomeByProperty =
         payments.stream()
+            .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById),
+                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
@@ -631,8 +628,7 @@ public class ReportService {
         netIncome,
         expensesByCategory,
         properties,
-        Objects.requireNonNullElse(
-            teamService.getDefaultCurrency(principal.requireTeamId()), "EUR"));
+        teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
   }
 
   @Transactional(readOnly = true)
@@ -664,10 +660,9 @@ public class ReportService {
 
   // Helper methods
 
-  private @Nullable UUID getPropertyIdFromContract(
+  private Optional<UUID> getPropertyIdFromContract(
       UUID contractId, Map<UUID, Contract> contractsById) {
-    @Nullable Contract contract = contractsById.get(contractId);
-    return contract != null ? contract.getPropertyId() : null;
+    return Optional.ofNullable(contractsById.get(contractId)).map(Contract::getPropertyId);
   }
 
   private List<CategoryExpenseSummary> calculateExpensesByCategory(

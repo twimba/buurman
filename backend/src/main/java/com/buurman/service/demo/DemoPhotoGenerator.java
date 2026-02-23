@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -69,10 +70,11 @@ public class DemoPhotoGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
-      if (uploadedBy == null) {
+      Optional<UUID> uploadedByOpt = ctx.getAdminUserForTeam(teamKey);
+      if (uploadedByOpt.isEmpty()) {
         continue;
       }
+      UUID uploadedBy = uploadedByOpt.get();
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
       if (propertyIds == null) {
         continue;

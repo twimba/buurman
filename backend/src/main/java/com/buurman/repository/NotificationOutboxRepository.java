@@ -6,6 +6,7 @@ import static java.time.ZoneOffset.UTC;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
@@ -55,22 +56,25 @@ public class NotificationOutboxRepository {
 
   public List<NotificationOutbox> findPendingBatch(int batchSize) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return List.copyOf(
-        dsl.selectFrom(NOTIFICATION_OUTBOX)
-            .where(
-                NOTIFICATION_OUTBOX
-                    .STATUS
-                    .in(OutboxStatus.PENDING.name(), OutboxStatus.FAILED.name())
-                    .and(NOTIFICATION_OUTBOX.RETRY_COUNT.lt(NOTIFICATION_OUTBOX.MAX_RETRIES))
-                    .and(
-                        NOTIFICATION_OUTBOX
-                            .NEXT_RETRY_AT
-                            .isNull()
-                            .or(NOTIFICATION_OUTBOX.NEXT_RETRY_AT.le(now))))
-            .orderBy(NOTIFICATION_OUTBOX.CREATED_AT.asc())
-            .limit(batchSize)
-            .fetch()
-            .map(mapper::toDomain));
+    return dsl
+        .selectFrom(NOTIFICATION_OUTBOX)
+        .where(
+            NOTIFICATION_OUTBOX
+                .STATUS
+                .in(OutboxStatus.PENDING.name(), OutboxStatus.FAILED.name())
+                .and(NOTIFICATION_OUTBOX.RETRY_COUNT.lt(NOTIFICATION_OUTBOX.MAX_RETRIES))
+                .and(
+                    NOTIFICATION_OUTBOX
+                        .NEXT_RETRY_AT
+                        .isNull()
+                        .or(NOTIFICATION_OUTBOX.NEXT_RETRY_AT.le(now))))
+        .orderBy(NOTIFICATION_OUTBOX.CREATED_AT.asc())
+        .limit(batchSize)
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public void markProcessing(UUID id) {

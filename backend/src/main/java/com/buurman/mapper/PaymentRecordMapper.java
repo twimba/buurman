@@ -2,6 +2,8 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +14,9 @@ import com.buurman.util.CurrencyUtils;
 @Component
 public class PaymentRecordMapper {
 
-  public @Nullable Payment toDomain(@Nullable PaymentsRecord record) {
+  public Optional<Payment> toDomain(@Nullable PaymentsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Payment payment = new Payment();
@@ -40,6 +42,6 @@ public class PaymentRecordMapper {
     payment.setDeletedAt(
         record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
 
-    return payment;
+    return Optional.of(payment);
   }
 }

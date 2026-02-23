@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -165,15 +166,14 @@ public class ContractBookletExporter {
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = contract.getRentAmountCurrency();
 
-    Tenant primaryTenant = findPrimaryTenant(parties, tenantMap);
     String primaryName =
-        primaryTenant != null
-            ? escapeHtml(primaryTenant.getFirstName())
-                + " "
-                + (primaryTenant.getLastName() != null
-                    ? escapeHtml(primaryTenant.getLastName())
-                    : "")
-            : "—";
+        findPrimaryTenant(parties, tenantMap)
+            .map(
+                t ->
+                    escapeHtml(t.getFirstName())
+                        + " "
+                        + (t.getLastName() != null ? escapeHtml(t.getLastName()) : ""))
+            .orElse("—");
 
     PaymentAggregation agg = aggregatePayments(payments, receivedByPayment);
 
@@ -797,13 +797,12 @@ public class ContractBookletExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private @Nullable Tenant findPrimaryTenant(
+  private Optional<Tenant> findPrimaryTenant(
       List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
-        .map(p -> tenantMap.get(p.getTenantId()))
-        .orElse(null);
+        .map(p -> tenantMap.get(p.getTenantId()));
   }
 
   private PaymentAggregation aggregatePayments(

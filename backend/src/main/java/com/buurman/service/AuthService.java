@@ -7,9 +7,9 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,10 +183,11 @@ public class AuthService {
     User user = userRepository.getById(userId);
 
     // Get active membership based on user's activeTeamId
-    TeamMember member = getActiveMembership(user);
-    String teamIdentifier = resolveTeamIdentifier(member);
+    Optional<TeamMember> member = getActiveMembership(user);
+    String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
 
-    return userMapper.toResponse(user, teamIdentifier, member != null ? member.getRole() : null);
+    return userMapper.toResponse(
+        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
   }
 
   @Transactional
@@ -197,23 +198,21 @@ public class AuthService {
     user.setLastName(request.lastName());
     user = userRepository.save(user);
 
-    TeamMember member = getActiveMembership(user);
-    String teamIdentifier = resolveTeamIdentifier(member);
+    Optional<TeamMember> member = getActiveMembership(user);
+    String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
 
-    return userMapper.toResponse(user, teamIdentifier, member != null ? member.getRole() : null);
+    return userMapper.toResponse(
+        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
   }
 
-  private @Nullable String resolveTeamIdentifier(@Nullable TeamMember member) {
-    if (member == null) {
-      return null;
-    }
-    return teamRepository.findById(member.getTeamId()).map(Team::getIdentifier).orElse(null);
+  private Optional<String> resolveTeamIdentifier(Optional<TeamMember> member) {
+    return member.flatMap(m -> teamRepository.findById(m.getTeamId()).map(Team::getIdentifier));
   }
 
-  private @Nullable TeamMember getActiveMembership(User user) {
+  private Optional<TeamMember> getActiveMembership(User user) {
     java.util.List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
     if (memberships.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     // Priority: activeTeamId → defaultTeamId → first membership
@@ -221,7 +220,7 @@ public class AuthService {
     if (activeTeamId != null) {
       for (TeamMember m : memberships) {
         if (m.getTeamId().equals(activeTeamId)) {
-          return m;
+          return Optional.of(m);
         }
       }
     }
@@ -230,12 +229,12 @@ public class AuthService {
     if (defaultTeamId != null) {
       for (TeamMember m : memberships) {
         if (m.getTeamId().equals(defaultTeamId)) {
-          return m;
+          return Optional.of(m);
         }
       }
     }
 
-    return memberships.get(0);
+    return Optional.of(memberships.get(0));
   }
 
   @Transactional
@@ -271,9 +270,10 @@ public class AuthService {
               .build());
     }
 
-    TeamMember member = getActiveMembership(user);
-    String teamIdentifier = resolveTeamIdentifier(member);
-    return userMapper.toResponse(user, teamIdentifier, member != null ? member.getRole() : null);
+    Optional<TeamMember> member = getActiveMembership(user);
+    String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
+    return userMapper.toResponse(
+        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
   }
 
   @Transactional

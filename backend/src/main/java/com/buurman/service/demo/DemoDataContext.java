@@ -3,9 +3,8 @@ package com.buurman.service.demo;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 /** Mutable context passed between demo data generators to share generated IDs. */
 public class DemoDataContext {
@@ -195,12 +194,13 @@ public class DemoDataContext {
   }
 
   /** Get the "admin" user UUID for a given team key (used as created_by/updated_by). */
-  public @Nullable UUID getAdminUserForTeam(String teamKey) {
-    return switch (teamKey) {
-      case "demo-team" -> userIds.get("demo.user@demo.buurman.io");
-      case "team-alpha" -> userIds.get("admin@demo.buurman.io");
-      case "team-beta" -> userIds.get("admin.team2@demo.buurman.io");
-      default -> userIds.values().iterator().next();
-    };
+  public Optional<UUID> getAdminUserForTeam(String teamKey) {
+    return Optional.ofNullable(
+        switch (teamKey) {
+          case "demo-team" -> userIds.get("demo.user@demo.buurman.io");
+          case "team-alpha" -> userIds.get("admin@demo.buurman.io");
+          case "team-beta" -> userIds.get("admin.team2@demo.buurman.io");
+          default -> userIds.values().iterator().next();
+        });
   }
 }

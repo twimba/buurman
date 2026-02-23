@@ -12,6 +12,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -207,20 +208,21 @@ public class PropertyDashboardService {
     BigDecimal annualNoi = annualIncome.subtract(annualExpenses).subtract(annualOperatingCosts);
 
     // Monthly Cash Flow = avg monthly income - avg monthly expenses - operating costs/12 - mortgage
-    BigDecimal avgMonthlyIncome =
+    Optional<BigDecimal> avgMonthlyIncome =
         divideOrNull(totalIncome, BigDecimal.valueOf(Math.max(months, 1)));
-    BigDecimal avgMonthlyExpenses =
+    Optional<BigDecimal> avgMonthlyExpenses =
         divideOrNull(totalExpenses, BigDecimal.valueOf(Math.max(months, 1)));
     BigDecimal monthlyOperatingCosts =
         annualOperatingCosts.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
-    BigDecimal monthlyCashFlow = null;
-    if (avgMonthlyIncome != null) {
-      monthlyCashFlow =
-          avgMonthlyIncome
-              .subtract(avgMonthlyExpenses != null ? avgMonthlyExpenses : ZERO)
-              .subtract(monthlyOperatingCosts)
-              .subtract(monthlyMortgage != null ? monthlyMortgage : ZERO);
-    }
+    BigDecimal monthlyCashFlow =
+        avgMonthlyIncome
+            .map(
+                income ->
+                    income
+                        .subtract(avgMonthlyExpenses.orElse(ZERO))
+                        .subtract(monthlyOperatingCosts)
+                        .subtract(monthlyMortgage != null ? monthlyMortgage : ZERO))
+            .orElse(null);
 
     // Total Equity = market value - mortgage balance
     BigDecimal totalEquity = null;
@@ -229,7 +231,7 @@ public class PropertyDashboardService {
     }
 
     // Equity Growth % = (marketValue - purchasePrice) / purchasePrice * 100
-    BigDecimal equityGrowthPercent = percentChange(purchasePrice, marketValue);
+    BigDecimal equityGrowthPercent = percentChange(purchasePrice, marketValue).orElse(null);
 
     // Total ROI = (marketValue - purchasePrice + netIncome) / purchasePrice * 100
     BigDecimal totalRoiPercent = null;
@@ -276,7 +278,8 @@ public class PropertyDashboardService {
     }
 
     // Occupancy Rate over the selected period
-    BigDecimal occupancyRatePercent = calculateOccupancyRate(contracts, LocalDate.now(), months);
+    BigDecimal occupancyRatePercent =
+        calculateOccupancyRate(contracts, LocalDate.now(), months).orElse(null);
 
     // Gross Rent Multiplier = market value / annual gross rent
     BigDecimal grossRentMultiplier = null;
@@ -678,12 +681,12 @@ public class PropertyDashboardService {
         percent);
   }
 
-  private @Nullable BigDecimal calculateOccupancyRate(
+  private Optional<BigDecimal> calculateOccupancyRate(
       List<Contract> contracts, LocalDate now, int months) {
     LocalDate start = now.minusMonths(months);
     long totalDays = DAYS.between(start, now);
     if (totalDays <= 0) {
-      return null;
+      return Optional.empty();
     }
 
     long occupiedDays = 0;
@@ -706,28 +709,29 @@ public class PropertyDashboardService {
     }
     occupiedDays = Math.min(occupiedDays, totalDays);
 
-    return BigDecimal.valueOf(occupiedDays)
-        .multiply(ONE_HUNDRED)
-        .divide(BigDecimal.valueOf(totalDays), SCALE, HALF_UP);
+    return Optional.of(
+        BigDecimal.valueOf(occupiedDays)
+            .multiply(ONE_HUNDRED)
+            .divide(BigDecimal.valueOf(totalDays), SCALE, HALF_UP));
   }
 
   private static BigDecimal sumAmounts(List<BigDecimal> amounts) {
     return amounts.stream().filter(java.util.Objects::nonNull).reduce(ZERO, BigDecimal::add);
   }
 
-  private static @Nullable BigDecimal divideOrNull(
+  private static Optional<BigDecimal> divideOrNull(
       @Nullable BigDecimal numerator, BigDecimal denominator) {
     if (numerator == null || denominator == null || denominator.compareTo(ZERO) == 0) {
-      return null;
+      return Optional.empty();
     }
-    return numerator.divide(denominator, SCALE, HALF_UP);
+    return Optional.of(numerator.divide(denominator, SCALE, HALF_UP));
   }
 
-  private static @Nullable BigDecimal percentChange(
+  private static Optional<BigDecimal> percentChange(
       @Nullable BigDecimal from, @Nullable BigDecimal to) {
     if (from == null || to == null || from.compareTo(ZERO) == 0) {
-      return null;
+      return Optional.empty();
     }
-    return to.subtract(from).multiply(ONE_HUNDRED).divide(from, SCALE, HALF_UP);
+    return Optional.of(to.subtract(from).multiply(ONE_HUNDRED).divide(from, SCALE, HALF_UP));
   }
 }

@@ -3,6 +3,7 @@ package com.buurman.mapper;
 import static java.time.ZoneOffset.UTC;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,9 @@ public class NotificationRecordMapper {
 
   private final ObjectMapper objectMapper;
 
-  public @Nullable Notification toDomain(@Nullable NotificationsRecord record) {
+  public Optional<Notification> toDomain(@Nullable NotificationsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Notification notification = new Notification();
@@ -72,6 +73,6 @@ public class NotificationRecordMapper {
     }
     notification.setCreatedBy(record.getCreatedBy());
 
-    return notification;
+    return Optional.of(notification);
   }
 }
