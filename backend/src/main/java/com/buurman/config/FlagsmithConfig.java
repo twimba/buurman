@@ -15,7 +15,6 @@ import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flagsmith.FlagsmithClient;
-import com.flagsmith.models.DefaultFlag;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +71,6 @@ public class FlagsmithConfig {
     return FlagsmithClient.newBuilder()
         .setApiKey(apiKey)
         .withConfiguration(config)
-        .setDefaultFlagValueFunction(FlagsmithConfig::defaultFlagHandler)
         .build();
   }
 
@@ -130,13 +128,6 @@ public class FlagsmithConfig {
   private String resolveBaseUrl() {
     String url = properties.apiUrl().replaceAll("/+$", "");
     return url.contains("/api/v1") ? url : url + "/api/v1";
-  }
-
-  private static DefaultFlag defaultFlagHandler(String featureName) {
-    DefaultFlag flag = new DefaultFlag();
-    flag.setEnabled(false);
-    flag.setValue(null);
-    return flag;
   }
 
   /**

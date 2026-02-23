@@ -222,7 +222,7 @@
         <dependency>
             <groupId>com.flagsmith</groupId>
             <artifactId>flagsmith-java-client</artifactId>
-            <version>7.4.3</version>
+            <version>8.0.0</version>
         </dependency>
 
         <!-- AOP for @Aspect support -->
