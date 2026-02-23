@@ -412,8 +412,7 @@ public class TenantService {
 
     List<Photo> photos = photoRepository.findByEntityAndTeamId("TENANT", tenant.getId(), teamId);
 
-    Optional<Photo> mainPhoto =
-        photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
+    Optional<Photo> mainPhoto = photos.stream().filter(Photo::getIsMainPhoto).findFirst();
 
     @Nullable String mainPhotoUrl =
         mainPhoto

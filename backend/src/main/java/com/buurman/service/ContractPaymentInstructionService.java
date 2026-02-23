@@ -49,10 +49,7 @@ public class ContractPaymentInstructionService {
     // Batch-load templates to avoid N+1
     List<UUID> templateIds =
         history.stream()
-            .filter(
-                cpi ->
-                    !Boolean.TRUE.equals(cpi.getIsCustom())
-                        && cpi.getPaymentInstructionId() != null)
+            .filter(cpi -> !cpi.getIsCustom() && cpi.getPaymentInstructionId() != null)
             .map(ContractPaymentInstruction::getPaymentInstructionId)
             .distinct()
             .toList();
@@ -75,8 +72,7 @@ public class ContractPaymentInstructionService {
         .map(
             cpi -> {
               Map<UUID, PaymentInstruction> templateMap = Map.of();
-              if (!Boolean.TRUE.equals(cpi.getIsCustom())
-                  && cpi.getPaymentInstructionId() != null) {
+              if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
                 piRepository
                     .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
                     .ifPresent(pi -> {});
@@ -322,7 +318,7 @@ public class ContractPaymentInstructionService {
 
   private Map<UUID, PaymentInstruction> loadTemplateMap(
       ContractPaymentInstruction cpi, UserPrincipal principal) {
-    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+    if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
       return piRepository
           .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
           .map(pi -> Map.of(pi.getId(), pi))
@@ -334,7 +330,7 @@ public class ContractPaymentInstructionService {
   private ContractPaymentInstructionResponse toResolvedResponse(
       ContractPaymentInstruction cpi, Map<UUID, PaymentInstruction> templateMap) {
 
-    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+    if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
       PaymentInstruction template = templateMap.get(cpi.getPaymentInstructionId());
       if (template != null) {
         return new ContractPaymentInstructionResponse(

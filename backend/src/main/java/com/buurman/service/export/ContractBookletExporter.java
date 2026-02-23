@@ -125,7 +125,7 @@ public class ContractBookletExporter {
         contractPaymentInstructionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Set<UUID> piIds = new HashSet<>();
     for (ContractPaymentInstruction cpi : allCpis) {
-      if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
+      if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
         piIds.add(cpi.getPaymentInstructionId());
       }
     }
@@ -576,7 +576,7 @@ public class ContractBookletExporter {
         });
 
     for (ContractPaymentInstruction cpi : sortedCpis) {
-      boolean isCustom = Boolean.TRUE.equals(cpi.getIsCustom());
+      boolean isCustom = cpi.getIsCustom();
       PaymentInstruction tpl =
           (!isCustom && cpi.getPaymentInstructionId() != null)
               ? piMap.get(cpi.getPaymentInstructionId())

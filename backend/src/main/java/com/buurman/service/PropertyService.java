@@ -784,8 +784,7 @@ public class PropertyService {
     List<Photo> photos =
         photoRepository.findByEntityAndTeamId("PROPERTY", property.getId(), teamId);
 
-    Optional<Photo> mainPhoto =
-        photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
+    Optional<Photo> mainPhoto = photos.stream().filter(Photo::getIsMainPhoto).findFirst();
 
     Optional<String> mainPhotoUrl =
         mainPhoto.map(

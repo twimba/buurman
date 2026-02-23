@@ -86,9 +86,9 @@ public class PaymentInstructionService {
     String oldName = pi.getName();
     @Nullable String oldPaymentMethod =
         pi.getPaymentMethod() != null ? pi.getPaymentMethod().name() : null;
-    @Nullable Boolean oldIsDefault = pi.getIsDefault();
+    Boolean oldIsDefault = pi.getIsDefault();
 
-    if (Boolean.TRUE.equals(request.isDefault()) && !Boolean.TRUE.equals(pi.getIsDefault())) {
+    if (Boolean.TRUE.equals(request.isDefault()) && !pi.getIsDefault()) {
       repository.clearDefaultByTeamId(principal.requireTeamId());
     }
 

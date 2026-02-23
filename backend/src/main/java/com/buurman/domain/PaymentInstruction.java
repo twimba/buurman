@@ -42,7 +42,7 @@ public class PaymentInstruction {
   private @Nullable String routingNumber;
   private @Nullable String paymentReference;
   private @Nullable String additionalDetails;
-  private @Nullable Boolean isDefault;
+  @Builder.Default private Boolean isDefault = false;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

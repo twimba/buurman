@@ -23,7 +23,7 @@ public class ContractPaymentInstruction {
   private UUID teamId;
   private UUID contractId;
   private @Nullable UUID paymentInstructionId;
-  private @Nullable Boolean isCustom;
+  @Builder.Default private Boolean isCustom = false;
   private @Nullable String customName;
   private @Nullable String customDescription;
   private @Nullable String customPaymentMethod;
