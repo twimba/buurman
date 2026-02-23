@@ -10,6 +10,7 @@ updates:
       - "/backend"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 50
 
   - package-ecosystem: "npm"
     directories:
@@ -19,6 +20,7 @@ updates:
       - "/backoffice"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 50
 
   - package-ecosystem: "docker"
     directories:
@@ -30,9 +32,11 @@ updates:
       - "/keycloak"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 50
 
   - package-ecosystem: "docker-compose"
     directories:
       - "/"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 50
