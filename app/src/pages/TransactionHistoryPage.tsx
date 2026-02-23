@@ -225,8 +225,12 @@ export const TransactionHistoryPage = () => {
   const handleDownloadCSV = async () => {
     try {
       const params: Record<string, string> = {};
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
 
       const response = await client.get('/reports/export/transactions/csv', {
         params,
@@ -251,8 +255,12 @@ export const TransactionHistoryPage = () => {
   const handleDownloadPDF = async () => {
     try {
       const params: Record<string, string> = {};
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
 
       const response = await client.get('/reports/export/transactions/pdf', {
         params,

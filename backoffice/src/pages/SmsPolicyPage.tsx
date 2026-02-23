@@ -60,10 +60,10 @@ function getCheckState(
 ): CheckState {
   let has = 0;
   for (const code of countryCodes) {
-    if (matrix[code]?.includes(type)) has++;
+    if (matrix[code]?.includes(type)) { has++; }
   }
-  if (has === 0) return "none";
-  if (has === countryCodes.length) return "all";
+  if (has === 0) { return "none"; }
+  if (has === countryCodes.length) { return "all"; }
   return "some";
 }
 
@@ -76,11 +76,11 @@ function getRowCheckState(
   let checked = 0;
   for (const code of countryCodes) {
     for (const type of types) {
-      if (matrix[code]?.includes(type)) checked++;
+      if (matrix[code]?.includes(type)) { checked++; }
     }
   }
-  if (checked === 0) return "none";
-  if (checked === totalCells) return "all";
+  if (checked === 0) { return "none"; }
+  if (checked === totalCells) { return "all"; }
   return "some";
 }
 
@@ -178,8 +178,8 @@ export const SmsPolicyPage = () => {
   const toggleExpanded = (groupId: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
-      if (next.has(groupId)) next.delete(groupId);
-      else next.add(groupId);
+      if (next.has(groupId)) { next.delete(groupId); }
+      else { next.add(groupId); }
       return next;
     });
   };
@@ -189,8 +189,8 @@ export const SmsPolicyPage = () => {
     setMatrix((prev) => {
       const types = prev[country] ? [...prev[country]] : [];
       const idx = types.indexOf(type);
-      if (idx >= 0) types.splice(idx, 1);
-      else types.push(type);
+      if (idx >= 0) { types.splice(idx, 1); }
+      else { types.push(type); }
       return { ...prev, [country]: types };
     });
   }, []);
@@ -205,8 +205,8 @@ export const SmsPolicyPage = () => {
         for (const code of countryCodes) {
           const types = next[code] ? [...next[code]] : [];
           const idx = types.indexOf(type);
-          if (enable && idx < 0) types.push(type);
-          if (!enable && idx >= 0) types.splice(idx, 1);
+          if (enable && idx < 0) { types.push(type); }
+          if (!enable && idx >= 0) { types.splice(idx, 1); }
           next[code] = types;
         }
         return next;

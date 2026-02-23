@@ -91,8 +91,12 @@ export const uploadTenantDocument = async (
 ): Promise<DocumentResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-  if (title) formData.append('title', title);
-  if (notes) formData.append('notes', notes);
+  if (title) {
+    formData.append('title', title);
+  }
+  if (notes) {
+    formData.append('notes', notes);
+  }
 
   const response = await client.post(
     `/tenants/${tenantId}/documents`,
@@ -114,8 +118,12 @@ export const uploadTenantPhoto = async (
 ): Promise<PhotoResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-  if (title) formData.append('title', title);
-  if (notes) formData.append('notes', notes);
+  if (title) {
+    formData.append('title', title);
+  }
+  if (notes) {
+    formData.append('notes', notes);
+  }
 
   const response = await client.post(`/tenants/${tenantId}/photos`, formData, {
     headers: {

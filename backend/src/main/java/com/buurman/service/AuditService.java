@@ -125,7 +125,9 @@ public class AuditService {
 
   @SuppressWarnings("unchecked")
   private Map<String, Object> objectToMap(@Nullable Object obj) {
-    if (obj == null) return Map.of();
+    if (obj == null) {
+      return Map.of();
+    }
     return objectMapper.convertValue(obj, Map.class);
   }
 

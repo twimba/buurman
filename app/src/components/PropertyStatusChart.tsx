@@ -66,7 +66,9 @@ export const PropertyStatusChart = ({
 
   const renderLegend = (props: LegendProps) => {
     const { payload } = props;
-    if (!payload) return null;
+    if (!payload) {
+      return null;
+    }
 
     return (
       <div className="flex flex-wrap justify-center gap-4 mt-4">

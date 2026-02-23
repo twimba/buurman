@@ -125,7 +125,9 @@ export const RichTextEditor = ({
   });
 
   const setLink = useCallback(() => {
-    if (!editor || !linkUrl) return;
+    if (!editor || !linkUrl) {
+      return;
+    }
 
     if (linkUrl === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -143,7 +145,9 @@ export const RichTextEditor = ({
   }, [editor, linkUrl]);
 
   const openLinkInput = useCallback(() => {
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
     const previousUrl = editor.getAttributes('link').href || '';
     setLinkUrl(previousUrl);
     setShowLinkInput(true);
@@ -358,7 +362,9 @@ export const RichTextEditor = ({
                 e.preventDefault();
                 setLink();
               }
-              if (e.key === 'Escape') setShowLinkInput(false);
+              if (e.key === 'Escape') {
+                setShowLinkInput(false);
+              }
             }}
             placeholder="https://example.com"
             className="flex-1 text-sm bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-2 py-1 outline-none focus:border-primary-400 dark:focus:border-primary-600"

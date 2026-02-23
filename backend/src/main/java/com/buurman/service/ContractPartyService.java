@@ -321,7 +321,9 @@ public class ContractPartyService {
 
   /** Build ContractPartyResponse list from parties, batch-loading tenants. */
   public List<ContractPartyResponse> buildPartyResponses(List<ContractParty> parties, UUID teamId) {
-    if (parties.isEmpty()) return List.of();
+    if (parties.isEmpty()) {
+      return List.of();
+    }
 
     List<UUID> tenantIds =
         parties.stream()
@@ -336,9 +338,13 @@ public class ContractPartyService {
         .map(
             party -> {
               @Nullable UUID tenantId = party.getTenantId();
-              if (tenantId == null) return null;
+              if (tenantId == null) {
+                return null;
+              }
               @Nullable Tenant tenant = tenantMap.get(tenantId);
-              if (tenant == null) return null;
+              if (tenant == null) {
+                return null;
+              }
               TenantSummary summary = tenantMapper.toSummary(tenant);
               return contractPartyMapper.toResponse(party, summary);
             })
@@ -360,7 +366,9 @@ public class ContractPartyService {
   /** Batch-load primary tenants for multiple contracts. Returns contractId → Tenant map. */
   public Map<UUID, Tenant> getPrimaryTenantsForContracts(
       Collection<UUID> contractIds, UUID teamId) {
-    if (contractIds.isEmpty()) return Map.of();
+    if (contractIds.isEmpty()) {
+      return Map.of();
+    }
     Map<UUID, List<ContractParty>> partiesByContract = getPartiesForContracts(contractIds, teamId);
     Map<UUID, UUID> contractToTenantId = new HashMap<>();
     Set<UUID> tenantIds = new HashSet<>();
@@ -376,7 +384,9 @@ public class ContractPartyService {
                         tenantIds.add(p.getTenantId());
                       }
                     }));
-    if (tenantIds.isEmpty()) return Map.of();
+    if (tenantIds.isEmpty()) {
+      return Map.of();
+    }
     Map<UUID, Tenant> tenantsById =
         tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
             .collect(Collectors.toMap(Tenant::getId, t -> t));
@@ -384,7 +394,9 @@ public class ContractPartyService {
     contractToTenantId.forEach(
         (contractId, tenantId) -> {
           Tenant tenant = tenantsById.get(tenantId);
-          if (tenant != null) result.put(contractId, tenant);
+          if (tenant != null) {
+            result.put(contractId, tenant);
+          }
         });
     return result;
   }

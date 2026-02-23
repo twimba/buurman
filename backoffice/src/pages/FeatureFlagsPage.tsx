@@ -67,7 +67,7 @@ export const FeatureFlagsPage = () => {
         "Failed to update feature flag"
       );
     }
-    if (error instanceof Error) return error.message;
+    if (error instanceof Error) { return error.message; }
     return "Failed to update feature flag";
   };
 
@@ -114,7 +114,7 @@ export const FeatureFlagsPage = () => {
   };
 
   const handleSelect = (identifier: string, label: string) => {
-    if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+    if (blurTimeoutRef.current) { clearTimeout(blurTimeoutRef.current); }
     setSelectedUser(identifier);
     setSelectedUserLabel(label);
     setInputValue("");

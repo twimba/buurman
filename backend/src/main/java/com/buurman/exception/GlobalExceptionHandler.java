@@ -183,7 +183,9 @@ public class GlobalExceptionHandler {
   private String extractJooqConstraintMessage(
       org.jooq.exception.IntegrityConstraintViolationException ex) {
     String msg = ex.getMessage();
-    if (msg == null) return "A data conflict occurred";
+    if (msg == null) {
+      return "A data conflict occurred";
+    }
     String lower = msg.toLowerCase();
     if (lower.contains("chk_cpi_dates")) {
       return "The effective date range conflicts with an existing payment instruction";
@@ -202,7 +204,9 @@ public class GlobalExceptionHandler {
 
   private String extractDataIntegrityMessage(DataIntegrityViolationException ex) {
     String cause = ex.getMostSpecificCause().getMessage();
-    if (cause == null) return "A data conflict occurred";
+    if (cause == null) {
+      return "A data conflict occurred";
+    }
 
     String lowerCause = cause.toLowerCase();
     if (lowerCause.contains("uq_contract_parties_contract_tenant")) {

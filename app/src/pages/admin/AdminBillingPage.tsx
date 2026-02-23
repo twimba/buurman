@@ -15,7 +15,9 @@ export const AdminBillingPage = () => {
     }
   }, [isLoading, canEditTeamSettings, navigate]);
 
-  if (isLoading || !canEditTeamSettings) return null;
+  if (isLoading || !canEditTeamSettings) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

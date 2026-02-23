@@ -90,7 +90,9 @@ export const DocumentsPage = () => {
   };
 
   const handleBulkDelete = () => {
-    if (selectedDocuments.size === 0) return;
+    if (selectedDocuments.size === 0) {
+      return;
+    }
     setPendingBulkDelete(Array.from(selectedDocuments));
   };
 
@@ -103,7 +105,9 @@ export const DocumentsPage = () => {
   };
 
   const handleBulkDownload = () => {
-    if (selectedDocuments.size === 0) return;
+    if (selectedDocuments.size === 0) {
+      return;
+    }
     bulkDownloadMutation.mutate(Array.from(selectedDocuments));
   };
 
@@ -115,13 +119,19 @@ export const DocumentsPage = () => {
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const getSortIcon = (field: string) => {
-    if (sort !== field) return null;
+    if (sort !== field) {
+      return null;
+    }
     return direction === 'asc' ? (
       <ChevronUp className="h-4 w-4" />
     ) : (
@@ -370,7 +380,9 @@ export const DocumentsPage = () => {
                                           'expense'
                                         ? `/expenses/${doc.entityIdentifier}`
                                         : '#';
-                            if (entityPath !== '#') navigate(entityPath);
+                            if (entityPath !== '#') {
+                              navigate(entityPath);
+                            }
                           }}
                           className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db] hover:bg-blue-100 hover:text-blue-800 transition-colors"
                         >

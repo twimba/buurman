@@ -168,7 +168,7 @@ export const BuurmiesPage = () => {
   const removeProfileReset = useRemoveProfileReset();
 
   const handleAction = () => {
-    if (!actionTarget) return;
+    if (!actionTarget) { return; }
     const { buurmy, action } = actionTarget;
     const mutationMap = {
       disable: disableBuurmy,
@@ -199,7 +199,7 @@ export const BuurmiesPage = () => {
 
   const buurmies = useMemo(() => {
     const all = data?.content ?? [];
-    if (!search.trim()) return all;
+    if (!search.trim()) { return all; }
     const q = search.toLowerCase();
     return all.filter(
       (b) =>

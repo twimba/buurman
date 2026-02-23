@@ -1260,8 +1260,9 @@ const AmenitiesSection = ({
   );
 
   const toggleAmenity = (id: string, checked: boolean) => {
-    if (checked) onAdd?.(id);
-    else onRemove?.(id);
+    if (checked) {
+      onAdd?.(id);
+    } else onRemove?.(id);
   };
 
   return (

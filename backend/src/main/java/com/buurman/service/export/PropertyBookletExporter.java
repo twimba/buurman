@@ -752,7 +752,9 @@ public class PropertyBookletExporter {
             || property.getWallConstruction() != null
             || property.getFlooringType() != null;
 
-    if (!hasConstruction) return;
+    if (!hasConstruction) {
+      return;
+    }
 
     appendSectionTitle(html, "Construction");
     html.append("<table class='detail-grid'>");
@@ -796,13 +798,21 @@ public class PropertyBookletExporter {
     boolean hasParkingData =
         property.getParkingType() != null || property.getParkingSpaces() != null;
 
-    if (!hasEnergyData && !hasUtilitiesData && !hasParkingData) return;
+    if (!hasEnergyData && !hasUtilitiesData && !hasParkingData) {
+      return;
+    }
 
     appendPageStart(html, "Building Specifications");
 
-    if (hasEnergyData) appendEnergySection(html, property);
-    if (hasUtilitiesData) appendUtilitiesSection(html, property);
-    if (hasParkingData) appendParkingSection(html, property);
+    if (hasEnergyData) {
+      appendEnergySection(html, property);
+    }
+    if (hasUtilitiesData) {
+      appendUtilitiesSection(html, property);
+    }
+    if (hasParkingData) {
+      appendParkingSection(html, property);
+    }
 
     appendPageEnd(html);
   }
@@ -920,7 +930,9 @@ public class PropertyBookletExporter {
       List<PropertyOutdoorArea> outdoorAreas) {
     boolean hasAmenities = !propertyAmenities.isEmpty();
     boolean hasOutdoorAreas = !outdoorAreas.isEmpty();
-    if (!hasAmenities && !hasOutdoorAreas) return;
+    if (!hasAmenities && !hasOutdoorAreas) {
+      return;
+    }
 
     appendPageStart(html, "Features &amp; Outdoor Spaces");
 
@@ -1005,7 +1017,9 @@ public class PropertyBookletExporter {
                 || (property.getAccessibilityNotes() != null
                     && !property.getAccessibilityNotes().isBlank()));
 
-    if (!hasSafetyData && !hasAccessibilityData) return;
+    if (!hasSafetyData && !hasAccessibilityData) {
+      return;
+    }
 
     appendPageStart(html, "Safety &amp; Accessibility");
 
@@ -1046,7 +1060,9 @@ public class PropertyBookletExporter {
   // ── Page: Photo Gallery ─────────────────────────────────────────
 
   private void appendPhotoGalleryPage(StringBuilder html, List<Photo> photos) {
-    if (photos.isEmpty()) return;
+    if (photos.isEmpty()) {
+      return;
+    }
 
     List<String[]> photoEntries = new ArrayList<>();
     for (Photo photo : photos) {
@@ -1056,7 +1072,9 @@ public class PropertyBookletExporter {
         photoEntries.add(new String[] {dataUri, label, isTrue(photo.getIsMainPhoto()) ? "1" : "0"});
       }
     }
-    if (photoEntries.isEmpty()) return;
+    if (photoEntries.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Photo Gallery");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -1067,7 +1085,9 @@ public class PropertyBookletExporter {
 
     html.append("<table style='width:100%;border-collapse:collapse;'>");
     for (int i = 0; i < photoEntries.size(); i++) {
-      if (i % 3 == 0) html.append("<tr>");
+      if (i % 3 == 0) {
+        html.append("<tr>");
+      }
       String[] entry = photoEntries.get(i);
       boolean isMain = "1".equals(entry[2]);
 
@@ -1108,7 +1128,9 @@ public class PropertyBookletExporter {
       StringBuilder html,
       Map<Integer, FinancialYearSummary> yearSummaries,
       @Nullable String currency) {
-    if (yearSummaries.isEmpty()) return;
+    if (yearSummaries.isEmpty()) {
+      return;
+    }
     String ccy = currency != null ? currency : "EUR";
 
     appendPageStart(html, "Financial Overview");
@@ -1153,7 +1175,9 @@ public class PropertyBookletExporter {
   // ── Page: Contracts ─────────────────────────────────────────────
 
   private void appendContractsPage(StringBuilder html, List<Contract> contracts, UUID teamId) {
-    if (contracts.isEmpty()) return;
+    if (contracts.isEmpty()) {
+      return;
+    }
 
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
     Map<UUID, Tenant> primaryTenants =
@@ -1339,13 +1363,17 @@ public class PropertyBookletExporter {
   }
 
   private String buildAreaString(Property property) {
-    if (property.getAreaValue() == null) return "—";
+    if (property.getAreaValue() == null) {
+      return "—";
+    }
     String unit = property.getAreaUnit() != null ? property.getAreaUnit() : "sqm";
     return property.getAreaValue() + " " + unit;
   }
 
   private String buildAreaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
-    if (value == null) return "—";
+    if (value == null) {
+      return "—";
+    }
     return value + " " + (unit != null ? unit : "sqm");
   }
 
@@ -1381,7 +1409,9 @@ public class PropertyBookletExporter {
   }
 
   private String getEnergyRatingColor(@Nullable String rating) {
-    if (rating == null) return "#6b7280";
+    if (rating == null) {
+      return "#6b7280";
+    }
     return switch (rating) {
       case "A++" -> "#065f46";
       case "A+" -> "#047857";

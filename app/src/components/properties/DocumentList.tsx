@@ -38,8 +38,12 @@ interface DocumentListProps {
 }
 
 const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
@@ -86,7 +90,9 @@ export const DocumentList = ({
   const updateDocumentMutation = useUpdateDocument();
 
   const handleBulkDownload = () => {
-    if (selectedDocuments.size === 0) return;
+    if (selectedDocuments.size === 0) {
+      return;
+    }
     bulkDownloadMutation.mutate(Array.from(selectedDocuments));
   };
 
@@ -95,7 +101,9 @@ export const DocumentList = ({
   };
 
   const handleBulkDelete = () => {
-    if (selectedDocuments.size === 0) return;
+    if (selectedDocuments.size === 0) {
+      return;
+    }
     setPendingBulkDelete(Array.from(selectedDocuments));
   };
 
@@ -135,7 +143,9 @@ export const DocumentList = ({
   };
 
   const handleUpload = async () => {
-    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length === 0) {
+      return;
+    }
     const cleanNotes = uploadNotes.trim();
     const notesValue =
       !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;

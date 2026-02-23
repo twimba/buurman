@@ -85,7 +85,7 @@ export const TeamDetailPage = () => {
   };
 
   const handleSave = () => {
-    if (!editName.trim()) return;
+    if (!editName.trim()) { return; }
     updateTeam.mutate(
       { identifier: identifier!, data: { name: editName.trim() } },
       {
@@ -140,8 +140,8 @@ export const TeamDetailPage = () => {
               className="w-full max-w-md px-3 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSave();
-                if (e.key === "Escape") cancelEditing();
+                if (e.key === "Enter") { handleSave(); }
+                if (e.key === "Escape") { cancelEditing(); }
               }}
             />
             <Button onClick={handleSave} isLoading={updateTeam.isPending}>

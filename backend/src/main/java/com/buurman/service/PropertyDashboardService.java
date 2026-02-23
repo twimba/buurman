@@ -625,7 +625,9 @@ public class PropertyDashboardService {
    */
   private BigDecimal getMonthlyShareOfAnnualCost(
       @Nullable BigDecimal annualAmount, @Nullable String dueMonths, int currentMonth) {
-    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) return ZERO;
+    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
+      return ZERO;
+    }
     if (dueMonths == null || dueMonths.isBlank()) {
       // If no due months specified, spread evenly across 12 months
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);

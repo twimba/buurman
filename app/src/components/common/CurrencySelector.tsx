@@ -28,7 +28,9 @@ export const CurrencySelector = ({
       <button
         type="button"
         onClick={() => {
-          if (!disabled) setIsOpen((o) => !o);
+          if (!disabled) {
+            setIsOpen((o) => !o);
+          }
         }}
         disabled={disabled}
         aria-expanded={isOpen}

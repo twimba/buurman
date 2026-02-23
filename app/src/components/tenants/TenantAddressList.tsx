@@ -140,7 +140,9 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
 
   // Filtering, sorting, pagination
   const filteredAndSorted = useMemo(() => {
-    if (!addresses) return [];
+    if (!addresses) {
+      return [];
+    }
     let filtered = [...addresses];
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
@@ -179,8 +181,12 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
         default:
           return 0;
       }
-      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return sortOrder === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return sortOrder === 'asc' ? 1 : -1;
+      }
       return 0;
     });
     return filtered;

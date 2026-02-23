@@ -20,7 +20,9 @@ final class BookletHelper {
   // ── Formatting ──────────────────────────────────────────────────
 
   static String escapeHtml(@Nullable String text) {
-    if (text == null) return "";
+    if (text == null) {
+      return "";
+    }
     return text.replace("&", "&amp;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
@@ -29,7 +31,9 @@ final class BookletHelper {
   }
 
   static String sanitizeRichText(@Nullable String html) {
-    if (html == null) return "";
+    if (html == null) {
+      return "";
+    }
     return html.replaceAll("(?i)<script[^>]*>.*?</script>", "")
         .replaceAll("(?i)<iframe[^>]*>.*?</iframe>", "")
         .replaceAll("(?i)<object[^>]*>.*?</object>", "")
@@ -40,7 +44,9 @@ final class BookletHelper {
   }
 
   static String formatEnumValue(@Nullable String value) {
-    if (value == null) return "";
+    if (value == null) {
+      return "";
+    }
     return Arrays.stream(value.split("_"))
         .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
         .collect(joining(" "));
@@ -65,23 +71,33 @@ final class BookletHelper {
   }
 
   static String displayBool(@Nullable Boolean value) {
-    if (value == null) return "—";
+    if (value == null) {
+      return "—";
+    }
     return value ? "Yes" : "No";
   }
 
   static String displayBoolWithDetail(@Nullable Boolean value, @Nullable String detail) {
-    if (value == null) return "—";
-    if (!value) return "No";
+    if (value == null) {
+      return "—";
+    }
+    if (!value) {
+      return "No";
+    }
     return detail != null ? "Yes — " + detail : "Yes";
   }
 
   static String displayWithUnit(@Nullable Number value, String unit) {
-    if (value == null) return "—";
+    if (value == null) {
+      return "—";
+    }
     return value + " " + unit;
   }
 
   static String displayEnum(@Nullable Enum<?> value) {
-    if (value == null) return "—";
+    if (value == null) {
+      return "—";
+    }
     return value.name().replace('_', ' ').substring(0, 1).toUpperCase()
         + value.name().replace('_', ' ').substring(1).toLowerCase();
   }

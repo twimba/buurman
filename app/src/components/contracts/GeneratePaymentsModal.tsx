@@ -16,7 +16,9 @@ export default function GeneratePaymentsModal({
 }: GeneratePaymentsModalProps) {
   const [count, setCount] = useState(1);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const submitForm = async (markAsPaid: boolean) => {
     await onSubmit(count, markAsPaid);

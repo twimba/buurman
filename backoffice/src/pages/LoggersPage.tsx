@@ -82,7 +82,7 @@ export const LoggersPage = () => {
   }, [searchInput]);
 
   const regexError = useMemo(() => {
-    if (!isRegex || !debouncedSearch) return null;
+    if (!isRegex || !debouncedSearch) { return null; }
     try {
       new RegExp(debouncedSearch, "i");
       return null;
@@ -92,7 +92,7 @@ export const LoggersPage = () => {
   }, [debouncedSearch, isRegex]);
 
   const filtered = useMemo(() => {
-    if (!loggers) return [];
+    if (!loggers) { return []; }
     let result = loggers;
 
     if (levelFilter !== "ALL") {
@@ -134,7 +134,7 @@ export const LoggersPage = () => {
     });
   };
 
-  if (isLoading) return <LoadingSpinner message="Loading loggers..." />;
+  if (isLoading) { return <LoadingSpinner message="Loading loggers..." />; }
 
   return (
     <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#0c0d14] p-6">

@@ -50,9 +50,13 @@ export const MoneyInput = ({
   const prefixRef = useRef<HTMLDivElement>(null);
 
   const formatWithThousands = (numStr: string): string => {
-    if (!numStr) return '';
+    if (!numStr) {
+      return '';
+    }
     const num = parseFloat(numStr);
-    if (isNaN(num)) return numStr;
+    if (isNaN(num)) {
+      return numStr;
+    }
     const parts = num.toFixed(fractionalDigits).split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return fractionalDigits > 0 ? parts.join('.') : parts[0];
@@ -93,10 +97,16 @@ export const MoneyInput = ({
     }
 
     // Only allow digits, one dot, and valid decimal length
-    if (!/^\d*\.?\d*$/.test(raw)) return;
-    if (fractionalDigits === 0 && raw.includes('.')) return;
+    if (!/^\d*\.?\d*$/.test(raw)) {
+      return;
+    }
+    if (fractionalDigits === 0 && raw.includes('.')) {
+      return;
+    }
     const parts = raw.split('.');
-    if (parts[1] !== undefined && parts[1].length > fractionalDigits) return;
+    if (parts[1] !== undefined && parts[1].length > fractionalDigits) {
+      return;
+    }
 
     setRawValue(raw);
     const num = parseFloat(raw);
@@ -112,9 +122,13 @@ export const MoneyInput = ({
 
   const handleBlur = () => {
     setIsFocused(false);
-    if (rawValue === '' || rawValue === '.') return;
+    if (rawValue === '' || rawValue === '.') {
+      return;
+    }
     const num = parseFloat(rawValue);
-    if (isNaN(num)) return;
+    if (isNaN(num)) {
+      return;
+    }
     const formatted = num.toFixed(fractionalDigits);
     setRawValue(formatted);
     const parsed = parseFloat(formatted);

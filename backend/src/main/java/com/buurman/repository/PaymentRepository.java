@@ -108,7 +108,9 @@ public class PaymentRepository {
 
   public List<Payment> findPaidByContractIdsAndDateRange(
       Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
-    if (contractIds.isEmpty()) return List.of();
+    if (contractIds.isEmpty()) {
+      return List.of();
+    }
     return dsl
         .selectFrom(PAYMENTS)
         .where(

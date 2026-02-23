@@ -73,7 +73,9 @@ export const ExpenseDetailPage = () => {
   const deleteDocumentMutation = useDeleteExpenseDocument(id!);
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       await deleteExpenseMutation.mutateAsync(id);
       navigate('/expenses');

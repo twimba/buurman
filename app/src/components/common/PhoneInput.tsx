@@ -19,8 +19,12 @@ interface PhoneInputProps {
 export const validatePhoneE164 = (
   value: string | null | undefined
 ): string | null => {
-  if (!value || !value.trim()) return null;
-  if (!isValidPhoneNumber(value)) return 'Please enter a valid phone number';
+  if (!value || !value.trim()) {
+    return null;
+  }
+  if (!isValidPhoneNumber(value)) {
+    return 'Please enter a valid phone number';
+  }
   return null;
 };
 

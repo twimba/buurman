@@ -59,7 +59,9 @@ export const PaymentForm = ({
   }
 
   useEffect(() => {
-    if (!defaultCurrency) return;
+    if (!defaultCurrency) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) =>
       prev.currency ? prev : { ...prev, currency: defaultCurrency }
@@ -68,7 +70,9 @@ export const PaymentForm = ({
   }, [defaultCurrency]);
 
   useEffect(() => {
-    if (resetKey === undefined || resetKey === 0 || payment) return;
+    if (resetKey === undefined || resetKey === 0 || payment) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => ({
       ...prev,
@@ -87,7 +91,9 @@ export const PaymentForm = ({
 
   // Determine which rent period the due date falls into
   const rentPeriodForDate = useMemo(() => {
-    if (!rentPeriods || !dueDate) return null;
+    if (!rentPeriods || !dueDate) {
+      return null;
+    }
     return (
       rentPeriods.find((rp) => {
         return (
@@ -100,7 +106,9 @@ export const PaymentForm = ({
 
   // Current rent period (no end date or end date >= today)
   const currentRentPeriod = useMemo(() => {
-    if (!rentPeriods) return null;
+    if (!rentPeriods) {
+      return null;
+    }
     const today = new Date().toISOString().split('T')[0];
     return (
       rentPeriods.find((rp) => {
@@ -126,18 +134,24 @@ export const PaymentForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.amount <= 0)
+    if (formData.amount <= 0) {
       newErrors.amount = 'Amount must be greater than 0';
-    if (!formData.dueDate) newErrors.dueDate = 'Due date is required';
-    if (formData.amount > 0 && !currency.trim())
+    }
+    if (!formData.dueDate) {
+      newErrors.dueDate = 'Due date is required';
+    }
+    if (formData.amount > 0 && !currency.trim()) {
       newErrors.currency = 'Currency is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
     await onSubmit(formData);
   };
 

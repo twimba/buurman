@@ -511,7 +511,9 @@ export const SubscriptionSection = () => {
                 <p className="text-sm text-blue-800 dark:text-blue-300">
                   {(() => {
                     const plan = plans.find((p) => p.id === selectedPlan);
-                    if (!plan) return null;
+                    if (!plan) {
+                      return null;
+                    }
                     const price = getPrice(plan);
                     return `You'll be charged €${price % 1 === 0 ? price : price.toFixed(2)}/month${isAnnual && plan.annualTotal ? ` (€${plan.annualTotal} billed annually)` : ''} starting from your next billing cycle.`;
                   })()}

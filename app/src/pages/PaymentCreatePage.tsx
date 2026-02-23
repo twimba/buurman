@@ -53,7 +53,9 @@ export const PaymentCreatePage = () => {
   });
 
   const isPrefillInvalid = useMemo(() => {
-    if (!prefilledContractId || !activeContracts) return false;
+    if (!prefilledContractId || !activeContracts) {
+      return false;
+    }
     return !activeContracts.content?.some(
       (c) => c.identifier === prefilledContractId
     );
@@ -134,7 +136,9 @@ export const PaymentCreatePage = () => {
 
         setBulkSubmitting(false);
         callbacks.onComplete();
-        if (!hasErrors) navigate(-1);
+        if (!hasErrors) {
+          navigate(-1);
+        }
       })
       .catch((e) => {
         rows.forEach((_, i) => callbacks.onRowError(i, getErrorMessage(e)));

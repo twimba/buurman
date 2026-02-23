@@ -77,7 +77,7 @@ const EmailBodyPreview = ({ body }: { body: string }) => {
 
   useEffect(() => {
     const iframe = iframeRef.current;
-    if (!iframe) return;
+    if (!iframe) { return; }
 
     const handleLoad = () => {
       const doc = iframe.contentDocument;

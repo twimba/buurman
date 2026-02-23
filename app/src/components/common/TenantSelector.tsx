@@ -116,7 +116,9 @@ export const TenantSelector = ({
           onChange={(e) => {
             setSearch(e.target.value);
             setHighlightedIndex(0);
-            if (!isOpen) setIsOpen(true);
+            if (!isOpen) {
+              setIsOpen(true);
+            }
           }}
           onFocus={() => {
             if (!disabled) {

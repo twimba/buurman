@@ -124,11 +124,15 @@ public class PropertyDashboardPdfExporter {
   }
 
   private static String humanize(@Nullable String enumValue) {
-    if (enumValue == null || enumValue.isBlank()) return enumValue != null ? enumValue : "";
+    if (enumValue == null || enumValue.isBlank()) {
+      return enumValue != null ? enumValue : "";
+    }
     String[] words = enumValue.split("_");
     StringBuilder sb = new StringBuilder();
     for (String w : words) {
-      if (!sb.isEmpty()) sb.append(' ');
+      if (!sb.isEmpty()) {
+        sb.append(' ');
+      }
       sb.append(w.substring(0, 1).toUpperCase()).append(w.substring(1).toLowerCase());
     }
     return sb.toString();

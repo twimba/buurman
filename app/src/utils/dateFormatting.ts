@@ -23,7 +23,9 @@ export function formatAppDate(
   timezone: string = 'UTC'
 ): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-  if (isNaN(date.getTime())) return '';
+  if (isNaN(date.getTime())) {
+    return '';
+  }
 
   const zonedDate = toZonedDate(date, timezone);
   const fnsFormat = DATE_FORMAT_MAP[dateFormatPref] || 'dd/MM/yyyy';
@@ -36,7 +38,9 @@ export function formatAppDateTime(
   timezone: string = 'UTC'
 ): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-  if (isNaN(date.getTime())) return '';
+  if (isNaN(date.getTime())) {
+    return '';
+  }
 
   const zonedDate = toZonedDate(date, timezone);
   const fnsFormat = DATE_FORMAT_MAP[dateFormatPref] || 'dd/MM/yyyy';
@@ -48,7 +52,9 @@ export function formatAppRelativeDate(
   timezone: string = 'UTC'
 ): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-  if (isNaN(date.getTime())) return '';
+  if (isNaN(date.getTime())) {
+    return '';
+  }
 
   const zonedDate = toZonedDate(date, timezone);
   return formatDistanceToNow(zonedDate, { addSuffix: true });

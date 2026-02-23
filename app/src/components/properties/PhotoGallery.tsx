@@ -93,7 +93,9 @@ export const PhotoGallery = ({
   };
 
   const handleUpload = async () => {
-    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length === 0) {
+      return;
+    }
     const cleanNotes = uploadNotes.trim();
     const notesValue =
       !cleanNotes || cleanNotes === '<p></p>' ? undefined : cleanNotes;

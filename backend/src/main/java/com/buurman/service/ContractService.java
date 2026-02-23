@@ -846,7 +846,9 @@ public class ContractService {
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and tenants). */
   private List<ContractResponse> toResponses(List<Contract> contracts, UUID teamId) {
-    if (contracts.isEmpty()) return List.of();
+    if (contracts.isEmpty()) {
+      return List.of();
+    }
 
     // Batch load properties
     List<UUID> propertyIds = contracts.stream().map(Contract::getPropertyId).distinct().toList();

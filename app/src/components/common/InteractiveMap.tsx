@@ -90,7 +90,9 @@ function getZoomForAccuracy(accuracy: string | null | undefined): number {
 }
 
 function getCountryCenter(countryCode?: string): { lat: number; lng: number } {
-  if (!countryCode) return DEFAULT_CENTER;
+  if (!countryCode) {
+    return DEFAULT_CENTER;
+  }
   return COUNTRY_CENTERS[countryCode.toUpperCase()] ?? DEFAULT_CENTER;
 }
 
@@ -136,7 +138,9 @@ export const InteractiveMap = ({
 
   const handleDragEnd = useCallback(
     (event: google.maps.MapMouseEvent) => {
-      if (!onLocationChange || !event.latLng) return;
+      if (!onLocationChange || !event.latLng) {
+        return;
+      }
       onLocationChange(event.latLng.lat(), event.latLng.lng());
     },
     [onLocationChange]
@@ -144,7 +148,9 @@ export const InteractiveMap = ({
 
   const handleMapClick = useCallback(
     (event: MapMouseEvent) => {
-      if (!onLocationChange || !clickToPlaceActive) return;
+      if (!onLocationChange || !clickToPlaceActive) {
+        return;
+      }
       const detail = event.detail;
       if (detail.latLng) {
         onLocationChange(detail.latLng.lat, detail.latLng.lng);

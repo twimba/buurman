@@ -45,16 +45,25 @@ export function MetricHint({
 
   const handleMouseEnter = useCallback(() => {
     const el = tooltipRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const rect = el.getBoundingClientRect();
     const vw = window.innerWidth;
     let offset = 0;
-    if (rect.right > vw - 8) offset = vw - 8 - rect.right;
-    else if (rect.left < 8) offset = 8 - rect.left;
-    if (offset !== nudge) setNudge(offset);
+    if (rect.right > vw - 8) {
+      offset = vw - 8 - rect.right;
+    } else if (rect.left < 8) {
+      offset = 8 - rect.left;
+    }
+    if (offset !== nudge) {
+      setNudge(offset);
+    }
   }, [nudge]);
 
-  if (!resolved) return <>{label}</>;
+  if (!resolved) {
+    return <>{label}</>;
+  }
 
   return (
     <span

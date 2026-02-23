@@ -391,14 +391,20 @@ public class ContractBookletExporter {
     List<ContractParty> sortedParties = new ArrayList<>(parties);
     sortedParties.sort(
         (a, b) -> {
-          if (a.getRole() == ContractPartyRole.PRIMARY_TENANT) return -1;
-          if (b.getRole() == ContractPartyRole.PRIMARY_TENANT) return 1;
+          if (a.getRole() == ContractPartyRole.PRIMARY_TENANT) {
+            return -1;
+          }
+          if (b.getRole() == ContractPartyRole.PRIMARY_TENANT) {
+            return 1;
+          }
           return a.getRole().compareTo(b.getRole());
         });
 
     for (ContractParty party : sortedParties) {
       Tenant t = tenantMap.get(party.getTenantId());
-      if (t == null) continue;
+      if (t == null) {
+        continue;
+      }
       String roleColor = getPartyRoleColor(party.getRole());
       String roleBg = getPartyRoleBgColor(party.getRole());
 
@@ -416,7 +422,9 @@ public class ContractBookletExporter {
 
       html.append("<div class='party-name'>");
       html.append(escapeHtml(t.getFirstName()));
-      if (t.getLastName() != null) html.append(" ").append(escapeHtml(t.getLastName()));
+      if (t.getLastName() != null) {
+        html.append(" ").append(escapeHtml(t.getLastName()));
+      }
       html.append("</div>");
 
       html.append("<table class='party-details'>");
@@ -544,7 +552,9 @@ public class ContractBookletExporter {
       List<ContractPaymentInstruction> allCpis,
       Map<UUID, PaymentInstruction> piMap,
       DateTimeFormatter dateFmt) {
-    if (allCpis.isEmpty()) return;
+    if (allCpis.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Payment Instructions");
 
@@ -553,9 +563,15 @@ public class ContractBookletExporter {
         (a, b) -> {
           LocalDate aDate = a.getEffectiveFrom();
           LocalDate bDate = b.getEffectiveFrom();
-          if (aDate == null && bDate == null) return 0;
-          if (aDate == null) return 1;
-          if (bDate == null) return -1;
+          if (aDate == null && bDate == null) {
+            return 0;
+          }
+          if (aDate == null) {
+            return 1;
+          }
+          if (bDate == null) {
+            return -1;
+          }
           return bDate.compareTo(aDate);
         });
 
@@ -838,7 +854,9 @@ public class ContractBookletExporter {
   }
 
   private String formatPaymentMethod(@Nullable String value) {
-    if (value == null) return "";
+    if (value == null) {
+      return "";
+    }
     return PAYMENT_METHOD_LABELS.getOrDefault(value, formatEnumValue(value));
   }
 

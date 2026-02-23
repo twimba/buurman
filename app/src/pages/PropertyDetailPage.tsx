@@ -162,7 +162,9 @@ export const PropertyDetailPage = () => {
 
   // Contracts filtering, sorting, and pagination
   const filteredAndSortedContracts = useMemo(() => {
-    if (!contracts) return [];
+    if (!contracts) {
+      return [];
+    }
 
     let filtered = [...contracts];
 
@@ -208,8 +210,12 @@ export const PropertyDetailPage = () => {
           return 0;
       }
 
-      if (aVal < bVal) return contractsSortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return contractsSortOrder === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return contractsSortOrder === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return contractsSortOrder === 'asc' ? 1 : -1;
+      }
       return 0;
     });
 
@@ -238,7 +244,9 @@ export const PropertyDetailPage = () => {
 
   // Expenses filtering, sorting, and pagination
   const filteredAndSortedExpenses = useMemo(() => {
-    if (!expenses) return [];
+    if (!expenses) {
+      return [];
+    }
 
     let filtered = [...expenses];
 
@@ -278,8 +286,12 @@ export const PropertyDetailPage = () => {
           return 0;
       }
 
-      if (aVal < bVal) return expensesSortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return expensesSortOrder === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return expensesSortOrder === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return expensesSortOrder === 'asc' ? 1 : -1;
+      }
       return 0;
     });
 
@@ -307,7 +319,9 @@ export const PropertyDetailPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       await deletePropertyMutation.mutateAsync(id);
       navigate('/properties');
@@ -356,14 +370,30 @@ export const PropertyDetailPage = () => {
 
   const formatFieldName = (field: string): string => {
     // Handle special field names
-    if (field === 'documentAdded') return 'Document Added';
-    if (field === 'documentRemoved') return 'Document Removed';
-    if (field === 'documentCount') return 'Document Count';
-    if (field === 'photoAdded') return 'Photo Added';
-    if (field === 'photoRemoved') return 'Photo Removed';
-    if (field === 'photoCount') return 'Photo Count';
-    if (field === 'photoEdited') return 'Photo Edited';
-    if (field === 'documentEdited') return 'Document Edited';
+    if (field === 'documentAdded') {
+      return 'Document Added';
+    }
+    if (field === 'documentRemoved') {
+      return 'Document Removed';
+    }
+    if (field === 'documentCount') {
+      return 'Document Count';
+    }
+    if (field === 'photoAdded') {
+      return 'Photo Added';
+    }
+    if (field === 'photoRemoved') {
+      return 'Photo Removed';
+    }
+    if (field === 'photoCount') {
+      return 'Photo Count';
+    }
+    if (field === 'photoEdited') {
+      return 'Photo Edited';
+    }
+    if (field === 'documentEdited') {
+      return 'Document Edited';
+    }
 
     // Convert camelCase to Title Case with spaces
     return field
@@ -373,14 +403,22 @@ export const PropertyDetailPage = () => {
   };
 
   const formatFieldValue = (value: unknown): string => {
-    if (value === null || value === undefined) return 'N/A';
-    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-    if (typeof value === 'object') return JSON.stringify(value);
+    if (value === null || value === undefined) {
+      return 'N/A';
+    }
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
+    }
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
+    }
     return String(value);
   };
 
   const formatEnumValue = (value: string | null): string => {
-    if (!value) return '';
+    if (!value) {
+      return '';
+    }
     return value
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (c) => c.toUpperCase())
@@ -393,7 +431,9 @@ export const PropertyDetailPage = () => {
     amount: number | null,
     currency: string | null
   ): string => {
-    if (amount == null) return 'N/A';
+    if (amount == null) {
+      return 'N/A';
+    }
     try {
       return new Intl.NumberFormat(undefined, {
         style: 'currency',
@@ -1085,7 +1125,9 @@ export const PropertyDetailPage = () => {
                       Record<string, typeof property.amenities>
                     >((groups, amenity) => {
                       const cat = amenity.amenityCategory;
-                      if (!groups[cat]) groups[cat] = [];
+                      if (!groups[cat]) {
+                        groups[cat] = [];
+                      }
                       groups[cat]!.push(amenity);
                       return groups;
                     }, {})

@@ -66,8 +66,12 @@ export const uploadPropertyDocument = async (
 ): Promise<DocumentResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-  if (title) formData.append('title', title);
-  if (notes) formData.append('notes', notes);
+  if (title) {
+    formData.append('title', title);
+  }
+  if (notes) {
+    formData.append('notes', notes);
+  }
 
   const response = await client.post(
     `/properties/${propertyId}/documents`,
@@ -116,8 +120,12 @@ export const uploadPropertyPhoto = async (
 ): Promise<PhotoResponse> => {
   const formData = new FormData();
   formData.append('file', file);
-  if (title) formData.append('title', title);
-  if (notes) formData.append('notes', notes);
+  if (title) {
+    formData.append('title', title);
+  }
+  if (notes) {
+    formData.append('notes', notes);
+  }
 
   const response = await client.post(
     `/properties/${propertyId}/photos`,

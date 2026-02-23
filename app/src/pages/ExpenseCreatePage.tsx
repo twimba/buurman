@@ -141,7 +141,9 @@ export const ExpenseCreatePage = () => {
 
         setBulkSubmitting(false);
         callbacks.onComplete();
-        if (!hasErrors) navigate('/expenses');
+        if (!hasErrors) {
+          navigate('/expenses');
+        }
       })
       .catch((e) => {
         rows.forEach((_, i) => callbacks.onRowError(i, getErrorMessage(e)));

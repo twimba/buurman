@@ -60,7 +60,9 @@ export const CurrencyDropdown = ({
 
   // Lock body scroll on mobile
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile) {
+      return;
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -70,7 +72,9 @@ export const CurrencyDropdown = ({
 
   // Outside click detection (desktop only — mobile uses backdrop)
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile) {
+      return;
+    }
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       if (
@@ -89,9 +93,13 @@ export const CurrencyDropdown = ({
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile) {
+      return;
+    }
     const anchor = triggerRef?.current;
-    if (!anchor) return;
+    if (!anchor) {
+      return;
+    }
 
     const update = () => {
       const rect = anchor.getBoundingClientRect();
@@ -226,7 +234,9 @@ export const CurrencyDropdown = ({
         aria-label="Select Currency"
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex flex-col justify-end"
         onMouseDown={(e) => {
-          if (e.target === e.currentTarget) onClose();
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
         }}
       >
         <div
@@ -281,7 +291,9 @@ export const CurrencyDropdown = ({
   }
 
   // Desktop: portal-rendered popover (escapes overflow:hidden ancestors)
-  if (!pos) return null;
+  if (!pos) {
+    return null;
+  }
 
   return createPortal(
     <div

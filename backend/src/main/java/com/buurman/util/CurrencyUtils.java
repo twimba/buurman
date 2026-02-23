@@ -16,18 +16,24 @@ public final class CurrencyUtils {
    * currency code itself if no symbol is found.
    */
   public static String getCurrencySymbol(@Nullable String currencyCode) {
-    if (currencyCode == null || currencyCode.isBlank()) return "";
+    if (currencyCode == null || currencyCode.isBlank()) {
+      return "";
+    }
     try {
       Currency currency = Currency.getInstance(currencyCode);
       String symbol = currency.getSymbol();
-      if (!symbol.equals(currencyCode)) return symbol;
+      if (!symbol.equals(currencyCode)) {
+        return symbol;
+      }
       // Default locale didn't resolve the symbol — search for a locale where this currency is
       // native
       for (Locale locale : Locale.getAvailableLocales()) {
         try {
           if (currency.equals(Currency.getInstance(locale))) {
             String localeSymbol = currency.getSymbol(locale);
-            if (!localeSymbol.equals(currencyCode)) return localeSymbol;
+            if (!localeSymbol.equals(currencyCode)) {
+              return localeSymbol;
+            }
           }
         } catch (IllegalArgumentException ignored) {
           // Locale has no currency
@@ -43,7 +49,9 @@ public final class CurrencyUtils {
    * Formats an amount with its currency symbol (e.g. "€1,234.56"). Returns "N/A" if amount is null.
    */
   public static String formatCurrency(@Nullable BigDecimal amount, String currencyCode) {
-    if (amount == null) return "N/A";
+    if (amount == null) {
+      return "N/A";
+    }
     String symbol = getCurrencySymbol(currencyCode);
     return symbol + String.format("%,.2f", amount);
   }
@@ -99,7 +107,9 @@ public final class CurrencyUtils {
    */
   public static BigDecimal sumToMajorUnits(
       @Nullable BigDecimal sumResult, @Nullable String currencyCode) {
-    if (sumResult == null || currencyCode == null) return BigDecimal.ZERO;
+    if (sumResult == null || currencyCode == null) {
+      return BigDecimal.ZERO;
+    }
     return toMajorUnits(sumResult.longValueExact(), currencyCode);
   }
 }

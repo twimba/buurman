@@ -35,7 +35,9 @@ export const RegisterPaymentForm = ({
   });
 
   useEffect(() => {
-    if (!defaultCurrency) return;
+    if (!defaultCurrency) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) =>
       prev.currency ? prev : { ...prev, currency: defaultCurrency }
@@ -44,7 +46,9 @@ export const RegisterPaymentForm = ({
   }, [defaultCurrency]);
 
   useEffect(() => {
-    if (resetKey === undefined || resetKey === 0) return;
+    if (resetKey === undefined || resetKey === 0) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => ({
       ...prev,
@@ -61,19 +65,24 @@ export const RegisterPaymentForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.amount <= 0)
+    if (formData.amount <= 0) {
       newErrors.amount = 'Amount must be greater than 0';
-    if (formData.amount > 0 && !currency.trim())
+    }
+    if (formData.amount > 0 && !currency.trim()) {
       newErrors.currency = 'Currency is required';
-    if (!formData.paymentDate)
+    }
+    if (!formData.paymentDate) {
       newErrors.paymentDate = 'Payment date is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
     await onSubmit({
       contractIdentifier,
       amount: formData.amount,

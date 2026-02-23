@@ -30,13 +30,17 @@ export const VerifyEmailPage: React.FC = () => {
 
   // Cooldown timer
   useEffect(() => {
-    if (cooldown <= 0) return;
+    if (cooldown <= 0) {
+      return;
+    }
     const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [cooldown]);
 
   const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
 
     const newDigits = [...digits];
     newDigits[index] = value.slice(-1);
@@ -60,7 +64,9 @@ export const VerifyEmailPage: React.FC = () => {
       .getData('text')
       .replace(/\D/g, '')
       .slice(0, 6);
-    if (pasted.length === 0) return;
+    if (pasted.length === 0) {
+      return;
+    }
 
     const newDigits = [...digits];
     for (let i = 0; i < pasted.length && i < 6; i++) {
@@ -94,7 +100,9 @@ export const VerifyEmailPage: React.FC = () => {
   };
 
   const handleResend = async () => {
-    if (cooldown > 0 || resendMutation.isPending) return;
+    if (cooldown > 0 || resendMutation.isPending) {
+      return;
+    }
     try {
       await resendMutation.mutateAsync();
       setCooldown(RESEND_COOLDOWN_SECONDS);

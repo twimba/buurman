@@ -267,7 +267,9 @@ public class TenantBookletExporter {
   // ── Page: Addresses ─────────────────────────────────────────────
 
   private void appendAddressesPage(StringBuilder html, List<TenantAddress> addresses) {
-    if (addresses.isEmpty()) return;
+    if (addresses.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Addresses");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -328,7 +330,9 @@ public class TenantBookletExporter {
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
       DateTimeFormatter shortFmt) {
-    if (contracts.isEmpty()) return;
+    if (contracts.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Rental History");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -418,7 +422,9 @@ public class TenantBookletExporter {
 
   private void appendPaymentHistoryPage(
       StringBuilder html, List<Payment> allPayments, DateTimeFormatter shortFmt) {
-    if (allPayments.isEmpty()) return;
+    if (allPayments.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Payment History");
 
@@ -427,7 +433,9 @@ public class TenantBookletExporter {
     for (Payment payment : allPayments) {
       LocalDate dateRef =
           payment.getPaymentDate() != null ? payment.getPaymentDate() : payment.getDueDate();
-      if (dateRef == null) continue;
+      if (dateRef == null) {
+        continue;
+      }
       int year = dateRef.getYear();
       yearPayments.computeIfAbsent(year, k -> new BigDecimal[] {BigDecimal.ZERO, BigDecimal.ZERO});
       BigDecimal[] amounts = yearPayments.get(year);
@@ -470,9 +478,15 @@ public class TenantBookletExporter {
                 (a, b) -> {
                   LocalDate da = a.getDueDate() != null ? a.getDueDate() : a.getPaymentDate();
                   LocalDate db = b.getDueDate() != null ? b.getDueDate() : b.getPaymentDate();
-                  if (da == null && db == null) return 0;
-                  if (da == null) return 1;
-                  if (db == null) return -1;
+                  if (da == null && db == null) {
+                    return 0;
+                  }
+                  if (da == null) {
+                    return 1;
+                  }
+                  if (db == null) {
+                    return -1;
+                  }
                   return db.compareTo(da);
                 })
             .limit(50)
@@ -520,9 +534,13 @@ public class TenantBookletExporter {
   // ── Helpers ─────────────────────────────────────────────────────
 
   private String resolveCurrentPropertyName(Tenant tenant, Map<UUID, Property> propertyMap) {
-    if (tenant.getCurrentPropertyId() == null) return "—";
+    if (tenant.getCurrentPropertyId() == null) {
+      return "—";
+    }
     Property current = propertyMap.get(tenant.getCurrentPropertyId());
-    if (current == null) return "—";
+    if (current == null) {
+      return "—";
+    }
     return escapeHtml(current.getStreet()) + ", " + escapeHtml(current.getCity());
   }
 }

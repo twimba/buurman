@@ -632,8 +632,12 @@ public class FlagsmithAdminService {
   }
 
   public String getAuthMethod() {
-    if (StringUtils.hasText(properties.apiToken())) return "api_token";
-    if (StringUtils.hasText(properties.adminEmail())) return "credentials";
+    if (StringUtils.hasText(properties.apiToken())) {
+      return "api_token";
+    }
+    if (StringUtils.hasText(properties.adminEmail())) {
+      return "credentials";
+    }
     return "none";
   }
 

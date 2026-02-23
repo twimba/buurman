@@ -61,7 +61,9 @@ export const ExpenseForm = ({
   }
 
   useEffect(() => {
-    if (!defaultCurrency) return;
+    if (!defaultCurrency) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) =>
       prev.currency ? prev : { ...prev, currency: defaultCurrency }
@@ -70,7 +72,9 @@ export const ExpenseForm = ({
   }, [defaultCurrency]);
 
   useEffect(() => {
-    if (resetKey === undefined || resetKey === 0 || expense) return;
+    if (resetKey === undefined || resetKey === 0 || expense) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => ({
       ...prev,
@@ -86,26 +90,32 @@ export const ExpenseForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.propertyIdentifier)
+    if (!formData.propertyIdentifier) {
       newErrors.propertyIdentifier = 'Property is required';
-    if (formData.amount <= 0)
+    }
+    if (formData.amount <= 0) {
       newErrors.amount = 'Amount must be greater than 0';
+    }
     if (
       formData.amount > 0 &&
       !(formData.currency || defaultCurrency || '').trim()
     )
       newErrors.currency = 'Currency is required';
-    if (!formData.expenseDate)
+    if (!formData.expenseDate) {
       newErrors.expenseDate = 'Expense date is required';
-    if (!formData.description || formData.description.trim().length === 0)
+    }
+    if (!formData.description || formData.description.trim().length === 0) {
       newErrors.description = 'Description is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
     await onSubmit(formData);
   };
 
