@@ -21,7 +21,7 @@ ENV DOCKER_HOST=unix:///var/run/docker.sock
 ENTRYPOINT ["sh", "-c", "mvn clean package -DskipTests -B && java -jar target/buurman-backend-*.jar"]
 
 # === Prod stage: packages a pre-built JAR (CI) ===
-FROM eclipse-temurin:21-jre-alpine AS prod
+FROM eclipse-temurin:25-jre-alpine AS prod
 
 WORKDIR /app
 
