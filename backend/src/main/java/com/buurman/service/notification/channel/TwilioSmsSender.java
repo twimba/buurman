@@ -6,6 +6,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +30,8 @@ public class TwilioSmsSender implements NotificationChannelSender {
 
   private final MetricsService metricsService;
   private final String fromNumber;
-  private final String messagingServiceSid;
-  private final String statusCallbackUrl;
+  private final @Nullable String messagingServiceSid;
+  private final @Nullable String statusCallbackUrl;
 
   public TwilioSmsSender(TwilioProperties twilioProperties, MetricsService metricsService) {
     this.metricsService = metricsService;
