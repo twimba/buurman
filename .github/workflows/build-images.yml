@@ -518,7 +518,7 @@ jobs:
 
       - name: Install scc
         run: |
-          curl -sSL https://github.com/boyter/scc/releases/download/v3.5.0/scc_Linux_x86_64.tar.gz | tar -xz -C /usr/local/bin scc
+          curl -sSL https://github.com/boyter/scc/releases/download/v3.6.0/scc_Linux_x86_64.tar.gz | tar -xz -C /usr/local/bin scc
 
       - name: Code statistics
         run: |
