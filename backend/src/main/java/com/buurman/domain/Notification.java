@@ -29,6 +29,10 @@ public class Notification {
   private String providerStatus;
   private String providerError;
   private Instant statusUpdatedAt;
+  private int openCount;
+  private int clickCount;
+  private Instant firstOpenedAt;
+  private Instant firstClickedAt;
   private UUID resentFromId;
   private String resendReason;
   private Instant createdAt;

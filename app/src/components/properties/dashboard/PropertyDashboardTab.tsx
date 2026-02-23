@@ -12,6 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Brush,
 } from 'recharts';
 import type { BarShapeProps } from 'recharts';
 import {
@@ -41,7 +42,9 @@ import type {
   ExpenseBreakdownChartData,
   OccupancyChartData,
   DashboardDataCompleteness,
+  FutureTrendData,
 } from '@/types/property';
+import { Area, AreaChart } from 'recharts';
 
 const COLORS = {
   income: '#10B981',
@@ -260,6 +263,7 @@ export const PropertyDashboardTab = ({
     expenseBreakdown,
     occupancy,
     dataCompleteness,
+    futureTrend,
   } = dashboard;
 
   return (
@@ -375,6 +379,20 @@ export const PropertyDashboardTab = ({
             currency={summary.currency || ''}
           />
         </ChartCard>
+
+        {futureTrend && futureTrend.months.length > 0 && (
+          <ChartCard
+            title="6-Month Projection"
+            icon={<TrendingUp className="h-5 w-5" />}
+          >
+            <FutureTrendChart
+              data={futureTrend}
+              tooltipStyle={tooltipStyle}
+              isDark={isDark}
+              currency={summary.currency || ''}
+            />
+          </ChartCard>
+        )}
 
         <ChartCard
           title="Equity Overview"
@@ -517,7 +535,7 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6 overflow-hidden">
       <div className="flex items-center gap-2 mb-4">
         <span className="text-[#9ca0b8] dark:text-[#5c6180]">{icon}</span>
         <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
@@ -751,6 +769,15 @@ function CashFlowChart({
           shape={mortgageBarShape}
           isAnimationActive={false}
         />
+        {chartData.length > 6 && (
+          <Brush
+            dataKey="month"
+            height={20}
+            stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+            fill={isDark ? '#14161f' : '#f8f9fc'}
+            tickFormatter={formatMonthTick}
+          />
+        )}
       </ComposedChart>
     </ResponsiveContainer>
   );
@@ -899,6 +926,15 @@ function OccupancyAndTrendChart({
                 activeDot={{ r: 5 }}
                 isAnimationActive={false}
               />
+              {cashFlow.months.length > 6 && (
+                <Brush
+                  dataKey="month"
+                  height={20}
+                  stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+                  fill={isDark ? '#14161f' : '#f8f9fc'}
+                  tickFormatter={formatMonthTick}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -955,55 +991,70 @@ function ExpenseTimelineChart({
 
   const enabledCategories = allCategories.filter((c) => enabled.has(c));
 
+  const barCount = chartData.length;
+
   return (
     <div>
       {/* Stacked bar chart */}
-      <ResponsiveContainer width="100%" height={320}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-          barCategoryGap="20%"
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-          />
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={formatMonthTick}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={(v) => formatAxisValue(v, currency)}
-          />
-          <Tooltip
-            contentStyle={tooltipStyle}
-            labelFormatter={(label) => formatMonthTick(String(label))}
-            formatter={(value?: number | string, name?: string) => [
-              formatCurrency(Number(value ?? 0), currency),
-              humanizeCategory(name ?? ''),
-            ]}
-          />
-          {enabledCategories.map((cat, i) => {
-            const colorIndex = allCategories.indexOf(cat);
-            const isLast = i === enabledCategories.length - 1;
-            return (
-              <Bar
-                key={cat}
-                dataKey={cat}
-                name={cat}
-                stackId="expenses"
-                fill={PIE_COLORS[colorIndex % PIE_COLORS.length]}
-                fillOpacity={0.85}
-                isAnimationActive={false}
-                radius={isLast ? [4, 4, 0, 0] : undefined}
+      <div style={{ overflowX: 'auto' }}>
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+            barCategoryGap={
+              barCount > 18 ? '8%' : barCount > 12 ? '12%' : '20%'
+            }
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+            />
+            <XAxis
+              dataKey="month"
+              tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+              tickFormatter={formatMonthTick}
+            />
+            <YAxis
+              tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+              tickFormatter={(v) => formatAxisValue(v, currency)}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelFormatter={(label) => formatMonthTick(String(label))}
+              formatter={(value?: number | string, name?: string) => [
+                formatCurrency(Number(value ?? 0), currency),
+                humanizeCategory(name ?? ''),
+              ]}
+            />
+            {enabledCategories.map((cat, i) => {
+              const colorIndex = allCategories.indexOf(cat);
+              const isLast = i === enabledCategories.length - 1;
+              return (
+                <Bar
+                  key={cat}
+                  dataKey={cat}
+                  name={cat}
+                  stackId="expenses"
+                  fill={PIE_COLORS[colorIndex % PIE_COLORS.length]}
+                  fillOpacity={0.85}
+                  isAnimationActive={false}
+                  radius={isLast ? [4, 4, 0, 0] : undefined}
+                />
+              );
+            })}
+            {chartData.length > 6 && (
+              <Brush
+                dataKey="month"
+                height={20}
+                stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+                fill={isDark ? '#14161f' : '#f8f9fc'}
+                tickFormatter={formatMonthTick}
               />
-            );
-          })}
-        </BarChart>
-      </ResponsiveContainer>
+            )}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Clickable legend — styled like Recharts default legend */}
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
@@ -1159,6 +1210,85 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
 }
 
 // --- Empty Chart State ---
+
+// --- Future Trend Chart ---
+
+function FutureTrendChart({
+  data,
+  tooltipStyle,
+  isDark,
+  currency,
+}: {
+  data: FutureTrendData;
+  tooltipStyle: React.CSSProperties;
+  isDark: boolean;
+  currency: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-2 font-medium">
+        Projected income & expenses based on active contracts and operating
+        costs
+      </p>
+      <ResponsiveContainer width="100%" height={280}>
+        <AreaChart
+          data={data.months}
+          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+          />
+          <XAxis
+            dataKey="month"
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={formatMonthTick}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={(v) => formatAxisValue(v, currency)}
+          />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            labelFormatter={(label) => formatMonthTick(String(label))}
+            formatter={(value?: number | string, name?: string) => [
+              formatCurrency(Number(value ?? 0), currency),
+              name,
+            ]}
+          />
+          <Legend />
+          <Area
+            type="monotone"
+            dataKey="expectedIncome"
+            name="Expected Income"
+            stroke="#10B981"
+            fill="#10B981"
+            fillOpacity={0.15}
+            strokeWidth={2}
+          />
+          <Area
+            type="monotone"
+            dataKey="expectedExpenses"
+            name="Expected Expenses"
+            stroke="#EF4444"
+            fill="#EF4444"
+            fillOpacity={0.15}
+            strokeWidth={2}
+          />
+          <Line
+            type="monotone"
+            dataKey="expectedNet"
+            name="Expected Net"
+            stroke="#3B82F6"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ fill: '#3B82F6', r: 3 }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 function EmptyChart({ message }: { message: string }) {
   return (

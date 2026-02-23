@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
 import java.math.BigDecimal;
@@ -176,13 +177,24 @@ public class ExpenseRepository {
   }
 
   public PaginatedResult<Expense> findAllByTeamIdPaginated(
-      UUID teamId, String category, UUID propertyId, PageRequest pageRequest) {
+      UUID teamId,
+      String category,
+      UUID propertyId,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      PageRequest pageRequest) {
     Condition condition = EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull());
     if (category != null && !category.isEmpty()) {
       condition = condition.and(EXPENSES.CATEGORY.eq(category));
     }
     if (propertyId != null) {
       condition = condition.and(EXPENSES.PROPERTY_ID.eq(propertyId));
+    }
+    if (dateFrom != null) {
+      condition = condition.and(EXPENSES.EXPENSE_DATE.ge(dateFrom));
+    }
+    if (dateTo != null) {
+      condition = condition.and(EXPENSES.EXPENSE_DATE.le(dateTo));
     }
     Map<String, Field<?>> sortableFields =
         Map.of(
@@ -241,6 +253,18 @@ public class ExpenseRepository {
         .fetchOptional()
         .map(r -> r.get(EXPENSES.CURRENCY))
         .orElse(null);
+  }
+
+  public LocalDate findEarliestExpenseDate(UUID teamId) {
+    return dsl.select(min(EXPENSES.EXPENSE_DATE))
+        .from(EXPENSES)
+        .where(
+            EXPENSES
+                .TEAM_ID
+                .eq(teamId)
+                .and(EXPENSES.DELETED_AT.isNull())
+                .and(EXPENSES.EXPENSE_DATE.isNotNull()))
+        .fetchOne(min(EXPENSES.EXPENSE_DATE));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

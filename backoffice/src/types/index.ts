@@ -95,6 +95,10 @@ export interface BackofficeNotification {
   status: string;
   providerStatus: string | null;
   providerError: string | null;
+  openCount: number;
+  clickCount: number;
+  firstOpenedAt: string | null;
+  firstClickedAt: string | null;
   resentFromIdentifier: string | null;
   resendReason: string | null;
   createdAt: string;

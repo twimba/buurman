@@ -1,9 +1,17 @@
 import { useState } from 'react';
-import { DollarSign, Calendar, Save, Loader2, MapPin } from 'lucide-react';
+import {
+  DollarSign,
+  Calendar,
+  Save,
+  Loader2,
+  MapPin,
+  Building,
+} from 'lucide-react';
 import {
   useCurrentTeam,
   useTeamSettings,
   useUpdateTeamSettings,
+  useUpdateTeam,
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
 import { CurrencySelector } from '../common/CurrencySelector';
@@ -14,13 +22,22 @@ export const TeamPreferencesSection = () => {
   const { data: team } = useCurrentTeam();
   const { data: settingsData, isLoading } = useTeamSettings(team?.identifier);
   const updateSettingsMutation = useUpdateTeamSettings(team?.identifier || '');
+  const updateTeamMutation = useUpdateTeam(team?.identifier || '');
 
   const [hasChanges, setHasChanges] = useState(false);
+  const [teamName, setTeamName] = useState('');
+  const [teamNameSynced, setTeamNameSynced] = useState(false);
   const [preferences, setPreferences] = useState({
     defaultCurrency: '',
     defaultCountry: '',
     fiscalYearStart: '01',
   });
+
+  // Sync team name from server
+  if (team?.teamName && !teamNameSynced) {
+    setTeamName(team.teamName);
+    setTeamNameSynced(true);
+  }
 
   const [lastSyncedSettings, setLastSyncedSettings] = useState(settingsData);
   if (settingsData?.regional && settingsData !== lastSyncedSettings) {
@@ -53,17 +70,22 @@ export const TeamPreferencesSection = () => {
   };
 
   const handleSave = () => {
-    updateSettingsMutation.mutate(
-      {
+    const saveSettings = () =>
+      updateSettingsMutation.mutateAsync({
         regional: {
           defaultCurrency: preferences.defaultCurrency || undefined,
           defaultCountry: preferences.defaultCountry || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
         },
-      },
-      {
-        onSuccess: () => setHasChanges(false),
-      }
+      });
+
+    const nameChanged = teamName.trim() && teamName.trim() !== team?.teamName;
+    const saveTeamName = nameChanged
+      ? () => updateTeamMutation.mutateAsync({ name: teamName.trim() })
+      : () => Promise.resolve();
+
+    Promise.all([saveSettings(), saveTeamName()]).then(() =>
+      setHasChanges(false)
     );
   };
 
@@ -106,8 +128,38 @@ export const TeamPreferencesSection = () => {
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Currency Settings */}
+          {/* Team Name */}
           <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Building className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                Team Identity
+              </h3>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                Team Name
+              </label>
+              <input
+                type="text"
+                value={teamName}
+                onChange={(e) => {
+                  setTeamName(e.target.value);
+                  setHasChanges(true);
+                }}
+                disabled={!canEditTeamSettings}
+                className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:bg-[#1e2130] disabled:cursor-not-allowed bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+                placeholder="Enter team name"
+              />
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                The display name for your team
+              </p>
+            </div>
+          </div>
+
+          {/* Currency Settings */}
+          <div className="space-y-4 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
               <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">

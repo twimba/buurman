@@ -31,6 +31,8 @@ import com.buurman.dto.response.PropertyDashboardResponse.DataCompleteness;
 import com.buurman.dto.response.PropertyDashboardResponse.EquityChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.ExpenseBreakdownChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.ExpenseTimelineMonth;
+import com.buurman.dto.response.PropertyDashboardResponse.FutureMonthDataPoint;
+import com.buurman.dto.response.PropertyDashboardResponse.FutureTrendData;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
@@ -155,10 +157,13 @@ public class PropertyDashboardService {
     ExpenseBreakdownChartData expenseBreakdown =
         buildExpenseBreakdown(expenses, property, now, effectiveMonths);
     OccupancyChartData occupancy = buildOccupancyChart(contracts, now, effectiveMonths);
-    DataCompleteness completeness = buildDataCompleteness(property, contracts, payments, expenses);
+    DataCompleteness completeness =
+        buildDataCompleteness(property, contracts, property.getTeamId());
+    PropertyDashboardResponse.FutureTrendData futureTrend =
+        buildFutureTrend(property, contracts, now);
 
     return new PropertyDashboardResponse(
-        summary, cashFlow, equity, expenseBreakdown, occupancy, completeness);
+        summary, cashFlow, equity, expenseBreakdown, occupancy, completeness, futureTrend);
   }
 
   private SummaryMetrics buildSummaryMetrics(
@@ -367,12 +372,12 @@ public class PropertyDashboardService {
                         e -> e.getCategory() != null ? e.getCategory().name() : "OTHER",
                         Collectors.reducing(ZERO, Expense::getAmount, BigDecimal::add))));
 
-    // Add property-level annual operating costs to breakdown
+    // Add property-level annual operating costs to breakdown.
+    // MANAGEMENT and MAINTENANCE_RESERVE are excluded — they are budget allocations,
+    // not actual incurred expenses recorded against the property.
     addIfNotNull(byCategory, "PROPERTY_TAX", property.getAnnualPropertyTax());
     addIfNotNull(byCategory, "INSURANCE", property.getAnnualInsurance());
     addIfNotNull(byCategory, "HOA", property.getAnnualHoaFee());
-    addIfNotNull(byCategory, "MANAGEMENT", property.getAnnualManagementFee());
-    addIfNotNull(byCategory, "MAINTENANCE_RESERVE", property.getAnnualMaintenanceReserve());
 
     List<CategorySlice> slices =
         byCategory.entrySet().stream()
@@ -411,16 +416,6 @@ public class PropertyDashboardService {
         property.getAnnualInsuranceDueMonth());
     addAnnualCostToTimeline(
         monthlyMap, "HOA", property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
-    addAnnualCostToTimeline(
-        monthlyMap,
-        "MANAGEMENT",
-        property.getAnnualManagementFee(),
-        property.getAnnualManagementFeeDueMonth());
-    addAnnualCostToTimeline(
-        monthlyMap,
-        "MAINTENANCE_RESERVE",
-        property.getAnnualMaintenanceReserve(),
-        property.getAnnualMaintenanceReserveDueMonth());
 
     List<ExpenseTimelineMonth> timeline =
         monthlyMap.entrySet().stream()
@@ -431,16 +426,35 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Distributes an annual cost into a month-indexed map. If dueMonth is set, the full amount goes
-   * into that month. Otherwise, it's spread evenly across all 12 months.
+   * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers. Returns null
+   * if the input is null or blank (meaning all months).
+   */
+  private static List<Integer> parseDueMonths(String dueMonths) {
+    if (dueMonths == null || dueMonths.isBlank()) {
+      return null;
+    }
+    return java.util.Arrays.stream(dueMonths.split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .map(Integer::parseInt)
+        .toList();
+  }
+
+  /**
+   * Distributes an annual cost into a month-indexed map. If dueMonths is set, the amount is divided
+   * among those months. Otherwise, it's spread evenly across all 12 months.
    */
   private static void addAnnualCostToMonth(
-      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, Integer dueMonth) {
+      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
-    if (dueMonth != null) {
-      monthMap.merge(dueMonth, annualAmount, BigDecimal::add);
+    List<Integer> months = parseDueMonths(dueMonths);
+    if (months != null && !months.isEmpty()) {
+      BigDecimal perMonth = annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
+      for (int m : months) {
+        monthMap.merge(m, perMonth, BigDecimal::add);
+      }
     } else {
       BigDecimal monthly = annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
       for (int m = 1; m <= 12; m++) {
@@ -450,21 +464,23 @@ public class PropertyDashboardService {
   }
 
   /**
-   * Adds an annual cost to the expense timeline. If dueMonth is set, the full amount goes into
-   * matching months in the timeline. Otherwise, it's spread evenly (÷12) across all months.
+   * Adds an annual cost to the expense timeline. If dueMonths is set, the amount is divided among
+   * matching months. Otherwise, it's spread evenly (÷12) across all months.
    */
   private static void addAnnualCostToTimeline(
       Map<YearMonth, Map<String, BigDecimal>> timeline,
       String category,
       BigDecimal annualAmount,
-      Integer dueMonth) {
+      String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
-    if (dueMonth != null) {
+    List<Integer> months = parseDueMonths(dueMonths);
+    if (months != null && !months.isEmpty()) {
+      BigDecimal perMonth = annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
       for (Map.Entry<YearMonth, Map<String, BigDecimal>> entry : timeline.entrySet()) {
-        if (entry.getKey().getMonthValue() == dueMonth) {
-          entry.getValue().merge(category, annualAmount, BigDecimal::add);
+        if (months.contains(entry.getKey().getMonthValue())) {
+          entry.getValue().merge(category, perMonth, BigDecimal::add);
         }
       }
     } else {
@@ -526,8 +542,97 @@ public class PropertyDashboardService {
     return new OccupancyChartData(dataPoints);
   }
 
+  private FutureTrendData buildFutureTrend(
+      Property property, List<Contract> contracts, LocalDate now) {
+    List<FutureMonthDataPoint> points = new ArrayList<>();
+
+    for (int i = 1; i <= 6; i++) {
+      YearMonth futureMonth = YearMonth.from(now).plusMonths(i);
+      LocalDate monthStart = futureMonth.atDay(1);
+      LocalDate monthEnd = futureMonth.atEndOfMonth();
+      int monthNumber = futureMonth.getMonthValue();
+
+      // Expected income: sum of monthly rent from active contracts covering this month
+      BigDecimal expectedIncome =
+          contracts.stream()
+              .filter(
+                  c ->
+                      c.getStatus() == ContractStatus.ACTIVE
+                          && !c.getStartDate().isAfter(monthEnd)
+                          && (c.getEndDate() == null || !c.getEndDate().isBefore(monthStart)))
+              .map(c -> c.getRentAmount() != null ? c.getRentAmount() : ZERO)
+              .reduce(ZERO, BigDecimal::add);
+
+      // Expected expenses: operating costs due in this month + monthly mortgage
+      BigDecimal expectedExpenses = ZERO;
+
+      // Monthly mortgage payment
+      if (property.getMonthlyMortgagePayment() != null
+          && property.getMonthlyMortgagePayment().compareTo(ZERO) > 0) {
+        expectedExpenses = expectedExpenses.add(property.getMonthlyMortgagePayment());
+      }
+
+      // Add annual costs that are due in this month
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualPropertyTax(),
+                  property.getAnnualPropertyTaxDueMonth(),
+                  monthNumber));
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualInsurance(),
+                  property.getAnnualInsuranceDueMonth(),
+                  monthNumber));
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth(), monthNumber));
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualManagementFee(),
+                  property.getAnnualManagementFeeDueMonth(),
+                  monthNumber));
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualMaintenanceReserve(),
+                  property.getAnnualMaintenanceReserveDueMonth(),
+                  monthNumber));
+
+      BigDecimal expectedNet = expectedIncome.subtract(expectedExpenses);
+      points.add(
+          new FutureMonthDataPoint(
+              futureMonth.toString(), expectedIncome, expectedExpenses, expectedNet));
+    }
+
+    return new FutureTrendData(points);
+  }
+
+  /**
+   * Returns the monthly share of an annual cost if it falls due in the given month. dueMonths is a
+   * comma-separated list of month numbers (1-12). The annual cost is divided evenly among the due
+   * months.
+   */
+  private BigDecimal getMonthlyShareOfAnnualCost(
+      BigDecimal annualAmount, String dueMonths, int currentMonth) {
+    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) return ZERO;
+    if (dueMonths == null || dueMonths.isBlank()) {
+      // If no due months specified, spread evenly across 12 months
+      return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+    }
+    List<Integer> months = parseDueMonths(dueMonths);
+    if (months.isEmpty()) {
+      return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
+    }
+    if (!months.contains(currentMonth)) return ZERO;
+    return annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
+  }
+
   private DataCompleteness buildDataCompleteness(
-      Property property, List<Contract> contracts, List<Payment> payments, List<Expense> expenses) {
+      Property property, List<Contract> contracts, UUID teamId) {
 
     boolean hasPurchasePrice = property.getPurchasePrice() != null;
     boolean hasMarketValue = property.getCurrentMarketValue() != null;
@@ -535,8 +640,15 @@ public class PropertyDashboardService {
     boolean hasOperatingCosts =
         property.getAnnualPropertyTax() != null || property.getAnnualInsurance() != null;
     boolean hasContracts = !contracts.isEmpty();
-    boolean hasPayments = !payments.isEmpty();
-    boolean hasExpenses = !expenses.isEmpty();
+    // Use all-time checks for payments/expenses (independent of period filter)
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    boolean hasPayments =
+        !contractIds.isEmpty()
+            && !paymentRepository
+                .findPaidByContractIdsAndDateRange(
+                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now())
+                .isEmpty();
+    boolean hasExpenses = !expenseRepository.findByPropertyId(property.getId(), teamId).isEmpty();
 
     int filled = 0;
     int total = 7;

@@ -29,6 +29,10 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { RefreshButton } from '@/components/ui/RefreshButton';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import {
+  PeriodFilter,
+  PeriodDateRange,
+} from '@/components/common/PeriodFilter';
+import {
   AreaChart,
   Area,
   XAxis,
@@ -68,6 +72,7 @@ export const ExpensesPage = () => {
   const [propertyFilter, setPropertyFilter] = useState<string | undefined>(
     undefined
   );
+  const [periodRange, setPeriodRange] = useState<PeriodDateRange | null>(null);
 
   const {
     pageParams,
@@ -88,6 +93,8 @@ export const ExpensesPage = () => {
   } = useExpenses({
     category: categoryFilter,
     propertyIdentifier: propertyFilter,
+    dateFrom: periodRange?.startDate,
+    dateTo: periodRange?.endDate,
     ...pageParams,
   });
 
@@ -280,25 +287,37 @@ export const ExpensesPage = () => {
             </h3>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Property Filter */}
-            <div className="lg:w-72">
-              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                Property
-              </label>
-              <PropertySelector
-                value={propertyFilter ?? ''}
-                onChange={(id) => {
-                  setPropertyFilter(id || undefined);
-                  resetPage();
-                }}
-                clearable
-                placeholder="All Properties"
-              />
+          <div className="flex flex-col gap-4">
+            {/* Row 1: Property selector + Period filter */}
+            <div className="flex flex-col lg:flex-row gap-4 items-end">
+              <div className="lg:w-96">
+                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  Property
+                </label>
+                <PropertySelector
+                  value={propertyFilter ?? ''}
+                  onChange={(id) => {
+                    setPropertyFilter(id || undefined);
+                    resetPage();
+                  }}
+                  clearable
+                  placeholder="All Properties"
+                />
+              </div>
+              <div className="flex-1">
+                <PeriodFilter
+                  presets={['month', 'quarter', 'year', 'all', 'custom']}
+                  defaultPreset="all"
+                  onChange={(range) => {
+                    setPeriodRange(range);
+                    resetPage();
+                  }}
+                />
+              </div>
             </div>
 
-            {/* Category Filter */}
-            <div className="flex-1">
+            {/* Row 2: Category filter */}
+            <div>
               <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
                 Category
               </label>

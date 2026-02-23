@@ -6,7 +6,6 @@ import {
   DollarSign,
   Calendar,
   Building2,
-  PieChart as PieChartIcon,
   BarChart3,
   List,
 } from 'lucide-react';
@@ -26,6 +25,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import {
+  useDataDateRange,
   useFinancialOverview,
   useIncomeTrend,
   useExpenseBreakdown,
@@ -35,6 +35,17 @@ import {
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
+import { useQuery } from '@tanstack/react-query';
+import { getProperties } from '@/api/properties';
+import { exportTransactionsCSV, exportTransactionsPDF } from '@/api/reports';
+import {
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  Check,
+  Download,
+  FileText,
+} from 'lucide-react';
 
 export const FinancialReportsPage = () => {
   const navigate = useNavigate();
@@ -47,11 +58,37 @@ export const FinancialReportsPage = () => {
     fontSize: '12px',
     color: isDark ? '#eef0f6' : '#1a1d2e',
   };
+  const [expenseChartType, setExpenseChartType] = useState<'pie' | 'bar'>(
+    'pie'
+  );
+  const [incomeChartType, setIncomeChartType] = useState<'line' | 'bar'>(
+    'line'
+  );
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
+
+  const { data: dateRangeData } = useDataDateRange();
+
+  const { data: propertiesData } = useQuery({
+    queryKey: ['properties'],
+    queryFn: () => getProperties(),
+  });
+  const allProperties = propertiesData?.content ?? [];
+
+  const toggleProperty = (id: string) => {
+    setSelectedPropertyIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
+
   const [periodType, setPeriodType] = useState<
     'month' | 'quarter' | 'year' | 'all' | 'custom'
   >('month');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+
+  // Earliest data date from backend (for "All Time" period)
+  const earliestDataDate = dateRangeData?.earliestDate ?? null;
 
   // Calculate date range based on period type
   const dateRange = useMemo(() => {
@@ -72,7 +109,9 @@ export const FinancialReportsPage = () => {
         startDate = new Date(today.getFullYear(), 0, 1);
         break;
       case 'all':
-        startDate = new Date(1982, 6, 24);
+        startDate = earliestDataDate
+          ? new Date(earliestDataDate + 'T00:00:00')
+          : new Date(today.getFullYear(), today.getMonth(), 1);
         break;
       case 'custom':
         if (customStartDate && customEndDate) {
@@ -88,7 +127,7 @@ export const FinancialReportsPage = () => {
       startDate: startDate!.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
     };
-  }, [periodType, customStartDate, customEndDate]);
+  }, [periodType, customStartDate, customEndDate, earliestDataDate]);
 
   // Pre-fill custom date fields when switching to a predefined period
   const handlePeriodChange = (type: typeof periodType) => {
@@ -111,7 +150,9 @@ export const FinancialReportsPage = () => {
           start = new Date(today.getFullYear(), 0, 1);
           break;
         case 'all':
-          start = new Date(1982, 6, 24);
+          start = earliestDataDate
+            ? new Date(earliestDataDate + 'T00:00:00')
+            : new Date(today.getFullYear(), today.getMonth(), 1);
           break;
         default:
           start = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -129,7 +170,7 @@ export const FinancialReportsPage = () => {
   } = useFinancialOverview(
     dateRange.startDate,
     dateRange.endDate,
-    undefined,
+    selectedPropertyIds.length > 0 ? selectedPropertyIds : undefined,
     undefined,
     periodType !== 'custom' || (!!customStartDate && !!customEndDate)
   );
@@ -138,7 +179,12 @@ export const FinancialReportsPage = () => {
     data: incomeTrend,
     isLoading: trendLoading,
     error: trendError,
-  } = useIncomeTrend(12);
+  } = useIncomeTrend(
+    dateRange.startDate,
+    dateRange.endDate,
+    selectedPropertyIds.length > 0 ? selectedPropertyIds : undefined,
+    periodType !== 'custom' || (!!customStartDate && !!customEndDate)
+  );
 
   const {
     data: expenseBreakdown,
@@ -147,6 +193,7 @@ export const FinancialReportsPage = () => {
   } = useExpenseBreakdown(
     dateRange.startDate,
     dateRange.endDate,
+    selectedPropertyIds.length > 0 ? selectedPropertyIds : undefined,
     periodType !== 'custom' || (!!customStartDate && !!customEndDate)
   );
 
@@ -157,6 +204,7 @@ export const FinancialReportsPage = () => {
   } = usePropertyComparison(
     dateRange.startDate,
     dateRange.endDate,
+    selectedPropertyIds.length > 0 ? selectedPropertyIds : undefined,
     periodType !== 'custom' || (!!customStartDate && !!customEndDate)
   );
 
@@ -164,7 +212,11 @@ export const FinancialReportsPage = () => {
     data: occupancyTrend,
     isLoading: occupancyLoading,
     error: occupancyError,
-  } = useOccupancyTrend(12);
+  } = useOccupancyTrend(
+    dateRange.startDate,
+    dateRange.endDate,
+    periodType !== 'custom' || (!!customStartDate && !!customEndDate)
+  );
 
   const formatCurrency = (value: number) => {
     const cur = overview?.currency;
@@ -231,13 +283,61 @@ export const FinancialReportsPage = () => {
             Comprehensive financial overview and analytics
           </p>
         </div>
-        <button
-          onClick={() => navigate('/reports/transactions')}
-          className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
-        >
-          <List className="h-5 w-5" />
-          View Transaction History
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportTransactionsCSV(
+                  dateRange.startDate,
+                  dateRange.endDate
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'transactions.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                /* ignore */
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+            title="Download CSV"
+          >
+            <Download className="h-4 w-4" />
+            CSV
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const blob = await exportTransactionsPDF(
+                  dateRange.startDate,
+                  dateRange.endDate
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'financial-report.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch {
+                /* ignore */
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+            title="Download PDF"
+          >
+            <FileText className="h-4 w-4" />
+            PDF
+          </button>
+          <button
+            onClick={() => navigate('/reports/transactions')}
+            className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors text-sm"
+          >
+            <List className="h-5 w-5" />
+            Transactions
+          </button>
+        </div>
       </div>
 
       {/* Period Selector */}
@@ -293,6 +393,74 @@ export const FinancialReportsPage = () => {
                 className="px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               />
             </div>
+          </div>
+
+          {/* Advanced Filters Toggle */}
+          <div className="border-t border-[#edf0f7] dark:border-[#2a2e3f] pt-3 mt-3">
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center gap-2 text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] transition-colors"
+            >
+              <Filter className="h-4 w-4" />
+              Advanced Filters
+              {selectedPropertyIds.length > 0 && (
+                <span className="bg-[#5c7cfa] text-white text-xs px-1.5 py-0.5 rounded-full">
+                  {selectedPropertyIds.length}
+                </span>
+              )}
+              {showAdvancedFilters ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+
+            {showAdvancedFilters && (
+              <div className="mt-3 space-y-3">
+                {/* Property Filter */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Properties
+                    </label>
+                    {selectedPropertyIds.length > 0 && (
+                      <button
+                        onClick={() => setSelectedPropertyIds([])}
+                        className="text-xs text-[#5c7cfa] hover:underline"
+                      >
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {allProperties.map((p) => {
+                      const isSelected = selectedPropertyIds.includes(
+                        p.identifier
+                      );
+                      return (
+                        <button
+                          key={p.identifier}
+                          onClick={() => toggleProperty(p.identifier)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                            isSelected
+                              ? 'bg-[#5c7cfa]/10 border-[#5c7cfa] text-[#5c7cfa] dark:bg-[#5c7cfa]/20 dark:text-[#748ffc]'
+                              : 'border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] hover:border-[#5c7cfa]/50'
+                          }`}
+                        >
+                          {isSelected && <Check className="h-3 w-3" />}
+                          {p.street}, {p.city}
+                        </button>
+                      );
+                    })}
+                    {allProperties.length === 0 && (
+                      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                        No properties found
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -386,13 +554,34 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Income Trend (12 Months)
+                Income Trend
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Monthly income, expenses, and net profit
               </p>
             </div>
-            <BarChart3 className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <div className="flex items-center gap-1 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-md p-0.5">
+              <button
+                onClick={() => setIncomeChartType('line')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  incomeChartType === 'line'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Line
+              </button>
+              <button
+                onClick={() => setIncomeChartType('bar')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  incomeChartType === 'bar'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Bar
+              </button>
+            </div>
           </div>
           {trendLoading ? (
             <div className="flex justify-center py-12">
@@ -400,53 +589,97 @@ export const FinancialReportsPage = () => {
             </div>
           ) : incomeTrend ? (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={incomeTrend.dataPoints}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-                />
-                <XAxis
-                  dataKey="period"
-                  tick={{ fontSize: 12 }}
-                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  stroke={isDark ? '#5c6180' : '#9CA3AF'}
-                  tickFormatter={formatYAxis}
-                />
-                <Tooltip
-                  formatter={(value: number | undefined) =>
-                    value !== undefined ? formatCurrency(value) : 'N/A'
-                  }
-                  contentStyle={tooltipStyle}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="income"
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  name="Income"
-                  dot={{ fill: '#10B981', r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="expenses"
-                  stroke="#EF4444"
-                  strokeWidth={2}
-                  name="Expenses"
-                  dot={{ fill: '#EF4444', r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="netProfit"
-                  stroke="#3B82F6"
-                  strokeWidth={2}
-                  name="Net Profit"
-                  dot={{ fill: '#3B82F6', r: 4 }}
-                />
-              </LineChart>
+              {incomeChartType === 'line' ? (
+                <LineChart data={incomeTrend.dataPoints}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                  />
+                  <XAxis
+                    dataKey="period"
+                    tick={{ fontSize: 12 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                    tickFormatter={formatYAxis}
+                  />
+                  <Tooltip
+                    formatter={(value: number | undefined) =>
+                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    }
+                    contentStyle={tooltipStyle}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    name="Income"
+                    dot={{ fill: '#10B981', r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="expenses"
+                    stroke="#EF4444"
+                    strokeWidth={2}
+                    name="Expenses"
+                    dot={{ fill: '#EF4444', r: 4 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="netProfit"
+                    stroke="#3B82F6"
+                    strokeWidth={2}
+                    name="Net Profit"
+                    dot={{ fill: '#3B82F6', r: 4 }}
+                  />
+                </LineChart>
+              ) : (
+                <BarChart data={incomeTrend.dataPoints}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                  />
+                  <XAxis
+                    dataKey="period"
+                    tick={{ fontSize: 12 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                    tickFormatter={formatYAxis}
+                  />
+                  <Tooltip
+                    formatter={(value: number | undefined) =>
+                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    }
+                    contentStyle={tooltipStyle}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="income"
+                    fill="#10B981"
+                    name="Income"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="expenses"
+                    fill="#EF4444"
+                    name="Expenses"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="netProfit"
+                    fill="#3B82F6"
+                    name="Net Profit"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           ) : null}
         </div>
@@ -462,68 +695,126 @@ export const FinancialReportsPage = () => {
                 By category for selected period
               </p>
             </div>
-            <PieChartIcon className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <div className="flex items-center gap-1 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-md p-0.5">
+              <button
+                onClick={() => setExpenseChartType('pie')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  expenseChartType === 'pie'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Pie
+              </button>
+              <button
+                onClick={() => setExpenseChartType('bar')}
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                  expenseChartType === 'bar'
+                    ? 'bg-white dark:bg-[#2a2e3f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
+                    : 'text-[#6b7194] dark:text-[#8b90a8]'
+                }`}
+              >
+                Bar
+              </button>
+            </div>
           </div>
           {breakdownLoading ? (
             <div className="flex justify-center py-12">
               <LoadingSpinner />
             </div>
           ) : expenseBreakdown && expenseBreakdown.categories.length > 0 ? (
-            <div className="flex flex-col lg:flex-row items-center gap-6">
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={expenseBreakdown.categories}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({
-                      name,
-                      percent,
-                    }: {
-                      name?: string;
-                      percent?: number;
-                    }) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {expenseBreakdown.categories.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+            expenseChartType === 'pie' ? (
+              <div className="flex flex-col lg:flex-row items-center gap-6">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={expenseBreakdown.categories}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({
+                        name,
+                        percent,
+                      }: {
+                        name?: string;
+                        percent?: number;
+                      }) =>
+                        `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {expenseBreakdown.categories.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number | undefined) =>
+                        value !== undefined ? formatCurrency(value) : 'N/A'
+                      }
+                      contentStyle={tooltipStyle}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex-1 max-w-xs">
+                  <div className="space-y-2">
+                    {expenseBreakdown.categories.map((category) => (
+                      <div
+                        key={category.name}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: category.color }}
+                          />
+                          <span className="text-[#3d4463] dark:text-[#c4c8db]">
+                            {category.name}
+                          </span>
+                        </div>
+                        <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          {formatCurrency(category.value)}
+                        </span>
+                      </div>
                     ))}
-                  </Pie>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={expenseBreakdown.categories} layout="vertical">
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+                  />
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 12 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                    tickFormatter={formatYAxis}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={{ fontSize: 11 }}
+                    stroke={isDark ? '#5c6180' : '#9CA3AF'}
+                    width={120}
+                  />
                   <Tooltip
                     formatter={(value: number | undefined) =>
                       value !== undefined ? formatCurrency(value) : 'N/A'
                     }
                     contentStyle={tooltipStyle}
                   />
-                </PieChart>
+                  <Bar dataKey="value" name="Amount" radius={[0, 4, 4, 0]}>
+                    {expenseBreakdown.categories.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
-              <div className="flex-1 max-w-xs">
-                <div className="space-y-2">
-                  {expenseBreakdown.categories.map((category) => (
-                    <div
-                      key={category.name}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        <span className="text-[#3d4463] dark:text-[#c4c8db]">
-                          {category.name}
-                        </span>
-                      </div>
-                      <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                        {formatCurrency(category.value)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            )
           ) : (
             <div className="text-center py-12 text-[#6b7194] dark:text-[#8b90a8]">
               No expense data for selected period
@@ -531,15 +822,15 @@ export const FinancialReportsPage = () => {
           )}
         </div>
 
-        {/* Property Comparison Bar Chart */}
+        {/* Property Performance Table */}
         <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Property Comparison
+                Property Performance
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Income vs expenses by property
+                Income, expenses & net profit per property
               </p>
             </div>
             <Building2 className="h-6 w-6 text-[#9ca0b8] dark:text-[#5c6180]" />
@@ -549,86 +840,113 @@ export const FinancialReportsPage = () => {
               <LoadingSpinner />
             </div>
           ) : propertyComparison && propertyComparison.properties.length > 0 ? (
-            <ResponsiveContainer width="100%" height={450}>
-              <BarChart
-                data={propertyComparison.properties.map((p) => ({
-                  street: p.property.street,
-                  city: p.property.city,
-                  income: p.income,
-                  expenses: p.expenses,
-                  netProfit: p.netProfit,
-                }))}
-                margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-                />
-                <XAxis
-                  dataKey="street"
-                  tick={(props: {
-                    x: string | number;
-                    y: string | number;
-                    index: number;
-                  }) => {
-                    const { x, y, index } = props;
-                    const data = propertyComparison.properties[index];
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[#edf0f7] dark:border-[#2a2e3f]">
+                    <th className="text-left py-2 pr-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Property
+                    </th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Income
+                    </th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Expenses
+                    </th>
+                    <th className="text-right py-2 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Net Profit
+                    </th>
+                    <th className="text-right py-2 pl-4 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                      Margin
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {propertyComparison.properties.map((p) => {
+                    const margin =
+                      p.income > 0 ? (p.netProfit / p.income) * 100 : 0;
                     return (
-                      <g transform={`translate(${x},${y})`}>
-                        <text
-                          x={0}
-                          y={0}
-                          dy={24}
-                          textAnchor="middle"
-                          fill={isDark ? '#8b90a8' : '#6B7280'}
-                          fontSize={11}
+                      <tr
+                        key={p.property.identifier}
+                        className="border-b border-[#edf0f7] dark:border-[#2a2e3f] last:border-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1e2130] cursor-pointer"
+                        onClick={() =>
+                          navigate(`/properties/${p.property.identifier}`)
+                        }
+                      >
+                        <td className="py-3 pr-4">
+                          <div className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                            {p.property.street}
+                          </div>
+                          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                            {p.property.city}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">
+                          {formatCurrency(p.income)}
+                        </td>
+                        <td className="py-3 px-4 text-right font-medium text-red-600 dark:text-red-400">
+                          {formatCurrency(p.expenses)}
+                        </td>
+                        <td
+                          className={`py-3 px-4 text-right font-semibold ${p.netProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}
                         >
-                          <tspan x={0} dy={0}>
-                            {data.property.street}
-                          </tspan>
-                          <tspan
-                            x={0}
-                            dy={14}
-                            fontSize={10}
-                            fill={isDark ? '#5c6180' : '#9CA3AF'}
+                          {formatCurrency(p.netProfit)}
+                        </td>
+                        <td className="py-3 pl-4 text-right">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                              margin >= 50
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                : margin >= 20
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                  : margin >= 0
+                                    ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                                    : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                            }`}
                           >
-                            {data.property.city}
-                          </tspan>
-                        </text>
-                      </g>
+                            {margin.toFixed(1)}%
+                          </span>
+                        </td>
+                      </tr>
                     );
-                  }}
-                  height={60}
-                  interval={0}
-                  stroke={isDark ? '#5c6180' : '#6B7280'}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  stroke={isDark ? '#5c6180' : '#6B7280'}
-                  tickFormatter={formatYAxis}
-                />
-                <Tooltip
-                  formatter={(value: number | undefined) =>
-                    value !== undefined ? formatCurrency(value) : 'N/A'
-                  }
-                  labelFormatter={(label, payload) => {
-                    if (
-                      Array.isArray(payload) &&
-                      payload.length > 0 &&
-                      payload[0].payload?.fullName
-                    ) {
-                      return payload[0].payload.fullName;
-                    }
-                    return label;
-                  }}
-                  contentStyle={tooltipStyle}
-                />
-                <Legend />
-                <Bar dataKey="income" fill="#10B981" name="Income" />
-                <Bar dataKey="expenses" fill="#EF4444" name="Expenses" />
-                <Bar dataKey="netProfit" fill="#3B82F6" name="Net Profit" />
-              </BarChart>
-            </ResponsiveContainer>
+                  })}
+                </tbody>
+                {propertyComparison.properties.length > 1 && (
+                  <tfoot>
+                    <tr className="border-t-2 border-[#c9cfd9] dark:border-[#3a3f54]">
+                      <td className="py-3 pr-4 font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                        Total
+                      </td>
+                      <td className="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">
+                        {formatCurrency(
+                          propertyComparison.properties.reduce(
+                            (s, p) => s + p.income,
+                            0
+                          )
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right font-semibold text-red-600 dark:text-red-400">
+                        {formatCurrency(
+                          propertyComparison.properties.reduce(
+                            (s, p) => s + p.expenses,
+                            0
+                          )
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right font-semibold text-blue-600 dark:text-blue-400">
+                        {formatCurrency(
+                          propertyComparison.properties.reduce(
+                            (s, p) => s + p.netProfit,
+                            0
+                          )
+                        )}
+                      </td>
+                      <td className="py-3 pl-4"></td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
           ) : (
             <div className="text-center py-12 text-[#6b7194] dark:text-[#8b90a8]">
               No property data for selected period
@@ -641,7 +959,7 @@ export const FinancialReportsPage = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Occupancy Trend (12 Months)
+                Occupancy Trend
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
                 Monthly occupancy rate percentage

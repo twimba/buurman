@@ -3,10 +3,12 @@ package com.buurman.repository;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
+import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
 import java.math.BigDecimal;
@@ -275,7 +277,13 @@ public class PaymentRepository {
   }
 
   public PaginatedResult<Payment> findAllByTeamIdPaginated(
-      UUID teamId, String status, UUID contractId, PageRequest pageRequest) {
+      UUID teamId,
+      String status,
+      UUID contractId,
+      UUID propertyId,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      PageRequest pageRequest) {
     Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       if ("OVERDUE".equalsIgnoreCase(status)) {
@@ -289,6 +297,24 @@ public class PaymentRepository {
     }
     if (contractId != null) {
       condition = condition.and(PAYMENTS.CONTRACT_ID.eq(contractId));
+    }
+    if (propertyId != null) {
+      condition =
+          condition.and(
+              PAYMENTS.CONTRACT_ID.in(
+                  dsl.select(CONTRACTS.ID)
+                      .from(CONTRACTS)
+                      .where(
+                          CONTRACTS
+                              .PROPERTY_ID
+                              .eq(propertyId)
+                              .and(CONTRACTS.DELETED_AT.isNull()))));
+    }
+    if (dateFrom != null) {
+      condition = condition.and(PAYMENTS.DUE_DATE.ge(dateFrom));
+    }
+    if (dateTo != null) {
+      condition = condition.and(PAYMENTS.DUE_DATE.le(dateTo));
     }
     Map<String, Field<?>> sortableFields =
         Map.of(
@@ -359,6 +385,19 @@ public class PaymentRepository {
         .fetchOptional()
         .map(r -> r.get(PAYMENTS.CURRENCY))
         .orElse(null);
+  }
+
+  public LocalDate findEarliestPaymentDate(UUID teamId) {
+    return dsl.select(min(PAYMENTS.PAYMENT_DATE))
+        .from(PAYMENTS)
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.DELETED_AT.isNull())
+                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                .and(PAYMENTS.STATUS.eq(PAID.name())))
+        .fetchOne(min(PAYMENTS.PAYMENT_DATE));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

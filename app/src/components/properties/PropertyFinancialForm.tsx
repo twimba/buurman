@@ -16,19 +16,106 @@ const inputCls =
   'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] disabled:dark:bg-[#1a1d28] disabled:text-[#9ca0b8] disabled:dark:text-[#5c6180] disabled:cursor-not-allowed';
 
 const MONTH_OPTIONS = [
-  { value: 1, label: 'January' },
-  { value: 2, label: 'February' },
-  { value: 3, label: 'March' },
-  { value: 4, label: 'April' },
+  { value: 1, label: 'Jan' },
+  { value: 2, label: 'Feb' },
+  { value: 3, label: 'Mar' },
+  { value: 4, label: 'Apr' },
   { value: 5, label: 'May' },
-  { value: 6, label: 'June' },
-  { value: 7, label: 'July' },
-  { value: 8, label: 'August' },
-  { value: 9, label: 'September' },
-  { value: 10, label: 'October' },
-  { value: 11, label: 'November' },
-  { value: 12, label: 'December' },
+  { value: 6, label: 'Jun' },
+  { value: 7, label: 'Jul' },
+  { value: 8, label: 'Aug' },
+  { value: 9, label: 'Sep' },
+  { value: 10, label: 'Oct' },
+  { value: 11, label: 'Nov' },
+  { value: 12, label: 'Dec' },
 ];
+
+/** Multi-month selector: stores comma-separated month numbers (e.g. "1,3,7"), null = all months */
+function MonthMultiSelect({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: string | null | undefined;
+  onChange: (val: string | null) => void;
+  disabled?: boolean;
+}) {
+  const selected = new Set(
+    value
+      ? value
+          .split(',')
+          .map((s) => parseInt(s.trim(), 10))
+          .filter((n) => !isNaN(n))
+      : []
+  );
+  const allSelected = selected.size === 0;
+
+  const toggle = (month: number) => {
+    const next = new Set(selected);
+    if (next.has(month)) {
+      next.delete(month);
+    } else {
+      next.add(month);
+    }
+    if (next.size === 0 || next.size === 12) {
+      onChange(null);
+    } else {
+      onChange(
+        Array.from(next)
+          .sort((a, b) => a - b)
+          .join(',')
+      );
+    }
+  };
+
+  const selectAll = () => onChange(null);
+
+  const summary = allSelected
+    ? 'All months (÷12)'
+    : `${selected.size} month${selected.size !== 1 ? 's' : ''} — amount ÷${selected.size}`;
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-1.5">
+        <button
+          type="button"
+          onClick={selectAll}
+          disabled={disabled}
+          className={`text-xs px-2 py-0.5 rounded transition-colors ${
+            allSelected
+              ? 'bg-[#5c7cfa] text-white'
+              : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          All
+        </button>
+        <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          {summary}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {MONTH_OPTIONS.map((m) => {
+          const isActive = !allSelected && selected.has(m.value);
+          return (
+            <button
+              key={m.value}
+              type="button"
+              onClick={() => toggle(m.value)}
+              disabled={disabled}
+              className={`text-xs px-2 py-1 rounded transition-colors ${
+                isActive
+                  ? 'bg-[#5c7cfa] text-white'
+                  : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {m.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function countFilled(values: (unknown | null | undefined)[]): number {
   return values.filter((v) => v !== null && v !== undefined && v !== '').length;
@@ -227,20 +314,55 @@ export const PropertyFinancialForm = ({
           </div>
           <div>
             <label className={labelCls}>Monthly Payment</label>
-            <MoneyInput
-              value={formData.monthlyMortgagePayment ?? undefined}
-              onChange={(val) =>
-                onChange('monthlyMortgagePayment', val ?? null)
-              }
-              currency={
-                formData.monthlyMortgagePaymentCurrency || currencyFallback
-              }
-              onCurrencyChange={(v) =>
-                onChange('monthlyMortgagePaymentCurrency', v)
-              }
-              disabled={isMortgageNone}
-              error={!!errors?.monthlyMortgagePaymentCurrency}
-            />
+            <div className="flex items-center gap-2 mb-2">
+              <label className="inline-flex items-center gap-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] cursor-pointer">
+                <input
+                  type="radio"
+                  name="mortgagePaymentType"
+                  checked={formData.monthlyMortgagePayment !== -1}
+                  onChange={() => {
+                    if (formData.monthlyMortgagePayment === -1) {
+                      onChange('monthlyMortgagePayment', null);
+                    }
+                  }}
+                  disabled={isMortgageNone}
+                  className="text-[#5c7cfa]"
+                />
+                Fixed amount
+              </label>
+              <label className="inline-flex items-center gap-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] cursor-pointer">
+                <input
+                  type="radio"
+                  name="mortgagePaymentType"
+                  checked={formData.monthlyMortgagePayment === -1}
+                  onChange={() => onChange('monthlyMortgagePayment', -1)}
+                  disabled={isMortgageNone}
+                  className="text-[#5c7cfa]"
+                />
+                Variable
+              </label>
+            </div>
+            {formData.monthlyMortgagePayment !== -1 && (
+              <MoneyInput
+                value={formData.monthlyMortgagePayment ?? undefined}
+                onChange={(val) =>
+                  onChange('monthlyMortgagePayment', val ?? null)
+                }
+                currency={
+                  formData.monthlyMortgagePaymentCurrency || currencyFallback
+                }
+                onCurrencyChange={(v) =>
+                  onChange('monthlyMortgagePaymentCurrency', v)
+                }
+                disabled={isMortgageNone}
+                error={!!errors?.monthlyMortgagePaymentCurrency}
+              />
+            )}
+            {formData.monthlyMortgagePayment === -1 && (
+              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] italic">
+                Payment amount varies — will not be used for fixed projections
+              </p>
+            )}
             {errors?.monthlyMortgagePaymentCurrency && (
               <p className="text-red-600 text-sm mt-1">
                 {errors.monthlyMortgagePaymentCurrency}
@@ -300,25 +422,12 @@ export const PropertyFinancialForm = ({
                 {errors.annualPropertyTaxCurrency}
               </p>
             )}
-            <label className={`${labelCls} mt-2`}>Due Month</label>
-            <select
-              value={formData.annualPropertyTaxDueMonth ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'annualPropertyTaxDueMonth',
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
-              }
-              className={inputCls}
+            <label className={`${labelCls} mt-2`}>Due Months</label>
+            <MonthMultiSelect
+              value={formData.annualPropertyTaxDueMonth}
+              onChange={(val) => onChange('annualPropertyTaxDueMonth', val)}
               disabled={!formData.annualPropertyTax}
-            >
-              <option value="">Every month (÷12)</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className={labelCls}>Insurance</label>
@@ -334,25 +443,12 @@ export const PropertyFinancialForm = ({
                 {errors.annualInsuranceCurrency}
               </p>
             )}
-            <label className={`${labelCls} mt-2`}>Due Month</label>
-            <select
-              value={formData.annualInsuranceDueMonth ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'annualInsuranceDueMonth',
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
-              }
-              className={inputCls}
+            <label className={`${labelCls} mt-2`}>Due Months</label>
+            <MonthMultiSelect
+              value={formData.annualInsuranceDueMonth}
+              onChange={(val) => onChange('annualInsuranceDueMonth', val)}
               disabled={!formData.annualInsurance}
-            >
-              <option value="">Every month (÷12)</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className={labelCls}>
@@ -370,25 +466,12 @@ export const PropertyFinancialForm = ({
                 {errors.annualHoaFeeCurrency}
               </p>
             )}
-            <label className={`${labelCls} mt-2`}>Due Month</label>
-            <select
-              value={formData.annualHoaFeeDueMonth ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'annualHoaFeeDueMonth',
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
-              }
-              className={inputCls}
+            <label className={`${labelCls} mt-2`}>Due Months</label>
+            <MonthMultiSelect
+              value={formData.annualHoaFeeDueMonth}
+              onChange={(val) => onChange('annualHoaFeeDueMonth', val)}
               disabled={!formData.annualHoaFee}
-            >
-              <option value="">Every month (÷12)</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className={labelCls}>Management Fee</label>
@@ -408,25 +491,12 @@ export const PropertyFinancialForm = ({
                 {errors.annualManagementFeeCurrency}
               </p>
             )}
-            <label className={`${labelCls} mt-2`}>Due Month</label>
-            <select
-              value={formData.annualManagementFeeDueMonth ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'annualManagementFeeDueMonth',
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
-              }
-              className={inputCls}
+            <label className={`${labelCls} mt-2`}>Due Months</label>
+            <MonthMultiSelect
+              value={formData.annualManagementFeeDueMonth}
+              onChange={(val) => onChange('annualManagementFeeDueMonth', val)}
               disabled={!formData.annualManagementFee}
-            >
-              <option value="">Every month (÷12)</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div>
             <label className={labelCls}>
@@ -450,25 +520,14 @@ export const PropertyFinancialForm = ({
                 {errors.annualMaintenanceReserveCurrency}
               </p>
             )}
-            <label className={`${labelCls} mt-2`}>Due Month</label>
-            <select
-              value={formData.annualMaintenanceReserveDueMonth ?? ''}
-              onChange={(e) =>
-                onChange(
-                  'annualMaintenanceReserveDueMonth',
-                  e.target.value ? parseInt(e.target.value, 10) : null
-                )
+            <label className={`${labelCls} mt-2`}>Due Months</label>
+            <MonthMultiSelect
+              value={formData.annualMaintenanceReserveDueMonth}
+              onChange={(val) =>
+                onChange('annualMaintenanceReserveDueMonth', val)
               }
-              className={inputCls}
               disabled={!formData.annualMaintenanceReserve}
-            >
-              <option value="">Every month (÷12)</option>
-              {MONTH_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
       </CollapsibleSection>

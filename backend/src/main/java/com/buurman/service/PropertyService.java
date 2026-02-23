@@ -142,8 +142,10 @@ public class PropertyService {
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    validateCurrencyRequired(
-        request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment())) {
+      validateCurrencyRequired(
+          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    }
     validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
     validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
     validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
@@ -278,8 +280,10 @@ public class PropertyService {
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    validateCurrencyRequired(
-        request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment())) {
+      validateCurrencyRequired(
+          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
+    }
     validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
     validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
     validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());

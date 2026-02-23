@@ -54,8 +54,8 @@ const navigation = [
 ];
 
 const administrationNavigation = [
-  { name: 'Team Members', href: '/admin/team-members', icon: Users },
   { name: 'Preferences', href: '/admin/preferences', icon: Settings },
+  { name: 'Team Members', href: '/admin/team-members', icon: Users },
   { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },

@@ -12,6 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Property {
 
+  /**
+   * Sentinel value for variable mortgage payments (-1). When monthlyMortgagePayment equals this,
+   * the payment varies and should not be used for fixed projections.
+   */
+  public static final BigDecimal VARIABLE_PAYMENT_SENTINEL = BigDecimal.valueOf(-1);
+
+  public static final long VARIABLE_PAYMENT_SENTINEL_DB = -1L;
+
   private UUID id;
   private String identifier;
   private UUID teamId;
@@ -109,12 +117,12 @@ public class Property {
   private BigDecimal annualMaintenanceReserve;
   private String annualMaintenanceReserveCurrency;
 
-  // Operating Cost Due Months (1-12)
-  private Integer annualPropertyTaxDueMonth;
-  private Integer annualInsuranceDueMonth;
-  private Integer annualHoaFeeDueMonth;
-  private Integer annualManagementFeeDueMonth;
-  private Integer annualMaintenanceReserveDueMonth;
+  // Operating Cost Due Months — comma-separated month numbers (e.g. "1,3,7"), null = all months
+  private String annualPropertyTaxDueMonth;
+  private String annualInsuranceDueMonth;
+  private String annualHoaFeeDueMonth;
+  private String annualManagementFeeDueMonth;
+  private String annualMaintenanceReserveDueMonth;
 
   // Depreciation
   private DepreciationMethod depreciationMethod;

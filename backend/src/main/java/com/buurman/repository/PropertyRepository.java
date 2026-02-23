@@ -192,12 +192,16 @@ public class PropertyRepository {
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMonthlyMortgagePayment(),
-                  property.getMonthlyMortgagePaymentCurrency()))
+              isVariablePayment(property.getMonthlyMortgagePayment())
+                  ? Property.VARIABLE_PAYMENT_SENTINEL_DB
+                  : CurrencyUtils.toMinorUnitsOrNull(
+                      property.getMonthlyMortgagePayment(),
+                      property.getMonthlyMortgagePaymentCurrency()))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              property.getMonthlyMortgagePaymentCurrency())
+              isVariablePayment(property.getMonthlyMortgagePayment())
+                  ? null
+                  : property.getMonthlyMortgagePaymentCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
@@ -226,21 +230,14 @@ public class PropertyRepository {
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
               property.getAnnualMaintenanceReserveCurrency())
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH, property.getAnnualPropertyTaxDueMonth())
+          .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, property.getAnnualInsuranceDueMonth())
+          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth())
           .set(
-              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
-              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
-              toShortOrNull(property.getAnnualInsuranceDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, property.getAnnualManagementFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+              property.getAnnualMaintenanceReserveDueMonth())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -353,12 +350,16 @@ public class PropertyRepository {
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  property.getMonthlyMortgagePayment(),
-                  property.getMonthlyMortgagePaymentCurrency()))
+              isVariablePayment(property.getMonthlyMortgagePayment())
+                  ? Property.VARIABLE_PAYMENT_SENTINEL_DB
+                  : CurrencyUtils.toMinorUnitsOrNull(
+                      property.getMonthlyMortgagePayment(),
+                      property.getMonthlyMortgagePaymentCurrency()))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              property.getMonthlyMortgagePaymentCurrency())
+              isVariablePayment(property.getMonthlyMortgagePayment())
+                  ? null
+                  : property.getMonthlyMortgagePaymentCurrency())
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
@@ -387,21 +388,14 @@ public class PropertyRepository {
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY,
               property.getAnnualMaintenanceReserveCurrency())
+          .set(PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH, property.getAnnualPropertyTaxDueMonth())
+          .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, property.getAnnualInsuranceDueMonth())
+          .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, property.getAnnualHoaFeeDueMonth())
           .set(
-              PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
-              toShortOrNull(property.getAnnualPropertyTaxDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH,
-              toShortOrNull(property.getAnnualInsuranceDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualHoaFeeDueMonth()))
-          .set(
-              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH,
-              toShortOrNull(property.getAnnualManagementFeeDueMonth()))
+              PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, property.getAnnualManagementFeeDueMonth())
           .set(
               PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH,
-              toShortOrNull(property.getAnnualMaintenanceReserveDueMonth()))
+              property.getAnnualMaintenanceReserveDueMonth())
           .set(
               PROPERTIES.DEPRECIATION_METHOD,
               property.getDepreciationMethod() != null
@@ -490,7 +484,7 @@ public class PropertyRepository {
         .execute();
   }
 
-  private static Short toShortOrNull(Integer value) {
-    return value != null ? value.shortValue() : null;
+  private static boolean isVariablePayment(java.math.BigDecimal value) {
+    return value != null && value.compareTo(Property.VARIABLE_PAYMENT_SENTINEL) == 0;
   }
 }

@@ -4,6 +4,7 @@ import static com.buurman.util.UlidGenerator.newExpenseId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -145,16 +146,25 @@ public class ExpenseService {
 
   @Transactional(readOnly = true)
   public PageResponse<ExpenseResponse> getExpensesPaginated(
-      UserPrincipal principal, String category, UUID propertyId, PageRequest pageRequest) {
+      UserPrincipal principal,
+      String category,
+      UUID propertyId,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      PageRequest pageRequest) {
     PaginatedResult<Expense> result =
         expenseRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), category, propertyId, pageRequest);
+            principal.getTeamId(), category, propertyId, dateFrom, dateTo, pageRequest);
     List<ExpenseResponse> responses =
         result.items().stream()
             .map(expense -> enrichExpenseResponse(expense, principal.getTeamId()))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+  }
+
+  public UUID resolvePropertyId(String propertyIdentifier, UUID teamId) {
+    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId).getId();
   }
 
   public ExpenseStatsResponse getExpenseStats(UserPrincipal principal) {

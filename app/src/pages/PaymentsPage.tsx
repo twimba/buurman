@@ -14,6 +14,11 @@ import { ContractCell } from '@/components/contracts/ContractCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ContractSelector } from '@/components/common/ContractSelector';
+import { PropertySelector } from '@/components/common/PropertySelector';
+import {
+  PeriodFilter,
+  PeriodDateRange,
+} from '@/components/common/PeriodFilter';
 import {
   Plus,
   CalendarCheck,
@@ -61,6 +66,10 @@ export const PaymentsPage = () => {
   const [contractFilter, setContractFilter] = useState<string | undefined>(
     undefined
   );
+  const [propertyFilter, setPropertyFilter] = useState<string | undefined>(
+    undefined
+  );
+  const [periodRange, setPeriodRange] = useState<PeriodDateRange | null>(null);
 
   const {
     pageParams,
@@ -81,6 +90,9 @@ export const PaymentsPage = () => {
   } = usePayments({
     status: statusFilter,
     contractIdentifier: contractFilter,
+    propertyIdentifier: propertyFilter,
+    dateFrom: periodRange?.startDate,
+    dateTo: periodRange?.endDate,
     ...pageParams,
   });
 
@@ -283,46 +295,74 @@ export const PaymentsPage = () => {
             </h3>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Contract Filter */}
-            <div className="lg:w-72">
-              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                Contract
-              </label>
-              <ContractSelector
-                value={contractFilter ?? ''}
-                onChange={(id) => {
-                  setContractFilter(id || undefined);
-                  resetPage();
-                }}
-                status={undefined}
-                clearable
-                placeholder="All Contracts"
-              />
-            </div>
+          <div className="flex flex-col gap-4">
+            {/* Period Filter */}
+            <PeriodFilter
+              presets={['month', 'quarter', 'year', 'all', 'custom']}
+              defaultPreset="all"
+              onChange={(range) => {
+                setPeriodRange(range);
+                resetPage();
+              }}
+            />
 
-            {/* Status Filter */}
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                Status
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {statusFilters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    onClick={() => {
-                      setStatusFilter(filter.value);
-                      resetPage();
-                    }}
-                    className={`px-4 py-2 rounded transition-colors text-sm ${
-                      statusFilter === filter.value
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
-                    }`}
-                  >
-                    {filter.label}
-                  </button>
-                ))}
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Property Filter */}
+              <div className="lg:w-72">
+                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  Property
+                </label>
+                <PropertySelector
+                  value={propertyFilter ?? ''}
+                  onChange={(id) => {
+                    setPropertyFilter(id || undefined);
+                    resetPage();
+                  }}
+                  clearable
+                  placeholder="All Properties"
+                />
+              </div>
+
+              {/* Contract Filter */}
+              <div className="lg:w-72">
+                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  Contract
+                </label>
+                <ContractSelector
+                  value={contractFilter ?? ''}
+                  onChange={(id) => {
+                    setContractFilter(id || undefined);
+                    resetPage();
+                  }}
+                  status={undefined}
+                  clearable
+                  placeholder="All Contracts"
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  Status
+                </label>
+                <div className="flex gap-2 flex-wrap">
+                  {statusFilters.map((filter) => (
+                    <button
+                      key={filter.label}
+                      onClick={() => {
+                        setStatusFilter(filter.value);
+                        resetPage();
+                      }}
+                      className={`px-4 py-2 rounded transition-colors text-sm ${
+                        statusFilter === filter.value
+                          ? 'bg-[#5c7cfa] text-white'
+                          : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -468,11 +508,11 @@ export const PaymentsPage = () => {
               No payments found
             </h3>
             <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
-              {statusFilter
+              {statusFilter || propertyFilter || contractFilter
                 ? 'Try adjusting your filters'
                 : 'Get started by recording your first payment'}
             </p>
-            {!statusFilter && (
+            {!statusFilter && !propertyFilter && !contractFilter && (
               <div className="flex items-center gap-2 justify-center">
                 <button
                   onClick={() => navigate('/payments/new')}

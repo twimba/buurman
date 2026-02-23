@@ -45,8 +45,18 @@ export const MoneyInput = ({
   const [lastEmitted, setLastEmitted] = useState(value);
   const [prevFractionalDigits, setPrevFractionalDigits] =
     useState(fractionalDigits);
+  const [isFocused, setIsFocused] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const prefixRef = useRef<HTMLDivElement>(null);
+
+  const formatWithThousands = (numStr: string): string => {
+    if (!numStr) return '';
+    const num = parseFloat(numStr);
+    if (isNaN(num)) return numStr;
+    const parts = num.toFixed(fractionalDigits).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return fractionalDigits > 0 ? parts.join('.') : parts[0];
+  };
 
   // Sync external value → rawValue when parent changes it
   if (value !== lastEmitted) {
@@ -96,7 +106,12 @@ export const MoneyInput = ({
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
   const handleBlur = () => {
+    setIsFocused(false);
     if (rawValue === '' || rawValue === '.') return;
     const num = parseFloat(rawValue);
     if (isNaN(num)) return;
@@ -108,6 +123,8 @@ export const MoneyInput = ({
       onChange(parsed);
     }
   };
+
+  const displayValue = isFocused ? rawValue : formatWithThousands(rawValue);
 
   const defaultPlaceholder =
     placeholder ??
@@ -150,8 +167,9 @@ export const MoneyInput = ({
         id={id}
         type="text"
         inputMode="decimal"
-        value={rawValue}
+        value={displayValue}
         onChange={handleChange}
+        onFocus={handleFocus}
         onBlur={handleBlur}
         placeholder={defaultPlaceholder}
         disabled={disabled}

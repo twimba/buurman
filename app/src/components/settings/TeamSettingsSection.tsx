@@ -414,33 +414,27 @@ export const TeamSettingsSection = () => {
           </div>
         )}
 
-      {/* Roles Reference Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Roles & Permissions
-          </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-            Understanding team member roles
-          </p>
-        </div>
-
-        <div className="p-6 space-y-4">
+      {/* Roles Reference — compact informational banner */}
+      <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] px-4 py-3">
+        <div className="flex items-center gap-2 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <Shield className="h-3.5 w-3.5 shrink-0" />
+          <span className="font-medium">Roles:</span>
           {Object.entries(roleLabels).map(([role, label]) => (
-            <div
-              key={role}
-              className="flex items-start gap-3 p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg"
-            >
-              <Shield className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] mt-0.5" />
-              <div>
-                <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {label}
-                </p>
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  {roleDescriptions[role as Role]}
-                </p>
-              </div>
-            </div>
+            <span key={role} className="inline-flex items-center gap-1">
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${roleColors[role as Role]}`}
+              >
+                {label}
+              </span>
+              <span className="text-[#9ca0b8] dark:text-[#5c6180]">
+                {roleDescriptions[role as Role]}
+              </span>
+              {role !== 'TEAM_VIEWER' && (
+                <span className="text-[#c9cfd9] dark:text-[#3a3f54] mx-1">
+                  &middot;
+                </span>
+              )}
+            </span>
           ))}
         </div>
       </div>

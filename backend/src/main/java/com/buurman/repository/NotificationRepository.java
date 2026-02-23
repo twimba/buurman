@@ -196,6 +196,28 @@ public class NotificationRepository {
         .execute();
   }
 
+  public void incrementOpenCount(String providerMessageId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(NOTIFICATIONS)
+        .set(NOTIFICATIONS.OPEN_COUNT, NOTIFICATIONS.OPEN_COUNT.plus(1))
+        .set(
+            NOTIFICATIONS.FIRST_OPENED_AT,
+            org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_OPENED_AT, now))
+        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .execute();
+  }
+
+  public void incrementClickCount(String providerMessageId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(NOTIFICATIONS)
+        .set(NOTIFICATIONS.CLICK_COUNT, NOTIFICATIONS.CLICK_COUNT.plus(1))
+        .set(
+            NOTIFICATIONS.FIRST_CLICKED_AT,
+            org.jooq.impl.DSL.coalesce(NOTIFICATIONS.FIRST_CLICKED_AT, now))
+        .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
+        .execute();
+  }
+
   public List<Record2<String, Integer>> countByTeamIdGroupedByStatus(UUID teamId) {
     return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
         .from(NOTIFICATIONS)
