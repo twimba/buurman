@@ -15,9 +15,9 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 class PdfRenderer {
 
   byte[] renderHtml(String html) {
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      PdfWriter writer = new PdfWriter(baos);
-      PdfDocument pdf = new PdfDocument(writer);
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(baos);
+        PdfDocument pdf = new PdfDocument(writer)) {
       pdf.setDefaultPageSize(PageSize.A4);
 
       ConverterProperties converterProperties = new ConverterProperties();
