@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.CalendarFeed;
@@ -75,9 +74,9 @@ public class CalendarFeedRepository {
 
   public Optional<CalendarFeed> findExistingFeed(
       CalendarFeed.FeedType feedType,
-      @Nullable UUID contractId,
-      @Nullable UUID propertyId,
-      @Nullable UUID tenantId,
+      Optional<UUID> contractId,
+      Optional<UUID> propertyId,
+      Optional<UUID> tenantId,
       UUID userId,
       UUID teamId) {
     var condition =
@@ -89,16 +88,16 @@ public class CalendarFeedRepository {
             .and(CALENDAR_FEEDS.DELETED_AT.isNull());
 
     condition =
-        contractId != null
-            ? condition.and(CALENDAR_FEEDS.CONTRACT_ID.eq(contractId))
+        contractId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.CONTRACT_ID.eq(contractId.get()))
             : condition.and(CALENDAR_FEEDS.CONTRACT_ID.isNull());
     condition =
-        propertyId != null
-            ? condition.and(CALENDAR_FEEDS.PROPERTY_ID.eq(propertyId))
+        propertyId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.PROPERTY_ID.eq(propertyId.get()))
             : condition.and(CALENDAR_FEEDS.PROPERTY_ID.isNull());
     condition =
-        tenantId != null
-            ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId))
+        tenantId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId.get()))
             : condition.and(CALENDAR_FEEDS.TENANT_ID.isNull());
 
     return dsl.selectFrom(CALENDAR_FEEDS)
@@ -124,9 +123,9 @@ public class CalendarFeedRepository {
           .set(CALENDAR_FEEDS.USER_ID, feed.getUserId())
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())
           .set(CALENDAR_FEEDS.FEED_TYPE, feed.getFeedType().name())
-          .set(CALENDAR_FEEDS.CONTRACT_ID, feed.getContractId())
-          .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId())
-          .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId())
+          .set(CALENDAR_FEEDS.CONTRACT_ID, feed.getContractId().orElse(null))
+          .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId().orElse(null))
+          .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId().orElse(null))
           .set(CALENDAR_FEEDS.ENABLED, feed.getEnabled())
           .set(CALENDAR_FEEDS.CREATED_AT, createdAt)
           .set(CALENDAR_FEEDS.UPDATED_AT, updatedAt)

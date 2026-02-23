@@ -63,9 +63,9 @@ public class CalendarFeedService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public CalendarFeedResponse createFeed(
       CreateCalendarFeedRequest request, UserPrincipal principal) {
-    UUID contractId = null;
-    UUID propertyId = null;
-    UUID tenantId = null;
+    Optional<UUID> contractId = Optional.empty();
+    Optional<UUID> propertyId = Optional.empty();
+    Optional<UUID> tenantId = Optional.empty();
 
     switch (request.feedType()) {
       case CONTRACT -> {
@@ -76,7 +76,7 @@ public class CalendarFeedService {
         Contract contract =
             contractRepository.getByIdentifierAndTeamId(
                 request.contractIdentifier(), principal.requireTeamId());
-        contractId = contract.getId();
+        contractId = Optional.of(contract.getId());
       }
       case PROPERTY_PAYMENTS -> {
         if (request.propertyIdentifier() == null || request.propertyIdentifier().isBlank()) {
@@ -86,7 +86,7 @@ public class CalendarFeedService {
         Property property =
             propertyRepository.getByIdentifierAndTeamId(
                 request.propertyIdentifier(), principal.requireTeamId());
-        propertyId = property.getId();
+        propertyId = Optional.of(property.getId());
       }
       case TENANT_PAYMENTS -> {
         if (request.tenantIdentifier() == null || request.tenantIdentifier().isBlank()) {
@@ -96,7 +96,7 @@ public class CalendarFeedService {
         Tenant tenant =
             tenantRepository.getByIdentifierAndTeamId(
                 request.tenantIdentifier(), principal.requireTeamId());
-        tenantId = tenant.getId();
+        tenantId = Optional.of(tenant.getId());
       }
       case ALL_PAYMENTS -> {
         /* no entity needed */
@@ -181,30 +181,32 @@ public class CalendarFeedService {
     // Load contracts whose milestones should appear in the feed
     List<Contract> milestoneContracts = new ArrayList<>();
     switch (feed.getFeedType()) {
-      case CONTRACT -> {
-        if (feed.getContractId() != null) {
-          contractIds.add(feed.getContractId());
-          contractRepository
-              .findByIdAndTeamId(feed.getContractId(), teamId)
-              .ifPresent(milestoneContracts::add);
-        }
-      }
-      case PROPERTY_PAYMENTS -> {
-        if (feed.getPropertyId() != null) {
-          List<Contract> propContracts =
-              contractRepository.findByPropertyId(feed.getPropertyId(), teamId);
-          milestoneContracts.addAll(propContracts);
-          propContracts.forEach(c -> contractIds.add(c.getId()));
-        }
-      }
-      case TENANT_PAYMENTS -> {
-        if (feed.getTenantId() != null) {
-          List<Contract> tenContracts =
-              contractRepository.findByTenantIdViaParties(feed.getTenantId(), teamId);
-          milestoneContracts.addAll(tenContracts);
-          tenContracts.forEach(c -> contractIds.add(c.getId()));
-        }
-      }
+      case CONTRACT ->
+          feed.getContractId()
+              .ifPresent(
+                  cId -> {
+                    contractIds.add(cId);
+                    contractRepository
+                        .findByIdAndTeamId(cId, teamId)
+                        .ifPresent(milestoneContracts::add);
+                  });
+      case PROPERTY_PAYMENTS ->
+          feed.getPropertyId()
+              .ifPresent(
+                  pId -> {
+                    List<Contract> propContracts = contractRepository.findByPropertyId(pId, teamId);
+                    milestoneContracts.addAll(propContracts);
+                    propContracts.forEach(c -> contractIds.add(c.getId()));
+                  });
+      case TENANT_PAYMENTS ->
+          feed.getTenantId()
+              .ifPresent(
+                  tId -> {
+                    List<Contract> tenContracts =
+                        contractRepository.findByTenantIdViaParties(tId, teamId);
+                    milestoneContracts.addAll(tenContracts);
+                    tenContracts.forEach(c -> contractIds.add(c.getId()));
+                  });
       case ALL_PAYMENTS -> {
         /* no milestones */
       }
@@ -315,12 +317,10 @@ public class CalendarFeedService {
     return switch (feed.getFeedType()) {
       case ALL_PAYMENTS -> paymentRepository.findAllByTeamId(teamId);
       case CONTRACT ->
-          paymentRepository.findByContractId(
-              java.util.Objects.requireNonNull(feed.getContractId()), teamId);
+          paymentRepository.findByContractId(feed.getContractId().orElseThrow(), teamId);
       case PROPERTY_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByPropertyId(
-                java.util.Objects.requireNonNull(feed.getPropertyId()), teamId);
+            contractRepository.findByPropertyId(feed.getPropertyId().orElseThrow(), teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -329,8 +329,7 @@ public class CalendarFeedService {
       }
       case TENANT_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByTenantIdViaParties(
-                java.util.Objects.requireNonNull(feed.getTenantId()), teamId);
+            contractRepository.findByTenantIdViaParties(feed.getTenantId().orElseThrow(), teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -349,27 +348,27 @@ public class CalendarFeedService {
       case ALL_PAYMENTS -> "Buurman - All Payment Due Dates";
       case CONTRACT -> "Buurman - Contract Calendar";
       case PROPERTY_PAYMENTS -> {
-        UUID propertyId = java.util.Objects.requireNonNull(feed.getPropertyId());
+        UUID pId = feed.getPropertyId().orElseThrow();
         Property p =
             propertyMap.values().stream()
-                .filter(prop -> prop.getId().equals(propertyId))
+                .filter(prop -> prop.getId().equals(pId))
                 .findFirst()
                 .orElse(null);
         if (p == null) {
-          p = propertyRepository.findByIdAndTeamId(propertyId, teamId).orElse(null);
+          p = propertyRepository.findByIdAndTeamId(pId, teamId).orElse(null);
         }
         String name = p != null && p.getStreet() != null ? p.getStreet() : "Property";
         yield "Buurman - " + name + " Payments";
       }
       case TENANT_PAYMENTS -> {
-        UUID tenantIdVal = java.util.Objects.requireNonNull(feed.getTenantId());
+        UUID tId = feed.getTenantId().orElseThrow();
         Tenant t =
             tenantMap.values().stream()
-                .filter(tn -> tn.getId().equals(tenantIdVal))
+                .filter(tn -> tn.getId().equals(tId))
                 .findFirst()
                 .orElse(null);
         if (t == null) {
-          t = tenantRepository.findByIdAndTeamId(tenantIdVal, teamId).orElse(null);
+          t = tenantRepository.findByIdAndTeamId(tId, teamId).orElse(null);
         }
         String name = t != null ? t.getFirstName() + " " + t.getLastName() : "Tenant";
         yield "Buurman - " + name + " Payments";
@@ -423,9 +422,9 @@ public class CalendarFeedService {
     String tenantIdentifier = null;
     String entityLabel = null;
 
-    if (feed.getContractId() != null) {
-      Optional<Contract> contractOpt =
-          contractRepository.findByIdAndTeamId(feed.getContractId(), teamId);
+    if (feed.getContractId().isPresent()) {
+      UUID cId = feed.getContractId().get();
+      Optional<Contract> contractOpt = contractRepository.findByIdAndTeamId(cId, teamId);
       if (contractOpt.isPresent()) {
         Contract contract = contractOpt.get();
         contractIdentifier = contract.getIdentifier();
@@ -451,9 +450,9 @@ public class CalendarFeedService {
       }
     }
 
-    if (feed.getPropertyId() != null) {
-      Optional<Property> propOpt =
-          propertyRepository.findByIdAndTeamId(feed.getPropertyId(), teamId);
+    if (feed.getPropertyId().isPresent()) {
+      UUID pId = feed.getPropertyId().get();
+      Optional<Property> propOpt = propertyRepository.findByIdAndTeamId(pId, teamId);
       if (propOpt.isPresent()) {
         Property property = propOpt.get();
         propertyIdentifier = property.getIdentifier();
@@ -465,8 +464,9 @@ public class CalendarFeedService {
       }
     }
 
-    if (feed.getTenantId() != null) {
-      Optional<Tenant> tenantOpt = tenantRepository.findByIdAndTeamId(feed.getTenantId(), teamId);
+    if (feed.getTenantId().isPresent()) {
+      UUID tId = feed.getTenantId().get();
+      Optional<Tenant> tenantOpt = tenantRepository.findByIdAndTeamId(tId, teamId);
       if (tenantOpt.isPresent()) {
         Tenant tenant = tenantOpt.get();
         tenantIdentifier = tenant.getIdentifier();
@@ -487,7 +487,7 @@ public class CalendarFeedService {
         Optional.ofNullable(propertyIdentifier),
         Optional.ofNullable(tenantIdentifier),
         Optional.ofNullable(entityLabel),
-        Boolean.TRUE.equals(feed.getEnabled()),
+        feed.getEnabled(),
         feedUrl,
         feed.getCreatedAt(),
         Optional.ofNullable(feed.getUpdatedAt()));

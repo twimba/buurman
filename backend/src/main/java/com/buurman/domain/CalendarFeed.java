@@ -1,6 +1,7 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -30,10 +31,10 @@ public class CalendarFeed {
   private UUID userId;
   private String feedToken;
   private FeedType feedType;
-  private @Nullable UUID contractId;
-  private @Nullable UUID propertyId;
-  private @Nullable UUID tenantId;
-  private @Nullable Boolean enabled;
+  @Builder.Default private Optional<UUID> contractId = Optional.empty();
+  @Builder.Default private Optional<UUID> propertyId = Optional.empty();
+  @Builder.Default private Optional<UUID> tenantId = Optional.empty();
+  @Builder.Default private Boolean enabled = true;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
