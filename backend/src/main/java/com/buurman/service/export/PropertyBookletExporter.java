@@ -315,9 +315,9 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String bedBath =
-        (details.getBedrooms() != null ? details.getBedrooms() + " bed" : "—")
+        (details.getBedrooms().map(v -> v + " bed").orElse("—"))
             + " / "
-            + (details.getBathrooms() != null ? details.getBathrooms() + " bath" : "—");
+            + (details.getBathrooms().map(v -> v + " bath").orElse("—"));
     appendCoverCell(html, "Bedrooms / Bathrooms", bedBath);
     appendCoverCell(html, "Total Area", area);
     html.append("</tr><tr>");
@@ -332,18 +332,17 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
-    String usable = buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit());
-    String common = buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit());
+    String usable =
+        buildAreaDisplay(
+            details.getUsableAreaValue().orElse(null), details.getUsableAreaUnit().orElse(null));
+    String common =
+        buildAreaDisplay(
+            details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null));
     appendCoverCell(html, "Usable / Common Area", usable + " / " + common);
-    appendCoverCell(
-        html,
-        "Floor Level",
-        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
+    appendCoverCell(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Ceiling Height",
-        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+        html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("</tr>");
   }
@@ -359,19 +358,12 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);
-    appendCoverCell(
-        html,
-        "Clear Height",
-        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
+    appendCoverCell(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Loading Docks",
-        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+        html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
     appendCoverCell(
-        html,
-        "Power Capacity",
-        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+        html, "Power Capacity", details.getPowerCapacityKva().map(v -> v + " kVA").orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -387,20 +379,19 @@ public class PropertyBookletExporter {
     appendCoverCell(
         html,
         "Total Land Area",
-        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+        buildAreaDisplay(
+            details.getTotalLandAreaValue().orElse(null),
+            details.getTotalLandAreaUnit().orElse(null)));
     appendCoverCell(
         html,
         "Arable Area",
-        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+        buildAreaDisplay(
+            details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Soil Type",
-        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+        html, "Soil Type", details.getSoilType().map(v -> formatEnumValue(v)).orElse("—"));
     appendCoverCell(
-        html,
-        "Current Use",
-        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+        html, "Current Use", details.getCurrentUse().map(v -> formatEnumValue(v)).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -472,21 +463,13 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Residential Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(
-        html, "Bedrooms", details.getBedrooms() != null ? details.getBedrooms().toString() : "—");
-    appendField(
-        html,
-        "Bathrooms",
-        details.getBathrooms() != null ? details.getBathrooms().toString() : "—");
+    appendField(html, "Bedrooms", details.getBedrooms().map(Object::toString).orElse("—"));
+    appendField(html, "Bathrooms", details.getBathrooms().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Furnished",
-        details.getFurnished() != null ? (isTrue(details.getFurnished()) ? "Yes" : "No") : "—");
+        html, "Furnished", details.getFurnished().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
-        html,
-        "Pet Policy",
-        details.getPetPolicy() != null ? formatEnumValue(details.getPetPolicy()) : "—");
+        html, "Pet Policy", details.getPetPolicy().map(v -> formatEnumValue(v)).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -499,62 +482,40 @@ public class PropertyBookletExporter {
     appendField(
         html,
         "Usable Area",
-        buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit()));
+        buildAreaDisplay(
+            details.getUsableAreaValue().orElse(null), details.getUsableAreaUnit().orElse(null)));
     appendField(
         html,
         "Common Area",
-        buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit()));
+        buildAreaDisplay(
+            details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null)));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Floor Level",
-        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
-    appendField(
-        html,
-        "Ceiling Height",
-        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+    appendField(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
+    appendField(html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Storefront",
-        details.getHasStorefront() != null
-            ? (isTrue(details.getHasStorefront()) ? "Yes" : "No")
-            : "—");
+        details.getHasStorefront().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Signage Rights",
-        details.getHasSignageRights() != null
-            ? (isTrue(details.getHasSignageRights()) ? "Yes" : "No")
-            : "—");
+        details.getHasSignageRights().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Max Occupancy",
-        details.getMaxOccupancy() != null ? details.getMaxOccupancy().toString() : "—");
-    appendField(
-        html,
-        "Restrooms",
-        details.getRestroomCount() != null ? details.getRestroomCount().toString() : "—");
+    appendField(html, "Max Occupancy", details.getMaxOccupancy().map(Object::toString).orElse("—"));
+    appendField(html, "Restrooms", details.getRestroomCount().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Kitchen Facility",
-        details.getHasKitchenFacility() != null
-            ? (isTrue(details.getHasKitchenFacility()) ? "Yes" : "No")
-            : "—");
+        details.getHasKitchenFacility().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Accessibility Compliant",
-        details.getAccessibilityCompliant() != null
-            ? (isTrue(details.getAccessibilityCompliant()) ? "Yes" : "No")
-            : "—");
+        details.getAccessibilityCompliant().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
     html.append("<td></td>");
     html.append("</tr>");
     html.append("</table>");
@@ -565,76 +526,59 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Industrial Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(
-        html,
-        "Clear Height",
-        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
-    appendField(
-        html,
-        "Loading Docks",
-        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+    appendField(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
+    appendField(html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Drive-In Doors",
-        details.getDriveInDoors() != null ? details.getDriveInDoors().toString() : "—");
+        html, "Drive-In Doors", details.getDriveInDoors().map(Object::toString).orElse("—"));
     appendField(
         html,
         "Floor Load Capacity",
-        details.getFloorLoadCapacityKgSqm() != null
-            ? details.getFloorLoadCapacityKgSqm() + " kg/sqm"
-            : "—");
+        details.getFloorLoadCapacityKgSqm().map(v -> v + " kg/sqm").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Power Capacity",
-        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+        html, "Power Capacity", details.getPowerCapacityKva().map(v -> v + " kVA").orElse("—"));
     appendField(
         html,
         "Three-Phase Power",
-        details.getHasThreePhasePower() != null
-            ? (isTrue(details.getHasThreePhasePower()) ? "Yes" : "No")
-            : "—");
+        details.getHasThreePhasePower().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Crane",
-        details.getHasCrane() != null
-            ? (isTrue(details.getHasCrane())
-                ? "Yes"
-                    + (details.getCraneCapacityTons() != null
-                        ? " (" + details.getCraneCapacityTons() + " tons)"
-                        : "")
-                : "No")
-            : "—");
+        details
+            .getHasCrane()
+            .map(
+                v ->
+                    isTrue(v)
+                        ? "Yes"
+                            + details
+                                .getCraneCapacityTons()
+                                .map(t -> " (" + t + " tons)")
+                                .orElse("")
+                        : "No")
+            .orElse("—"));
     appendField(
         html,
         "Hazmat Certification",
-        details.getHasHazmatCertification() != null
-            ? (isTrue(details.getHasHazmatCertification()) ? "Yes" : "No")
-            : "—");
+        details.getHasHazmatCertification().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Ventilation System",
-        details.getHasVentilationSystem() != null
-            ? (isTrue(details.getHasVentilationSystem()) ? "Yes" : "No")
-            : "—");
+        details.getHasVentilationSystem().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Climate Control",
-        details.getHasClimateControl() != null
-            ? (isTrue(details.getHasClimateControl()) ? "Yes" : "No")
-            : "—");
+        details.getHasClimateControl().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, "Yard Area", buildAreaDisplay(details.getYardAreaValue(), details.getYardAreaUnit()));
-    appendField(
         html,
-        "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        "Yard Area",
+        buildAreaDisplay(
+            details.getYardAreaValue().orElse(null), details.getYardAreaUnit().orElse(null)));
+    appendField(
+        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -647,58 +591,47 @@ public class PropertyBookletExporter {
     appendField(
         html,
         "Total Land Area",
-        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+        buildAreaDisplay(
+            details.getTotalLandAreaValue().orElse(null),
+            details.getTotalLandAreaUnit().orElse(null)));
     appendField(
         html,
         "Arable Area",
-        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+        buildAreaDisplay(
+            details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Soil Type",
-        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+    appendField(html, "Soil Type", details.getSoilType().map(v -> formatEnumValue(v)).orElse("—"));
     appendField(
         html,
         "Water Rights",
-        details.getHasWaterRights() != null
-            ? (isTrue(details.getHasWaterRights()) ? "Yes" : "No")
-            : "—");
+        details.getHasWaterRights().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Water Source",
-        details.getWaterSource() != null ? formatEnumValue(details.getWaterSource()) : "—");
+        html, "Water Source", details.getWaterSource().map(v -> formatEnumValue(v)).orElse("—"));
     appendField(
-        html,
-        "Irrigation",
-        details.getIrrigationType() != null ? formatEnumValue(details.getIrrigationType()) : "—");
+        html, "Irrigation", details.getIrrigationType().map(v -> formatEnumValue(v)).orElse("—"));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Fencing",
-        details.getFencingType() != null ? formatEnumValue(details.getFencingType()) : "—");
+    appendField(html, "Fencing", details.getFencingType().map(v -> formatEnumValue(v)).orElse("—"));
     appendField(
         html,
         "Outbuildings",
-        details.getHasOutbuildings() != null
-            ? (isTrue(details.getHasOutbuildings())
-                ? "Yes"
-                    + (details.getOutbuildingDetails() != null
-                        ? " — " + escapeHtml(details.getOutbuildingDetails())
-                        : "")
-                : "No")
-            : "—");
+        details
+            .getHasOutbuildings()
+            .map(
+                v ->
+                    isTrue(v)
+                        ? "Yes"
+                            + details
+                                .getOutbuildingDetails()
+                                .map(d -> " — " + escapeHtml(d))
+                                .orElse("")
+                        : "No")
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Current Use",
-        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+        html, "Current Use", details.getCurrentUse().map(v -> formatEnumValue(v)).orElse("—"));
     appendField(
-        html,
-        "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -941,10 +874,10 @@ public class PropertyBookletExporter {
         html.append("<div style='font-size:15px;font-weight:600;color:#276749;'>")
             .append(escapeHtml(formatEnumValue(oa.getType())))
             .append("</div>");
-        if (oa.getAreaValue() != null) {
+        if (oa.getAreaValue().isPresent()) {
           String unit = oa.getAreaUnit() != null ? oa.getAreaUnit() : "sqm";
           html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
-              .append(oa.getAreaValue())
+              .append(oa.getAreaValue().get())
               .append(" ")
               .append(unit)
               .append("</div>");

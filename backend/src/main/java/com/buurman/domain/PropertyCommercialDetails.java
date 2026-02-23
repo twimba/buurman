@@ -2,9 +2,8 @@ package com.buurman.domain;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,19 +20,19 @@ public class PropertyCommercialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private @Nullable BigDecimal usableAreaValue;
-  private @Nullable String usableAreaUnit;
-  private @Nullable BigDecimal commonAreaValue;
-  private @Nullable String commonAreaUnit;
-  private @Nullable Integer floorLevel;
-  private @Nullable BigDecimal ceilingHeightM;
-  private @Nullable Boolean hasStorefront;
-  private @Nullable Boolean hasSignageRights;
-  private @Nullable String zoningClassification;
-  private @Nullable Integer maxOccupancy;
-  private @Nullable Integer restroomCount;
-  private @Nullable Boolean hasKitchenFacility;
-  private @Nullable Boolean accessibilityCompliant;
+  @Builder.Default private Optional<BigDecimal> usableAreaValue = Optional.empty();
+  @Builder.Default private Optional<String> usableAreaUnit = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> commonAreaValue = Optional.empty();
+  @Builder.Default private Optional<String> commonAreaUnit = Optional.empty();
+  @Builder.Default private Optional<Integer> floorLevel = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> ceilingHeightM = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasStorefront = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasSignageRights = Optional.empty();
+  @Builder.Default private Optional<String> zoningClassification = Optional.empty();
+  @Builder.Default private Optional<Integer> maxOccupancy = Optional.empty();
+  @Builder.Default private Optional<Integer> restroomCount = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasKitchenFacility = Optional.empty();
+  @Builder.Default private Optional<Boolean> accessibilityCompliant = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

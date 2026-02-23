@@ -82,7 +82,7 @@ public class PropertyAmenityService {
     pa.setPropertyId(property.getId());
     pa.setAmenityId(amenity.getId());
     pa.setTeamId(principal.requireTeamId());
-    pa.setNotes(request.notes());
+    pa.setNotes(Optional.ofNullable(request.notes()));
     pa.setCreatedBy(principal.getUserId());
     pa.setUpdatedBy(principal.getUserId());
 
@@ -135,7 +135,7 @@ public class PropertyAmenityService {
         amenity.getName(),
         amenity.getCategory(),
         Optional.ofNullable(amenity.getIcon()),
-        Optional.ofNullable(pa.getNotes()));
+        pa.getNotes());
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {

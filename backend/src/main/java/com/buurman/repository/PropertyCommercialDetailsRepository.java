@@ -43,21 +43,37 @@ public class PropertyCommercialDetailsRepository {
           .set(PROPERTY_COMMERCIAL_DETAILS.ID, newId)
           .set(PROPERTY_COMMERCIAL_DETAILS.PROPERTY_ID, details.getPropertyId())
           .set(PROPERTY_COMMERCIAL_DETAILS.TEAM_ID, details.getTeamId())
-          .set(PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_VALUE, details.getUsableAreaValue())
-          .set(PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_UNIT, details.getUsableAreaUnit())
-          .set(PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_VALUE, details.getCommonAreaValue())
-          .set(PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_UNIT, details.getCommonAreaUnit())
-          .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel())
-          .set(PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M, details.getCeilingHeightM())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS, details.getHasSignageRights())
-          .set(PROPERTY_COMMERCIAL_DETAILS.ZONING_CLASSIFICATION, details.getZoningClassification())
-          .set(PROPERTY_COMMERCIAL_DETAILS.MAX_OCCUPANCY, details.getMaxOccupancy())
-          .set(PROPERTY_COMMERCIAL_DETAILS.RESTROOM_COUNT, details.getRestroomCount())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_KITCHEN_FACILITY, details.getHasKitchenFacility())
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_VALUE,
+              details.getUsableAreaValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_UNIT,
+              details.getUsableAreaUnit().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_VALUE,
+              details.getCommonAreaValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_UNIT,
+              details.getCommonAreaUnit().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M,
+              details.getCeilingHeightM().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS,
+              details.getHasSignageRights().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.ZONING_CLASSIFICATION,
+              details.getZoningClassification().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.MAX_OCCUPANCY, details.getMaxOccupancy().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.RESTROOM_COUNT, details.getRestroomCount().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.HAS_KITCHEN_FACILITY,
+              details.getHasKitchenFacility().orElse(null))
           .set(
               PROPERTY_COMMERCIAL_DETAILS.ACCESSIBILITY_COMPLIANT,
-              details.getAccessibilityCompliant())
+              details.getAccessibilityCompliant().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.CREATED_AT, now)
           .set(PROPERTY_COMMERCIAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_COMMERCIAL_DETAILS.CREATED_BY, details.getCreatedBy())
@@ -68,21 +84,37 @@ public class PropertyCommercialDetailsRepository {
       details.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(PROPERTY_COMMERCIAL_DETAILS)
-          .set(PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_VALUE, details.getUsableAreaValue())
-          .set(PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_UNIT, details.getUsableAreaUnit())
-          .set(PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_VALUE, details.getCommonAreaValue())
-          .set(PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_UNIT, details.getCommonAreaUnit())
-          .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel())
-          .set(PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M, details.getCeilingHeightM())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS, details.getHasSignageRights())
-          .set(PROPERTY_COMMERCIAL_DETAILS.ZONING_CLASSIFICATION, details.getZoningClassification())
-          .set(PROPERTY_COMMERCIAL_DETAILS.MAX_OCCUPANCY, details.getMaxOccupancy())
-          .set(PROPERTY_COMMERCIAL_DETAILS.RESTROOM_COUNT, details.getRestroomCount())
-          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_KITCHEN_FACILITY, details.getHasKitchenFacility())
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_VALUE,
+              details.getUsableAreaValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.USABLE_AREA_UNIT,
+              details.getUsableAreaUnit().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_VALUE,
+              details.getCommonAreaValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_UNIT,
+              details.getCommonAreaUnit().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M,
+              details.getCeilingHeightM().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS,
+              details.getHasSignageRights().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.ZONING_CLASSIFICATION,
+              details.getZoningClassification().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.MAX_OCCUPANCY, details.getMaxOccupancy().orElse(null))
+          .set(PROPERTY_COMMERCIAL_DETAILS.RESTROOM_COUNT, details.getRestroomCount().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.HAS_KITCHEN_FACILITY,
+              details.getHasKitchenFacility().orElse(null))
           .set(
               PROPERTY_COMMERCIAL_DETAILS.ACCESSIBILITY_COMPLIANT,
-              details.getAccessibilityCompliant())
+              details.getAccessibilityCompliant().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_COMMERCIAL_DETAILS.UPDATED_BY, details.getUpdatedBy())
           .where(
@@ -112,19 +144,19 @@ public class PropertyCommercialDetailsRepository {
     d.setId(record.getId());
     d.setPropertyId(record.getPropertyId());
     d.setTeamId(record.getTeamId());
-    d.setUsableAreaValue(record.getUsableAreaValue());
-    d.setUsableAreaUnit(record.getUsableAreaUnit());
-    d.setCommonAreaValue(record.getCommonAreaValue());
-    d.setCommonAreaUnit(record.getCommonAreaUnit());
-    d.setFloorLevel(record.getFloorLevel());
-    d.setCeilingHeightM(record.getCeilingHeightM());
-    d.setHasStorefront(record.getHasStorefront());
-    d.setHasSignageRights(record.getHasSignageRights());
-    d.setZoningClassification(record.getZoningClassification());
-    d.setMaxOccupancy(record.getMaxOccupancy());
-    d.setRestroomCount(record.getRestroomCount());
-    d.setHasKitchenFacility(record.getHasKitchenFacility());
-    d.setAccessibilityCompliant(record.getAccessibilityCompliant());
+    d.setUsableAreaValue(Optional.ofNullable(record.getUsableAreaValue()));
+    d.setUsableAreaUnit(Optional.ofNullable(record.getUsableAreaUnit()));
+    d.setCommonAreaValue(Optional.ofNullable(record.getCommonAreaValue()));
+    d.setCommonAreaUnit(Optional.ofNullable(record.getCommonAreaUnit()));
+    d.setFloorLevel(Optional.ofNullable(record.getFloorLevel()));
+    d.setCeilingHeightM(Optional.ofNullable(record.getCeilingHeightM()));
+    d.setHasStorefront(Optional.ofNullable(record.getHasStorefront()));
+    d.setHasSignageRights(Optional.ofNullable(record.getHasSignageRights()));
+    d.setZoningClassification(Optional.ofNullable(record.getZoningClassification()));
+    d.setMaxOccupancy(Optional.ofNullable(record.getMaxOccupancy()));
+    d.setRestroomCount(Optional.ofNullable(record.getRestroomCount()));
+    d.setHasKitchenFacility(Optional.ofNullable(record.getHasKitchenFacility()));
+    d.setAccessibilityCompliant(Optional.ofNullable(record.getAccessibilityCompliant()));
     d.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     d.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     d.setCreatedBy(record.getCreatedBy());

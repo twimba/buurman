@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +19,10 @@ public class PropertyResidentialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private @Nullable Integer bedrooms;
-  private @Nullable Integer bathrooms;
-  private @Nullable Boolean furnished;
-  private @Nullable String petPolicy;
+  @Builder.Default private Optional<Integer> bedrooms = Optional.empty();
+  @Builder.Default private Optional<Integer> bathrooms = Optional.empty();
+  @Builder.Default private Optional<Boolean> furnished = Optional.empty();
+  @Builder.Default private Optional<String> petPolicy = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

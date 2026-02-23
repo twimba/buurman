@@ -71,7 +71,7 @@ public class PropertyOutdoorAreaRepository {
           .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, area.getPropertyId())
           .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, area.getTeamId())
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
-          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
+          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
           .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, createdAt)
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
@@ -88,7 +88,7 @@ public class PropertyOutdoorAreaRepository {
 
       dsl.update(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
-          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
+          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
@@ -121,13 +121,13 @@ public class PropertyOutdoorAreaRepository {
     area.setPropertyId(record.getPropertyId());
     area.setTeamId(record.getTeamId());
     area.setType(record.getType());
-    area.setAreaValue(record.getAreaValue());
+    area.setAreaValue(Optional.ofNullable(record.getAreaValue()));
     area.setAreaUnit(record.getAreaUnit());
     area.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     area.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     area.setCreatedBy(record.getCreatedBy());
     area.setUpdatedBy(record.getUpdatedBy());
-    area.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
+    area.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return area;
   }
 }

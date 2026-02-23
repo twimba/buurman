@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +20,8 @@ public class PropertyTenantHistory {
   private UUID teamId;
   private UUID propertyId;
   private UUID tenantId;
-  private @Nullable Instant movedInAt;
-  private @Nullable Instant movedOutAt;
+  @Builder.Default private Optional<Instant> movedInAt = Optional.empty();
+  @Builder.Default private Optional<Instant> movedOutAt = Optional.empty();
   private ActionType actionType;
   private UUID performedBy;
   private Instant performedAt;

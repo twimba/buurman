@@ -6,6 +6,7 @@ import static java.time.ZoneOffset.UTC;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
@@ -39,10 +40,8 @@ public class PropertyTenantHistoryRepository {
                         record.getTeamId(),
                         record.getPropertyId(),
                         record.getTenantId(),
-                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
-                        record.getMovedOutAt() != null
-                            ? record.getMovedOutAt().toInstant(UTC)
-                            : null,
+                        Optional.ofNullable(record.getMovedInAt()).map(dt -> dt.toInstant(UTC)),
+                        Optional.ofNullable(record.getMovedOutAt()).map(dt -> dt.toInstant(UTC)),
                         PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
                         record.getPerformedBy(),
                         record.getPerformedAt().toInstant(UTC))));
@@ -65,10 +64,8 @@ public class PropertyTenantHistoryRepository {
                         record.getTeamId(),
                         record.getPropertyId(),
                         record.getTenantId(),
-                        record.getMovedInAt() != null ? record.getMovedInAt().toInstant(UTC) : null,
-                        record.getMovedOutAt() != null
-                            ? record.getMovedOutAt().toInstant(UTC)
-                            : null,
+                        Optional.ofNullable(record.getMovedInAt()).map(dt -> dt.toInstant(UTC)),
+                        Optional.ofNullable(record.getMovedOutAt()).map(dt -> dt.toInstant(UTC)),
                         PropertyTenantHistory.ActionType.valueOf(record.getActionType()),
                         record.getPerformedBy(),
                         record.getPerformedAt().toInstant(UTC))));
@@ -86,14 +83,10 @@ public class PropertyTenantHistoryRepository {
         .set(PROPERTY_TENANT_HISTORY.TENANT_ID, history.getTenantId())
         .set(
             PROPERTY_TENANT_HISTORY.MOVED_IN_AT,
-            history.getMovedInAt() != null
-                ? LocalDateTime.ofInstant(history.getMovedInAt(), UTC)
-                : null)
+            history.getMovedInAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(
             PROPERTY_TENANT_HISTORY.MOVED_OUT_AT,
-            history.getMovedOutAt() != null
-                ? LocalDateTime.ofInstant(history.getMovedOutAt(), UTC)
-                : null)
+            history.getMovedOutAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(PROPERTY_TENANT_HISTORY.ACTION_TYPE, history.getActionType().name())
         .set(PROPERTY_TENANT_HISTORY.PERFORMED_BY, history.getPerformedBy())
         .set(

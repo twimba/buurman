@@ -48,7 +48,7 @@ public class PropertyOutdoorAreaService {
     area.setPropertyId(property.getId());
     area.setTeamId(principal.requireTeamId());
     area.setType(request.type());
-    area.setAreaValue(request.areaValue());
+    area.setAreaValue(Optional.ofNullable(request.areaValue()));
     area.setAreaUnit(request.areaUnit() != null ? request.areaUnit() : "sqm");
     area.setCreatedBy(principal.getUserId());
     area.setUpdatedBy(principal.getUserId());
@@ -71,7 +71,7 @@ public class PropertyOutdoorAreaService {
         outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.requireTeamId());
 
     area.setType(request.type());
-    area.setAreaValue(request.areaValue());
+    area.setAreaValue(Optional.ofNullable(request.areaValue()));
     if (request.areaUnit() != null) {
       area.setAreaUnit(request.areaUnit());
     }
@@ -103,7 +103,7 @@ public class PropertyOutdoorAreaService {
     return new PropertyOutdoorAreaResponse(
         area.getIdentifier(),
         area.getType(),
-        Optional.ofNullable(area.getAreaValue()),
+        area.getAreaValue(),
         Optional.ofNullable(area.getAreaUnit()),
         area.getCreatedAt(),
         Optional.ofNullable(area.getUpdatedAt()));

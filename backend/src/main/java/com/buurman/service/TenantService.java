@@ -225,7 +225,8 @@ public class TenantService {
     history.setTeamId(principal.requireTeamId());
     history.setPropertyId(property.getId());
     history.setTenantId(tenant.getId());
-    history.setMovedInAt(request.movedInAt() != null ? request.movedInAt() : clock.instant());
+    history.setMovedInAt(
+        Optional.of(request.movedInAt() != null ? request.movedInAt() : clock.instant()));
     history.setActionType(PropertyTenantHistory.ActionType.LINKED);
     history.setPerformedBy(principal.getUserId());
     history.setPerformedAt(clock.instant());
@@ -269,7 +270,7 @@ public class TenantService {
     history.setTeamId(principal.requireTeamId());
     history.setPropertyId(propertyId);
     history.setTenantId(tenant.getId());
-    history.setMovedOutAt(clock.instant());
+    history.setMovedOutAt(Optional.of(clock.instant()));
     history.setActionType(PropertyTenantHistory.ActionType.UNLINKED);
     history.setPerformedBy(principal.getUserId());
     history.setPerformedAt(clock.instant());
@@ -497,8 +498,8 @@ public class TenantService {
 
     return new PropertyTenantHistoryResponse(
         propertySummary,
-        Optional.ofNullable(history.getMovedInAt()),
-        Optional.ofNullable(history.getMovedOutAt()),
+        history.getMovedInAt(),
+        history.getMovedOutAt(),
         history.getActionType(),
         Optional.of(userName),
         history.getPerformedAt());
@@ -522,7 +523,7 @@ public class TenantService {
     history.setTeamId(principal.requireTeamId());
     history.setPropertyId(propertyId);
     history.setTenantId(tenantId);
-    history.setMovedOutAt(clock.instant());
+    history.setMovedOutAt(Optional.of(clock.instant()));
     history.setActionType(PropertyTenantHistory.ActionType.UNLINKED);
     history.setPerformedBy(principal.getUserId());
     history.setPerformedAt(clock.instant());

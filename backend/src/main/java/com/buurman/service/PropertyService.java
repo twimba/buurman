@@ -464,10 +464,11 @@ public class PropertyService {
           PropertyResidentialDetails d = new PropertyResidentialDetails();
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setBedrooms(residential.bedrooms());
-          d.setBathrooms(residential.bathrooms());
-          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
-          d.setPetPolicy(residential.petPolicy());
+          d.setBedrooms(Optional.ofNullable(residential.bedrooms()));
+          d.setBathrooms(Optional.ofNullable(residential.bathrooms()));
+          d.setFurnished(
+              Optional.of(residential.furnished() != null ? residential.furnished() : false));
+          d.setPetPolicy(Optional.ofNullable(residential.petPolicy()));
           d.setCreatedBy(userId);
           d.setUpdatedBy(userId);
           residentialDetailsRepository.save(d);
@@ -478,25 +479,30 @@ public class PropertyService {
           PropertyCommercialDetails d = new PropertyCommercialDetails();
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setUsableAreaValue(commercial.usableAreaValue());
-          d.setUsableAreaUnit(commercial.usableAreaUnit());
-          d.setCommonAreaValue(commercial.commonAreaValue());
-          d.setCommonAreaUnit(commercial.commonAreaUnit());
-          d.setFloorLevel(commercial.floorLevel());
-          d.setCeilingHeightM(commercial.ceilingHeightM());
+          d.setUsableAreaValue(Optional.ofNullable(commercial.usableAreaValue()));
+          d.setUsableAreaUnit(Optional.ofNullable(commercial.usableAreaUnit()));
+          d.setCommonAreaValue(Optional.ofNullable(commercial.commonAreaValue()));
+          d.setCommonAreaUnit(Optional.ofNullable(commercial.commonAreaUnit()));
+          d.setFloorLevel(Optional.ofNullable(commercial.floorLevel()));
+          d.setCeilingHeightM(Optional.ofNullable(commercial.ceilingHeightM()));
           d.setHasStorefront(
-              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
+              Optional.of(commercial.hasStorefront() != null ? commercial.hasStorefront() : false));
           d.setHasSignageRights(
-              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
-          d.setZoningClassification(commercial.zoningClassification());
-          d.setMaxOccupancy(commercial.maxOccupancy());
-          d.setRestroomCount(commercial.restroomCount());
+              Optional.of(
+                  commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false));
+          d.setZoningClassification(Optional.ofNullable(commercial.zoningClassification()));
+          d.setMaxOccupancy(Optional.ofNullable(commercial.maxOccupancy()));
+          d.setRestroomCount(Optional.ofNullable(commercial.restroomCount()));
           d.setHasKitchenFacility(
-              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
+              Optional.of(
+                  commercial.hasKitchenFacility() != null
+                      ? commercial.hasKitchenFacility()
+                      : false));
           d.setAccessibilityCompliant(
-              commercial.accessibilityCompliant() != null
-                  ? commercial.accessibilityCompliant()
-                  : false);
+              Optional.of(
+                  commercial.accessibilityCompliant() != null
+                      ? commercial.accessibilityCompliant()
+                      : false));
           d.setCreatedBy(userId);
           d.setUpdatedBy(userId);
           commercialDetailsRepository.save(d);
@@ -507,28 +513,34 @@ public class PropertyService {
           PropertyIndustrialDetails d = new PropertyIndustrialDetails();
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setClearHeightM(industrial.clearHeightM());
-          d.setLoadingDocks(industrial.loadingDocks());
-          d.setDriveInDoors(industrial.driveInDoors());
-          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
-          d.setPowerCapacityKva(industrial.powerCapacityKva());
+          d.setClearHeightM(Optional.ofNullable(industrial.clearHeightM()));
+          d.setLoadingDocks(Optional.ofNullable(industrial.loadingDocks()));
+          d.setDriveInDoors(Optional.ofNullable(industrial.driveInDoors()));
+          d.setFloorLoadCapacityKgSqm(Optional.ofNullable(industrial.floorLoadCapacityKgSqm()));
+          d.setPowerCapacityKva(Optional.ofNullable(industrial.powerCapacityKva()));
           d.setHasThreePhasePower(
-              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
-          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
-          d.setCraneCapacityTons(industrial.craneCapacityTons());
+              Optional.of(
+                  industrial.hasThreePhasePower() != null
+                      ? industrial.hasThreePhasePower()
+                      : false));
+          d.setHasCrane(Optional.of(industrial.hasCrane() != null ? industrial.hasCrane() : false));
+          d.setCraneCapacityTons(Optional.ofNullable(industrial.craneCapacityTons()));
           d.setHasHazmatCertification(
-              industrial.hasHazmatCertification() != null
-                  ? industrial.hasHazmatCertification()
-                  : false);
+              Optional.of(
+                  industrial.hasHazmatCertification() != null
+                      ? industrial.hasHazmatCertification()
+                      : false));
           d.setHasVentilationSystem(
-              industrial.hasVentilationSystem() != null
-                  ? industrial.hasVentilationSystem()
-                  : false);
+              Optional.of(
+                  industrial.hasVentilationSystem() != null
+                      ? industrial.hasVentilationSystem()
+                      : false));
           d.setHasClimateControl(
-              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
-          d.setYardAreaValue(industrial.yardAreaValue());
-          d.setYardAreaUnit(industrial.yardAreaUnit());
-          d.setZoningClassification(industrial.zoningClassification());
+              Optional.of(
+                  industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false));
+          d.setYardAreaValue(Optional.ofNullable(industrial.yardAreaValue()));
+          d.setYardAreaUnit(Optional.ofNullable(industrial.yardAreaUnit()));
+          d.setZoningClassification(Optional.ofNullable(industrial.zoningClassification()));
           d.setCreatedBy(userId);
           d.setUpdatedBy(userId);
           industrialDetailsRepository.save(d);
@@ -539,21 +551,23 @@ public class PropertyService {
           PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
-          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
-          d.setArableAreaValue(agricultural.arableAreaValue());
-          d.setArableAreaUnit(agricultural.arableAreaUnit());
-          d.setSoilType(agricultural.soilType());
+          d.setTotalLandAreaValue(Optional.ofNullable(agricultural.totalLandAreaValue()));
+          d.setTotalLandAreaUnit(Optional.ofNullable(agricultural.totalLandAreaUnit()));
+          d.setArableAreaValue(Optional.ofNullable(agricultural.arableAreaValue()));
+          d.setArableAreaUnit(Optional.ofNullable(agricultural.arableAreaUnit()));
+          d.setSoilType(Optional.ofNullable(agricultural.soilType()));
           d.setHasWaterRights(
-              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
-          d.setWaterSource(agricultural.waterSource());
-          d.setIrrigationType(agricultural.irrigationType());
-          d.setFencingType(agricultural.fencingType());
+              Optional.of(
+                  agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false));
+          d.setWaterSource(Optional.ofNullable(agricultural.waterSource()));
+          d.setIrrigationType(Optional.ofNullable(agricultural.irrigationType()));
+          d.setFencingType(Optional.ofNullable(agricultural.fencingType()));
           d.setHasOutbuildings(
-              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
-          d.setOutbuildingDetails(agricultural.outbuildingDetails());
-          d.setCurrentUse(agricultural.currentUse());
-          d.setZoningClassification(agricultural.zoningClassification());
+              Optional.of(
+                  agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false));
+          d.setOutbuildingDetails(Optional.ofNullable(agricultural.outbuildingDetails()));
+          d.setCurrentUse(Optional.ofNullable(agricultural.currentUse()));
+          d.setZoningClassification(Optional.ofNullable(agricultural.zoningClassification()));
           d.setCreatedBy(userId);
           d.setUpdatedBy(userId);
           agriculturalDetailsRepository.save(d);
@@ -582,10 +596,11 @@ public class PropertyService {
           PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setBedrooms(residential.bedrooms());
-          d.setBathrooms(residential.bathrooms());
-          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
-          d.setPetPolicy(residential.petPolicy());
+          d.setBedrooms(Optional.ofNullable(residential.bedrooms()));
+          d.setBathrooms(Optional.ofNullable(residential.bathrooms()));
+          d.setFurnished(
+              Optional.of(residential.furnished() != null ? residential.furnished() : false));
+          d.setPetPolicy(Optional.ofNullable(residential.petPolicy()));
           d.setUpdatedBy(userId);
           if (d.getId() == null) {
             d.setCreatedBy(userId);
@@ -600,25 +615,30 @@ public class PropertyService {
           PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setUsableAreaValue(commercial.usableAreaValue());
-          d.setUsableAreaUnit(commercial.usableAreaUnit());
-          d.setCommonAreaValue(commercial.commonAreaValue());
-          d.setCommonAreaUnit(commercial.commonAreaUnit());
-          d.setFloorLevel(commercial.floorLevel());
-          d.setCeilingHeightM(commercial.ceilingHeightM());
+          d.setUsableAreaValue(Optional.ofNullable(commercial.usableAreaValue()));
+          d.setUsableAreaUnit(Optional.ofNullable(commercial.usableAreaUnit()));
+          d.setCommonAreaValue(Optional.ofNullable(commercial.commonAreaValue()));
+          d.setCommonAreaUnit(Optional.ofNullable(commercial.commonAreaUnit()));
+          d.setFloorLevel(Optional.ofNullable(commercial.floorLevel()));
+          d.setCeilingHeightM(Optional.ofNullable(commercial.ceilingHeightM()));
           d.setHasStorefront(
-              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
+              Optional.of(commercial.hasStorefront() != null ? commercial.hasStorefront() : false));
           d.setHasSignageRights(
-              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
-          d.setZoningClassification(commercial.zoningClassification());
-          d.setMaxOccupancy(commercial.maxOccupancy());
-          d.setRestroomCount(commercial.restroomCount());
+              Optional.of(
+                  commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false));
+          d.setZoningClassification(Optional.ofNullable(commercial.zoningClassification()));
+          d.setMaxOccupancy(Optional.ofNullable(commercial.maxOccupancy()));
+          d.setRestroomCount(Optional.ofNullable(commercial.restroomCount()));
           d.setHasKitchenFacility(
-              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
+              Optional.of(
+                  commercial.hasKitchenFacility() != null
+                      ? commercial.hasKitchenFacility()
+                      : false));
           d.setAccessibilityCompliant(
-              commercial.accessibilityCompliant() != null
-                  ? commercial.accessibilityCompliant()
-                  : false);
+              Optional.of(
+                  commercial.accessibilityCompliant() != null
+                      ? commercial.accessibilityCompliant()
+                      : false));
           d.setUpdatedBy(userId);
           if (d.getId() == null) {
             d.setCreatedBy(userId);
@@ -633,28 +653,34 @@ public class PropertyService {
           PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setClearHeightM(industrial.clearHeightM());
-          d.setLoadingDocks(industrial.loadingDocks());
-          d.setDriveInDoors(industrial.driveInDoors());
-          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
-          d.setPowerCapacityKva(industrial.powerCapacityKva());
+          d.setClearHeightM(Optional.ofNullable(industrial.clearHeightM()));
+          d.setLoadingDocks(Optional.ofNullable(industrial.loadingDocks()));
+          d.setDriveInDoors(Optional.ofNullable(industrial.driveInDoors()));
+          d.setFloorLoadCapacityKgSqm(Optional.ofNullable(industrial.floorLoadCapacityKgSqm()));
+          d.setPowerCapacityKva(Optional.ofNullable(industrial.powerCapacityKva()));
           d.setHasThreePhasePower(
-              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
-          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
-          d.setCraneCapacityTons(industrial.craneCapacityTons());
+              Optional.of(
+                  industrial.hasThreePhasePower() != null
+                      ? industrial.hasThreePhasePower()
+                      : false));
+          d.setHasCrane(Optional.of(industrial.hasCrane() != null ? industrial.hasCrane() : false));
+          d.setCraneCapacityTons(Optional.ofNullable(industrial.craneCapacityTons()));
           d.setHasHazmatCertification(
-              industrial.hasHazmatCertification() != null
-                  ? industrial.hasHazmatCertification()
-                  : false);
+              Optional.of(
+                  industrial.hasHazmatCertification() != null
+                      ? industrial.hasHazmatCertification()
+                      : false));
           d.setHasVentilationSystem(
-              industrial.hasVentilationSystem() != null
-                  ? industrial.hasVentilationSystem()
-                  : false);
+              Optional.of(
+                  industrial.hasVentilationSystem() != null
+                      ? industrial.hasVentilationSystem()
+                      : false));
           d.setHasClimateControl(
-              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
-          d.setYardAreaValue(industrial.yardAreaValue());
-          d.setYardAreaUnit(industrial.yardAreaUnit());
-          d.setZoningClassification(industrial.zoningClassification());
+              Optional.of(
+                  industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false));
+          d.setYardAreaValue(Optional.ofNullable(industrial.yardAreaValue()));
+          d.setYardAreaUnit(Optional.ofNullable(industrial.yardAreaUnit()));
+          d.setZoningClassification(Optional.ofNullable(industrial.zoningClassification()));
           d.setUpdatedBy(userId);
           if (d.getId() == null) {
             d.setCreatedBy(userId);
@@ -669,21 +695,23 @@ public class PropertyService {
           PropertyAgriculturalDetails d = existing.orElseGet(PropertyAgriculturalDetails::new);
           d.setPropertyId(propertyId);
           d.setTeamId(teamId);
-          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
-          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
-          d.setArableAreaValue(agricultural.arableAreaValue());
-          d.setArableAreaUnit(agricultural.arableAreaUnit());
-          d.setSoilType(agricultural.soilType());
+          d.setTotalLandAreaValue(Optional.ofNullable(agricultural.totalLandAreaValue()));
+          d.setTotalLandAreaUnit(Optional.ofNullable(agricultural.totalLandAreaUnit()));
+          d.setArableAreaValue(Optional.ofNullable(agricultural.arableAreaValue()));
+          d.setArableAreaUnit(Optional.ofNullable(agricultural.arableAreaUnit()));
+          d.setSoilType(Optional.ofNullable(agricultural.soilType()));
           d.setHasWaterRights(
-              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
-          d.setWaterSource(agricultural.waterSource());
-          d.setIrrigationType(agricultural.irrigationType());
-          d.setFencingType(agricultural.fencingType());
+              Optional.of(
+                  agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false));
+          d.setWaterSource(Optional.ofNullable(agricultural.waterSource()));
+          d.setIrrigationType(Optional.ofNullable(agricultural.irrigationType()));
+          d.setFencingType(Optional.ofNullable(agricultural.fencingType()));
           d.setHasOutbuildings(
-              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
-          d.setOutbuildingDetails(agricultural.outbuildingDetails());
-          d.setCurrentUse(agricultural.currentUse());
-          d.setZoningClassification(agricultural.zoningClassification());
+              Optional.of(
+                  agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false));
+          d.setOutbuildingDetails(Optional.ofNullable(agricultural.outbuildingDetails()));
+          d.setCurrentUse(Optional.ofNullable(agricultural.currentUse()));
+          d.setZoningClassification(Optional.ofNullable(agricultural.zoningClassification()));
           d.setUpdatedBy(userId);
           if (d.getId() == null) {
             d.setCreatedBy(userId);
@@ -704,10 +732,7 @@ public class PropertyService {
         .map(
             d ->
                 new ResidentialDetailsResponse(
-                    Optional.ofNullable(d.getBedrooms()),
-                    Optional.ofNullable(d.getBathrooms()),
-                    Optional.ofNullable(d.getFurnished()),
-                    Optional.ofNullable(d.getPetPolicy())));
+                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
   }
 
   private Optional<CommercialDetailsResponse> buildCommercialResponse(
@@ -717,19 +742,19 @@ public class PropertyService {
         .map(
             d ->
                 new CommercialDetailsResponse(
-                    Optional.ofNullable(d.getUsableAreaValue()),
-                    Optional.ofNullable(d.getUsableAreaUnit()),
-                    Optional.ofNullable(d.getCommonAreaValue()),
-                    Optional.ofNullable(d.getCommonAreaUnit()),
-                    Optional.ofNullable(d.getFloorLevel()),
-                    Optional.ofNullable(d.getCeilingHeightM()),
-                    Optional.ofNullable(d.getHasStorefront()),
-                    Optional.ofNullable(d.getHasSignageRights()),
-                    Optional.ofNullable(d.getZoningClassification()),
-                    Optional.ofNullable(d.getMaxOccupancy()),
-                    Optional.ofNullable(d.getRestroomCount()),
-                    Optional.ofNullable(d.getHasKitchenFacility()),
-                    Optional.ofNullable(d.getAccessibilityCompliant())));
+                    d.getUsableAreaValue(),
+                    d.getUsableAreaUnit(),
+                    d.getCommonAreaValue(),
+                    d.getCommonAreaUnit(),
+                    d.getFloorLevel(),
+                    d.getCeilingHeightM(),
+                    d.getHasStorefront(),
+                    d.getHasSignageRights(),
+                    d.getZoningClassification(),
+                    d.getMaxOccupancy(),
+                    d.getRestroomCount(),
+                    d.getHasKitchenFacility(),
+                    d.getAccessibilityCompliant()));
   }
 
   private Optional<IndustrialDetailsResponse> buildIndustrialResponse(
@@ -739,20 +764,20 @@ public class PropertyService {
         .map(
             d ->
                 new IndustrialDetailsResponse(
-                    Optional.ofNullable(d.getClearHeightM()),
-                    Optional.ofNullable(d.getLoadingDocks()),
-                    Optional.ofNullable(d.getDriveInDoors()),
-                    Optional.ofNullable(d.getFloorLoadCapacityKgSqm()),
-                    Optional.ofNullable(d.getPowerCapacityKva()),
-                    Optional.ofNullable(d.getHasThreePhasePower()),
-                    Optional.ofNullable(d.getHasCrane()),
-                    Optional.ofNullable(d.getCraneCapacityTons()),
-                    Optional.ofNullable(d.getHasHazmatCertification()),
-                    Optional.ofNullable(d.getHasVentilationSystem()),
-                    Optional.ofNullable(d.getHasClimateControl()),
-                    Optional.ofNullable(d.getYardAreaValue()),
-                    Optional.ofNullable(d.getYardAreaUnit()),
-                    Optional.ofNullable(d.getZoningClassification())));
+                    d.getClearHeightM(),
+                    d.getLoadingDocks(),
+                    d.getDriveInDoors(),
+                    d.getFloorLoadCapacityKgSqm(),
+                    d.getPowerCapacityKva(),
+                    d.getHasThreePhasePower(),
+                    d.getHasCrane(),
+                    d.getCraneCapacityTons(),
+                    d.getHasHazmatCertification(),
+                    d.getHasVentilationSystem(),
+                    d.getHasClimateControl(),
+                    d.getYardAreaValue(),
+                    d.getYardAreaUnit(),
+                    d.getZoningClassification()));
   }
 
   private Optional<AgriculturalDetailsResponse> buildAgriculturalResponse(
@@ -762,19 +787,19 @@ public class PropertyService {
         .map(
             d ->
                 new AgriculturalDetailsResponse(
-                    Optional.ofNullable(d.getTotalLandAreaValue()),
-                    Optional.ofNullable(d.getTotalLandAreaUnit()),
-                    Optional.ofNullable(d.getArableAreaValue()),
-                    Optional.ofNullable(d.getArableAreaUnit()),
-                    Optional.ofNullable(d.getSoilType()),
-                    Optional.ofNullable(d.getHasWaterRights()),
-                    Optional.ofNullable(d.getWaterSource()),
-                    Optional.ofNullable(d.getIrrigationType()),
-                    Optional.ofNullable(d.getFencingType()),
-                    Optional.ofNullable(d.getHasOutbuildings()),
-                    Optional.ofNullable(d.getOutbuildingDetails()),
-                    Optional.ofNullable(d.getCurrentUse()),
-                    Optional.ofNullable(d.getZoningClassification())));
+                    d.getTotalLandAreaValue(),
+                    d.getTotalLandAreaUnit(),
+                    d.getArableAreaValue(),
+                    d.getArableAreaUnit(),
+                    d.getSoilType(),
+                    d.getHasWaterRights(),
+                    d.getWaterSource(),
+                    d.getIrrigationType(),
+                    d.getFencingType(),
+                    d.getHasOutbuildings(),
+                    d.getOutbuildingDetails(),
+                    d.getCurrentUse(),
+                    d.getZoningClassification()));
   }
 
   private PropertyResponse toResponseWithMainPhoto(
@@ -809,7 +834,7 @@ public class PropertyService {
                             new PropertyOutdoorAreaResponse(
                                 a.getIdentifier(),
                                 a.getType(),
-                                Optional.ofNullable(a.getAreaValue()),
+                                a.getAreaValue(),
                                 Optional.ofNullable(a.getAreaUnit()),
                                 a.getCreatedAt(),
                                 Optional.ofNullable(a.getUpdatedAt())))

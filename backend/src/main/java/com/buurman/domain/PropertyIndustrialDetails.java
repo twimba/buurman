@@ -2,9 +2,8 @@ package com.buurman.domain;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,20 +20,20 @@ public class PropertyIndustrialDetails {
   private UUID id;
   private UUID propertyId;
   private UUID teamId;
-  private @Nullable BigDecimal clearHeightM;
-  private @Nullable Integer loadingDocks;
-  private @Nullable Integer driveInDoors;
-  private @Nullable BigDecimal floorLoadCapacityKgSqm;
-  private @Nullable Integer powerCapacityKva;
-  private @Nullable Boolean hasThreePhasePower;
-  private @Nullable Boolean hasCrane;
-  private @Nullable BigDecimal craneCapacityTons;
-  private @Nullable Boolean hasHazmatCertification;
-  private @Nullable Boolean hasVentilationSystem;
-  private @Nullable Boolean hasClimateControl;
-  private @Nullable BigDecimal yardAreaValue;
-  private @Nullable String yardAreaUnit;
-  private @Nullable String zoningClassification;
+  @Builder.Default private Optional<BigDecimal> clearHeightM = Optional.empty();
+  @Builder.Default private Optional<Integer> loadingDocks = Optional.empty();
+  @Builder.Default private Optional<Integer> driveInDoors = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> floorLoadCapacityKgSqm = Optional.empty();
+  @Builder.Default private Optional<Integer> powerCapacityKva = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasThreePhasePower = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasCrane = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> craneCapacityTons = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasHazmatCertification = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasVentilationSystem = Optional.empty();
+  @Builder.Default private Optional<Boolean> hasClimateControl = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> yardAreaValue = Optional.empty();
+  @Builder.Default private Optional<String> yardAreaUnit = Optional.empty();
+  @Builder.Default private Optional<String> zoningClassification = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

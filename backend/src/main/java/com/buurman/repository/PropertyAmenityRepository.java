@@ -73,7 +73,7 @@ public class PropertyAmenityRepository {
           .set(PROPERTY_AMENITIES.PROPERTY_ID, pa.getPropertyId())
           .set(PROPERTY_AMENITIES.AMENITY_ID, pa.getAmenityId())
           .set(PROPERTY_AMENITIES.TEAM_ID, pa.getTeamId())
-          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
+          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
           .set(PROPERTY_AMENITIES.CREATED_AT, createdAt)
           .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
           .set(PROPERTY_AMENITIES.CREATED_BY, pa.getCreatedBy())
@@ -88,7 +88,7 @@ public class PropertyAmenityRepository {
           pa.getUpdatedAt() != null ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC) : now;
 
       dsl.update(PROPERTY_AMENITIES)
-          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
+          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
           .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
           .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
           .where(
@@ -119,12 +119,12 @@ public class PropertyAmenityRepository {
     pa.setPropertyId(record.getPropertyId());
     pa.setAmenityId(record.getAmenityId());
     pa.setTeamId(record.getTeamId());
-    pa.setNotes(record.getNotes());
+    pa.setNotes(Optional.ofNullable(record.getNotes()));
     pa.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     pa.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     pa.setCreatedBy(record.getCreatedBy());
     pa.setUpdatedBy(record.getUpdatedBy());
-    pa.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
+    pa.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return pa;
   }
 }

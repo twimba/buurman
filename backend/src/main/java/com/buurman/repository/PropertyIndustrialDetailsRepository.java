@@ -43,25 +43,36 @@ public class PropertyIndustrialDetailsRepository {
           .set(PROPERTY_INDUSTRIAL_DETAILS.ID, newId)
           .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, details.getPropertyId())
           .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, details.getTeamId())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors())
+          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-              details.getFloorLoadCapacityKgSqm())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, details.getPowerCapacityKva())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, details.getHasThreePhasePower())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS, details.getCraneCapacityTons())
+              details.getFloorLoadCapacityKgSqm().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
+              details.getPowerCapacityKva().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER,
+              details.getHasThreePhasePower().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
+              details.getCraneCapacityTons().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION,
-              details.getHasHazmatCertification())
+              details.getHasHazmatCertification().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, details.getHasVentilationSystem())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, details.getHasClimateControl())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE, details.getYardAreaValue())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, details.getYardAreaUnit())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, details.getZoningClassification())
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM,
+              details.getHasVentilationSystem().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL,
+              details.getHasClimateControl().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE, details.getYardAreaValue().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, details.getYardAreaUnit().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION,
+              details.getZoningClassification().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_AT, now)
           .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY, details.getCreatedBy())
@@ -72,25 +83,36 @@ public class PropertyIndustrialDetailsRepository {
       details.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(PROPERTY_INDUSTRIAL_DETAILS)
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors())
+          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-              details.getFloorLoadCapacityKgSqm())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, details.getPowerCapacityKva())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, details.getHasThreePhasePower())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS, details.getCraneCapacityTons())
+              details.getFloorLoadCapacityKgSqm().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
+              details.getPowerCapacityKva().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER,
+              details.getHasThreePhasePower().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
+              details.getCraneCapacityTons().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION,
-              details.getHasHazmatCertification())
+              details.getHasHazmatCertification().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, details.getHasVentilationSystem())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, details.getHasClimateControl())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE, details.getYardAreaValue())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, details.getYardAreaUnit())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, details.getZoningClassification())
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM,
+              details.getHasVentilationSystem().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL,
+              details.getHasClimateControl().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE, details.getYardAreaValue().orElse(null))
+          .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, details.getYardAreaUnit().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION,
+              details.getZoningClassification().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY, details.getUpdatedBy())
           .where(
@@ -120,20 +142,20 @@ public class PropertyIndustrialDetailsRepository {
     d.setId(record.getId());
     d.setPropertyId(record.getPropertyId());
     d.setTeamId(record.getTeamId());
-    d.setClearHeightM(record.getClearHeightM());
-    d.setLoadingDocks(record.getLoadingDocks());
-    d.setDriveInDoors(record.getDriveInDoors());
-    d.setFloorLoadCapacityKgSqm(record.getFloorLoadCapacityKgSqm());
-    d.setPowerCapacityKva(record.getPowerCapacityKva());
-    d.setHasThreePhasePower(record.getHasThreePhasePower());
-    d.setHasCrane(record.getHasCrane());
-    d.setCraneCapacityTons(record.getCraneCapacityTons());
-    d.setHasHazmatCertification(record.getHasHazmatCertification());
-    d.setHasVentilationSystem(record.getHasVentilationSystem());
-    d.setHasClimateControl(record.getHasClimateControl());
-    d.setYardAreaValue(record.getYardAreaValue());
-    d.setYardAreaUnit(record.getYardAreaUnit());
-    d.setZoningClassification(record.getZoningClassification());
+    d.setClearHeightM(Optional.ofNullable(record.getClearHeightM()));
+    d.setLoadingDocks(Optional.ofNullable(record.getLoadingDocks()));
+    d.setDriveInDoors(Optional.ofNullable(record.getDriveInDoors()));
+    d.setFloorLoadCapacityKgSqm(Optional.ofNullable(record.getFloorLoadCapacityKgSqm()));
+    d.setPowerCapacityKva(Optional.ofNullable(record.getPowerCapacityKva()));
+    d.setHasThreePhasePower(Optional.ofNullable(record.getHasThreePhasePower()));
+    d.setHasCrane(Optional.ofNullable(record.getHasCrane()));
+    d.setCraneCapacityTons(Optional.ofNullable(record.getCraneCapacityTons()));
+    d.setHasHazmatCertification(Optional.ofNullable(record.getHasHazmatCertification()));
+    d.setHasVentilationSystem(Optional.ofNullable(record.getHasVentilationSystem()));
+    d.setHasClimateControl(Optional.ofNullable(record.getHasClimateControl()));
+    d.setYardAreaValue(Optional.ofNullable(record.getYardAreaValue()));
+    d.setYardAreaUnit(Optional.ofNullable(record.getYardAreaUnit()));
+    d.setZoningClassification(Optional.ofNullable(record.getZoningClassification()));
     d.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     d.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     d.setCreatedBy(record.getCreatedBy());
