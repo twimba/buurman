@@ -29,15 +29,11 @@ public class CalendarFeedRecordMapper {
     feed.setPropertyId(Optional.ofNullable(record.getPropertyId()));
     feed.setTenantId(Optional.ofNullable(record.getTenantId()));
     feed.setEnabled(record.getEnabled());
-    if (record.getCreatedAt() != null) {
-      feed.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
-    if (record.getUpdatedAt() != null) {
-      feed.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
-    }
+    feed.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    feed.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     feed.setCreatedBy(record.getCreatedBy());
     feed.setUpdatedBy(record.getUpdatedBy());
-    feed.setDeletedAt(record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
+    feed.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(feed);
   }
