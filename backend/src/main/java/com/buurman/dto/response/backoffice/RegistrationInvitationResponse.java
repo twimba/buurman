@@ -11,4 +11,5 @@ public record RegistrationInvitationResponse(
     boolean revoked,
     String status,
     String createdBy,
-    Instant createdAt) {}
+    Instant createdAt,
+    boolean hasNote) {}

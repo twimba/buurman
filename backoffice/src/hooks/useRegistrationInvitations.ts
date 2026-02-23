@@ -3,6 +3,7 @@ import {
   registrationInvitationsApi,
   type CreateRegistrationInvitationRequest,
   type SendRegistrationInvitationRequest,
+  type UpdateRegistrationInvitationNoteRequest,
 } from "../api/registrationInvitations";
 
 interface ListParams {
@@ -63,6 +64,30 @@ export const useSendRegistrationInvitation = () => {
       identifier: string;
       data: SendRegistrationInvitationRequest;
     }) => registrationInvitationsApi.send(identifier, data),
+  });
+};
+
+export const useUpdateRegistrationInvitationNote = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      identifier,
+      data,
+    }: {
+      identifier: string;
+      data: UpdateRegistrationInvitationNoteRequest;
+    }) =>
+      registrationInvitationsApi
+        .updateNote(identifier, data)
+        .then((res) => res.data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["registrationInvitations"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["registrationInvitations", variables.identifier],
+      });
+    },
   });
 };
 

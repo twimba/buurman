@@ -48,6 +48,7 @@ public class RegistrationInvitationRepository {
         .set(REGISTRATION_INVITATIONS.CREATED_AT, now)
         .set(REGISTRATION_INVITATIONS.UPDATED_AT, now)
         .set(REGISTRATION_INVITATIONS.CREATED_BY, invitation.getCreatedBy())
+        .set(REGISTRATION_INVITATIONS.NOTE, invitation.getNote())
         .execute();
 
     invitation.setId(id);
@@ -159,6 +160,15 @@ public class RegistrationInvitationRepository {
         .execute();
   }
 
+  public void updateNote(UUID id, String note) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(REGISTRATION_INVITATIONS)
+        .set(REGISTRATION_INVITATIONS.NOTE, note)
+        .set(REGISTRATION_INVITATIONS.UPDATED_AT, now)
+        .where(REGISTRATION_INVITATIONS.ID.eq(id))
+        .execute();
+  }
+
   private RegistrationInvitation toDomain(org.jooq.Record record) {
     RegistrationInvitation inv = new RegistrationInvitation();
     inv.setId(record.get(REGISTRATION_INVITATIONS.ID));
@@ -172,6 +182,7 @@ public class RegistrationInvitationRepository {
     inv.setCreatedAt(toInstant(record.get(REGISTRATION_INVITATIONS.CREATED_AT)));
     inv.setUpdatedAt(toInstant(record.get(REGISTRATION_INVITATIONS.UPDATED_AT)));
     inv.setCreatedBy(record.get(REGISTRATION_INVITATIONS.CREATED_BY));
+    inv.setNote(record.get(REGISTRATION_INVITATIONS.NOTE));
     return inv;
   }
 

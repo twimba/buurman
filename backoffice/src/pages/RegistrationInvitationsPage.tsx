@@ -8,6 +8,7 @@ import {
   Ban,
   MoreHorizontal,
   Ticket,
+  StickyNote,
 } from "lucide-react";
 import { RefreshButton, Pagination, ConfirmDialog } from "@buurman/ui";
 import { format } from "date-fns";
@@ -190,12 +191,19 @@ export function RegistrationInvitationsPage() {
                     className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <Link
-                        to={`/registration-invitations/${inv.identifier}`}
-                        className="font-mono text-sm font-semibold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline"
-                      >
-                        {inv.code}
-                      </Link>
+                      <div className="flex items-center gap-1.5">
+                        <Link
+                          to={`/registration-invitations/${inv.identifier}`}
+                          className="font-mono text-sm font-semibold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline"
+                        >
+                          {inv.code}
+                        </Link>
+                        {inv.hasNote && (
+                          <span title="Has internal note">
+                            <StickyNote className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span

@@ -14,6 +14,7 @@ import com.buurman.domain.RegistrationInvitationUsage;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
+import com.buurman.dto.request.backoffice.UpdateRegistrationInvitationNoteRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.ValidateInvitationCodeResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationDetailResponse;
@@ -72,6 +73,7 @@ public class RegistrationInvitationService {
     invitation.setCode(code);
     invitation.setMaxUsages(request.maxUsages());
     invitation.setExpiresAt(request.expiresAt());
+    invitation.setNote(request.note());
     invitation.setCreatedBy(principal.getEmail());
 
     invitation = invitationRepository.save(invitation);
@@ -180,6 +182,23 @@ public class RegistrationInvitationService {
         principal.getEmail());
   }
 
+  @Transactional
+  public RegistrationInvitationDetailResponse updateNote(
+      String identifier,
+      UpdateRegistrationInvitationNoteRequest request,
+      BackofficePrincipal principal) {
+    RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
+    String note = (request.note() != null && !request.note().isBlank()) ? request.note() : null;
+    invitationRepository.updateNote(invitation.getId(), note);
+
+    log.info(
+        "Registration invitation note updated: code={}, by={}",
+        invitation.getCode(),
+        principal.getEmail());
+
+    return getByIdentifier(identifier);
+  }
+
   public String suggestCode() {
     return HumanReadableIdGenerator.generateUnique(invitationRepository::existsByCode);
   }
@@ -242,7 +261,8 @@ public class RegistrationInvitationService {
         inv.getRevokedAt() != null,
         inv.getStatus(),
         inv.getCreatedBy(),
-        inv.getCreatedAt());
+        inv.getCreatedAt(),
+        inv.getNote() != null && !inv.getNote().isBlank());
   }
 
   private RegistrationInvitationDetailResponse toDetailResponse(
@@ -269,6 +289,7 @@ public class RegistrationInvitationService {
         inv.getCreatedBy(),
         inv.getCreatedAt(),
         inv.getUpdatedAt(),
+        inv.getNote(),
         usageRecords);
   }
 }

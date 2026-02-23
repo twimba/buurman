@@ -16,6 +16,7 @@ public record RegistrationInvitationDetailResponse(
     String createdBy,
     Instant createdAt,
     Instant updatedAt,
+    String note,
     List<UsageRecord> usages) {
   public record UsageRecord(String userEmail, String userName, Instant usedAt) {}
 }

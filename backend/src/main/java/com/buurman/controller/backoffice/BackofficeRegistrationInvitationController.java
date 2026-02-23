@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
+import com.buurman.dto.request.backoffice.UpdateRegistrationInvitationNoteRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationDetailResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationResponse;
@@ -86,6 +88,15 @@ public class BackofficeRegistrationInvitationController {
       @AuthenticationPrincipal BackofficePrincipal principal) {
     invitationService.sendInvitation(identifier, request, principal);
     return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{identifier}/note")
+  @Operation(summary = "Update registration invitation note")
+  public ResponseEntity<RegistrationInvitationDetailResponse> updateNote(
+      @PathVariable String identifier,
+      @RequestBody UpdateRegistrationInvitationNoteRequest request,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
+    return ResponseEntity.ok(invitationService.updateNote(identifier, request, principal));
   }
 
   @GetMapping("/suggest-code")

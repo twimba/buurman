@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, RefreshCw, Loader2, Sparkles } from "lucide-react";
+import { RichTextEditor } from "./RichTextEditor";
 import {
   useCreateRegistrationInvitation,
   useSuggestCode,
@@ -15,6 +16,7 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
   const [unlimited, setUnlimited] = useState(false);
   const [expiresAt, setExpiresAt] = useState("");
   const [neverExpires, setNeverExpires] = useState(true);
+  const [note, setNote] = useState("");
   const [error, setError] = useState("");
 
   const { data: suggestedCode, refetch: refreshCode } = useSuggestCode();
@@ -44,6 +46,7 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
         code: code.trim().toLowerCase(),
         maxUsages: unlimited ? null : parseInt(maxUsages, 10) || 1,
         expiresAt: neverExpires ? null : expiresAt || null,
+        note: note || null,
       });
       onClose();
     } catch (err: unknown) {
@@ -55,7 +58,7 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-zinc-800 shadow-xl">
+      <div className="relative z-10 w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-800 shadow-xl">
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 px-6 py-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-indigo-500" />
@@ -153,6 +156,19 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
                 />
               )}
             </div>
+          </div>
+
+          {/* Internal Note */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
+              Internal Note{" "}
+              <span className="text-zinc-400 font-normal">(optional)</span>
+            </label>
+            <RichTextEditor
+              value={note}
+              onChange={setNote}
+              placeholder="Add an internal note about this invitation..."
+            />
           </div>
 
           {error && (

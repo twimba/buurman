@@ -16,7 +16,10 @@ import { useState } from "react";
 import {
   useRegistrationInvitation,
   useRevokeRegistrationInvitation,
+  useUpdateRegistrationInvitationNote,
 } from "../hooks/useRegistrationInvitations";
+import { RichTextEditor } from "../components/RichTextEditor";
+import { RichTextDisplay } from "../components/RichTextDisplay";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
 
@@ -40,8 +43,11 @@ export function RegistrationInvitationDetailPage() {
     refetch,
   } = useRegistrationInvitation(identifier!);
   const revokeMutation = useRevokeRegistrationInvitation();
+  const updateNoteMutation = useUpdateRegistrationInvitationNote();
   const [showRevoke, setShowRevoke] = useState(false);
   const [showSend, setShowSend] = useState(false);
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteValue, setNoteValue] = useState("");
 
   const handleCopyLink = () => {
     if (!invitation) return;
@@ -167,6 +173,60 @@ export function RegistrationInvitationDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Internal Note */}
+      <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Internal Note
+          </h2>
+          {!editingNote ? (
+            <button
+              onClick={() => {
+                setNoteValue(invitation.note || "");
+                setEditingNote(true);
+              }}
+              className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors"
+            >
+              {invitation.note ? "Edit" : "Add Note"}
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditingNote(false)}
+                className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (!identifier) return;
+                  await updateNoteMutation.mutateAsync({
+                    identifier,
+                    data: { note: noteValue || null },
+                  });
+                  setEditingNote(false);
+                }}
+                disabled={updateNoteMutation.isPending}
+                className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 px-3 py-1 rounded-md font-medium transition-colors"
+              >
+                {updateNoteMutation.isPending ? "Saving..." : "Save"}
+              </button>
+            </div>
+          )}
+        </div>
+        {editingNote ? (
+          <RichTextEditor
+            value={noteValue}
+            onChange={setNoteValue}
+            placeholder="Add an internal note about this invitation..."
+          />
+        ) : invitation.note ? (
+          <RichTextDisplay content={invitation.note} />
+        ) : (
+          <p className="text-sm text-zinc-400 italic">No note added</p>
+        )}
+      </div>
 
       {/* Usage History */}
       <div>

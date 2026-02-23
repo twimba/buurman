@@ -20,6 +20,7 @@ public class RegistrationInvitation {
   private Instant createdAt;
   private Instant updatedAt;
   private String createdBy;
+  private String note;
 
   public boolean isValid() {
     if (revokedAt != null) {

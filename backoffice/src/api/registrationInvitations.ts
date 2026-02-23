@@ -10,6 +10,7 @@ export interface RegistrationInvitation {
   status: "ACTIVE" | "EXPIRED" | "EXHAUSTED" | "REVOKED";
   createdBy: string;
   createdAt: string;
+  hasNote: boolean;
 }
 
 export interface UsageRecord {
@@ -22,6 +23,7 @@ export interface RegistrationInvitationDetail extends RegistrationInvitation {
   revokedBy: string | null;
   revokedAt: string | null;
   updatedAt: string;
+  note: string | null;
   usages: UsageRecord[];
 }
 
@@ -29,6 +31,11 @@ export interface CreateRegistrationInvitationRequest {
   code?: string;
   maxUsages?: number | null;
   expiresAt?: string | null;
+  note?: string | null;
+}
+
+export interface UpdateRegistrationInvitationNoteRequest {
+  note: string | null;
 }
 
 export interface SendRegistrationInvitationRequest {
@@ -69,4 +76,13 @@ export const registrationInvitationsApi = {
     client
       .get<{ code: string }>("/registration-invitations/suggest-code")
       .then((res) => res.data.code),
+
+  updateNote: (
+    identifier: string,
+    data: UpdateRegistrationInvitationNoteRequest,
+  ) =>
+    client.put<RegistrationInvitationDetail>(
+      `/registration-invitations/${identifier}/note`,
+      data,
+    ),
 };
