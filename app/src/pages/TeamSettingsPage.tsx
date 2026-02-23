@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTabState } from '@/hooks/useTabState';
 import {
   Users,
   Building,
@@ -50,7 +51,14 @@ const tabs = [
 ];
 
 export const TeamSettingsPage = () => {
-  const [activeTab, setActiveTab] = useState<TeamSettingsTab>('team');
+  const [activeTab, setActiveTab] = useTabState<TeamSettingsTab>('team', [
+    'team',
+    'teamPreferences',
+    'paymentInstructions',
+    'calendarFeeds',
+    'subscription',
+    'payments',
+  ] as const);
   const [showBanner, setShowBanner] = useState(true);
   const { activeTeam, canEditTeamSettings, isLoading } = useTeam();
   const navigate = useNavigate();

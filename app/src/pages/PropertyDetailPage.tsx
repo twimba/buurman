@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTabState } from '@/hooks/useTabState';
 import {
   useProperty,
   useDeleteProperty,
@@ -83,15 +84,15 @@ export const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTab] = useState<
-    | 'info'
-    | 'photos'
-    | 'documents'
-    | 'contracts'
-    | 'expenses'
-    | 'audit'
-    | 'dashboard'
-  >('info');
+  const [activeTab, setActiveTab] = useTabState('info', [
+    'info',
+    'photos',
+    'documents',
+    'contracts',
+    'expenses',
+    'audit',
+    'dashboard',
+  ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTabState } from '@/hooks/useTabState';
 import {
   useContract,
   useDeleteContract,
@@ -65,9 +66,12 @@ export const ContractDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'payments' | 'documents' | 'history'
-  >('overview');
+  const [activeTab, setActiveTab] = useTabState('overview', [
+    'overview',
+    'payments',
+    'documents',
+    'history',
+  ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showGeneratePaymentsModal, setShowGeneratePaymentsModal] =

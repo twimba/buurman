@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTabState } from '@/hooks/useTabState';
 import {
   useExpense,
   useDeleteExpense,
@@ -45,9 +46,11 @@ export const ExpenseDetailPage = () => {
   const { formatDate } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    'details' | 'documents' | 'history'
-  >('details');
+  const [activeTab, setActiveTab] = useTabState('details', [
+    'details',
+    'documents',
+    'history',
+  ] as const);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );

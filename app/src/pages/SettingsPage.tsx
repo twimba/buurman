@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { User, Bell, Users, Settings as SettingsIcon } from 'lucide-react';
+import { useTabState } from '@/hooks/useTabState';
 import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
 import { MyTeamsSection } from '@/components/settings/MyTeamsSection';
@@ -13,7 +13,11 @@ const tabs = [
 ];
 
 export const SettingsPage = () => {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+  const [activeTab, setActiveTab] = useTabState<SettingsTab>('profile', [
+    'profile',
+    'preferences',
+    'teams',
+  ] as const);
 
   return (
     <div className="min-h-screen bg-background">

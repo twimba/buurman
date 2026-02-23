@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
   useDeletePayment,
@@ -334,9 +335,12 @@ export const PaymentDetailPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showReceivalModal, setShowReceivalModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    'details' | 'receivals' | 'documents' | 'history'
-  >('details');
+  const [activeTab, setActiveTab] = useTabState('details', [
+    'details',
+    'receivals',
+    'documents',
+    'history',
+  ] as const);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
