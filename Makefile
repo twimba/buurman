@@ -38,7 +38,7 @@ certs:
 	bash scripts/setup-local-certs.sh
 
 scc:
-	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --overhead 1.05  --avg-wage 70000 --sloccount-formats
+	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --overhead 1.05  --avg-wage 70000 --sloccount-format
 
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity
