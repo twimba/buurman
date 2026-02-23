@@ -1,5 +1,5 @@
 # === Dev stage: builds from source at startup (docker-compose) ===
-FROM maven:3.9.12-eclipse-temurin-21-alpine AS dev
+FROM maven:3-eclipse-temurin-25-alpine AS dev
 
 WORKDIR /app
 
