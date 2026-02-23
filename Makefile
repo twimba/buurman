@@ -40,6 +40,9 @@ certs:
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --overhead 1.05  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-lifecycle,1.6,1.02,2.5,0.5"
 
+backend-upgradable-dependencies:
+	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
+	
 deploy-prod:
 	git fetch origin main
 	git tag -f prod origin/main
