@@ -1,0 +1,105 @@
+name: Build & Deploy Prometheus
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy after build"
+        type: boolean
+        default: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-prometheus:
+    name: Build & Publish Prometheus
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          VERSION=3.9.1
+          SHA=${GITHUB_SHA::7}
+          echo "tag=${VERSION}-${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: ./prometheus
+          push: true
+          platforms: linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/prometheus:${{ steps.version.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/prometheus:latest
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Prometheus Image
+
+          | | |
+          |---|---|
+          | **Status** | ${{ steps.build.outcome == 'success' && '✅ Published' || '❌ Failed' }} |
+          | **Image** | \`${{ env.REGISTRY }}/${{ github.repository_owner }}/buurman/prometheus\` |
+          | **Tag** | \`${{ steps.version.outputs.tag }}\` |
+          | **Digest** | \`${{ steps.build.outputs.digest }}\` |
+
+          EOF
+
+  deploy:
+    name: Deploy Prometheus to Dokploy
+    needs: [build-prometheus]
+    if: inputs.deploy == true
+    runs-on: ubuntu-latest
+    env:
+      DOKPLOY_API: https://dokploy.buurman.io/api
+    steps:
+      - name: Deploy Prometheus
+        env:
+          APP_ID: "JomRAMqjmV0IVMsa8pd4i"
+          IMAGE: ghcr.io/${{ github.repository_owner }}/buurman/prometheus:${{ needs.build-prometheus.outputs.tag }}
+        run: |
+          curl -sSf -X POST "$DOKPLOY_API/application.update" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
+          curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
+          echo "Deployed prometheus → $IMAGE"
+
+      - name: Summary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Deploy
+
+          | Service | Tag | Status |
+          |---------|-----|--------|
+          | Prometheus | \`${{ needs.build-prometheus.outputs.tag }}\` | ${{ needs.build-prometheus.result == 'success' && '🚀 Deployed' || '⏭️ Skipped' }} |
+          EOF

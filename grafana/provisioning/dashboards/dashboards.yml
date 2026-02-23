@@ -1,5 +1,9 @@
 apiVersion: 1
 
+# Dashboards are provisioned from the Docker image (grafana/dashboards/*.json).
+# UI edits are overwritten on container restart — git is the source of truth.
+# To persist changes: export dashboard JSON from Grafana UI and commit to grafana/dashboards/.
+
 providers:
   - name: "Buurman Dashboards"
     orgId: 1

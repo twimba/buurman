@@ -221,6 +221,12 @@ services:
     container_name: buurman-prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      # host.docker.internal works for both make dev (backend on host) and make up (backend
+      # in Docker with port 8081 exposed). Prod overrides via Dokploy env vars.
+      BACKEND_METRICS_TARGET: ${BACKEND_METRICS_TARGET:-host.docker.internal:8081}
+      POSTGRES_EXPORTER_TARGET: ${POSTGRES_EXPORTER_TARGET:-postgres-exporter:9187}
+      HETZNER_BEARER_TOKEN: ${HETZNER_BEARER_TOKEN:-}
     volumes:
       - prometheus_data:/prometheus
     labels:
@@ -263,6 +269,7 @@ services:
     environment:
       # --- Server ---
       GF_SERVER_ROOT_URL: "https://grafana.local.buurman.io"
+      PROMETHEUS_URL: http://prometheus:9090
       # --- Theme & Embedding ---
       GF_USERS_DEFAULT_THEME: light
       GF_SECURITY_ALLOW_EMBEDDING: "true"
@@ -331,6 +338,8 @@ services:
     env_file: .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
