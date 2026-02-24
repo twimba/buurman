@@ -90,6 +90,7 @@ public record CreatePropertyRequest(
     Optional<BigDecimal> mortgageInterestRate,
     Optional<LocalDate> mortgageStartDate,
     Optional<LocalDate> mortgageEndDate,
+    Optional<Boolean> mortgagePaymentVariable,
     Optional<BigDecimal> monthlyMortgagePayment,
     Optional<String> monthlyMortgagePaymentCurrency,
     Optional<BigDecimal> annualPropertyTax,
@@ -125,6 +126,7 @@ public record CreatePropertyRequest(
         Objects.requireNonNullElse(electricityConnectionType, Optional.empty());
     currentMarketValueCurrency =
         Objects.requireNonNullElse(currentMarketValueCurrency, Optional.empty());
+    mortgagePaymentVariable = Objects.requireNonNullElse(mortgagePaymentVariable, Optional.empty());
     monthlyMortgagePaymentCurrency =
         Objects.requireNonNullElse(monthlyMortgagePaymentCurrency, Optional.empty());
     annualPropertyTaxCurrency =

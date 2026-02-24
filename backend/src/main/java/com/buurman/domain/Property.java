@@ -18,14 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Property {
 
-  /**
-   * Sentinel value for variable mortgage payments (-1). When monthlyMortgagePayment equals this,
-   * the payment varies and should not be used for fixed projections.
-   */
-  public static final BigDecimal VARIABLE_PAYMENT_SENTINEL = BigDecimal.valueOf(-1);
-
-  public static final long VARIABLE_PAYMENT_SENTINEL_DB = -1L;
-
   private UUID id;
   private String identifier;
   private UUID teamId;
@@ -108,6 +100,7 @@ public class Property {
   @Builder.Default private Optional<BigDecimal> mortgageInterestRate = Optional.empty();
   @Builder.Default private Optional<LocalDate> mortgageStartDate = Optional.empty();
   @Builder.Default private Optional<LocalDate> mortgageEndDate = Optional.empty();
+  private boolean mortgagePaymentVariable;
   @Builder.Default private Optional<BigDecimal> monthlyMortgagePayment = Optional.empty();
   @Builder.Default private Optional<String> monthlyMortgagePaymentCurrency = Optional.empty();
 

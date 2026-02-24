@@ -86,18 +86,12 @@ public interface PropertyRecordMapper {
             CurrencyUtils.toMajorUnitsOrNull(
                 record.getMortgageAmount(), record.getMortgageAmountCurrency())));
     property.setMortgageAmountCurrency(Optional.ofNullable(record.getMortgageAmountCurrency()));
-    if (record.getMonthlyMortgagePayment() != null
-        && record.getMonthlyMortgagePayment() == Property.VARIABLE_PAYMENT_SENTINEL_DB) {
-      property.setMonthlyMortgagePayment(Optional.of(Property.VARIABLE_PAYMENT_SENTINEL));
-      property.setMonthlyMortgagePaymentCurrency(Optional.empty());
-    } else {
-      property.setMonthlyMortgagePayment(
-          Optional.ofNullable(
-              CurrencyUtils.toMajorUnitsOrNull(
-                  record.getMonthlyMortgagePayment(), record.getMonthlyMortgagePaymentCurrency())));
-      property.setMonthlyMortgagePaymentCurrency(
-          Optional.ofNullable(record.getMonthlyMortgagePaymentCurrency()));
-    }
+    property.setMonthlyMortgagePayment(
+        Optional.ofNullable(
+            CurrencyUtils.toMajorUnitsOrNull(
+                record.getMonthlyMortgagePayment(), record.getMonthlyMortgagePaymentCurrency())));
+    property.setMonthlyMortgagePaymentCurrency(
+        Optional.ofNullable(record.getMonthlyMortgagePaymentCurrency()));
     property.setAnnualPropertyTax(
         Optional.ofNullable(
             CurrencyUtils.toMajorUnitsOrNull(

@@ -4,7 +4,6 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -214,18 +213,15 @@ public class PropertyRepository {
           .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate().orElse(null))
           .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate().orElse(null))
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_PAYMENT_VARIABLE, property.isMortgagePaymentVariable())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? (Long) Property.VARIABLE_PAYMENT_SENTINEL_DB
-                  : CurrencyUtils.toMinorUnitsOrNull(
-                      property.getMonthlyMortgagePayment().orElse(null),
-                      property.getMonthlyMortgagePaymentCurrency().orElse(null)))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMonthlyMortgagePayment().orElse(null),
+                  property.getMonthlyMortgagePaymentCurrency().orElse(null)))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? null
-                  : property.getMonthlyMortgagePaymentCurrency().orElse(null))
+              property.getMonthlyMortgagePaymentCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
@@ -405,18 +401,15 @@ public class PropertyRepository {
           .set(PROPERTIES.MORTGAGE_INTEREST_RATE, property.getMortgageInterestRate().orElse(null))
           .set(PROPERTIES.MORTGAGE_START_DATE, property.getMortgageStartDate().orElse(null))
           .set(PROPERTIES.MORTGAGE_END_DATE, property.getMortgageEndDate().orElse(null))
+          .set(PROPERTIES.MORTGAGE_PAYMENT_VARIABLE, property.isMortgagePaymentVariable())
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? (Long) Property.VARIABLE_PAYMENT_SENTINEL_DB
-                  : CurrencyUtils.toMinorUnitsOrNull(
-                      property.getMonthlyMortgagePayment().orElse(null),
-                      property.getMonthlyMortgagePaymentCurrency().orElse(null)))
+              CurrencyUtils.toMinorUnitsOrNull(
+                  property.getMonthlyMortgagePayment().orElse(null),
+                  property.getMonthlyMortgagePaymentCurrency().orElse(null)))
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY,
-              isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? null
-                  : property.getMonthlyMortgagePaymentCurrency().orElse(null))
+              property.getMonthlyMortgagePaymentCurrency().orElse(null))
           .set(
               PROPERTIES.ANNUAL_PROPERTY_TAX,
               CurrencyUtils.toMinorUnitsOrNull(
@@ -556,9 +549,5 @@ public class PropertyRepository {
         .set(PROPERTIES.DELETED_AT, now)
         .where(PROPERTIES.ID.eq(id).and(PROPERTIES.TEAM_ID.eq(teamId)))
         .execute();
-  }
-
-  private static boolean isVariablePayment(@Nullable BigDecimal value) {
-    return value != null && value.compareTo(Property.VARIABLE_PAYMENT_SENTINEL) == 0;
   }
 }

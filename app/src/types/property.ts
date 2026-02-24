@@ -574,6 +574,7 @@ export interface PropertyResponse {
   mortgageInterestRate: number | null;
   mortgageStartDate: string | null;
   mortgageEndDate: string | null;
+  mortgagePaymentVariable: boolean;
   monthlyMortgagePayment: number | null;
   monthlyMortgagePaymentCurrency: string | null;
   annualPropertyTax: number | null;
@@ -688,6 +689,7 @@ export interface CreatePropertyRequest {
   mortgageInterestRate?: number | null;
   mortgageStartDate?: string | null;
   mortgageEndDate?: string | null;
+  mortgagePaymentVariable?: boolean;
   monthlyMortgagePayment?: number | null;
   monthlyMortgagePaymentCurrency?: string | null;
   annualPropertyTax?: number | null;
@@ -794,6 +796,7 @@ export interface UpdatePropertyRequest {
   mortgageInterestRate?: number | null;
   mortgageStartDate?: string | null;
   mortgageEndDate?: string | null;
+  mortgagePaymentVariable?: boolean;
   monthlyMortgagePayment?: number | null;
   monthlyMortgagePaymentCurrency?: string | null;
   annualPropertyTax?: number | null;

@@ -143,6 +143,7 @@ export const PropertyForm = ({
     mortgageType: property?.mortgageType ?? null,
     mortgageAmount: property?.mortgageAmount ?? null,
     mortgageInterestRate: property?.mortgageInterestRate ?? null,
+    mortgagePaymentVariable: property?.mortgagePaymentVariable ?? false,
     monthlyMortgagePayment: property?.monthlyMortgagePayment ?? null,
     mortgageStartDate: property?.mortgageStartDate ?? null,
     mortgageEndDate: property?.mortgageEndDate ?? null,
@@ -301,6 +302,7 @@ export const PropertyForm = ({
         mortgageType: property.mortgageType ?? null,
         mortgageAmount: property.mortgageAmount ?? null,
         mortgageInterestRate: property.mortgageInterestRate ?? null,
+        mortgagePaymentVariable: property.mortgagePaymentVariable ?? false,
         monthlyMortgagePayment: property.monthlyMortgagePayment ?? null,
         mortgageStartDate: property.mortgageStartDate ?? null,
         mortgageEndDate: property.mortgageEndDate ?? null,
@@ -490,13 +492,15 @@ export const PropertyForm = ({
       formData.mortgageAmountCurrency,
       'Mortgage'
     );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.monthlyMortgagePayment,
-      'monthlyMortgagePaymentCurrency',
-      formData.monthlyMortgagePaymentCurrency,
-      'Monthly payment'
-    );
+    if (!formData.mortgagePaymentVariable) {
+      validateMonetaryCurrency(
+        newErrors,
+        formData.monthlyMortgagePayment,
+        'monthlyMortgagePaymentCurrency',
+        formData.monthlyMortgagePaymentCurrency,
+        'Monthly payment'
+      );
+    }
     validateMonetaryCurrency(
       newErrors,
       formData.annualPropertyTax,

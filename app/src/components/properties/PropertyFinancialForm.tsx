@@ -258,6 +258,7 @@ export const PropertyFinancialForm = ({
                 if (val === MortgageType.NONE) {
                   onChange('mortgageAmount', null);
                   onChange('mortgageInterestRate', null);
+                  onChange('mortgagePaymentVariable', false);
                   onChange('monthlyMortgagePayment', null);
                   onChange('mortgageStartDate', null);
                   onChange('mortgageEndDate', null);
@@ -319,10 +320,10 @@ export const PropertyFinancialForm = ({
                 <input
                   type="radio"
                   name="mortgagePaymentType"
-                  checked={formData.monthlyMortgagePayment !== -1}
+                  checked={!formData.mortgagePaymentVariable}
                   onChange={() => {
-                    if (formData.monthlyMortgagePayment === -1) {
-                      onChange('monthlyMortgagePayment', null);
+                    if (formData.mortgagePaymentVariable) {
+                      onChange('mortgagePaymentVariable', false);
                     }
                   }}
                   disabled={isMortgageNone}
@@ -334,15 +335,18 @@ export const PropertyFinancialForm = ({
                 <input
                   type="radio"
                   name="mortgagePaymentType"
-                  checked={formData.monthlyMortgagePayment === -1}
-                  onChange={() => onChange('monthlyMortgagePayment', -1)}
+                  checked={formData.mortgagePaymentVariable === true}
+                  onChange={() => {
+                    onChange('mortgagePaymentVariable', true);
+                    onChange('monthlyMortgagePayment', null);
+                  }}
                   disabled={isMortgageNone}
                   className="text-[#5c7cfa]"
                 />
                 Variable
               </label>
             </div>
-            {formData.monthlyMortgagePayment !== -1 && (
+            {!formData.mortgagePaymentVariable && (
               <MoneyInput
                 value={formData.monthlyMortgagePayment ?? undefined}
                 onChange={(val) =>
@@ -358,7 +362,7 @@ export const PropertyFinancialForm = ({
                 error={!!errors?.monthlyMortgagePaymentCurrency}
               />
             )}
-            {formData.monthlyMortgagePayment === -1 && (
+            {formData.mortgagePaymentVariable && (
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] italic">
                 Payment amount varies — will not be used for fixed projections
               </p>

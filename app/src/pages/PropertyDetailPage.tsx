@@ -1413,13 +1413,14 @@ export const PropertyDetailPage = () => {
                             </div>
                           </div>
                         )}
-                        {property.monthlyMortgagePayment != null && (
+                        {(property.mortgagePaymentVariable ||
+                          property.monthlyMortgagePayment != null) && (
                           <div>
                             <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                               Monthly Payment
                             </div>
                             <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {property.monthlyMortgagePayment === -1
+                              {property.mortgagePaymentVariable
                                 ? 'Variable'
                                 : formatMoney(
                                     property.monthlyMortgagePayment,

@@ -1,6 +1,5 @@
 package com.buurman.service;
 
-import static com.buurman.domain.Property.VARIABLE_PAYMENT_SENTINEL;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
 import java.math.BigDecimal;
@@ -146,14 +145,7 @@ public class PropertyService {
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
-    if (monthlyMortgagePayment.isEmpty()
-        || VARIABLE_PAYMENT_SENTINEL.compareTo(
-                monthlyMortgagePayment.orElseThrow(
-                    () ->
-                        new IllegalStateException(
-                            "Monthly mortgage payment verified present but missing")))
-            != 0) {
+    if (!request.mortgagePaymentVariable().orElse(false)) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -272,8 +264,7 @@ public class PropertyService {
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
-    if (monthlyMortgagePayment.filter(v -> VARIABLE_PAYMENT_SENTINEL.compareTo(v) == 0).isEmpty()) {
+    if (!request.mortgagePaymentVariable().orElse(false)) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -873,6 +864,7 @@ public class PropertyService {
         response.mortgageInterestRate(),
         response.mortgageStartDate(),
         response.mortgageEndDate(),
+        response.mortgagePaymentVariable(),
         response.monthlyMortgagePayment(),
         response.monthlyMortgagePaymentCurrency(),
         response.annualPropertyTax(),

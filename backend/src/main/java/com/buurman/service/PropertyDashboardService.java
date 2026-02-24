@@ -180,7 +180,10 @@ public class PropertyDashboardService {
     BigDecimal purchasePrice = property.getPurchasePrice().orElse(null);
     BigDecimal marketValue = property.getCurrentMarketValue().orElse(null);
     BigDecimal mortgageAmount = property.getMortgageAmount().orElse(null);
-    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
+    BigDecimal monthlyMortgage =
+        property.isMortgagePaymentVariable()
+            ? null
+            : property.getMonthlyMortgagePayment().orElse(null);
     String currency = property.getPurchasePriceCurrency().orElse(null);
 
     BigDecimal totalIncome = sumAmounts(payments.stream().map(Payment::getAmount).toList());
@@ -309,7 +312,10 @@ public class PropertyDashboardService {
       Property property,
       LocalDate now,
       int months) {
-    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
+    BigDecimal monthlyMortgage =
+        property.isMortgagePaymentVariable()
+            ? null
+            : property.getMonthlyMortgagePayment().orElse(null);
 
     // Build per-month operating cost map (due-month-aware)
     Map<Integer, BigDecimal> operatingCostsByMonth = new java.util.HashMap<>();

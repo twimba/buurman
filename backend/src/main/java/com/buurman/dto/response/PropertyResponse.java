@@ -91,6 +91,7 @@ public record PropertyResponse(
     Optional<BigDecimal> mortgageInterestRate,
     Optional<LocalDate> mortgageStartDate,
     Optional<LocalDate> mortgageEndDate,
+    boolean mortgagePaymentVariable,
     Optional<BigDecimal> monthlyMortgagePayment,
     Optional<String> monthlyMortgagePaymentCurrency,
     Optional<BigDecimal> annualPropertyTax,
