@@ -436,7 +436,12 @@ export const ContractForm = ({
               ),
           ];
 
-      await onSubmit({ ...formData, parties } as CreateContractRequest);
+      await onSubmit({
+        ...formData,
+        endDate: formData.endDate || null,
+        signedDate: formData.signedDate || null,
+        parties,
+      } as CreateContractRequest);
       if (contract) {
         navigate(`/contracts/${contract.identifier}`);
       } else {

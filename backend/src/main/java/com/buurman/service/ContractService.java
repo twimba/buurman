@@ -295,6 +295,10 @@ public class ContractService {
 
     // Update fields
     contractMapper.updateEntity(contract, request);
+    // Explicitly set clearable Optional fields — MapStruct's IGNORE strategy
+    // treats Optional.empty() as non-null, preventing these from being cleared.
+    contract.setEndDate(request.endDate());
+    contract.setSignedDate(request.signedDate());
     contract.setPropertyId(property.getId());
     contract.setUpdatedBy(principal.getUserId());
     contract.setUpdatedAt(clock.instant());
