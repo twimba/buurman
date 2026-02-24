@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -563,9 +562,7 @@ public class TeamService {
     };
   }
 
-  private String formatInstantDate(@Nullable Instant instant) {
-    return instant != null
-        ? LocalDate.ofInstant(instant, UTC).format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
-        : "";
+  private String formatInstantDate(Instant instant) {
+    return LocalDate.ofInstant(instant, UTC).format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
   }
 }

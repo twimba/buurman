@@ -16,8 +16,7 @@ public record FinancialOverviewRequest(
 
   // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
   // @NotNull fails — null guards prevent NPE in that case.
-  @AssertTrue(message = "End date must be after start date")
-  @SuppressWarnings("ConstantConditions")
+  @AssertTrue(message = "End date must be after start date") @SuppressWarnings("ConstantConditions")
   public boolean isEndDateAfterStartDate() {
     return endDate == null || startDate == null || !endDate.isBefore(startDate);
   }

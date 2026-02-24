@@ -66,7 +66,10 @@ public class S3StorageService {
       MultipartFile file, String teamIdentifier, String entityType, String entityIdentifier) {
     Instant start = clock.instant();
     try {
-      @Nullable String originalFilename = file.getOriginalFilename();
+      String originalFilename = file.getOriginalFilename();
+      if (originalFilename == null ){
+        throw new RuntimeException("Unable to upload file. No filename provided");
+      }
       String fileKey =
           generateFileKey(teamIdentifier, entityType, entityIdentifier, originalFilename);
 
@@ -296,20 +299,15 @@ public class S3StorageService {
    * Generate file key with pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}.{ext}
    */
   private String generateFileKey(
-      String teamIdentifier,
-      String entityType,
-      String entityIdentifier,
-      @Nullable String filename) {
+      String teamIdentifier, String entityType, String entityIdentifier, String filename) {
     String ext = extractExtension(filename);
     String uniqueId = UUID.randomUUID().toString();
     return String.format(
         "%s/%s/%s/%s.%s", teamIdentifier, entityType, entityIdentifier, uniqueId, ext);
   }
 
-  private static String extractExtension(@Nullable String filename) {
-    if (filename == null) {
-      return "dat";
-    }
+  private static String extractExtension(String filename) {
+
     int lastDot = filename.lastIndexOf('.');
     if (lastDot >= 0 && lastDot < filename.length() - 1) {
       return filename

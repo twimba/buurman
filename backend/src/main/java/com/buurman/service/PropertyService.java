@@ -243,20 +243,6 @@ public class PropertyService {
     return toResponseWithMainPhoto(savedProperty, principal.requireTeamId(), true);
   }
 
-  public List<PropertyResponse> getProperties(
-      UserPrincipal principal, Property.@Nullable PropertyStatus status) {
-    List<Property> properties;
-    if (status != null) {
-      properties = propertyRepository.findByTeamIdAndStatus(principal.requireTeamId(), status);
-    } else {
-      properties = propertyRepository.findAllByTeamId(principal.requireTeamId());
-    }
-
-    return properties.stream()
-        .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
-        .toList();
-  }
-
   public PageResponse<PropertyResponse> getPropertiesPaginated(
       UserPrincipal principal,
       @Nullable String status,
