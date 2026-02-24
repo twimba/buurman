@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,18 +29,15 @@ public class PhoneNumberPolicy {
   @Builder.Default private Optional<Instant> updatedAt = Optional.empty();
   @Builder.Default private Optional<String> updatedBy = Optional.empty();
 
-  public boolean isAllowed(@Nullable String countryCode, @Nullable String numberType) {
+  public boolean isAllowed(Optional<String> countryCode, Optional<String> numberType) {
     return policyMatrix
         .map(
             matrix -> {
-              List<String> allowedTypes = matrix.get(countryCode);
+              List<String> allowedTypes = countryCode.map(matrix::get).orElse(null);
               if (allowedTypes == null || allowedTypes.isEmpty()) {
                 return false;
               }
-              if (numberType == null) {
-                return true; // type unknown but country is allowed
-              }
-              return allowedTypes.contains(numberType);
+              return numberType.map(allowedTypes::contains).orElse(true); // type unknown → allowed
             })
         .orElse(false);
   }

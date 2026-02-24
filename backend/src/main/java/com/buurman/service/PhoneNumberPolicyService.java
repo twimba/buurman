@@ -70,7 +70,7 @@ public class PhoneNumberPolicyService {
 
     PhoneNumberPolicy policy = getPolicy();
 
-    if (!policy.isAllowed(regionCode, typeStr)) {
+    if (!policy.isAllowed(Optional.ofNullable(regionCode), Optional.ofNullable(typeStr))) {
       // Determine specific error message
       if (regionCode == null
           || policy.getPolicyMatrix().isEmpty()
