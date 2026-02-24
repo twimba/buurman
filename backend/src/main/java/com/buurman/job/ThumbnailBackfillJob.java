@@ -44,21 +44,11 @@ public class ThumbnailBackfillJob implements Job {
       try (InputStream is = s3StorageService.downloadFile(photo.getFileKey())) {
         var thumbData = thumbnailService.generateThumbnail(is);
         if (thumbData.isPresent()) {
-          // Parse team/entity identifiers from file key
-          // Key pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
-          String[] parts = photo.getFileKey().split("/", -1);
-          String teamIdentifier = parts[0];
-          String entityType = parts[1];
-          String entityIdentifier = parts[2];
-
           String thumbnailFileKey =
               s3StorageService.uploadFile(
                   thumbData.get(),
                   "image/jpeg",
-                  teamIdentifier,
-                  entityType,
-                  entityIdentifier,
-                  "thumb_" + photo.getFileName());
+                  S3StorageService.deriveThumbnailKey(photo.getFileKey()));
 
           photo.setThumbnailFileKey(Optional.of(thumbnailFileKey));
           photoRepository.save(photo);

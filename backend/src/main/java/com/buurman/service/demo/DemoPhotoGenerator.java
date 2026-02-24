@@ -159,12 +159,7 @@ public class DemoPhotoGenerator {
         if (thumbData.isPresent()) {
           thumbnailFileKey =
               s3StorageService.uploadFile(
-                  thumbData.get(),
-                  "image/jpeg",
-                  teamIdentifier,
-                  "PROPERTY",
-                  propertyIdentifier,
-                  "thumb_" + fileName);
+                  thumbData.get(), "image/jpeg", S3StorageService.deriveThumbnailKey(fileKey));
         }
 
         Photo photo = new Photo();

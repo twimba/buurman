@@ -116,12 +116,7 @@ public class PhotoService {
       if (thumbnailData.isPresent()) {
         thumbnailFileKey =
             s3StorageService.uploadFile(
-                thumbnailData.get(),
-                "image/jpeg",
-                principal.requireTeamIdentifier(),
-                entityType,
-                entityIdentifier,
-                "thumb_" + file.getOriginalFilename());
+                thumbnailData.get(), "image/jpeg", S3StorageService.deriveThumbnailKey(fileKey));
       }
     } catch (IOException e) {
       log.warn(

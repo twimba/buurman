@@ -7,6 +7,7 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -107,9 +108,7 @@ public class S3StorageService {
     }
   }
 
-  /**
-   * Upload raw bytes to S3 and return the file key. Same key pattern as the MultipartFile variant.
-   */
+  /** Upload raw bytes to S3 with a generated key. Same pattern as the MultipartFile variant. */
   public String uploadFile(
       byte[] data,
       String contentType,
@@ -117,8 +116,13 @@ public class S3StorageService {
       String entityType,
       String entityIdentifier,
       String filename) {
+    return uploadFile(
+        data, contentType, generateFileKey(teamIdentifier, entityType, entityIdentifier, filename));
+  }
+
+  /** Upload raw bytes to S3 using an explicit (pre-computed) file key. */
+  public String uploadFile(byte[] data, String contentType, String fileKey) {
     Instant start = clock.instant();
-    String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, filename);
 
     PutObjectRequest putObjectRequest =
         PutObjectRequest.builder().bucket(bucketName).key(fileKey).contentType(contentType).build();
@@ -137,6 +141,20 @@ public class S3StorageService {
 
     log.info("File uploaded to S3: {}", fileKey);
     return fileKey;
+  }
+
+  /**
+   * Derives the thumbnail key from an existing photo file key by stripping the extension and
+   * appending {@code _thumbnail.jpeg}. E.g.: {@code team/property/prop-123/uuid.jpg →
+   * team/property/prop-123/uuid_thumbnail.jpeg}
+   */
+  public static String deriveThumbnailKey(String fileKey) {
+    int lastDot = fileKey.lastIndexOf('.');
+    int lastSlash = fileKey.lastIndexOf('/');
+    if (lastDot > lastSlash) {
+      return fileKey.substring(0, lastDot) + "_thumbnail.jpeg";
+    }
+    return fileKey + "_thumbnail.jpeg";
   }
 
   /**
@@ -274,19 +292,30 @@ public class S3StorageService {
   }
 
   /**
-   * Generate file key with pattern:
-   * {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
+   * Generate file key with pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}.{ext}
    */
   private String generateFileKey(
       String teamIdentifier,
       String entityType,
       String entityIdentifier,
       @Nullable String filename) {
-    String sanitizedFilename =
-        (filename != null ? filename : "unnamed").replaceAll("[^a-zA-Z0-9._-]", "_");
+    String ext = extractExtension(filename);
     String uniqueId = UUID.randomUUID().toString();
     return String.format(
-        "%s/%s/%s/%s_%s",
-        teamIdentifier, entityType, entityIdentifier, uniqueId, sanitizedFilename);
+        "%s/%s/%s/%s.%s", teamIdentifier, entityType, entityIdentifier, uniqueId, ext);
+  }
+
+  private static String extractExtension(@Nullable String filename) {
+    if (filename == null) {
+      return "dat";
+    }
+    int lastDot = filename.lastIndexOf('.');
+    if (lastDot >= 0 && lastDot < filename.length() - 1) {
+      return filename
+          .substring(lastDot + 1)
+          .toLowerCase(Locale.ROOT)
+          .replaceAll("[^a-z0-9]", "dat");
+    }
+    return "dat";
   }
 }
