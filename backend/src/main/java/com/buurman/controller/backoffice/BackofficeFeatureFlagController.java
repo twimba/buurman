@@ -107,7 +107,7 @@ public class BackofficeFeatureFlagController {
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
-    UUID activeTeamId = resolveActiveTeamId(user, memberships);
+    Optional<UUID> activeTeamId = resolveActiveTeamId(user, memberships);
 
     List<TeamFlagEvaluation> evaluations = new ArrayList<>();
 
@@ -135,7 +135,7 @@ public class BackofficeFeatureFlagController {
               team.getName(),
               membership.getRole(),
               membership.isOwner(),
-              membership.getTeamId().equals(activeTeamId),
+              activeTeamId.map(membership.getTeamId()::equals).orElse(false),
               flags));
     }
 
@@ -365,23 +365,23 @@ public class BackofficeFeatureFlagController {
 
   // --- Internal ---
 
-  private @Nullable UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
+  private Optional<UUID> resolveActiveTeamId(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     Optional<UUID> activeTeamIdOpt = user.getActiveTeamId();
     if (activeTeamIdOpt.isPresent()
         && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamIdOpt.get()))) {
-      return activeTeamIdOpt.get();
+      return Optional.of(activeTeamIdOpt.get());
     }
 
     Optional<UUID> defaultTeamIdOpt = user.getDefaultTeamId();
     if (defaultTeamIdOpt.isPresent()
         && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamIdOpt.get()))) {
-      return defaultTeamIdOpt.get();
+      return Optional.of(defaultTeamIdOpt.get());
     }
 
-    return memberships.getFirst().getTeamId();
+    return Optional.of(memberships.getFirst().getTeamId());
   }
 }

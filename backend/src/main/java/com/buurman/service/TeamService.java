@@ -85,15 +85,11 @@ public class TeamService {
         userRepository.findByIds(userIds).stream().collect(toMap(User::getId, u -> u));
 
     return members.stream()
-        .map(
-            member -> {
-              User user = usersById.get(member.getUserId());
-              if (user == null) {
-                return null;
-              }
-              return teamMapper.toMemberResponse(member, user, principal.getUserId());
-            })
-        .filter(java.util.Objects::nonNull)
+        .flatMap(
+            member ->
+                Optional.ofNullable(usersById.get(member.getUserId()))
+                    .map(user -> teamMapper.toMemberResponse(member, user, principal.getUserId()))
+                    .stream())
         .toList();
   }
 
@@ -163,13 +159,11 @@ public class TeamService {
     // Fetch team and inviter details for the response
     Team team = teamRepository.getById(invitation.getTeamId());
 
-    String inviterName = "Team Admin";
-    if (invitation.getInvitedBy() != null) {
-      @Nullable User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-      if (inviter != null) {
-        inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-      }
-    }
+    String inviterName =
+        userRepository
+            .findById(invitation.getInvitedBy())
+            .map(u -> u.getFirstName() + " " + u.getLastName())
+            .orElse("Team Admin");
 
     return teamMapper.toInvitationResponse(
         invitation,
@@ -192,30 +186,25 @@ public class TeamService {
 
     return pending.stream()
         .filter(inv -> !memberTeamIds.contains(inv.getTeamId()))
-        .map(
-            invitation -> {
-              @Nullable Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
-              if (team == null) {
-                return null;
-              }
-
-              String inviterName = "Team Admin";
-              if (invitation.getInvitedBy() != null) {
-                @Nullable User inviter =
-                    userRepository.findById(invitation.getInvitedBy()).orElse(null);
-                if (inviter != null) {
-                  inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-                }
-              }
-
-              return teamMapper.toInvitationResponse(
-                  invitation,
-                  team.getIdentifier(),
-                  team.getName(),
-                  inviterName,
-                  appProperties.email().baseUrl() + "/invitation/");
-            })
-        .filter(r -> r != null)
+        .flatMap(
+            invitation ->
+                teamRepository
+                    .findById(invitation.getTeamId())
+                    .map(
+                        team -> {
+                          String inviterName =
+                              userRepository
+                                  .findById(invitation.getInvitedBy())
+                                  .map(u -> u.getFirstName() + " " + u.getLastName())
+                                  .orElse("Team Admin");
+                          return teamMapper.toInvitationResponse(
+                              invitation,
+                              team.getIdentifier(),
+                              team.getName(),
+                              inviterName,
+                              appProperties.email().baseUrl() + "/invitation/");
+                        })
+                    .stream())
         .toList();
   }
 
@@ -233,14 +222,9 @@ public class TeamService {
     return pending.stream()
         .map(
             invitation -> {
-              String inviterName = "Team Admin";
-              if (invitation.getInvitedBy() != null) {
-                @Nullable User inviter =
-                    userRepository.findById(invitation.getInvitedBy()).orElse(null);
-                if (inviter != null) {
-                  inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-                }
-              }
+              User inviter = userRepository.getById(invitation.getInvitedBy());
+              String inviterName = inviter.getFullName();
+
               return teamMapper.toInvitationResponse(
                   invitation,
                   team.getIdentifier(),
@@ -350,27 +334,36 @@ public class TeamService {
     user.setActiveTeamId(Optional.of(invitation.getTeamId()));
     userRepository.save(user);
 
-    // Notify inviter
-    @Nullable User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-    @Nullable Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
-    if (inviter != null && team != null) {
-      notificationService.send(
-          SendNotificationRequest.builder()
-              .teamId(team.getId())
-              .notificationType(NotificationType.INVITATION_ACCEPTED)
-              .recipientUserId(inviter.getId())
-              .recipientEmail(inviter.getEmail())
-              .recipientPhone(inviter.getPhone().orElse(null))
-              .templateName("invitation-accepted")
-              .templateVariables(
-                  Map.of(
-                      "inviterName", inviter.getFirstName(),
-                      "memberName", user.getFirstName() + " " + user.getLastName(),
-                      "memberEmail", user.getEmail(),
-                      "teamName", team.getName(),
-                      "baseUrl", appProperties.email().baseUrl()))
-              .build());
-    }
+    // Notify inviter (soft lookup — inviter or team may have been deleted)
+    userRepository
+        .findById(invitation.getInvitedBy())
+        .ifPresent(
+            inviter ->
+                teamRepository
+                    .findById(invitation.getTeamId())
+                    .ifPresent(
+                        team ->
+                            notificationService.send(
+                                SendNotificationRequest.builder()
+                                    .teamId(team.getId())
+                                    .notificationType(NotificationType.INVITATION_ACCEPTED)
+                                    .recipientUserId(inviter.getId())
+                                    .recipientEmail(inviter.getEmail())
+                                    .recipientPhone(inviter.getPhone().orElse(null))
+                                    .templateName("invitation-accepted")
+                                    .templateVariables(
+                                        Map.of(
+                                            "inviterName",
+                                            inviter.getFirstName(),
+                                            "memberName",
+                                            user.getFirstName() + " " + user.getLastName(),
+                                            "memberEmail",
+                                            user.getEmail(),
+                                            "teamName",
+                                            team.getName(),
+                                            "baseUrl",
+                                            appProperties.email().baseUrl()))
+                                    .build())));
   }
 
   @Transactional

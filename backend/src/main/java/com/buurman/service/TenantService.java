@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.domain.User;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -492,7 +493,7 @@ public class TenantService {
     String userName =
         userRepository
             .findById(history.getPerformedBy())
-            .map(user -> user.getFirstName() + " " + user.getLastName())
+            .map(User::getFullName)
             .orElse("Unknown User");
 
     return new PropertyTenantHistoryResponse(

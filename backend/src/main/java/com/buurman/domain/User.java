@@ -47,4 +47,8 @@ public class User {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
+
+  public String getFullName() {
+    return getFirstName() + " " + getLastName();
+  }
 }

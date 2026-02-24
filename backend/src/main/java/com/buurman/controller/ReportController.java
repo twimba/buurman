@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -81,7 +82,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
     return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
   }
 
@@ -97,7 +98,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
     if (startDate != null && endDate != null) {
       return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
     }
@@ -115,7 +116,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
@@ -130,7 +131,7 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
@@ -196,14 +197,15 @@ public class ReportController {
         .body(pdf);
   }
 
-  private @Nullable List<UUID> resolvePropertyIdentifiers(
+  private Optional<List<UUID>> resolvePropertyIdentifiers(
       @Nullable List<String> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
-    return identifiers.stream()
-        .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
-        .map(Property::getId)
-        .toList();
+    return Optional.of(
+        identifiers.stream()
+            .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
+            .map(Property::getId)
+            .toList());
   }
 }

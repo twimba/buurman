@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -173,44 +172,49 @@ public class ReportService {
 
     List<PropertyFinancialSummary> incomeByPropertyList =
         allPropertyIds.stream()
-            .map(
-                propId -> {
-                  Property prop = propertiesById.get(propId);
-                  if (prop == null) {
-                    return null;
-                  }
-                  BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  return new PropertyFinancialSummary(
-                      propertyMapper.toSummary(prop),
-                      income,
-                      BigDecimal.ZERO,
-                      income,
-                      calculateOccupancyDays(
-                          contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate));
-                })
-            .filter(Objects::nonNull)
+            .flatMap(
+                propId ->
+                    Optional.ofNullable(propertiesById.get(propId))
+                        .map(
+                            prop -> {
+                              BigDecimal income =
+                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              return new PropertyFinancialSummary(
+                                  propertyMapper.toSummary(prop),
+                                  income,
+                                  BigDecimal.ZERO,
+                                  income,
+                                  calculateOccupancyDays(
+                                      contractsByProperty.getOrDefault(propId, List.of()),
+                                      startDate,
+                                      endDate));
+                            })
+                        .stream())
             .toList();
 
     List<PropertyFinancialSummary> expensesByPropertyList =
         allPropertyIds.stream()
-            .map(
-                propId -> {
-                  Property prop = propertiesById.get(propId);
-                  if (prop == null) {
-                    return null;
-                  }
-                  BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal netProfit = income.subtract(expense);
-                  return new PropertyFinancialSummary(
-                      propertyMapper.toSummary(prop),
-                      income,
-                      expense,
-                      netProfit,
-                      calculateOccupancyDays(
-                          contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate));
-                })
-            .filter(Objects::nonNull)
+            .flatMap(
+                propId ->
+                    Optional.ofNullable(propertiesById.get(propId))
+                        .map(
+                            prop -> {
+                              BigDecimal income =
+                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal expense =
+                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal netProfit = income.subtract(expense);
+                              return new PropertyFinancialSummary(
+                                  propertyMapper.toSummary(prop),
+                                  income,
+                                  expense,
+                                  netProfit,
+                                  calculateOccupancyDays(
+                                      contractsByProperty.getOrDefault(propId, List.of()),
+                                      startDate,
+                                      endDate));
+                            })
+                        .stream())
             .toList();
 
     // Calculate net profit
@@ -430,19 +434,20 @@ public class ReportService {
 
     List<PropertyComparisonResponse.PropertyData> propertyData =
         allPropertyIds.stream()
-            .map(
-                propId -> {
-                  Property prop = propertiesById.get(propId);
-                  if (prop == null) {
-                    return null;
-                  }
-                  BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal netProfit = income.subtract(expense);
-                  return new PropertyComparisonResponse.PropertyData(
-                      propertyMapper.toSummary(prop), income, expense, netProfit);
-                })
-            .filter(Objects::nonNull)
+            .flatMap(
+                propId ->
+                    Optional.ofNullable(propertiesById.get(propId))
+                        .map(
+                            prop -> {
+                              BigDecimal income =
+                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal expense =
+                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal netProfit = income.subtract(expense);
+                              return new PropertyComparisonResponse.PropertyData(
+                                  propertyMapper.toSummary(prop), income, expense, netProfit);
+                            })
+                        .stream())
             .sorted(
                 Comparator.comparing(PropertyComparisonResponse.PropertyData::netProfit).reversed())
             .toList();
@@ -607,24 +612,27 @@ public class ReportService {
 
     List<PropertyFinancialSummary> properties =
         allPropertyIds.stream()
-            .map(
-                propId -> {
-                  Property prop = propertiesById.get(propId);
-                  if (prop == null) {
-                    return null;
-                  }
-                  BigDecimal income = incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal expense = expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                  BigDecimal netProfit = income.subtract(expense);
-                  return new PropertyFinancialSummary(
-                      propertyMapper.toSummary(prop),
-                      income,
-                      expense,
-                      netProfit,
-                      calculateOccupancyDays(
-                          contractsByProperty.getOrDefault(propId, List.of()), startDate, endDate));
-                })
-            .filter(Objects::nonNull)
+            .flatMap(
+                propId ->
+                    Optional.ofNullable(propertiesById.get(propId))
+                        .map(
+                            prop -> {
+                              BigDecimal income =
+                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal expense =
+                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal netProfit = income.subtract(expense);
+                              return new PropertyFinancialSummary(
+                                  propertyMapper.toSummary(prop),
+                                  income,
+                                  expense,
+                                  netProfit,
+                                  calculateOccupancyDays(
+                                      contractsByProperty.getOrDefault(propId, List.of()),
+                                      startDate,
+                                      endDate));
+                            })
+                        .stream())
             .toList();
 
     return new TaxSummaryResponse(

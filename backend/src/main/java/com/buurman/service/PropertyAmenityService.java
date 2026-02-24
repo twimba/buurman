@@ -117,15 +117,11 @@ public class PropertyAmenityService {
         amenityRepository.findAll().stream().collect(toMap(Amenity::getId, identity()));
 
     return links.stream()
-        .map(
-            pa -> {
-              @Nullable Amenity amenity = amenityMap.get(pa.getAmenityId());
-              if (amenity == null) {
-                return null;
-              }
-              return toPropertyAmenityResponse(amenity, pa);
-            })
-        .filter(r -> r != null)
+        .flatMap(
+            pa ->
+                Optional.ofNullable(amenityMap.get(pa.getAmenityId()))
+                    .map(amenity -> toPropertyAmenityResponse(amenity, pa))
+                    .stream())
         .toList();
   }
 
