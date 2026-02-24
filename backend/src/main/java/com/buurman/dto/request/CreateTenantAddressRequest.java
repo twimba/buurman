@@ -1,6 +1,5 @@
 package com.buurman.dto.request;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.buurman.domain.TenantAddress;
@@ -18,12 +17,4 @@ public record CreateTenantAddressRequest(
     Optional<AddressStatus> status,
     Optional<Double> latitude,
     Optional<Double> longitude,
-    Optional<String> geocodeAccuracy) {
-  public CreateTenantAddressRequest {
-    postalCode = Objects.requireNonNullElse(postalCode, Optional.empty());
-    status = Objects.requireNonNullElse(status, Optional.empty());
-    latitude = Objects.requireNonNullElse(latitude, Optional.empty());
-    longitude = Objects.requireNonNullElse(longitude, Optional.empty());
-    geocodeAccuracy = Objects.requireNonNullElse(geocodeAccuracy, Optional.empty());
-  }
-}
+    Optional<String> geocodeAccuracy) {}

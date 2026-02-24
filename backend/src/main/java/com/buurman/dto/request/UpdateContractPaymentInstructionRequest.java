@@ -27,18 +27,5 @@ public record UpdateContractPaymentInstructionRequest(
   public UpdateContractPaymentInstructionRequest {
     paymentInstructionIdentifier =
         Objects.requireNonNullElse(paymentInstructionIdentifier, Optional.empty());
-    isCustom = Objects.requireNonNullElse(isCustom, Optional.empty());
-    customName = Objects.requireNonNullElse(customName, Optional.empty());
-    customDescription = Objects.requireNonNullElse(customDescription, Optional.empty());
-    customPaymentMethod = Objects.requireNonNullElse(customPaymentMethod, Optional.empty());
-    customBankName = Objects.requireNonNullElse(customBankName, Optional.empty());
-    customAccountHolderName = Objects.requireNonNullElse(customAccountHolderName, Optional.empty());
-    customIban = Objects.requireNonNullElse(customIban, Optional.empty());
-    customBicSwift = Objects.requireNonNullElse(customBicSwift, Optional.empty());
-    customAccountNumber = Objects.requireNonNullElse(customAccountNumber, Optional.empty());
-    customRoutingNumber = Objects.requireNonNullElse(customRoutingNumber, Optional.empty());
-    customPaymentReference = Objects.requireNonNullElse(customPaymentReference, Optional.empty());
-    customAdditionalDetails = Objects.requireNonNullElse(customAdditionalDetails, Optional.empty());
-    notes = Objects.requireNonNullElse(notes, Optional.empty());
   }
 }

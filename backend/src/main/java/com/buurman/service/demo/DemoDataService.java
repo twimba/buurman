@@ -72,7 +72,8 @@ public class DemoDataService {
   private final S3StorageService s3StorageService;
   private final Clock clock;
 
-  public DemoDataResponse generate() {
+  @Transactional
+  public void generate() {
     long startTime = clock.millis();
     log.info("Starting demo data generation...");
 
@@ -118,7 +119,7 @@ public class DemoDataService {
         ctx.getNotificationsCreated(),
         ctx.getDocumentsCreated());
 
-    return new DemoDataResponse(
+    new DemoDataResponse(
         ctx.getTeamsCreated(),
         ctx.getUsersCreated(),
         ctx.getPropertiesCreated(),
@@ -146,6 +147,7 @@ public class DemoDataService {
     auditLogGenerator.generate(ctx);
   }
 
+  @Transactional
   public void cleanup() {
     log.info("Cleaning up existing demo data...");
 
@@ -428,6 +430,7 @@ public class DemoDataService {
     log.info("Deleted {}/{} S3 files", deleted, keys.size());
   }
 
+  @Transactional
   public void scheduledRegenerate() {
     if (!properties.enabled()) {
       return;

@@ -146,9 +146,9 @@ public class NotificationService {
   }
 
   @Transactional
-  public List<Notification> sendToTeam(SendNotificationRequest request) {
+  public void sendToTeam(SendNotificationRequest request) {
     if (request.teamId().isEmpty()) {
-      return List.of();
+      return;
     }
     List<Notification> allNotifications = new ArrayList<>();
     List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId().get());
@@ -175,7 +175,6 @@ public class NotificationService {
                 allNotifications.addAll(send(perUser));
               });
     }
-    return allNotifications;
   }
 
   @Transactional

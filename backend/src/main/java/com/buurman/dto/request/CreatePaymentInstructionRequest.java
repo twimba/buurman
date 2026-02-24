@@ -1,6 +1,5 @@
 package com.buurman.dto.request;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.buurman.domain.PaymentInstruction;
@@ -21,17 +20,4 @@ public record CreatePaymentInstructionRequest(
     Optional<String> routingNumber,
     Optional<String> paymentReference,
     Optional<String> additionalDetails,
-    Optional<Boolean> isDefault) {
-  public CreatePaymentInstructionRequest {
-    description = Objects.requireNonNullElse(description, Optional.empty());
-    bankName = Objects.requireNonNullElse(bankName, Optional.empty());
-    accountHolderName = Objects.requireNonNullElse(accountHolderName, Optional.empty());
-    iban = Objects.requireNonNullElse(iban, Optional.empty());
-    bicSwift = Objects.requireNonNullElse(bicSwift, Optional.empty());
-    accountNumber = Objects.requireNonNullElse(accountNumber, Optional.empty());
-    routingNumber = Objects.requireNonNullElse(routingNumber, Optional.empty());
-    paymentReference = Objects.requireNonNullElse(paymentReference, Optional.empty());
-    additionalDetails = Objects.requireNonNullElse(additionalDetails, Optional.empty());
-    isDefault = Objects.requireNonNullElse(isDefault, Optional.empty());
-  }
-}
+    Optional<Boolean> isDefault) {}

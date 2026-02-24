@@ -488,94 +488,90 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        residential.ifPresent(
-            r -> {
-              PropertyResidentialDetails d = new PropertyResidentialDetails();
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setBedrooms(r.bedrooms());
-              d.setBathrooms(r.bathrooms());
-              d.setFurnished(Optional.of(r.furnished().orElse(false)));
-              d.setPetPolicy(r.petPolicy());
-              d.setCreatedBy(userId);
-              d.setUpdatedBy(userId);
-              residentialDetailsRepository.save(d);
-            });
-      }
-      case COMMERCIAL -> {
-        commercial.ifPresent(
-            c -> {
-              PropertyCommercialDetails d = new PropertyCommercialDetails();
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setUsableAreaValue(c.usableAreaValue());
-              d.setUsableAreaUnit(c.usableAreaUnit());
-              d.setCommonAreaValue(c.commonAreaValue());
-              d.setCommonAreaUnit(c.commonAreaUnit());
-              d.setFloorLevel(c.floorLevel());
-              d.setCeilingHeightM(c.ceilingHeightM());
-              d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
-              d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
-              d.setZoningClassification(c.zoningClassification());
-              d.setMaxOccupancy(c.maxOccupancy());
-              d.setRestroomCount(c.restroomCount());
-              d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
-              d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
-              d.setCreatedBy(userId);
-              d.setUpdatedBy(userId);
-              commercialDetailsRepository.save(d);
-            });
-      }
-      case INDUSTRIAL -> {
-        industrial.ifPresent(
-            i -> {
-              PropertyIndustrialDetails d = new PropertyIndustrialDetails();
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setClearHeightM(i.clearHeightM());
-              d.setLoadingDocks(i.loadingDocks());
-              d.setDriveInDoors(i.driveInDoors());
-              d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
-              d.setPowerCapacityKva(i.powerCapacityKva());
-              d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
-              d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
-              d.setCraneCapacityTons(i.craneCapacityTons());
-              d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
-              d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
-              d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
-              d.setYardAreaValue(i.yardAreaValue());
-              d.setYardAreaUnit(i.yardAreaUnit());
-              d.setZoningClassification(i.zoningClassification());
-              d.setCreatedBy(userId);
-              d.setUpdatedBy(userId);
-              industrialDetailsRepository.save(d);
-            });
-      }
-      case AGRICULTURAL -> {
-        agricultural.ifPresent(
-            a -> {
-              PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setTotalLandAreaValue(a.totalLandAreaValue());
-              d.setTotalLandAreaUnit(a.totalLandAreaUnit());
-              d.setArableAreaValue(a.arableAreaValue());
-              d.setArableAreaUnit(a.arableAreaUnit());
-              d.setSoilType(a.soilType());
-              d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
-              d.setWaterSource(a.waterSource());
-              d.setIrrigationType(a.irrigationType());
-              d.setFencingType(a.fencingType());
-              d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
-              d.setOutbuildingDetails(a.outbuildingDetails());
-              d.setCurrentUse(a.currentUse());
-              d.setZoningClassification(a.zoningClassification());
-              d.setCreatedBy(userId);
-              d.setUpdatedBy(userId);
-              agriculturalDetailsRepository.save(d);
-            });
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r -> {
+                PropertyResidentialDetails d = new PropertyResidentialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setBedrooms(r.bedrooms());
+                d.setBathrooms(r.bathrooms());
+                d.setFurnished(Optional.of(r.furnished().orElse(false)));
+                d.setPetPolicy(r.petPolicy());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                residentialDetailsRepository.save(d);
+              });
+      case COMMERCIAL ->
+          commercial.ifPresent(
+              c -> {
+                PropertyCommercialDetails d = new PropertyCommercialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setUsableAreaValue(c.usableAreaValue());
+                d.setUsableAreaUnit(c.usableAreaUnit());
+                d.setCommonAreaValue(c.commonAreaValue());
+                d.setCommonAreaUnit(c.commonAreaUnit());
+                d.setFloorLevel(c.floorLevel());
+                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
+                d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
+                d.setZoningClassification(c.zoningClassification());
+                d.setMaxOccupancy(c.maxOccupancy());
+                d.setRestroomCount(c.restroomCount());
+                d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
+                d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                commercialDetailsRepository.save(d);
+              });
+      case INDUSTRIAL ->
+          industrial.ifPresent(
+              i -> {
+                PropertyIndustrialDetails d = new PropertyIndustrialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setClearHeightM(i.clearHeightM());
+                d.setLoadingDocks(i.loadingDocks());
+                d.setDriveInDoors(i.driveInDoors());
+                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
+                d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
+                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
+                d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
+                d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
+                d.setYardAreaValue(i.yardAreaValue());
+                d.setYardAreaUnit(i.yardAreaUnit());
+                d.setZoningClassification(i.zoningClassification());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                industrialDetailsRepository.save(d);
+              });
+      case AGRICULTURAL ->
+          agricultural.ifPresent(
+              a -> {
+                PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setTotalLandAreaValue(a.totalLandAreaValue());
+                d.setTotalLandAreaUnit(a.totalLandAreaUnit());
+                d.setArableAreaValue(a.arableAreaValue());
+                d.setArableAreaUnit(a.arableAreaUnit());
+                d.setSoilType(a.soilType());
+                d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
+                d.setWaterSource(a.waterSource());
+                d.setIrrigationType(a.irrigationType());
+                d.setFencingType(a.fencingType());
+                d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
+                d.setOutbuildingDetails(a.outbuildingDetails());
+                d.setCurrentUse(a.currentUse());
+                d.setZoningClassification(a.zoningClassification());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                agriculturalDetailsRepository.save(d);
+              });
       case MIXED_USE -> {
         // No detail table for MIXED_USE
       }
@@ -592,110 +588,107 @@ public class PropertyService {
       Optional<IndustrialDetailsRequest> industrial,
       Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        residential.ifPresent(
-            r -> {
-              Optional<PropertyResidentialDetails> existing =
-                  residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-              PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setBedrooms(r.bedrooms());
-              d.setBathrooms(r.bathrooms());
-              d.setFurnished(Optional.of(r.furnished().orElse(false)));
-              d.setPetPolicy(r.petPolicy());
-              d.setUpdatedBy(userId);
-              if (d.getId() == null) {
-                d.setCreatedBy(userId);
-              }
-              residentialDetailsRepository.save(d);
-            });
-      }
-      case COMMERCIAL -> {
-        commercial.ifPresent(
-            c -> {
-              Optional<PropertyCommercialDetails> existing =
-                  commercialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-              PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setUsableAreaValue(c.usableAreaValue());
-              d.setUsableAreaUnit(c.usableAreaUnit());
-              d.setCommonAreaValue(c.commonAreaValue());
-              d.setCommonAreaUnit(c.commonAreaUnit());
-              d.setFloorLevel(c.floorLevel());
-              d.setCeilingHeightM(c.ceilingHeightM());
-              d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
-              d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
-              d.setZoningClassification(c.zoningClassification());
-              d.setMaxOccupancy(c.maxOccupancy());
-              d.setRestroomCount(c.restroomCount());
-              d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
-              d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
-              d.setUpdatedBy(userId);
-              if (d.getId() == null) {
-                d.setCreatedBy(userId);
-              }
-              commercialDetailsRepository.save(d);
-            });
-      }
-      case INDUSTRIAL -> {
-        industrial.ifPresent(
-            i -> {
-              Optional<PropertyIndustrialDetails> existing =
-                  industrialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-              PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setClearHeightM(i.clearHeightM());
-              d.setLoadingDocks(i.loadingDocks());
-              d.setDriveInDoors(i.driveInDoors());
-              d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
-              d.setPowerCapacityKva(i.powerCapacityKva());
-              d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
-              d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
-              d.setCraneCapacityTons(i.craneCapacityTons());
-              d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
-              d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
-              d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
-              d.setYardAreaValue(i.yardAreaValue());
-              d.setYardAreaUnit(i.yardAreaUnit());
-              d.setZoningClassification(i.zoningClassification());
-              d.setUpdatedBy(userId);
-              if (d.getId() == null) {
-                d.setCreatedBy(userId);
-              }
-              industrialDetailsRepository.save(d);
-            });
-      }
-      case AGRICULTURAL -> {
-        agricultural.ifPresent(
-            a -> {
-              Optional<PropertyAgriculturalDetails> existing =
-                  agriculturalDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-              PropertyAgriculturalDetails d = existing.orElseGet(PropertyAgriculturalDetails::new);
-              d.setPropertyId(propertyId);
-              d.setTeamId(teamId);
-              d.setTotalLandAreaValue(a.totalLandAreaValue());
-              d.setTotalLandAreaUnit(a.totalLandAreaUnit());
-              d.setArableAreaValue(a.arableAreaValue());
-              d.setArableAreaUnit(a.arableAreaUnit());
-              d.setSoilType(a.soilType());
-              d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
-              d.setWaterSource(a.waterSource());
-              d.setIrrigationType(a.irrigationType());
-              d.setFencingType(a.fencingType());
-              d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
-              d.setOutbuildingDetails(a.outbuildingDetails());
-              d.setCurrentUse(a.currentUse());
-              d.setZoningClassification(a.zoningClassification());
-              d.setUpdatedBy(userId);
-              if (d.getId() == null) {
-                d.setCreatedBy(userId);
-              }
-              agriculturalDetailsRepository.save(d);
-            });
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r -> {
+                Optional<PropertyResidentialDetails> existing =
+                    residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setBedrooms(r.bedrooms());
+                d.setBathrooms(r.bathrooms());
+                d.setFurnished(Optional.of(r.furnished().orElse(false)));
+                d.setPetPolicy(r.petPolicy());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                residentialDetailsRepository.save(d);
+              });
+      case COMMERCIAL ->
+          commercial.ifPresent(
+              c -> {
+                Optional<PropertyCommercialDetails> existing =
+                    commercialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setUsableAreaValue(c.usableAreaValue());
+                d.setUsableAreaUnit(c.usableAreaUnit());
+                d.setCommonAreaValue(c.commonAreaValue());
+                d.setCommonAreaUnit(c.commonAreaUnit());
+                d.setFloorLevel(c.floorLevel());
+                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
+                d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
+                d.setZoningClassification(c.zoningClassification());
+                d.setMaxOccupancy(c.maxOccupancy());
+                d.setRestroomCount(c.restroomCount());
+                d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
+                d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                commercialDetailsRepository.save(d);
+              });
+      case INDUSTRIAL ->
+          industrial.ifPresent(
+              i -> {
+                Optional<PropertyIndustrialDetails> existing =
+                    industrialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setClearHeightM(i.clearHeightM());
+                d.setLoadingDocks(i.loadingDocks());
+                d.setDriveInDoors(i.driveInDoors());
+                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
+                d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
+                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
+                d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
+                d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
+                d.setYardAreaValue(i.yardAreaValue());
+                d.setYardAreaUnit(i.yardAreaUnit());
+                d.setZoningClassification(i.zoningClassification());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                industrialDetailsRepository.save(d);
+              });
+      case AGRICULTURAL ->
+          agricultural.ifPresent(
+              a -> {
+                Optional<PropertyAgriculturalDetails> existing =
+                    agriculturalDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyAgriculturalDetails d =
+                    existing.orElseGet(PropertyAgriculturalDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setTotalLandAreaValue(a.totalLandAreaValue());
+                d.setTotalLandAreaUnit(a.totalLandAreaUnit());
+                d.setArableAreaValue(a.arableAreaValue());
+                d.setArableAreaUnit(a.arableAreaUnit());
+                d.setSoilType(a.soilType());
+                d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
+                d.setWaterSource(a.waterSource());
+                d.setIrrigationType(a.irrigationType());
+                d.setFencingType(a.fencingType());
+                d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
+                d.setOutbuildingDetails(a.outbuildingDetails());
+                d.setCurrentUse(a.currentUse());
+                d.setZoningClassification(a.zoningClassification());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                agriculturalDetailsRepository.save(d);
+              });
       case MIXED_USE -> {
         // No detail table
       }

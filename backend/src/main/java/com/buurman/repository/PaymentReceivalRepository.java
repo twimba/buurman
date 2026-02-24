@@ -111,7 +111,7 @@ public class PaymentReceivalRepository {
     return CurrencyUtils.sumToMajorUnits(sum, currency);
   }
 
-  public PaymentReceival save(PaymentReceival receival) {
+  public void save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
     String currency = receival.getCurrency();
 
@@ -137,8 +137,6 @@ public class PaymentReceivalRepository {
     receival.setId(id);
     receival.setCreatedAt(createdAt.toInstant(UTC));
     receival.setUpdatedAt(updatedAt.toInstant(UTC));
-
-    return receival;
   }
 
   public void update(

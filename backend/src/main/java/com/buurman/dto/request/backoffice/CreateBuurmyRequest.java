@@ -1,6 +1,5 @@
 package com.buurman.dto.request.backoffice;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Email;
@@ -13,8 +12,4 @@ public record CreateBuurmyRequest(
     @NotBlank @Size(max = 100) String firstName,
     @NotBlank @Size(max = 100) String lastName,
     @NotBlank @Size(min = 8, max = 128) String password,
-    boolean temporaryPassword) {
-  public CreateBuurmyRequest {
-    username = Objects.requireNonNullElse(username, Optional.empty());
-  }
-}
+    boolean temporaryPassword) {}

@@ -34,7 +34,7 @@ public class PropertyAgriculturalDetailsRepository {
         .map(this::toDomain);
   }
 
-  public PropertyAgriculturalDetails save(PropertyAgriculturalDetails details) {
+  public void save(PropertyAgriculturalDetails details) {
     LocalDateTime now = LocalDateTime.now(clock);
 
     if (details.getId() == null) {
@@ -125,7 +125,6 @@ public class PropertyAgriculturalDetailsRepository {
           .execute();
       details.setUpdatedAt(now.toInstant(UTC));
     }
-    return details;
   }
 
   public void deleteByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {

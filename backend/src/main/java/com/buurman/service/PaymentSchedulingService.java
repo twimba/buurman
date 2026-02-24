@@ -53,6 +53,7 @@ public class PaymentSchedulingService {
    * Scheduled job that generates future payments for all teams with auto-generation enabled. Runs
    * every hour.
    */
+  @Transactional
   public void scheduledPaymentGeneration() {
     log.info("Starting scheduled payment generation");
     long startTime = clock.millis();

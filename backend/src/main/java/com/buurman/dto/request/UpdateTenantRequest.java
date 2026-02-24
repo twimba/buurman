@@ -1,6 +1,5 @@
 package com.buurman.dto.request;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Email;
@@ -17,13 +16,4 @@ public record UpdateTenantRequest(
         Optional<String> phone,
     Optional<String> taxNumber,
     Optional<String> idNumber,
-    Optional<String> additionalInfo) {
-  public UpdateTenantRequest {
-    lastName = Objects.requireNonNullElse(lastName, Optional.empty());
-    email = Objects.requireNonNullElse(email, Optional.empty());
-    phone = Objects.requireNonNullElse(phone, Optional.empty());
-    taxNumber = Objects.requireNonNullElse(taxNumber, Optional.empty());
-    idNumber = Objects.requireNonNullElse(idNumber, Optional.empty());
-    additionalInfo = Objects.requireNonNullElse(additionalInfo, Optional.empty());
-  }
-}
+    Optional<String> additionalInfo) {}

@@ -174,9 +174,7 @@ public class FlagsmithAdminService {
     // Resolve feature_segment link ID
     long featureId = currentFs.get("feature").get("id").asLong();
     var fsLinkId = findFeatureSegmentId(featureId, findSegmentIdForFeatureState(featureStateId));
-    if (fsLinkId.isPresent()) {
-      body.put("feature_segment", fsLinkId.get());
-    }
+    fsLinkId.ifPresent(aLong -> body.put("feature_segment", aLong));
 
     // Build feature_state_value as nested dict
     ObjectNode fsv = mapper.createObjectNode();
@@ -417,10 +415,6 @@ public class FlagsmithAdminService {
   }
 
   /**
-   * Fetches all segments and their feature flag overrides using the Admin API. For each feature,
-   * queries its feature-segment links, then resolves the corresponding feature state values.
-   */
-  /**
    * Fetches all segments and their feature flag overrides using the environment document (same data
    * the SDK uses for local evaluation). Segment descriptions are enriched from the admin segments
    * endpoint.
@@ -483,14 +477,14 @@ public class FlagsmithAdminService {
    * Creates a feature-segment link (segment override) for a feature. Flagsmith auto-creates a
    * FeatureState with environment defaults.
    */
-  public long createFeatureSegment(long featureId, long segmentId) {
+  public void createFeatureSegment(long featureId, long segmentId) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     body.put("feature", featureId);
     body.put("segment", segmentId);
     body.put("environment", environmentId.orElseThrow());
     JsonNode resp = post("/features/feature-segments/", body, adminToken.orElse(null));
-    return resp.get("id").asLong();
+    resp.get("id").asLong();
   }
 
   /** Finds the feature-segment link ID for a given feature + segment combo. */
@@ -552,14 +546,6 @@ public class FlagsmithAdminService {
   public void deleteFeatureSegment(long featureSegmentId) {
     ensureDiscovered();
     delete("/features/feature-segments/" + featureSegmentId + "/", adminToken.orElse(null));
-  }
-
-  /**
-   * Builds the Flagsmith identity string for a user in a team, matching the format used by {@link
-   * FeatureFlagService#buildIdentity}.
-   */
-  public static String buildIdentity(String teamIdentifier, String userIdentifier) {
-    return "team:%s_user:%s".formatted(teamIdentifier, userIdentifier);
   }
 
   // --- Internal: environment document ---

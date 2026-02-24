@@ -186,13 +186,7 @@ public class PhotoRepository {
             "fileSize", PHOTOS.FILE_SIZE,
             "entityType", PHOTOS.ENTITY_TYPE);
     return PaginationHelper.paginate(
-        dsl,
-        PHOTOS,
-        condition,
-        sortableFields,
-        PHOTOS.UPLOADED_AT,
-        pageRequest,
-        r -> mapper.toDomain(r));
+        dsl, PHOTOS, condition, sortableFields, PHOTOS.UPLOADED_AT, pageRequest, mapper::toDomain);
   }
 
   public List<Photo> findWithoutThumbnail(int limit) {

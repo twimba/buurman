@@ -1,7 +1,6 @@
 package com.buurman.dto.request;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Min;
@@ -21,22 +20,4 @@ public record IndustrialDetailsRequest(
     Optional<Boolean> hasClimateControl,
     @Positive(message = "Yard area must be positive") Optional<BigDecimal> yardAreaValue,
     Optional<String> yardAreaUnit,
-    Optional<String> zoningClassification) {
-
-  public IndustrialDetailsRequest {
-    clearHeightM = Objects.requireNonNullElse(clearHeightM, Optional.empty());
-    loadingDocks = Objects.requireNonNullElse(loadingDocks, Optional.empty());
-    driveInDoors = Objects.requireNonNullElse(driveInDoors, Optional.empty());
-    floorLoadCapacityKgSqm = Objects.requireNonNullElse(floorLoadCapacityKgSqm, Optional.empty());
-    powerCapacityKva = Objects.requireNonNullElse(powerCapacityKva, Optional.empty());
-    hasThreePhasePower = Objects.requireNonNullElse(hasThreePhasePower, Optional.empty());
-    hasCrane = Objects.requireNonNullElse(hasCrane, Optional.empty());
-    craneCapacityTons = Objects.requireNonNullElse(craneCapacityTons, Optional.empty());
-    hasHazmatCertification = Objects.requireNonNullElse(hasHazmatCertification, Optional.empty());
-    hasVentilationSystem = Objects.requireNonNullElse(hasVentilationSystem, Optional.empty());
-    hasClimateControl = Objects.requireNonNullElse(hasClimateControl, Optional.empty());
-    yardAreaValue = Objects.requireNonNullElse(yardAreaValue, Optional.empty());
-    yardAreaUnit = Objects.requireNonNullElse(yardAreaUnit, Optional.empty());
-    zoningClassification = Objects.requireNonNullElse(zoningClassification, Optional.empty());
-  }
-}
+    Optional<String> zoningClassification) {}

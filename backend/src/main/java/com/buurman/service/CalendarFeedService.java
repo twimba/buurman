@@ -251,22 +251,19 @@ public class CalendarFeedService {
     // Emit contract milestone events (start, end, signed dates)
     for (Contract contract : milestoneContracts) {
       Property property = propertyMap.get(contract.getPropertyId());
-      String propertyLabel =
-          property != null && property.getStreet() != null ? property.getStreet() : "Contract";
+      String propertyLabel = property != null ? property.getStreet() : "Contract";
 
-      if (contract.getStartDate() != null) {
-        sb.append("BEGIN:VEVENT\r\n");
-        appendFolded(sb, "UID:contract-start-" + contract.getIdentifier() + "@buurman.app");
-        sb.append("DTSTART;VALUE=DATE:")
-            .append(contract.getStartDate().format(DATE_FORMAT))
-            .append("\r\n");
-        appendFolded(sb, "SUMMARY:" + escapeText("Contract Start - " + propertyLabel));
-        appendFolded(
-            sb, "DESCRIPTION:" + escapeText("Contract #" + contract.getIdentifier() + " starts"));
-        sb.append("STATUS:CONFIRMED\r\n");
-        sb.append("TRANSP:TRANSPARENT\r\n");
-        sb.append("END:VEVENT\r\n");
-      }
+      sb.append("BEGIN:VEVENT\r\n");
+      appendFolded(sb, "UID:contract-start-" + contract.getIdentifier() + "@buurman.app");
+      sb.append("DTSTART;VALUE=DATE:")
+          .append(contract.getStartDate().format(DATE_FORMAT))
+          .append("\r\n");
+      appendFolded(sb, "SUMMARY:" + escapeText("Contract Start - " + propertyLabel));
+      appendFolded(
+          sb, "DESCRIPTION:" + escapeText("Contract #" + contract.getIdentifier() + " starts"));
+      sb.append("STATUS:CONFIRMED\r\n");
+      sb.append("TRANSP:TRANSPARENT\r\n");
+      sb.append("END:VEVENT\r\n");
 
       if (contract.getEndDate().isPresent()) {
         sb.append("BEGIN:VEVENT\r\n");
@@ -366,7 +363,7 @@ public class CalendarFeedService {
         if (p == null) {
           p = propertyRepository.findByIdAndTeamId(pId, teamId).orElse(null);
         }
-        String name = p != null && p.getStreet() != null ? p.getStreet() : "Property";
+        String name = p != null ? p.getStreet() : "Property";
         yield "Buurman - " + name + " Payments";
       }
       case TENANT_PAYMENTS -> {
@@ -387,12 +384,8 @@ public class CalendarFeedService {
   }
 
   private String buildSummary(@Nullable Property property) {
-    if (property != null && property.getStreet() != null) {
-      String summary = "Rent Due - " + property.getStreet();
-      if (property.getCity() != null) {
-        summary += ", " + property.getCity();
-      }
-      return summary;
+    if (property != null) {
+      return "Rent Due - %s, %s".formatted(property.getStreet(), property.getCity());
     }
     return "Rent Payment Due";
   }
@@ -403,18 +396,16 @@ public class CalendarFeedService {
       @Nullable Property property,
       @Nullable Tenant tenant) {
     StringBuilder desc = new StringBuilder();
-    if (payment.getAmount() != null) {
-      String currency = payment.getCurrency();
-      desc.append("Amount: ")
-          .append(currency)
-          .append(" ")
-          .append(payment.getAmount().toPlainString());
-    }
+    String currency = payment.getCurrency();
+    desc.append("Amount: ")
+        .append(currency)
+        .append(" ")
+        .append(payment.getAmount().toPlainString());
     if (tenant != null) {
       desc.append("\\nTenant: ").append(tenant.getFirstName());
       tenant.getLastName().ifPresent(n -> desc.append(" ").append(n));
     }
-    if (property != null && property.getStreet() != null) {
+    if (property != null) {
       desc.append("\\nProperty: ").append(property.getStreet());
     }
     if (contract != null) {
@@ -445,17 +436,17 @@ public class CalendarFeedService {
                 .orElse(null);
 
         StringBuilder label = new StringBuilder();
-        if (property != null && property.getStreet() != null) {
+        if (property != null) {
           label.append(property.getStreet());
         }
         if (tenant != null) {
-          if (label.length() > 0) {
+          if (!label.isEmpty()) {
             label.append(" - ");
           }
           label.append(tenant.getFirstName());
           tenant.getLastName().ifPresent(n -> label.append(" ").append(n));
         }
-        entityLabel = label.length() > 0 ? label.toString() : contract.getIdentifier();
+        entityLabel = !label.isEmpty() ? label.toString() : contract.getIdentifier();
       }
     }
 
@@ -465,11 +456,7 @@ public class CalendarFeedService {
       if (propOpt.isPresent()) {
         Property property = propOpt.get();
         propertyIdentifier = property.getIdentifier();
-        entityLabel =
-            property.getStreet() != null ? property.getStreet() : property.getIdentifier();
-        if (property.getCity() != null) {
-          entityLabel += ", " + property.getCity();
-        }
+        entityLabel = property.getStreet() + ", " + property.getCity();
       }
     }
 
@@ -499,7 +486,7 @@ public class CalendarFeedService {
         feed.getEnabled(),
         feedUrl,
         feed.getCreatedAt(),
-        Optional.ofNullable(feed.getUpdatedAt()));
+        Optional.of(feed.getUpdatedAt()));
   }
 
   private void verifyOwnership(CalendarFeed feed, UserPrincipal principal) {
@@ -511,9 +498,6 @@ public class CalendarFeedService {
   }
 
   private static String escapeText(String text) {
-    if (text == null) {
-      return "";
-    }
     return text.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,");
   }
 

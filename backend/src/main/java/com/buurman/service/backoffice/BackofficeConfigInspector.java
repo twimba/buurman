@@ -209,12 +209,12 @@ public class BackofficeConfigInspector {
 
   private void addEntry(
       List<ConfigEntry> entries, String category, String key, @Nullable String value) {
-    entries.add(new ConfigEntry(category, key, value != null ? value : "\u2014"));
+    entries.add(new ConfigEntry(category, key, value != null ? value : "—"));
   }
 
   private String obfuscate(String fieldName, @Nullable String value) {
     if (value == null || value.isBlank()) {
-      return "\u2014";
+      return "—";
     }
     String lowerField = fieldName.toLowerCase(Locale.ROOT);
     for (String keyword : SENSITIVE_KEYWORDS) {

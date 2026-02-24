@@ -1,6 +1,5 @@
 package com.buurman.dto.request;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.NotBlank;
@@ -13,8 +12,4 @@ public record UpdateUserProfileRequest(
     @Pattern(
             regexp = "^\\+[1-9]\\d{1,14}$",
             message = "Phone must be in E.164 format (e.g. +31612345678)")
-        Optional<String> phone) {
-  public UpdateUserProfileRequest {
-    phone = Objects.requireNonNullElse(phone, Optional.empty());
-  }
-}
+        Optional<String> phone) {}

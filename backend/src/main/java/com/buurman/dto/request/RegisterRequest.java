@@ -15,7 +15,6 @@ public record RegisterRequest(
     Optional<String> invitationToken,
     Optional<String> registrationInvitationCode) {
   public RegisterRequest {
-    invitationToken = Objects.requireNonNullElse(invitationToken, Optional.empty());
     registrationInvitationCode =
         Objects.requireNonNullElse(registrationInvitationCode, Optional.empty());
   }

@@ -1,6 +1,5 @@
 package com.buurman.dto.request;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,9 +10,4 @@ public record UploadDocumentRequest(
     @NotBlank(message = "Entity type is required") String entityType,
     @NotNull(message = "Entity ID is required") UUID entityId,
     Optional<String> title,
-    Optional<String> notes) {
-  public UploadDocumentRequest {
-    title = Objects.requireNonNullElse(title, Optional.empty());
-    notes = Objects.requireNonNullElse(notes, Optional.empty());
-  }
-}
+    Optional<String> notes) {}

@@ -187,10 +187,10 @@ public class ContractRentPeriodService {
     // Recalculate previous period's effective_to
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(contract.getId(), teamId, request.effectiveFrom());
-    if (previousPeriod.isPresent()) {
-      rentPeriodRepository.setEffectiveTo(
-          previousPeriod.get().getId(), teamId, request.effectiveFrom().minusDays(1));
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            rentPeriodRepository.setEffectiveTo(
+                contractRentPeriod.getId(), teamId, request.effectiveFrom().minusDays(1)));
 
     syncContractRentAmount(contract, teamId, principal.getUserId());
 
@@ -242,23 +242,23 @@ public class ContractRentPeriodService {
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(
             contract.getId(), teamId, period.getEffectiveFrom());
-    if (previousPeriod.isPresent()) {
-      rentPeriodRepository.setEffectiveTo(previousPeriod.get().getId(), teamId, null);
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            rentPeriodRepository.setEffectiveTo(contractRentPeriod.getId(), teamId, null));
 
     rentPeriodRepository.softDeleteByIdAndTeamId(period.getId(), teamId);
 
     syncContractRentAmount(contract, teamId, principal.getUserId());
 
     // Update PENDING payments: revert to previous period's amount
-    if (previousPeriod.isPresent()) {
-      updatePendingPayments(
-          contract.getId(),
-          teamId,
-          period.getEffectiveFrom(),
-          previousPeriod.get().getRentAmount(),
-          principal.getUserId());
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            updatePendingPayments(
+                contract.getId(),
+                teamId,
+                period.getEffectiveFrom(),
+                contractRentPeriod.getRentAmount(),
+                principal.getUserId()));
 
     // Audit
     auditService.logDelete(teamId, "CONTRACT", contract.getId(), principal.getUserId(), period);

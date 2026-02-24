@@ -27,7 +27,7 @@ public class NotificationOutboxRepository {
   private final NotificationOutboxRecordMapper mapper;
   private final Clock clock;
 
-  public NotificationOutbox save(NotificationOutbox outbox) {
+  public void save(NotificationOutbox outbox) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
     LocalDateTime createdAt = LocalDateTime.ofInstant(outbox.getCreatedAt(), UTC);
@@ -49,8 +49,6 @@ public class NotificationOutboxRepository {
     outbox.setStatus(OutboxStatus.PENDING);
     outbox.setRetryCount(0);
     outbox.setCreatedAt(createdAt.toInstant(UTC));
-
-    return outbox;
   }
 
   public List<NotificationOutbox> findPendingBatch(int batchSize) {

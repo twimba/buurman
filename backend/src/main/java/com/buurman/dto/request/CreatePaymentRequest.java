@@ -2,7 +2,6 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.NotBlank;
@@ -16,10 +15,4 @@ public record CreatePaymentRequest(
     @NotNull(message = "Due date is required") LocalDate dueDate,
     Optional<String> notes,
     Optional<Boolean> markAsPaid,
-    Optional<LocalDate> paymentDate) {
-  public CreatePaymentRequest {
-    notes = Objects.requireNonNullElse(notes, Optional.empty());
-    markAsPaid = Objects.requireNonNullElse(markAsPaid, Optional.empty());
-    paymentDate = Objects.requireNonNullElse(paymentDate, Optional.empty());
-  }
-}
+    Optional<LocalDate> paymentDate) {}

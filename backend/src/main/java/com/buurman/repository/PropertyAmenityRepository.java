@@ -58,7 +58,7 @@ public class PropertyAmenityRepository {
         .orElseThrow(() -> new NotFoundException("Property amenity not found"));
   }
 
-  public PropertyAmenity save(PropertyAmenity pa) {
+  public void save(PropertyAmenity pa) {
     LocalDateTime now = LocalDateTime.now(clock);
 
     if (pa.getId() == null) {
@@ -97,8 +97,6 @@ public class PropertyAmenityRepository {
 
       pa.setUpdatedAt(updatedAt.toInstant(UTC));
     }
-
-    return pa;
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

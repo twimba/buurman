@@ -118,7 +118,7 @@ public class BackofficeFeatureFlagController {
       }
 
       String identity =
-          FlagsmithAdminService.buildIdentity(
+          FeatureFlagService.buildIdentity(
               Objects.requireNonNull(team.getIdentifier()),
               Objects.requireNonNull(user.getIdentifier()));
 
@@ -177,7 +177,7 @@ public class BackofficeFeatureFlagController {
       @PathVariable String flagName,
       @RequestBody UpdateFeatureFlagRequest request) {
 
-    String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
 
     // Find the feature ID from the global feature states
     FeatureStateInfo globalState =
@@ -234,7 +234,7 @@ public class BackofficeFeatureFlagController {
       @PathVariable String teamIdentifier,
       @PathVariable String flagName) {
 
-    String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
 
     FeatureStateInfo globalState =
         flagsmithAdminService

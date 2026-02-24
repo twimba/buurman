@@ -1,7 +1,6 @@
 package com.buurman.service.notification;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,13 +18,6 @@ public record SendNotificationRequest(
     String templateName,
     Map<String, Object> templateVariables,
     UUID createdBy) {
-  public SendNotificationRequest {
-    teamId = Objects.requireNonNullElse(teamId, Optional.empty());
-    recipientUserId = Objects.requireNonNullElse(recipientUserId, Optional.empty());
-    recipientTenantId = Objects.requireNonNullElse(recipientTenantId, Optional.empty());
-    recipientEmail = Objects.requireNonNullElse(recipientEmail, Optional.empty());
-    recipientPhone = Objects.requireNonNullElse(recipientPhone, Optional.empty());
-  }
 
   public static Builder builder() {
     return new Builder();

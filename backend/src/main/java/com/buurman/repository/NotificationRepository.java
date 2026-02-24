@@ -307,7 +307,7 @@ public class NotificationRepository {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .flatMap(r -> mapper.toDomain(r));
+        .flatMap(mapper::toDomain);
   }
 
   public Notification getByIdentifierUnscoped(String identifier) {

@@ -196,13 +196,7 @@ public class TenantRepository {
             "lastName", TENANTS.LAST_NAME,
             "email", TENANTS.EMAIL);
     return PaginationHelper.paginate(
-        dsl,
-        TENANTS,
-        condition,
-        sortableFields,
-        TENANTS.CREATED_AT,
-        pageRequest,
-        r -> mapper.toDomain(r));
+        dsl, TENANTS, condition, sortableFields, TENANTS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
   public List<Tenant> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

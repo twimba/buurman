@@ -213,13 +213,7 @@ public class UserRepository {
             "createdAt", USERS.CREATED_AT);
 
     return PaginationHelper.paginate(
-        dsl,
-        USERS,
-        condition,
-        sortableFields,
-        USERS.CREATED_AT,
-        pageRequest,
-        r -> mapper.toDomain(r));
+        dsl, USERS, condition, sortableFields, USERS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
   public Optional<User> findByIdentifierUnscoped(String identifier) {

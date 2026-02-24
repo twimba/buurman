@@ -23,11 +23,9 @@ public class TeamMembershipAspect {
   @Before("@annotation(requiresTeamRole)")
   public void checkTeamRole(JoinPoint joinPoint, RequiresTeamRole requiresTeamRole) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal)) {
+    if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal principal)) {
       throw new InsufficientPermissionsException("Authentication required");
     }
-
-    UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
 
     // Check if user has team membership
     if (!principal.hasTeam()) {

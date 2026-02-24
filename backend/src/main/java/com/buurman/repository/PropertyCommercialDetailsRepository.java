@@ -34,7 +34,7 @@ public class PropertyCommercialDetailsRepository {
         .map(this::toDomain);
   }
 
-  public PropertyCommercialDetails save(PropertyCommercialDetails details) {
+  public void save(PropertyCommercialDetails details) {
     LocalDateTime now = LocalDateTime.now(clock);
 
     if (details.getId() == null) {
@@ -125,7 +125,6 @@ public class PropertyCommercialDetailsRepository {
           .execute();
       details.setUpdatedAt(now.toInstant(UTC));
     }
-    return details;
   }
 
   public void deleteByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {

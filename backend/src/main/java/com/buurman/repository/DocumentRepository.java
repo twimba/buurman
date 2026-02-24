@@ -234,7 +234,7 @@ public class DocumentRepository {
         sortableFields,
         DOCUMENTS.UPLOADED_AT,
         pageRequest,
-        r -> mapper.toDomain(r));
+        mapper::toDomain);
   }
 
   public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {

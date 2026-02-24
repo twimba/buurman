@@ -2,7 +2,6 @@ package com.buurman.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,12 +15,12 @@ public record GenerateReportRequest(
     @NotNull LocalDate endDate,
     Optional<List<UUID>> propertyIds,
     Optional<Boolean> includeDocuments) {
-  public GenerateReportRequest {
-    propertyIds = Objects.requireNonNullElse(propertyIds, Optional.empty());
-    includeDocuments = Objects.requireNonNullElse(includeDocuments, Optional.empty());
-  }
 
-  @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
+  // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
+  // @NotNull fails — null guards prevent NPE in that case.
+  @AssertTrue(message = "End date must be after start date")
+  @SuppressWarnings("ConstantConditions")
+  public boolean isEndDateAfterStartDate() {
     return endDate == null || startDate == null || !endDate.isBefore(startDate);
   }
 

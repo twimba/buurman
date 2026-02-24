@@ -354,28 +354,19 @@ public class ContractBookletExporter {
     appendField(
         html, "City", escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
     html.append("</tr><tr>");
-    appendField(
-        html, "Country", property.getCountry() != null ? escapeHtml(property.getCountry()) : "—");
-    appendField(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendField(html, "Country", escapeHtml(property.getCountry()));
+    appendField(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Category",
-        formatEnumValue(
-            property.getPropertyCategory() != null ? property.getPropertyCategory().name() : ""));
+    appendField(html, "Category", formatEnumValue(property.getPropertyCategory().name()));
     appendField(html, "Property ID", property.getIdentifier());
     html.append("</tr><tr>");
-    String area =
-        property.getAreaValue() != null
-            ? property.getAreaValue()
-                + " "
-                + (property.getAreaUnit() != null ? property.getAreaUnit() : "m²")
-            : "—";
-    appendField(html, "Area", area);
+    appendField(
+        html,
+        "Area",
+        property
+            .getAreaValue()
+            .map(av -> "%s %s".formatted(av, property.getAreaUnit().orElse("")))
+            .orElse("–"));
     html.append("</tr>");
     html.append("</table>");
 

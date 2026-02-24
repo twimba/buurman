@@ -531,7 +531,7 @@ public class PropertyRepository {
         sortableFields,
         PROPERTIES.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain(r));
+        mapper::toDomain);
   }
 
   public List<Property> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

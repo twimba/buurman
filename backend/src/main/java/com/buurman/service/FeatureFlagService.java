@@ -163,8 +163,12 @@ public class FeatureFlagService {
   }
 
   private String buildIdentity(UserPrincipal principal) {
-    return "team:%s_user:%s"
-        .formatted(principal.getTeamIdentifier().orElse(null), principal.getUserIdentifier());
+    return buildIdentity(
+        principal.getTeamIdentifier().orElseThrow(), principal.getUserIdentifier());
+  }
+
+  public static String buildIdentity(String teamIdentifier, String userIdentifier) {
+    return "team:%s_user:%s".formatted(teamIdentifier, userIdentifier);
   }
 
   private Map<String, Object> buildTraits(UserPrincipal principal) {

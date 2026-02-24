@@ -69,7 +69,6 @@ twilio:
 
 notification:
   outbox:
-    poll-interval-ms: 60000
     batch-size: 10
     max-retries: 1
 
@@ -90,5 +89,4 @@ scheduling:
 buurman:
   demo:
     enabled: false
-    api-key: test
     cron: "0 0 0 1 1 *"

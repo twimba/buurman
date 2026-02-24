@@ -1,7 +1,6 @@
 package com.buurman.dto.request;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Positive;
@@ -19,21 +18,4 @@ public record AgriculturalDetailsRequest(
     Optional<Boolean> hasOutbuildings,
     Optional<String> outbuildingDetails,
     Optional<String> currentUse,
-    Optional<String> zoningClassification) {
-
-  public AgriculturalDetailsRequest {
-    totalLandAreaValue = Objects.requireNonNullElse(totalLandAreaValue, Optional.empty());
-    totalLandAreaUnit = Objects.requireNonNullElse(totalLandAreaUnit, Optional.empty());
-    arableAreaValue = Objects.requireNonNullElse(arableAreaValue, Optional.empty());
-    arableAreaUnit = Objects.requireNonNullElse(arableAreaUnit, Optional.empty());
-    soilType = Objects.requireNonNullElse(soilType, Optional.empty());
-    hasWaterRights = Objects.requireNonNullElse(hasWaterRights, Optional.empty());
-    waterSource = Objects.requireNonNullElse(waterSource, Optional.empty());
-    irrigationType = Objects.requireNonNullElse(irrigationType, Optional.empty());
-    fencingType = Objects.requireNonNullElse(fencingType, Optional.empty());
-    hasOutbuildings = Objects.requireNonNullElse(hasOutbuildings, Optional.empty());
-    outbuildingDetails = Objects.requireNonNullElse(outbuildingDetails, Optional.empty());
-    currentUse = Objects.requireNonNullElse(currentUse, Optional.empty());
-    zoningClassification = Objects.requireNonNullElse(zoningClassification, Optional.empty());
-  }
-}
+    Optional<String> zoningClassification) {}

@@ -35,7 +35,6 @@ public class BackofficeJwtAuthenticationConverter
     return new BackofficeAuthentication(principal, authorities);
   }
 
-  @SuppressWarnings("unchecked")
   private List<SimpleGrantedAuthority> extractRealmRoles(Jwt jwt) {
     Map<String, Object> realmAccess = jwt.getClaim("realm_access");
     if (realmAccess == null) {
