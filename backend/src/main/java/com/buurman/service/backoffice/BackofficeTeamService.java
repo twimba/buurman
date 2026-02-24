@@ -73,9 +73,9 @@ public class BackofficeTeamService {
                 m -> {
                   User u = usersById.get(m.getUserId());
                   return new MemberInfo(
-                      Optional.ofNullable(u != null ? u.getEmail() : null),
-                      Optional.ofNullable(u != null ? u.getFirstName() : null),
-                      Optional.ofNullable(u != null ? u.getLastName() : null),
+                      Optional.ofNullable(u).map(User::getEmail),
+                      Optional.ofNullable(u).map(User::getFirstName),
+                      Optional.ofNullable(u).map(User::getLastName),
                       m.getRole(),
                       m.isOwner(),
                       m.getJoinedAt(),
@@ -135,7 +135,7 @@ public class BackofficeTeamService {
 
     log.info(
         "Backoffice user {} updated team {} name to '{}'",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         request.name());
     return toListResponse(team);
@@ -148,7 +148,7 @@ public class BackofficeTeamService {
     teamRepository.softDeleteById(team.getId());
     log.info(
         "Backoffice user {} soft-deleted team {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         team.getName());
   }

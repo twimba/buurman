@@ -37,7 +37,7 @@ public class TransactionCsvExporter {
               t.type(),
               t.description(),
               t.property(),
-              t.category() != null ? t.category() : "",
+              t.category().orElse(""),
               t.amount().toString(),
               t.currency()
             });

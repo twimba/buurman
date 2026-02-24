@@ -225,8 +225,8 @@ public class PhotoService {
     Optional<String> oldTitle = photo.getTitle();
     Optional<String> oldNotes = photo.getNotes();
 
-    photo.setTitle(Optional.ofNullable(request.title()));
-    photo.setNotes(Optional.ofNullable(request.notes()));
+    photo.setTitle(request.title());
+    photo.setNotes(request.notes());
 
     photoRepository.save(photo);
 
@@ -235,15 +235,15 @@ public class PhotoService {
     Map<String, Object> oldValues = new java.util.HashMap<>();
     Map<String, Object> newValues = new java.util.HashMap<>();
 
-    if (!java.util.Objects.equals(oldTitle.orElse(null), request.title())) {
-      changedFields.put("title", request.title());
+    if (!java.util.Objects.equals(oldTitle.orElse(null), request.title().orElse(null))) {
+      changedFields.put("title", request.title().orElse(null));
       oldValues.put("title", oldTitle.orElse(null));
-      newValues.put("title", request.title());
+      newValues.put("title", request.title().orElse(null));
     }
-    if (!java.util.Objects.equals(oldNotes.orElse(null), request.notes())) {
-      changedFields.put("notes", request.notes());
+    if (!java.util.Objects.equals(oldNotes.orElse(null), request.notes().orElse(null))) {
+      changedFields.put("notes", request.notes().orElse(null));
       oldValues.put("notes", oldNotes.orElse(null));
-      newValues.put("notes", request.notes());
+      newValues.put("notes", request.notes().orElse(null));
     }
 
     if (!changedFields.isEmpty()) {

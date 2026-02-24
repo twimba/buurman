@@ -44,7 +44,7 @@ public class UserTeamService {
     User user = userRepository.getById(principal.getUserId());
 
     @Nullable String oldPhone = user.getPhone().orElse(null);
-    @Nullable String newPhone = request.phone();
+    @Nullable String newPhone = request.phone().orElse(null);
 
     // Validate phone against policy before saving
     if (newPhone != null && !newPhone.isBlank()) {
@@ -53,7 +53,7 @@ public class UserTeamService {
 
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
-    user.setPhone(Optional.ofNullable(newPhone));
+    user.setPhone(request.phone());
 
     // If phone changed or removed, clear verification
     boolean phoneChanged = !java.util.Objects.equals(oldPhone, newPhone);

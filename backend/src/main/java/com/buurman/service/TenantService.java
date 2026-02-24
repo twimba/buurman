@@ -6,7 +6,6 @@ import java.net.URL;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,15 +75,18 @@ public class TenantService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse createTenant(CreateTenantRequest request, UserPrincipal principal) {
-    if (request.email() != null && !request.email().isBlank()) {
-      tenantRepository
-          .findByEmailAndTeamId(request.email(), principal.requireTeamId())
-          .ifPresent(
-              existing -> {
-                throw new IllegalArgumentException(
-                    "Tenant with email " + request.email() + " already exists");
-              });
-    }
+    request
+        .email()
+        .filter(e -> !e.isBlank())
+        .ifPresent(
+            email ->
+                tenantRepository
+                    .findByEmailAndTeamId(email, principal.requireTeamId())
+                    .ifPresent(
+                        existing -> {
+                          throw new IllegalArgumentException(
+                              "Tenant with email " + email + " already exists");
+                        }));
 
     Tenant tenant = tenantMapper.toEntity(request);
     tenant.setIdentifier(newTenantId().value());
@@ -145,19 +147,20 @@ public class TenantService {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    if (request.email() != null
-        && !request.email().isBlank()
-        && !Objects.equals(tenant.getEmail(), request.email())) {
-      tenantRepository
-          .findByEmailAndTeamId(request.email(), principal.requireTeamId())
-          .ifPresent(
-              existing -> {
-                if (!existing.getId().equals(tenant.getId())) {
-                  throw new IllegalArgumentException(
-                      "Tenant with email " + request.email() + " already exists");
-                }
-              });
-    }
+    request
+        .email()
+        .filter(e -> !e.isBlank() && !tenant.getEmail().filter(e::equals).isPresent())
+        .ifPresent(
+            email ->
+                tenantRepository
+                    .findByEmailAndTeamId(email, principal.requireTeamId())
+                    .ifPresent(
+                        existing -> {
+                          if (!existing.getId().equals(tenant.getId())) {
+                            throw new IllegalArgumentException(
+                                "Tenant with email " + email + " already exists");
+                          }
+                        }));
 
     Tenant oldTenant = cloneTenant(tenant);
     tenantMapper.updateEntity(tenant, request);
@@ -225,8 +228,7 @@ public class TenantService {
     history.setTeamId(principal.requireTeamId());
     history.setPropertyId(property.getId());
     history.setTenantId(tenant.getId());
-    history.setMovedInAt(
-        Optional.of(request.movedInAt() != null ? request.movedInAt() : clock.instant()));
+    history.setMovedInAt(Optional.of(request.movedInAt().orElseGet(clock::instant)));
     history.setActionType(PropertyTenantHistory.ActionType.LINKED);
     history.setPerformedBy(principal.getUserId());
     history.setPerformedAt(clock.instant());

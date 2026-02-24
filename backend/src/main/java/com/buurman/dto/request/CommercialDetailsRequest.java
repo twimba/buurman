@@ -1,23 +1,40 @@
 package com.buurman.dto.request;
 
 import java.math.BigDecimal;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 
 public record CommercialDetailsRequest(
-    @Nullable @Positive(message = "Usable area must be positive") BigDecimal usableAreaValue,
-    @Nullable String usableAreaUnit,
-    @Nullable @Positive(message = "Common area must be positive") BigDecimal commonAreaValue,
-    @Nullable String commonAreaUnit,
-    @Nullable Integer floorLevel,
-    @Nullable @Positive(message = "Ceiling height must be positive") BigDecimal ceilingHeightM,
-    @Nullable Boolean hasStorefront,
-    @Nullable Boolean hasSignageRights,
-    @Nullable String zoningClassification,
-    @Nullable @Positive(message = "Max occupancy must be positive") Integer maxOccupancy,
-    @Nullable @Min(value = 0, message = "Restroom count must be non-negative") Integer restroomCount,
-    @Nullable Boolean hasKitchenFacility,
-    @Nullable Boolean accessibilityCompliant) {}
+    @Positive(message = "Usable area must be positive") Optional<BigDecimal> usableAreaValue,
+    Optional<String> usableAreaUnit,
+    @Positive(message = "Common area must be positive") Optional<BigDecimal> commonAreaValue,
+    Optional<String> commonAreaUnit,
+    Optional<Integer> floorLevel,
+    @Positive(message = "Ceiling height must be positive") Optional<BigDecimal> ceilingHeightM,
+    Optional<Boolean> hasStorefront,
+    Optional<Boolean> hasSignageRights,
+    Optional<String> zoningClassification,
+    @Positive(message = "Max occupancy must be positive") Optional<Integer> maxOccupancy,
+    @Min(value = 0, message = "Restroom count must be non-negative") Optional<Integer> restroomCount,
+    Optional<Boolean> hasKitchenFacility,
+    Optional<Boolean> accessibilityCompliant) {
+
+  public CommercialDetailsRequest {
+    usableAreaValue = Objects.requireNonNullElse(usableAreaValue, Optional.empty());
+    usableAreaUnit = Objects.requireNonNullElse(usableAreaUnit, Optional.empty());
+    commonAreaValue = Objects.requireNonNullElse(commonAreaValue, Optional.empty());
+    commonAreaUnit = Objects.requireNonNullElse(commonAreaUnit, Optional.empty());
+    floorLevel = Objects.requireNonNullElse(floorLevel, Optional.empty());
+    ceilingHeightM = Objects.requireNonNullElse(ceilingHeightM, Optional.empty());
+    hasStorefront = Objects.requireNonNullElse(hasStorefront, Optional.empty());
+    hasSignageRights = Objects.requireNonNullElse(hasSignageRights, Optional.empty());
+    zoningClassification = Objects.requireNonNullElse(zoningClassification, Optional.empty());
+    maxOccupancy = Objects.requireNonNullElse(maxOccupancy, Optional.empty());
+    restroomCount = Objects.requireNonNullElse(restroomCount, Optional.empty());
+    hasKitchenFacility = Objects.requireNonNullElse(hasKitchenFacility, Optional.empty());
+    accessibilityCompliant = Objects.requireNonNullElse(accessibilityCompliant, Optional.empty());
+  }
+}

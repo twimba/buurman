@@ -273,16 +273,17 @@ public class ExpenseRepository {
         .map(r -> r.get(EXPENSES.CURRENCY));
   }
 
-  public @Nullable LocalDate findEarliestExpenseDate(UUID teamId) {
-    return dsl.select(min(EXPENSES.EXPENSE_DATE))
-        .from(EXPENSES)
-        .where(
-            EXPENSES
-                .TEAM_ID
-                .eq(teamId)
-                .and(EXPENSES.DELETED_AT.isNull())
-                .and(EXPENSES.EXPENSE_DATE.isNotNull()))
-        .fetchOne(min(EXPENSES.EXPENSE_DATE));
+  public Optional<LocalDate> findEarliestExpenseDate(UUID teamId) {
+    return Optional.ofNullable(
+        dsl.select(min(EXPENSES.EXPENSE_DATE))
+            .from(EXPENSES)
+            .where(
+                EXPENSES
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(EXPENSES.DELETED_AT.isNull())
+                    .and(EXPENSES.EXPENSE_DATE.isNotNull()))
+            .fetchOne(min(EXPENSES.EXPENSE_DATE)));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

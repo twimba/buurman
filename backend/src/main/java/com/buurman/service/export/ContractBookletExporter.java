@@ -173,8 +173,7 @@ public class ContractBookletExporter {
             .map(
                 t ->
                     escapeHtml(t.getFirstName())
-                        + " "
-                        + (t.getLastName() != null ? escapeHtml(t.getLastName()) : ""))
+                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
             .orElse("—");
 
     PaymentAggregation agg = aggregatePayments(payments, receivedByPayment);
@@ -425,16 +424,14 @@ public class ContractBookletExporter {
 
       html.append("<div class='party-name'>");
       html.append(escapeHtml(t.getFirstName()));
-      if (t.getLastName() != null) {
-        html.append(" ").append(escapeHtml(t.getLastName()));
-      }
+      t.getLastName().ifPresent(n -> html.append(" ").append(escapeHtml(n)));
       html.append("</div>");
 
       html.append("<table class='party-details'>");
       String phone = t.getPhone().orElse(null);
-      if (t.getEmail() != null) {
+      if (t.getEmail().isPresent()) {
         html.append("<tr><td class='pd-label'>Email</td><td class='pd-value'>")
-            .append(escapeHtml(t.getEmail()))
+            .append(escapeHtml(t.getEmail().get()))
             .append("</td>");
         if (phone != null) {
           html.append("<td class='pd-label'>Phone</td><td class='pd-value'>")

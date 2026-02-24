@@ -167,11 +167,9 @@ public class PaymentService {
 
     validateCurrencyDecimals(request.amount(), request.currency());
 
-    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
+    boolean markAsPaid = request.markAsPaid().orElse(false);
     @Nullable LocalDate paymentDate =
-        markAsPaid
-            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now(clock))
-            : null;
+        markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
@@ -360,9 +358,8 @@ public class PaymentService {
     }
 
     // Validate currency decimals if amount or currency is being changed
-    BigDecimal effectiveAmount = request.amount() != null ? request.amount() : payment.getAmount();
-    String effectiveCurrency =
-        request.currency() != null ? request.currency() : payment.getCurrency();
+    BigDecimal effectiveAmount = request.amount().orElse(payment.getAmount());
+    String effectiveCurrency = request.currency().orElse(payment.getCurrency());
     validateCurrencyDecimals(effectiveAmount, effectiveCurrency);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
@@ -419,7 +416,7 @@ public class PaymentService {
       receival.setAmount(remainingBalance);
       receival.setCurrency(currency);
       receival.setReceivalDate(request.paymentDate());
-      receival.setNotes(Optional.ofNullable(request.notes()));
+      receival.setNotes(request.notes());
       receival.setCreatedBy(principal.getUserId());
       receival.setUpdatedBy(principal.getUserId());
       receival.setCreatedAt(clock.instant());
@@ -432,9 +429,7 @@ public class PaymentService {
     payment.setPaymentDate(Optional.of(request.paymentDate()));
     Payment.PaymentStatus oldStatus = payment.getStatus();
     payment.setStatus(PAID);
-    Optional.ofNullable(request.notes())
-        .filter(n -> !n.isEmpty())
-        .ifPresent(n -> payment.setNotes(Optional.of(n)));
+    request.notes().filter(n -> !n.isEmpty()).ifPresent(n -> payment.setNotes(Optional.of(n)));
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
 
@@ -509,7 +504,7 @@ public class PaymentService {
     receival.setAmount(request.amount());
     receival.setCurrency(currency);
     receival.setReceivalDate(request.receivalDate());
-    receival.setNotes(Optional.ofNullable(request.notes()));
+    receival.setNotes(request.notes());
     receival.setCreatedBy(principal.getUserId());
     receival.setUpdatedBy(principal.getUserId());
     receival.setCreatedAt(clock.instant());
@@ -597,7 +592,7 @@ public class PaymentService {
         teamId,
         request.amount(),
         request.receivalDate(),
-        request.notes(),
+        request.notes().orElse(null),
         principal.getUserId(),
         currency);
 
@@ -875,7 +870,7 @@ public class PaymentService {
                 : property.getIdentifier();
       }
       if (tenant != null) {
-        tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+        tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
       }
     }
     notificationService.sendToTeam(
@@ -917,7 +912,7 @@ public class PaymentService {
                 : property.getIdentifier();
       }
       if (tenant != null) {
-        tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+        tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
       }
     }
     String currency = payment.getCurrency();

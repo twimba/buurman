@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -640,25 +641,15 @@ public class ReportService {
   public DataDateRangeResponse getDataDateRange(UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    @Nullable LocalDate earliest = null;
+    Optional<LocalDate> earliestPayment = paymentRepository.findEarliestPaymentDate(teamId);
+    Optional<LocalDate> earliestExpense = expenseRepository.findEarliestExpenseDate(teamId);
+    Optional<LocalDate> earliestContract = contractRepository.findEarliestStartDate(teamId);
 
-    // Earliest payment date
-    @Nullable LocalDate earliestPayment = paymentRepository.findEarliestPaymentDate(teamId);
-    if (earliestPayment != null && (earliest == null || earliestPayment.isBefore(earliest))) {
-      earliest = earliestPayment;
-    }
-
-    // Earliest expense date
-    @Nullable LocalDate earliestExpense = expenseRepository.findEarliestExpenseDate(teamId);
-    if (earliestExpense != null && (earliest == null || earliestExpense.isBefore(earliest))) {
-      earliest = earliestExpense;
-    }
-
-    // Earliest contract start date
-    @Nullable LocalDate earliestContract = contractRepository.findEarliestStartDate(teamId);
-    if (earliestContract != null && (earliest == null || earliestContract.isBefore(earliest))) {
-      earliest = earliestContract;
-    }
+    Optional<LocalDate> earliest =
+        Stream.of(earliestPayment, earliestExpense, earliestContract)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .min(Comparator.naturalOrder());
 
     return new DataDateRangeResponse(earliest);
   }

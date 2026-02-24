@@ -94,14 +94,15 @@ public class BackofficeSystemInfoService {
     var git = gitPropertiesProvider.getIfAvailable();
     var build = buildPropertiesProvider.getIfAvailable();
 
+    var optGit = Optional.ofNullable(git);
     return new BuildInfo(
         appProperties.version(),
-        Optional.ofNullable(git != null ? git.getShortCommitId() : null),
-        Optional.ofNullable(git != null ? git.get("commit.id.full") : null),
-        Optional.ofNullable(git != null ? resolveGitBranch(git) : null),
-        Optional.ofNullable(git != null ? git.getCommitTime() : null),
+        optGit.map(GitProperties::getShortCommitId),
+        optGit.map(g -> g.get("commit.id.full")),
+        optGit.map(this::resolveGitBranch),
+        optGit.map(GitProperties::getCommitTime),
         git != null && Boolean.parseBoolean(git.get("dirty")),
-        Optional.ofNullable(build != null ? build.getTime() : null));
+        Optional.ofNullable(build).map(BuildProperties::getTime));
   }
 
   private @Nullable String resolveGitBranch(GitProperties git) {

@@ -55,7 +55,7 @@ public class PaymentInstructionService {
     pi.setCreatedAt(clock.instant());
     pi.setUpdatedAt(clock.instant());
 
-    if (Boolean.TRUE.equals(request.isDefault())) {
+    if (request.isDefault().orElse(false)) {
       repository.clearDefaultByTeamId(principal.requireTeamId());
     }
 
@@ -88,7 +88,7 @@ public class PaymentInstructionService {
         pi.getPaymentMethod() != null ? pi.getPaymentMethod().name() : null;
     Boolean oldIsDefault = pi.getIsDefault();
 
-    if (Boolean.TRUE.equals(request.isDefault()) && !pi.getIsDefault()) {
+    if (request.isDefault().orElse(false) && !pi.getIsDefault()) {
       repository.clearDefaultByTeamId(principal.requireTeamId());
     }
 

@@ -18,8 +18,10 @@ public interface TenantMapper {
   @Mapping(target = "activeProperties", ignore = true)
   @Mapping(target = "mainPhotoUrl", ignore = true)
   @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
+  @Mapping(target = "lastName", expression = "java(tenant.getLastName().orElse(null))")
   TenantResponse toResponse(Tenant tenant);
 
+  @Mapping(target = "lastName", expression = "java(tenant.getLastName().orElse(null))")
   TenantSummary toSummary(Tenant tenant);
 
   @Mapping(target = "id", ignore = true)

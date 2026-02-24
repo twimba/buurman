@@ -45,7 +45,7 @@ public class TeamPermissionService {
    * Validate that the user is a member of the target team. Throws CrossTeamAccessException if not.
    */
   public void validateTeamAccess(UserPrincipal principal, UUID teamId) {
-    if (principal.requireTeamId() == null) {
+    if (!principal.hasTeam()) {
       throw new TeamMembershipNotFoundException("User is not a member of any team");
     }
     if (!principal.requireTeamId().equals(teamId)) {
@@ -58,10 +58,10 @@ public class TeamPermissionService {
    * InsufficientPermissionsException if not.
    */
   public void validateRole(UserPrincipal principal, String... requiredRoles) {
-    if (principal.getRole() == null) {
+    if (principal.getRole().isEmpty()) {
       throw new InsufficientPermissionsException("Access denied: no role assigned");
     }
-    boolean hasRole = Arrays.asList(requiredRoles).contains(principal.getRole());
+    boolean hasRole = Arrays.asList(requiredRoles).contains(principal.getRole().orElse(null));
     if (!hasRole) {
       throw new InsufficientPermissionsException(
           "Access denied: requires one of " + Arrays.toString(requiredRoles));

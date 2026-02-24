@@ -20,8 +20,8 @@ public class Tenant {
   private String identifier;
   private UUID teamId;
   private String firstName;
-  private String lastName;
-  private String email;
+  @Builder.Default private Optional<String> lastName = Optional.empty();
+  @Builder.Default private Optional<String> email = Optional.empty();
   @Builder.Default private Optional<String> phone = Optional.empty();
   @Builder.Default private Optional<String> taxNumber = Optional.empty();
   @Builder.Default private Optional<String> idNumber = Optional.empty();

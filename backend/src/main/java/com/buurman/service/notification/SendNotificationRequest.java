@@ -1,6 +1,8 @@
 package com.buurman.service.notification;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -8,15 +10,23 @@ import org.jspecify.annotations.Nullable;
 import com.buurman.domain.NotificationType;
 
 public record SendNotificationRequest(
-    @Nullable UUID teamId,
+    Optional<UUID> teamId,
     NotificationType notificationType,
-    @Nullable UUID recipientUserId,
-    @Nullable UUID recipientTenantId,
-    @Nullable String recipientEmail,
-    @Nullable String recipientPhone,
+    Optional<UUID> recipientUserId,
+    Optional<UUID> recipientTenantId,
+    Optional<String> recipientEmail,
+    Optional<String> recipientPhone,
     String templateName,
     Map<String, Object> templateVariables,
     UUID createdBy) {
+  public SendNotificationRequest {
+    teamId = Objects.requireNonNullElse(teamId, Optional.empty());
+    recipientUserId = Objects.requireNonNullElse(recipientUserId, Optional.empty());
+    recipientTenantId = Objects.requireNonNullElse(recipientTenantId, Optional.empty());
+    recipientEmail = Objects.requireNonNullElse(recipientEmail, Optional.empty());
+    recipientPhone = Objects.requireNonNullElse(recipientPhone, Optional.empty());
+  }
+
   public static Builder builder() {
     return new Builder();
   }
@@ -80,12 +90,12 @@ public record SendNotificationRequest(
 
     public SendNotificationRequest build() {
       return new SendNotificationRequest(
-          teamId,
+          Optional.ofNullable(teamId),
           notificationType,
-          recipientUserId,
-          recipientTenantId,
-          recipientEmail,
-          recipientPhone,
+          Optional.ofNullable(recipientUserId),
+          Optional.ofNullable(recipientTenantId),
+          Optional.ofNullable(recipientEmail),
+          Optional.ofNullable(recipientPhone),
           templateName,
           templateVariables,
           createdBy);

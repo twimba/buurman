@@ -1,5 +1,10 @@
 package com.buurman.dto.request.backoffice;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
-public record SetLogLevelRequest(@Nullable String level) {}
+public record SetLogLevelRequest(Optional<String> level) {
+  public SetLogLevelRequest {
+    level = Objects.requireNonNullElse(level, Optional.empty());
+  }
+}

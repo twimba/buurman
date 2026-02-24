@@ -46,4 +46,35 @@ public class OptionalMappingConfig {
   public <T> Optional<T> mapObject(@Nullable T value) {
     return Optional.ofNullable(value);
   }
+
+  // Unwrappers: Optional<T> → @Nullable T, used by update mappers so that
+  // NullValuePropertyMappingStrategy.IGNORE can skip empty Optionals (they unwrap to null).
+
+  public @Nullable String unwrapString(Optional<String> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable BigDecimal unwrapBigDecimal(Optional<BigDecimal> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable LocalDate unwrapLocalDate(Optional<LocalDate> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable Integer unwrapInteger(Optional<Integer> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable Double unwrapDouble(Optional<Double> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable Boolean unwrapBoolean(Optional<Boolean> value) {
+    return value.orElse(null);
+  }
+
+  public <T> @Nullable T unwrapObject(Optional<T> value) {
+    return value.orElse(null);
+  }
 }

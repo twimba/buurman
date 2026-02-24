@@ -42,9 +42,9 @@ public class BackofficeBuurmyService {
     List<UserRepresentation> allUsers = keycloakService.listRealmUsers(search, 0, totalElements);
 
     // Sort if requested
-    if (pageRequest.sort() != null && !pageRequest.sort().isBlank()) {
-      Comparator<UserRepresentation> comparator = getComparator(pageRequest.sort());
-      if (pageRequest.direction() == SortDirection.DESC) {
+    if (pageRequest.sort().filter(s -> !s.isBlank()).isPresent()) {
+      Comparator<UserRepresentation> comparator = getComparator(pageRequest.sort().get());
+      if (pageRequest.direction().orElse(SortDirection.DESC) == SortDirection.DESC) {
         comparator = comparator.reversed();
       }
       allUsers = new ArrayList<>(allUsers);
@@ -89,13 +89,13 @@ public class BackofficeBuurmyService {
   public BuurmyResponse createBuurmy(CreateBuurmyRequest request, BackofficePrincipal principal) {
     String keycloakUserId =
         keycloakService.createRealmUser(
-            request.email(), request.username(),
+            request.email(), request.username().orElse(null),
             request.firstName(), request.lastName(),
             request.password(), request.temporaryPassword());
 
     log.info(
         "Backoffice user {} created buurmy {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         keycloakUserId,
         request.email());
 
@@ -105,26 +105,35 @@ public class BackofficeBuurmyService {
   public void disableBuurmy(String keycloakUserId, BackofficePrincipal principal) {
     validateNotSelf(keycloakUserId, principal);
     keycloakService.disableBackofficeUser(keycloakUserId);
-    log.info("Backoffice user {} disabled buurmy {}", principal.getEmail(), keycloakUserId);
+    log.info(
+        "Backoffice user {} disabled buurmy {}",
+        principal.getEmail().orElse("unknown"),
+        keycloakUserId);
   }
 
   public void enableBuurmy(String keycloakUserId, BackofficePrincipal principal) {
     validateNotSelf(keycloakUserId, principal);
     keycloakService.enableBackofficeUser(keycloakUserId);
-    log.info("Backoffice user {} enabled buurmy {}", principal.getEmail(), keycloakUserId);
+    log.info(
+        "Backoffice user {} enabled buurmy {}",
+        principal.getEmail().orElse("unknown"),
+        keycloakUserId);
   }
 
   public void deleteBuurmy(String keycloakUserId, BackofficePrincipal principal) {
     validateNotSelf(keycloakUserId, principal);
     keycloakService.deleteBackofficeUser(keycloakUserId);
-    log.info("Backoffice user {} deleted buurmy {}", principal.getEmail(), keycloakUserId);
+    log.info(
+        "Backoffice user {} deleted buurmy {}",
+        principal.getEmail().orElse("unknown"),
+        keycloakUserId);
   }
 
   public void forcePasswordUpdate(String keycloakUserId, BackofficePrincipal principal) {
     keycloakService.addRequiredUserAction(keycloakUserId, "UPDATE_PASSWORD");
     log.info(
         "Backoffice user {} forced password update for buurmy {}",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         keycloakUserId);
   }
 
@@ -132,7 +141,7 @@ public class BackofficeBuurmyService {
     keycloakService.addRequiredUserAction(keycloakUserId, "UPDATE_PROFILE");
     log.info(
         "Backoffice user {} forced profile update for buurmy {}",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         keycloakUserId);
   }
 
@@ -140,7 +149,7 @@ public class BackofficeBuurmyService {
     keycloakService.removeRequiredUserAction(keycloakUserId, "UPDATE_PASSWORD");
     log.info(
         "Backoffice user {} removed password reset for buurmy {}",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         keycloakUserId);
   }
 
@@ -148,18 +157,24 @@ public class BackofficeBuurmyService {
     keycloakService.removeRequiredUserAction(keycloakUserId, "UPDATE_PROFILE");
     log.info(
         "Backoffice user {} removed profile reset for buurmy {}",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         keycloakUserId);
   }
 
   public void verifyBuurmy(String keycloakUserId, BackofficePrincipal principal) {
     keycloakService.verifyBackofficeUser(keycloakUserId);
-    log.info("Backoffice user {} verified buurmy {}", principal.getEmail(), keycloakUserId);
+    log.info(
+        "Backoffice user {} verified buurmy {}",
+        principal.getEmail().orElse("unknown"),
+        keycloakUserId);
   }
 
   public void unverifyBuurmy(String keycloakUserId, BackofficePrincipal principal) {
     keycloakService.unverifyBackofficeUser(keycloakUserId);
-    log.info("Backoffice user {} unverified buurmy {}", principal.getEmail(), keycloakUserId);
+    log.info(
+        "Backoffice user {} unverified buurmy {}",
+        principal.getEmail().orElse("unknown"),
+        keycloakUserId);
   }
 
   private void validateNotSelf(String keycloakUserId, BackofficePrincipal principal) {

@@ -83,7 +83,7 @@ public class BackofficeNotificationService {
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         original.getNotificationType(),
         original.getChannel());

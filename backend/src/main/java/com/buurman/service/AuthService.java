@@ -92,10 +92,11 @@ public class AuthService {
   public UserResponse register(RegisterRequest request) {
     // Check if invitation code is required
     boolean invitationRequired = featureFlagService.isEnabled(FeatureFlags.INVITATION_REQUIRED);
-    String registrationCode = request.registrationInvitationCode();
+    String registrationCode =
+        request.registrationInvitationCode().filter(s -> !s.isBlank()).orElse(null);
 
     if (invitationRequired) {
-      if (registrationCode == null || registrationCode.isBlank()) {
+      if (registrationCode == null) {
         throw new BadRequestException("Invitation code is required");
       }
       if (!registrationInvitationService.validateCode(registrationCode).valid()) {
@@ -159,9 +160,11 @@ public class AuthService {
       createAndSendVerificationCode(user, code);
 
       // Auto-accept invitation if token provided
-      if (request.invitationToken() != null && !request.invitationToken().isBlank()) {
-        acceptInvitationForNewUser(request.invitationToken(), user);
-      }
+      final User finalUser = user;
+      request
+          .invitationToken()
+          .filter(t -> !t.isBlank())
+          .ifPresent(token -> acceptInvitationForNewUser(token, finalUser));
 
       metricsService.incrementCounter("team.registered.total");
       metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");

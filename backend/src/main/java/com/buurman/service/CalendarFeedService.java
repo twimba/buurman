@@ -69,33 +69,42 @@ public class CalendarFeedService {
 
     switch (request.feedType()) {
       case CONTRACT -> {
-        if (request.contractIdentifier() == null || request.contractIdentifier().isBlank()) {
-          throw new IllegalArgumentException(
-              "contractIdentifier is required for CONTRACT feed type");
-        }
+        String contractIdStr =
+            request
+                .contractIdentifier()
+                .filter(s -> !s.isBlank())
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "contractIdentifier is required for CONTRACT feed type"));
         Contract contract =
-            contractRepository.getByIdentifierAndTeamId(
-                request.contractIdentifier(), principal.requireTeamId());
+            contractRepository.getByIdentifierAndTeamId(contractIdStr, principal.requireTeamId());
         contractId = Optional.of(contract.getId());
       }
       case PROPERTY_PAYMENTS -> {
-        if (request.propertyIdentifier() == null || request.propertyIdentifier().isBlank()) {
-          throw new IllegalArgumentException(
-              "propertyIdentifier is required for PROPERTY_PAYMENTS feed type");
-        }
+        String propertyIdStr =
+            request
+                .propertyIdentifier()
+                .filter(s -> !s.isBlank())
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "propertyIdentifier is required for PROPERTY_PAYMENTS feed type"));
         Property property =
-            propertyRepository.getByIdentifierAndTeamId(
-                request.propertyIdentifier(), principal.requireTeamId());
+            propertyRepository.getByIdentifierAndTeamId(propertyIdStr, principal.requireTeamId());
         propertyId = Optional.of(property.getId());
       }
       case TENANT_PAYMENTS -> {
-        if (request.tenantIdentifier() == null || request.tenantIdentifier().isBlank()) {
-          throw new IllegalArgumentException(
-              "tenantIdentifier is required for TENANT_PAYMENTS feed type");
-        }
+        String tenantIdStr =
+            request
+                .tenantIdentifier()
+                .filter(s -> !s.isBlank())
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "tenantIdentifier is required for TENANT_PAYMENTS feed type"));
         Tenant tenant =
-            tenantRepository.getByIdentifierAndTeamId(
-                request.tenantIdentifier(), principal.requireTeamId());
+            tenantRepository.getByIdentifierAndTeamId(tenantIdStr, principal.requireTeamId());
         tenantId = Optional.of(tenant.getId());
       }
       case ALL_PAYMENTS -> {
@@ -370,7 +379,8 @@ public class CalendarFeedService {
         if (t == null) {
           t = tenantRepository.findByIdAndTeamId(tId, teamId).orElse(null);
         }
-        String name = t != null ? t.getFirstName() + " " + t.getLastName() : "Tenant";
+        String name =
+            t != null ? t.getFirstName() + t.getLastName().map(n -> " " + n).orElse("") : "Tenant";
         yield "Buurman - " + name + " Payments";
       }
     };
@@ -401,10 +411,8 @@ public class CalendarFeedService {
           .append(payment.getAmount().toPlainString());
     }
     if (tenant != null) {
-      desc.append("\\nTenant: ")
-          .append(tenant.getFirstName())
-          .append(" ")
-          .append(tenant.getLastName());
+      desc.append("\\nTenant: ").append(tenant.getFirstName());
+      tenant.getLastName().ifPresent(n -> desc.append(" ").append(n));
     }
     if (property != null && property.getStreet() != null) {
       desc.append("\\nProperty: ").append(property.getStreet());
@@ -444,7 +452,8 @@ public class CalendarFeedService {
           if (label.length() > 0) {
             label.append(" - ");
           }
-          label.append(tenant.getFirstName()).append(" ").append(tenant.getLastName());
+          label.append(tenant.getFirstName());
+          tenant.getLastName().ifPresent(n -> label.append(" ").append(n));
         }
         entityLabel = label.length() > 0 ? label.toString() : contract.getIdentifier();
       }
@@ -470,7 +479,7 @@ public class CalendarFeedService {
       if (tenantOpt.isPresent()) {
         Tenant tenant = tenantOpt.get();
         tenantIdentifier = tenant.getIdentifier();
-        entityLabel = tenant.getFirstName() + " " + tenant.getLastName();
+        entityLabel = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
       }
     }
 
@@ -495,7 +504,7 @@ public class CalendarFeedService {
 
   private void verifyOwnership(CalendarFeed feed, UserPrincipal principal) {
     boolean isOwner = feed.getUserId().equals(principal.getUserId());
-    boolean isAdmin = "TEAM_ADMIN".equals(principal.getRole());
+    boolean isAdmin = "TEAM_ADMIN".equals(principal.getRole().orElse(null));
     if (!isOwner && !isAdmin) {
       throw new IllegalArgumentException("You do not have permission to modify this calendar feed");
     }

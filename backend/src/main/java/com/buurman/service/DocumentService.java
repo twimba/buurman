@@ -201,8 +201,8 @@ public class DocumentService {
     String oldTitle = document.getTitle().orElse(null);
     String oldNotes = document.getNotes().orElse(null);
 
-    document.setTitle(Optional.ofNullable(request.title()));
-    document.setNotes(Optional.ofNullable(request.notes()));
+    document.setTitle(request.title());
+    document.setNotes(request.notes());
 
     documentRepository.save(document);
 
@@ -211,15 +211,15 @@ public class DocumentService {
     Map<String, Object> oldValues = new java.util.HashMap<>();
     Map<String, Object> newValues = new java.util.HashMap<>();
 
-    if (!java.util.Objects.equals(oldTitle, request.title())) {
-      changedFields.put("title", request.title());
+    if (!java.util.Objects.equals(oldTitle, request.title().orElse(null))) {
+      changedFields.put("title", request.title().orElse(null));
       oldValues.put("title", oldTitle);
-      newValues.put("title", request.title());
+      newValues.put("title", request.title().orElse(null));
     }
-    if (!java.util.Objects.equals(oldNotes, request.notes())) {
-      changedFields.put("notes", request.notes());
+    if (!java.util.Objects.equals(oldNotes, request.notes().orElse(null))) {
+      changedFields.put("notes", request.notes().orElse(null));
       oldValues.put("notes", oldNotes);
-      newValues.put("notes", request.notes());
+      newValues.put("notes", request.notes().orElse(null));
     }
 
     if (!changedFields.isEmpty()) {

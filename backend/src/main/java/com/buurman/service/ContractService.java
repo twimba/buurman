@@ -105,12 +105,12 @@ public class ContractService {
             });
 
     // Validate dates
-    if (request.endDate() != null && request.endDate().isBefore(request.startDate())) {
+    if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
       throw new IllegalArgumentException("End date must be on or after start date");
     }
 
     // Validate FIXED_TERM contracts have end date
-    if (request.contractType() == FIXED_TERM && request.endDate() == null) {
+    if (request.contractType() == FIXED_TERM && request.endDate().isEmpty()) {
       throw new IllegalArgumentException("FIXED_TERM contracts must have an end date");
     }
 
@@ -166,7 +166,8 @@ public class ContractService {
         property.getStreet() != null
             ? property.getStreet() + ", " + property.getCity()
             : property.getIdentifier();
-    String tenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String tenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     Map<String, Object> contractVars = new HashMap<>();
     contractVars.put("propertyName", propertyName);
     contractVars.put("tenantName", tenantName);
@@ -259,7 +260,7 @@ public class ContractService {
         propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
     // Validate dates
-    if (request.endDate() != null && request.endDate().isBefore(request.startDate())) {
+    if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
       throw new IllegalArgumentException("End date must be on or after start date");
     }
 
@@ -516,9 +517,7 @@ public class ContractService {
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("status", newStatus);
-    if (request.reason() != null) {
-      changedFields.put("statusChangeReason", request.reason());
-    }
+    request.reason().ifPresent(r -> changedFields.put("statusChangeReason", r));
 
     auditService.logUpdate(
         teamId,
@@ -537,7 +536,8 @@ public class ContractService {
         statusChangeProperty != null && statusChangeProperty.getStreet() != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
             : identifier;
-    String scTenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String scTenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -637,7 +637,8 @@ public class ContractService {
         reopenProperty != null && reopenProperty.getStreet() != null
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
             : identifier;
-    String reopenTenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String reopenTenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -766,11 +767,8 @@ public class ContractService {
       String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
-    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
-    LocalDate paymentDate =
-        markAsPaid
-            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now())
-            : null;
+    boolean markAsPaid = request.markAsPaid().map(Boolean.TRUE::equals).orElse(false);
+    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now()) : null;
     int generated =
         paymentSchedulingService.generatePaymentsManually(
             contract.getId(),

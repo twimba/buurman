@@ -426,17 +426,18 @@ public class PaymentRepository {
         .map(r -> r.get(PAYMENTS.CURRENCY));
   }
 
-  public @Nullable LocalDate findEarliestPaymentDate(UUID teamId) {
-    return dsl.select(min(PAYMENTS.PAYMENT_DATE))
-        .from(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.DELETED_AT.isNull())
-                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                .and(PAYMENTS.STATUS.eq(PAID.name())))
-        .fetchOne(min(PAYMENTS.PAYMENT_DATE));
+  public Optional<LocalDate> findEarliestPaymentDate(UUID teamId) {
+    return Optional.ofNullable(
+        dsl.select(min(PAYMENTS.PAYMENT_DATE))
+            .from(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.DELETED_AT.isNull())
+                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                    .and(PAYMENTS.STATUS.eq(PAID.name())))
+            .fetchOne(min(PAYMENTS.PAYMENT_DATE)));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

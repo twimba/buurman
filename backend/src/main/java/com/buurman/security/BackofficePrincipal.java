@@ -1,28 +1,38 @@
 package com.buurman.security;
 
 import java.security.Principal;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
-import lombok.Getter;
-
-@Getter
 public class BackofficePrincipal implements Principal {
   private final String keycloakId;
-  private final @Nullable String email;
-  private final @Nullable String name;
-  private final @Nullable String role;
+  private final Optional<String> email;
+  private final Optional<String> name;
+  private final Optional<String> role;
 
   public BackofficePrincipal(
       String keycloakId, @Nullable String email, @Nullable String name, @Nullable String role) {
     this.keycloakId = keycloakId;
-    this.email = email;
-    this.name = name;
-    this.role = role;
+    this.email = Optional.ofNullable(email);
+    this.name = Optional.ofNullable(name);
+    this.role = Optional.ofNullable(role);
+  }
+
+  public String getKeycloakId() {
+    return keycloakId;
+  }
+
+  public Optional<String> getEmail() {
+    return email;
+  }
+
+  public Optional<String> getRole() {
+    return role;
   }
 
   @Override
   public @Nullable String getName() {
-    return name;
+    return name.orElse(null);
   }
 }

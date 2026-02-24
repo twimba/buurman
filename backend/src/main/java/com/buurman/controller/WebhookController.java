@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import java.security.Security;
 import java.security.interfaces.ECPublicKey;
 import java.util.Map;
+import java.util.Optional;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jspecify.annotations.Nullable;
@@ -91,8 +92,9 @@ public class WebhookController {
 
   private boolean verifySendGridSignature(
       String payload, @Nullable String signature, @Nullable String timestamp) {
-    String verificationKey = sendGridProperties.webhookVerificationKey();
-    if (verificationKey == null || verificationKey.isBlank()) {
+    Optional<String> verificationKey =
+        sendGridProperties.webhookVerificationKey().filter(k -> !k.isBlank());
+    if (verificationKey.isEmpty()) {
       return true; // Skip verification in dev
     }
     if (signature == null || timestamp == null) {
@@ -100,7 +102,7 @@ public class WebhookController {
     }
     try {
       EventWebhook eventWebhook = new EventWebhook();
-      ECPublicKey publicKey = eventWebhook.ConvertPublicKeyToECDSA(verificationKey);
+      ECPublicKey publicKey = eventWebhook.ConvertPublicKeyToECDSA(verificationKey.orElseThrow());
       return eventWebhook.VerifySignature(publicKey, payload, signature, timestamp);
     } catch (Exception e) {
       log.error("SendGrid signature verification error: {}", e.getMessage());

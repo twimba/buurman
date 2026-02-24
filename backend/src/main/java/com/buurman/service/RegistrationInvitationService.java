@@ -61,28 +61,34 @@ public class RegistrationInvitationService {
   @Transactional
   public RegistrationInvitationResponse create(
       CreateRegistrationInvitationRequest request, BackofficePrincipal principal) {
-    String code;
-    if (request.code() != null && !request.code().isBlank()) {
-      code = request.code().trim().toLowerCase();
-      if (invitationRepository.existsByCode(code)) {
-        throw new BadRequestException("Invitation code already exists: " + code);
-      }
-    } else {
-      code = HumanReadableIdGenerator.generateUnique(invitationRepository::existsByCode);
-    }
+    String code =
+        request
+            .code()
+            .map(String::trim)
+            .map(String::toLowerCase)
+            .filter(c -> !c.isBlank())
+            .map(
+                c -> {
+                  if (invitationRepository.existsByCode(c)) {
+                    throw new BadRequestException("Invitation code already exists: " + c);
+                  }
+                  return c;
+                })
+            .orElseGet(
+                () -> HumanReadableIdGenerator.generateUnique(invitationRepository::existsByCode));
 
     RegistrationInvitation invitation = new RegistrationInvitation();
     invitation.setCode(code);
-    invitation.setMaxUsages(Optional.ofNullable(request.maxUsages()));
-    invitation.setExpiresAt(Optional.ofNullable(request.expiresAt()));
-    invitation.setNote(Optional.ofNullable(request.note()));
-    String principalEmail = principal.getEmail() != null ? principal.getEmail() : "unknown";
+    invitation.setMaxUsages(request.maxUsages());
+    invitation.setExpiresAt(request.expiresAt());
+    invitation.setNote(request.note());
+    String principalEmail = principal.getEmail().orElse("unknown");
     invitation.setCreatedBy(principalEmail);
 
     invitation = invitationRepository.save(invitation);
 
     metricsService.incrementCounter("registration.invitation.created.total");
-    log.info("Registration invitation created: code={}, by={}", code, principal.getEmail());
+    log.info("Registration invitation created: code={}, by={}", code, principalEmail);
 
     return toResponse(invitation);
   }
@@ -117,7 +123,7 @@ public class RegistrationInvitationService {
       throw new BusinessRuleException("Invitation is already revoked");
     }
 
-    String revokerEmail = principal.getEmail() != null ? principal.getEmail() : "unknown";
+    String revokerEmail = principal.getEmail().orElse("unknown");
     invitationRepository.revoke(invitation.getId(), revokerEmail);
     metricsService.incrementCounter("registration.invitation.revoked.total");
     log.info("Registration invitation revoked: code={}, by={}", invitation.getCode(), revokerEmail);
@@ -181,7 +187,7 @@ public class RegistrationInvitationService {
         invitation.getCode(),
         request.channel(),
         request.recipient(),
-        principal.getEmail());
+        principal.getEmail().orElse("unknown"));
   }
 
   @Transactional
@@ -196,7 +202,7 @@ public class RegistrationInvitationService {
     log.info(
         "Registration invitation note updated: code={}, by={}",
         invitation.getCode(),
-        principal.getEmail());
+        principal.getEmail().orElse("unknown"));
 
     return getByIdentifier(identifier);
   }
@@ -225,7 +231,13 @@ public class RegistrationInvitationService {
     try {
       emailSender.send(
           new NotificationSendRequest(
-              null, recipientEmail, null, rendered.subject(), rendered.body(), null, null));
+              Optional.empty(),
+              Optional.of(recipientEmail),
+              Optional.empty(),
+              rendered.subject(),
+              rendered.body(),
+              Optional.empty(),
+              Optional.empty()));
     } catch (com.buurman.service.notification.NotificationSendException e) {
       throw new BusinessRuleException("Failed to send invitation email: " + e.getMessage());
     }
@@ -247,7 +259,13 @@ public class RegistrationInvitationService {
     try {
       smsSender.send(
           new NotificationSendRequest(
-              null, null, recipientPhone, "Buurman Invitation", body, null, null));
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of(recipientPhone),
+              Optional.of("Buurman Invitation"),
+              body,
+              Optional.empty(),
+              Optional.empty()));
     } catch (com.buurman.service.notification.NotificationSendException e) {
       throw new BusinessRuleException("Failed to send invitation SMS: " + e.getMessage());
     }

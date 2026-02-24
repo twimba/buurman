@@ -95,15 +95,18 @@ public class JobExecutionHistoryRepository {
     int total = dsl.fetchCount(dsl.selectFrom(TABLE).where(where));
 
     SortField<?> sortField = STARTED_AT.desc();
-    if (pageRequest.sort() != null) {
+    if (pageRequest.sort().isPresent()) {
       Field<?> field =
-          switch (pageRequest.sort()) {
+          switch (pageRequest.sort().get()) {
             case "jobName" -> JOB_NAME;
             case "status" -> STATUS;
             case "durationMs" -> DURATION_MS;
             default -> STARTED_AT;
           };
-      sortField = pageRequest.direction() == SortDirection.ASC ? field.asc() : field.desc();
+      sortField =
+          pageRequest.direction().orElse(SortDirection.DESC) == SortDirection.ASC
+              ? field.asc()
+              : field.desc();
     }
 
     var records =

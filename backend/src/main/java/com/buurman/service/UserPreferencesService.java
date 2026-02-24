@@ -43,7 +43,7 @@ public class UserPreferencesService {
   @Transactional
   public UserPreferencesResponse updatePreferences(
       UserPrincipal principal, UpdateUserPreferencesRequest request) {
-    UserPreferences prefs =
+    final UserPreferences prefs =
         preferencesRepository
             .findByUserId(principal.getUserId())
             .orElseGet(
@@ -53,40 +53,36 @@ public class UserPreferencesService {
                   return newPrefs;
                 });
 
-    if (request.theme() != null) {
-      prefs.setTheme(request.theme());
-    }
-    if (request.language() != null) {
-      prefs.setLanguage(request.language());
-    }
-    if (request.timezone() != null) {
-      prefs.setTimezone(request.timezone());
-    }
-    if (request.dateFormat() != null) {
-      prefs.setDateFormat(request.dateFormat());
-    }
-    if (request.currencyFormat() != null) {
-      prefs.setCurrencyFormat(Optional.of(request.currencyFormat()));
-    }
-    if (request.emailNotifications() != null) {
-      if (request.emailNotifications()
-          && !featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal)) {
-        prefs.setEmailNotifications(false);
-      } else {
-        prefs.setEmailNotifications(request.emailNotifications());
-      }
-    }
-    if (request.smsNotifications() != null) {
-      if (request.smsNotifications()
-          && !featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal)) {
-        prefs.setSmsNotifications(false);
-      } else {
-        prefs.setSmsNotifications(request.smsNotifications());
-      }
-    }
+    request.theme().ifPresent(prefs::setTheme);
+    request.language().ifPresent(prefs::setLanguage);
+    request.timezone().ifPresent(prefs::setTimezone);
+    request.dateFormat().ifPresent(prefs::setDateFormat);
+    request.currencyFormat().ifPresent(cf -> prefs.setCurrencyFormat(Optional.of(cf)));
+    request
+        .emailNotifications()
+        .ifPresent(
+            enabled -> {
+              if (enabled
+                  && !featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal)) {
+                prefs.setEmailNotifications(false);
+              } else {
+                prefs.setEmailNotifications(enabled);
+              }
+            });
+    request
+        .smsNotifications()
+        .ifPresent(
+            enabled -> {
+              if (enabled
+                  && !featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal)) {
+                prefs.setSmsNotifications(false);
+              } else {
+                prefs.setSmsNotifications(enabled);
+              }
+            });
 
-    prefs = preferencesRepository.save(prefs);
-    return toResponse(prefs);
+    UserPreferences savedPrefs = preferencesRepository.save(prefs);
+    return toResponse(savedPrefs);
   }
 
   public NotificationTypePreferencesResponse getNotificationTypePreferences(

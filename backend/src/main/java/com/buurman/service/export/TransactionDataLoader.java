@@ -5,6 +5,7 @@ import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -63,7 +64,7 @@ class TransactionDataLoader {
                 "INCOME",
                 "Rent payment - " + propertyName,
                 propertyName,
-                null,
+                Optional.empty(),
                 payment.getAmount(),
                 payment.getCurrency()));
       }
@@ -93,7 +94,7 @@ class TransactionDataLoader {
               "EXPENSE",
               expense.getDescription(),
               propertyName,
-              expense.getCategory() != null ? expense.getCategory().name() : "",
+              Optional.ofNullable(expense.getCategory()).map(Enum::name),
               expense.getAmount(),
               expense.getCurrency()));
     }

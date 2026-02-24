@@ -1,11 +1,18 @@
 package com.buurman.dto.request.backoffice;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 public record CreateRegistrationInvitationRequest(
-    @Nullable String code,
-    @Nullable Integer maxUsages,
-    @Nullable Instant expiresAt,
-    @Nullable String note) {}
+    Optional<String> code,
+    Optional<Integer> maxUsages,
+    Optional<Instant> expiresAt,
+    Optional<String> note) {
+  public CreateRegistrationInvitationRequest {
+    code = Objects.requireNonNullElse(code, Optional.empty());
+    maxUsages = Objects.requireNonNullElse(maxUsages, Optional.empty());
+    expiresAt = Objects.requireNonNullElse(expiresAt, Optional.empty());
+    note = Objects.requireNonNullElse(note, Optional.empty());
+  }
+}

@@ -1094,9 +1094,7 @@ public class PropertyBookletExporter {
       Tenant tenant = primaryTenants.get(contract.getId());
       String tenantName =
           tenant != null
-              ? tenant.getFirstName()
-                  + " "
-                  + (tenant.getLastName() != null ? tenant.getLastName() : "")
+              ? tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("")
               : "Unknown";
 
       html.append("<tr>");

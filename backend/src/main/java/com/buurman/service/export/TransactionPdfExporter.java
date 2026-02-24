@@ -104,9 +104,7 @@ public class TransactionPdfExporter {
           .append("</span></td>");
       html.append("<td>").append(escapeHtml(t.description())).append("</td>");
       html.append("<td>").append(escapeHtml(t.property())).append("</td>");
-      html.append("<td>")
-          .append(t.category() != null ? escapeHtml(t.category()) : "-")
-          .append("</td>");
+      html.append("<td>").append(t.category().map(c -> escapeHtml(c)).orElse("-")).append("</td>");
       html.append("<td style='text-align: right;' class='")
           .append(t.type().equals("INCOME") ? "amount-income" : "amount-expense")
           .append("'>")

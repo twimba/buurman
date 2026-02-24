@@ -82,7 +82,7 @@ public class PropertyAmenityService {
     pa.setPropertyId(property.getId());
     pa.setAmenityId(amenity.getId());
     pa.setTeamId(principal.requireTeamId());
-    pa.setNotes(Optional.ofNullable(request.notes()));
+    pa.setNotes(request.notes());
     pa.setCreatedBy(principal.getUserId());
     pa.setUpdatedBy(principal.getUserId());
 

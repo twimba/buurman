@@ -20,6 +20,10 @@ public interface TenantRecordMapper {
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toOptionalInstant(record.getDeletedAt()))")
+  @Mapping(
+      target = "lastName",
+      expression = "java(java.util.Optional.ofNullable(record.getLastName()))")
+  @Mapping(target = "email", expression = "java(java.util.Optional.ofNullable(record.getEmail()))")
   @Mapping(target = "phone", expression = "java(java.util.Optional.ofNullable(record.getPhone()))")
   @Mapping(
       target = "taxNumber",
@@ -42,6 +46,8 @@ public interface TenantRecordMapper {
       expression =
           "java(tenant.getDeletedAt().map(i ->"
               + " java.time.LocalDateTime.ofInstant(i, java.time.ZoneOffset.UTC)).orElse(null))")
+  @Mapping(target = "lastName", expression = "java(tenant.getLastName().orElse(null))")
+  @Mapping(target = "email", expression = "java(tenant.getEmail().orElse(null))")
   @Mapping(target = "phone", expression = "java(tenant.getPhone().orElse(null))")
   @Mapping(target = "taxNumber", expression = "java(tenant.getTaxNumber().orElse(null))")
   @Mapping(target = "idNumber", expression = "java(tenant.getIdNumber().orElse(null))")

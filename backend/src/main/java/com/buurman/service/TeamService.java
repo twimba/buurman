@@ -105,7 +105,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole())) {
+        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -380,7 +380,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole())) {
+        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -408,7 +408,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole())) {
+        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -436,7 +436,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole())) {
+        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -455,37 +455,33 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole())) {
+        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
       throw new ForbiddenException("Access denied");
     }
 
-    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
+    final TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
 
-    if (request.payments() != null) {
-      prefs.setPaymentsAheadCount(request.payments().paymentsAheadCount());
-      prefs.setAutoGenerationEnabled(request.payments().autoGenerationEnabled());
-    }
+    request
+        .payments()
+        .ifPresent(
+            payments -> {
+              prefs.setPaymentsAheadCount(payments.paymentsAheadCount());
+              prefs.setAutoGenerationEnabled(payments.autoGenerationEnabled());
+            });
 
-    if (request.regional() != null) {
-      if (request.regional().defaultCurrency() != null) {
-        prefs.setDefaultCurrency(Optional.of(request.regional().defaultCurrency()));
-      }
-      if (request.regional().defaultCountry() != null) {
-        prefs.setDefaultCountry(request.regional().defaultCountry());
-      }
-      if (request.regional().timezone() != null) {
-        prefs.setTimezone(request.regional().timezone());
-      }
-      if (request.regional().dateFormat() != null) {
-        prefs.setDateFormat(request.regional().dateFormat());
-      }
-      if (request.regional().fiscalYearStartMonth() != null) {
-        prefs.setFiscalYearStartMonth(request.regional().fiscalYearStartMonth());
-      }
-    }
+    request
+        .regional()
+        .ifPresent(
+            regional -> {
+              regional.defaultCurrency().ifPresent(c -> prefs.setDefaultCurrency(Optional.of(c)));
+              regional.defaultCountry().ifPresent(prefs::setDefaultCountry);
+              regional.timezone().ifPresent(prefs::setTimezone);
+              regional.dateFormat().ifPresent(prefs::setDateFormat);
+              regional.fiscalYearStartMonth().ifPresent(prefs::setFiscalYearStartMonth);
+            });
 
-    prefs = teamPreferencesRepository.save(prefs);
-    return toPreferencesResponse(prefs);
+    TeamPreferences savedPrefs = teamPreferencesRepository.save(prefs);
+    return toPreferencesResponse(savedPrefs);
   }
 
   public TeamPreferencesResponse getTeamPreferences(

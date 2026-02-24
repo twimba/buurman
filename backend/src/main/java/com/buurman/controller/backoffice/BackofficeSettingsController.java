@@ -55,7 +55,7 @@ public class BackofficeSettingsController {
     policy.setPolicyMatrix(Optional.ofNullable(request.policyMatrix()));
     policy.setMaxCodesPerHour(request.maxCodesPerHour());
     policy.setVerificationCodeExpiryMinutes(request.verificationCodeExpiryMinutes());
-    policy.setUpdatedBy(Optional.ofNullable(principal.getEmail()));
+    policy.setUpdatedBy(principal.getEmail());
 
     policy = policyService.updatePolicy(policy);
     return toResponse(policy);

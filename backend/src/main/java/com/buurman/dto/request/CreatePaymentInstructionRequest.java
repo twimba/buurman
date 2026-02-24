@@ -1,6 +1,7 @@
 package com.buurman.dto.request;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.buurman.domain.PaymentInstruction;
 
@@ -10,14 +11,27 @@ import jakarta.validation.constraints.Size;
 
 public record CreatePaymentInstructionRequest(
     @NotBlank(message = "Name is required") String name,
-    @Nullable String description,
+    Optional<String> description,
     @NotNull(message = "Payment method is required") PaymentInstruction.PaymentMethod paymentMethod,
-    @Nullable String bankName,
-    @Nullable String accountHolderName,
-    @Nullable @Size(max = 34) String iban,
-    @Nullable @Size(max = 11) String bicSwift,
-    @Nullable String accountNumber,
-    @Nullable String routingNumber,
-    @Nullable String paymentReference,
-    @Nullable String additionalDetails,
-    @Nullable Boolean isDefault) {}
+    Optional<String> bankName,
+    Optional<String> accountHolderName,
+    @Size(max = 34) Optional<String> iban,
+    @Size(max = 11) Optional<String> bicSwift,
+    Optional<String> accountNumber,
+    Optional<String> routingNumber,
+    Optional<String> paymentReference,
+    Optional<String> additionalDetails,
+    Optional<Boolean> isDefault) {
+  public CreatePaymentInstructionRequest {
+    description = Objects.requireNonNullElse(description, Optional.empty());
+    bankName = Objects.requireNonNullElse(bankName, Optional.empty());
+    accountHolderName = Objects.requireNonNullElse(accountHolderName, Optional.empty());
+    iban = Objects.requireNonNullElse(iban, Optional.empty());
+    bicSwift = Objects.requireNonNullElse(bicSwift, Optional.empty());
+    accountNumber = Objects.requireNonNullElse(accountNumber, Optional.empty());
+    routingNumber = Objects.requireNonNullElse(routingNumber, Optional.empty());
+    paymentReference = Objects.requireNonNullElse(paymentReference, Optional.empty());
+    additionalDetails = Objects.requireNonNullElse(additionalDetails, Optional.empty());
+    isDefault = Objects.requireNonNullElse(isDefault, Optional.empty());
+  }
+}

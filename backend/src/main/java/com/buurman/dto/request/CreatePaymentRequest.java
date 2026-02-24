@@ -2,8 +2,8 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +14,12 @@ public record CreatePaymentRequest(
     @NotNull(message = "Amount is required") @Positive(message = "Amount must be positive") BigDecimal amount,
     @NotBlank(message = "Currency is required") String currency,
     @NotNull(message = "Due date is required") LocalDate dueDate,
-    @Nullable String notes,
-    @Nullable Boolean markAsPaid,
-    @Nullable LocalDate paymentDate) {}
+    Optional<String> notes,
+    Optional<Boolean> markAsPaid,
+    Optional<LocalDate> paymentDate) {
+  public CreatePaymentRequest {
+    notes = Objects.requireNonNullElse(notes, Optional.empty());
+    markAsPaid = Objects.requireNonNullElse(markAsPaid, Optional.empty());
+    paymentDate = Objects.requireNonNullElse(paymentDate, Optional.empty());
+  }
+}

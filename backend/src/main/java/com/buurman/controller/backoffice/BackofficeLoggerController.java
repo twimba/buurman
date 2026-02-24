@@ -42,7 +42,7 @@ public class BackofficeLoggerController {
   @PostMapping("/{loggerName}/level")
   public LoggerConfigurationResponse setLogLevel(
       @PathVariable String loggerName, @RequestBody SetLogLevelRequest request) {
-    return loggerService.setLogLevel(loggerName, request.level());
+    return loggerService.setLogLevel(loggerName, request.level().orElse(null));
   }
 
   @Operation(summary = "Reset all log levels to defaults")

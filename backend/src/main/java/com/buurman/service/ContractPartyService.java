@@ -73,7 +73,8 @@ public class ContractPartyService {
     }
 
     Tenant tenant =
-        resolveOrCreateTenant(request.tenantIdentifier(), request.newTenant(), principal);
+        resolveOrCreateTenant(
+            request.tenantIdentifier().orElse(null), request.newTenant().orElse(null), principal);
 
     if (contractPartyRepository.existsByContractIdAndTenantIdAndTeamId(
         contract.getId(), tenant.getId(), teamId)) {
@@ -99,7 +100,7 @@ public class ContractPartyService {
         request.role());
 
     // Audit log
-    String tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+    String tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("partyAdded", tenantName);
     changedFields.put("role", request.role().name());
@@ -145,7 +146,7 @@ public class ContractPartyService {
         party
             .getTenantId()
             .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
-            .map(t -> t.getFirstName() + " " + t.getLastName())
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
             .orElse("Unknown");
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("partyRemoved", tenantName);
@@ -171,7 +172,8 @@ public class ContractPartyService {
     validateContractEditable(contract);
 
     Tenant newTenant =
-        resolveOrCreateTenant(request.tenantIdentifier(), request.newTenant(), principal);
+        resolveOrCreateTenant(
+            request.tenantIdentifier().orElse(null), request.newTenant().orElse(null), principal);
 
     // Find current primary tenant
     ContractParty currentPrimary =
@@ -185,9 +187,10 @@ public class ContractPartyService {
         currentPrimary
             .getTenantId()
             .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
-            .map(t -> t.getFirstName() + " " + t.getLastName())
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
             .orElse("Unknown");
-    String newTenantName = newTenant.getFirstName() + " " + newTenant.getLastName();
+    String newTenantName =
+        newTenant.getFirstName() + newTenant.getLastName().map(n -> " " + n).orElse("");
 
     // If new tenant already exists as a different role on this contract, remove that entry
     List<ContractParty> existingParties =
@@ -247,10 +250,14 @@ public class ContractPartyService {
 
     for (ContractPartyRequest partyReq : parties) {
       Tenant tenant =
-          resolveOrCreateTenant(partyReq.tenantIdentifier(), partyReq.newTenant(), principal);
+          resolveOrCreateTenant(
+              partyReq.tenantIdentifier().orElse(null),
+              partyReq.newTenant().orElse(null),
+              principal);
 
       if (!seenTenantIds.add(tenant.getId())) {
-        String tenantName = tenant.getFirstName() + " " + tenant.getLastName();
+        String tenantName =
+            tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
         throw new IllegalArgumentException(
             "Tenant \"" + tenantName + "\" is listed more than once in the contract parties");
       }

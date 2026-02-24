@@ -51,8 +51,7 @@ public class S3StorageService {
     this.s3Client = s3Client;
     this.s3Presigner = s3Presigner;
     this.bucketName = s3Properties.bucketName();
-    @Nullable String endpoint = s3Properties.publicEndpoint();
-    this.s3PublicEndpoint = endpoint != null ? endpoint : "";
+    this.s3PublicEndpoint = s3Properties.publicEndpoint().orElse("");
     this.usePresignedUrls = s3Properties.usePresignedUrls();
     this.metricsService = metricsService;
     this.clock = clock;

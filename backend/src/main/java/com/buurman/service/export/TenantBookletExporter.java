@@ -110,7 +110,7 @@ public class TenantBookletExporter {
 
     String fullName =
         escapeHtml(tenant.getFirstName())
-            + (tenant.getLastName() != null ? " " + escapeHtml(tenant.getLastName()) : "");
+            + tenant.getLastName().map(n -> " " + escapeHtml(n)).orElse("");
 
     BigDecimal totalPaid =
         allPayments.stream()
@@ -178,7 +178,7 @@ public class TenantBookletExporter {
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendCoverCell(html, "Email", tenant.getEmail() != null ? escapeHtml(tenant.getEmail()) : "—");
+    appendCoverCell(html, "Email", tenant.getEmail().map(e -> escapeHtml(e)).orElse("—"));
     appendCoverCell(html, "Phone", tenant.getPhone().map(p -> escapeHtml(p)).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
@@ -209,7 +209,7 @@ public class TenantBookletExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(html, "Full Name", fullName);
-    appendField(html, "Email", tenant.getEmail());
+    appendField(html, "Email", tenant.getEmail().orElse(null));
     html.append("</tr><tr>");
     appendField(html, "Phone", tenant.getPhone().orElse(null));
     appendField(html, "Reference", "#" + tenant.getIdentifier());

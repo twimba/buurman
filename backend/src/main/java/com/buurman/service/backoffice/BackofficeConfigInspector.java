@@ -132,7 +132,7 @@ public class BackofficeConfigInspector {
   }
 
   private void addS3Config(List<ConfigEntry> entries) {
-    addEntry(entries, "AWS S3", "endpoint", awsS3Properties.endpoint());
+    addEntry(entries, "AWS S3", "endpoint", awsS3Properties.endpoint().orElse(null));
     addEntry(entries, "AWS S3", "region", awsS3Properties.region());
     addEntry(entries, "AWS S3", "accessKey", obfuscate("key", awsS3Properties.accessKey()));
     addEntry(entries, "AWS S3", "secretKey", obfuscate("secret", awsS3Properties.secretKey()));
@@ -148,7 +148,10 @@ public class BackofficeConfigInspector {
       addEntry(entries, "Twilio", "authToken", obfuscate("token", twilio.authToken()));
       addEntry(entries, "Twilio", "fromNumber", twilio.fromNumber());
       addEntry(
-          entries, "Twilio", "messagingServiceSid", obfuscate("sid", twilio.messagingServiceSid()));
+          entries,
+          "Twilio",
+          "messagingServiceSid",
+          obfuscate("sid", twilio.messagingServiceSid().orElse(null)));
     }
   }
 
@@ -173,8 +176,13 @@ public class BackofficeConfigInspector {
     if (fs != null) {
       addEntry(entries, "Flagsmith", "apiUrl", fs.apiUrl());
       addEntry(entries, "Flagsmith", "enableAnalytics", String.valueOf(fs.enableAnalytics()));
-      addEntry(entries, "Flagsmith", "serverSideKey", obfuscate("key", fs.serverSideKey()));
-      addEntry(entries, "Flagsmith", "adminPassword", obfuscate("password", fs.adminPassword()));
+      addEntry(
+          entries, "Flagsmith", "serverSideKey", obfuscate("key", fs.serverSideKey().orElse(null)));
+      addEntry(
+          entries,
+          "Flagsmith",
+          "adminPassword",
+          obfuscate("password", fs.adminPassword().orElse(null)));
       addEntry(entries, "Flagsmith", "projectName", fs.projectName());
       addEntry(entries, "Flagsmith", "environmentName", fs.environmentName());
     }

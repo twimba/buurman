@@ -104,7 +104,7 @@ public class BackofficeUserService {
 
     log.info(
         "Backoffice user {} disabled user {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         user.getEmail());
   }
@@ -118,7 +118,7 @@ public class BackofficeUserService {
 
     log.info(
         "Backoffice user {} enabled user {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         user.getEmail());
   }
@@ -131,7 +131,7 @@ public class BackofficeUserService {
 
     log.info(
         "Backoffice user {} triggered password reset for user {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         user.getEmail());
   }

@@ -86,7 +86,7 @@ public class ContractRentPeriodService {
     period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(request.effectiveFrom());
     period.setEffectiveTo(Optional.empty());
-    period.setNotes(Optional.ofNullable(request.notes()));
+    period.setNotes(request.notes());
     period.setCreatedBy(principal.getUserId());
     period.setUpdatedBy(principal.getUserId());
     period.setCreatedAt(clock.instant());
@@ -113,9 +113,7 @@ public class ContractRentPeriodService {
     if (previousRentAmount != null) {
       changedFields.put("previousRentAmount", previousRentAmount);
     }
-    if (request.notes() != null) {
-      changedFields.put("notes", request.notes());
-    }
+    request.notes().ifPresent(n -> changedFields.put("notes", n));
     auditService.logCreate(teamId, "CONTRACT", contract.getId(), principal.getUserId(), saved);
 
     // Notification
@@ -134,7 +132,7 @@ public class ContractRentPeriodService {
         request.rentAmount(),
         request.effectiveFrom());
 
-    return rentPeriodMapper.toResponse(saved, previousRentAmount);
+    return rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
   }
 
   public List<RentPeriodResponse> getRentTimeline(
@@ -180,7 +178,7 @@ public class ContractRentPeriodService {
 
     period.setRentAmount(request.rentAmount());
     period.setEffectiveFrom(request.effectiveFrom());
-    period.setNotes(Optional.ofNullable(request.notes()));
+    period.setNotes(request.notes());
     period.setUpdatedBy(principal.getUserId());
     period.setUpdatedAt(clock.instant());
 
@@ -220,8 +218,7 @@ public class ContractRentPeriodService {
 
     log.info("Rent period updated: {} in contract {}", periodIdentifier, contractIdentifier);
 
-    BigDecimal prevAmount =
-        previousPeriod.isPresent() ? previousPeriod.get().getRentAmount() : null;
+    Optional<BigDecimal> prevAmount = previousPeriod.map(ContractRentPeriod::getRentAmount);
     return rentPeriodMapper.toResponse(period, prevAmount);
   }
 
@@ -395,7 +392,8 @@ public class ContractRentPeriodService {
           property != null && property.getStreet() != null
               ? property.getStreet() + ", " + property.getCity()
               : contract.getIdentifier();
-      String tenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+      String tenantName =
+          primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
 
       Map<String, Object> vars = new HashMap<>();
       vars.put("propertyName", propertyName);

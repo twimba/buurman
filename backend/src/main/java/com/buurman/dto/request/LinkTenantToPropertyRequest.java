@@ -1,11 +1,16 @@
 package com.buurman.dto.request;
 
 import java.time.Instant;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.validation.constraints.NotNull;
 
 public record LinkTenantToPropertyRequest(
     @NotNull(message = "Property identifier is required") String propertyIdentifier,
-    @Nullable Instant movedInAt) {}
+    Optional<Instant> movedInAt) {
+
+  public LinkTenantToPropertyRequest {
+    movedInAt = Objects.requireNonNullElse(movedInAt, Optional.empty());
+  }
+}

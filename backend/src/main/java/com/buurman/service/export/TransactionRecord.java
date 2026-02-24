@@ -2,8 +2,8 @@ package com.buurman.service.export;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 record TransactionRecord(
     String id,
@@ -11,6 +11,10 @@ record TransactionRecord(
     String type,
     String description,
     String property,
-    @Nullable String category,
+    Optional<String> category,
     BigDecimal amount,
-    String currency) {}
+    String currency) {
+  TransactionRecord {
+    category = Objects.requireNonNullElse(category, Optional.empty());
+  }
+}

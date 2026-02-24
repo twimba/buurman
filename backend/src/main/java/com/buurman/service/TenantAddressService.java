@@ -45,7 +45,8 @@ public class TenantAddressService {
 
     // Check for unique ACTIVE CURRENT address constraint
     if (request.addressType() == TenantAddress.AddressType.CURRENT
-        && (request.status() == null || request.status() == TenantAddress.AddressStatus.ACTIVE)) {
+        && (request.status().isEmpty()
+            || request.status().orElseThrow() == TenantAddress.AddressStatus.ACTIVE)) {
       List<TenantAddress> existingAddresses =
           addressRepository.findByTenantId(tenantId, principal.requireTeamId());
       boolean hasActiveCurrent =
@@ -78,7 +79,7 @@ public class TenantAddressService {
       geocodingService
           .geocode(
               request.street(), request.city(),
-              request.postalCode(), request.country())
+              request.postalCode().orElse(null), request.country())
           .ifPresent(
               result -> {
                 address.setLatitude(Optional.of(result.latitude().doubleValue()));

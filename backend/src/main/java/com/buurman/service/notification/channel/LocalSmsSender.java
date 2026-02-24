@@ -4,6 +4,7 @@ import static com.buurman.domain.NotificationChannel.SMS;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
@@ -35,7 +36,7 @@ public class LocalSmsSender implements NotificationChannelSender {
     String fakeSid = "SM" + UUID.randomUUID().toString().replace("-", "").substring(0, 32);
 
     log.info("========== LOCAL SMS ==========");
-    log.info("To: {}", request.recipientPhone());
+    log.info("To: {}", request.recipientPhone().orElse(""));
     log.info("Body: {}", request.body());
     log.info("Fake SID: {}", fakeSid);
     log.info("===============================");
@@ -52,7 +53,7 @@ public class LocalSmsSender implements NotificationChannelSender {
   @Override
   public RenderedContent render(String templateName, Map<String, Object> variables) {
     String body = renderSmsTemplate(templateName, variables);
-    return new RenderedContent(null, body, SMS);
+    return new RenderedContent(Optional.empty(), body, SMS);
   }
 
   private String renderSmsTemplate(String templateName, Map<String, Object> variables) {

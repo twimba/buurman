@@ -1,5 +1,11 @@
 package com.buurman.dto.request;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
-public record UpdatePhotoRequest(@Nullable String title, @Nullable String notes) {}
+public record UpdatePhotoRequest(Optional<String> title, Optional<String> notes) {
+  public UpdatePhotoRequest {
+    title = Objects.requireNonNullElse(title, Optional.empty());
+    notes = Objects.requireNonNullElse(notes, Optional.empty());
+  }
+}

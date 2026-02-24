@@ -205,12 +205,17 @@ public class AuditLogRepository {
             "action", AUDIT_LOG.ACTION);
 
     Field<?> sortField =
-        (pageRequest.sort() != null && sortableFields.containsKey(pageRequest.sort()))
-            ? sortableFields.get(pageRequest.sort())
-            : AUDIT_LOG.TIMESTAMP;
+        pageRequest
+            .sort()
+            .filter(sortableFields::containsKey)
+            .map(sortableFields::get)
+            .orElse(AUDIT_LOG.TIMESTAMP);
 
     SortField<?> orderBy =
-        "asc".equals(pageRequest.direction()) ? sortField.asc() : sortField.desc();
+        pageRequest.direction().orElse(com.buurman.domain.SortDirection.DESC)
+                == com.buurman.domain.SortDirection.ASC
+            ? sortField.asc()
+            : sortField.desc();
 
     Long totalCount =
         dsl.selectCount()

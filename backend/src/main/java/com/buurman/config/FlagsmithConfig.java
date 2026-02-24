@@ -1,13 +1,10 @@
 package com.buurman.config;
 
-import static org.springframework.util.StringUtils.hasText;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -37,9 +34,10 @@ public class FlagsmithConfig {
 
   @PostConstruct
   public void logFlagsmithAdminStatus() {
-    if (hasText(properties.apiToken())) {
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
       log.info("Flagsmith admin: configured via API token");
-    } else if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
+    } else if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+        && properties.adminPassword().filter(s -> !s.isBlank()).isPresent()) {
       log.info("Flagsmith admin: configured via email/password login");
     } else {
       log.warn(
@@ -55,9 +53,10 @@ public class FlagsmithConfig {
   }
 
   private Optional<String> resolveServerKey() {
-    if (properties.serverSideKey() != null && !properties.serverSideKey().isBlank()) {
+    Optional<String> configured = properties.serverSideKey().filter(s -> !s.isBlank());
+    if (configured.isPresent()) {
       log.info("Using configured Flagsmith server-side key");
-      return Optional.of(properties.serverSideKey());
+      return configured;
     }
     return discoverServerKey();
   }
@@ -98,13 +97,13 @@ public class FlagsmithConfig {
       FlagsmithAdminApi api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
       String token;
-      if (hasText(properties.apiToken())) {
-        token = properties.apiToken();
+      if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
+        token = properties.apiToken().orElseThrow();
       } else {
-        // Null-safety: these are guaranteed non-null here because resolveAdminTokenForDiscovery()
-        // already verified that both are present (hasText) before reaching this code path
-        String adminEmail = Objects.requireNonNull(properties.adminEmail());
-        String adminPassword = Objects.requireNonNull(properties.adminPassword());
+        // Null-safety: these are guaranteed present here because resolveAdminTokenForDiscovery()
+        // already verified that both are present (non-blank) before reaching this code path
+        String adminEmail = properties.adminEmail().orElseThrow();
+        String adminPassword = properties.adminPassword().orElseThrow();
         token = api.login(adminEmail, adminPassword);
       }
 
@@ -124,11 +123,12 @@ public class FlagsmithConfig {
   }
 
   private @Nullable String resolveAdminTokenForDiscovery() {
-    if (hasText(properties.apiToken())) {
-      return properties.apiToken();
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
+      return properties.apiToken().orElseThrow();
     }
 
-    if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
+    if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+        && properties.adminPassword().filter(s -> !s.isBlank()).isPresent()) {
       return "credentials";
     }
 

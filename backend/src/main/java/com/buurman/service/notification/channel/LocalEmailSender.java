@@ -4,6 +4,7 @@ import static com.buurman.domain.NotificationChannel.EMAIL;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
@@ -56,8 +57,14 @@ public class LocalEmailSender implements NotificationChannelSender {
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
       helper.setFrom(fromEmail, fromName);
-      helper.setTo(java.util.Objects.requireNonNull(request.recipientEmail(), "recipientEmail"));
-      helper.setSubject(java.util.Objects.requireNonNull(request.subject(), "subject"));
+      helper.setTo(
+          request
+              .recipientEmail()
+              .orElseThrow(() -> new NotificationSendException("recipientEmail is required")));
+      helper.setSubject(
+          request
+              .subject()
+              .orElseThrow(() -> new NotificationSendException("subject is required")));
       helper.setText(request.body(), true);
 
       mailSender.send(message);
@@ -65,8 +72,8 @@ public class LocalEmailSender implements NotificationChannelSender {
       String fakeMessageId = UUID.randomUUID().toString();
       log.info(
           "[LOCAL] Email sent to {} via Mailpit, subject: {}, fakeId: {}",
-          request.recipientEmail(),
-          request.subject(),
+          request.recipientEmail().orElse(""),
+          request.subject().orElse(""),
           fakeMessageId);
       metricsService.recordNotificationSend(start, "email", "mailpit", "success");
       return fakeMessageId;
@@ -91,7 +98,7 @@ public class LocalEmailSender implements NotificationChannelSender {
     String subject = deriveSubject(templateName, variables);
     String body = templateEngine.process("email/" + templateName, context);
 
-    return new RenderedContent(subject, body, EMAIL);
+    return new RenderedContent(Optional.of(subject), body, EMAIL);
   }
 
   private String deriveSubject(String templateName, Map<String, Object> variables) {

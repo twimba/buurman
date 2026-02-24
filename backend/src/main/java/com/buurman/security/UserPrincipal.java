@@ -1,6 +1,7 @@
 package com.buurman.security;
 
 import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -11,9 +12,9 @@ public class UserPrincipal implements Principal {
   private final String keycloakId;
   private final String email;
   private final String name;
-  private final @Nullable UUID teamId; // nullable for users without team membership
-  private final @Nullable String teamIdentifier; // ULID, nullable
-  private final @Nullable String role; // nullable for users without team membership
+  private final Optional<UUID> teamId; // empty for users without team membership
+  private final Optional<String> teamIdentifier; // ULID, empty if no team
+  private final Optional<String> role; // empty for users without team membership
   private final boolean isOwner;
   private final boolean emailVerified;
 
@@ -33,9 +34,9 @@ public class UserPrincipal implements Principal {
     this.keycloakId = keycloakId;
     this.email = email;
     this.name = name;
-    this.teamId = teamId;
-    this.teamIdentifier = teamIdentifier;
-    this.role = role;
+    this.teamId = Optional.ofNullable(teamId);
+    this.teamIdentifier = Optional.ofNullable(teamIdentifier);
+    this.role = Optional.ofNullable(role);
     this.isOwner = isOwner;
     this.emailVerified = emailVerified;
   }
@@ -97,15 +98,15 @@ public class UserPrincipal implements Principal {
     return name;
   }
 
-  public @Nullable UUID getTeamId() {
+  public Optional<UUID> getTeamId() {
     return teamId;
   }
 
-  public @Nullable String getTeamIdentifier() {
+  public Optional<String> getTeamIdentifier() {
     return teamIdentifier;
   }
 
-  public @Nullable String getRole() {
+  public Optional<String> getRole() {
     return role;
   }
 
@@ -118,22 +119,18 @@ public class UserPrincipal implements Principal {
   }
 
   public boolean hasTeam() {
-    return teamId != null;
+    return teamId.isPresent();
   }
 
   /** Returns team ID, throwing if the user has no active team membership. */
   public UUID requireTeamId() {
-    if (teamId == null) {
-      throw new IllegalStateException("User has no active team membership");
-    }
-    return teamId;
+    return teamId.orElseThrow(
+        () -> new IllegalStateException("User has no active team membership"));
   }
 
   /** Returns team identifier (ULID), throwing if the user has no active team membership. */
   public String requireTeamIdentifier() {
-    if (teamIdentifier == null) {
-      throw new IllegalStateException("User has no active team membership");
-    }
-    return teamIdentifier;
+    return teamIdentifier.orElseThrow(
+        () -> new IllegalStateException("User has no active team membership"));
   }
 }

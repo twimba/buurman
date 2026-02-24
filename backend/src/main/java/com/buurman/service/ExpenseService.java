@@ -117,7 +117,10 @@ public class ExpenseService {
 
     // Single summary notification for all successful items
     List<ExpenseResponse> successes =
-        results.stream().filter(BulkCreateResult::isSuccess).map(BulkCreateResult::result).toList();
+        results.stream()
+            .filter(BulkCreateResult::isSuccess)
+            .flatMap(r -> r.result().stream())
+            .toList();
 
     if (!successes.isEmpty()) {
       sendBulkExpenseNotification(successes, principal);
@@ -354,7 +357,7 @@ public class ExpenseService {
     String propertyName = formatPropertyName(response.property());
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId())
+            .teamId(principal.getTeamId().orElse(null))
             .notificationType(NotificationType.EXPENSE_CREATED)
             .templateName("expense-created")
             .templateVariables(
@@ -393,7 +396,7 @@ public class ExpenseService {
 
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId())
+            .teamId(principal.getTeamId().orElse(null))
             .notificationType(NotificationType.EXPENSE_CREATED)
             .templateName("expenses-bulk-created")
             .templateVariables(vars)

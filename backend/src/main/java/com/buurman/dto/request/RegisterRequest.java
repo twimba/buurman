@@ -1,6 +1,7 @@
 package com.buurman.dto.request;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,5 +12,11 @@ public record RegisterRequest(
     @NotBlank String firstName,
     @NotBlank String lastName,
     @NotBlank @Size(min = 8) String password,
-    @Nullable String invitationToken,
-    @Nullable String registrationInvitationCode) {}
+    Optional<String> invitationToken,
+    Optional<String> registrationInvitationCode) {
+  public RegisterRequest {
+    invitationToken = Objects.requireNonNullElse(invitationToken, Optional.empty());
+    registrationInvitationCode =
+        Objects.requireNonNullElse(registrationInvitationCode, Optional.empty());
+  }
+}

@@ -28,11 +28,16 @@ public final class PaginationHelper {
       Function<R, T> recordMapper) {
 
     Field<?> sortField =
-        (pageRequest.sort() != null && sortableFields.containsKey(pageRequest.sort()))
-            ? sortableFields.get(pageRequest.sort())
-            : defaultSort;
+        pageRequest
+            .sort()
+            .filter(sortableFields::containsKey)
+            .map(sortableFields::get)
+            .orElse(defaultSort);
 
-    SortField<?> orderBy = pageRequest.direction() == ASC ? sortField.asc() : sortField.desc();
+    SortField<?> orderBy =
+        pageRequest.direction().orElse(com.buurman.domain.SortDirection.DESC) == ASC
+            ? sortField.asc()
+            : sortField.desc();
 
     long totalElements = dsl.fetchCount(table, condition);
 

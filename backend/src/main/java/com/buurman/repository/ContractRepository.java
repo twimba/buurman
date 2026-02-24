@@ -393,16 +393,17 @@ public class ContractRepository {
         .toList();
   }
 
-  public @Nullable LocalDate findEarliestStartDate(UUID teamId) {
-    return dsl.select(min(CONTRACTS.START_DATE))
-        .from(CONTRACTS)
-        .where(
-            CONTRACTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(CONTRACTS.DELETED_AT.isNull())
-                .and(CONTRACTS.START_DATE.isNotNull()))
-        .fetchOne(min(CONTRACTS.START_DATE));
+  public Optional<LocalDate> findEarliestStartDate(UUID teamId) {
+    return Optional.ofNullable(
+        dsl.select(min(CONTRACTS.START_DATE))
+            .from(CONTRACTS)
+            .where(
+                CONTRACTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(CONTRACTS.DELETED_AT.isNull())
+                    .and(CONTRACTS.START_DATE.isNotNull()))
+            .fetchOne(min(CONTRACTS.START_DATE)));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
