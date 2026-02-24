@@ -61,7 +61,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     // Extract realm roles from JWT (realm_access.roles)
     List<SimpleGrantedAuthority> realmAuthorities = extractRealmRoles(jwt);
 
-    boolean emailVerified = user.getEmailVerifiedAt() != null;
+    boolean emailVerified = user.getEmailVerifiedAt().isPresent();
 
     String userIdentifier = Objects.requireNonNull(user.getIdentifier(), "User identifier is null");
 
