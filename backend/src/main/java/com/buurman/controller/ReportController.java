@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,13 +76,12 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @RequestParam List<String> propertyIdentifiers,
       @RequestParam Optional<String> currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
-            .orElse(null);
+        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
     return reportService.getFinancialOverview(
         startDate, endDate, propertyIds, currency.orElse(null), principal);
   }
@@ -100,7 +98,8 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
             .orElse(null);
     if (startDate.isPresent() && endDate.isPresent()) {
       return reportService.getIncomeTrendByDateRange(
@@ -120,7 +119,8 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
             .orElse(null);
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
@@ -136,7 +136,8 @@ public class ReportController {
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
             .orElse(null);
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
@@ -205,9 +206,8 @@ public class ReportController {
         .body(pdf);
   }
 
-  private Optional<List<UUID>> resolvePropertyIdentifiers(
-      @Nullable List<String> identifiers, UUID teamId) {
-    if (identifiers == null || identifiers.isEmpty()) {
+  private Optional<List<UUID>> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
+    if (identifiers.isEmpty()) {
       return Optional.empty();
     }
     return Optional.of(

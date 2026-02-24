@@ -95,14 +95,14 @@ public class AuthService {
   public UserResponse register(RegisterRequest request) {
     // Check if invitation code is required
     boolean invitationRequired = featureFlagService.isEnabled(INVITATION_REQUIRED);
-    String registrationCode =
-        request.registrationInvitationCode().filter(s -> !s.isBlank()).orElse(null);
+    Optional<String> registrationCode =
+        request.registrationInvitationCode().filter(s -> !s.isBlank());
 
     if (invitationRequired) {
-      if (registrationCode == null) {
+      if (registrationCode.isEmpty()) {
         throw new BadRequestException("Invitation code is required");
       }
-      if (!registrationInvitationService.validateCode(registrationCode).valid()) {
+      if (!registrationInvitationService.validateCode(registrationCode.orElseThrow()).valid()) {
         throw new BadRequestException("Invalid or expired invitation code");
       }
     }
@@ -154,8 +154,8 @@ public class AuthService {
       teamMemberRepository.save(member);
 
       // Record registration invitation usage atomically
-      if (invitationRequired && registrationCode != null && !registrationCode.isBlank()) {
-        registrationInvitationService.recordUsage(registrationCode, user.getId());
+      if (invitationRequired && !registrationCode.get().isBlank()) {
+        registrationInvitationService.recordUsage(registrationCode.get(), user.getId());
       }
 
       // Send verification code email
