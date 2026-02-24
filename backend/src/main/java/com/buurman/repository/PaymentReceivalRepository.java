@@ -100,7 +100,7 @@ public class PaymentReceivalRepository {
 
   public BigDecimal sumByPaymentIdAndTeamId(
       UUID paymentId, UUID teamId, @Nullable String currency) {
-    @Nullable BigDecimal sum =
+    BigDecimal sum =
         dsl.select(coalesce(sum(AMOUNT), 0L))
             .from(TABLE)
             .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))

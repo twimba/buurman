@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +23,7 @@ public class BackofficeJwtAuthenticationConverter
 
     List<SimpleGrantedAuthority> authorities = extractRealmRoles(jwt);
 
-    @Nullable String role =
+    String role =
         authorities.stream()
             .map(a -> a.getAuthority().replace("ROLE_", ""))
             .filter(r -> r.equals("BACKOFFICE_ADMIN"))

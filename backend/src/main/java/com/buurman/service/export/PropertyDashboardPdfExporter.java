@@ -29,7 +29,7 @@ public class PropertyDashboardPdfExporter {
 
   private String buildHtml(PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    @Nullable String currency = s.currency().orElse(null);
+    String currency = s.currency().orElse(null);
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");

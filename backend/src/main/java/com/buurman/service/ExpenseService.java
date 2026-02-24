@@ -210,7 +210,7 @@ public class ExpenseService {
     UUID teamId = principal.requireTeamId();
 
     Optional<AmountStats> totalStats = expenseRepository.getTotalStats(teamId);
-    @Nullable String currency = expenseRepository.findCurrencyByTeamId(teamId).orElse(null);
+    String currency = expenseRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<ExpenseStatsResponse.CategoryTotal> topCategories =
         expenseRepository.getCategoryBreakdown(teamId).stream()

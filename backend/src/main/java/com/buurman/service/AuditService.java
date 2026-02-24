@@ -226,19 +226,6 @@ public class AuditService {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> parseJsonbField(JSONB jsonb) {
-    if (jsonb == null || jsonb.data() == null) {
-      return Map.of();
-    }
-    try {
-      return objectMapper.readValue(jsonb.data(), Map.class);
-    } catch (JsonProcessingException e) {
-      log.error("Failed to parse JSONB field", e);
-      return Map.of();
-    }
-  }
-
-  @SuppressWarnings("unchecked")
   private Map<String, Object> parseJsonField(@Nullable String json) {
     if (json == null || json.isBlank()) {
       return Map.of();

@@ -112,7 +112,7 @@ public class PhotoService {
     photo.setEntityType(entityType);
     photo.setEntityId(entityId);
     photo.setFileKey(fileKey);
-    @Nullable String originalFilename = file.getOriginalFilename();
+    String originalFilename = file.getOriginalFilename();
     photo.setFileName(originalFilename != null ? originalFilename : "unnamed");
     photo.setFileSize(file.getSize());
     photo.setMimeType(mimeType);
@@ -286,7 +286,7 @@ public class PhotoService {
     PhotoResponse response = photoMapper.toResponse(photo);
     String downloadUrl = s3StorageService.generatePresignedUrl(photo.getFileKey()).toString();
 
-    @Nullable String thumbnailUrl =
+    String thumbnailUrl =
         photo
             .getThumbnailFileKey()
             .map(key -> s3StorageService.generatePresignedUrl(key).toString())

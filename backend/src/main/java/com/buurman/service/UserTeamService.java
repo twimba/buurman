@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,13 +180,13 @@ public class UserTeamService {
         teamMemberRepository.findAllByUserId(principal.getUserId());
 
     if (user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
-      @Nullable UUID newActiveTeamId =
+      UUID newActiveTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateActiveTeamId(principal.getUserId(), newActiveTeamId);
     }
 
     if (user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
-      @Nullable UUID newDefaultTeamId =
+      UUID newDefaultTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateDefaultTeamId(principal.getUserId(), newDefaultTeamId);
     }

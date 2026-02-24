@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,8 +83,7 @@ public class PaymentInstructionService {
 
     // Store old values for audit
     String oldName = pi.getName();
-    @Nullable String oldPaymentMethod =
-        pi.getPaymentMethod() != null ? pi.getPaymentMethod().name() : null;
+    String oldPaymentMethod = pi.getPaymentMethod() != null ? pi.getPaymentMethod().name() : null;
     Boolean oldIsDefault = pi.getIsDefault();
 
     if (request.isDefault().orElse(false) && !pi.getIsDefault()) {
@@ -103,7 +101,7 @@ public class PaymentInstructionService {
     if (!Objects.equals(oldName, updated.getName())) {
       changedFields.put("name", updated.getName());
     }
-    @Nullable String newPaymentMethod =
+    String newPaymentMethod =
         updated.getPaymentMethod() != null ? updated.getPaymentMethod().name() : null;
     if (!Objects.equals(oldPaymentMethod, newPaymentMethod)) {
       changedFields.put("paymentMethod", newPaymentMethod);

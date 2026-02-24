@@ -217,7 +217,7 @@ public class RegistrationInvitationService {
       String recipientEmail,
       String registerUrl,
       BackofficePrincipal principal) {
-    @Nullable NotificationChannelSender emailSender = channelSenders.get(NotificationChannel.EMAIL);
+    NotificationChannelSender emailSender = channelSenders.get(NotificationChannel.EMAIL);
     if (emailSender == null) {
       throw new BusinessRuleException("Email sending is not configured");
     }
@@ -246,7 +246,7 @@ public class RegistrationInvitationService {
 
   private void sendViaSms(
       RegistrationInvitation invitation, String recipientPhone, String registerUrl) {
-    @Nullable NotificationChannelSender smsSender = channelSenders.get(NotificationChannel.SMS);
+    NotificationChannelSender smsSender = channelSenders.get(NotificationChannel.SMS);
     if (smsSender == null) {
       throw new BusinessRuleException("SMS sending is not configured");
     }

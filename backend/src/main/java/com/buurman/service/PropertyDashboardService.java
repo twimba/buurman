@@ -79,7 +79,7 @@ public class PropertyDashboardService {
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
 
-    @Nullable String currency = property.getPurchasePriceCurrency().orElse(null);
+    String currency = property.getPurchasePriceCurrency().orElse(null);
     LocalDate now = LocalDate.now(clock);
 
     LocalDate startDate;
@@ -177,11 +177,11 @@ public class PropertyDashboardService {
       List<Expense> expenses,
       int months) {
 
-    @Nullable BigDecimal purchasePrice = property.getPurchasePrice().orElse(null);
-    @Nullable BigDecimal marketValue = property.getCurrentMarketValue().orElse(null);
-    @Nullable BigDecimal mortgageAmount = property.getMortgageAmount().orElse(null);
-    @Nullable BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
-    @Nullable String currency = property.getPurchasePriceCurrency().orElse(null);
+    BigDecimal purchasePrice = property.getPurchasePrice().orElse(null);
+    BigDecimal marketValue = property.getCurrentMarketValue().orElse(null);
+    BigDecimal mortgageAmount = property.getMortgageAmount().orElse(null);
+    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
+    String currency = property.getPurchasePriceCurrency().orElse(null);
 
     BigDecimal totalIncome = sumAmounts(payments.stream().map(Payment::getAmount).toList());
     BigDecimal totalExpenses = sumAmounts(expenses.stream().map(Expense::getAmount).toList());
@@ -309,7 +309,7 @@ public class PropertyDashboardService {
       Property property,
       LocalDate now,
       int months) {
-    @Nullable BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
+    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
 
     // Build per-month operating cost map (due-month-aware)
     Map<Integer, BigDecimal> operatingCostsByMonth = new java.util.HashMap<>();
@@ -639,7 +639,7 @@ public class PropertyDashboardService {
       // If no due months specified, spread evenly across 12 months
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }
-    @Nullable List<Integer> months = parseDueMonths(dueMonths);
+    List<Integer> months = parseDueMonths(dueMonths);
     if (months == null || months.isEmpty()) {
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }

@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.buurman.domain.Property;
+import com.buurman.domain.Tenant;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -165,8 +167,7 @@ public class PaymentService {
     validateCurrencyDecimals(request.amount(), request.currency());
 
     boolean markAsPaid = request.markAsPaid().orElse(false);
-    @Nullable LocalDate paymentDate =
-        markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
+    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
@@ -259,7 +260,7 @@ public class PaymentService {
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
-    @Nullable UUID contractId = null;
+    UUID contractId = null;
     if (contractIdentifier != null) {
       Contract contract =
           contractRepository.getByIdentifierAndTeamId(
@@ -297,7 +298,7 @@ public class PaymentService {
 
     Optional<AmountStats> pending = paymentRepository.getPendingStats(teamId);
     Optional<AmountStats> overdue = paymentRepository.getOverdueStats(teamId);
-    @Nullable String currency = paymentRepository.findCurrencyByTeamId(teamId).orElse(null);
+    String currency = paymentRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<PaymentStatsResponse.MonthlyTrend> monthlyTrend =
         paymentRepository.getMonthlyPaidTrend(teamId, 12).stream()
@@ -933,12 +934,12 @@ public class PaymentService {
             .filter(java.util.Objects::nonNull)
             .collect(toSet());
 
-    Map<UUID, com.buurman.domain.Property> propertiesById =
+    Map<UUID, Property> propertiesById =
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
-            .collect(toMap(com.buurman.domain.Property::getId, identity()));
+            .collect(toMap(Property::getId, identity()));
 
     // Batch-fetch primary tenants via contract_parties
-    Map<UUID, com.buurman.domain.Tenant> primaryTenantByContract =
+    Map<UUID, Tenant> primaryTenantByContract =
         contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
     // Batch-fetch documents for all payments
@@ -962,16 +963,15 @@ public class PaymentService {
       List<PaymentReceivalResponse> receivalResponses =
           receivals.stream().map(receivalMapper::toResponse).toList();
 
-      @Nullable Contract contract = contractsById.get(payment.getContractId());
-      @Nullable ContractSummary contractSummary =
+      Contract contract = contractsById.get(payment.getContractId());
+      ContractSummary contractSummary =
           contract != null ? contractMapper.toSummary(contract) : null;
-      @Nullable PropertySummary propertySummary = null;
-      @Nullable TenantSummary tenantSummary = null;
+      PropertySummary propertySummary = null;
+      TenantSummary tenantSummary = null;
 
       if (contract != null) {
-        com.buurman.domain.@Nullable Property property =
-            propertiesById.get(contract.getPropertyId());
-        com.buurman.domain.@Nullable Tenant tenant = primaryTenantByContract.get(contract.getId());
+        Property property = propertiesById.get(contract.getPropertyId());
+        Tenant tenant = primaryTenantByContract.get(contract.getId());
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
         }
@@ -982,13 +982,13 @@ public class PaymentService {
 
       List<com.buurman.domain.Document> paymentDocs =
           docsByPaymentId.getOrDefault(payment.getId(), List.of());
-      @Nullable DocumentResponse proofOfPayment =
+      DocumentResponse proofOfPayment =
           paymentDocs.stream()
               .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
-      @Nullable DocumentResponse receipt =
+      DocumentResponse receipt =
           paymentDocs.stream()
               .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()
@@ -1030,32 +1030,32 @@ public class PaymentService {
     List<PaymentReceivalResponse> receivalResponses =
         receivals.stream().map(receivalMapper::toResponse).toList();
 
-    @Nullable Contract contract =
+    Contract contract =
         contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
 
     if (contract != null) {
       ContractSummary contractSummary = contractMapper.toSummary(contract);
 
-      @Nullable PropertySummary propertySummary =
+      PropertySummary propertySummary =
           propertyRepository
               .findByIdAndTeamId(contract.getPropertyId(), teamId)
               .map(propertyMapper::toSummary)
               .orElse(null);
 
-      @Nullable TenantSummary tenantSummary =
+      TenantSummary tenantSummary =
           contractPartyService
               .findPrimaryTenantForContract(contract.getId(), teamId)
               .map(tenantMapper::toSummary)
               .orElse(null);
 
-      @Nullable DocumentResponse proofOfPayment =
+      DocumentResponse proofOfPayment =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
               .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
 
-      @Nullable DocumentResponse receipt =
+      DocumentResponse receipt =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
               .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()

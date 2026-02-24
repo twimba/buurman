@@ -418,12 +418,12 @@ public class TenantService {
 
     Optional<Photo> mainPhoto = photos.stream().filter(Photo::getIsMainPhoto).findFirst();
 
-    @Nullable String mainPhotoUrl =
+    String mainPhotoUrl =
         mainPhoto
             .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
             .orElse(null);
 
-    @Nullable String mainPhotoThumbnailUrl =
+    String mainPhotoThumbnailUrl =
         mainPhoto
             .map(
                 photo -> {
@@ -439,10 +439,10 @@ public class TenantService {
 
     List<TenantPropertyAssignment> activeProperties = new java.util.ArrayList<>();
     for (Contract contract : activeContracts) {
-      @Nullable Property property =
+      Property property =
           propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
       if (property != null) {
-        @Nullable String role =
+        String role =
             contractPartyRepository
                 .findByTenantIdAndContractIdAndTeamId(tenant.getId(), contract.getId(), teamId)
                 .map(party -> party.getRole().name())
