@@ -17,6 +17,6 @@ public interface UserMapper {
   @Mapping(target = "createdAt", source = "user.createdAt")
   @Mapping(target = "teamIdentifier", source = "teamIdentifier")
   @Mapping(target = "role", source = "role")
-  @Mapping(target = "emailVerified", expression = "java(user.getEmailVerifiedAt() != null)")
+  @Mapping(target = "emailVerified", expression = "java(user.getEmailVerifiedAt().isPresent())")
   UserResponse toResponse(User user, @Nullable String teamIdentifier, @Nullable String role);
 }

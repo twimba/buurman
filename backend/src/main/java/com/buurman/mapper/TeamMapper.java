@@ -34,7 +34,7 @@ public interface TeamMapper {
   @Mapping(
       target = "isExpired",
       expression = "java(invitation.getExpiresAt().isBefore(java.time.Instant.now()))")
-  @Mapping(target = "isAccepted", expression = "java(invitation.getAcceptedAt() != null)")
+  @Mapping(target = "isAccepted", expression = "java(invitation.getAcceptedAt().isPresent())")
   InvitationResponse toInvitationResponse(
       TeamInvitation invitation,
       String teamIdentifier,
