@@ -1,6 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,15 +46,15 @@ public class BackofficeRegistrationInvitationController {
   @GetMapping
   @Operation(summary = "List registration invitations")
   public ResponseEntity<PageResponse<RegistrationInvitationResponse>> list(
-      @RequestParam(required = false) String search,
+      @RequestParam Optional<String> search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal BackofficePrincipal principal) {
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return ResponseEntity.ok(invitationService.list(pageRequest, search));
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
+    return ResponseEntity.ok(invitationService.list(pageRequest, search.orElse(null)));
   }
 
   @PostMapping

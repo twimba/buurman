@@ -73,7 +73,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V030)
+- Convention: `V<version>__<description>.sql` (currently at V010)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -197,6 +197,8 @@ src/
 - Google Java Style Guide (backend), Airbnb JS Style Guide (app)
 - Conventional commits: `feat:`, `fix:`, `docs:`, `chore:`
 - Self-documenting code, comments only for complex business logic
+- **MANDATORY**: All `if`, `else`, `for`, `while` bodies MUST use curly braces — no brace-less single-statement bodies, ever
+- **MANDATORY**: Use idiomatic Optional API (`map`, `orElse`, `orElseThrow`, `ifPresent`, `flatMap`) — never `if (opt != null)` or `opt.get()` without `isPresent()` check
 
 ## Development Workflow
 

@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record PhotoResponse(
     String identifier,
@@ -10,9 +11,9 @@ public record PhotoResponse(
     String fileName,
     Long fileSize,
     String mimeType,
-    String title,
-    String notes,
+    Optional<String> title,
+    Optional<String> notes,
     Boolean isMainPhoto,
     Instant uploadedAt,
-    String downloadUrl,
-    String thumbnailUrl) {}
+    Optional<String> downloadUrl,
+    Optional<String> thumbnailUrl) {}

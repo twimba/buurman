@@ -38,7 +38,9 @@ export const DashboardPage = () => {
   const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
 
   const unpaidPayments = useMemo(() => {
-    if (!allPayments) return [];
+    if (!allPayments) {
+      return [];
+    }
     return allPayments
       .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE')
       .sort(

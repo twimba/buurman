@@ -128,16 +128,24 @@ const thClass =
   "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
 
 const formatDuration = (ms: number | null): string => {
-  if (ms == null) return "-";
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+  if (ms == null) {
+    return "-";
+  }
+  if (ms < 1000) {
+    return `${ms}ms`;
+  }
+  if (ms < 60000) {
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
   const minutes = Math.floor(ms / 60000);
   const seconds = Math.round((ms % 60000) / 1000);
   return `${minutes}m ${seconds}s`;
 };
 
 const formatFireTime = (iso: string | null): string => {
-  if (!iso) return "-";
+  if (!iso) {
+    return "-";
+  }
   try {
     return format(new Date(iso), "dd MMM yyyy HH:mm:ss");
   } catch {
@@ -170,7 +178,9 @@ const CronTooltip = ({ expression }: { expression: string }) => {
   const triggerRef = useRef<HTMLSpanElement>(null);
 
   const updatePosition = useCallback(() => {
-    if (!triggerRef.current) return;
+    if (!triggerRef.current) {
+      return;
+    }
     const rect = triggerRef.current.getBoundingClientRect();
     setPos({
       top: rect.top + window.scrollY,
@@ -179,7 +189,9 @@ const CronTooltip = ({ expression }: { expression: string }) => {
   }, []);
 
   const description = describeCron(expression);
-  if (description === expression) return null;
+  if (description === expression) {
+    return null;
+  }
 
   const parts = expression.split(/\s+/);
 
@@ -345,7 +357,9 @@ export const SchedulerPage = () => {
   });
 
   const handleConfirmAction = () => {
-    if (!confirmAction) return;
+    if (!confirmAction) {
+      return;
+    }
     const { type, jobName, group } = confirmAction;
     const mutation =
       type === "pause" ? pauseJob : type === "resume" ? resumeJob : triggerJob;

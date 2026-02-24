@@ -47,8 +47,12 @@ const computeMinEffectiveDate = (
   const today = new Date().toISOString().split('T')[0];
   if (contractStatus === ContractStatus.DRAFT) {
     const candidates = [today];
-    if (contractStartDate) candidates.push(contractStartDate);
-    if (contractSignedDate) candidates.push(contractSignedDate);
+    if (contractStartDate) {
+      candidates.push(contractStartDate);
+    }
+    if (contractSignedDate) {
+      candidates.push(contractSignedDate);
+    }
     candidates.sort();
     return candidates[0];
   }

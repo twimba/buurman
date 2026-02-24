@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +47,7 @@ public class ReferenceController {
     Set<Currency> currencies = Currency.getAvailableCurrencies();
     return currencies.stream()
         .filter(c -> c.getDefaultFractionDigits() >= 0)
-        .sorted((a, b) -> a.getCurrencyCode().compareTo(b.getCurrencyCode()))
+        .sorted(Comparator.comparing(Currency::getCurrencyCode))
         .map(
             c ->
                 new CurrencyInfo(

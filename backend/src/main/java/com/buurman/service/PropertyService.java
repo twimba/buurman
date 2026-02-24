@@ -1,8 +1,11 @@
 package com.buurman.service;
 
+import static com.buurman.domain.Property.VARIABLE_PAYMENT_SENTINEL;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
+import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Currency;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,7 +146,14 @@ public class PropertyService {
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment())) {
+    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
+    if (monthlyMortgagePayment.isEmpty()
+        || VARIABLE_PAYMENT_SENTINEL.compareTo(
+                monthlyMortgagePayment.orElseThrow(
+                    () ->
+                        new IllegalStateException(
+                            "Monthly mortgage payment verified present but missing")))
+            != 0) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -156,20 +167,20 @@ public class PropertyService {
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
-    property.setTeamId(principal.getTeamId());
+    property.setTeamId(principal.requireTeamId());
     property.setCreatedBy(principal.getUserId());
     property.setUpdatedBy(principal.getUserId());
 
-    if (property.getLatitude() == null || property.getLongitude() == null) {
+    if (property.getLatitude().isEmpty() || property.getLongitude().isEmpty()) {
       geocodingService
           .geocode(
               request.street(), request.city(),
               request.postalCode(), request.country())
           .ifPresent(
               result -> {
-                property.setLatitude(result.latitude());
-                property.setLongitude(result.longitude());
-                property.setGeocodeAccuracy(result.accuracy());
+                property.setLatitude(Optional.of(result.latitude()));
+                property.setLongitude(Optional.of(result.longitude()));
+                property.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 
@@ -178,7 +189,7 @@ public class PropertyService {
     saveDetailsForCategory(
         request.propertyCategory(),
         savedProperty.getId(),
-        principal.getTeamId(),
+        principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
         request.commercialDetails(),
@@ -191,22 +202,19 @@ public class PropertyService {
         "Property created: {} ({}) for team {}",
         savedProperty.getIdentifier(),
         request.propertyCategory(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY",
         savedProperty.getId(),
         principal.getUserId(),
         savedProperty);
 
-    String propertyName =
-        savedProperty.getStreet() != null
-            ? savedProperty.getStreet() + ", " + savedProperty.getCity()
-            : savedProperty.getIdentifier();
+    String propertyName = savedProperty.getStreet() + ", " + savedProperty.getCity();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId())
+            .teamId(principal.requireTeamId())
             .notificationType(NotificationType.PROPERTY_CREATED)
             .templateName("property-created")
             .templateVariables(
@@ -216,43 +224,27 @@ public class PropertyService {
                     "propertyAddress",
                     propertyName,
                     "propertyType",
-                    savedProperty.getPropertyType() != null
-                        ? savedProperty.getPropertyType().name()
-                        : "N/A",
+                    savedProperty.getPropertyType().name(),
                     "baseUrl",
                     appProperties.email().baseUrl()))
             .createdBy(principal.getUserId())
             .build());
 
-    return toResponseWithMainPhoto(savedProperty, principal.getTeamId(), true);
-  }
-
-  public List<PropertyResponse> getProperties(
-      UserPrincipal principal, Property.PropertyStatus status) {
-    List<Property> properties;
-    if (status != null) {
-      properties = propertyRepository.findByTeamIdAndStatus(principal.getTeamId(), status);
-    } else {
-      properties = propertyRepository.findAllByTeamId(principal.getTeamId());
-    }
-
-    return properties.stream()
-        .map(property -> toResponseWithMainPhoto(property, principal.getTeamId(), false))
-        .toList();
+    return toResponseWithMainPhoto(savedProperty, principal.requireTeamId(), true);
   }
 
   public PageResponse<PropertyResponse> getPropertiesPaginated(
       UserPrincipal principal,
-      String status,
-      String category,
-      String query,
+      @Nullable String status,
+      @Nullable String category,
+      @Nullable String query,
       PageRequest pageRequest) {
     PaginatedResult<Property> result =
         propertyRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, category, query, pageRequest);
+            principal.requireTeamId(), status, category, query, pageRequest);
     List<PropertyResponse> responses =
         result.items().stream()
-            .map(property -> toResponseWithMainPhoto(property, principal.getTeamId(), false))
+            .map(property -> toResponseWithMainPhoto(property, principal.requireTeamId(), false))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -260,9 +252,9 @@ public class PropertyService {
 
   public PropertyResponse getProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return toResponseWithMainPhoto(property, principal.getTeamId(), true);
+    return toResponseWithMainPhoto(property, principal.requireTeamId(), true);
   }
 
   @Transactional
@@ -271,16 +263,17 @@ public class PropertyService {
       String identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    PropertyResponse oldState = toResponseWithMainPhoto(property, principal.getTeamId(), true);
+    PropertyResponse oldState = toResponseWithMainPhoto(property, principal.requireTeamId(), true);
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
     validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment())) {
+    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
+    if (monthlyMortgagePayment.filter(v -> VARIABLE_PAYMENT_SENTINEL.compareTo(v) == 0).isEmpty()) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -306,16 +299,16 @@ public class PropertyService {
             || !Objects.equals(oldPostalCode, property.getPostalCode())
             || !Objects.equals(oldCountry, property.getCountry());
 
-    if (addressChanged && (property.getLatitude() == null || property.getLongitude() == null)) {
+    if (addressChanged && (property.getLatitude().isEmpty() || property.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               property.getStreet(), property.getCity(),
               property.getPostalCode(), property.getCountry())
           .ifPresent(
               result -> {
-                property.setLatitude(result.latitude());
-                property.setLongitude(result.longitude());
-                property.setGeocodeAccuracy(result.accuracy());
+                property.setLatitude(Optional.of(result.latitude()));
+                property.setLongitude(Optional.of(result.longitude()));
+                property.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 
@@ -324,7 +317,7 @@ public class PropertyService {
     updateDetailsForCategory(
         property.getPropertyCategory(),
         property.getId(),
-        principal.getTeamId(),
+        principal.requireTeamId(),
         principal.getUserId(),
         request.residentialDetails(),
         request.commercialDetails(),
@@ -332,12 +325,12 @@ public class PropertyService {
         request.agriculturalDetails());
 
     PropertyResponse newState =
-        toResponseWithMainPhoto(updatedProperty, principal.getTeamId(), true);
+        toResponseWithMainPhoto(updatedProperty, principal.requireTeamId(), true);
 
-    log.info("Property updated: {} for team {}", identifier, principal.getTeamId());
+    log.info("Property updated: {} for team {}", identifier, principal.requireTeamId());
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PROPERTY",
         updatedProperty.getId(),
         principal.getUserId(),
@@ -352,26 +345,30 @@ public class PropertyService {
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteProperty(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.getTeamId());
-    log.info("Property deleted: {} for team {}", identifier, principal.getTeamId());
+    propertyRepository.softDeleteByIdAndTeamId(property.getId(), principal.requireTeamId());
+    log.info("Property deleted: {} for team {}", identifier, principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);
+        principal.requireTeamId(), "PROPERTY", property.getId(), principal.getUserId(), property);
   }
 
   public DocumentResponse uploadDocument(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
@@ -386,20 +383,24 @@ public class PropertyService {
 
   public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "PROPERTY", property.getId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
   }
 
   public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier, MultipartFile file, String title, String notes, UserPrincipal principal) {
+      String identifier,
+      MultipartFile file,
+      @Nullable String title,
+      @Nullable String notes,
+      UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
         file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
   }
@@ -407,13 +408,13 @@ public class PropertyService {
   public PhotoResponse setMainPhoto(
       String identifier, String photoIdentifier, UserPrincipal principal) {
     Property property =
-        propertyRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    Photo photo = photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.getTeamId());
+        propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    Photo photo =
+        photoRepository.getByIdentifierAndTeamId(photoIdentifier, principal.requireTeamId());
     return photoService.setMainPhoto(photo.getId(), "PROPERTY", property.getId(), principal);
   }
 
   // --- Private helpers ---
-
   private void validateCategoryTypeMatch(PropertyCategory category, PropertyType type) {
     Set<PropertyType> validTypes = VALID_TYPES_BY_CATEGORY.get(category);
     if (validTypes == null || !validTypes.contains(type)) {
@@ -422,17 +423,24 @@ public class PropertyService {
     }
   }
 
-  private void validateCurrencyRequired(String currency, java.math.BigDecimal... monetaryFields) {
-    if (currency != null && !currency.isBlank()) {
+  @SafeVarargs
+  private void validateCurrencyRequired(
+      Optional<String> currency, Optional<BigDecimal>... monetaryFields) {
+    if (currency.isPresent()
+        && !currency
+            .orElseThrow(() -> new IllegalStateException("Currency verified present but missing"))
+            .isBlank()) {
       try {
-        java.util.Currency.getInstance(currency);
+        Currency.getInstance(
+            currency.orElseThrow(
+                () -> new IllegalStateException("Currency verified present but missing")));
       } catch (IllegalArgumentException e) {
         throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
       }
       return;
     }
-    for (java.math.BigDecimal field : monetaryFields) {
-      if (field != null) {
+    for (Optional<BigDecimal> field : monetaryFields) {
+      if (field.isPresent()) {
         throw new BadRequestException("Currency is required when monetary fields are provided");
       }
     }
@@ -443,111 +451,95 @@ public class PropertyService {
       UUID propertyId,
       UUID teamId,
       UUID userId,
-      ResidentialDetailsRequest residential,
-      CommercialDetailsRequest commercial,
-      IndustrialDetailsRequest industrial,
-      AgriculturalDetailsRequest agricultural) {
+      Optional<ResidentialDetailsRequest> residential,
+      Optional<CommercialDetailsRequest> commercial,
+      Optional<IndustrialDetailsRequest> industrial,
+      Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        if (residential != null) {
-          PropertyResidentialDetails d = new PropertyResidentialDetails();
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setBedrooms(residential.bedrooms());
-          d.setBathrooms(residential.bathrooms());
-          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
-          d.setPetPolicy(residential.petPolicy());
-          d.setCreatedBy(userId);
-          d.setUpdatedBy(userId);
-          residentialDetailsRepository.save(d);
-        }
-      }
-      case COMMERCIAL -> {
-        if (commercial != null) {
-          PropertyCommercialDetails d = new PropertyCommercialDetails();
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setUsableAreaValue(commercial.usableAreaValue());
-          d.setUsableAreaUnit(commercial.usableAreaUnit());
-          d.setCommonAreaValue(commercial.commonAreaValue());
-          d.setCommonAreaUnit(commercial.commonAreaUnit());
-          d.setFloorLevel(commercial.floorLevel());
-          d.setCeilingHeightM(commercial.ceilingHeightM());
-          d.setHasStorefront(
-              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
-          d.setHasSignageRights(
-              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
-          d.setZoningClassification(commercial.zoningClassification());
-          d.setMaxOccupancy(commercial.maxOccupancy());
-          d.setRestroomCount(commercial.restroomCount());
-          d.setHasKitchenFacility(
-              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
-          d.setAccessibilityCompliant(
-              commercial.accessibilityCompliant() != null
-                  ? commercial.accessibilityCompliant()
-                  : false);
-          d.setCreatedBy(userId);
-          d.setUpdatedBy(userId);
-          commercialDetailsRepository.save(d);
-        }
-      }
-      case INDUSTRIAL -> {
-        if (industrial != null) {
-          PropertyIndustrialDetails d = new PropertyIndustrialDetails();
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setClearHeightM(industrial.clearHeightM());
-          d.setLoadingDocks(industrial.loadingDocks());
-          d.setDriveInDoors(industrial.driveInDoors());
-          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
-          d.setPowerCapacityKva(industrial.powerCapacityKva());
-          d.setHasThreePhasePower(
-              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
-          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
-          d.setCraneCapacityTons(industrial.craneCapacityTons());
-          d.setHasHazmatCertification(
-              industrial.hasHazmatCertification() != null
-                  ? industrial.hasHazmatCertification()
-                  : false);
-          d.setHasVentilationSystem(
-              industrial.hasVentilationSystem() != null
-                  ? industrial.hasVentilationSystem()
-                  : false);
-          d.setHasClimateControl(
-              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
-          d.setYardAreaValue(industrial.yardAreaValue());
-          d.setYardAreaUnit(industrial.yardAreaUnit());
-          d.setZoningClassification(industrial.zoningClassification());
-          d.setCreatedBy(userId);
-          d.setUpdatedBy(userId);
-          industrialDetailsRepository.save(d);
-        }
-      }
-      case AGRICULTURAL -> {
-        if (agricultural != null) {
-          PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
-          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
-          d.setArableAreaValue(agricultural.arableAreaValue());
-          d.setArableAreaUnit(agricultural.arableAreaUnit());
-          d.setSoilType(agricultural.soilType());
-          d.setHasWaterRights(
-              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
-          d.setWaterSource(agricultural.waterSource());
-          d.setIrrigationType(agricultural.irrigationType());
-          d.setFencingType(agricultural.fencingType());
-          d.setHasOutbuildings(
-              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
-          d.setOutbuildingDetails(agricultural.outbuildingDetails());
-          d.setCurrentUse(agricultural.currentUse());
-          d.setZoningClassification(agricultural.zoningClassification());
-          d.setCreatedBy(userId);
-          d.setUpdatedBy(userId);
-          agriculturalDetailsRepository.save(d);
-        }
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r -> {
+                PropertyResidentialDetails d = new PropertyResidentialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setBedrooms(r.bedrooms());
+                d.setBathrooms(r.bathrooms());
+                d.setFurnished(Optional.of(r.furnished().orElse(false)));
+                d.setPetPolicy(r.petPolicy());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                residentialDetailsRepository.save(d);
+              });
+      case COMMERCIAL ->
+          commercial.ifPresent(
+              c -> {
+                PropertyCommercialDetails d = new PropertyCommercialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setUsableAreaValue(c.usableAreaValue());
+                d.setUsableAreaUnit(c.usableAreaUnit());
+                d.setCommonAreaValue(c.commonAreaValue());
+                d.setCommonAreaUnit(c.commonAreaUnit());
+                d.setFloorLevel(c.floorLevel());
+                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
+                d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
+                d.setZoningClassification(c.zoningClassification());
+                d.setMaxOccupancy(c.maxOccupancy());
+                d.setRestroomCount(c.restroomCount());
+                d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
+                d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                commercialDetailsRepository.save(d);
+              });
+      case INDUSTRIAL ->
+          industrial.ifPresent(
+              i -> {
+                PropertyIndustrialDetails d = new PropertyIndustrialDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setClearHeightM(i.clearHeightM());
+                d.setLoadingDocks(i.loadingDocks());
+                d.setDriveInDoors(i.driveInDoors());
+                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
+                d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
+                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
+                d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
+                d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
+                d.setYardAreaValue(i.yardAreaValue());
+                d.setYardAreaUnit(i.yardAreaUnit());
+                d.setZoningClassification(i.zoningClassification());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                industrialDetailsRepository.save(d);
+              });
+      case AGRICULTURAL ->
+          agricultural.ifPresent(
+              a -> {
+                PropertyAgriculturalDetails d = new PropertyAgriculturalDetails();
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setTotalLandAreaValue(a.totalLandAreaValue());
+                d.setTotalLandAreaUnit(a.totalLandAreaUnit());
+                d.setArableAreaValue(a.arableAreaValue());
+                d.setArableAreaUnit(a.arableAreaUnit());
+                d.setSoilType(a.soilType());
+                d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
+                d.setWaterSource(a.waterSource());
+                d.setIrrigationType(a.irrigationType());
+                d.setFencingType(a.fencingType());
+                d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
+                d.setOutbuildingDetails(a.outbuildingDetails());
+                d.setCurrentUse(a.currentUse());
+                d.setZoningClassification(a.zoningClassification());
+                d.setCreatedBy(userId);
+                d.setUpdatedBy(userId);
+                agriculturalDetailsRepository.save(d);
+              });
       case MIXED_USE -> {
         // No detail table for MIXED_USE
       }
@@ -559,144 +551,130 @@ public class PropertyService {
       UUID propertyId,
       UUID teamId,
       UUID userId,
-      ResidentialDetailsRequest residential,
-      CommercialDetailsRequest commercial,
-      IndustrialDetailsRequest industrial,
-      AgriculturalDetailsRequest agricultural) {
+      Optional<ResidentialDetailsRequest> residential,
+      Optional<CommercialDetailsRequest> commercial,
+      Optional<IndustrialDetailsRequest> industrial,
+      Optional<AgriculturalDetailsRequest> agricultural) {
     switch (category) {
-      case RESIDENTIAL -> {
-        if (residential != null) {
-          Optional<PropertyResidentialDetails> existing =
-              residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-          PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setBedrooms(residential.bedrooms());
-          d.setBathrooms(residential.bathrooms());
-          d.setFurnished(residential.furnished() != null ? residential.furnished() : false);
-          d.setPetPolicy(residential.petPolicy());
-          d.setUpdatedBy(userId);
-          if (d.getId() == null) {
-            d.setCreatedBy(userId);
-          }
-          residentialDetailsRepository.save(d);
-        }
-      }
-      case COMMERCIAL -> {
-        if (commercial != null) {
-          Optional<PropertyCommercialDetails> existing =
-              commercialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-          PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setUsableAreaValue(commercial.usableAreaValue());
-          d.setUsableAreaUnit(commercial.usableAreaUnit());
-          d.setCommonAreaValue(commercial.commonAreaValue());
-          d.setCommonAreaUnit(commercial.commonAreaUnit());
-          d.setFloorLevel(commercial.floorLevel());
-          d.setCeilingHeightM(commercial.ceilingHeightM());
-          d.setHasStorefront(
-              commercial.hasStorefront() != null ? commercial.hasStorefront() : false);
-          d.setHasSignageRights(
-              commercial.hasSignageRights() != null ? commercial.hasSignageRights() : false);
-          d.setZoningClassification(commercial.zoningClassification());
-          d.setMaxOccupancy(commercial.maxOccupancy());
-          d.setRestroomCount(commercial.restroomCount());
-          d.setHasKitchenFacility(
-              commercial.hasKitchenFacility() != null ? commercial.hasKitchenFacility() : false);
-          d.setAccessibilityCompliant(
-              commercial.accessibilityCompliant() != null
-                  ? commercial.accessibilityCompliant()
-                  : false);
-          d.setUpdatedBy(userId);
-          if (d.getId() == null) {
-            d.setCreatedBy(userId);
-          }
-          commercialDetailsRepository.save(d);
-        }
-      }
-      case INDUSTRIAL -> {
-        if (industrial != null) {
-          Optional<PropertyIndustrialDetails> existing =
-              industrialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-          PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setClearHeightM(industrial.clearHeightM());
-          d.setLoadingDocks(industrial.loadingDocks());
-          d.setDriveInDoors(industrial.driveInDoors());
-          d.setFloorLoadCapacityKgSqm(industrial.floorLoadCapacityKgSqm());
-          d.setPowerCapacityKva(industrial.powerCapacityKva());
-          d.setHasThreePhasePower(
-              industrial.hasThreePhasePower() != null ? industrial.hasThreePhasePower() : false);
-          d.setHasCrane(industrial.hasCrane() != null ? industrial.hasCrane() : false);
-          d.setCraneCapacityTons(industrial.craneCapacityTons());
-          d.setHasHazmatCertification(
-              industrial.hasHazmatCertification() != null
-                  ? industrial.hasHazmatCertification()
-                  : false);
-          d.setHasVentilationSystem(
-              industrial.hasVentilationSystem() != null
-                  ? industrial.hasVentilationSystem()
-                  : false);
-          d.setHasClimateControl(
-              industrial.hasClimateControl() != null ? industrial.hasClimateControl() : false);
-          d.setYardAreaValue(industrial.yardAreaValue());
-          d.setYardAreaUnit(industrial.yardAreaUnit());
-          d.setZoningClassification(industrial.zoningClassification());
-          d.setUpdatedBy(userId);
-          if (d.getId() == null) {
-            d.setCreatedBy(userId);
-          }
-          industrialDetailsRepository.save(d);
-        }
-      }
-      case AGRICULTURAL -> {
-        if (agricultural != null) {
-          Optional<PropertyAgriculturalDetails> existing =
-              agriculturalDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
-          PropertyAgriculturalDetails d = existing.orElseGet(PropertyAgriculturalDetails::new);
-          d.setPropertyId(propertyId);
-          d.setTeamId(teamId);
-          d.setTotalLandAreaValue(agricultural.totalLandAreaValue());
-          d.setTotalLandAreaUnit(agricultural.totalLandAreaUnit());
-          d.setArableAreaValue(agricultural.arableAreaValue());
-          d.setArableAreaUnit(agricultural.arableAreaUnit());
-          d.setSoilType(agricultural.soilType());
-          d.setHasWaterRights(
-              agricultural.hasWaterRights() != null ? agricultural.hasWaterRights() : false);
-          d.setWaterSource(agricultural.waterSource());
-          d.setIrrigationType(agricultural.irrigationType());
-          d.setFencingType(agricultural.fencingType());
-          d.setHasOutbuildings(
-              agricultural.hasOutbuildings() != null ? agricultural.hasOutbuildings() : false);
-          d.setOutbuildingDetails(agricultural.outbuildingDetails());
-          d.setCurrentUse(agricultural.currentUse());
-          d.setZoningClassification(agricultural.zoningClassification());
-          d.setUpdatedBy(userId);
-          if (d.getId() == null) {
-            d.setCreatedBy(userId);
-          }
-          agriculturalDetailsRepository.save(d);
-        }
-      }
+      case RESIDENTIAL ->
+          residential.ifPresent(
+              r -> {
+                Optional<PropertyResidentialDetails> existing =
+                    residentialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyResidentialDetails d = existing.orElseGet(PropertyResidentialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setBedrooms(r.bedrooms());
+                d.setBathrooms(r.bathrooms());
+                d.setFurnished(Optional.of(r.furnished().orElse(false)));
+                d.setPetPolicy(r.petPolicy());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                residentialDetailsRepository.save(d);
+              });
+      case COMMERCIAL ->
+          commercial.ifPresent(
+              c -> {
+                Optional<PropertyCommercialDetails> existing =
+                    commercialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyCommercialDetails d = existing.orElseGet(PropertyCommercialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setUsableAreaValue(c.usableAreaValue());
+                d.setUsableAreaUnit(c.usableAreaUnit());
+                d.setCommonAreaValue(c.commonAreaValue());
+                d.setCommonAreaUnit(c.commonAreaUnit());
+                d.setFloorLevel(c.floorLevel());
+                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
+                d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
+                d.setZoningClassification(c.zoningClassification());
+                d.setMaxOccupancy(c.maxOccupancy());
+                d.setRestroomCount(c.restroomCount());
+                d.setHasKitchenFacility(Optional.of(c.hasKitchenFacility().orElse(false)));
+                d.setAccessibilityCompliant(Optional.of(c.accessibilityCompliant().orElse(false)));
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                commercialDetailsRepository.save(d);
+              });
+      case INDUSTRIAL ->
+          industrial.ifPresent(
+              i -> {
+                Optional<PropertyIndustrialDetails> existing =
+                    industrialDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setClearHeightM(i.clearHeightM());
+                d.setLoadingDocks(i.loadingDocks());
+                d.setDriveInDoors(i.driveInDoors());
+                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
+                d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
+                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
+                d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
+                d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
+                d.setYardAreaValue(i.yardAreaValue());
+                d.setYardAreaUnit(i.yardAreaUnit());
+                d.setZoningClassification(i.zoningClassification());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                industrialDetailsRepository.save(d);
+              });
+      case AGRICULTURAL ->
+          agricultural.ifPresent(
+              a -> {
+                Optional<PropertyAgriculturalDetails> existing =
+                    agriculturalDetailsRepository.findByPropertyIdAndTeamId(propertyId, teamId);
+                PropertyAgriculturalDetails d =
+                    existing.orElseGet(PropertyAgriculturalDetails::new);
+                d.setPropertyId(propertyId);
+                d.setTeamId(teamId);
+                d.setTotalLandAreaValue(a.totalLandAreaValue());
+                d.setTotalLandAreaUnit(a.totalLandAreaUnit());
+                d.setArableAreaValue(a.arableAreaValue());
+                d.setArableAreaUnit(a.arableAreaUnit());
+                d.setSoilType(a.soilType());
+                d.setHasWaterRights(Optional.of(a.hasWaterRights().orElse(false)));
+                d.setWaterSource(a.waterSource());
+                d.setIrrigationType(a.irrigationType());
+                d.setFencingType(a.fencingType());
+                d.setHasOutbuildings(Optional.of(a.hasOutbuildings().orElse(false)));
+                d.setOutbuildingDetails(a.outbuildingDetails());
+                d.setCurrentUse(a.currentUse());
+                d.setZoningClassification(a.zoningClassification());
+                d.setUpdatedBy(userId);
+                if (d.getId() == null) {
+                  d.setCreatedBy(userId);
+                }
+                agriculturalDetailsRepository.save(d);
+              });
       case MIXED_USE -> {
         // No detail table
       }
     }
   }
 
-  private ResidentialDetailsResponse buildResidentialResponse(UUID propertyId, UUID teamId) {
+  private Optional<ResidentialDetailsResponse> buildResidentialResponse(
+      UUID propertyId, UUID teamId) {
     return residentialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
             d ->
                 new ResidentialDetailsResponse(
-                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()))
-        .orElse(null);
+                    d.getBedrooms(), d.getBathrooms(), d.getFurnished(), d.getPetPolicy()));
   }
 
-  private CommercialDetailsResponse buildCommercialResponse(UUID propertyId, UUID teamId) {
+  private Optional<CommercialDetailsResponse> buildCommercialResponse(
+      UUID propertyId, UUID teamId) {
     return commercialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -714,11 +692,11 @@ public class PropertyService {
                     d.getMaxOccupancy(),
                     d.getRestroomCount(),
                     d.getHasKitchenFacility(),
-                    d.getAccessibilityCompliant()))
-        .orElse(null);
+                    d.getAccessibilityCompliant()));
   }
 
-  private IndustrialDetailsResponse buildIndustrialResponse(UUID propertyId, UUID teamId) {
+  private Optional<IndustrialDetailsResponse> buildIndustrialResponse(
+      UUID propertyId, UUID teamId) {
     return industrialDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -737,11 +715,11 @@ public class PropertyService {
                     d.getHasClimateControl(),
                     d.getYardAreaValue(),
                     d.getYardAreaUnit(),
-                    d.getZoningClassification()))
-        .orElse(null);
+                    d.getZoningClassification()));
   }
 
-  private AgriculturalDetailsResponse buildAgriculturalResponse(UUID propertyId, UUID teamId) {
+  private Optional<AgriculturalDetailsResponse> buildAgriculturalResponse(
+      UUID propertyId, UUID teamId) {
     return agriculturalDetailsRepository
         .findByPropertyIdAndTeamId(propertyId, teamId)
         .map(
@@ -759,8 +737,7 @@ public class PropertyService {
                     d.getHasOutbuildings(),
                     d.getOutbuildingDetails(),
                     d.getCurrentUse(),
-                    d.getZoningClassification()))
-        .orElse(null);
+                    d.getZoningClassification()));
   }
 
   private PropertyResponse toResponseWithMainPhoto(
@@ -770,62 +747,55 @@ public class PropertyService {
     List<Photo> photos =
         photoRepository.findByEntityAndTeamId("PROPERTY", property.getId(), teamId);
 
-    Optional<Photo> mainPhoto =
-        photos.stream().filter(photo -> Boolean.TRUE.equals(photo.getIsMainPhoto())).findFirst();
+    Optional<Photo> mainPhoto = photos.stream().filter(Photo::getIsMainPhoto).findFirst();
 
-    String mainPhotoUrl =
-        mainPhoto
-            .map(photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString())
-            .orElse(null);
+    Optional<String> mainPhotoUrl =
+        mainPhoto.map(
+            photo -> s3StorageService.generatePresignedUrl(photo.getFileKey()).toString());
 
-    String mainPhotoThumbnailUrl =
-        mainPhoto
-            .map(
-                photo -> {
-                  String key =
-                      photo.getThumbnailFileKey() != null
-                          ? photo.getThumbnailFileKey()
-                          : photo.getFileKey();
-                  return s3StorageService.generatePresignedUrl(key).toString();
-                })
-            .orElse(null);
+    Optional<String> mainPhotoThumbnailUrl =
+        mainPhoto.map(
+            photo -> {
+              String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
+              return s3StorageService.generatePresignedUrl(key).toString();
+            });
 
-    List<PropertyOutdoorAreaResponse> outdoorAreas =
+    Optional<List<PropertyOutdoorAreaResponse>> outdoorAreas =
         includeNestedCollections
-            ? outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
-                .map(
-                    a ->
-                        new PropertyOutdoorAreaResponse(
-                            a.getIdentifier(),
-                            a.getType(),
-                            a.getAreaValue(),
-                            a.getAreaUnit(),
-                            a.getCreatedAt(),
-                            a.getUpdatedAt()))
-                .toList()
-            : null;
+            ? Optional.of(
+                outdoorAreaRepository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
+                    .map(
+                        a ->
+                            new PropertyOutdoorAreaResponse(
+                                a.getIdentifier(),
+                                a.getType(),
+                                a.getAreaValue(),
+                                Optional.of(a.getAreaUnit()),
+                                a.getCreatedAt(),
+                                Optional.of(a.getUpdatedAt())))
+                    .toList())
+            : Optional.empty();
 
-    List<PropertyAmenityResponse> amenities =
+    Optional<List<PropertyAmenityResponse>> amenities =
         includeNestedCollections
-            ? propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId)
-            : null;
+            ? Optional.of(
+                propertyAmenityService.buildPropertyAmenityResponses(property.getId(), teamId))
+            : Optional.empty();
 
     // Build category-specific detail responses
-    ResidentialDetailsResponse residentialDetails = null;
-    CommercialDetailsResponse commercialDetails = null;
-    IndustrialDetailsResponse industrialDetails = null;
-    AgriculturalDetailsResponse agriculturalDetails = null;
+    Optional<ResidentialDetailsResponse> residentialDetails = Optional.empty();
+    Optional<CommercialDetailsResponse> commercialDetails = Optional.empty();
+    Optional<IndustrialDetailsResponse> industrialDetails = Optional.empty();
+    Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
-    if (property.getPropertyCategory() != null) {
-      switch (property.getPropertyCategory()) {
-        case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
-        case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
-        case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
-        case AGRICULTURAL ->
-            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
-        case MIXED_USE -> {
-          // No detail table
-        }
+    switch (property.getPropertyCategory()) {
+      case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+      case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
+      case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
+      case AGRICULTURAL ->
+          agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
+      case MIXED_USE -> {
+        // No detail table
       }
     }
 

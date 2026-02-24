@@ -2,6 +2,7 @@ package com.buurman.security;
 
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -21,7 +22,7 @@ public class BackofficeAuthentication extends AbstractAuthenticationToken {
   }
 
   @Override
-  public Object getCredentials() {
+  public @Nullable Object getCredentials() {
     return null; // No credentials needed for JWT auth
   }
 

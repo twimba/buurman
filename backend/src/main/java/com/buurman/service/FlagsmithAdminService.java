@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.buurman.config.models.FlagsmithProperties;
 import com.buurman.exception.ExternalServiceException;
@@ -42,12 +42,12 @@ public class FlagsmithAdminService {
   private static final String SERVER_KEY_NAME = "Backend";
 
   // Cached admin session state
-  private String adminToken;
+  private Optional<String> adminToken = Optional.empty();
   private Instant tokenExpiresAt = Instant.MIN;
-  private Integer projectId;
-  private Integer environmentId;
-  private String environmentClientKey;
-  private String serverSideKey;
+  private Optional<Integer> projectId = Optional.empty();
+  private Optional<Integer> environmentId = Optional.empty();
+  private Optional<String> environmentClientKey = Optional.empty();
+  private Optional<String> serverSideKey = Optional.empty();
 
   public FlagsmithAdminService(FlagsmithProperties properties) {
     this.properties = properties;
@@ -59,22 +59,34 @@ public class FlagsmithAdminService {
   // --- Public records ---
 
   public record FeatureStateInfo(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
   public record IdentityInfo(long id, String identifier) {}
 
   public record IdentityOverrideInfo(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      @Nullable String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
-  public record SegmentInfo(long id, String name, String description) {}
+  public record SegmentInfo(long id, @Nullable String name, @Nullable String description) {}
 
   public record SegmentOverrideState(
-      long featureStateId, long featureId, String featureName, boolean enabled, Object value) {}
+      long featureStateId,
+      long featureId,
+      @Nullable String featureName,
+      boolean enabled,
+      @Nullable Object value) {}
 
   public record SegmentWithOverrides(
       long segmentId,
-      String segmentName,
-      String description,
+      @Nullable String segmentName,
+      @Nullable String description,
       List<SegmentOverrideState> overrides) {}
 
   // --- Global feature state operations ---
@@ -87,7 +99,13 @@ public class FlagsmithAdminService {
   public List<FeatureStateInfo> listFeatureStates() {
     ensureDiscovered();
     Map<Long, String> featureNames = loadFeatureNames();
-    JsonNode resp = get("/environments/" + environmentClientKey + "/featurestates/", adminToken);
+    JsonNode resp =
+        get(
+            "/environments/"
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
+                + "/featurestates/",
+            adminToken.orElse(null));
     List<FeatureStateInfo> result = new ArrayList<>();
     for (JsonNode fs : asArray(resp)) {
       result.add(parseFeatureState(fs, featureNames));
@@ -95,7 +113,8 @@ public class FlagsmithAdminService {
     return result;
   }
 
-  public FeatureStateInfo updateFeatureState(long featureStateId, Boolean enabled, String value) {
+  public FeatureStateInfo updateFeatureState(
+      long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     if (enabled != null) {
@@ -111,13 +130,23 @@ public class FlagsmithAdminService {
     }
     // PATCH returns a sparse response, so re-fetch the full state afterwards
     patch(
-        "/environments/" + environmentClientKey + "/featurestates/" + featureStateId + "/",
+        "/environments/"
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
+            + "/featurestates/"
+            + featureStateId
+            + "/",
         body,
-        adminToken);
+        adminToken.orElse(null));
     JsonNode full =
         get(
-            "/environments/" + environmentClientKey + "/featurestates/" + featureStateId + "/",
-            adminToken);
+            "/environments/"
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
+                + "/featurestates/"
+                + featureStateId
+                + "/",
+            adminToken.orElse(null));
     Map<Long, String> featureNames = loadFeatureNames();
     return parseFeatureState(full, featureNames);
   }
@@ -128,29 +157,32 @@ public class FlagsmithAdminService {
    * be updated through /features/featurestates/{id}/.
    */
   public FeatureStateInfo updateSegmentOverrideState(
-      long featureStateId, Boolean enabled, String value) {
+      long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
 
     // The top-level /features/featurestates/ uses FeatureStateSerializerFull which
     // needs a complete body via PUT. We build it from the environment document.
-    JsonNode currentFs = findFeatureStateInEnvDocument(featureStateId);
-    if (currentFs == null) {
-      throw new IllegalStateException(
-          "Feature state %d not found in environment document".formatted(featureStateId));
-    }
+    JsonNode currentFs =
+        findFeatureStateInEnvDocument(featureStateId)
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "Feature state %d not found in environment document"
+                            .formatted(featureStateId)));
 
     ObjectNode body = mapper.createObjectNode();
     body.put("id", featureStateId);
     body.put("feature", currentFs.get("feature").get("id").asLong());
-    body.put("environment", environmentId);
+    body.put(
+        "environment",
+        environmentId.orElseThrow(
+            () -> new IllegalStateException("Flagsmith environment ID not discovered")));
     body.put("enabled", enabled != null ? enabled : currentFs.get("enabled").asBoolean());
 
     // Resolve feature_segment link ID
     long featureId = currentFs.get("feature").get("id").asLong();
     var fsLinkId = findFeatureSegmentId(featureId, findSegmentIdForFeatureState(featureStateId));
-    if (fsLinkId.isPresent()) {
-      body.put("feature_segment", fsLinkId.get());
-    }
+    fsLinkId.ifPresent(aLong -> body.put("feature_segment", aLong));
 
     // Build feature_state_value as nested dict
     ObjectNode fsv = mapper.createObjectNode();
@@ -192,21 +224,22 @@ public class FlagsmithAdminService {
     }
     body.set("feature_state_value", fsv);
 
-    JsonNode resp = put("/features/featurestates/" + featureStateId + "/", body, adminToken);
+    JsonNode resp =
+        put("/features/featurestates/" + featureStateId + "/", body, adminToken.orElse(null));
     Map<Long, String> featureNames = loadFeatureNames();
     return parseFeatureState(resp, featureNames);
   }
 
   /** Finds a feature state node in the environment document by its django_id/id. */
-  private JsonNode findFeatureStateInEnvDocument(long featureStateId) {
+  private Optional<JsonNode> findFeatureStateInEnvDocument(long featureStateId) {
     JsonNode doc = getEnvironmentDocument();
     JsonNode project = doc.get("project");
     if (project == null) {
-      return null;
+      return Optional.empty();
     }
     JsonNode segments = project.get("segments");
     if (segments == null) {
-      return null;
+      return Optional.empty();
     }
     for (JsonNode segment : segments) {
       JsonNode featureStates = segment.get("feature_states");
@@ -219,11 +252,11 @@ public class FlagsmithAdminService {
                 ? fs.get("django_id").asLong()
                 : fs.get("id").asLong();
         if (id == featureStateId) {
-          return fs;
+          return Optional.of(fs);
         }
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   /** Finds which segment a feature state belongs to (from env document). */
@@ -262,10 +295,19 @@ public class FlagsmithAdminService {
 
   /** Loads feature ID → name mapping from the project features endpoint. */
   private Map<Long, String> loadFeatureNames() {
-    JsonNode resp = get("/projects/" + projectId + "/features/", adminToken);
+    JsonNode resp =
+        get(
+            "/projects/"
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered"))
+                + "/features/",
+            adminToken.orElse(null));
     Map<Long, String> names = new HashMap<>();
     for (JsonNode f : asArray(resp)) {
-      names.put(f.get("id").asLong(), text(f, "name"));
+      String name = text(f, "name");
+      if (name != null) {
+        names.put(f.get("id").asLong(), name);
+      }
     }
     return names;
   }
@@ -281,10 +323,11 @@ public class FlagsmithAdminService {
     JsonNode resp =
         get(
             "/environments/"
-                + environmentClientKey
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/?identifier="
                 + encode(identityString),
-            adminToken);
+            adminToken.orElse(null));
     JsonNode results = asArray(resp);
     for (JsonNode node : results) {
       if (identityString.equals(text(node, "identifier"))) {
@@ -299,11 +342,12 @@ public class FlagsmithAdminService {
     JsonNode resp =
         get(
             "/environments/"
-                + environmentClientKey
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/",
-            adminToken);
+            adminToken.orElse(null));
     List<IdentityOverrideInfo> result = new ArrayList<>();
     for (JsonNode fs : asArray(resp)) {
       result.add(parseIdentityOverride(fs));
@@ -312,7 +356,7 @@ public class FlagsmithAdminService {
   }
 
   public IdentityOverrideInfo createIdentityOverride(
-      long identityId, long featureId, boolean enabled, String value) {
+      long identityId, long featureId, boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     body.put("feature", featureId);
@@ -325,17 +369,18 @@ public class FlagsmithAdminService {
     JsonNode resp =
         post(
             "/environments/"
-                + environmentClientKey
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/",
             body,
-            adminToken);
+            adminToken.orElse(null));
     return parseIdentityOverride(resp);
   }
 
   public IdentityOverrideInfo updateIdentityOverride(
-      long identityId, long featureStateId, Boolean enabled, String value) {
+      long identityId, long featureStateId, @Nullable Boolean enabled, @Nullable String value) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     if (enabled != null) {
@@ -347,14 +392,15 @@ public class FlagsmithAdminService {
     JsonNode resp =
         patch(
             "/environments/"
-                + environmentClientKey
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/"
                 + featureStateId
                 + "/",
             body,
-            adminToken);
+            adminToken.orElse(null));
     return parseIdentityOverride(resp);
   }
 
@@ -362,13 +408,14 @@ public class FlagsmithAdminService {
     ensureDiscovered();
     delete(
         "/environments/"
-            + environmentClientKey
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
             + "/identities/"
             + identityId
             + "/featurestates/"
             + featureStateId
             + "/",
-        adminToken);
+        adminToken.orElse(null));
   }
 
   // --- Segment operations ---
@@ -376,7 +423,13 @@ public class FlagsmithAdminService {
   /** Lists all segments defined in the project. */
   public List<SegmentInfo> listSegments() {
     ensureDiscovered();
-    JsonNode resp = get("/projects/" + projectId + "/segments/", adminToken);
+    JsonNode resp =
+        get(
+            "/projects/"
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered"))
+                + "/segments/",
+            adminToken.orElse(null));
     List<SegmentInfo> result = new ArrayList<>();
     for (JsonNode s : asArray(resp)) {
       result.add(new SegmentInfo(s.get("id").asLong(), text(s, "name"), text(s, "description")));
@@ -384,10 +437,6 @@ public class FlagsmithAdminService {
     return result;
   }
 
-  /**
-   * Fetches all segments and their feature flag overrides using the Admin API. For each feature,
-   * queries its feature-segment links, then resolves the corresponding feature state values.
-   */
   /**
    * Fetches all segments and their feature flag overrides using the environment document (same data
    * the SDK uses for local evaluation). Segment descriptions are enriched from the admin segments
@@ -451,14 +500,17 @@ public class FlagsmithAdminService {
    * Creates a feature-segment link (segment override) for a feature. Flagsmith auto-creates a
    * FeatureState with environment defaults.
    */
-  public long createFeatureSegment(long featureId, long segmentId) {
+  public void createFeatureSegment(long featureId, long segmentId) {
     ensureDiscovered();
     ObjectNode body = mapper.createObjectNode();
     body.put("feature", featureId);
     body.put("segment", segmentId);
-    body.put("environment", environmentId);
-    JsonNode resp = post("/features/feature-segments/", body, adminToken);
-    return resp.get("id").asLong();
+    body.put(
+        "environment",
+        environmentId.orElseThrow(
+            () -> new IllegalStateException("Flagsmith environment ID not discovered")));
+    JsonNode resp = post("/features/feature-segments/", body, adminToken.orElse(null));
+    resp.get("id").asLong();
   }
 
   /** Finds the feature-segment link ID for a given feature + segment combo. */
@@ -466,8 +518,12 @@ public class FlagsmithAdminService {
     ensureDiscovered();
     JsonNode resp =
         get(
-            "/features/feature-segments/?feature=" + featureId + "&environment=" + environmentId,
-            adminToken);
+            "/features/feature-segments/?feature="
+                + featureId
+                + "&environment="
+                + environmentId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment ID not discovered")),
+            adminToken.orElse(null));
     for (JsonNode fs : asArray(resp)) {
       if (fs.get("segment").asLong() == segmentId) {
         return Optional.of(fs.get("id").asLong());
@@ -516,21 +572,13 @@ public class FlagsmithAdminService {
   /** Deletes a feature-segment link, cascading the associated feature state. */
   public void deleteFeatureSegment(long featureSegmentId) {
     ensureDiscovered();
-    delete("/features/feature-segments/" + featureSegmentId + "/", adminToken);
-  }
-
-  /**
-   * Builds the Flagsmith identity string for a user in a team, matching the format used by {@link
-   * FeatureFlagService#buildIdentity}.
-   */
-  public static String buildIdentity(String teamIdentifier, String userIdentifier) {
-    return "team:%s_user:%s".formatted(teamIdentifier, userIdentifier);
+    delete("/features/feature-segments/" + featureSegmentId + "/", adminToken.orElse(null));
   }
 
   // --- Internal: environment document ---
 
   private JsonNode getEnvironmentDocument() {
-    if (serverSideKey == null) {
+    if (serverSideKey.isEmpty()) {
       throw new IllegalStateException(
           "Server-side key not available — cannot fetch environment document");
     }
@@ -538,7 +586,10 @@ public class FlagsmithAdminService {
       var req =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + "/environment-document/"))
-              .header("X-Environment-Key", serverSideKey)
+              .header(
+                  "X-Environment-Key",
+                  serverSideKey.orElseThrow(
+                      () -> new IllegalStateException("Flagsmith server-side key not available")))
               .GET()
               .timeout(REQUEST_TIMEOUT)
               .build();
@@ -560,13 +611,13 @@ public class FlagsmithAdminService {
 
   private void ensureDiscovered() {
     ensureAuthenticated();
-    if (projectId == null || environmentClientKey == null) {
+    if (projectId.isEmpty() || environmentClientKey.isEmpty()) {
       discover();
     }
   }
 
   private void ensureAuthenticated() {
-    if (adminToken != null && Instant.now().isBefore(tokenExpiresAt)) {
+    if (adminToken.isPresent() && Instant.now().isBefore(tokenExpiresAt)) {
       return;
     }
     resolveAdminToken();
@@ -574,14 +625,14 @@ public class FlagsmithAdminService {
 
   private void resolveAdminToken() {
     // Priority 1: Direct API token (Flagsmith Cloud)
-    if (StringUtils.hasText(properties.apiToken())) {
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
       this.adminToken = properties.apiToken();
       this.tokenExpiresAt = Instant.MAX;
       return;
     }
     // Priority 2: Login with email/password (self-hosted)
-    if (StringUtils.hasText(properties.adminEmail())
-        && StringUtils.hasText(properties.adminPassword())) {
+    if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+        && properties.adminPassword().filter(s -> !s.isBlank()).isPresent()) {
       login();
       return;
     }
@@ -595,72 +646,96 @@ public class FlagsmithAdminService {
     ObjectNode body =
         mapper
             .createObjectNode()
-            .put("email", properties.adminEmail())
-            .put("password", properties.adminPassword());
+            .put(
+                "email",
+                properties
+                    .adminEmail()
+                    .orElseThrow(
+                        () -> new IllegalStateException("Flagsmith admin email not configured")))
+            .put(
+                "password",
+                properties
+                    .adminPassword()
+                    .orElseThrow(
+                        () ->
+                            new IllegalStateException("Flagsmith admin password not configured")));
     JsonNode resp = post("/auth/login/", body, null);
     if (!resp.has("key")) {
       throw new ExternalServiceException("Flagsmith admin login failed");
     }
-    this.adminToken = resp.get("key").asText();
+    this.adminToken = Optional.of(resp.get("key").asText());
     this.tokenExpiresAt = Instant.now().plus(TOKEN_TTL);
     log.debug("Flagsmith admin token refreshed");
   }
 
   public boolean isAdminConfigured() {
-    return StringUtils.hasText(properties.apiToken())
-        || (StringUtils.hasText(properties.adminEmail())
-            && StringUtils.hasText(properties.adminPassword()));
+    return properties.apiToken().filter(s -> !s.isBlank()).isPresent()
+        || (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+            && properties.adminPassword().filter(s -> !s.isBlank()).isPresent());
   }
 
   public String getAuthMethod() {
-    if (StringUtils.hasText(properties.apiToken())) return "api_token";
-    if (StringUtils.hasText(properties.adminEmail())) return "credentials";
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
+      return "api_token";
+    }
+    if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()) {
+      return "credentials";
+    }
     return "none";
   }
 
   private void discover() {
     // Find project
-    JsonNode projects = get("/projects/", adminToken);
+    JsonNode projects = get("/projects/", adminToken.orElse(null));
     for (JsonNode p : asArray(projects)) {
       if (properties.projectName().equals(text(p, "name"))) {
-        this.projectId = p.get("id").asInt();
+        this.projectId = Optional.of(p.get("id").asInt());
         break;
       }
     }
-    if (projectId == null) {
+    if (projectId.isEmpty()) {
       throw new IllegalStateException(
           "Flagsmith project '%s' not found".formatted(properties.projectName()));
     }
 
     // Find environment client key and ID
-    JsonNode envs = get("/environments/?project=" + projectId, adminToken);
+    JsonNode envs =
+        get(
+            "/environments/?project="
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered")),
+            adminToken.orElse(null));
     for (JsonNode env : asArray(envs)) {
       if (properties.environmentName().equals(text(env, "name"))) {
-        this.environmentClientKey = env.get("api_key").asText();
-        this.environmentId = env.get("id").asInt();
+        this.environmentClientKey = Optional.of(env.get("api_key").asText());
+        this.environmentId = Optional.of(env.get("id").asInt());
         break;
       }
     }
-    if (environmentClientKey == null) {
+    if (environmentClientKey.isEmpty()) {
       throw new IllegalStateException(
           "Flagsmith environment '%s' not found".formatted(properties.environmentName()));
     }
 
     // Find or create server-side key (needed for environment-document endpoint)
-    String apiKeysPath = "/environments/" + environmentClientKey + "/api-keys/";
-    JsonNode keys = get(apiKeysPath, adminToken);
+    String apiKeysPath =
+        "/environments/"
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
+            + "/api-keys/";
+    JsonNode keys = get(apiKeysPath, adminToken.orElse(null));
     for (JsonNode k : asArray(keys)) {
       if (SERVER_KEY_NAME.equals(text(k, "name"))) {
-        this.serverSideKey = k.get("key").asText();
+        this.serverSideKey = Optional.of(k.get("key").asText());
         break;
       }
     }
-    if (serverSideKey == null) {
+    if (serverSideKey.isEmpty()) {
       // Create it if it doesn't exist
       ObjectNode keyBody = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
-      JsonNode created = post(apiKeysPath, keyBody, adminToken);
+      JsonNode created = post(apiKeysPath, keyBody, adminToken.orElse(null));
       if (created.has("key")) {
-        this.serverSideKey = created.get("key").asText();
+        this.serverSideKey = Optional.of(created.get("key").asText());
       }
     }
 
@@ -669,21 +744,19 @@ public class FlagsmithAdminService {
         projectId,
         environmentId,
         environmentClientKey,
-        serverSideKey != null ? "resolved" : "MISSING");
+        serverSideKey.isPresent() ? "resolved" : "MISSING");
   }
 
   // --- Internal: HTTP helpers ---
 
-  private JsonNode get(String path, String token) {
+  private JsonNode get(String path, @Nullable String token) {
     try {
-      var req =
-          HttpRequest.newBuilder()
-              .uri(URI.create(baseUrl + path))
-              .header("Authorization", "Token " + token)
-              .GET()
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+      var builder =
+          HttpRequest.newBuilder().uri(URI.create(baseUrl + path)).GET().timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "GET", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -694,7 +767,7 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode post(String path, JsonNode payload, String token) {
+  private JsonNode post(String path, JsonNode payload, @Nullable String token) {
     try {
       var builder =
           HttpRequest.newBuilder()
@@ -716,17 +789,18 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode put(String path, JsonNode payload, String token) {
+  private JsonNode put(String path, JsonNode payload, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Content-Type", "application/json")
-              .header("Authorization", "Token " + token)
               .PUT(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PUT", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -737,18 +811,19 @@ public class FlagsmithAdminService {
     }
   }
 
-  private JsonNode patch(String path, JsonNode payload, String token) {
+  private JsonNode patch(String path, JsonNode payload, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
               .header("Content-Type", "application/json")
-              .header("Authorization", "Token " + token)
               .method(
                   "PATCH", HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "PATCH", path);
       return mapper.readTree(resp.body());
     } catch (ExternalServiceException e) {
@@ -759,16 +834,17 @@ public class FlagsmithAdminService {
     }
   }
 
-  private void delete(String path, String token) {
+  private void delete(String path, @Nullable String token) {
     try {
-      var req =
+      var builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
-              .header("Authorization", "Token " + token)
               .DELETE()
-              .timeout(REQUEST_TIMEOUT)
-              .build();
-      HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+      HttpResponse<String> resp = http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
       checkStatus(resp, "DELETE", path);
     } catch (ExternalServiceException e) {
       throw e;
@@ -785,7 +861,7 @@ public class FlagsmithAdminService {
     }
     if (status == 401) {
       // Token expired — clear cached token so next call re-authenticates
-      this.adminToken = null;
+      this.adminToken = Optional.empty();
       this.tokenExpiresAt = Instant.MIN;
     }
     throw new ExternalServiceException(
@@ -826,7 +902,7 @@ public class FlagsmithAdminService {
     return featureNode.isObject() ? featureNode.get("id").asLong() : featureNode.asLong();
   }
 
-  private Object extractValue(JsonNode fs) {
+  private @Nullable Object extractValue(JsonNode fs) {
     JsonNode val = fs.get("feature_state_value");
     if (val == null || val.isNull()) {
       return null;
@@ -874,7 +950,7 @@ public class FlagsmithAdminService {
     throw new IllegalStateException("Unexpected Flagsmith response format");
   }
 
-  private static String text(JsonNode node, String field) {
+  private static @Nullable String text(JsonNode node, String field) {
     return node.has(field) && !node.get(field).isNull() ? node.get(field).asText() : null;
   }
 

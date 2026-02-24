@@ -5,6 +5,7 @@ import static com.buurman.domain.NotificationChannel.EMAIL;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -56,9 +57,20 @@ public class SendGridEmailSender implements NotificationChannelSender {
     Instant start = Instant.now();
     try {
       Email from = new Email(fromEmail, fromName);
-      Email to = new Email(request.recipientEmail());
+      Email to =
+          new Email(
+              request
+                  .recipientEmail()
+                  .orElseThrow(() -> new NotificationSendException("recipientEmail is required")));
       Content content = new Content("text/html", request.body());
-      Mail mail = new Mail(from, request.subject(), to, content);
+      Mail mail =
+          new Mail(
+              from,
+              request
+                  .subject()
+                  .orElseThrow(() -> new NotificationSendException("subject is required")),
+              to,
+              content);
 
       Request sgRequest = new Request();
       sgRequest.setMethod(Method.POST);
@@ -69,7 +81,13 @@ public class SendGridEmailSender implements NotificationChannelSender {
 
       if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
         String messageId = response.getHeaders().get("X-Message-Id");
-        log.info("SendGrid email sent to {}, message ID: {}", request.recipientEmail(), messageId);
+        if (messageId == null) {
+          messageId = "";
+        }
+        log.info(
+            "SendGrid email sent to {}, message ID: {}",
+            request.recipientEmail().orElse(""),
+            messageId);
         metricsService.recordNotificationSend(start, "email", "sendgrid", "success");
         return messageId;
       } else {
@@ -98,7 +116,7 @@ public class SendGridEmailSender implements NotificationChannelSender {
     String subject = deriveSubject(templateName, variables);
     String body = templateEngine.process("email/" + templateName, context);
 
-    return new RenderedContent(subject, body, EMAIL);
+    return new RenderedContent(Optional.of(subject), body, EMAIL);
   }
 
   private String deriveSubject(String templateName, Map<String, Object> variables) {
@@ -140,6 +158,12 @@ public class SendGridEmailSender implements NotificationChannelSender {
       return defaultValue;
     }
     Object val = variables.get(key);
-    return val != null ? val.toString() : defaultValue;
+    if (val == null) {
+      return defaultValue;
+    }
+    if (val instanceof Optional<?> opt) {
+      return opt.map(Object::toString).orElse(defaultValue);
+    }
+    return val.toString();
   }
 }

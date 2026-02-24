@@ -80,7 +80,9 @@ export const PropertySelector = ({
     const groups = new Map<string, PropertyResponse[]>();
     for (const p of filtered) {
       const cat = p.propertyCategory ?? 'OTHER';
-      if (!groups.has(cat)) groups.set(cat, []);
+      if (!groups.has(cat)) {
+        groups.set(cat, []);
+      }
       groups.get(cat)!.push(p);
     }
     // Sort groups by category order
@@ -236,7 +238,9 @@ export const PropertySelector = ({
           onChange={(e) => {
             setSearch(e.target.value);
             setHighlightedIndex(0);
-            if (!isOpen) setIsOpen(true);
+            if (!isOpen) {
+              setIsOpen(true);
+            }
           }}
           onFocus={() => {
             if (!disabled) {

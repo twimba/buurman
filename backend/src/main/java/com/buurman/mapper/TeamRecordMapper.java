@@ -2,9 +2,9 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Team;
@@ -13,9 +13,9 @@ import com.buurman.jooq.generated.tables.records.TeamsRecord;
 @Component
 public class TeamRecordMapper {
 
-  public Team toDomain(TeamsRecord record) {
+  public Optional<Team> toDomain(@Nullable TeamsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Team team = new Team();
@@ -23,16 +23,12 @@ public class TeamRecordMapper {
     team.setIdentifier(record.getIdentifier());
     team.setName(record.getName());
     team.setDemo(record.getDemo());
-    team.setCreatedAt(toInstant(record.getCreatedAt()));
-    team.setUpdatedAt(toInstant(record.getUpdatedAt()));
+    team.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    team.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     team.setCreatedBy(record.getCreatedBy());
     team.setUpdatedBy(record.getUpdatedBy());
-    team.setDeletedAt(toInstant(record.getDeletedAt()));
+    team.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
-    return team;
-  }
-
-  private Instant toInstant(LocalDateTime localDateTime) {
-    return localDateTime == null ? null : localDateTime.toInstant(UTC);
+    return Optional.of(team);
   }
 }

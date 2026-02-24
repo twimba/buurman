@@ -1,4 +1,9 @@
 package com.buurman.dto.response;
 
+import java.util.Optional;
+
 public record ResidentialDetailsResponse(
-    Integer bedrooms, Integer bathrooms, Boolean furnished, String petPolicy) {}
+    Optional<Integer> bedrooms,
+    Optional<Integer> bathrooms,
+    Optional<Boolean> furnished,
+    Optional<String> petPolicy) {}

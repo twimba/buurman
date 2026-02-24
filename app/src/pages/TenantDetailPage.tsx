@@ -142,7 +142,9 @@ export const TenantDetailPage = () => {
   const deletePhotoMutation = useDeletePhoto();
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       await deleteTenantMutation.mutateAsync(id);
       navigate('/tenants');
@@ -203,7 +205,9 @@ export const TenantDetailPage = () => {
 
   // Contracts filtering, sorting, and pagination
   const filteredAndSortedContracts = useMemo(() => {
-    if (!contracts) return [];
+    if (!contracts) {
+      return [];
+    }
     let filtered = [...contracts];
     if (contractsSearchTerm) {
       const search = contractsSearchTerm.toLowerCase();
@@ -240,8 +244,12 @@ export const TenantDetailPage = () => {
         default:
           return 0;
       }
-      if (aVal < bVal) return contractsSortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return contractsSortOrder === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return contractsSortOrder === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return contractsSortOrder === 'asc' ? 1 : -1;
+      }
       return 0;
     });
     return filtered;

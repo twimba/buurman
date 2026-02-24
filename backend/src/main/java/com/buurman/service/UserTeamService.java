@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -41,29 +42,30 @@ public class UserTeamService {
       UpdateUserProfileRequest request, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
-    String oldPhone = user.getPhone();
-    String newPhone = request.phone();
+    Optional<String> oldPhone = user.getPhone();
+    Optional<String> newPhone = request.phone();
 
     // Validate phone against policy before saving
-    if (newPhone != null && !newPhone.isBlank()) {
-      phoneNumberPolicyService.validate(newPhone);
-    }
+    newPhone.filter(p -> !p.isBlank()).ifPresent(phoneNumberPolicyService::validate);
 
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
-    user.setPhone(newPhone);
+    user.setPhone(request.phone());
 
     // If phone changed or removed, clear verification
-    boolean phoneChanged = !java.util.Objects.equals(oldPhone, newPhone);
+    boolean phoneChanged = !oldPhone.equals(newPhone);
     if (phoneChanged) {
-      user.setPhoneVerifiedAt(null);
+      user.setPhoneVerifiedAt(Optional.empty());
     }
 
     user = userRepository.save(user);
+    UUID savedUserId = user.getId();
 
-    // If phone changed to a new (non-null) value, trigger verification
-    if (phoneChanged && newPhone != null && !newPhone.isBlank()) {
-      phoneVerificationService.sendVerificationCode(user.getId());
+    // If phone changed to a new (non-blank) value, trigger verification
+    if (phoneChanged) {
+      newPhone
+          .filter(p -> !p.isBlank())
+          .ifPresent(p -> phoneVerificationService.sendVerificationCode(savedUserId));
     }
 
     return toProfileResponse(user);
@@ -71,12 +73,12 @@ public class UserTeamService {
 
   private UserProfileResponse toProfileResponse(User user) {
     return new UserProfileResponse(
-        user.getIdentifier(),
+        java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
         user.getPhone(),
-        user.getPhoneVerifiedAt() != null);
+        user.getPhoneVerifiedAt().isPresent());
   }
 
   public List<UserTeamResponse> getUserTeams(UserPrincipal principal) {
@@ -93,10 +95,10 @@ public class UserTeamService {
               return new UserTeamResponse(
                   team.getIdentifier(),
                   team.getName(),
-                  membership.getRole(),
+                  membership.getRole().name(),
                   membership.isOwner(),
-                  team.getId().equals(user.getDefaultTeamId()),
-                  team.getId().equals(user.getActiveTeamId()),
+                  user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
+                  user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),
                   memberCount,
                   membership.getJoinedAt());
             })
@@ -121,9 +123,9 @@ public class UserTeamService {
     return new UserTeamResponse(
         team.getIdentifier(),
         team.getName(),
-        membership.getRole(),
+        membership.getRole().name(),
         membership.isOwner(),
-        team.getId().equals(user.getDefaultTeamId()),
+        user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
         true, // now active
         memberCount,
         membership.getJoinedAt());
@@ -147,10 +149,10 @@ public class UserTeamService {
     return new UserTeamResponse(
         team.getIdentifier(),
         team.getName(),
-        membership.getRole(),
+        membership.getRole().name(),
         membership.isOwner(),
         true, // now default
-        team.getId().equals(user.getActiveTeamId()),
+        user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),
         memberCount,
         membership.getJoinedAt());
   }
@@ -177,15 +179,15 @@ public class UserTeamService {
     List<TeamMember> remainingMemberships =
         teamMemberRepository.findAllByUserId(principal.getUserId());
 
-    if (team.getId().equals(user.getActiveTeamId())) {
+    if (user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       UUID newActiveTeamId =
-          remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
+          remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateActiveTeamId(principal.getUserId(), newActiveTeamId);
     }
 
-    if (team.getId().equals(user.getDefaultTeamId())) {
+    if (user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       UUID newDefaultTeamId =
-          remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
+          remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateDefaultTeamId(principal.getUserId(), newDefaultTeamId);
     }
   }

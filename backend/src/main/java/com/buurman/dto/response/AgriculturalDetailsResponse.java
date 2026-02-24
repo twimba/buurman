@@ -1,18 +1,19 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public record AgriculturalDetailsResponse(
-    BigDecimal totalLandAreaValue,
-    String totalLandAreaUnit,
-    BigDecimal arableAreaValue,
-    String arableAreaUnit,
-    String soilType,
-    Boolean hasWaterRights,
-    String waterSource,
-    String irrigationType,
-    String fencingType,
-    Boolean hasOutbuildings,
-    String outbuildingDetails,
-    String currentUse,
-    String zoningClassification) {}
+    Optional<BigDecimal> totalLandAreaValue,
+    Optional<String> totalLandAreaUnit,
+    Optional<BigDecimal> arableAreaValue,
+    Optional<String> arableAreaUnit,
+    Optional<String> soilType,
+    Optional<Boolean> hasWaterRights,
+    Optional<String> waterSource,
+    Optional<String> irrigationType,
+    Optional<String> fencingType,
+    Optional<Boolean> hasOutbuildings,
+    Optional<String> outbuildingDetails,
+    Optional<String> currentUse,
+    Optional<String> zoningClassification) {}

@@ -25,16 +25,17 @@ public class PropertyAmenityRepository {
   private final Clock clock;
 
   public List<PropertyAmenity> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_AMENITIES)
-        .where(
-            PROPERTY_AMENITIES
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_AMENITIES.TEAM_ID.eq(teamId))
-                .and(PROPERTY_AMENITIES.DELETED_AT.isNull()))
-        .orderBy(PROPERTY_AMENITIES.CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_AMENITIES)
+            .where(
+                PROPERTY_AMENITIES
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(PROPERTY_AMENITIES.TEAM_ID.eq(teamId))
+                    .and(PROPERTY_AMENITIES.DELETED_AT.isNull()))
+            .orderBy(PROPERTY_AMENITIES.CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PropertyAmenity> findByPropertyIdAndAmenityIdAndTeamId(
@@ -57,22 +58,20 @@ public class PropertyAmenityRepository {
         .orElseThrow(() -> new NotFoundException("Property amenity not found"));
   }
 
-  public PropertyAmenity save(PropertyAmenity pa) {
+  public void save(PropertyAmenity pa) {
     LocalDateTime now = LocalDateTime.now(clock);
 
     if (pa.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          pa.getCreatedAt() != null ? LocalDateTime.ofInstant(pa.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          pa.getUpdatedAt() != null ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(PROPERTY_AMENITIES)
           .set(PROPERTY_AMENITIES.ID, newId)
           .set(PROPERTY_AMENITIES.PROPERTY_ID, pa.getPropertyId())
           .set(PROPERTY_AMENITIES.AMENITY_ID, pa.getAmenityId())
           .set(PROPERTY_AMENITIES.TEAM_ID, pa.getTeamId())
-          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
+          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
           .set(PROPERTY_AMENITIES.CREATED_AT, createdAt)
           .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
           .set(PROPERTY_AMENITIES.CREATED_BY, pa.getCreatedBy())
@@ -83,11 +82,10 @@ public class PropertyAmenityRepository {
       pa.setCreatedAt(createdAt.toInstant(UTC));
       pa.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          pa.getUpdatedAt() != null ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = now;
 
       dsl.update(PROPERTY_AMENITIES)
-          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes())
+          .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
           .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
           .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
           .where(
@@ -99,8 +97,6 @@ public class PropertyAmenityRepository {
 
       pa.setUpdatedAt(updatedAt.toInstant(UTC));
     }
-
-    return pa;
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
@@ -118,12 +114,12 @@ public class PropertyAmenityRepository {
     pa.setPropertyId(record.getPropertyId());
     pa.setAmenityId(record.getAmenityId());
     pa.setTeamId(record.getTeamId());
-    pa.setNotes(record.getNotes());
-    pa.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    pa.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    pa.setNotes(Optional.ofNullable(record.getNotes()));
+    pa.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    pa.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     pa.setCreatedBy(record.getCreatedBy());
     pa.setUpdatedBy(record.getUpdatedBy());
-    pa.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
+    pa.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return pa;
   }
 }

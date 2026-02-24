@@ -113,7 +113,9 @@ const ReceivalsTable = ({
   };
 
   const saveEdit = () => {
-    if (!editingId || !editAmount || parseFloat(editAmount) <= 0) return;
+    if (!editingId || !editAmount || parseFloat(editAmount) <= 0) {
+      return;
+    }
     onEdit(editingId, {
       amount: parseFloat(editAmount),
       receivalDate: editDate,
@@ -135,7 +137,9 @@ const ReceivalsTable = ({
     }
     items.sort((a, b) => {
       const mul = sortOrder === 'asc' ? 1 : -1;
-      if (sortField === 'amount') return (a.amount - b.amount) * mul;
+      if (sortField === 'amount') {
+        return (a.amount - b.amount) * mul;
+      }
       return a.receivalDate.localeCompare(b.receivalDate) * mul;
     });
     return items;
@@ -389,7 +393,9 @@ export const PaymentDetailPage = () => {
   const deleteReceivalMutation = useDeletePaymentReceival(id!);
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       await deletePaymentMutation.mutateAsync(id);
       navigate('/payments');
@@ -410,7 +416,9 @@ export const PaymentDetailPage = () => {
   };
 
   const handleMarkPaid = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     const data: MarkPaidRequest = {
       paymentDate,
       notes: markPaidNotes || undefined,
@@ -424,7 +432,9 @@ export const PaymentDetailPage = () => {
   };
 
   const handleRegisterReceival = async () => {
-    if (!receivalAmount || parseFloat(receivalAmount) <= 0) return;
+    if (!receivalAmount || parseFloat(receivalAmount) <= 0) {
+      return;
+    }
     const data: CreatePaymentReceivalRequest = {
       amount: parseFloat(receivalAmount),
       receivalDate,

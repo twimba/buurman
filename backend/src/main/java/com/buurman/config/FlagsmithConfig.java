@@ -1,7 +1,5 @@
 package com.buurman.config;
 
-import static org.springframework.util.StringUtils.hasText;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -9,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,9 +34,10 @@ public class FlagsmithConfig {
 
   @PostConstruct
   public void logFlagsmithAdminStatus() {
-    if (hasText(properties.apiToken())) {
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
       log.info("Flagsmith admin: configured via API token");
-    } else if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
+    } else if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+        && properties.adminPassword().filter(s -> !s.isBlank()).isPresent()) {
       log.info("Flagsmith admin: configured via email/password login");
     } else {
       log.warn(
@@ -48,14 +48,15 @@ public class FlagsmithConfig {
   }
 
   @Bean
-  public FlagsmithClient flagsmithClient() {
+  public @Nullable FlagsmithClient flagsmithClient() {
     return resolveServerKey().map(this::buildClient).orElse(null);
   }
 
   private Optional<String> resolveServerKey() {
-    if (properties.serverSideKey() != null && !properties.serverSideKey().isBlank()) {
+    Optional<String> configured = properties.serverSideKey().filter(s -> !s.isBlank());
+    if (configured.isPresent()) {
       log.info("Using configured Flagsmith server-side key");
-      return Optional.of(properties.serverSideKey());
+      return configured;
     }
     return discoverServerKey();
   }
@@ -95,10 +96,28 @@ public class FlagsmithConfig {
       ObjectMapper mapper = new ObjectMapper();
       FlagsmithAdminApi api = new FlagsmithAdminApi(http, mapper, resolveBaseUrl());
 
-      String token =
-          hasText(properties.apiToken())
-              ? properties.apiToken()
-              : api.login(properties.adminEmail(), properties.adminPassword());
+      String token;
+      if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
+        token =
+            properties
+                .apiToken()
+                .orElseThrow(
+                    () -> new IllegalStateException("API token verified present but missing"));
+      } else {
+        // Null-safety: these are guaranteed present here because resolveAdminTokenForDiscovery()
+        // already verified that both are present (non-blank) before reaching this code path
+        String adminEmail =
+            properties
+                .adminEmail()
+                .orElseThrow(
+                    () -> new IllegalStateException("Admin email verified present but missing"));
+        String adminPassword =
+            properties
+                .adminPassword()
+                .orElseThrow(
+                    () -> new IllegalStateException("Admin password verified present but missing"));
+        token = api.login(adminEmail, adminPassword);
+      }
 
       String envName = properties.environmentName();
       int projectId = api.findProjectId(token, properties.projectName());
@@ -115,12 +134,15 @@ public class FlagsmithConfig {
     }
   }
 
-  private String resolveAdminTokenForDiscovery() {
-    if (hasText(properties.apiToken())) {
-      return properties.apiToken();
+  private @Nullable String resolveAdminTokenForDiscovery() {
+    if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
+      return properties
+          .apiToken()
+          .orElseThrow(() -> new IllegalStateException("API token verified present but missing"));
     }
 
-    if (hasText(properties.adminEmail()) && hasText(properties.adminPassword())) {
+    if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()
+        && properties.adminPassword().filter(s -> !s.isBlank()).isPresent()) {
       return "credentials";
     }
 
@@ -143,17 +165,7 @@ public class FlagsmithConfig {
    * Thin wrapper around Flagsmith's admin REST API. Each method throws on failure so the caller can
    * handle everything in a single catch block.
    */
-  private static class FlagsmithAdminApi {
-
-    private final HttpClient http;
-    private final ObjectMapper mapper;
-    private final String baseUrl;
-
-    FlagsmithAdminApi(HttpClient http, ObjectMapper mapper, String baseUrl) {
-      this.http = http;
-      this.mapper = mapper;
-      this.baseUrl = baseUrl;
-    }
+  private record FlagsmithAdminApi(HttpClient http, ObjectMapper mapper, String baseUrl) {
 
     String login(String email, String password) throws Exception {
       ObjectNode body = mapper.createObjectNode().put("email", email).put("password", password);
@@ -214,7 +226,7 @@ public class FlagsmithConfig {
       return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
     }
 
-    private JsonNode post(String path, JsonNode payload, String token) throws Exception {
+    private JsonNode post(String path, JsonNode payload, @Nullable String token) throws Exception {
       HttpRequest.Builder builder =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + path))
@@ -241,7 +253,7 @@ public class FlagsmithConfig {
       throw new IllegalStateException("unexpected response format");
     }
 
-    private static String text(JsonNode node, String field) {
+    private static @Nullable String text(JsonNode node, String field) {
       return node.has(field) ? node.get(field).asText() : null;
     }
   }

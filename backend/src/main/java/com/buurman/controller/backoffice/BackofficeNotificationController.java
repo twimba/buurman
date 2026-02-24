@@ -4,7 +4,9 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,24 +41,31 @@ public class BackofficeNotificationController {
       description = "Get all notifications with filtering and pagination")
   @GetMapping
   public PageResponse<BackofficeNotificationResponse> listNotifications(
-      @RequestParam(required = false) String teamIdentifier,
-      @RequestParam(required = false) String type,
-      @RequestParam(required = false) String channel,
-      @RequestParam(required = false) String status,
-      @RequestParam(required = false) String recipientEmail,
-      @RequestParam(required = false) String dateFrom,
-      @RequestParam(required = false) String dateTo,
+      @RequestParam Optional<String> teamIdentifier,
+      @RequestParam Optional<String> type,
+      @RequestParam Optional<String> channel,
+      @RequestParam Optional<String> status,
+      @RequestParam Optional<String> recipientEmail,
+      @RequestParam Optional<String> dateFrom,
+      @RequestParam Optional<String> dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
 
-    LocalDateTime from = parseDateTime(dateFrom);
-    LocalDateTime to = parseDateTime(dateTo);
+    LocalDateTime from = parseDateTime(dateFrom.orElse(null));
+    LocalDateTime to = parseDateTime(dateTo.orElse(null));
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return backofficeNotificationService.listNotifications(
-        pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
+        pageRequest,
+        teamIdentifier.orElse(null),
+        type.orElse(null),
+        channel.orElse(null),
+        status.orElse(null),
+        recipientEmail.orElse(null),
+        from,
+        to);
   }
 
   @Operation(summary = "Get notification", description = "Get notification details by identifier")
@@ -80,7 +89,7 @@ public class BackofficeNotificationController {
     return backofficeNotificationService.getStats();
   }
 
-  private LocalDateTime parseDateTime(String dateTimeStr) {
+  private @Nullable LocalDateTime parseDateTime(@Nullable String dateTimeStr) {
     if (dateTimeStr == null || dateTimeStr.isBlank()) {
       return null;
     }

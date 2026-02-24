@@ -1,7 +1,7 @@
 package com.buurman.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.buurman.domain.TeamRole;
 
-public record UpdateMemberRoleRequest(
-    @NotBlank @Pattern(regexp = "TEAM_ADMIN|TEAM_EDITOR|TEAM_VIEWER") String role) {}
+import jakarta.validation.constraints.NotNull;
+
+public record UpdateMemberRoleRequest(@NotNull TeamRole role) {}

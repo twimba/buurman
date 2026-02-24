@@ -33,9 +33,10 @@ public class S3Config {
                     AwsBasicCredentials.create(
                         awsS3Properties.accessKey(), awsS3Properties.secretKey())));
 
-    if (awsS3Properties.endpoint() != null && !awsS3Properties.endpoint().isBlank()) {
-      builder.endpointOverride(URI.create(awsS3Properties.endpoint())).forcePathStyle(true);
-    }
+    awsS3Properties
+        .endpoint()
+        .filter(e -> !e.isBlank())
+        .ifPresent(e -> builder.endpointOverride(URI.create(e)).forcePathStyle(true));
 
     return builder.build();
   }
@@ -50,11 +51,15 @@ public class S3Config {
                     AwsBasicCredentials.create(
                         awsS3Properties.accessKey(), awsS3Properties.secretKey())));
 
-    if (awsS3Properties.endpoint() != null && !awsS3Properties.endpoint().isBlank()) {
-      builder
-          .endpointOverride(URI.create(awsS3Properties.endpoint()))
-          .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build());
-    }
+    awsS3Properties
+        .endpoint()
+        .filter(e -> !e.isBlank())
+        .ifPresent(
+            e ->
+                builder
+                    .endpointOverride(URI.create(e))
+                    .serviceConfiguration(
+                        S3Configuration.builder().pathStyleAccessEnabled(true).build()));
 
     return builder.build();
   }

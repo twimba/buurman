@@ -40,14 +40,15 @@ public class CalendarFeedController {
       description = "Public endpoint serving iCal feed content")
   @GetMapping(value = "/ical/{feedToken}", produces = "text/calendar; charset=utf-8")
   public ResponseEntity<String> getCalendarFeed(@PathVariable String feedToken) {
-    String ical = calendarFeedService.generateICalFeed(feedToken);
-    if (ical == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok()
-        .header("Content-Disposition", "inline; filename=\"buurman-payments.ics\"")
-        .header("Cache-Control", "no-cache, no-store, must-revalidate")
-        .body(ical);
+    return calendarFeedService
+        .generateICalFeed(feedToken)
+        .map(
+            ical ->
+                ResponseEntity.ok()
+                    .header("Content-Disposition", "inline; filename=\"buurman-payments.ics\"")
+                    .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                    .body(ical))
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @Operation(

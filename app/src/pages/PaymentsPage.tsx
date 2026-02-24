@@ -79,7 +79,7 @@ export const PaymentsPage = () => {
     handleSizeChange,
     handleSortChange,
     resetPage,
-  } = usePagination({ defaultSort: 'dueDate', defaultDirection: 'asc' });
+  } = usePagination({ defaultSort: 'dueDate' });
 
   const {
     data: paymentsData,
@@ -101,7 +101,9 @@ export const PaymentsPage = () => {
   const statsCurrency = paymentStats?.currency ?? '';
 
   const fmtMoney = (value: number, currency: string) => {
-    if (!currency) return value.toFixed(2);
+    if (!currency) {
+      return value.toFixed(2);
+    }
     try {
       return new Intl.NumberFormat(undefined, {
         style: 'currency',

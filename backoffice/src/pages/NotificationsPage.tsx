@@ -174,7 +174,9 @@ export const NotificationsPage = () => {
   };
 
   const handleResend = () => {
-    if (!resendTarget) return;
+    if (!resendTarget) {
+      return;
+    }
     resendMutation.mutate(resendTarget, {
       onSuccess: () => setResendTarget(null),
     });

@@ -3,8 +3,6 @@ package com.buurman.service;
 import static com.buurman.domain.AuditLog.Action.CREATE;
 import static com.buurman.domain.AuditLog.Action.DELETE;
 import static com.buurman.domain.AuditLog.Action.UPDATE;
-import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
-import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
@@ -12,13 +10,16 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.JSONB;
-import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.AuditLogEntry;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
@@ -70,7 +71,7 @@ public class AuditService {
       String entityType,
       UUID entityId,
       UUID userId,
-      Object oldEntity,
+      @Nullable Object oldEntity,
       Object newEntity,
       Map<String, Object> changedFields) {
     try {
@@ -122,7 +123,10 @@ public class AuditService {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> objectToMap(Object obj) {
+  private Map<String, Object> objectToMap(@Nullable Object obj) {
+    if (obj == null) {
+      return Map.of();
+    }
     return objectMapper.convertValue(obj, Map.class);
   }
 
@@ -152,8 +156,8 @@ public class AuditService {
     if (a == null || b == null) {
       return false;
     }
-    if (a instanceof java.math.BigDecimal && b instanceof java.math.BigDecimal) {
-      return ((java.math.BigDecimal) a).compareTo((java.math.BigDecimal) b) == 0;
+    if (a instanceof java.math.BigDecimal da && b instanceof java.math.BigDecimal db) {
+      return da.compareTo(db) == 0;
     }
     return a.equals(b);
   }
@@ -168,72 +172,68 @@ public class AuditService {
   }
 
   public PageResponse<RecentActivityResponse> getAllAuditLogsPaginated(
-      UUID teamId, String entityType, String action, String search, PageRequest pageRequest) {
-    PaginatedResult<Record> result =
+      UUID teamId,
+      @Nullable String entityType,
+      @Nullable String action,
+      @Nullable String search,
+      PageRequest pageRequest) {
+    PaginatedResult<AuditLogEntry> result =
         auditLogRepository.findAllByTeamIdPaginated(
             teamId, entityType, action, search, pageRequest);
     List<RecentActivityResponse> responses =
         result.items().stream()
-            .map(
-                record ->
-                    mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
+            .map(record -> mapRecordToRecentActivity(record, record.entityType(), teamId))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public List<RecentActivityResponse> getAllAuditLogs(
-      UUID teamId, String entityType, String action, String search) {
-    return auditLogRepository.findAllByTeamId(teamId, entityType, action, search).stream()
-        .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
-        .toList();
-  }
-
   private RecentActivityResponse mapRecordToRecentActivity(
-      Record record, String entityType, UUID teamId) {
-    String action = record.get(AUDIT_LOG.ACTION);
-    String firstName = record.get(USERS.FIRST_NAME);
-    String lastName = record.get(USERS.LAST_NAME);
+      AuditLogEntry record, String entityType, UUID teamId) {
+    String action = record.action();
     String userName =
-        (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
+        record
+            .firstName()
+            .flatMap(fn -> record.lastName().map(ln -> fn + " " + ln))
+            .orElse("Unknown");
 
     // Parse JSON fields first
-    Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
-    Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
-    Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+    Map<String, Object> changedFields = parseJsonField(record.changedFieldsJson().orElse(null));
+    Map<String, Object> oldValues = parseJsonField(record.oldValuesJson().orElse(null));
+    Map<String, Object> newValues = parseJsonField(record.newValuesJson().orElse(null));
 
     // Build description based on action and changed fields
     String description = buildActivityDescription(action, entityType, userName, changedFields);
 
     // Resolve entity identifier from entity UUID
-    UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
+    UUID entityId = record.entityId();
     String entityIdentifier =
         auditLogRepository
             .findEntityIdentifier(entityType, entityId, teamId)
-            .orElse(entityId != null ? entityId.toString() : "unknown");
+            .orElse(entityId.toString());
 
     return new RecentActivityResponse(
         entityType,
         entityIdentifier,
         entityType, // entityName - can be enhanced later
         action,
-        userName,
-        record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
-        description,
+        Optional.ofNullable(userName),
+        record.timestamp().toInstant(UTC),
+        Optional.ofNullable(description),
         changedFields,
         oldValues,
         newValues);
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> parseJsonbField(JSONB jsonb) {
-    if (jsonb == null || jsonb.data() == null) {
+  private Map<String, Object> parseJsonField(@Nullable String json) {
+    if (json == null || json.isBlank()) {
       return Map.of();
     }
     try {
-      return objectMapper.readValue(jsonb.data(), Map.class);
+      return objectMapper.readValue(json, Map.class);
     } catch (JsonProcessingException e) {
-      log.error("Failed to parse JSONB field", e);
+      log.error("Failed to parse JSON field", e);
       return Map.of();
     }
   }
@@ -241,14 +241,14 @@ public class AuditService {
   private String buildActivityDescription(
       String action, String entityType, String userName, Map<String, Object> changedFields) {
     // Check for document operations
-    if (changedFields != null && changedFields.containsKey("documentAdded")) {
+    if (changedFields.containsKey("documentAdded")) {
       String fileName = (String) changedFields.get("documentAdded");
       String category = (String) changedFields.get("category");
       String docType = "PHOTO".equals(category) ? "photo" : "document";
       return String.format("%s uploaded %s: %s", userName, docType, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("documentRemoved")) {
+    if (changedFields.containsKey("documentRemoved")) {
       String fileName = (String) changedFields.get("documentRemoved");
       String category = (String) changedFields.get("category");
       String docType = "PHOTO".equals(category) ? "photo" : "document";
@@ -256,40 +256,40 @@ public class AuditService {
     }
 
     // Check for photo operations
-    if (changedFields != null && changedFields.containsKey("photoAdded")) {
+    if (changedFields.containsKey("photoAdded")) {
       String fileName = (String) changedFields.get("photoAdded");
       return String.format("%s uploaded photo: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("photoRemoved")) {
+    if (changedFields.containsKey("photoRemoved")) {
       String fileName = (String) changedFields.get("photoRemoved");
       return String.format("%s removed photo: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("photoEdited")) {
+    if (changedFields.containsKey("photoEdited")) {
       String fileName = (String) changedFields.get("photoEdited");
       return String.format("%s edited photo metadata: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("documentEdited")) {
+    if (changedFields.containsKey("documentEdited")) {
       String fileName = (String) changedFields.get("documentEdited");
       return String.format("%s edited document metadata: %s", userName, fileName);
     }
 
     // Check for contract party operations
-    if (changedFields != null && changedFields.containsKey("partyAdded")) {
+    if (changedFields.containsKey("partyAdded")) {
       String tenantName = (String) changedFields.get("partyAdded");
       String role = (String) changedFields.get("role");
       return String.format("%s added %s as %s", userName, tenantName, formatRole(role));
     }
 
-    if (changedFields != null && changedFields.containsKey("partyRemoved")) {
+    if (changedFields.containsKey("partyRemoved")) {
       String tenantName = (String) changedFields.get("partyRemoved");
       String role = (String) changedFields.get("role");
       return String.format("%s removed %s (%s)", userName, tenantName, formatRole(role));
     }
 
-    if (changedFields != null && changedFields.containsKey("primaryTenantChanged")) {
+    if (changedFields.containsKey("primaryTenantChanged")) {
       String newTenant = (String) changedFields.get("primaryTenantChanged");
       String oldTenant = (String) changedFields.get("previousPrimaryTenant");
       return String.format(
@@ -297,17 +297,17 @@ public class AuditService {
     }
 
     // Check for receival operations
-    if (changedFields != null && changedFields.containsKey("receivalRegistered")) {
+    if (changedFields.containsKey("receivalRegistered")) {
       return String.format(
           "%s registered a receival: %s", userName, changedFields.get("receivalRegistered"));
     }
 
-    if (changedFields != null && changedFields.containsKey("receivalUpdated")) {
+    if (changedFields.containsKey("receivalUpdated")) {
       return String.format(
           "%s updated a receival: %s", userName, changedFields.get("receivalUpdated"));
     }
 
-    if (changedFields != null && changedFields.containsKey("receivalDeleted")) {
+    if (changedFields.containsKey("receivalDeleted")) {
       return String.format(
           "%s deleted a receival: %s", userName, changedFields.get("receivalDeleted"));
     }
@@ -322,10 +322,14 @@ public class AuditService {
           default -> "modified";
         };
 
-    return String.format("%s %s this %s", userName, actionText, entityType.toLowerCase());
+    return String.format(
+        "%s %s this %s", userName, actionText, entityType.toLowerCase(Locale.ROOT));
   }
 
-  private String formatRole(String role) {
+  private String formatRole(@Nullable String role) {
+    if (role == null) {
+      return "Unknown";
+    }
     return Arrays.stream(ContractPartyRole.values())
         .filter(r -> r.name().equals(role))
         .findFirst()

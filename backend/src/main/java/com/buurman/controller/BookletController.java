@@ -35,7 +35,7 @@ public class BookletController {
       @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
-        exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.getTeamId());
+        exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=property-booklet.pdf")
@@ -50,7 +50,7 @@ public class BookletController {
   public ResponseEntity<byte[]> exportTenantBooklet(
       @PathVariable String tenantIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
 
-    byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.getTeamId());
+    byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=tenant-booklet.pdf")
@@ -65,7 +65,8 @@ public class BookletController {
   public ResponseEntity<byte[]> exportContractBooklet(
       @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
 
-    byte[] pdf = exportService.generateContractReportPDF(contractIdentifier, principal.getTeamId());
+    byte[] pdf =
+        exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=contract-booklet.pdf")

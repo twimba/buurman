@@ -3,10 +3,11 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public record BackofficePhoneNumberPolicyResponse(
     Map<String, List<String>> policyMatrix,
     int maxCodesPerHour,
     int verificationCodeExpiryMinutes,
-    Instant updatedAt,
-    String updatedBy) {}
+    Optional<Instant> updatedAt,
+    Optional<String> updatedBy) {}

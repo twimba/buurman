@@ -123,7 +123,9 @@ export const ContractDetailPage = () => {
 
   // Payments filtering, sorting, and pagination
   const filteredAndSortedPayments = useMemo(() => {
-    if (!payments) return [];
+    if (!payments) {
+      return [];
+    }
 
     let filtered = [...payments];
 
@@ -162,8 +164,12 @@ export const ContractDetailPage = () => {
           return 0;
       }
 
-      if (aVal < bVal) return paymentsSortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return paymentsSortOrder === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return paymentsSortOrder === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return paymentsSortOrder === 'asc' ? 1 : -1;
+      }
       return 0;
     });
 
@@ -191,7 +197,9 @@ export const ContractDetailPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       await deleteContractMutation.mutateAsync(id);
       navigate('/contracts');
@@ -237,7 +245,9 @@ export const ContractDetailPage = () => {
   };
 
   const handleDuplicate = async () => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
     try {
       const newContract = await duplicateContractMutation.mutateAsync(id);
       navigate(`/contracts/${newContract.identifier}`);
@@ -1065,7 +1075,9 @@ export const ContractDetailPage = () => {
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal fields for document operations
-                                if (field === 'documentCount') return null;
+                                if (field === 'documentCount') {
+                                  return null;
+                                }
 
                                 // Special handling for document operations
                                 if (

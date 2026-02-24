@@ -35,11 +35,12 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.ENABLED.isTrue())
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public List<CalendarFeed> findByUserIdAndTeamId(UUID userId, UUID teamId) {
-    return dsl.selectFrom(CALENDAR_FEEDS)
+    return dsl
+        .selectFrom(CALENDAR_FEEDS)
         .where(
             CALENDAR_FEEDS
                 .USER_ID
@@ -48,7 +49,10 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .orderBy(CALENDAR_FEEDS.CREATED_AT.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Optional<CalendarFeed> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -60,7 +64,7 @@ public class CalendarFeedRepository {
                 .and(CALENDAR_FEEDS.TEAM_ID.eq(teamId))
                 .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public CalendarFeed getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -70,9 +74,9 @@ public class CalendarFeedRepository {
 
   public Optional<CalendarFeed> findExistingFeed(
       CalendarFeed.FeedType feedType,
-      UUID contractId,
-      UUID propertyId,
-      UUID tenantId,
+      Optional<UUID> contractId,
+      Optional<UUID> propertyId,
+      Optional<UUID> tenantId,
       UUID userId,
       UUID teamId) {
     var condition =
@@ -84,19 +88,22 @@ public class CalendarFeedRepository {
             .and(CALENDAR_FEEDS.DELETED_AT.isNull());
 
     condition =
-        contractId != null
-            ? condition.and(CALENDAR_FEEDS.CONTRACT_ID.eq(contractId))
+        contractId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.CONTRACT_ID.eq(contractId.get()))
             : condition.and(CALENDAR_FEEDS.CONTRACT_ID.isNull());
     condition =
-        propertyId != null
-            ? condition.and(CALENDAR_FEEDS.PROPERTY_ID.eq(propertyId))
+        propertyId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.PROPERTY_ID.eq(propertyId.get()))
             : condition.and(CALENDAR_FEEDS.PROPERTY_ID.isNull());
     condition =
-        tenantId != null
-            ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId))
+        tenantId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId.get()))
             : condition.and(CALENDAR_FEEDS.TENANT_ID.isNull());
 
-    return dsl.selectFrom(CALENDAR_FEEDS).where(condition).fetchOptional().map(mapper::toDomain);
+    return dsl.selectFrom(CALENDAR_FEEDS)
+        .where(condition)
+        .fetchOptional()
+        .flatMap(mapper::toDomain);
   }
 
   public CalendarFeed save(CalendarFeed feed) {
@@ -104,10 +111,8 @@ public class CalendarFeedRepository {
 
     if (feed.getId() == null) {
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt =
-          feed.getCreatedAt() != null ? LocalDateTime.ofInstant(feed.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          feed.getUpdatedAt() != null ? LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.ID, id)
@@ -116,9 +121,9 @@ public class CalendarFeedRepository {
           .set(CALENDAR_FEEDS.USER_ID, feed.getUserId())
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())
           .set(CALENDAR_FEEDS.FEED_TYPE, feed.getFeedType().name())
-          .set(CALENDAR_FEEDS.CONTRACT_ID, feed.getContractId())
-          .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId())
-          .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId())
+          .set(CALENDAR_FEEDS.CONTRACT_ID, feed.getContractId().orElse(null))
+          .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId().orElse(null))
+          .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId().orElse(null))
           .set(CALENDAR_FEEDS.ENABLED, feed.getEnabled())
           .set(CALENDAR_FEEDS.CREATED_AT, createdAt)
           .set(CALENDAR_FEEDS.UPDATED_AT, updatedAt)
@@ -130,8 +135,7 @@ public class CalendarFeedRepository {
       feed.setCreatedAt(createdAt.toInstant(UTC));
       feed.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          feed.getUpdatedAt() != null ? LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = now;
 
       dsl.update(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())

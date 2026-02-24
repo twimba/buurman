@@ -86,7 +86,7 @@ public class TenantBookletExporter {
     Map<UUID, ContractPartyRole> contractRoles = new HashMap<>();
     for (Contract contract : contracts) {
       contractPartyService.getPartiesForContract(contract.getId(), teamId).stream()
-          .filter(p -> p.getTenantId().equals(tenant.getId()))
+          .filter(p -> p.getTenantId().map(id -> id.equals(tenant.getId())).orElse(false))
           .findFirst()
           .ifPresent(p -> contractRoles.put(contract.getId(), p.getRole()));
     }
@@ -110,7 +110,7 @@ public class TenantBookletExporter {
 
     String fullName =
         escapeHtml(tenant.getFirstName())
-            + (tenant.getLastName() != null ? " " + escapeHtml(tenant.getLastName()) : "");
+            + tenant.getLastName().map(n -> " " + escapeHtml(n)).orElse("");
 
     BigDecimal totalPaid =
         allPayments.stream()
@@ -178,8 +178,8 @@ public class TenantBookletExporter {
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendCoverCell(html, "Email", tenant.getEmail() != null ? escapeHtml(tenant.getEmail()) : "—");
-    appendCoverCell(html, "Phone", tenant.getPhone() != null ? escapeHtml(tenant.getPhone()) : "—");
+    appendCoverCell(html, "Email", tenant.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, "Phone", tenant.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
     appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
@@ -209,15 +209,15 @@ public class TenantBookletExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(html, "Full Name", fullName);
-    appendField(html, "Email", tenant.getEmail());
+    appendField(html, "Email", tenant.getEmail().orElse(null));
     html.append("</tr><tr>");
-    appendField(html, "Phone", tenant.getPhone());
+    appendField(html, "Phone", tenant.getPhone().orElse(null));
     appendField(html, "Reference", "#" + tenant.getIdentifier());
     html.append("</tr>");
-    if (tenant.getTaxNumber() != null || tenant.getIdNumber() != null) {
+    if (tenant.getTaxNumber().isPresent() || tenant.getIdNumber().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Tax Number", tenant.getTaxNumber());
-      appendField(html, "Government ID", tenant.getIdNumber());
+      appendField(html, "Tax Number", tenant.getTaxNumber().orElse(null));
+      appendField(html, "Government ID", tenant.getIdNumber().orElse(null));
       html.append("</tr>");
     }
     html.append("<tr>");
@@ -226,11 +226,14 @@ public class TenantBookletExporter {
     html.append("</tr>");
     html.append("</table>");
 
-    if (tenant.getAdditionalInfo() != null && !tenant.getAdditionalInfo().isBlank()) {
-      html.append("<div class='text-block'><strong>Additional Information</strong><br/>")
-          .append(sanitizeRichText(tenant.getAdditionalInfo()))
-          .append("</div>");
-    }
+    tenant
+        .getAdditionalInfo()
+        .filter(s -> !s.isBlank())
+        .ifPresent(
+            info ->
+                html.append("<div class='text-block'><strong>Additional Information</strong><br/>")
+                    .append(sanitizeRichText(info))
+                    .append("</div>"));
 
     appendSectionTitle(html, "Financial Summary");
     html.append("<table class='summary-grid'><tr>");
@@ -267,7 +270,9 @@ public class TenantBookletExporter {
   // ── Page: Addresses ─────────────────────────────────────────────
 
   private void appendAddressesPage(StringBuilder html, List<TenantAddress> addresses) {
-    if (addresses.isEmpty()) return;
+    if (addresses.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Addresses");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -328,7 +333,9 @@ public class TenantBookletExporter {
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
       DateTimeFormatter shortFmt) {
-    if (contracts.isEmpty()) return;
+    if (contracts.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Rental History");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -392,9 +399,7 @@ public class TenantBookletExporter {
           "Start Date",
           contract.getStartDate() != null ? contract.getStartDate().format(shortFmt) : "—");
       appendField(
-          html,
-          "End Date",
-          contract.getEndDate() != null ? contract.getEndDate().format(shortFmt) : "Ongoing");
+          html, "End Date", contract.getEndDate().map(d -> d.format(shortFmt)).orElse("Ongoing"));
       html.append("</tr><tr>");
       appendField(
           html,
@@ -418,16 +423,19 @@ public class TenantBookletExporter {
 
   private void appendPaymentHistoryPage(
       StringBuilder html, List<Payment> allPayments, DateTimeFormatter shortFmt) {
-    if (allPayments.isEmpty()) return;
+    if (allPayments.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Payment History");
 
     // Year summary
     Map<Integer, BigDecimal[]> yearPayments = new TreeMap<>(Comparator.reverseOrder());
     for (Payment payment : allPayments) {
-      LocalDate dateRef =
-          payment.getPaymentDate() != null ? payment.getPaymentDate() : payment.getDueDate();
-      if (dateRef == null) continue;
+      LocalDate dateRef = payment.getPaymentDate().orElse(payment.getDueDate());
+      if (dateRef == null) {
+        continue;
+      }
       int year = dateRef.getYear();
       yearPayments.computeIfAbsent(year, k -> new BigDecimal[] {BigDecimal.ZERO, BigDecimal.ZERO});
       BigDecimal[] amounts = yearPayments.get(year);
@@ -468,11 +476,19 @@ public class TenantBookletExporter {
         allPayments.stream()
             .sorted(
                 (a, b) -> {
-                  LocalDate da = a.getDueDate() != null ? a.getDueDate() : a.getPaymentDate();
-                  LocalDate db = b.getDueDate() != null ? b.getDueDate() : b.getPaymentDate();
-                  if (da == null && db == null) return 0;
-                  if (da == null) return 1;
-                  if (db == null) return -1;
+                  LocalDate da =
+                      a.getDueDate() != null ? a.getDueDate() : a.getPaymentDate().orElse(null);
+                  LocalDate db =
+                      b.getDueDate() != null ? b.getDueDate() : b.getPaymentDate().orElse(null);
+                  if (da == null && db == null) {
+                    return 0;
+                  }
+                  if (da == null) {
+                    return 1;
+                  }
+                  if (db == null) {
+                    return -1;
+                  }
                   return db.compareTo(da);
                 })
             .limit(50)
@@ -491,8 +507,7 @@ public class TenantBookletExporter {
           .append(CurrencyUtils.formatCurrency(payment.getAmount(), payment.getCurrency()))
           .append("</td>");
       html.append("<td>")
-          .append(
-              payment.getPaymentDate() != null ? payment.getPaymentDate().format(shortFmt) : "—")
+          .append(payment.getPaymentDate().map(d -> d.format(shortFmt)).orElse("—"))
           .append("</td>");
 
       String payStatus = payment.getStatus() != null ? payment.getStatus().name() : "";
@@ -520,9 +535,10 @@ public class TenantBookletExporter {
   // ── Helpers ─────────────────────────────────────────────────────
 
   private String resolveCurrentPropertyName(Tenant tenant, Map<UUID, Property> propertyMap) {
-    if (tenant.getCurrentPropertyId() == null) return "—";
-    Property current = propertyMap.get(tenant.getCurrentPropertyId());
-    if (current == null) return "—";
-    return escapeHtml(current.getStreet()) + ", " + escapeHtml(current.getCity());
+    return tenant
+        .getCurrentPropertyId()
+        .map(propertyMap::get)
+        .map(p -> escapeHtml(p.getStreet()) + ", " + escapeHtml(p.getCity()))
+        .orElse("—");
   }
 }

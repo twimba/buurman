@@ -1,7 +1,10 @@
 package com.buurman.service.backoffice;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;
@@ -19,25 +22,28 @@ public class BackofficeLoggerService {
 
   private final LoggingSystem loggingSystem;
 
-  public List<LoggerConfigurationResponse> listLoggers(String search) {
+  public List<LoggerConfigurationResponse> listLoggers(@Nullable String search) {
     return loggingSystem.getLoggerConfigurations().stream()
         .filter(config -> config.getEffectiveLevel() != null)
         .filter(
             config ->
                 search == null
                     || search.isBlank()
-                    || config.getName().toLowerCase().contains(search.toLowerCase()))
+                    || config
+                        .getName()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(search.toLowerCase(Locale.ROOT)))
         .map(this::toResponse)
         .toList();
   }
 
-  public LoggerConfigurationResponse setLogLevel(String loggerName, String level) {
-    LogLevel logLevel = level != null ? LogLevel.valueOf(level.toUpperCase()) : null;
+  public LoggerConfigurationResponse setLogLevel(String loggerName, @Nullable String level) {
+    LogLevel logLevel = level != null ? LogLevel.valueOf(level.toUpperCase(Locale.ROOT)) : null;
     loggingSystem.setLogLevel(loggerName, logLevel);
     log.info("Set log level for '{}' to '{}'", loggerName, level);
 
     LoggerConfiguration config = loggingSystem.getLoggerConfiguration(loggerName);
-    return toResponse(config);
+    return toResponse(java.util.Objects.requireNonNull(config));
   }
 
   public void resetAll() {
@@ -50,7 +56,8 @@ public class BackofficeLoggerService {
   private LoggerConfigurationResponse toResponse(LoggerConfiguration config) {
     return new LoggerConfigurationResponse(
         config.getName(),
-        config.getConfiguredLevel() != null ? config.getConfiguredLevel().name() : null,
+        Optional.ofNullable(
+            config.getConfiguredLevel() != null ? config.getConfiguredLevel().name() : null),
         config.getEffectiveLevel().name());
   }
 }

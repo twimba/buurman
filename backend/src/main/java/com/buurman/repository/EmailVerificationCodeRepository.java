@@ -26,8 +26,7 @@ public class EmailVerificationCodeRepository {
   public void save(EmailVerificationCode code) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt =
-        code.getCreatedAt() != null ? LocalDateTime.ofInstant(code.getCreatedAt(), UTC) : now;
+    LocalDateTime createdAt = now;
 
     dsl.insertInto(EMAIL_VERIFICATION_CODES)
         .set(EMAIL_VERIFICATION_CODES.ID, id)
@@ -59,7 +58,7 @@ public class EmailVerificationCodeRepository {
               evc.setUserId(record.getUserId());
               evc.setCode(record.getCode());
               evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
-              evc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+              evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
               evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
               return evc;
             });

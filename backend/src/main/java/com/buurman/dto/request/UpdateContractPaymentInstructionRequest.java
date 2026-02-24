@@ -1,23 +1,31 @@
 package com.buurman.dto.request;
 
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UpdateContractPaymentInstructionRequest(
-    String paymentInstructionIdentifier,
-    Boolean isCustom,
-    String customName,
-    String customDescription,
-    String customPaymentMethod,
-    String customBankName,
-    String customAccountHolderName,
-    @Size(max = 34) String customIban,
-    @Size(max = 11) String customBicSwift,
-    String customAccountNumber,
-    String customRoutingNumber,
-    String customPaymentReference,
-    String customAdditionalDetails,
+    Optional<String> paymentInstructionIdentifier,
+    Optional<Boolean> isCustom,
+    Optional<String> customName,
+    Optional<String> customDescription,
+    Optional<String> customPaymentMethod,
+    Optional<String> customBankName,
+    Optional<String> customAccountHolderName,
+    Optional<@Size(max = 34) String> customIban,
+    Optional<@Size(max = 11) String> customBicSwift,
+    Optional<String> customAccountNumber,
+    Optional<String> customRoutingNumber,
+    Optional<String> customPaymentReference,
+    Optional<String> customAdditionalDetails,
     @NotNull(message = "Effective from date is required") LocalDate effectiveFrom,
-    String notes) {}
+    Optional<String> notes) {
+
+  public UpdateContractPaymentInstructionRequest {
+    paymentInstructionIdentifier =
+        Objects.requireNonNullElse(paymentInstructionIdentifier, Optional.empty());
+  }
+}

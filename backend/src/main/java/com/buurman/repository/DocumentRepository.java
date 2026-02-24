@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,12 +17,12 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Document;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.DocumentsRecord;
 import com.buurman.mapper.DocumentRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -57,15 +58,16 @@ public class DocumentRepository {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .IDENTIFIER
-                .in(identifiers)
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .IDENTIFIER
+                    .in(identifiers)
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<Document> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -81,17 +83,18 @@ public class DocumentRepository {
   }
 
   public List<Document> findByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(DOCUMENTS.ENTITY_ID.eq(entityId))
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .orderBy(DOCUMENTS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .orderBy(DOCUMENTS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Document save(Document document) {
@@ -116,8 +119,8 @@ public class DocumentRepository {
           .set(DOCUMENTS.FILE_NAME, document.getFileName())
           .set(DOCUMENTS.FILE_SIZE, document.getFileSize())
           .set(DOCUMENTS.MIME_TYPE, document.getMimeType())
-          .set(DOCUMENTS.TITLE, document.getTitle())
-          .set(DOCUMENTS.NOTES, document.getNotes())
+          .set(DOCUMENTS.TITLE, document.getTitle().orElse(null))
+          .set(DOCUMENTS.NOTES, document.getNotes().orElse(null))
           .set(DOCUMENTS.UPLOADED_BY, document.getUploadedBy())
           .set(DOCUMENTS.UPLOADED_AT, uploadedAt)
           .execute();
@@ -128,8 +131,8 @@ public class DocumentRepository {
     } else {
       // UPDATE (title and notes are updatable)
       dsl.update(DOCUMENTS)
-          .set(DOCUMENTS.TITLE, document.getTitle())
-          .set(DOCUMENTS.NOTES, document.getNotes())
+          .set(DOCUMENTS.TITLE, document.getTitle().orElse(null))
+          .set(DOCUMENTS.NOTES, document.getNotes().orElse(null))
           .where(DOCUMENTS.ID.eq(document.getId()).and(DOCUMENTS.TEAM_ID.eq(document.getTeamId())))
           .execute();
     }
@@ -159,14 +162,15 @@ public class DocumentRepository {
         .execute();
   }
 
-  public List<Document> searchDocuments(String searchTerm, String entityType, UUID teamId) {
+  public List<Document> searchDocuments(
+      @Nullable String searchTerm, @Nullable String entityType, UUID teamId) {
     var query =
         dsl.selectFrom(DOCUMENTS)
             .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull()));
 
     // Add search filter if provided
     if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-      String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+      String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
       query =
           query.and(
               lower(DOCUMENTS.TITLE)
@@ -180,7 +184,7 @@ public class DocumentRepository {
       query = query.and(DOCUMENTS.ENTITY_TYPE.eq(entityType));
     }
 
-    return query.orderBy(DOCUMENTS.UPLOADED_AT.desc()).fetch().map(mapper::toDomain);
+    return List.copyOf(query.orderBy(DOCUMENTS.UPLOADED_AT.desc()).fetch().map(mapper::toDomain));
   }
 
   public List<Document> findByEntityTypeAndEntityIdsAndTeamId(
@@ -188,24 +192,25 @@ public class DocumentRepository {
     if (entityIds == null || entityIds.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ENTITY_TYPE
-                .eq(entityType)
-                .and(DOCUMENTS.ENTITY_ID.in(entityIds))
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .orderBy(DOCUMENTS.UPLOADED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(DOCUMENTS.ENTITY_ID.in(entityIds))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .orderBy(DOCUMENTS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public PaginatedResult<Document> findAllByTeamIdPaginated(
-      UUID teamId, String search, String entityType, PageRequest pageRequest) {
+      UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
     Condition condition = DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull());
     if (search != null && !search.trim().isEmpty()) {
-      String searchPattern = "%" + search.toLowerCase() + "%";
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(DOCUMENTS.TITLE)
@@ -229,18 +234,19 @@ public class DocumentRepository {
         sortableFields,
         DOCUMENTS.UPLOADED_AT,
         pageRequest,
-        r -> mapper.toDomain((DocumentsRecord) r));
+        mapper::toDomain);
   }
 
   public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {
-    return dsl.selectFrom(DOCUMENTS)
-        .where(
-            DOCUMENTS
-                .ID
-                .in(ids)
-                .and(DOCUMENTS.TEAM_ID.eq(teamId))
-                .and(DOCUMENTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ID
+                    .in(ids)
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 }

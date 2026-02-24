@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record InvitationResponse(
     String token,
@@ -8,9 +9,9 @@ public record InvitationResponse(
     String teamIdentifier,
     String teamName,
     String role,
-    String inviterName,
+    Optional<String> inviterName,
     Instant invitedAt,
-    Instant expiresAt,
+    Optional<Instant> expiresAt,
     String invitationUrl,
     boolean isExpired,
     boolean isAccepted) {}

@@ -2,21 +2,22 @@ package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public record RegistrationInvitationDetailResponse(
     String identifier,
     String code,
-    Integer maxUsages,
+    Optional<Integer> maxUsages,
     int usageCount,
-    Instant expiresAt,
+    Optional<Instant> expiresAt,
     boolean revoked,
-    String revokedBy,
-    Instant revokedAt,
+    Optional<String> revokedBy,
+    Optional<Instant> revokedAt,
     String status,
     String createdBy,
     Instant createdAt,
-    Instant updatedAt,
-    String note,
+    Optional<Instant> updatedAt,
+    Optional<String> note,
     List<UsageRecord> usages) {
-  public record UsageRecord(String userEmail, String userName, Instant usedAt) {}
+  public record UsageRecord(String userEmail, Optional<String> userName, Instant usedAt) {}
 }

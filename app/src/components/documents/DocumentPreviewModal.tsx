@@ -35,9 +35,15 @@ export const DocumentPreviewModal = ({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight' && onNext) onNext();
-      if (e.key === 'ArrowLeft' && onPrevious) onPrevious();
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      if (e.key === 'ArrowRight' && onNext) {
+        onNext();
+      }
+      if (e.key === 'ArrowLeft' && onPrevious) {
+        onPrevious();
+      }
     },
     [onClose, onNext, onPrevious]
   );
@@ -52,11 +58,17 @@ export const DocumentPreviewModal = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
+    if (touchStartX.current === null) {
+      return;
+    }
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
-    if (delta > SWIPE_THRESHOLD && onPrevious) onPrevious();
-    if (delta < -SWIPE_THRESHOLD && onNext) onNext();
+    if (delta > SWIPE_THRESHOLD && onPrevious) {
+      onPrevious();
+    }
+    if (delta < -SWIPE_THRESHOLD && onNext) {
+      onNext();
+    }
   };
 
   const isImage = document.mimeType.startsWith('image/');

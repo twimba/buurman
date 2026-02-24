@@ -191,12 +191,17 @@ function validateInlineTenant(
   prefix: string
 ): Record<string, string> {
   const errs: Record<string, string> = {};
-  if (!data.firstName.trim()) errs[`${prefix}_firstName`] = 'Required';
-  if (data.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email!))
+  if (!data.firstName.trim()) {
+    errs[`${prefix}_firstName`] = 'Required';
+  }
+  if (data.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email!)) {
     errs[`${prefix}_email`] = 'Invalid email';
+  }
   if (data.phone) {
     const phoneErr = validatePhoneE164(data.phone);
-    if (phoneErr) errs[`${prefix}_phone`] = phoneErr;
+    if (phoneErr) {
+      errs[`${prefix}_phone`] = phoneErr;
+    }
   }
   return errs;
 }
@@ -259,7 +264,9 @@ export const ContractForm = ({
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)
   useEffect(() => {
-    if (!defaultCurrency || isEditing) return;
+    if (!defaultCurrency || isEditing) {
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => {
       const fields = [
@@ -268,11 +275,14 @@ export const ContractForm = ({
         'securityDepositCurrency',
       ] as const;
       const needsUpdate = fields.some((f) => !prev[f]);
-      if (!needsUpdate) return prev;
+      if (!needsUpdate) {
+        return prev;
+      }
       const updated = { ...prev };
       for (const f of fields) {
-        if (!updated[f])
+        if (!updated[f]) {
           (updated as Record<string, unknown>)[f] = defaultCurrency;
+        }
       }
       return updated;
     });
@@ -313,8 +323,9 @@ export const ContractForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.propertyIdentifier)
+    if (!formData.propertyIdentifier) {
       newErrors.propertyIdentifier = 'Property is required';
+    }
 
     // Validate primary tenant
     if (!isEditing) {
@@ -328,9 +339,12 @@ export const ContractForm = ({
       }
     }
 
-    if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.rentAmount || formData.rentAmount <= 0)
+    if (!formData.startDate) {
+      newErrors.startDate = 'Start date is required';
+    }
+    if (!formData.rentAmount || formData.rentAmount <= 0) {
       newErrors.rentAmount = 'Rent amount must be greater than 0';
+    }
     if (
       formData.rentAmount &&
       formData.rentAmount > 0 &&
@@ -391,7 +405,9 @@ export const ContractForm = ({
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
 
     try {
       // Build parties array for create mode
@@ -1147,7 +1163,9 @@ const ContractPartiesEditor = ({
   const handleAddParty = async () => {
     try {
       if (addMode === 'select') {
-        if (!newTenantId) return;
+        if (!newTenantId) {
+          return;
+        }
         await addPartyMutation.mutateAsync({
           tenantIdentifier: newTenantId,
           role: newRole,
@@ -1192,7 +1210,9 @@ const ContractPartiesEditor = ({
   const handleChangePrimary = async () => {
     try {
       if (changePrimaryMode === 'select') {
-        if (!newPrimaryTenantId) return;
+        if (!newPrimaryTenantId) {
+          return;
+        }
         await changePrimaryMutation.mutateAsync({
           tenantIdentifier: newPrimaryTenantId,
         });

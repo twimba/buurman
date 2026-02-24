@@ -1,12 +1,14 @@
 package com.buurman.dto.response.backoffice;
 
+import java.util.Optional;
+
 public record JobExecutionHistoryResponse(
     String id,
     String jobName,
     String jobGroup,
     String startedAt,
-    String endedAt,
-    Long durationMs,
+    Optional<String> endedAt,
+    Optional<Long> durationMs,
     String status,
-    String errorMessage,
-    String nodeId) {}
+    Optional<String> errorMessage,
+    Optional<String> nodeId) {}

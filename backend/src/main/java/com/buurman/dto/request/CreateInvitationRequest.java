@@ -1,9 +1,9 @@
 package com.buurman.dto.request;
 
+import com.buurman.domain.TeamRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 
-public record CreateInvitationRequest(
-    @NotBlank @Email String email,
-    @NotBlank @Pattern(regexp = "TEAM_ADMIN|TEAM_EDITOR|TEAM_VIEWER") String role) {}
+public record CreateInvitationRequest(@NotBlank @Email String email, @NotNull TeamRole role) {}

@@ -50,21 +50,28 @@ export function RegistrationInvitationDetailPage() {
   const [noteValue, setNoteValue] = useState("");
 
   const handleCopyLink = () => {
-    if (!invitation) return;
+    if (!invitation) {
+      return;
+    }
     const url = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, "")}/register?code=${invitation.code}`;
     navigator.clipboard.writeText(url);
   };
 
   const handleRevoke = async () => {
-    if (!identifier) return;
+    if (!identifier) {
+      return;
+    }
     await revokeMutation.mutateAsync(identifier);
     setShowRevoke(false);
     refetch();
   };
 
-  if (isLoading) return <LoadingSpinner />;
-  if (!invitation)
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  if (!invitation) {
     return <div className="text-zinc-500">Invitation not found</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -200,7 +207,9 @@ export function RegistrationInvitationDetailPage() {
               </button>
               <button
                 onClick={async () => {
-                  if (!identifier) return;
+                  if (!identifier) {
+                    return;
+                  }
                   await updateNoteMutation.mutateAsync({
                     identifier,
                     data: { note: noteValue || null },

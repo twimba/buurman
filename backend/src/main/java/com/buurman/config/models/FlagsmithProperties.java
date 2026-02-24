@@ -1,5 +1,7 @@
 package com.buurman.config.models;
 
+import java.util.Optional;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "flagsmith")
@@ -7,9 +9,17 @@ public record FlagsmithProperties(
     String apiUrl,
     boolean enableAnalytics,
     int environmentRefreshIntervalSeconds,
-    String serverSideKey,
-    String adminEmail,
-    String adminPassword,
-    String apiToken,
+    Optional<String> serverSideKey,
+    Optional<String> adminEmail,
+    Optional<String> adminPassword,
+    Optional<String> apiToken,
     String projectName,
-    String environmentName) {}
+    String environmentName) {
+
+  public FlagsmithProperties {
+    serverSideKey = Optional.ofNullable(serverSideKey).flatMap(o -> o);
+    adminEmail = Optional.ofNullable(adminEmail).flatMap(o -> o);
+    adminPassword = Optional.ofNullable(adminPassword).flatMap(o -> o);
+    apiToken = Optional.ofNullable(apiToken).flatMap(o -> o);
+  }
+}

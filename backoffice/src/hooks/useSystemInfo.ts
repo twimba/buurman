@@ -26,7 +26,9 @@ export const useAppBuildInfo = () => {
     queryFn: async (): Promise<AppBuildInfo | null> => {
       try {
         const res = await fetch(appBuildInfoUrl);
-        if (!res.ok) return null;
+        if (!res.ok) {
+          return null;
+        }
         return res.json();
       } catch {
         return null;

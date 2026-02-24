@@ -15,6 +15,8 @@ import static com.twilio.rest.api.v2010.account.Message.Status.SCHEDULED;
 import static com.twilio.rest.api.v2010.account.Message.Status.SENDING;
 import static com.twilio.rest.api.v2010.account.Message.Status.UNDELIVERED;
 
+import java.util.Optional;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +39,7 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
 
   @Override
   public Notification refreshStatus(Notification notification) {
-    if (notification.getProviderMessageId() == null
-        || notification.getProviderMessageId().isBlank()) {
+    if (notification.getProviderMessageId().map(String::isBlank).orElse(true)) {
       log.debug(
           "No provider message ID for notification {}, skipping refresh",
           notification.getIdentifier());
@@ -59,7 +60,15 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
 
   private Notification refreshTwilioStatus(Notification notification) {
     try {
-      Message message = Message.fetcher(notification.getProviderMessageId()).fetch();
+      Message message =
+          Message.fetcher(
+                  notification
+                      .getProviderMessageId()
+                      .orElseThrow(
+                          () ->
+                              new IllegalStateException(
+                                  "Twilio notification missing provider message ID")))
+              .fetch();
 
       NotificationStatus newStatus = mapTwilioStatus(message.getStatus());
       String providerStatus = message.getStatus() != null ? message.getStatus().toString() : null;
@@ -71,13 +80,13 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
       notificationRepository.updateStatus(
           notification.getId(),
           newStatus,
-          notification.getProviderMessageId(),
+          notification.getProviderMessageId().orElse(null),
           providerStatus,
           providerError);
 
       notification.setStatus(newStatus);
-      notification.setProviderStatus(providerStatus);
-      notification.setProviderError(providerError);
+      notification.setProviderStatus(Optional.ofNullable(providerStatus));
+      notification.setProviderError(Optional.ofNullable(providerError));
 
       log.info(
           "Refreshed Twilio status for notification {}: {}",

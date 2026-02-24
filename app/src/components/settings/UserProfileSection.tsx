@@ -42,10 +42,14 @@ function validatePhoneAgainstPolicy(
 ): string | null {
   try {
     const parsed = parsePhoneNumber(phone);
-    if (!parsed) return null;
+    if (!parsed) {
+      return null;
+    }
 
     const country = parsed.country;
-    if (!country) return null;
+    if (!country) {
+      return null;
+    }
 
     const allowedTypes = policy.policyMatrix[country];
     if (!allowedTypes || allowedTypes.length === 0) {
@@ -136,11 +140,15 @@ export const UserProfileSection = () => {
     } catch {
       /* noop */
     }
-    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    if (cooldownRef.current) {
+      clearInterval(cooldownRef.current);
+    }
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) {
-          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          if (cooldownRef.current) {
+            clearInterval(cooldownRef.current);
+          }
           try {
             localStorage.removeItem(COOLDOWN_KEY);
           } catch {
@@ -159,7 +167,9 @@ export const UserProfileSection = () => {
       cooldownRef.current = setInterval(() => {
         setCooldown((prev) => {
           if (prev <= 1) {
-            if (cooldownRef.current) clearInterval(cooldownRef.current);
+            if (cooldownRef.current) {
+              clearInterval(cooldownRef.current);
+            }
             cooldownRef.current = null;
             try {
               localStorage.removeItem(COOLDOWN_KEY);
@@ -173,7 +183,9 @@ export const UserProfileSection = () => {
       }, 1000);
     }
     return () => {
-      if (cooldownRef.current) clearInterval(cooldownRef.current);
+      if (cooldownRef.current) {
+        clearInterval(cooldownRef.current);
+      }
       cooldownRef.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -245,7 +257,9 @@ export const UserProfileSection = () => {
 
   const handleVerifyCode = useCallback(
     (code: string) => {
-      if (code.length !== 6) return;
+      if (code.length !== 6) {
+        return;
+      }
       verifyPhoneMutation.mutate(code, {
         onSuccess: () => {
           setShowVerification(false);
@@ -265,7 +279,9 @@ export const UserProfileSection = () => {
   };
 
   const handleResend = () => {
-    if (cooldown > 0) return;
+    if (cooldown > 0) {
+      return;
+    }
     resendMutation.mutate(undefined, {
       onSuccess: () => {
         setVerificationCode('');
@@ -458,7 +474,9 @@ export const UserProfileSection = () => {
                 value={userData.phone || null}
                 onChange={(e164) => {
                   setUserData({ ...userData, phone: e164 || '' });
-                  if (phoneError) setPhoneError('');
+                  if (phoneError) {
+                    setPhoneError('');
+                  }
                 }}
                 disabled={!isEditing}
                 error={phoneError}

@@ -7,6 +7,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -43,53 +44,44 @@ public class ContractPaymentInstructionService {
       String contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     List<ContractPaymentInstruction> history =
-        cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.getTeamId());
+        cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.requireTeamId());
 
     // Batch-load templates to avoid N+1
     List<UUID> templateIds =
         history.stream()
-            .filter(
-                cpi ->
-                    !Boolean.TRUE.equals(cpi.getIsCustom())
-                        && cpi.getPaymentInstructionId() != null)
-            .map(ContractPaymentInstruction::getPaymentInstructionId)
+            .filter(cpi -> !cpi.getIsCustom())
+            .flatMap(cpi -> cpi.getPaymentInstructionId().stream())
             .distinct()
             .toList();
 
     Map<UUID, PaymentInstruction> templateMap =
         templateIds.isEmpty()
             ? Map.of()
-            : piRepository.findAllByTeamId(principal.getTeamId()).stream()
+            : piRepository.findAllByTeamId(principal.requireTeamId()).stream()
                 .filter(pi -> templateIds.contains(pi.getId()))
                 .collect(toMap(PaymentInstruction::getId, identity()));
 
     return history.stream().map(cpi -> toResolvedResponse(cpi, templateMap)).toList();
   }
 
-  public ContractPaymentInstructionResponse getCurrent(
+  public Optional<ContractPaymentInstructionResponse> getCurrent(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     return cpiRepository
-        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
         .map(
             cpi -> {
               Map<UUID, PaymentInstruction> templateMap = Map.of();
-              if (!Boolean.TRUE.equals(cpi.getIsCustom())
-                  && cpi.getPaymentInstructionId() != null) {
-                piRepository
-                    .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
-                    .ifPresent(pi -> {});
-                PaymentInstruction template =
-                    piRepository
-                        .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
-                        .orElse(null);
-                if (template != null) {
-                  templateMap = Map.of(template.getId(), template);
-                }
+              if (!cpi.getIsCustom()) {
+                templateMap =
+                    cpi.getPaymentInstructionId()
+                        .flatMap(
+                            piId -> piRepository.findByIdAndTeamId(piId, principal.requireTeamId()))
+                        .map(pi -> Map.of(pi.getId(), pi))
+                        .orElse(Map.of());
               }
               return toResolvedResponse(cpi, templateMap);
-            })
-        .orElse(null);
+            });
   }
 
   @Transactional
@@ -104,12 +96,12 @@ public class ContractPaymentInstructionService {
 
     // Auto-close or replace current entry if one exists
     cpiRepository
-        .findCurrentByContractIdAndTeamId(contract.getId(), principal.getTeamId())
+        .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
         .ifPresent(
             current -> {
               if (!current.getEffectiveFrom().isBefore(request.effectiveFrom())) {
                 // Current entry hasn't started yet or starts same day — replace it
-                cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.getTeamId());
+                cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.requireTeamId());
                 log.info(
                     "Replaced future payment instruction {} for contract {}",
                     current.getIdentifier(),
@@ -117,7 +109,7 @@ public class ContractPaymentInstructionService {
               } else {
                 cpiRepository.setEffectiveTo(
                     current.getId(),
-                    principal.getTeamId(),
+                    principal.requireTeamId(),
                     request.effectiveFrom().minusDays(1),
                     principal.getUserId());
                 log.info(
@@ -133,10 +125,10 @@ public class ContractPaymentInstructionService {
         "Contract payment instruction created: {} for contract {} in team {}",
         saved.getIdentifier(),
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         saved.getId(),
         principal.getUserId(),
@@ -157,7 +149,7 @@ public class ContractPaymentInstructionService {
     validateEffectiveFrom(request.effectiveFrom(), contract);
 
     ContractPaymentInstruction existing =
-        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
 
     if (!existing.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -167,18 +159,18 @@ public class ContractPaymentInstructionService {
     // Close or replace the existing entry
     if (!existing.getEffectiveFrom().isBefore(request.effectiveFrom())) {
       // Existing entry hasn't started yet or starts same day — replace it
-      cpiRepository.softDeleteByIdAndTeamId(existing.getId(), principal.getTeamId());
+      cpiRepository.softDeleteByIdAndTeamId(existing.getId(), principal.requireTeamId());
     } else {
       cpiRepository.setEffectiveTo(
           existing.getId(),
-          principal.getTeamId(),
+          principal.requireTeamId(),
           request.effectiveFrom().minusDays(1),
           principal.getUserId());
     }
 
     // Create a new entry (append-only history)
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-    cpi.setTeamId(principal.getTeamId());
+    cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
     cpi.setNotes(request.notes());
@@ -187,12 +179,12 @@ public class ContractPaymentInstructionService {
     cpi.setCreatedAt(clock.instant());
     cpi.setUpdatedAt(clock.instant());
 
-    if (request.paymentInstructionIdentifier() != null
-        && !Boolean.TRUE.equals(request.isCustom())) {
+    if (request.paymentInstructionIdentifier().isPresent()
+        && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier(), principal.getTeamId());
-      cpi.setPaymentInstructionId(template.getId());
+              request.paymentInstructionIdentifier().get(), principal.requireTeamId());
+      cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
       cpi.setIsCustom(true);
@@ -214,10 +206,10 @@ public class ContractPaymentInstructionService {
         "Contract payment instruction updated (new entry): {} for contract {} in team {}",
         saved.getIdentifier(),
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         saved.getId(),
         principal.getUserId(),
@@ -232,7 +224,7 @@ public class ContractPaymentInstructionService {
       String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
-        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.getTeamId());
+        cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
 
     if (!cpi.getContractId().equals(contract.getId())) {
       throw new IllegalArgumentException(
@@ -246,15 +238,15 @@ public class ContractPaymentInstructionService {
           "Cannot delete a payment instruction that was already effective");
     }
 
-    cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.getTeamId());
+    cpiRepository.softDeleteByIdAndTeamId(cpi.getId(), principal.requireTeamId());
     log.info(
         "Contract payment instruction deleted: {} for contract {} in team {}",
         instructionIdentifier,
         contractIdentifier,
-        principal.getTeamId());
+        principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "CONTRACT_PAYMENT_INSTRUCTION",
         cpi.getId(),
         principal.getUserId(),
@@ -262,15 +254,20 @@ public class ContractPaymentInstructionService {
   }
 
   private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
-    return contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+    return contractRepository.getByIdentifierAndTeamId(
+        contractIdentifier, principal.requireTeamId());
   }
 
   private void validateEffectiveFrom(LocalDate effectiveFrom, Contract contract) {
     LocalDate minDate;
     if (contract.getStatus() == Contract.ContractStatus.DRAFT) {
       minDate =
-          Stream.of(LocalDate.now(clock), contract.getStartDate(), contract.getSignedDate())
-              .filter(d -> d != null)
+          Stream.of(
+                  Optional.of(LocalDate.now(clock)),
+                  Optional.of(contract.getStartDate()),
+                  contract.getSignedDate())
+              .filter(Optional::isPresent)
+              .map(Optional::get)
               .min(LocalDate::compareTo)
               .orElse(LocalDate.now(clock));
     } else {
@@ -285,7 +282,7 @@ public class ContractPaymentInstructionService {
       CreateContractPaymentInstructionRequest request, Contract contract, UserPrincipal principal) {
 
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
-    cpi.setTeamId(principal.getTeamId());
+    cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
     cpi.setNotes(request.notes());
@@ -294,12 +291,12 @@ public class ContractPaymentInstructionService {
     cpi.setCreatedAt(clock.instant());
     cpi.setUpdatedAt(clock.instant());
 
-    if (request.paymentInstructionIdentifier() != null
-        && !Boolean.TRUE.equals(request.isCustom())) {
+    if (request.paymentInstructionIdentifier().isPresent()
+        && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier(), principal.getTeamId());
-      cpi.setPaymentInstructionId(template.getId());
+              request.paymentInstructionIdentifier().get(), principal.requireTeamId());
+      cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
       cpi.setIsCustom(true);
@@ -321,9 +318,9 @@ public class ContractPaymentInstructionService {
 
   private Map<UUID, PaymentInstruction> loadTemplateMap(
       ContractPaymentInstruction cpi, UserPrincipal principal) {
-    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
-      return piRepository
-          .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.getTeamId())
+    if (!cpi.getIsCustom()) {
+      return cpi.getPaymentInstructionId()
+          .flatMap(piId -> piRepository.findByIdAndTeamId(piId, principal.requireTeamId()))
           .map(pi -> Map.of(pi.getId(), pi))
           .orElse(Map.of());
     }
@@ -333,37 +330,39 @@ public class ContractPaymentInstructionService {
   private ContractPaymentInstructionResponse toResolvedResponse(
       ContractPaymentInstruction cpi, Map<UUID, PaymentInstruction> templateMap) {
 
-    if (!Boolean.TRUE.equals(cpi.getIsCustom()) && cpi.getPaymentInstructionId() != null) {
-      PaymentInstruction template = templateMap.get(cpi.getPaymentInstructionId());
-      if (template != null) {
-        return new ContractPaymentInstructionResponse(
-            cpi.getIdentifier(),
-            template.getIdentifier(),
-            false,
-            template.getName(),
-            template.getDescription(),
-            template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null,
-            template.getBankName(),
-            template.getAccountHolderName(),
-            template.getIban(),
-            template.getBicSwift(),
-            template.getAccountNumber(),
-            template.getRoutingNumber(),
-            template.getPaymentReference(),
-            template.getAdditionalDetails(),
-            cpi.getEffectiveFrom(),
-            cpi.getEffectiveTo(),
-            cpi.getNotes(),
-            cpi.getCreatedAt(),
-            cpi.getUpdatedAt());
-      }
+    Optional<PaymentInstruction> maybeTemplate =
+        cpi.getIsCustom() ? Optional.empty() : cpi.getPaymentInstructionId().map(templateMap::get);
+
+    if (maybeTemplate.isPresent()) {
+      PaymentInstruction template = maybeTemplate.get();
+      return new ContractPaymentInstructionResponse(
+          cpi.getIdentifier(),
+          Optional.of(template.getIdentifier()),
+          Optional.of(false),
+          Optional.ofNullable(template.getName()),
+          Optional.ofNullable(template.getDescription()),
+          Optional.ofNullable(
+              template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null),
+          template.getBankName(),
+          template.getAccountHolderName(),
+          template.getIban(),
+          template.getBicSwift(),
+          template.getAccountNumber(),
+          template.getRoutingNumber(),
+          template.getPaymentReference(),
+          template.getAdditionalDetails(),
+          Optional.of(cpi.getEffectiveFrom()),
+          cpi.getEffectiveTo(),
+          cpi.getNotes(),
+          cpi.getCreatedAt(),
+          Optional.of(cpi.getUpdatedAt()));
     }
 
     // Custom or template not found
     return new ContractPaymentInstructionResponse(
         cpi.getIdentifier(),
-        null,
-        true,
+        Optional.empty(),
+        Optional.of(true),
         cpi.getCustomName(),
         cpi.getCustomDescription(),
         cpi.getCustomPaymentMethod(),
@@ -375,10 +374,10 @@ public class ContractPaymentInstructionService {
         cpi.getCustomRoutingNumber(),
         cpi.getCustomPaymentReference(),
         cpi.getCustomAdditionalDetails(),
-        cpi.getEffectiveFrom(),
+        Optional.of(cpi.getEffectiveFrom()),
         cpi.getEffectiveTo(),
         cpi.getNotes(),
         cpi.getCreatedAt(),
-        cpi.getUpdatedAt());
+        Optional.of(cpi.getUpdatedAt()));
   }
 }

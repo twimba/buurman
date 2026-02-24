@@ -23,10 +23,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -35,6 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
@@ -124,7 +126,6 @@ public class PaymentService {
     List<BulkCreateResult<PaymentResponse>> results = new ArrayList<>();
 
     for (int i = 0; i < requests.size(); i++) {
-      final int index = i;
       CreatePaymentRequest request = requests.get(i);
 
       Set<ConstraintViolation<CreatePaymentRequest>> violations = validator.validate(request);
@@ -133,17 +134,17 @@ public class PaymentService {
             violations.stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(joining(", "));
-        results.add(BulkCreateResult.error(index, errorMsg));
+        results.add(BulkCreateResult.error(i, errorMsg));
         continue;
       }
 
       try {
         PaymentResponse response =
             txTemplate.execute(status -> performCreatePayment(request, principal));
-        results.add(BulkCreateResult.success(index, response));
+        results.add(BulkCreateResult.success(i, response));
       } catch (Exception e) {
-        log.warn("Bulk payment creation failed for item {}: {}", index, e.getMessage());
-        results.add(BulkCreateResult.error(index, extractPaymentErrorMessage(e)));
+        log.warn("Bulk payment creation failed for item {}: {}", i, e.getMessage());
+        results.add(BulkCreateResult.error(i, extractPaymentErrorMessage(e)));
       }
     }
 
@@ -152,7 +153,7 @@ public class PaymentService {
 
   private PaymentResponse performCreatePayment(
       CreatePaymentRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(request.contractIdentifier(), teamId);
@@ -165,11 +166,8 @@ public class PaymentService {
 
     validateCurrencyDecimals(request.amount(), request.currency());
 
-    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
-    LocalDate paymentDate =
-        markAsPaid
-            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now(clock))
-            : null;
+    boolean markAsPaid = request.markAsPaid().orElse(false);
+    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
@@ -182,7 +180,7 @@ public class PaymentService {
     payment.setUpdatedAt(clock.instant());
 
     if (markAsPaid) {
-      payment.setPaymentDate(paymentDate);
+      payment.setPaymentDate(Optional.ofNullable(paymentDate));
     }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
@@ -198,7 +196,7 @@ public class PaymentService {
       receival.setPaymentId(savedPayment.getId());
       receival.setAmount(savedPayment.getAmount());
       receival.setCurrency(savedPayment.getCurrency());
-      receival.setReceivalDate(paymentDate);
+      receival.setReceivalDate(paymentDate != null ? paymentDate : LocalDate.now(clock));
       receival.setCreatedBy(principal.getUserId());
       receival.setUpdatedBy(principal.getUserId());
       receival.setCreatedAt(clock.instant());
@@ -237,105 +235,101 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
-    Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Payment payment =
+        paymentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    return enrichPaymentResponse(payment, principal.getTeamId());
+    return enrichPaymentResponse(payment, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
   public List<PaymentResponse> getAllPayments(UserPrincipal principal) {
-    List<Payment> payments = paymentRepository.findAllByTeamId(principal.getTeamId());
+    List<Payment> payments = paymentRepository.findAllByTeamId(principal.requireTeamId());
 
     LocalDate today = LocalDate.now(clock);
     payments.forEach(payment -> updatePaymentStatus(payment, today));
 
-    return enrichPaymentResponses(payments, principal.getTeamId());
+    return enrichPaymentResponses(payments, principal.requireTeamId());
   }
 
   @Transactional(readOnly = true)
   public PageResponse<PaymentResponse> getPaymentsPaginated(
       UserPrincipal principal,
-      String status,
-      String contractIdentifier,
-      String propertyIdentifier,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String status,
+      @Nullable String contractIdentifier,
+      @Nullable String propertyIdentifier,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     UUID contractId = null;
     if (contractIdentifier != null) {
       Contract contract =
-          contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+          contractRepository.getByIdentifierAndTeamId(
+              contractIdentifier, principal.requireTeamId());
       contractId = contract.getId();
     }
     UUID propertyId = null;
     if (propertyIdentifier != null) {
       var property =
-          propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+          propertyRepository.getByIdentifierAndTeamId(
+              propertyIdentifier, principal.requireTeamId());
       propertyId = property.getId();
     }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, contractId, propertyId, dateFrom, dateTo, pageRequest);
+            principal.requireTeamId(),
+            status,
+            contractId,
+            propertyId,
+            dateFrom,
+            dateTo,
+            pageRequest);
 
     LocalDate today = LocalDate.now(clock);
     result.items().forEach(payment -> updatePaymentStatus(payment, today));
 
-    List<PaymentResponse> responses = enrichPaymentResponses(result.items(), principal.getTeamId());
+    List<PaymentResponse> responses =
+        enrichPaymentResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public PaymentStatsResponse getPaymentStats(UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
-    Record2<Integer, BigDecimal> pending = paymentRepository.getPendingStats(teamId);
-    Record2<Integer, BigDecimal> overdue = paymentRepository.getOverdueStats(teamId);
-    String currency = paymentRepository.findCurrencyByTeamId(teamId);
+    Optional<AmountStats> pending = paymentRepository.getPendingStats(teamId);
+    Optional<AmountStats> overdue = paymentRepository.getOverdueStats(teamId);
+    String currency = paymentRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<PaymentStatsResponse.MonthlyTrend> monthlyTrend =
         paymentRepository.getMonthlyPaidTrend(teamId, 12).stream()
             .map(
                 r ->
                     new PaymentStatsResponse.MonthlyTrend(
-                        r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
+                        r.month(),
+                        CurrencyUtils.sumToMajorUnits(r.amount().orElse(null), currency)))
             .toList();
 
     return new PaymentStatsResponse(
-        pending.value1(),
-        CurrencyUtils.sumToMajorUnits(pending.value2(), currency),
-        overdue.value1(),
-        CurrencyUtils.sumToMajorUnits(overdue.value2(), currency),
-        currency,
+        pending.map(AmountStats::count).orElse(0),
+        CurrencyUtils.sumToMajorUnits(pending.flatMap(AmountStats::total).orElse(null), currency),
+        overdue.map(AmountStats::count).orElse(0),
+        CurrencyUtils.sumToMajorUnits(overdue.flatMap(AmountStats::total).orElse(null), currency),
+        Optional.ofNullable(currency),
         monthlyTrend);
   }
 
   @Transactional(readOnly = true)
-  public List<PaymentResponse> getPaymentsByContract(
-      String contractIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
-
-    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-
-    List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
-
-    LocalDate today = LocalDate.now(clock);
-    payments.forEach(payment -> updatePaymentStatus(payment, today));
-
-    return enrichPaymentResponses(payments, teamId);
-  }
-
-  @Transactional(readOnly = true)
   public List<PaymentResponse> getOverduePayments(UserPrincipal principal) {
-    List<Payment> payments = paymentRepository.findOverduePayments(principal.getTeamId());
+    List<Payment> payments = paymentRepository.findOverduePayments(principal.requireTeamId());
 
-    return enrichPaymentResponses(payments, principal.getTeamId());
+    return enrichPaymentResponses(payments, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse updatePayment(
       String identifier, UpdatePaymentRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -348,9 +342,8 @@ public class PaymentService {
     }
 
     // Validate currency decimals if amount or currency is being changed
-    BigDecimal effectiveAmount = request.amount() != null ? request.amount() : payment.getAmount();
-    String effectiveCurrency =
-        request.currency() != null ? request.currency() : payment.getCurrency();
+    BigDecimal effectiveAmount = request.amount().orElse(payment.getAmount());
+    String effectiveCurrency = request.currency().orElse(payment.getCurrency());
     validateCurrencyDecimals(effectiveAmount, effectiveCurrency);
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
@@ -381,7 +374,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse markPaymentAsPaid(
       String identifier, MarkPaidRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -417,12 +410,10 @@ public class PaymentService {
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
-    payment.setPaymentDate(request.paymentDate());
+    payment.setPaymentDate(Optional.of(request.paymentDate()));
     Payment.PaymentStatus oldStatus = payment.getStatus();
     payment.setStatus(PAID);
-    if (request.notes() != null && !request.notes().isEmpty()) {
-      payment.setNotes(request.notes());
-    }
+    request.notes().filter(n -> !n.isEmpty()).ifPresent(n -> payment.setNotes(Optional.of(n)));
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
 
@@ -459,7 +450,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse registerReceival(
       String paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -535,7 +526,7 @@ public class PaymentService {
   @Transactional(readOnly = true)
   public List<PaymentReceivalResponse> getReceivalsForPayment(
       String paymentIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -551,7 +542,7 @@ public class PaymentService {
       String receivalIdentifier,
       UpdatePaymentReceivalRequest request,
       UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -585,7 +576,7 @@ public class PaymentService {
         teamId,
         request.amount(),
         request.receivalDate(),
-        request.notes(),
+        request.notes().orElse(null),
         principal.getUserId(),
         currency);
 
@@ -614,7 +605,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse deleteReceival(
       String paymentIdentifier, String receivalIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
 
@@ -653,7 +644,7 @@ public class PaymentService {
     String currency = payment.getCurrency();
     BigDecimal totalReceived =
         receivalRepository.sumByPaymentIdAndTeamId(
-            payment.getId(), principal.getTeamId(), currency);
+            payment.getId(), principal.requireTeamId(), currency);
     BigDecimal balance = payment.getAmount().subtract(totalReceived);
 
     Payment.PaymentStatus newStatus;
@@ -661,18 +652,18 @@ public class PaymentService {
       newStatus = PAID;
       // Set payment date to the latest receival date
       List<PaymentReceival> receivals =
-          receivalRepository.findByPaymentIdAndTeamId(payment.getId(), principal.getTeamId());
+          receivalRepository.findByPaymentIdAndTeamId(payment.getId(), principal.requireTeamId());
       if (!receivals.isEmpty()) {
         LocalDate latestDate =
             receivals.stream()
                 .map(PaymentReceival::getReceivalDate)
                 .max(LocalDate::compareTo)
                 .orElse(LocalDate.now(clock));
-        payment.setPaymentDate(latestDate);
+        payment.setPaymentDate(Optional.of(latestDate));
       }
     } else if (totalReceived.compareTo(BigDecimal.ZERO) > 0) {
       newStatus = PARTIALLY_PAID;
-      payment.setPaymentDate(null);
+      payment.setPaymentDate(Optional.empty());
     } else {
       // No receivals - check if overdue
       if (payment.getDueDate().isBefore(LocalDate.now(clock))) {
@@ -680,7 +671,7 @@ public class PaymentService {
       } else {
         newStatus = PENDING;
       }
-      payment.setPaymentDate(null);
+      payment.setPaymentDate(Optional.empty());
     }
 
     payment.setStatus(newStatus);
@@ -694,7 +685,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deletePayment(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID paymentId = payment.getId();
 
@@ -724,7 +715,7 @@ public class PaymentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<PaymentResponse> bulkGeneratePayments(
       BulkGeneratePaymentsRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     YearMonth month = YearMonth.parse(request.forMonth());
 
     List<Contract> activeContracts = contractRepository.findByStatus(ACTIVE, teamId);
@@ -759,7 +750,7 @@ public class PaymentService {
       payment.setCurrency(contract.getRentAmountCurrency());
       payment.setDueDate(dueDate);
       payment.setStatus(PENDING);
-      payment.setNotes("Auto-generated for " + month);
+      payment.setNotes(Optional.of("Auto-generated for " + month));
       payment.setCreatedBy(principal.getUserId());
       payment.setUpdatedBy(principal.getUserId());
       payment.setCreatedAt(clock.instant());
@@ -782,7 +773,7 @@ public class PaymentService {
       auditService.logCreate(
           teamId,
           "BULK_PAYMENT_GENERATION",
-          generatedPayments.get(0).getId(),
+          generatedPayments.getFirst().getId(),
           principal.getUserId(),
           "Generated " + generatedPayments.size() + " payments for " + month);
     }
@@ -795,47 +786,44 @@ public class PaymentService {
   public DocumentResponse uploadDocument(
       String paymentIdentifier,
       MultipartFile file,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "PAYMENT", payment.getId(), payment.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.getDocuments("PAYMENT", payment.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String paymentIdentifier, UserPrincipal principal) {
     Payment payment =
-        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "PAYMENT", payment.getId());
+        paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "PAYMENT", payment.getId());
   }
 
   // --- Helper methods ---
 
   private LocalDate calculateDueDate(YearMonth month, Contract contract) {
-    Integer paymentDueDay = contract.getPaymentDueDay();
-    if (paymentDueDay == null) {
-      paymentDueDay = 1;
-    }
+    int paymentDueDay = contract.getPaymentDueDay().orElse(1);
 
     int maxDayInMonth = month.lengthOfMonth();
     int actualDay = Math.min(paymentDueDay, maxDayInMonth);
@@ -850,25 +838,18 @@ public class PaymentService {
   }
 
   private void sendPaymentPaidNotification(Payment payment, UUID teamId, UserPrincipal principal) {
-    Contract contract =
-        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
-    String propertyName = "N/A";
-    String tenantName = "N/A";
-    if (contract != null) {
-      Property property =
-          propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      Tenant tenant =
-          contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
-      if (property != null) {
-        propertyName =
-            property.getStreet() != null
-                ? property.getStreet() + ", " + property.getCity()
-                : property.getIdentifier();
-      }
-      if (tenant != null) {
-        tenantName = tenant.getFirstName() + " " + tenant.getLastName();
-      }
-    }
+    Optional<Contract> contractOpt =
+        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId);
+    String propertyName =
+        contractOpt
+            .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
+            .map(p -> p.getStreet() + ", " + p.getCity())
+            .orElse("N/A");
+    String tenantName =
+        contractOpt
+            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .orElse("N/A");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -883,7 +864,7 @@ public class PaymentService {
                     "amount",
                     payment.getCurrency() + " " + payment.getAmount(),
                     "paymentDate",
-                    payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "N/A",
+                    payment.getPaymentDate().map(LocalDate::toString).orElse("N/A"),
                     "baseUrl",
                     appProperties.email().baseUrl()))
             .createdBy(principal.getUserId())
@@ -892,25 +873,18 @@ public class PaymentService {
 
   private void sendReceivalNotification(
       Payment payment, BigDecimal receivalAmount, UUID teamId, UserPrincipal principal) {
-    Contract contract =
-        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
-    String propertyName = "N/A";
-    String tenantName = "N/A";
-    if (contract != null) {
-      Property property =
-          propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      Tenant tenant =
-          contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
-      if (property != null) {
-        propertyName =
-            property.getStreet() != null
-                ? property.getStreet() + ", " + property.getCity()
-                : property.getIdentifier();
-      }
-      if (tenant != null) {
-        tenantName = tenant.getFirstName() + " " + tenant.getLastName();
-      }
-    }
+    Optional<Contract> contractOpt =
+        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId);
+    String propertyName =
+        contractOpt
+            .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
+            .map(p -> p.getStreet() + ", " + p.getCity())
+            .orElse("N/A");
+    String tenantName =
+        contractOpt
+            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .orElse("N/A");
     String currency = payment.getCurrency();
     BigDecimal totalReceived =
         receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);
@@ -960,12 +934,12 @@ public class PaymentService {
             .filter(java.util.Objects::nonNull)
             .collect(toSet());
 
-    Map<UUID, com.buurman.domain.Property> propertiesById =
+    Map<UUID, Property> propertiesById =
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
-            .collect(toMap(com.buurman.domain.Property::getId, identity()));
+            .collect(toMap(Property::getId, identity()));
 
     // Batch-fetch primary tenants via contract_parties
-    Map<UUID, com.buurman.domain.Tenant> primaryTenantByContract =
+    Map<UUID, Tenant> primaryTenantByContract =
         contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
     // Batch-fetch documents for all payments
@@ -996,9 +970,8 @@ public class PaymentService {
       TenantSummary tenantSummary = null;
 
       if (contract != null) {
-        com.buurman.domain.Property property =
-            contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
-        com.buurman.domain.Tenant tenant = primaryTenantByContract.get(contract.getId());
+        Property property = propertiesById.get(contract.getPropertyId());
+        Tenant tenant = primaryTenantByContract.get(contract.getId());
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
         }
@@ -1011,13 +984,13 @@ public class PaymentService {
           docsByPaymentId.getOrDefault(payment.getId(), List.of());
       DocumentResponse proofOfPayment =
           paymentDocs.stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
       DocumentResponse receipt =
           paymentDocs.stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
@@ -1025,19 +998,19 @@ public class PaymentService {
       responses.add(
           new PaymentResponse(
               base.identifier(),
-              contractSummary,
-              tenantSummary,
-              propertySummary,
+              Optional.ofNullable(contractSummary),
+              Optional.ofNullable(tenantSummary),
+              Optional.ofNullable(propertySummary),
               base.amount(),
               base.currency(),
-              receivedAmount,
-              balance,
+              Optional.of(receivedAmount),
+              Optional.of(balance),
               base.paymentDate(),
               base.dueDate(),
               base.status(),
               base.notes(),
-              proofOfPayment,
-              receipt,
+              Optional.ofNullable(proofOfPayment),
+              Optional.ofNullable(receipt),
               receivalResponses,
               base.createdAt(),
               base.updatedAt()));
@@ -1077,33 +1050,33 @@ public class PaymentService {
 
       DocumentResponse proofOfPayment =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
 
       DocumentResponse receipt =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
 
       return new PaymentResponse(
           response.identifier(),
-          contractSummary,
-          tenantSummary,
-          propertySummary,
+          Optional.of(contractSummary),
+          Optional.ofNullable(tenantSummary),
+          Optional.ofNullable(propertySummary),
           response.amount(),
           response.currency(),
-          receivedAmount,
-          balance,
+          Optional.of(receivedAmount),
+          Optional.of(balance),
           response.paymentDate(),
           response.dueDate(),
           response.status(),
           response.notes(),
-          proofOfPayment,
-          receipt,
+          Optional.ofNullable(proofOfPayment),
+          Optional.ofNullable(receipt),
           receivalResponses,
           response.createdAt(),
           response.updatedAt());
@@ -1116,8 +1089,8 @@ public class PaymentService {
         response.property(),
         response.amount(),
         response.currency(),
-        receivedAmount,
-        balance,
+        Optional.of(receivedAmount),
+        Optional.of(balance),
         response.paymentDate(),
         response.dueDate(),
         response.status(),
@@ -1129,7 +1102,8 @@ public class PaymentService {
         response.updatedAt());
   }
 
-  private void validateCurrencyDecimals(BigDecimal amount, String currencyCode) {
+  private void validateCurrencyDecimals(
+      @Nullable BigDecimal amount, @Nullable String currencyCode) {
     if (amount == null || currencyCode == null || currencyCode.isBlank()) {
       return;
     }

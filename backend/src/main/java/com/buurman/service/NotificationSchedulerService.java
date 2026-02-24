@@ -1,5 +1,7 @@
 package com.buurman.service;
 
+import static com.buurman.domain.TeamRole.TEAM_EDITOR;
+import static com.buurman.util.Constants.SYSTEM_USER_ID;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,7 @@ import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
+import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -66,7 +70,11 @@ public class NotificationSchedulerService {
                 contractRepository.findExpiringContracts(team.getId(), thirtyDaysFromNow);
 
             for (Contract contract : expiringContracts) {
-              int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), contract.getEndDate());
+              if (contract.getEndDate().isEmpty()) {
+                continue;
+              }
+              LocalDate endDate = contract.getEndDate().get();
+              int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), endDate);
 
               if (daysUntilExpiry != 30
                   && daysUntilExpiry != 14
@@ -87,15 +95,16 @@ public class NotificationSchedulerService {
                               .notificationType(NotificationType.CONTRACT_EXPIRY)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
-                              .recipientPhone(user.getPhone())
+                              .recipientPhone(user.getPhone().orElse(null))
                               .templateName("contract-expiry")
                               .templateVariables(
                                   Map.of(
                                       "userName", user.getFirstName(),
                                       "propertyName", propertyName,
                                       "daysUntilExpiry", daysUntilExpiry,
-                                      "expiryDate", formatDate(contract.getEndDate()),
+                                      "expiryDate", formatDate(endDate),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .createdBy(SYSTEM_USER_ID)
                               .build()));
             }
 
@@ -150,7 +159,7 @@ public class NotificationSchedulerService {
                               .notificationType(NotificationType.PAYMENT_REMINDER)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
-                              .recipientPhone(user.getPhone())
+                              .recipientPhone(user.getPhone().orElse(null))
                               .templateName("payment-reminder")
                               .templateVariables(
                                   Map.of(
@@ -159,6 +168,7 @@ public class NotificationSchedulerService {
                                       "amount", formatCurrency(payment.getAmount()),
                                       "dueDate", formatDate(payment.getDueDate()),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .createdBy(SYSTEM_USER_ID)
                               .build()));
             }
 
@@ -190,13 +200,13 @@ public class NotificationSchedulerService {
   private void notifyTeamMembers(UUID teamId, java.util.function.Consumer<User> notifier) {
     List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
     for (TeamMember member : members) {
-      if ("TEAM_ADMIN".equals(member.getRole()) || "TEAM_EDITOR".equals(member.getRole())) {
+      if (member.getRole() == TeamRole.TEAM_ADMIN || member.getRole() == TEAM_EDITOR) {
         userRepository.findById(member.getUserId()).ifPresent(notifier);
       }
     }
   }
 
-  private String formatDate(LocalDate date) {
+  private String formatDate(@Nullable LocalDate date) {
     return date != null ? date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy")) : "";
   }
 

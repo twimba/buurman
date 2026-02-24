@@ -85,7 +85,9 @@ const MONTH_NAMES = [
 function formatMonthTick(v: string): string {
   const [y, m] = v.split('-');
   const month = MONTH_NAMES[parseInt(m, 10) - 1];
-  if (!month) return v;
+  if (!month) {
+    return v;
+  }
   return `${month} '${y.slice(2)}`;
 }
 
@@ -102,7 +104,9 @@ function getCurrencySymbol(currencyCode: string): string {
 }
 
 function formatCurrency(value: number | null, currencyCode: string): string {
-  if (value == null) return 'N/A';
+  if (value == null) {
+    return 'N/A';
+  }
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
@@ -119,9 +123,12 @@ function formatAxisValue(value: number, currencyCode: string): string {
   const symbol = getCurrencySymbol(currencyCode);
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
-  if (abs >= 1_000_000)
+  if (abs >= 1_000_000) {
     return `${sign}${symbol}${(abs / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
+  }
+  if (abs >= 1_000) {
+    return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
+  }
   return `${sign}${symbol}${abs.toFixed(0)}`;
 }
 
@@ -162,7 +169,9 @@ function computeMonths(
     case 'all':
       return 0;
     case 'custom': {
-      if (!customStartDate || !customEndDate) return 12;
+      if (!customStartDate || !customEndDate) {
+        return 12;
+      }
       const start = new Date(customStartDate);
       const end = new Date(customEndDate);
       return Math.max(
@@ -241,8 +250,10 @@ export const PropertyDashboardTab = ({
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error)
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
         Failed to load dashboard data.{' '}
@@ -254,7 +265,10 @@ export const PropertyDashboardTab = ({
         </button>
       </div>
     );
-  if (!dashboard) return null;
+  }
+  if (!dashboard) {
+    return null;
+  }
 
   const {
     summary,
@@ -570,7 +584,9 @@ function makeOutflowShape(dataKey: 'expenses' | 'mortgage') {
       fillOpacity,
       payload,
     } = props;
-    if (height === 0 || width === 0) return null;
+    if (height === 0 || width === 0) {
+      return null;
+    }
 
     // Normalize: Recharts passes negative height for below-zero bars.
     // SVG <rect> doesn't render with negative height, so always normalize.
@@ -633,7 +649,9 @@ function CashFlowTooltip({
   isDark: boolean;
   currency: string;
 }) {
-  if (!active || !payload?.length) return null;
+  if (!active || !payload?.length) {
+    return null;
+  }
   const get = (key: string) =>
     payload.find((p) => p.dataKey === key)?.value ?? 0;
   const income = get('income') as number;
@@ -706,7 +724,9 @@ function CashFlowChart({
     [data.months]
   );
 
-  if (!data.months.length) return <EmptyChart message="No transaction data" />;
+  if (!data.months.length) {
+    return <EmptyChart message="No transaction data" />;
+  }
 
   return (
     <ResponsiveContainer width="100%" height={380}>
@@ -965,7 +985,9 @@ function ExpenseTimelineChart({
     setEnabled((prev) => {
       const next = new Set(prev);
       if (next.has(cat)) {
-        if (next.size > 1) next.delete(cat);
+        if (next.size > 1) {
+          next.delete(cat);
+        }
       } else {
         next.add(cat);
       }
@@ -987,7 +1009,9 @@ function ExpenseTimelineChart({
     [data.timeline, allCategories, enabled]
   );
 
-  if (!data.categories.length) return <EmptyChart message="No expense data" />;
+  if (!data.categories.length) {
+    return <EmptyChart message="No expense data" />;
+  }
 
   const enabledCategories = allCategories.filter((c) => enabled.has(c));
 

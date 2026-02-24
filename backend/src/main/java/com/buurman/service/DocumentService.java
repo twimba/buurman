@@ -7,11 +7,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,8 +67,8 @@ public class DocumentService {
       String entityType,
       UUID entityId,
       String entityIdentifier,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
 
     // Validate file size
@@ -95,19 +98,20 @@ public class DocumentService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, principal.getTeamIdentifier(), entityType, entityIdentifier);
+            file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
 
     // Save document metadata
     Document document = new Document();
-    document.setTeamId(principal.getTeamId());
+    document.setTeamId(principal.requireTeamId());
     document.setEntityType(entityType);
     document.setEntityId(entityId);
     document.setFileKey(fileKey);
-    document.setFileName(file.getOriginalFilename());
+    document.setFileName(
+        java.util.Objects.requireNonNullElse(file.getOriginalFilename(), "unknown"));
     document.setFileSize(file.getSize());
     document.setMimeType(mimeType);
-    document.setTitle(title);
-    document.setNotes(notes);
+    document.setTitle(Optional.ofNullable(title));
+    document.setNotes(Optional.ofNullable(notes));
     document.setUploadedBy(principal.getUserId());
 
     Document savedDocument = documentRepository.save(document);
@@ -115,7 +119,7 @@ public class DocumentService {
     metricsService.incrementCounter("document.upload.total", "entity_type", entityType);
     metricsService.incrementCounter("document.upload.bytes.total", "entity_type", entityType);
     metricsService.recordHistogram(
-        "document.upload.bytes", file.getSize(), "entity_type", entityType);
+        "document.upload.bytes", (double) file.getSize(), "entity_type", entityType);
 
     log.info(
         "Document uploaded: {} for entity {}/{}",
@@ -126,12 +130,13 @@ public class DocumentService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("documentAdded", savedDocument.getFileName());
-    if (savedDocument.getTitle() != null && !savedDocument.getTitle().isEmpty()) {
-      changedFields.put("title", savedDocument.getTitle());
-    }
+    savedDocument
+        .getTitle()
+        .filter(t -> !t.isEmpty())
+        .ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
-        principal.getTeamId(),
-        entityType.toUpperCase(),
+        principal.requireTeamId(),
+        entityType.toUpperCase(Locale.ROOT),
         entityId,
         principal.getUserId(),
         java.util.Map.of("documentCount", "unchanged"),
@@ -144,13 +149,13 @@ public class DocumentService {
   public List<DocumentResponse> getDocuments(
       String entityType, UUID entityId, UserPrincipal principal) {
     List<Document> documents =
-        documentRepository.findByEntityAndTeamId(entityType, entityId, principal.getTeamId());
+        documentRepository.findByEntityAndTeamId(entityType, entityId, principal.requireTeamId());
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
   public URL getDownloadUrl(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     metricsService.incrementCounter(
         "document.download.total", "entity_type", document.getEntityType());
@@ -161,10 +166,10 @@ public class DocumentService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteDocument(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Soft delete in database
-    documentRepository.softDeleteByIdAndTeamId(document.getId(), principal.getTeamId());
+    documentRepository.softDeleteByIdAndTeamId(document.getId(), principal.requireTeamId());
 
     // Delete from S3
     s3StorageService.deleteFile(document.getFileKey());
@@ -177,12 +182,10 @@ public class DocumentService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("documentRemoved", document.getFileName());
-    if (document.getTitle() != null && !document.getTitle().isEmpty()) {
-      changedFields.put("title", document.getTitle());
-    }
+    document.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
-        principal.getTeamId(),
-        document.getEntityType().toUpperCase(),
+        principal.requireTeamId(),
+        document.getEntityType().toUpperCase(Locale.ROOT),
         document.getEntityId(),
         principal.getUserId(),
         java.util.Map.of("documentCount", "unchanged"),
@@ -194,10 +197,10 @@ public class DocumentService {
   public DocumentResponse updateDocument(
       String identifier, UpdateDocumentRequest request, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    String oldTitle = document.getTitle();
-    String oldNotes = document.getNotes();
+    String oldTitle = document.getTitle().orElse(null);
+    String oldNotes = document.getNotes().orElse(null);
 
     document.setTitle(request.title());
     document.setNotes(request.notes());
@@ -209,15 +212,15 @@ public class DocumentService {
     Map<String, Object> oldValues = new java.util.HashMap<>();
     Map<String, Object> newValues = new java.util.HashMap<>();
 
-    if (!java.util.Objects.equals(oldTitle, request.title())) {
-      changedFields.put("title", request.title());
+    if (!java.util.Objects.equals(oldTitle, request.title().orElse(null))) {
+      changedFields.put("title", request.title().orElse(null));
       oldValues.put("title", oldTitle);
-      newValues.put("title", request.title());
+      newValues.put("title", request.title().orElse(null));
     }
-    if (!java.util.Objects.equals(oldNotes, request.notes())) {
-      changedFields.put("notes", request.notes());
+    if (!java.util.Objects.equals(oldNotes, request.notes().orElse(null))) {
+      changedFields.put("notes", request.notes().orElse(null));
       oldValues.put("notes", oldNotes);
-      newValues.put("notes", request.notes());
+      newValues.put("notes", request.notes().orElse(null));
     }
 
     if (!changedFields.isEmpty()) {
@@ -227,8 +230,8 @@ public class DocumentService {
       newValues.put("fileName", document.getFileName());
 
       auditService.logUpdate(
-          principal.getTeamId(),
-          document.getEntityType().toUpperCase(),
+          principal.requireTeamId(),
+          document.getEntityType().toUpperCase(Locale.ROOT),
           document.getEntityId(),
           principal.getUserId(),
           oldValues,
@@ -254,14 +257,17 @@ public class DocumentService {
         response.title(),
         response.notes(),
         response.uploadedAt(),
-        downloadUrl);
+        Optional.of(downloadUrl));
   }
 
   public PageResponse<DocumentResponse> searchDocumentsPaginated(
-      String search, String entityType, UserPrincipal principal, PageRequest pageRequest) {
+      @Nullable String search,
+      @Nullable String entityType,
+      UserPrincipal principal,
+      PageRequest pageRequest) {
     PaginatedResult<Document> result =
         documentRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), search, entityType, pageRequest);
+            principal.requireTeamId(), search, entityType, pageRequest);
     List<DocumentResponse> responses =
         result.items().stream().map(this::toResponseWithDownloadUrl).toList();
     return PageResponse.of(
@@ -269,15 +275,15 @@ public class DocumentService {
   }
 
   public List<DocumentResponse> searchDocuments(
-      String searchTerm, String entityType, UserPrincipal principal) {
+      @Nullable String searchTerm, @Nullable String entityType, UserPrincipal principal) {
     List<Document> documents =
-        documentRepository.searchDocuments(searchTerm, entityType, principal.getTeamId());
+        documentRepository.searchDocuments(searchTerm, entityType, principal.requireTeamId());
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
   public DocumentResponse getDocument(String identifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(document);
   }
 
@@ -288,7 +294,8 @@ public class DocumentService {
 
     // Fetch all documents by identifiers
     List<Document> documents =
-        documentRepository.findByIdentifiersAndTeamId(documentIdentifiers, principal.getTeamId());
+        documentRepository.findByIdentifiersAndTeamId(
+            documentIdentifiers, principal.requireTeamId());
 
     if (documents.isEmpty()) {
       throw new IllegalArgumentException("No documents found");
@@ -330,7 +337,7 @@ public class DocumentService {
       log.info(
           "Created zip archive with {} documents for team {}",
           documents.size(),
-          principal.getTeamId());
+          principal.requireTeamId());
       return baos.toByteArray();
 
     } catch (Exception e) {

@@ -1,12 +1,13 @@
 package com.buurman.service.notification;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public record NotificationSendRequest(
-    UUID notificationId,
-    String recipientEmail,
-    String recipientPhone,
-    String subject,
+    Optional<UUID> notificationId,
+    Optional<String> recipientEmail,
+    Optional<String> recipientPhone,
+    Optional<String> subject,
     String body,
-    String fromEmail,
-    String fromName) {}
+    Optional<String> fromEmail,
+    Optional<String> fromName) {}

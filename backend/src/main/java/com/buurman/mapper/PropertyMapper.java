@@ -12,7 +12,7 @@ import com.buurman.dto.request.UpdatePropertyRequest;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.PropertySummary;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface PropertyMapper {
 
   @Mapping(target = "mainPhotoUrl", ignore = true)

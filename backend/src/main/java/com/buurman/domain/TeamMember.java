@@ -3,17 +3,22 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class TeamMember {
 
   private UUID id;
   private UUID teamId;
   private UUID userId;
-  private String role;
+  private TeamRole role;
   private boolean isOwner;
   private Instant invitedAt;
   private UUID invitedBy;
@@ -23,7 +28,7 @@ public class TeamMember {
       UUID id,
       UUID teamId,
       UUID userId,
-      String role,
+      TeamRole role,
       Instant invitedAt,
       UUID invitedBy,
       Instant joinedAt) {

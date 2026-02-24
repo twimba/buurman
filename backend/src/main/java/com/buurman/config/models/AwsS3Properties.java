@@ -1,13 +1,21 @@
 package com.buurman.config.models;
 
+import java.util.Optional;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "aws.s3")
 public record AwsS3Properties(
-    String endpoint,
+    Optional<String> endpoint,
     String region,
     String accessKey,
     String secretKey,
     String bucketName,
-    String publicEndpoint,
-    boolean usePresignedUrls) {}
+    Optional<String> publicEndpoint,
+    boolean usePresignedUrls) {
+
+  public AwsS3Properties {
+    endpoint = Optional.ofNullable(endpoint).flatMap(o -> o);
+    publicEndpoint = Optional.ofNullable(publicEndpoint).flatMap(o -> o);
+  }
+}

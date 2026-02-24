@@ -42,14 +42,22 @@ function hasRole(
 }
 
 function formatRelativeTime(iso: string | null): string {
-  if (!iso) return "\u2014";
+  if (!iso) {
+    return "\u2014";
+  }
   const diff = Date.now() - new Date(iso).getTime();
   const seconds = Math.floor(diff / 1000);
-  if (seconds < 60) return `${seconds}s ago`;
+  if (seconds < 60) {
+    return `${seconds}s ago`;
+  }
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) {
+    return `${minutes}m ago`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) {
+    return `${hours}h ago`;
+  }
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
@@ -60,21 +68,30 @@ function formatUptime(ms: number): string {
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const parts: string[] = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
+  if (days > 0) {
+    parts.push(`${days}d`);
+  }
+  if (hours > 0) {
+    parts.push(`${hours}h`);
+  }
   parts.push(`${minutes}m`);
   return parts.join(" ");
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  if (bytes < 1024 * 1024 * 1024)
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(0)} KB`;
+  }
+  if (bytes < 1024 * 1024 * 1024) {
     return `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
+  }
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }
 
 function formatNumber(n: number): string {
-  if (Number.isInteger(n)) return n.toLocaleString();
+  if (Number.isInteger(n)) {
+    return n.toLocaleString();
+  }
   return n.toFixed(2);
 }
 
@@ -235,23 +252,28 @@ function AlertBanner({
 }) {
   const alerts: { message: string; type: "warning" | "error" }[] = [];
 
-  if (data.failedCount > 0)
+  if (data.failedCount > 0) {
     alerts.push({
       message: `${data.failedCount} failed migration(s) \u2014 immediate attention required`,
       type: "error",
     });
-  if (data.pendingCount > 0)
+  }
+  if (data.pendingCount > 0) {
     alerts.push({
       message: `${data.pendingCount} pending migration(s) detected`,
       type: "warning",
     });
-  if (data.downServices > 0)
+  }
+  if (data.downServices > 0) {
     alerts.push({
       message: `${data.downServices} service(s) unreachable`,
       type: "error",
     });
+  }
 
-  if (alerts.length === 0) return null;
+  if (alerts.length === 0) {
+    return null;
+  }
 
   return (
     <div className="space-y-2 mb-6">
@@ -722,7 +744,9 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
   for (const m of metrics.custom) {
     const parts = m.name.split(".");
     const group = parts.length >= 3 ? parts.slice(0, 2).join(".") : m.name;
-    if (!grouped[group]) grouped[group] = [];
+    if (!grouped[group]) {
+      grouped[group] = [];
+    }
     grouped[group].push(m);
   }
 
@@ -857,7 +881,9 @@ function ConfigurationCard({
   // Group by category
   const grouped: Record<string, ConfigEntry[]> = {};
   for (const entry of configuration) {
-    if (!grouped[entry.category]) grouped[entry.category] = [];
+    if (!grouped[entry.category]) {
+      grouped[entry.category] = [];
+    }
     grouped[entry.category].push(entry);
   }
 
@@ -931,7 +957,9 @@ function MigrationsCard({
   };
 }) {
   const sorted = [...migrations.entries].sort((a, b) => {
-    if (!a.version || !b.version) return 0;
+    if (!a.version || !b.version) {
+      return 0;
+    }
     return b.version.localeCompare(a.version, undefined, { numeric: true });
   });
 
@@ -1092,7 +1120,9 @@ export const SystemInfoPage = () => {
   const { keycloak } = useAuth();
   const canView = hasRole(keycloak, "BACKOFFICE_SYSTEM");
 
-  if (!canView) return <AccessDenied />;
+  if (!canView) {
+    return <AccessDenied />;
+  }
 
   return <SystemInfoContent />;
 };
@@ -1101,7 +1131,9 @@ function SystemInfoContent() {
   const { data, isLoading, isFetching, error, refetch } = useSystemInfo();
   const { data: appBuild } = useAppBuildInfo();
 
-  if (isLoading) return <LoadingSkeleton />;
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
 
   if (error || !data) {
     return (

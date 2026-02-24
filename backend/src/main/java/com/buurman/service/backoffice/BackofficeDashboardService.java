@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jooq.Record2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.LabelCount;
 import com.buurman.dto.response.backoffice.BackofficeDashboardResponse;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamRepository;
@@ -32,13 +32,13 @@ public class BackofficeDashboardService {
     long disabledUsers = userRepository.countDisabled();
     long totalNotifications = notificationRepository.countAll();
 
-    List<Record2<String, Integer>> statusCounts = notificationRepository.countGroupedByStatus();
-    List<Record2<String, Integer>> channelCounts = notificationRepository.countGroupedByChannel();
+    List<LabelCount> statusCounts = notificationRepository.countGroupedByStatus();
+    List<LabelCount> channelCounts = notificationRepository.countGroupedByChannel();
 
     long pendingNotifications = 0, failedNotifications = 0, deliveredNotifications = 0;
-    for (Record2<String, Integer> record : statusCounts) {
-      String s = record.value1();
-      int count = record.value2();
+    for (LabelCount record : statusCounts) {
+      String s = record.label();
+      int count = record.count();
       switch (s) {
         case "PENDING", "QUEUED" -> pendingNotifications += count;
         case "DELIVERED" -> deliveredNotifications = count;
@@ -47,8 +47,8 @@ public class BackofficeDashboardService {
     }
 
     Map<String, Long> notificationsByChannel = new HashMap<>();
-    for (Record2<String, Integer> record : channelCounts) {
-      notificationsByChannel.put(record.value1(), (long) record.value2());
+    for (LabelCount record : channelCounts) {
+      notificationsByChannel.put(record.label(), (long) record.count());
     }
 
     return new BackofficeDashboardResponse(

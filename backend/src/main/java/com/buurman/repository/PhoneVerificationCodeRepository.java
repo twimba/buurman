@@ -26,8 +26,7 @@ public class PhoneVerificationCodeRepository {
   public void save(PhoneVerificationCode code) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt =
-        code.getCreatedAt() != null ? LocalDateTime.ofInstant(code.getCreatedAt(), UTC) : now;
+    LocalDateTime createdAt = now;
 
     dsl.insertInto(PHONE_VERIFICATION_CODES)
         .set(PHONE_VERIFICATION_CODES.ID, id)
@@ -62,7 +61,7 @@ public class PhoneVerificationCodeRepository {
               pvc.setPhone(record.getPhone());
               pvc.setCode(record.getCode());
               pvc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
-              pvc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+              pvc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(t -> t.toInstant(UTC)));
               pvc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
               return pvc;
             });

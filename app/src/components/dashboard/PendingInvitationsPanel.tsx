@@ -34,7 +34,9 @@ export const PendingInvitationsPanel = () => {
   const acceptMutation = useAcceptInvitation();
   const { formatDate } = useFormatDate();
 
-  if (isLoading || !invitations || invitations.length === 0) return null;
+  if (isLoading || !invitations || invitations.length === 0) {
+    return null;
+  }
 
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-[#14161f] dark:to-[#1a1d2e] rounded-xl shadow-sm border border-blue-200 dark:border-[#2a2e3f] p-6">

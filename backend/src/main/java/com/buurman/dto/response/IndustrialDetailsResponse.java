@@ -1,19 +1,20 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public record IndustrialDetailsResponse(
-    BigDecimal clearHeightM,
-    Integer loadingDocks,
-    Integer driveInDoors,
-    BigDecimal floorLoadCapacityKgSqm,
-    Integer powerCapacityKva,
-    Boolean hasThreePhasePower,
-    Boolean hasCrane,
-    BigDecimal craneCapacityTons,
-    Boolean hasHazmatCertification,
-    Boolean hasVentilationSystem,
-    Boolean hasClimateControl,
-    BigDecimal yardAreaValue,
-    String yardAreaUnit,
-    String zoningClassification) {}
+    Optional<BigDecimal> clearHeightM,
+    Optional<Integer> loadingDocks,
+    Optional<Integer> driveInDoors,
+    Optional<BigDecimal> floorLoadCapacityKgSqm,
+    Optional<Integer> powerCapacityKva,
+    Optional<Boolean> hasThreePhasePower,
+    Optional<Boolean> hasCrane,
+    Optional<BigDecimal> craneCapacityTons,
+    Optional<Boolean> hasHazmatCertification,
+    Optional<Boolean> hasVentilationSystem,
+    Optional<Boolean> hasClimateControl,
+    Optional<BigDecimal> yardAreaValue,
+    Optional<String> yardAreaUnit,
+    Optional<String> zoningClassification) {}

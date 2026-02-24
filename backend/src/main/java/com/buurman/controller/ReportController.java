@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -75,12 +76,16 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
-      @RequestParam(required = false) String currency,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @RequestParam Optional<String> currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
-    return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
+    List<UUID> propertyIds =
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
+            .orElse(null);
+    return reportService.getFinancialOverview(
+        startDate, endDate, propertyIds, currency.orElse(null), principal);
   }
 
   @Operation(
@@ -89,14 +94,18 @@ public class ReportController {
   @GetMapping("/charts/income-trend")
   public IncomeTrendResponse getIncomeTrend(
       @RequestParam(defaultValue = "12") int months,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
-    if (startDate != null && endDate != null) {
-      return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
+    List<UUID> propertyIds =
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
+            .orElse(null);
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getIncomeTrendByDateRange(
+          startDate.get(), endDate.get(), propertyIds, principal);
     }
     return reportService.getIncomeTrend(months, propertyIds, principal);
   }
@@ -108,10 +117,13 @@ public class ReportController {
   public ExpenseBreakdownResponse getExpenseBreakdown(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
+            .orElse(null);
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
@@ -122,10 +134,13 @@ public class ReportController {
   public PropertyComparisonResponse getPropertyComparison(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    List<UUID> propertyIds = resolvePropertyIdentifiers(propertyIdentifiers, principal.getTeamId());
+    List<UUID> propertyIds =
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
+            .orElse(null);
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
@@ -135,12 +150,12 @@ public class ReportController {
   @GetMapping("/charts/occupancy-trend")
   public OccupancyTrendResponse getOccupancyTrend(
       @RequestParam(defaultValue = "12") int months,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    if (startDate != null && endDate != null) {
-      return reportService.getOccupancyTrendByDateRange(startDate, endDate, principal);
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getOccupancyTrendByDateRange(startDate.get(), endDate.get(), principal);
     }
     return reportService.getOccupancyTrend(months, principal);
   }
@@ -160,12 +175,13 @@ public class ReportController {
       description = "Download transaction history as CSV file")
   @GetMapping("/export/transactions/csv")
   public ResponseEntity<byte[]> exportTransactionHistoryCSV(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] csv =
-        exportService.generateTransactionHistoryCSV(startDate, endDate, principal.getTeamId());
+        exportService.generateTransactionHistoryCSV(
+            startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
@@ -178,12 +194,13 @@ public class ReportController {
       description = "Download transaction history as PDF file")
   @GetMapping("/export/transactions/pdf")
   public ResponseEntity<byte[]> exportTransactionHistoryPDF(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
-        exportService.generateTransactionHistoryPDF(startDate, endDate, principal.getTeamId());
+        exportService.generateTransactionHistoryPDF(
+            startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")
@@ -191,13 +208,14 @@ public class ReportController {
         .body(pdf);
   }
 
-  private List<UUID> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
-    if (identifiers == null || identifiers.isEmpty()) {
-      return null;
+  private Optional<List<UUID>> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
+    if (identifiers.isEmpty()) {
+      return Optional.empty();
     }
-    return identifiers.stream()
-        .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
-        .map(Property::getId)
-        .toList();
+    return Optional.of(
+        identifiers.stream()
+            .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
+            .map(Property::getId)
+            .toList());
   }
 }

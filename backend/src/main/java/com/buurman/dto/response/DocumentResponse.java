@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record DocumentResponse(
     String identifier,
@@ -8,9 +9,9 @@ public record DocumentResponse(
     String entityIdentifier,
     String fileKey,
     String fileName,
-    Long fileSize,
-    String mimeType,
-    String title,
-    String notes,
+    Optional<Long> fileSize,
+    Optional<String> mimeType,
+    Optional<String> title,
+    Optional<String> notes,
     Instant uploadedAt,
-    String downloadUrl) {}
+    Optional<String> downloadUrl) {}

@@ -94,13 +94,17 @@ export function RegistrationInvitationsPage() {
   };
 
   const handleRevoke = async () => {
-    if (!revokeTarget) return;
+    if (!revokeTarget) {
+      return;
+    }
     await revokeMutation.mutateAsync(revokeTarget.identifier);
     setRevokeTarget(null);
   };
 
   const formatUsage = (inv: RegistrationInvitation) => {
-    if (inv.maxUsages === null) return `${inv.usageCount} / \u221E`;
+    if (inv.maxUsages === null) {
+      return `${inv.usageCount} / \u221E`;
+    }
     return `${inv.usageCount} / ${inv.maxUsages}`;
   };
 

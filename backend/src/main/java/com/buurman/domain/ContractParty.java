@@ -1,13 +1,17 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractParty {
@@ -15,11 +19,11 @@ public class ContractParty {
   private String identifier;
   private UUID teamId;
   private UUID contractId;
-  private UUID tenantId;
+  @Builder.Default private Optional<UUID> tenantId = Optional.empty();
   private ContractPartyRole role;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

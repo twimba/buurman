@@ -2,6 +2,7 @@ package com.buurman.service.export;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 record TransactionRecord(
     String id,
@@ -9,6 +10,8 @@ record TransactionRecord(
     String type,
     String description,
     String property,
-    String category,
+    Optional<String> category,
     BigDecimal amount,
-    String currency) {}
+    String currency) {
+  TransactionRecord {}
+}

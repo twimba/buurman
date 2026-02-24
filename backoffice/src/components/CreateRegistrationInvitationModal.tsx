@@ -28,7 +28,9 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
   const handleRefreshCode = () => {
     setCodeOverride(null);
     refreshCode().then((result) => {
-      if (result.data) setCodeOverride(result.data);
+      if (result.data) {
+        setCodeOverride(result.data);
+      }
     });
   };
 

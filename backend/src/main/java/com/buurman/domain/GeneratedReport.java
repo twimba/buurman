@@ -1,13 +1,17 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class GeneratedReport {
@@ -38,16 +42,16 @@ public class GeneratedReport {
   private UUID teamId;
   private ReportType reportType;
   private ReportFormat format;
-  private String parameters; // JSONB stored as string
+  @Builder.Default private Optional<String> parameters = Optional.empty(); // JSONB stored as string
   private ReportStatus status;
-  private Integer progress;
-  private String fileKey;
-  private String error;
+  @Builder.Default private Optional<Integer> progress = Optional.empty();
+  @Builder.Default private Optional<String> fileKey = Optional.empty();
+  @Builder.Default private Optional<String> error = Optional.empty();
   private UUID createdBy;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID updatedBy;
-  private Instant completedAt;
-  private Instant expiresAt;
-  private Instant deletedAt;
+  @Builder.Default private Optional<Instant> completedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> expiresAt = Optional.empty();
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

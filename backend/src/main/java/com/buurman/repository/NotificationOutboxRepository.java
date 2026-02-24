@@ -6,6 +6,7 @@ import static java.time.ZoneOffset.UTC;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
@@ -26,11 +27,10 @@ public class NotificationOutboxRepository {
   private final NotificationOutboxRecordMapper mapper;
   private final Clock clock;
 
-  public NotificationOutbox save(NotificationOutbox outbox) {
+  public void save(NotificationOutbox outbox) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt =
-        outbox.getCreatedAt() != null ? LocalDateTime.ofInstant(outbox.getCreatedAt(), UTC) : now;
+    LocalDateTime createdAt = now;
 
     dsl.insertInto(NOTIFICATION_OUTBOX)
         .set(NOTIFICATION_OUTBOX.ID, id)
@@ -49,13 +49,12 @@ public class NotificationOutboxRepository {
     outbox.setStatus(OutboxStatus.PENDING);
     outbox.setRetryCount(0);
     outbox.setCreatedAt(createdAt.toInstant(UTC));
-
-    return outbox;
   }
 
   public List<NotificationOutbox> findPendingBatch(int batchSize) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(NOTIFICATION_OUTBOX)
+    return dsl
+        .selectFrom(NOTIFICATION_OUTBOX)
         .where(
             NOTIFICATION_OUTBOX
                 .STATUS
@@ -69,7 +68,10 @@ public class NotificationOutboxRepository {
         .orderBy(NOTIFICATION_OUTBOX.CREATED_AT.asc())
         .limit(batchSize)
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public void markProcessing(UUID id) {

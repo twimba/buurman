@@ -2,6 +2,8 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.buurman.domain.Property;
 
@@ -18,100 +20,126 @@ public record CreatePropertyRequest(
     @NotBlank(message = "City is required") String city,
     @NotBlank(message = "Postal code is required") String postalCode,
     @NotBlank(message = "Country is required") String country,
-    BigDecimal latitude,
-    BigDecimal longitude,
-    String geocodeAccuracy,
-    @Positive(message = "Area value must be positive") BigDecimal areaValue,
-    String areaUnit,
+    Optional<BigDecimal> latitude,
+    Optional<BigDecimal> longitude,
+    Optional<String> geocodeAccuracy,
+    Optional<@Positive(message = "Area value must be positive") BigDecimal> areaValue,
+    Optional<String> areaUnit,
 
     // Construction & Structure
-    Integer yearBuilt,
-    Integer yearLastRenovated,
-    String constructionType,
-    String foundationType,
-    String roofType,
-    String wallConstruction,
-    String flooringType,
-    String windowType,
-    Integer numberOfFloors,
-    String structuralNotes,
+    Optional<Integer> yearBuilt,
+    Optional<Integer> yearLastRenovated,
+    Optional<String> constructionType,
+    Optional<String> foundationType,
+    Optional<String> roofType,
+    Optional<String> wallConstruction,
+    Optional<String> flooringType,
+    Optional<String> windowType,
+    Optional<Integer> numberOfFloors,
+    Optional<String> structuralNotes,
 
     // Energy & Climate
-    String energyEfficiencyRating,
-    LocalDate energyCertificateExpiryDate,
-    String heatingType,
-    String coolingType,
-    String hotWaterSystem,
-    String insulationNotes,
+    Optional<String> energyEfficiencyRating,
+    Optional<LocalDate> energyCertificateExpiryDate,
+    Optional<String> heatingType,
+    Optional<String> coolingType,
+    Optional<String> hotWaterSystem,
+    Optional<String> insulationNotes,
 
     // Utilities & Connections
-    String electricityConnectionType,
-    Integer electricityCapacityAmps,
-    String waterConnectionType,
-    Boolean hasGasConnection,
-    String sewageType,
-    String internetConnectionType,
-    Integer internetMaxSpeedMbps,
-    String internetStatus,
+    Optional<String> electricityConnectionType,
+    Optional<Integer> electricityCapacityAmps,
+    Optional<String> waterConnectionType,
+    Optional<Boolean> hasGasConnection,
+    Optional<String> sewageType,
+    Optional<String> internetConnectionType,
+    Optional<Integer> internetMaxSpeedMbps,
+    Optional<String> internetStatus,
 
     // Parking
-    Integer parkingSpaces,
-    String parkingType,
+    Optional<Integer> parkingSpaces,
+    Optional<String> parkingType,
 
     // Safety & Security
-    Boolean hasSmokeDetectors,
-    Boolean hasCoDetectors,
-    Boolean hasFireExtinguisher,
-    Boolean hasSprinklerSystem,
-    Boolean hasAlarmSystem,
-    Boolean hasSecurityCameras,
-    Boolean hasSecureEntry,
-    String safetyNotes,
+    Optional<Boolean> hasSmokeDetectors,
+    Optional<Boolean> hasCoDetectors,
+    Optional<Boolean> hasFireExtinguisher,
+    Optional<Boolean> hasSprinklerSystem,
+    Optional<Boolean> hasAlarmSystem,
+    Optional<Boolean> hasSecurityCameras,
+    Optional<Boolean> hasSecureEntry,
+    Optional<String> safetyNotes,
 
     // Accessibility
-    Boolean isWheelchairAccessible,
-    Boolean hasElevator,
-    Boolean hasStepFreeEntrance,
-    Boolean hasAdaptedBathroom,
-    String accessibilityNotes,
+    Optional<Boolean> isWheelchairAccessible,
+    Optional<Boolean> hasElevator,
+    Optional<Boolean> hasStepFreeEntrance,
+    Optional<Boolean> hasAdaptedBathroom,
+    Optional<String> accessibilityNotes,
 
     // Investment & Financial
-    BigDecimal purchasePrice,
-    String purchasePriceCurrency,
-    LocalDate purchaseDate,
-    BigDecimal currentMarketValue,
-    String currentMarketValueCurrency,
-    LocalDate marketValueDate,
-    Property.MortgageType mortgageType,
-    BigDecimal mortgageAmount,
-    String mortgageAmountCurrency,
-    BigDecimal mortgageInterestRate,
-    LocalDate mortgageStartDate,
-    LocalDate mortgageEndDate,
-    BigDecimal monthlyMortgagePayment,
-    String monthlyMortgagePaymentCurrency,
-    BigDecimal annualPropertyTax,
-    String annualPropertyTaxCurrency,
-    BigDecimal annualInsurance,
-    String annualInsuranceCurrency,
-    BigDecimal annualHoaFee,
-    String annualHoaFeeCurrency,
-    BigDecimal annualManagementFee,
-    String annualManagementFeeCurrency,
-    BigDecimal annualMaintenanceReserve,
-    String annualMaintenanceReserveCurrency,
-    String annualPropertyTaxDueMonth,
-    String annualInsuranceDueMonth,
-    String annualHoaFeeDueMonth,
-    String annualManagementFeeDueMonth,
-    String annualMaintenanceReserveDueMonth,
-    Property.DepreciationMethod depreciationMethod,
-    Integer depreciationYears,
-    BigDecimal landValue,
-    String landValueCurrency,
+    Optional<BigDecimal> purchasePrice,
+    Optional<String> purchasePriceCurrency,
+    Optional<LocalDate> purchaseDate,
+    Optional<BigDecimal> currentMarketValue,
+    Optional<String> currentMarketValueCurrency,
+    Optional<LocalDate> marketValueDate,
+    Optional<Property.MortgageType> mortgageType,
+    Optional<BigDecimal> mortgageAmount,
+    Optional<String> mortgageAmountCurrency,
+    Optional<BigDecimal> mortgageInterestRate,
+    Optional<LocalDate> mortgageStartDate,
+    Optional<LocalDate> mortgageEndDate,
+    Optional<BigDecimal> monthlyMortgagePayment,
+    Optional<String> monthlyMortgagePaymentCurrency,
+    Optional<BigDecimal> annualPropertyTax,
+    Optional<String> annualPropertyTaxCurrency,
+    Optional<BigDecimal> annualInsurance,
+    Optional<String> annualInsuranceCurrency,
+    Optional<BigDecimal> annualHoaFee,
+    Optional<String> annualHoaFeeCurrency,
+    Optional<BigDecimal> annualManagementFee,
+    Optional<String> annualManagementFeeCurrency,
+    Optional<BigDecimal> annualMaintenanceReserve,
+    Optional<String> annualMaintenanceReserveCurrency,
+    Optional<String> annualPropertyTaxDueMonth,
+    Optional<String> annualInsuranceDueMonth,
+    Optional<String> annualHoaFeeDueMonth,
+    Optional<String> annualManagementFeeDueMonth,
+    Optional<String> annualMaintenanceReserveDueMonth,
+    Optional<Property.DepreciationMethod> depreciationMethod,
+    Optional<Integer> depreciationYears,
+    Optional<BigDecimal> landValue,
+    Optional<String> landValueCurrency,
 
     // Category-specific details (only one should be provided)
-    @Valid ResidentialDetailsRequest residentialDetails,
-    @Valid CommercialDetailsRequest commercialDetails,
-    @Valid IndustrialDetailsRequest industrialDetails,
-    @Valid AgriculturalDetailsRequest agriculturalDetails) {}
+    @Valid Optional<ResidentialDetailsRequest> residentialDetails,
+    @Valid Optional<CommercialDetailsRequest> commercialDetails,
+    @Valid Optional<IndustrialDetailsRequest> industrialDetails,
+    @Valid Optional<AgriculturalDetailsRequest> agriculturalDetails) {
+
+  public CreatePropertyRequest {
+    energyCertificateExpiryDate =
+        Objects.requireNonNullElse(energyCertificateExpiryDate, Optional.empty());
+    electricityConnectionType =
+        Objects.requireNonNullElse(electricityConnectionType, Optional.empty());
+    currentMarketValueCurrency =
+        Objects.requireNonNullElse(currentMarketValueCurrency, Optional.empty());
+    monthlyMortgagePaymentCurrency =
+        Objects.requireNonNullElse(monthlyMortgagePaymentCurrency, Optional.empty());
+    annualPropertyTaxCurrency =
+        Objects.requireNonNullElse(annualPropertyTaxCurrency, Optional.empty());
+    annualManagementFeeCurrency =
+        Objects.requireNonNullElse(annualManagementFeeCurrency, Optional.empty());
+    annualMaintenanceReserve =
+        Objects.requireNonNullElse(annualMaintenanceReserve, Optional.empty());
+    annualMaintenanceReserveCurrency =
+        Objects.requireNonNullElse(annualMaintenanceReserveCurrency, Optional.empty());
+    annualPropertyTaxDueMonth =
+        Objects.requireNonNullElse(annualPropertyTaxDueMonth, Optional.empty());
+    annualManagementFeeDueMonth =
+        Objects.requireNonNullElse(annualManagementFeeDueMonth, Optional.empty());
+    annualMaintenanceReserveDueMonth =
+        Objects.requireNonNullElse(annualMaintenanceReserveDueMonth, Optional.empty());
+  }
+}

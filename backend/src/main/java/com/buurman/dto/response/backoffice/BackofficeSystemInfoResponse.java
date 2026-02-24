@@ -3,6 +3,7 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public record BackofficeSystemInfoResponse(
     BuildInfo build,
@@ -15,12 +16,12 @@ public record BackofficeSystemInfoResponse(
 
   public record BuildInfo(
       String version,
-      String gitCommit,
-      String gitCommitFull,
-      String gitBranch,
-      Instant gitCommitTime,
+      Optional<String> gitCommit,
+      Optional<String> gitCommitFull,
+      Optional<String> gitBranch,
+      Optional<Instant> gitCommitTime,
       boolean gitDirty,
-      Instant buildTime) {}
+      Optional<Instant> buildTime) {}
 
   public record RuntimeInfo(
       String javaVersion,
@@ -43,22 +44,26 @@ public record BackofficeSystemInfoResponse(
   public record GcInfo(String name, long collectionCount, long collectionTimeMs) {}
 
   public record MigrationInfo(
-      String currentVersion,
+      Optional<String> currentVersion,
       int appliedCount,
       int pendingCount,
       int failedCount,
       List<MigrationEntry> entries) {}
 
   public record MigrationEntry(
-      String version,
-      String description,
+      Optional<String> version,
+      Optional<String> description,
       String state,
-      Instant installedOn,
-      Integer executionTimeMs,
+      Optional<Instant> installedOn,
+      Optional<Integer> executionTimeMs,
       String script) {}
 
   public record ServiceHealth(
-      String name, Status status, Long latencyMs, String details, String error) {
+      String name,
+      Status status,
+      Optional<Long> latencyMs,
+      Optional<String> details,
+      Optional<String> error) {
 
     public enum Status {
       UP,
@@ -73,7 +78,7 @@ public record BackofficeSystemInfoResponse(
   public record MetricsSnapshot(
       long httpRequestCount,
       double httpRequestTotalTimeSeconds,
-      HttpLatencyStats httpLatency,
+      Optional<HttpLatencyStats> httpLatency,
       List<MetricEntry> custom) {}
 
   public record HttpLatencyStats(

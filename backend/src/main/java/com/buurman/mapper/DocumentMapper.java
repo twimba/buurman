@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import com.buurman.domain.Document;
 import com.buurman.dto.response.DocumentResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface DocumentMapper {
 
   @Mapping(target = "downloadUrl", ignore = true)

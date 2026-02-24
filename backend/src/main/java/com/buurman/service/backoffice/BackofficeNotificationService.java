@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
@@ -36,13 +38,13 @@ public class BackofficeNotificationService {
   @Transactional(readOnly = true)
   public PageResponse<BackofficeNotificationResponse> listNotifications(
       PageRequest pageRequest,
-      String teamIdentifier,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo) {
+      @Nullable String teamIdentifier,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo) {
 
     UUID teamId = null;
     if (teamIdentifier != null && !teamIdentifier.isBlank()) {
@@ -76,11 +78,12 @@ public class BackofficeNotificationService {
     Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
-        notificationService.resend(original.getTeamId(), original.getIdentifier(), null);
+        notificationService.resend(
+            original.getTeamId().orElse(null), original.getIdentifier(), null);
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         original.getNotificationType(),
         original.getChannel());
@@ -91,13 +94,13 @@ public class BackofficeNotificationService {
   @Transactional(readOnly = true)
   public Map<String, Object> getStats() {
     long totalCount = notificationRepository.countAll();
-    List<Record2<String, Integer>> statusCounts = notificationRepository.countGroupedByStatus();
-    List<Record2<String, Integer>> channelCounts = notificationRepository.countGroupedByChannel();
+    List<LabelCount> statusCounts = notificationRepository.countGroupedByStatus();
+    List<LabelCount> channelCounts = notificationRepository.countGroupedByChannel();
 
     long pendingCount = 0, deliveredCount = 0, failedCount = 0;
-    for (Record2<String, Integer> record : statusCounts) {
-      String s = record.value1();
-      int count = record.value2();
+    for (LabelCount record : statusCounts) {
+      String s = record.label();
+      int count = record.count();
       switch (s) {
         case "PENDING", "QUEUED" -> pendingCount += count;
         case "DELIVERED" -> deliveredCount = count;
@@ -106,8 +109,8 @@ public class BackofficeNotificationService {
     }
 
     Map<String, Long> byChannel = new HashMap<>();
-    for (Record2<String, Integer> record : channelCounts) {
-      byChannel.put(record.value1(), (long) record.value2());
+    for (LabelCount record : channelCounts) {
+      byChannel.put(record.label(), (long) record.count());
     }
 
     Map<String, Object> stats = new HashMap<>();
@@ -122,31 +125,28 @@ public class BackofficeNotificationService {
   private BackofficeNotificationResponse toResponse(Notification notification) {
     String teamIdentifier = null;
     String teamName = null;
-    if (notification.getTeamId() != null) {
-      Team team = teamRepository.findById(notification.getTeamId()).orElse(null);
+    if (notification.getTeamId().isPresent()) {
+      Team team = teamRepository.findById(notification.getTeamId().get()).orElse(null);
       if (team != null) {
         teamIdentifier = team.getIdentifier();
         teamName = team.getName();
       }
     }
 
-    String resentFromIdentifier = null;
-    if (notification.getResentFromId() != null) {
-      resentFromIdentifier =
-          notificationRepository
-              .findByIdentifierUnscoped(notification.getResentFromId().toString())
-              .map(Notification::getIdentifier)
-              .orElse(null);
-    }
+    Optional<String> resentFromIdentifier =
+        notification
+            .getResentFromId()
+            .flatMap(id -> notificationRepository.findByIdentifierUnscoped(id.toString()))
+            .map(Notification::getIdentifier);
 
     return new BackofficeNotificationResponse(
         notification.getIdentifier(),
-        teamIdentifier,
-        teamName,
+        Optional.ofNullable(teamIdentifier),
+        Optional.ofNullable(teamName),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
         notification.getSubject(),
-        notification.getBody(),
+        Optional.ofNullable(notification.getBody()),
         notification.getRecipientEmail(),
         notification.getRecipientPhone(),
         notification.getStatus().name(),

@@ -1,7 +1,9 @@
 package com.buurman.service.demo;
 
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
+import static com.buurman.service.demo.DemoUsers.ALL_USERS;
 import static com.buurman.util.UlidGenerator.newUserId;
 
 import java.time.Clock;
@@ -25,7 +27,7 @@ public class DemoUserGenerator {
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
 
-    for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
+    for (DemoUsers.DemoUser user : ALL_USERS) {
       UUID userId = UUID.randomUUID();
       String identifier = newUserId().value();
       String keycloakId = ctx.getKeycloakIds().get(user.email());
@@ -55,11 +57,11 @@ public class DemoUserGenerator {
     }
 
     // Set default/active team for each user (prefer the team where they are admin/owner)
-    for (DemoUsers.DemoUser user : DemoUsers.ALL_USERS) {
+    for (DemoUsers.DemoUser user : ALL_USERS) {
       UUID userId = ctx.getUserIds().get(user.email());
       String defaultTeamKey =
           user.teamRoles().entrySet().stream()
-              .filter(e -> e.getValue().isOwner() || "TEAM_ADMIN".equals(e.getValue().role()))
+              .filter(e -> e.getValue().isOwner() || e.getValue().role() == TEAM_ADMIN)
               .map(java.util.Map.Entry::getKey)
               .findFirst()
               .orElse(user.teamRoles().keySet().iterator().next());

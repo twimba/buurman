@@ -2,6 +2,7 @@ package com.buurman.service.backoffice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -96,7 +97,12 @@ public class BackofficeHealthCheckService {
             return checker.get();
           } catch (Exception e) {
             log.warn("Health check failed for {}: {}", name, e.getMessage());
-            return new ServiceHealth(name, Status.DOWN, null, null, e.getMessage());
+            return new ServiceHealth(
+                name,
+                Status.DOWN,
+                Optional.empty(),
+                Optional.empty(),
+                Optional.ofNullable(e.getMessage()));
           }
         },
         healthCheckExecutor);
@@ -119,7 +125,12 @@ public class BackofficeHealthCheckService {
                     pool.getIdleConnections());
       }
     }
-    return new ServiceHealth("PostgreSQL", Status.UP, latency, details, null);
+    return new ServiceHealth(
+        "PostgreSQL",
+        Status.UP,
+        Optional.of(latency),
+        Optional.ofNullable(details),
+        Optional.empty());
   }
 
   private ServiceHealth checkQuartz() {
@@ -129,9 +140,18 @@ public class BackofficeHealthCheckService {
       long latency = System.currentTimeMillis() - start;
       String details = started ? "Running" : "Stopped";
       return new ServiceHealth(
-          "Quartz Scheduler", started ? Status.UP : Status.DOWN, latency, details, null);
+          "Quartz Scheduler",
+          started ? Status.UP : Status.DOWN,
+          Optional.of(latency),
+          Optional.of(details),
+          Optional.empty());
     } catch (Exception e) {
-      return new ServiceHealth("Quartz Scheduler", Status.DOWN, null, null, e.getMessage());
+      return new ServiceHealth(
+          "Quartz Scheduler",
+          Status.DOWN,
+          Optional.empty(),
+          Optional.empty(),
+          Optional.ofNullable(e.getMessage()));
     }
   }
 
@@ -140,7 +160,11 @@ public class BackofficeHealthCheckService {
     s3Client.headBucket(HeadBucketRequest.builder().bucket(awsS3Properties.bucketName()).build());
     long latency = System.currentTimeMillis() - start;
     return new ServiceHealth(
-        "S3 Storage", Status.UP, latency, "Bucket: " + awsS3Properties.bucketName(), null);
+        "S3 Storage",
+        Status.UP,
+        Optional.of(latency),
+        Optional.of("Bucket: " + awsS3Properties.bucketName()),
+        Optional.empty());
   }
 
   private ServiceHealth checkKeycloak() {
@@ -148,22 +172,40 @@ public class BackofficeHealthCheckService {
     keycloak.realm(keycloakProperties.realm()).toRepresentation();
     long latency = System.currentTimeMillis() - start;
     return new ServiceHealth(
-        "Keycloak", Status.UP, latency, "Realm: " + keycloakProperties.realm(), null);
+        "Keycloak",
+        Status.UP,
+        Optional.of(latency),
+        Optional.of("Realm: " + keycloakProperties.realm()),
+        Optional.empty());
   }
 
   private ServiceHealth checkFlagsmith() {
     var client = flagsmithClientProvider.getIfAvailable();
     if (client == null) {
-      return new ServiceHealth("Flagsmith", Status.DISABLED, null, "Client not initialized", null);
+      return new ServiceHealth(
+          "Flagsmith",
+          Status.DISABLED,
+          Optional.empty(),
+          Optional.of("Client not initialized"),
+          Optional.empty());
     }
-    return new ServiceHealth("Flagsmith", Status.UP, null, "Client initialized", null);
+    return new ServiceHealth(
+        "Flagsmith",
+        Status.UP,
+        Optional.empty(),
+        Optional.of("Client initialized"),
+        Optional.empty());
   }
 
   private ServiceHealth checkSendGrid() {
     var sg = sendGridProvider.getIfAvailable();
     if (sg == null) {
       return new ServiceHealth(
-          "SendGrid", Status.DISABLED, null, "Not active in this profile", null);
+          "SendGrid",
+          Status.DISABLED,
+          Optional.empty(),
+          Optional.of("Not active in this profile"),
+          Optional.empty());
     }
     try {
       long start = System.currentTimeMillis();
@@ -176,18 +218,28 @@ public class BackofficeHealthCheckService {
       return new ServiceHealth(
           "SendGrid",
           ok ? Status.UP : Status.DOWN,
-          latency,
-          "HTTP " + response.getStatusCode(),
-          ok ? null : "HTTP " + response.getStatusCode());
+          Optional.of(latency),
+          Optional.of("HTTP " + response.getStatusCode()),
+          ok ? Optional.empty() : Optional.of("HTTP " + response.getStatusCode()));
     } catch (Exception e) {
-      return new ServiceHealth("SendGrid", Status.DOWN, null, null, e.getMessage());
+      return new ServiceHealth(
+          "SendGrid",
+          Status.DOWN,
+          Optional.empty(),
+          Optional.empty(),
+          Optional.ofNullable(e.getMessage()));
     }
   }
 
   private ServiceHealth checkSmtp() {
     var sender = mailSenderProvider.getIfAvailable();
     if (sender == null) {
-      return new ServiceHealth("SMTP", Status.DISABLED, null, "Not active in this profile", null);
+      return new ServiceHealth(
+          "SMTP",
+          Status.DISABLED,
+          Optional.empty(),
+          Optional.of("Not active in this profile"),
+          Optional.empty());
     }
     try {
       long start = System.currentTimeMillis();
@@ -195,9 +247,15 @@ public class BackofficeHealthCheckService {
         impl.testConnection();
       }
       long latency = System.currentTimeMillis() - start;
-      return new ServiceHealth("SMTP", Status.UP, latency, null, null);
+      return new ServiceHealth(
+          "SMTP", Status.UP, Optional.of(latency), Optional.empty(), Optional.empty());
     } catch (Exception e) {
-      return new ServiceHealth("SMTP", Status.DOWN, null, null, e.getMessage());
+      return new ServiceHealth(
+          "SMTP",
+          Status.DOWN,
+          Optional.empty(),
+          Optional.empty(),
+          Optional.ofNullable(e.getMessage()));
     }
   }
 }

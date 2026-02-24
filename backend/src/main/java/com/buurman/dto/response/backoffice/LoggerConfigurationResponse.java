@@ -1,4 +1,6 @@
 package com.buurman.dto.response.backoffice;
 
+import java.util.Optional;
+
 public record LoggerConfigurationResponse(
-    String name, String configuredLevel, String effectiveLevel) {}
+    String name, Optional<String> configuredLevel, String effectiveLevel) {}

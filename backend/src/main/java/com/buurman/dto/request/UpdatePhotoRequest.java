@@ -1,3 +1,5 @@
 package com.buurman.dto.request;
 
-public record UpdatePhotoRequest(String title, String notes) {}
+import java.util.Optional;
+
+public record UpdatePhotoRequest(Optional<String> title, Optional<String> notes) {}

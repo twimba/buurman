@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toMap;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,7 +63,7 @@ public class TeamService {
   private final Clock clock;
 
   public TeamResponse getCurrentTeam(UserPrincipal principal) {
-    Team team = teamRepository.getById(principal.getTeamId());
+    Team team = teamRepository.getById(principal.requireTeamId());
 
     long memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
     return teamMapper.toResponse(team, memberCount);
@@ -71,7 +73,7 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user belongs to this team
-    if (!team.getId().equals(principal.getTeamId())) {
+    if (!team.getId().equals(principal.requireTeamId())) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -83,10 +85,11 @@ public class TeamService {
         userRepository.findByIds(userIds).stream().collect(toMap(User::getId, u -> u));
 
     return members.stream()
-        .map(
+        .flatMap(
             member ->
-                teamMapper.toMemberResponse(
-                    member, usersById.get(member.getUserId()), principal.getUserId()))
+                Optional.ofNullable(usersById.get(member.getUserId()))
+                    .map(user -> teamMapper.toMemberResponse(member, user, principal.getUserId()))
+                    .stream())
         .toList();
   }
 
@@ -97,7 +100,8 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
-    if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -134,7 +138,7 @@ public class TeamService {
                 Map.of(
                     "inviterName", inviterName,
                     "teamName", team.getName(),
-                    "role", formatRole(invitation.getRole()),
+                    "role", invitation.getRole().getDisplayName(),
                     "inviteUrl",
                         appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                     "expiresAt", formatInstantDate(invitation.getExpiresAt())))
@@ -155,13 +159,11 @@ public class TeamService {
     // Fetch team and inviter details for the response
     Team team = teamRepository.getById(invitation.getTeamId());
 
-    String inviterName = "Team Admin";
-    if (invitation.getInvitedBy() != null) {
-      User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-      if (inviter != null) {
-        inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-      }
-    }
+    String inviterName =
+        userRepository
+            .findById(invitation.getInvitedBy())
+            .map(u -> u.getFirstName() + " " + u.getLastName())
+            .orElse("Team Admin");
 
     return teamMapper.toInvitationResponse(
         invitation,
@@ -184,29 +186,25 @@ public class TeamService {
 
     return pending.stream()
         .filter(inv -> !memberTeamIds.contains(inv.getTeamId()))
-        .map(
-            invitation -> {
-              Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
-              if (team == null) {
-                return null;
-              }
-
-              String inviterName = "Team Admin";
-              if (invitation.getInvitedBy() != null) {
-                User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-                if (inviter != null) {
-                  inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-                }
-              }
-
-              return teamMapper.toInvitationResponse(
-                  invitation,
-                  team.getIdentifier(),
-                  team.getName(),
-                  inviterName,
-                  appProperties.email().baseUrl() + "/invitation/");
-            })
-        .filter(r -> r != null)
+        .flatMap(
+            invitation ->
+                teamRepository
+                    .findById(invitation.getTeamId())
+                    .map(
+                        team -> {
+                          String inviterName =
+                              userRepository
+                                  .findById(invitation.getInvitedBy())
+                                  .map(u -> u.getFirstName() + " " + u.getLastName())
+                                  .orElse("Team Admin");
+                          return teamMapper.toInvitationResponse(
+                              invitation,
+                              team.getIdentifier(),
+                              team.getName(),
+                              inviterName,
+                              appProperties.email().baseUrl() + "/invitation/");
+                        })
+                    .stream())
         .toList();
   }
 
@@ -215,7 +213,7 @@ public class TeamService {
       String teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    if (!team.getId().equals(principal.getTeamId())) {
+    if (!team.getId().equals(principal.requireTeamId())) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -224,13 +222,9 @@ public class TeamService {
     return pending.stream()
         .map(
             invitation -> {
-              String inviterName = "Team Admin";
-              if (invitation.getInvitedBy() != null) {
-                User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-                if (inviter != null) {
-                  inviterName = inviter.getFirstName() + " " + inviter.getLastName();
-                }
-              }
+              User inviter = userRepository.getById(invitation.getInvitedBy());
+              String inviterName = inviter.getFullName();
+
               return teamMapper.toInvitationResponse(
                   invitation,
                   team.getIdentifier(),
@@ -247,7 +241,7 @@ public class TeamService {
       String teamIdentifier, String token, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    if (!team.getId().equals(principal.getTeamId())) {
+    if (!team.getId().equals(principal.requireTeamId())) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -257,16 +251,15 @@ public class TeamService {
       throw new BusinessRuleException("Invitation does not belong to this team");
     }
 
-    if (invitation.getAcceptedAt() != null) {
+    if (invitation.getAcceptedAt().isPresent()) {
       throw new BusinessRuleException("Invitation already accepted");
     }
 
     // Reset token, expiry, and resend tracking
     invitation.setToken(UUID.randomUUID().toString());
     invitation.setExpiresAt(clock.instant().plus(7, DAYS));
-    invitation.setResentAt(clock.instant());
-    invitation.setResentCount(
-        invitation.getResentCount() == null ? 1 : invitation.getResentCount() + 1);
+    invitation.setResentAt(Optional.of(clock.instant()));
+    invitation.setResentCount(Optional.of(invitation.getResentCount().map(c -> c + 1).orElse(1)));
 
     invitation = invitationRepository.save(invitation);
 
@@ -282,7 +275,7 @@ public class TeamService {
                 Map.of(
                     "inviterName", inviterName,
                     "teamName", team.getName(),
-                    "role", formatRole(invitation.getRole()),
+                    "role", invitation.getRole().getDisplayName(),
                     "inviteUrl",
                         appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                     "expiresAt", formatInstantDate(invitation.getExpiresAt())))
@@ -302,7 +295,7 @@ public class TeamService {
     TeamInvitation invitation = invitationRepository.getByToken(token);
 
     // Validate
-    if (invitation.getAcceptedAt() != null) {
+    if (invitation.getAcceptedAt().isPresent()) {
       throw new BusinessRuleException("Invitation already accepted");
     }
     if (invitation.getExpiresAt().isBefore(clock.instant())) {
@@ -332,36 +325,45 @@ public class TeamService {
     teamMemberRepository.save(member);
 
     // Mark invitation as accepted
-    invitation.setAcceptedAt(clock.instant());
-    invitation.setAcceptedBy(principal.getUserId());
+    invitation.setAcceptedAt(Optional.of(clock.instant()));
+    invitation.setAcceptedBy(Optional.of(principal.getUserId()));
     invitationRepository.save(invitation);
 
     // Switch to the invited team as default and active
-    user.setDefaultTeamId(invitation.getTeamId());
-    user.setActiveTeamId(invitation.getTeamId());
+    user.setDefaultTeamId(Optional.of(invitation.getTeamId()));
+    user.setActiveTeamId(Optional.of(invitation.getTeamId()));
     userRepository.save(user);
 
-    // Notify inviter
-    User inviter = userRepository.findById(invitation.getInvitedBy()).orElse(null);
-    Team team = teamRepository.findById(invitation.getTeamId()).orElse(null);
-    if (inviter != null && team != null) {
-      notificationService.send(
-          SendNotificationRequest.builder()
-              .teamId(team.getId())
-              .notificationType(NotificationType.INVITATION_ACCEPTED)
-              .recipientUserId(inviter.getId())
-              .recipientEmail(inviter.getEmail())
-              .recipientPhone(inviter.getPhone())
-              .templateName("invitation-accepted")
-              .templateVariables(
-                  Map.of(
-                      "inviterName", inviter.getFirstName(),
-                      "memberName", user.getFirstName() + " " + user.getLastName(),
-                      "memberEmail", user.getEmail(),
-                      "teamName", team.getName(),
-                      "baseUrl", appProperties.email().baseUrl()))
-              .build());
-    }
+    // Notify inviter (soft lookup — inviter or team may have been deleted)
+    userRepository
+        .findById(invitation.getInvitedBy())
+        .ifPresent(
+            inviter ->
+                teamRepository
+                    .findById(invitation.getTeamId())
+                    .ifPresent(
+                        team ->
+                            notificationService.send(
+                                SendNotificationRequest.builder()
+                                    .teamId(team.getId())
+                                    .notificationType(NotificationType.INVITATION_ACCEPTED)
+                                    .recipientUserId(inviter.getId())
+                                    .recipientEmail(inviter.getEmail())
+                                    .recipientPhone(inviter.getPhone().orElse(null))
+                                    .templateName("invitation-accepted")
+                                    .templateVariables(
+                                        Map.of(
+                                            "inviterName",
+                                            inviter.getFirstName(),
+                                            "memberName",
+                                            user.getFirstName() + " " + user.getLastName(),
+                                            "memberEmail",
+                                            user.getEmail(),
+                                            "teamName",
+                                            team.getName(),
+                                            "baseUrl",
+                                            appProperties.email().baseUrl()))
+                                    .build())));
   }
 
   @Transactional
@@ -370,7 +372,8 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
-    if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -397,7 +400,8 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
-    if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -424,7 +428,8 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
-    if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -442,44 +447,41 @@ public class TeamService {
       String teamIdentifier, UpdateTeamSettingsRequest request, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    if (!team.getId().equals(principal.getTeamId()) || !"TEAM_ADMIN".equals(principal.getRole())) {
+    if (!team.getId().equals(principal.requireTeamId())
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
-    TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
+    final TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
 
-    if (request.payments() != null) {
-      prefs.setPaymentsAheadCount(request.payments().paymentsAheadCount());
-      prefs.setAutoGenerationEnabled(request.payments().autoGenerationEnabled());
-    }
+    request
+        .payments()
+        .ifPresent(
+            payments -> {
+              prefs.setPaymentsAheadCount(payments.paymentsAheadCount());
+              prefs.setAutoGenerationEnabled(payments.autoGenerationEnabled());
+            });
 
-    if (request.regional() != null) {
-      if (request.regional().defaultCurrency() != null) {
-        prefs.setDefaultCurrency(request.regional().defaultCurrency());
-      }
-      if (request.regional().defaultCountry() != null) {
-        prefs.setDefaultCountry(request.regional().defaultCountry());
-      }
-      if (request.regional().timezone() != null) {
-        prefs.setTimezone(request.regional().timezone());
-      }
-      if (request.regional().dateFormat() != null) {
-        prefs.setDateFormat(request.regional().dateFormat());
-      }
-      if (request.regional().fiscalYearStartMonth() != null) {
-        prefs.setFiscalYearStartMonth(request.regional().fiscalYearStartMonth());
-      }
-    }
+    request
+        .regional()
+        .ifPresent(
+            regional -> {
+              regional.defaultCurrency().ifPresent(c -> prefs.setDefaultCurrency(Optional.of(c)));
+              regional.defaultCountry().ifPresent(prefs::setDefaultCountry);
+              regional.timezone().ifPresent(prefs::setTimezone);
+              regional.dateFormat().ifPresent(prefs::setDateFormat);
+              regional.fiscalYearStartMonth().ifPresent(prefs::setFiscalYearStartMonth);
+            });
 
-    prefs = teamPreferencesRepository.save(prefs);
-    return toPreferencesResponse(prefs);
+    TeamPreferences savedPrefs = teamPreferencesRepository.save(prefs);
+    return toPreferencesResponse(savedPrefs);
   }
 
   public TeamPreferencesResponse getTeamPreferences(
       String teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
-    if (!team.getId().equals(principal.getTeamId())) {
+    if (!team.getId().equals(principal.requireTeamId())) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -487,12 +489,11 @@ public class TeamService {
     return toPreferencesResponse(prefs);
   }
 
-  /** Returns the team's configured default currency, or null if not configured. */
-  public String getDefaultCurrency(UUID teamId) {
+  /** Returns the team's configured default currency, or empty if not configured. */
+  public Optional<String> getDefaultCurrency(UUID teamId) {
     return teamPreferencesRepository
         .findByTeamId(teamId)
-        .map(TeamPreferences::getDefaultCurrency)
-        .orElse(null);
+        .flatMap(TeamPreferences::getDefaultCurrency);
   }
 
   private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {
@@ -501,10 +502,10 @@ public class TeamService {
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
             prefs.getDefaultCurrency(),
-            prefs.getDefaultCountry(),
-            prefs.getTimezone(),
-            prefs.getDateFormat(),
-            prefs.getFiscalYearStartMonth()));
+            Optional.of(prefs.getDefaultCountry()),
+            Optional.of(prefs.getTimezone()),
+            Optional.of(prefs.getDateFormat()),
+            Optional.of(prefs.getFiscalYearStartMonth())));
   }
 
   @Transactional
@@ -513,7 +514,7 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is owner of this team
-    if (!team.getId().equals(principal.getTeamId()) || !principal.isOwner()) {
+    if (!team.getId().equals(principal.requireTeamId()) || !principal.isOwner()) {
       throw new ForbiddenException("Only team owner can transfer ownership");
     }
 
@@ -538,7 +539,7 @@ public class TeamService {
     teamMemberRepository.save(currentOwnerMember);
 
     newOwnerMember.setOwner(true);
-    newOwnerMember.setRole("TEAM_ADMIN"); // Owner must be admin
+    newOwnerMember.setRole(TEAM_ADMIN); // Owner must be admin
     newOwnerMember = teamMemberRepository.save(newOwnerMember);
 
     // Update team's created_by to new owner
@@ -553,18 +554,7 @@ public class TeamService {
     return teamRepository.getByIdentifier(teamIdentifier);
   }
 
-  private String formatRole(String role) {
-    return switch (role) {
-      case "TEAM_ADMIN" -> "Administrator";
-      case "TEAM_EDITOR" -> "Editor";
-      case "TEAM_VIEWER" -> "Viewer";
-      default -> role;
-    };
-  }
-
   private String formatInstantDate(Instant instant) {
-    return instant != null
-        ? LocalDate.ofInstant(instant, UTC).format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
-        : "";
+    return LocalDate.ofInstant(instant, UTC).format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
   }
 }

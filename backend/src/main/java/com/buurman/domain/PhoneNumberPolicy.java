@@ -3,37 +3,42 @@ package com.buurman.domain;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class PhoneNumberPolicy {
 
   private UUID id;
-  private Map<String, List<String>> policyMatrix; // country code -> allowed number types
-  private int maxCodesPerHour = 3;
-  private int verificationCodeExpiryMinutes = 10;
-  private Instant updatedAt;
-  private String updatedBy;
 
-  public boolean isAllowed(String countryCode, String numberType) {
-    if (policyMatrix == null) {
-      return false;
-    }
+  @Builder.Default
+  private Optional<Map<String, List<String>>> policyMatrix =
+      Optional.empty(); // country code -> allowed number types
 
-    List<String> allowedTypes = policyMatrix.get(countryCode);
+  @Builder.Default private int maxCodesPerHour = 3;
+  @Builder.Default private int verificationCodeExpiryMinutes = 10;
+  @Builder.Default private Optional<Instant> updatedAt = Optional.empty();
+  @Builder.Default private Optional<String> updatedBy = Optional.empty();
 
-    if (allowedTypes == null || allowedTypes.isEmpty()) {
-      return false;
-    }
-
-    if (numberType == null) {
-      return true; // type unknown but country is allowed
-    }
-
-    return allowedTypes.contains(numberType);
+  public boolean isAllowed(Optional<String> countryCode, Optional<String> numberType) {
+    return policyMatrix
+        .map(
+            matrix -> {
+              List<String> allowedTypes = countryCode.map(matrix::get).orElse(null);
+              if (allowedTypes == null || allowedTypes.isEmpty()) {
+                return false;
+              }
+              return numberType.map(allowedTypes::contains).orElse(true); // type unknown → allowed
+            })
+        .orElse(false);
   }
 }

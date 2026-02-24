@@ -1,8 +1,10 @@
 package com.buurman.service.export;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -24,17 +26,17 @@ public class PropertyDashboardCsvExporter {
       // Summary section
       writer.writeNext(new String[] {"--- Summary Metrics ---"});
       writer.writeNext(new String[] {"Metric", "Value"});
-      writer.writeNext(new String[] {"Currency", s.currency() != null ? s.currency() : "N/A"});
-      writer.writeNext(row("Total ROI %", s.totalRoiPercent()));
-      writer.writeNext(row("Annualized ROI %", s.annualizedRoiPercent()));
-      writer.writeNext(row("Cap Rate %", s.capRatePercent()));
-      writer.writeNext(row("Cash-on-Cash %", s.cashOnCashPercent()));
-      writer.writeNext(row("Monthly Cash Flow", s.monthlyCashFlow()));
-      writer.writeNext(row("Annual NOI", s.annualNoi()));
-      writer.writeNext(row("Total Equity", s.totalEquity()));
-      writer.writeNext(row("Equity Growth %", s.equityGrowthPercent()));
-      writer.writeNext(row("Occupancy Rate %", s.occupancyRatePercent()));
-      writer.writeNext(row("Gross Rent Multiplier", s.grossRentMultiplier()));
+      writer.writeNext(new String[] {"Currency", s.currency().orElse("N/A")});
+      writer.writeNext(row("Total ROI %", s.totalRoiPercent().orElse(null)));
+      writer.writeNext(row("Annualized ROI %", s.annualizedRoiPercent().orElse(null)));
+      writer.writeNext(row("Cap Rate %", s.capRatePercent().orElse(null)));
+      writer.writeNext(row("Cash-on-Cash %", s.cashOnCashPercent().orElse(null)));
+      writer.writeNext(row("Monthly Cash Flow", s.monthlyCashFlow().orElse(null)));
+      writer.writeNext(row("Annual NOI", s.annualNoi().orElse(null)));
+      writer.writeNext(row("Total Equity", s.totalEquity().orElse(null)));
+      writer.writeNext(row("Equity Growth %", s.equityGrowthPercent().orElse(null)));
+      writer.writeNext(row("Occupancy Rate %", s.occupancyRatePercent().orElse(null)));
+      writer.writeNext(row("Gross Rent Multiplier", s.grossRentMultiplier().orElse(null)));
       writer.writeNext(new String[] {""});
 
       // Monthly cash flow
@@ -71,7 +73,7 @@ public class PropertyDashboardCsvExporter {
     }
   }
 
-  private static String[] row(String label, java.math.BigDecimal value) {
+  private static String[] row(String label, @Nullable BigDecimal value) {
     return new String[] {label, value != null ? value.toPlainString() : "N/A"};
   }
 }

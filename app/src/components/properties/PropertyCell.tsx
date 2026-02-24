@@ -37,10 +37,12 @@ const CategoryIcon = ({
   category?: PropertyCategory;
   type?: PropertyType;
 }) => {
-  if (category === PropertyCategory.INDUSTRIAL)
+  if (category === PropertyCategory.INDUSTRIAL) {
     return <Factory className={iconCls} />;
-  if (category === PropertyCategory.AGRICULTURAL)
+  }
+  if (category === PropertyCategory.AGRICULTURAL) {
     return <Tractor className={iconCls} />;
+  }
   if (
     category === PropertyCategory.COMMERCIAL ||
     type === PropertyType.COMMERCIAL

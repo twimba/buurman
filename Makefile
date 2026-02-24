@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc
 
 ## Start everything in Docker (including backend + app containers)
 up:

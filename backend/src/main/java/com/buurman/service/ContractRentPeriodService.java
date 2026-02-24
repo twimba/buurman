@@ -9,8 +9,10 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,22 +60,22 @@ public class ContractRentPeriodService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse addRentPeriod(
       String contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateEffectiveFrom(contract, request.effectiveFrom());
     validateNoConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
 
     // Close the previous period
-    BigDecimal previousRentAmount = null;
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(
             contract.getId(), teamId, request.effectiveFrom().plusDays(1));
-    if (previousPeriod.isPresent()) {
-      previousRentAmount = previousPeriod.get().getRentAmount();
-      rentPeriodRepository.setEffectiveTo(
-          previousPeriod.get().getId(), teamId, request.effectiveFrom().minusDays(1));
-    }
+    BigDecimal previousRentAmount =
+        previousPeriod.map(ContractRentPeriod::getRentAmount).orElse(null);
+    previousPeriod.ifPresent(
+        prev ->
+            rentPeriodRepository.setEffectiveTo(
+                prev.getId(), teamId, request.effectiveFrom().minusDays(1)));
 
     // Create new period
     ContractRentPeriod period = new ContractRentPeriod();
@@ -83,7 +85,7 @@ public class ContractRentPeriodService {
     period.setRentAmount(request.rentAmount());
     period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(request.effectiveFrom());
-    period.setEffectiveTo(null);
+    period.setEffectiveTo(Optional.empty());
     period.setNotes(request.notes());
     period.setCreatedBy(principal.getUserId());
     period.setUpdatedBy(principal.getUserId());
@@ -111,9 +113,7 @@ public class ContractRentPeriodService {
     if (previousRentAmount != null) {
       changedFields.put("previousRentAmount", previousRentAmount);
     }
-    if (request.notes() != null) {
-      changedFields.put("notes", request.notes());
-    }
+    request.notes().ifPresent(n -> changedFields.put("notes", n));
     auditService.logCreate(teamId, "CONTRACT", contract.getId(), principal.getUserId(), saved);
 
     // Notification
@@ -132,26 +132,24 @@ public class ContractRentPeriodService {
         request.rentAmount(),
         request.effectiveFrom());
 
-    return rentPeriodMapper.toResponse(saved, previousRentAmount);
+    return rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
   }
 
   public List<RentPeriodResponse> getRentTimeline(
       String contractIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     return rentPeriodMapper.toResponses(periods);
   }
 
-  public ContractRentPeriod getCurrentRent(UUID contractId, UUID teamId) {
-    return rentPeriodRepository.findCurrentByContractIdAndTeamId(contractId, teamId).orElse(null);
+  public Optional<ContractRentPeriod> getCurrentRent(UUID contractId, UUID teamId) {
+    return rentPeriodRepository.findCurrentByContractIdAndTeamId(contractId, teamId);
   }
 
-  public ContractRentPeriod getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
-    return rentPeriodRepository
-        .findAtDateByContractIdAndTeamId(contractId, teamId, date)
-        .orElse(null);
+  public Optional<ContractRentPeriod> getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
+    return rentPeriodRepository.findAtDateByContractIdAndTeamId(contractId, teamId, date);
   }
 
   @Transactional
@@ -161,7 +159,7 @@ public class ContractRentPeriodService {
       String periodIdentifier,
       UpdateRentPeriodRequest request,
       UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -189,10 +187,10 @@ public class ContractRentPeriodService {
     // Recalculate previous period's effective_to
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(contract.getId(), teamId, request.effectiveFrom());
-    if (previousPeriod.isPresent()) {
-      rentPeriodRepository.setEffectiveTo(
-          previousPeriod.get().getId(), teamId, request.effectiveFrom().minusDays(1));
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            rentPeriodRepository.setEffectiveTo(
+                contractRentPeriod.getId(), teamId, request.effectiveFrom().minusDays(1)));
 
     syncContractRentAmount(contract, teamId, principal.getUserId());
 
@@ -220,8 +218,7 @@ public class ContractRentPeriodService {
 
     log.info("Rent period updated: {} in contract {}", periodIdentifier, contractIdentifier);
 
-    BigDecimal prevAmount =
-        previousPeriod.isPresent() ? previousPeriod.get().getRentAmount() : null;
+    Optional<BigDecimal> prevAmount = previousPeriod.map(ContractRentPeriod::getRentAmount);
     return rentPeriodMapper.toResponse(period, prevAmount);
   }
 
@@ -229,7 +226,7 @@ public class ContractRentPeriodService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteRentPeriod(
       String contractIdentifier, String periodIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
         rentPeriodRepository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -245,23 +242,23 @@ public class ContractRentPeriodService {
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(
             contract.getId(), teamId, period.getEffectiveFrom());
-    if (previousPeriod.isPresent()) {
-      rentPeriodRepository.setEffectiveTo(previousPeriod.get().getId(), teamId, null);
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            rentPeriodRepository.setEffectiveTo(contractRentPeriod.getId(), teamId, null));
 
     rentPeriodRepository.softDeleteByIdAndTeamId(period.getId(), teamId);
 
     syncContractRentAmount(contract, teamId, principal.getUserId());
 
     // Update PENDING payments: revert to previous period's amount
-    if (previousPeriod.isPresent()) {
-      updatePendingPayments(
-          contract.getId(),
-          teamId,
-          period.getEffectiveFrom(),
-          previousPeriod.get().getRentAmount(),
-          principal.getUserId());
-    }
+    previousPeriod.ifPresent(
+        contractRentPeriod ->
+            updatePendingPayments(
+                contract.getId(),
+                teamId,
+                period.getEffectiveFrom(),
+                contractRentPeriod.getRentAmount(),
+                principal.getUserId()));
 
     // Audit
     auditService.logDelete(teamId, "CONTRACT", contract.getId(), principal.getUserId(), period);
@@ -279,7 +276,7 @@ public class ContractRentPeriodService {
     period.setRentAmount(contract.getRentAmount());
     period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(contract.getStartDate());
-    period.setEffectiveTo(null);
+    period.setEffectiveTo(Optional.empty());
     period.setCreatedBy(principal.getUserId());
     period.setUpdatedBy(principal.getUserId());
     period.setCreatedAt(clock.instant());
@@ -295,7 +292,7 @@ public class ContractRentPeriodService {
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), contract.getTeamId());
     if (periods.size() == 1) {
-      ContractRentPeriod initial = periods.get(0);
+      ContractRentPeriod initial = periods.getFirst();
       initial.setRentAmount(contract.getRentAmount());
       initial.setEffectiveFrom(contract.getStartDate());
       initial.setUpdatedBy(principal.getUserId());
@@ -310,7 +307,7 @@ public class ContractRentPeriodService {
     if (effectiveFrom.isBefore(contract.getStartDate())) {
       throw new BusinessRuleException("Effective date cannot be before the contract start date");
     }
-    if (contract.getEndDate() != null && effectiveFrom.isAfter(contract.getEndDate())) {
+    if (contract.getEndDate().filter(effectiveFrom::isAfter).isPresent()) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
     }
   }
@@ -327,7 +324,7 @@ public class ContractRentPeriodService {
                   p ->
                       !p.getDueDate().isBefore(effectiveFrom)
                           && p.getStatus() != PENDING
-                          && p.getDeletedAt() == null);
+                          && p.getDeletedAt().isEmpty());
       if (hasConflicting) {
         throw new BusinessRuleException(
             "Cannot set retroactive rent period: non-pending payments exist for dates after "
@@ -339,16 +336,18 @@ public class ContractRentPeriodService {
   private void syncContractRentAmount(Contract contract, UUID teamId, UUID userId) {
     var currentPeriod =
         rentPeriodRepository.findCurrentByContractIdAndTeamId(contract.getId(), teamId);
-    if (currentPeriod.isPresent()) {
-      BigDecimal currentRent = currentPeriod.get().getRentAmount();
-      if (contract.getRentAmount().compareTo(currentRent) != 0) {
-        contract.setRentAmount(currentRent);
-        contract.setUpdatedBy(userId);
-        contract.setUpdatedAt(clock.instant());
-        contractRepository.save(contract);
-        log.debug("Synced contract {} rent_amount to {}", contract.getIdentifier(), currentRent);
-      }
-    }
+    currentPeriod.ifPresent(
+        period -> {
+          BigDecimal currentRent = period.getRentAmount();
+          if (contract.getRentAmount().compareTo(currentRent) != 0) {
+            contract.setRentAmount(currentRent);
+            contract.setUpdatedBy(userId);
+            contract.setUpdatedAt(clock.instant());
+            contractRepository.save(contract);
+            log.debug(
+                "Synced contract {} rent_amount to {}", contract.getIdentifier(), currentRent);
+          }
+        });
   }
 
   private void updatePendingPayments(
@@ -381,7 +380,7 @@ public class ContractRentPeriodService {
   private void sendRentAdjustedNotification(
       Contract contract,
       UUID teamId,
-      BigDecimal oldRentAmount,
+      @Nullable BigDecimal oldRentAmount,
       BigDecimal newRentAmount,
       LocalDate effectiveFrom,
       UUID userId) {
@@ -392,10 +391,11 @@ public class ContractRentPeriodService {
           contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
 
       String propertyName =
-          property != null && property.getStreet() != null
+          property != null
               ? property.getStreet() + ", " + property.getCity()
               : contract.getIdentifier();
-      String tenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+      String tenantName =
+          primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
 
       Map<String, Object> vars = new HashMap<>();
       vars.put("propertyName", propertyName);

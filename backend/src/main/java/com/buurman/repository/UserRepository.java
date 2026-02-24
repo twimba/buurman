@@ -15,12 +15,12 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -73,19 +73,15 @@ public class UserRepository {
           .set(USERS.EMAIL, user.getEmail())
           .set(USERS.FIRST_NAME, user.getFirstName())
           .set(USERS.LAST_NAME, user.getLastName())
-          .set(USERS.PHONE, user.getPhone())
-          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
-          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+          .set(USERS.PHONE, user.getPhone().orElse(null))
+          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId().orElse(null))
+          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId().orElse(null))
           .set(
               USERS.EMAIL_VERIFIED_AT,
-              user.getEmailVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC)
-                  : null)
+              user.getEmailVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(
               USERS.PHONE_VERIFIED_AT,
-              user.getPhoneVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC)
-                  : null)
+              user.getPhoneVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(USERS.CREATED_AT, createdAt)
           .set(USERS.UPDATED_AT, updatedAt)
           .execute();
@@ -104,19 +100,15 @@ public class UserRepository {
           .set(USERS.EMAIL, user.getEmail())
           .set(USERS.FIRST_NAME, user.getFirstName())
           .set(USERS.LAST_NAME, user.getLastName())
-          .set(USERS.PHONE, user.getPhone())
-          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
-          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+          .set(USERS.PHONE, user.getPhone().orElse(null))
+          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId().orElse(null))
+          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId().orElse(null))
           .set(
               USERS.EMAIL_VERIFIED_AT,
-              user.getEmailVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC)
-                  : null)
+              user.getEmailVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(
               USERS.PHONE_VERIFIED_AT,
-              user.getPhoneVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC)
-                  : null)
+              user.getPhoneVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(USERS.UPDATED_AT, updatedAt)
           .where(USERS.ID.eq(user.getId()))
           .execute();
@@ -136,7 +128,7 @@ public class UserRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(USERS).where(USERS.ID.in(ids)).fetch().map(mapper::toDomain);
+    return List.copyOf(dsl.selectFrom(USERS).where(USERS.ID.in(ids)).fetch().map(mapper::toDomain));
   }
 
   public Optional<User> findByKeycloakId(String keycloakId) {
@@ -154,7 +146,7 @@ public class UserRepository {
     return dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.EMAIL.eq(email)));
   }
 
-  public void updateActiveTeamId(UUID userId, UUID teamId) {
+  public void updateActiveTeamId(UUID userId, @Nullable UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.ACTIVE_TEAM_ID, teamId)
@@ -190,7 +182,7 @@ public class UserRepository {
         .execute();
   }
 
-  public void updateDefaultTeamId(UUID userId, UUID teamId) {
+  public void updateDefaultTeamId(UUID userId, @Nullable UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.DEFAULT_TEAM_ID, teamId)
@@ -199,7 +191,7 @@ public class UserRepository {
         .execute();
   }
 
-  public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, String search) {
+  public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, @Nullable String search) {
     Condition condition = USERS.DELETED_AT.isNull();
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search + "%";
@@ -221,13 +213,7 @@ public class UserRepository {
             "createdAt", USERS.CREATED_AT);
 
     return PaginationHelper.paginate(
-        dsl,
-        USERS,
-        condition,
-        sortableFields,
-        USERS.CREATED_AT,
-        pageRequest,
-        r -> mapper.toDomain((UsersRecord) r));
+        dsl, USERS, condition, sortableFields, USERS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
   public Optional<User> findByIdentifierUnscoped(String identifier) {
@@ -243,7 +229,7 @@ public class UserRepository {
         .orElseThrow(() -> new NotFoundException("User not found"));
   }
 
-  public void updateDisabledAt(UUID userId, LocalDateTime disabledAt) {
+  public void updateDisabledAt(UUID userId, @Nullable LocalDateTime disabledAt) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(USERS)
         .set(USERS.DISABLED_AT, disabledAt)
@@ -253,13 +239,17 @@ public class UserRepository {
   }
 
   public long countAll() {
-    return dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()).fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount().from(USERS).where(USERS.DELETED_AT.isNull()).fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   public long countDisabled() {
-    return dsl.selectCount()
-        .from(USERS)
-        .where(USERS.DELETED_AT.isNull().and(USERS.DISABLED_AT.isNotNull()))
-        .fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount()
+            .from(USERS)
+            .where(USERS.DELETED_AT.isNull().and(USERS.DISABLED_AT.isNotNull()))
+            .fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 }

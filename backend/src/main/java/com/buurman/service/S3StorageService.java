@@ -7,6 +7,7 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class S3StorageService {
     this.s3Client = s3Client;
     this.s3Presigner = s3Presigner;
     this.bucketName = s3Properties.bucketName();
-    this.s3PublicEndpoint = s3Properties.publicEndpoint();
+    this.s3PublicEndpoint = s3Properties.publicEndpoint().orElse("");
     this.usePresignedUrls = s3Properties.usePresignedUrls();
     this.metricsService = metricsService;
     this.clock = clock;
@@ -65,6 +66,9 @@ public class S3StorageService {
     Instant start = clock.instant();
     try {
       String originalFilename = file.getOriginalFilename();
+      if (originalFilename == null) {
+        throw new RuntimeException("Unable to upload file. No filename provided");
+      }
       String fileKey =
           generateFileKey(teamIdentifier, entityType, entityIdentifier, originalFilename);
 
@@ -106,9 +110,7 @@ public class S3StorageService {
     }
   }
 
-  /**
-   * Upload raw bytes to S3 and return the file key. Same key pattern as the MultipartFile variant.
-   */
+  /** Upload raw bytes to S3 with a generated key. Same pattern as the MultipartFile variant. */
   public String uploadFile(
       byte[] data,
       String contentType,
@@ -116,8 +118,15 @@ public class S3StorageService {
       String entityType,
       String entityIdentifier,
       String filename) {
-    Instant start = clock.instant();
     String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, filename);
+    uploadFile(data, contentType, fileKey);
+
+    return fileKey;
+  }
+
+  /** Upload raw bytes to S3 using an explicit (pre-computed) file key. */
+  public void uploadFile(byte[] data, String contentType, String fileKey) {
+    Instant start = clock.instant();
 
     PutObjectRequest putObjectRequest =
         PutObjectRequest.builder().bucket(bucketName).key(fileKey).contentType(contentType).build();
@@ -135,7 +144,20 @@ public class S3StorageService {
         "s3.operation.total", "operation", "upload", "result", "success");
 
     log.info("File uploaded to S3: {}", fileKey);
-    return fileKey;
+  }
+
+  /**
+   * Derives the thumbnail key from an existing photo file key by stripping the extension and
+   * appending {@code _thumbnail.jpeg}. E.g.: {@code team/property/prop-123/uuid.jpg →
+   * team/property/prop-123/uuid_thumbnail.jpeg}
+   */
+  public static String deriveThumbnailKey(String fileKey) {
+    int lastDot = fileKey.lastIndexOf('.');
+    int lastSlash = fileKey.lastIndexOf('/');
+    if (lastDot > lastSlash) {
+      return fileKey.substring(0, lastDot) + "_thumbnail.jpeg";
+    }
+    return fileKey + "_thumbnail.jpeg";
   }
 
   /**
@@ -273,15 +295,23 @@ public class S3StorageService {
   }
 
   /**
-   * Generate file key with pattern:
-   * {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
+   * Generate file key with pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}.{ext}
    */
   private String generateFileKey(
       String teamIdentifier, String entityType, String entityIdentifier, String filename) {
-    String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+    String ext = extractExtension(filename);
     String uniqueId = UUID.randomUUID().toString();
     return String.format(
-        "%s/%s/%s/%s_%s",
-        teamIdentifier, entityType, entityIdentifier, uniqueId, sanitizedFilename);
+        "%s/%s/%s/%s.%s", teamIdentifier, entityType, entityIdentifier, uniqueId, ext);
+  }
+
+  private static String extractExtension(String filename) {
+    int lastDot = filename.lastIndexOf('.');
+    if (lastDot >= 0 && lastDot < filename.length() - 1) {
+      String ext =
+          filename.substring(lastDot + 1).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+      return ext.isEmpty() ? "dat" : ext;
+    }
+    return "dat";
   }
 }

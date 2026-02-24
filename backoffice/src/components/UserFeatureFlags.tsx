@@ -42,7 +42,9 @@ const PropagationBanner = ({
   visible: boolean;
   onDismiss: () => void;
 }) => {
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
   return (
     <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-sm text-blue-700 dark:text-blue-400">
       <Info className="h-4 w-4 flex-shrink-0" />
@@ -142,8 +144,12 @@ const InlineValueEditor = ({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") save();
-            if (e.key === "Escape") cancel();
+            if (e.key === "Enter") {
+              save();
+            }
+            if (e.key === "Escape") {
+              cancel();
+            }
           }}
           onBlur={save}
           disabled={loading}
@@ -242,7 +248,9 @@ const isOverridden = (
   flag: { enabled: boolean; value: unknown },
   globalFlag?: { enabled: boolean; value: unknown },
 ) => {
-  if (!globalFlag) return false;
+  if (!globalFlag) {
+    return false;
+  }
   return (
     flag.enabled !== globalFlag.enabled ||
     String(flag.value ?? "") !== String(globalFlag.value ?? "")
@@ -325,7 +333,9 @@ const UserFlagRow = ({
   const override = isOverridden(flag, globalFlag);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  if (showOverrideOnly && !override) return null;
+  if (showOverrideOnly && !override) {
+    return null;
+  }
 
   return (
     <>
@@ -854,7 +864,9 @@ const SegmentOverrideRow = ({
   const override = isOverridden(flag, globalFlag);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  if (showOverrideOnly && !override) return null;
+  if (showOverrideOnly && !override) {
+    return null;
+  }
 
   return (
     <>

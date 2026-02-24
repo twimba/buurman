@@ -2,14 +2,15 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
-import com.buurman.domain.Payment;
+import com.buurman.domain.Payment.PaymentStatus;
 
 import jakarta.validation.constraints.Positive;
 
 public record UpdatePaymentRequest(
-    @Positive(message = "Amount must be positive") BigDecimal amount,
-    String currency,
-    LocalDate dueDate,
-    Payment.PaymentStatus status,
-    String notes) {}
+    Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,
+    Optional<String> currency,
+    Optional<LocalDate> dueDate,
+    Optional<PaymentStatus> status,
+    Optional<String> notes) {}

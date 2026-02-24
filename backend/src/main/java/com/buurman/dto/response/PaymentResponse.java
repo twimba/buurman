@@ -4,24 +4,25 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.buurman.domain.Payment;
 
 public record PaymentResponse(
     String identifier,
-    ContractSummary contract,
-    TenantSummary tenant,
-    PropertySummary property,
+    Optional<ContractSummary> contract,
+    Optional<TenantSummary> tenant,
+    Optional<PropertySummary> property,
     BigDecimal amount,
     String currency,
-    BigDecimal receivedAmount,
-    BigDecimal balance,
-    LocalDate paymentDate,
+    Optional<BigDecimal> receivedAmount,
+    Optional<BigDecimal> balance,
+    Optional<LocalDate> paymentDate,
     LocalDate dueDate,
     Payment.PaymentStatus status,
-    String notes,
-    DocumentResponse proofOfPayment,
-    DocumentResponse receipt,
+    Optional<String> notes,
+    Optional<DocumentResponse> proofOfPayment,
+    Optional<DocumentResponse> receipt,
     List<PaymentReceivalResponse> receivals,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

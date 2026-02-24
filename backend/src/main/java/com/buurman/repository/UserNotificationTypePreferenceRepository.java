@@ -25,10 +25,11 @@ public class UserNotificationTypePreferenceRepository {
   private final Clock clock;
 
   public List<UserNotificationTypePreference> findByUserId(UUID userId) {
-    return dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
-        .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(USER_NOTIFICATION_TYPE_PREFERENCES)
+            .where(USER_NOTIFICATION_TYPE_PREFERENCES.USER_ID.eq(userId))
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<UserNotificationTypePreference> findByUserIdAndType(
@@ -78,8 +79,12 @@ public class UserNotificationTypePreferenceRepository {
     pref.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
     pref.setEmailEnabled(record.getEmailEnabled());
     pref.setSmsEnabled(record.getSmsEnabled());
-    pref.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    pref.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    if (record.getCreatedAt() != null) {
+      pref.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    }
+    if (record.getUpdatedAt() != null) {
+      pref.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
+    }
     return pref;
   }
 }

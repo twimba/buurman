@@ -994,8 +994,12 @@ export const FinancialReportsPage = () => {
                     value: number | undefined,
                     name: string | undefined
                   ) => {
-                    if (value === undefined) return 'N/A';
-                    if (name === 'occupancyRate') return formatPercent(value);
+                    if (value === undefined) {
+                      return 'N/A';
+                    }
+                    if (name === 'occupancyRate') {
+                      return formatPercent(value);
+                    }
                     return value;
                   }}
                   contentStyle={tooltipStyle}

@@ -17,6 +17,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
@@ -70,32 +71,30 @@ public class ContractPaymentInstructionRepository {
 
     UUID id = UUID.randomUUID();
     String identifier = newContractPaymentInstructionId().value();
-    LocalDateTime createdAt =
-        cpi.getCreatedAt() != null ? LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC) : now;
-    LocalDateTime updatedAt =
-        cpi.getUpdatedAt() != null ? LocalDateTime.ofInstant(cpi.getUpdatedAt(), UTC) : now;
+    LocalDateTime createdAt = now;
+    LocalDateTime updatedAt = now;
 
     dsl.insertInto(TABLE)
         .set(ID, id)
         .set(IDENTIFIER, identifier)
         .set(TEAM_ID, cpi.getTeamId())
         .set(CONTRACT_ID, cpi.getContractId())
-        .set(PAYMENT_INSTRUCTION_ID, cpi.getPaymentInstructionId())
+        .set(PAYMENT_INSTRUCTION_ID, cpi.getPaymentInstructionId().orElse(null))
         .set(IS_CUSTOM, cpi.getIsCustom())
-        .set(CUSTOM_NAME, cpi.getCustomName())
-        .set(CUSTOM_DESCRIPTION, cpi.getCustomDescription())
-        .set(CUSTOM_PAYMENT_METHOD, cpi.getCustomPaymentMethod())
-        .set(CUSTOM_BANK_NAME, cpi.getCustomBankName())
-        .set(CUSTOM_ACCOUNT_HOLDER_NAME, cpi.getCustomAccountHolderName())
-        .set(CUSTOM_IBAN, cpi.getCustomIban())
-        .set(CUSTOM_BIC_SWIFT, cpi.getCustomBicSwift())
-        .set(CUSTOM_ACCOUNT_NUMBER, cpi.getCustomAccountNumber())
-        .set(CUSTOM_ROUTING_NUMBER, cpi.getCustomRoutingNumber())
-        .set(CUSTOM_PAYMENT_REFERENCE, cpi.getCustomPaymentReference())
-        .set(CUSTOM_ADDITIONAL_DETAILS, cpi.getCustomAdditionalDetails())
+        .set(CUSTOM_NAME, cpi.getCustomName().orElse(null))
+        .set(CUSTOM_DESCRIPTION, cpi.getCustomDescription().orElse(null))
+        .set(CUSTOM_PAYMENT_METHOD, cpi.getCustomPaymentMethod().orElse(null))
+        .set(CUSTOM_BANK_NAME, cpi.getCustomBankName().orElse(null))
+        .set(CUSTOM_ACCOUNT_HOLDER_NAME, cpi.getCustomAccountHolderName().orElse(null))
+        .set(CUSTOM_IBAN, cpi.getCustomIban().orElse(null))
+        .set(CUSTOM_BIC_SWIFT, cpi.getCustomBicSwift().orElse(null))
+        .set(CUSTOM_ACCOUNT_NUMBER, cpi.getCustomAccountNumber().orElse(null))
+        .set(CUSTOM_ROUTING_NUMBER, cpi.getCustomRoutingNumber().orElse(null))
+        .set(CUSTOM_PAYMENT_REFERENCE, cpi.getCustomPaymentReference().orElse(null))
+        .set(CUSTOM_ADDITIONAL_DETAILS, cpi.getCustomAdditionalDetails().orElse(null))
         .set(EFFECTIVE_FROM, cpi.getEffectiveFrom())
-        .set(EFFECTIVE_TO, cpi.getEffectiveTo())
-        .set(NOTES, cpi.getNotes())
+        .set(EFFECTIVE_TO, cpi.getEffectiveTo().orElse(null))
+        .set(NOTES, cpi.getNotes().orElse(null))
         .set(CREATED_AT, createdAt)
         .set(UPDATED_AT, updatedAt)
         .set(CREATED_BY, cpi.getCreatedBy())
@@ -110,11 +109,12 @@ public class ContractPaymentInstructionRepository {
   }
 
   public List<ContractPaymentInstruction> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return dsl.selectFrom(TABLE)
-        .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(EFFECTIVE_FROM.desc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(EFFECTIVE_FROM.desc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<ContractPaymentInstruction> findCurrentByContractIdAndTeamId(
@@ -176,31 +176,40 @@ public class ContractPaymentInstructionRepository {
     cpi.setIdentifier(record.get(IDENTIFIER));
     cpi.setTeamId(record.get(TEAM_ID));
     cpi.setContractId(record.get(CONTRACT_ID));
-    cpi.setPaymentInstructionId(record.get(PAYMENT_INSTRUCTION_ID));
+    cpi.setPaymentInstructionId(Optional.ofNullable(record.get(PAYMENT_INSTRUCTION_ID)));
     cpi.setIsCustom(record.get(IS_CUSTOM));
-    cpi.setCustomName(record.get(CUSTOM_NAME));
-    cpi.setCustomDescription(record.get(CUSTOM_DESCRIPTION));
-    cpi.setCustomPaymentMethod(record.get(CUSTOM_PAYMENT_METHOD));
-    cpi.setCustomBankName(record.get(CUSTOM_BANK_NAME));
-    cpi.setCustomAccountHolderName(record.get(CUSTOM_ACCOUNT_HOLDER_NAME));
-    cpi.setCustomIban(record.get(CUSTOM_IBAN));
-    cpi.setCustomBicSwift(record.get(CUSTOM_BIC_SWIFT));
-    cpi.setCustomAccountNumber(record.get(CUSTOM_ACCOUNT_NUMBER));
-    cpi.setCustomRoutingNumber(record.get(CUSTOM_ROUTING_NUMBER));
-    cpi.setCustomPaymentReference(record.get(CUSTOM_PAYMENT_REFERENCE));
-    cpi.setCustomAdditionalDetails(record.get(CUSTOM_ADDITIONAL_DETAILS));
-    cpi.setEffectiveFrom(toLocalDate(record.get("effective_from")));
-    cpi.setEffectiveTo(toLocalDate(record.get("effective_to")));
-    cpi.setNotes(record.get(NOTES));
-    cpi.setCreatedAt(toInstant(record.get("created_at")));
-    cpi.setUpdatedAt(toInstant(record.get("updated_at")));
+    cpi.setCustomName(Optional.ofNullable(record.get(CUSTOM_NAME)));
+    cpi.setCustomDescription(Optional.ofNullable(record.get(CUSTOM_DESCRIPTION)));
+    cpi.setCustomPaymentMethod(Optional.ofNullable(record.get(CUSTOM_PAYMENT_METHOD)));
+    cpi.setCustomBankName(Optional.ofNullable(record.get(CUSTOM_BANK_NAME)));
+    cpi.setCustomAccountHolderName(Optional.ofNullable(record.get(CUSTOM_ACCOUNT_HOLDER_NAME)));
+    cpi.setCustomIban(Optional.ofNullable(record.get(CUSTOM_IBAN)));
+    cpi.setCustomBicSwift(Optional.ofNullable(record.get(CUSTOM_BIC_SWIFT)));
+    cpi.setCustomAccountNumber(Optional.ofNullable(record.get(CUSTOM_ACCOUNT_NUMBER)));
+    cpi.setCustomRoutingNumber(Optional.ofNullable(record.get(CUSTOM_ROUTING_NUMBER)));
+    cpi.setCustomPaymentReference(Optional.ofNullable(record.get(CUSTOM_PAYMENT_REFERENCE)));
+    cpi.setCustomAdditionalDetails(Optional.ofNullable(record.get(CUSTOM_ADDITIONAL_DETAILS)));
+    LocalDate effectiveFrom = toLocalDate(record.get("effective_from"));
+    if (effectiveFrom != null) {
+      cpi.setEffectiveFrom(effectiveFrom);
+    }
+    cpi.setEffectiveTo(Optional.ofNullable(toLocalDate(record.get("effective_to"))));
+    cpi.setNotes(Optional.ofNullable(record.get(NOTES)));
+    Instant createdAt = toInstant(record.get("created_at"));
+    if (createdAt != null) {
+      cpi.setCreatedAt(createdAt);
+    }
+    Instant updatedAt = toInstant(record.get("updated_at"));
+    if (updatedAt != null) {
+      cpi.setUpdatedAt(updatedAt);
+    }
     cpi.setCreatedBy(record.get(CREATED_BY));
     cpi.setUpdatedBy(record.get(UPDATED_BY));
-    cpi.setDeletedAt(toInstant(record.get("deleted_at")));
+    cpi.setDeletedAt(Optional.ofNullable(toInstant(record.get("deleted_at"))));
     return cpi;
   }
 
-  private static LocalDate toLocalDate(Object val) {
+  private static @Nullable LocalDate toLocalDate(@Nullable Object val) {
     if (val instanceof LocalDate ld) {
       return ld;
     }
@@ -210,7 +219,7 @@ public class ContractPaymentInstructionRepository {
     return null;
   }
 
-  private static Instant toInstant(Object val) {
+  private static @Nullable Instant toInstant(@Nullable Object val) {
     if (val instanceof LocalDateTime ldt) {
       return ldt.toInstant(UTC);
     }

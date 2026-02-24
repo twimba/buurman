@@ -1,13 +1,19 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Document {
 
   private UUID id;
@@ -19,40 +25,11 @@ public class Document {
   private String fileName;
   private Long fileSize;
   private String mimeType;
-  private String title;
-  private String notes;
+  @Builder.Default private Optional<String> title = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private UUID uploadedBy;
   private Instant uploadedAt;
-  private Instant deletedAt;
-
-  public Document(
-      UUID id,
-      UUID teamId,
-      String entityType,
-      UUID entityId,
-      String fileKey,
-      String fileName,
-      Long fileSize,
-      String mimeType,
-      String title,
-      String notes,
-      UUID uploadedBy,
-      Instant uploadedAt,
-      Instant deletedAt) {
-    this.id = id;
-    this.teamId = teamId;
-    this.entityType = entityType;
-    this.entityId = entityId;
-    this.fileKey = fileKey;
-    this.fileName = fileName;
-    this.fileSize = fileSize;
-    this.mimeType = mimeType;
-    this.title = title;
-    this.notes = notes;
-    this.uploadedBy = uploadedBy;
-    this.uploadedAt = uploadedAt;
-    this.deletedAt = deletedAt;
-  }
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
   public enum EntityType {
     PROPERTY,

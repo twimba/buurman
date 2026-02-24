@@ -1,7 +1,12 @@
 package com.buurman.security;
 
 import java.security.Principal;
+import java.util.Optional;
 import java.util.UUID;
+
+import org.jspecify.annotations.Nullable;
+
+import com.buurman.domain.TeamRole;
 
 public class UserPrincipal implements Principal {
   private final UUID userId;
@@ -9,9 +14,9 @@ public class UserPrincipal implements Principal {
   private final String keycloakId;
   private final String email;
   private final String name;
-  private final UUID teamId; // nullable for users without team membership
-  private final String teamIdentifier; // ULID, nullable
-  private final String role; // nullable for users without team membership
+  private final Optional<UUID> teamId; // empty for users without team membership
+  private final Optional<String> teamIdentifier; // ULID, empty if no team
+  private final Optional<TeamRole> role; // empty for users without team membership
   private final boolean isOwner;
   private final boolean emailVerified;
 
@@ -21,9 +26,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role,
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable TeamRole role,
       boolean isOwner,
       boolean emailVerified) {
     this.userId = userId;
@@ -31,9 +36,9 @@ public class UserPrincipal implements Principal {
     this.keycloakId = keycloakId;
     this.email = email;
     this.name = name;
-    this.teamId = teamId;
-    this.teamIdentifier = teamIdentifier;
-    this.role = role;
+    this.teamId = Optional.ofNullable(teamId);
+    this.teamIdentifier = Optional.ofNullable(teamIdentifier);
+    this.role = Optional.ofNullable(role);
     this.isOwner = isOwner;
     this.emailVerified = emailVerified;
   }
@@ -44,9 +49,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role,
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable TeamRole role,
       boolean isOwner) {
     this(
         userId,
@@ -67,9 +72,9 @@ public class UserPrincipal implements Principal {
       String keycloakId,
       String email,
       String name,
-      UUID teamId,
-      String teamIdentifier,
-      String role) {
+      @Nullable UUID teamId,
+      @Nullable String teamIdentifier,
+      @Nullable TeamRole role) {
     this(
         userId, userIdentifier, keycloakId, email, name, teamId, teamIdentifier, role, false, true);
   }
@@ -95,15 +100,15 @@ public class UserPrincipal implements Principal {
     return name;
   }
 
-  public UUID getTeamId() {
+  public Optional<UUID> getTeamId() {
     return teamId;
   }
 
-  public String getTeamIdentifier() {
+  public Optional<String> getTeamIdentifier() {
     return teamIdentifier;
   }
 
-  public String getRole() {
+  public Optional<TeamRole> getRole() {
     return role;
   }
 
@@ -115,7 +120,19 @@ public class UserPrincipal implements Principal {
     return emailVerified;
   }
 
-  public boolean hasTeam() {
-    return teamId != null;
+  public boolean hasNoTeam() {
+    return teamId.isEmpty();
+  }
+
+  /** Returns team ID, throwing if the user has no active team membership. */
+  public UUID requireTeamId() {
+    return teamId.orElseThrow(
+        () -> new IllegalStateException("User has no active team membership"));
+  }
+
+  /** Returns team identifier (ULID), throwing if the user has no active team membership. */
+  public String requireTeamIdentifier() {
+    return teamIdentifier.orElseThrow(
+        () -> new IllegalStateException("User has no active team membership"));
   }
 }

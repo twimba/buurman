@@ -1,8 +1,10 @@
 package com.buurman.dto.response;
 
+import java.util.Optional;
+
 public record PropertyAmenityResponse(
     String amenityIdentifier,
     String amenityName,
     String amenityCategory,
-    String amenityIcon,
-    String notes) {}
+    Optional<String> amenityIcon,
+    Optional<String> notes) {}

@@ -3,13 +3,17 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractRentPeriod {
@@ -20,11 +24,11 @@ public class ContractRentPeriod {
   private BigDecimal rentAmount;
   private String currency;
   private LocalDate effectiveFrom;
-  private LocalDate effectiveTo;
-  private String notes;
+  @Builder.Default private Optional<LocalDate> effectiveTo = Optional.empty();
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

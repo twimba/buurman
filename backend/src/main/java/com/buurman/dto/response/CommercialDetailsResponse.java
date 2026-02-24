@@ -1,18 +1,19 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public record CommercialDetailsResponse(
-    BigDecimal usableAreaValue,
-    String usableAreaUnit,
-    BigDecimal commonAreaValue,
-    String commonAreaUnit,
-    Integer floorLevel,
-    BigDecimal ceilingHeightM,
-    Boolean hasStorefront,
-    Boolean hasSignageRights,
-    String zoningClassification,
-    Integer maxOccupancy,
-    Integer restroomCount,
-    Boolean hasKitchenFacility,
-    Boolean accessibilityCompliant) {}
+    Optional<BigDecimal> usableAreaValue,
+    Optional<String> usableAreaUnit,
+    Optional<BigDecimal> commonAreaValue,
+    Optional<String> commonAreaUnit,
+    Optional<Integer> floorLevel,
+    Optional<BigDecimal> ceilingHeightM,
+    Optional<Boolean> hasStorefront,
+    Optional<Boolean> hasSignageRights,
+    Optional<String> zoningClassification,
+    Optional<Integer> maxOccupancy,
+    Optional<Integer> restroomCount,
+    Optional<Boolean> hasKitchenFacility,
+    Optional<Boolean> accessibilityCompliant) {}

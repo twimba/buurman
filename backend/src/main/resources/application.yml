@@ -149,6 +149,8 @@ scheduling:
     payment-reminder-cron: "0 0 0 * * ?"
   metrics:
     metrics-push-cron: "0 */15 * * * ?"
+  thumbnail-backfill:
+    cron: "0 */5 * * * ?"
 
 # Actuator Configuration
 management:
@@ -172,11 +174,6 @@ management:
   metrics:
     tags:
       application: buurman
-    export:
-      prometheus:
-        enabled: true
-        descriptions: true
-        step: 30s
     distribution:
       percentiles-histogram:
         http.server.requests: true
@@ -187,6 +184,12 @@ management:
         http.server.requests: 0.5,0.75,0.95,0.99
         buurman.s3.operation.seconds: 0.5,0.95,0.99
         buurman.export.generation.seconds: 0.5,0.95,0.99
+  prometheus:
+    metrics:
+      export:
+        step: 30s
+        descriptions: true
+        enabled: true
 
 # Server Configuration
 server:

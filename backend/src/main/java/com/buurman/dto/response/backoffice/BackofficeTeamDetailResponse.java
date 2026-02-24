@@ -4,20 +4,21 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public record BackofficeTeamDetailResponse(
     String identifier,
     String teamName,
     Instant createdAt,
-    Instant updatedAt,
+    Optional<Instant> updatedAt,
     List<MemberInfo> members,
     DataCounts dataCounts,
     FinancialSnapshot financialSnapshot,
-    SettingsInfo settings) {
+    Optional<SettingsInfo> settings) {
   public record MemberInfo(
-      String email,
-      String firstName,
-      String lastName,
+      Optional<String> email,
+      Optional<String> firstName,
+      Optional<String> lastName,
       String role,
       boolean isOwner,
       Instant joinedAt,
@@ -32,19 +33,19 @@ public record BackofficeTeamDetailResponse(
       long documents) {}
 
   public record FinancialSnapshot(
-      BigDecimal totalActiveRent,
-      String currency,
+      Optional<BigDecimal> totalActiveRent,
+      Optional<String> currency,
       Map<String, Long> propertyStatusDistribution,
       Map<String, Long> propertyCategoryDistribution,
       Map<String, Long> contractStatusDistribution,
       Map<String, Long> paymentStatusDistribution) {}
 
   public record SettingsInfo(
-      Integer paymentsAheadCount,
+      Optional<Integer> paymentsAheadCount,
       boolean autoGenerationEnabled,
-      String defaultCurrency,
-      String defaultCountry,
-      String timezone,
-      String dateFormat,
-      String fiscalYearStartMonth) {}
+      Optional<String> defaultCurrency,
+      Optional<String> defaultCountry,
+      Optional<String> timezone,
+      Optional<String> dateFormat,
+      Optional<String> fiscalYearStartMonth) {}
 }

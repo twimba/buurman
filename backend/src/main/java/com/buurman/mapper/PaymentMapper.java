@@ -12,7 +12,7 @@ import com.buurman.dto.request.UpdatePaymentRequest;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentSummary;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface PaymentMapper {
 
   @Mapping(target = "id", ignore = true)

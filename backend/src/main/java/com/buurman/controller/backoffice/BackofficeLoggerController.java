@@ -1,6 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,16 +33,15 @@ public class BackofficeLoggerController {
 
   @Operation(summary = "List all loggers")
   @GetMapping
-  public List<LoggerConfigurationResponse> listLoggers(
-      @RequestParam(required = false) String search) {
-    return loggerService.listLoggers(search);
+  public List<LoggerConfigurationResponse> listLoggers(@RequestParam Optional<String> search) {
+    return loggerService.listLoggers(search.orElse(null));
   }
 
   @Operation(summary = "Set log level")
   @PostMapping("/{loggerName}/level")
   public LoggerConfigurationResponse setLogLevel(
       @PathVariable String loggerName, @RequestBody SetLogLevelRequest request) {
-    return loggerService.setLogLevel(loggerName, request.level());
+    return loggerService.setLogLevel(loggerName, request.level().orElse(null));
   }
 
   @Operation(summary = "Reset all log levels to defaults")

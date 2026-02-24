@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -65,14 +66,14 @@ public class TenantController {
       description = "Get all tenants with optional search and pagination")
   @GetMapping
   public PageResponse<TenantResponse> getTenants(
-      @RequestParam(required = false) String search,
+      @RequestParam Optional<String> search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return tenantService.getTenantsPaginated(principal, search, pageRequest);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
+    return tenantService.getTenantsPaginated(principal, search.orElse(null), pageRequest);
   }
 
   @Operation(summary = "Get tenant details", description = "Get details of a specific tenant")
@@ -143,10 +144,11 @@ public class TenantController {
   public DocumentResponse uploadDocument(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) String title,
-      @RequestParam(required = false) String notes,
+      @RequestParam Optional<String> title,
+      @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return tenantService.uploadDocument(identifier, file, title, notes, principal);
+    return tenantService.uploadDocument(
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Operation(summary = "List documents", description = "Get all documents for a tenant")
@@ -186,10 +188,11 @@ public class TenantController {
   public PhotoResponse uploadPhoto(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) String title,
-      @RequestParam(required = false) String notes,
+      @RequestParam Optional<String> title,
+      @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return tenantService.uploadPhoto(identifier, file, title, notes, principal);
+    return tenantService.uploadPhoto(
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Operation(

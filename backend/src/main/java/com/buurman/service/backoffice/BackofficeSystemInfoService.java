@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationState;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.info.BuildProperties;
@@ -93,17 +94,18 @@ public class BackofficeSystemInfoService {
     var git = gitPropertiesProvider.getIfAvailable();
     var build = buildPropertiesProvider.getIfAvailable();
 
+    var optGit = Optional.ofNullable(git);
     return new BuildInfo(
         appProperties.version(),
-        git != null ? git.getShortCommitId() : null,
-        git != null ? git.get("commit.id.full") : null,
-        git != null ? resolveGitBranch(git) : null,
-        git != null ? git.getCommitTime() : null,
+        optGit.map(GitProperties::getShortCommitId),
+        optGit.map(g -> g.get("commit.id.full")),
+        optGit.map(this::resolveGitBranch),
+        optGit.map(GitProperties::getCommitTime),
         git != null && Boolean.parseBoolean(git.get("dirty")),
-        build != null ? build.getTime() : null);
+        Optional.ofNullable(build).map(BuildProperties::getTime));
   }
 
-  private String resolveGitBranch(GitProperties git) {
+  private @Nullable String resolveGitBranch(GitProperties git) {
     String branch = git.getBranch();
     // Detached HEAD (e.g. tag checkout in CI) returns the commit SHA as branch
     if (branch != null && branch.matches("[0-9a-f]{40}")) {
@@ -161,7 +163,7 @@ public class BackofficeSystemInfoService {
 
   private BackofficeSystemInfoResponse.MigrationInfo getMigrationInfo() {
     if (flyway.isEmpty()) {
-      return new BackofficeSystemInfoResponse.MigrationInfo(null, 0, 0, 0, List.of());
+      return new BackofficeSystemInfoResponse.MigrationInfo(Optional.empty(), 0, 0, 0, List.of());
     }
 
     var info = flyway.get().info();
@@ -174,16 +176,18 @@ public class BackofficeSystemInfoService {
             .map(
                 m ->
                     new MigrationEntry(
-                        m.getVersion() != null ? m.getVersion().getVersion() : null,
-                        m.getDescription(),
+                        Optional.ofNullable(
+                            m.getVersion() != null ? m.getVersion().getVersion() : null),
+                        Optional.ofNullable(m.getDescription()),
                         m.getState().name(),
-                        m.getInstalledOn() != null ? m.getInstalledOn().toInstant() : null,
-                        m.getExecutionTime(),
+                        Optional.ofNullable(
+                            m.getInstalledOn() != null ? m.getInstalledOn().toInstant() : null),
+                        Optional.ofNullable(m.getExecutionTime()),
                         m.getScript()))
             .toList();
 
     return new BackofficeSystemInfoResponse.MigrationInfo(
-        current != null ? current.getVersion().getVersion() : null,
+        Optional.ofNullable(current != null ? current.getVersion().getVersion() : null),
         info.applied().length,
         info.pending().length,
         failedCount,
@@ -288,7 +292,7 @@ public class BackofficeSystemInfoService {
       }
     }
 
-    return new MetricsSnapshot(httpCount, httpTotalTimeSec, httpLatency, custom);
+    return new MetricsSnapshot(httpCount, httpTotalTimeSec, Optional.of(httpLatency), custom);
   }
 
   // --- Sessions ---

@@ -121,16 +121,24 @@ export const AddressForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.street.trim()) newErrors.street = 'Street is required';
-    if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.country.trim()) newErrors.country = 'Country is required';
+    if (!formData.street.trim()) {
+      newErrors.street = 'Street is required';
+    }
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
+    }
+    if (!formData.country.trim()) {
+      newErrors.country = 'Country is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
 
     try {
       await onSubmit(formData);

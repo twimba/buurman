@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -55,17 +56,27 @@ public class DemoPropertyGenerator {
       List.of(
           new CountryData(
               "Netherlands",
-              new String[] {
-                "Keizersgracht", "Prinsengracht", "Herengracht", "Vondelstraat",
-                "Beethovenstraat", "Apollolaan", "Singel", "Overtoom"
-              },
-              new String[] {"Zuidas", "Amstelplein", "WTC Boulevard", "Strawinskylaan"},
-              new String[] {"Westpoort", "Schiphol-Rijk", "Havenweg", "Industrieweg"},
-              new String[] {"Beemsterweg", "Polderweg", "Boerderijlaan", "Weideland"},
-              new String[] {
-                "Amsterdam", "Rotterdam", "Den Haag", "Utrecht",
-                "Eindhoven", "Leiden", "Haarlem", "Delft"
-              },
+              List.of(
+                  "Keizersgracht",
+                  "Prinsengracht",
+                  "Herengracht",
+                  "Vondelstraat",
+                  "Beethovenstraat",
+                  "Apollolaan",
+                  "Singel",
+                  "Overtoom"),
+              List.of("Zuidas", "Amstelplein", "WTC Boulevard", "Strawinskylaan"),
+              List.of("Westpoort", "Schiphol-Rijk", "Havenweg", "Industrieweg"),
+              List.of("Beemsterweg", "Polderweg", "Boerderijlaan", "Weideland"),
+              List.of(
+                  "Amsterdam",
+                  "Rotterdam",
+                  "Den Haag",
+                  "Utrecht",
+                  "Eindhoven",
+                  "Leiden",
+                  "Haarlem",
+                  "Delft"),
               "####_AA",
               51.8,
               53.0,
@@ -73,17 +84,27 @@ public class DemoPropertyGenerator {
               6.0),
           new CountryData(
               "Germany",
-              new String[] {
-                "Friedrichstraße", "Kurfürstendamm", "Schillerstraße", "Goethestraße",
-                "Berliner Straße", "Hauptstraße", "Bahnhofstraße", "Mozartstraße"
-              },
-              new String[] {"Potsdamer Platz", "Bankenviertel", "Geschäftsstraße", "Büropark"},
-              new String[] {"Industriegebiet", "Gewerbepark", "Logistikring", "Werkstraße"},
-              new String[] {"Ackerweg", "Hofstraße", "Feldmark", "Gutshof"},
-              new String[] {
-                "Berlin", "Munich", "Hamburg", "Frankfurt",
-                "Cologne", "Stuttgart", "Düsseldorf", "Dresden"
-              },
+              List.of(
+                  "Friedrichstraße",
+                  "Kurfürstendamm",
+                  "Schillerstraße",
+                  "Goethestraße",
+                  "Berliner Straße",
+                  "Hauptstraße",
+                  "Bahnhofstraße",
+                  "Mozartstraße"),
+              List.of("Potsdamer Platz", "Bankenviertel", "Geschäftsstraße", "Büropark"),
+              List.of("Industriegebiet", "Gewerbepark", "Logistikring", "Werkstraße"),
+              List.of("Ackerweg", "Hofstraße", "Feldmark", "Gutshof"),
+              List.of(
+                  "Berlin",
+                  "Munich",
+                  "Hamburg",
+                  "Frankfurt",
+                  "Cologne",
+                  "Stuttgart",
+                  "Düsseldorf",
+                  "Dresden"),
               "#####",
               48.0,
               54.0,
@@ -91,17 +112,27 @@ public class DemoPropertyGenerator {
               14.0),
           new CountryData(
               "United Kingdom",
-              new String[] {
-                "Baker Street", "King's Road", "Church Lane", "High Street",
-                "Park Avenue", "Victoria Road", "Station Road", "Mill Lane"
-              },
-              new String[] {"Canary Wharf", "Fenchurch Street", "Bishopsgate", "Fleet Street"},
-              new String[] {"Trading Estate", "Industrial Park", "Enterprise Way", "Dock Road"},
-              new String[] {"Manor Farm Road", "The Green", "Orchard Lane", "Meadow Drive"},
-              new String[] {
-                "London", "Manchester", "Birmingham", "Edinburgh",
-                "Bristol", "Liverpool", "Oxford", "Cambridge"
-              },
+              List.of(
+                  "Baker Street",
+                  "King's Road",
+                  "Church Lane",
+                  "High Street",
+                  "Park Avenue",
+                  "Victoria Road",
+                  "Station Road",
+                  "Mill Lane"),
+              List.of("Canary Wharf", "Fenchurch Street", "Bishopsgate", "Fleet Street"),
+              List.of("Trading Estate", "Industrial Park", "Enterprise Way", "Dock Road"),
+              List.of("Manor Farm Road", "The Green", "Orchard Lane", "Meadow Drive"),
+              List.of(
+                  "London",
+                  "Manchester",
+                  "Birmingham",
+                  "Edinburgh",
+                  "Bristol",
+                  "Liverpool",
+                  "Oxford",
+                  "Cambridge"),
               "AA## #AA",
               51.0,
               56.0,
@@ -109,23 +140,32 @@ public class DemoPropertyGenerator {
               1.5),
           new CountryData(
               "France",
-              new String[] {
-                "Rue de Rivoli", "Avenue des Champs-Élysées", "Boulevard Saint-Germain",
-                "Rue de la Paix", "Avenue Montaigne", "Rue du Faubourg",
-                "Place Vendôme", "Rue de Seine"
-              },
-              new String[] {
-                "Quartier des Affaires", "La Défense", "Rue du Commerce", "Avenue de l'Opéra"
-              },
-              new String[] {
-                "Zone Industrielle", "Parc d'Activités", "Rue de l'Usine", "Route du Port"
-              },
-              new String[] {
-                "Chemin du Vignoble", "Route des Champs", "Lieu-dit La Ferme", "Allée des Vergers"
-              },
-              new String[] {
-                "Paris", "Lyon", "Marseille", "Bordeaux", "Nice", "Toulouse", "Strasbourg", "Nantes"
-              },
+              List.of(
+                  "Rue de Rivoli",
+                  "Avenue des Champs-Élysées",
+                  "Boulevard Saint-Germain",
+                  "Rue de la Paix",
+                  "Avenue Montaigne",
+                  "Rue du Faubourg",
+                  "Place Vendôme",
+                  "Rue de Seine"),
+              List.of(
+                  "Quartier des Affaires", "La Défense", "Rue du Commerce", "Avenue de l'Opéra"),
+              List.of("Zone Industrielle", "Parc d'Activités", "Rue de l'Usine", "Route du Port"),
+              List.of(
+                  "Chemin du Vignoble",
+                  "Route des Champs",
+                  "Lieu-dit La Ferme",
+                  "Allée des Vergers"),
+              List.of(
+                  "Paris",
+                  "Lyon",
+                  "Marseille",
+                  "Bordeaux",
+                  "Nice",
+                  "Toulouse",
+                  "Strasbourg",
+                  "Nantes"),
               "#####",
               43.0,
               49.0,
@@ -133,29 +173,39 @@ public class DemoPropertyGenerator {
               7.0),
           new CountryData(
               "Spain",
-              new String[] {
-                "Calle Gran Vía", "Paseo de la Castellana", "Avenida Diagonal", "Calle Mayor",
-                "Calle de Alcalá", "Rambla de Catalunya", "Calle Serrano", "Paseo del Prado"
-              },
-              new String[] {
-                "Paseo de la Castellana",
-                "Calle de Serrano",
-                "Avenida de la Constitución",
-                "Plaza de España"
-              },
-              new String[] {
-                "Polígono Industrial", "Zona Franca", "Calle de la Industria", "Avenida del Puerto"
-              },
-              new String[] {
-                "Camino de la Huerta",
-                "Finca El Olivar",
-                "Carretera de los Viñedos",
-                "Calle del Campo"
-              },
-              new String[] {
-                "Madrid", "Barcelona", "Valencia", "Seville",
-                "Málaga", "Bilbao", "Granada", "San Sebastián"
-              },
+              List.of(
+                  "Calle Gran Vía",
+                  "Paseo de la Castellana",
+                  "Avenida Diagonal",
+                  "Calle Mayor",
+                  "Calle de Alcalá",
+                  "Rambla de Catalunya",
+                  "Calle Serrano",
+                  "Paseo del Prado"),
+              List.of(
+                  "Paseo de la Castellana",
+                  "Calle de Serrano",
+                  "Avenida de la Constitución",
+                  "Plaza de España"),
+              List.of(
+                  "Polígono Industrial",
+                  "Zona Franca",
+                  "Calle de la Industria",
+                  "Avenida del Puerto"),
+              List.of(
+                  "Camino de la Huerta",
+                  "Finca El Olivar",
+                  "Carretera de los Viñedos",
+                  "Calle del Campo"),
+              List.of(
+                  "Madrid",
+                  "Barcelona",
+                  "Valencia",
+                  "Seville",
+                  "Málaga",
+                  "Bilbao",
+                  "Granada",
+                  "San Sebastián"),
               "#####",
               36.0,
               43.5,
@@ -163,23 +213,25 @@ public class DemoPropertyGenerator {
               3.0),
           new CountryData(
               "Portugal",
-              new String[] {
-                "Rua Augusta", "Avenida da Liberdade", "Rua de Santa Catarina",
-                "Rua do Carmo", "Praça do Comércio", "Rua dos Clérigos",
-                "Avenida dos Aliados", "Rua da Prata"
-              },
-              new String[] {
-                "Avenida da República", "Rua do Comércio", "Praça do Município", "Parque das Nações"
-              },
-              new String[] {
-                "Zona Industrial", "Parque Empresarial", "Rua da Fábrica", "Estrada do Porto"
-              },
-              new String[] {
-                "Estrada das Quintas", "Caminho do Vinhedo", "Rua da Herdade", "Largo do Olival"
-              },
-              new String[] {
-                "Lisbon", "Porto", "Faro", "Coimbra", "Braga", "Funchal", "Aveiro", "Évora"
-              },
+              List.of(
+                  "Rua Augusta",
+                  "Avenida da Liberdade",
+                  "Rua de Santa Catarina",
+                  "Rua do Carmo",
+                  "Praça do Comércio",
+                  "Rua dos Clérigos",
+                  "Avenida dos Aliados",
+                  "Rua da Prata"),
+              List.of(
+                  "Avenida da República",
+                  "Rua do Comércio",
+                  "Praça do Município",
+                  "Parque das Nações"),
+              List.of(
+                  "Zona Industrial", "Parque Empresarial", "Rua da Fábrica", "Estrada do Porto"),
+              List.of(
+                  "Estrada das Quintas", "Caminho do Vinhedo", "Rua da Herdade", "Largo do Olival"),
+              List.of("Lisbon", "Porto", "Faro", "Coimbra", "Braga", "Funchal", "Aveiro", "Évora"),
               "####-###",
               37.0,
               42.0,
@@ -188,11 +240,11 @@ public class DemoPropertyGenerator {
 
   record CountryData(
       String name,
-      String[] residentialStreets,
-      String[] commercialStreets,
-      String[] industrialStreets,
-      String[] agriculturalStreets,
-      String[] cities,
+      List<String> residentialStreets,
+      List<String> commercialStreets,
+      List<String> industrialStreets,
+      List<String> agriculturalStreets,
+      List<String> cities,
       String postalFormat,
       double latMin,
       double latMax,
@@ -207,7 +259,7 @@ public class DemoPropertyGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = new ArrayList<>();
 
@@ -220,7 +272,7 @@ public class DemoPropertyGenerator {
         String status = i < PROPERTIES_PER_TEAM - 1 ? "OCCUPIED" : "VACANT";
 
         CountryData country = COUNTRIES.get(i % COUNTRIES.size());
-        String[] streets = streetsForCategory(country, propertyCategory);
+        List<String> streets = streetsForCategory(country, propertyCategory);
 
         int houseNumber = random.nextInt(1, 200);
         String street = pick(streets) + " " + houseNumber;
@@ -341,9 +393,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.MARKET_VALUE_DATE, i < 4 ? LocalDate.of(2025, 12, 1) : null)
             .set(PROPERTIES.MORTGAGE_TYPE, i == 0 ? "NONE" : i < 4 ? "FIXED_RATE" : null)
-            .set(
-                PROPERTIES.MORTGAGE_AMOUNT,
-                i > 0 && i < 4 ? Long.valueOf((150_000 + i * 50_000) * 100L) : null)
+            .set(PROPERTIES.MORTGAGE_AMOUNT, i > 0 && i < 4 ? (150_000 + i * 50_000) * 100L : null)
             .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, i > 0 && i < 4 ? currency : null)
             .set(
                 PROPERTIES.MORTGAGE_INTEREST_RATE,
@@ -354,22 +404,17 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.MORTGAGE_END_DATE, i > 0 && i < 4 ? LocalDate.of(2050 + i, 3, 31) : null)
             .set(
-                PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-                i > 0 && i < 4 ? Long.valueOf((600 + i * 150) * 100L) : null)
+                PROPERTIES.MONTHLY_MORTGAGE_PAYMENT, i > 0 && i < 4 ? (600 + i * 150) * 100L : null)
             .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY, i > 0 && i < 4 ? currency : null)
-            .set(
-                PROPERTIES.ANNUAL_PROPERTY_TAX,
-                i < 4 ? Long.valueOf((1200 + i * 300) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_PROPERTY_TAX, i < 4 ? (1200 + i * 300) * 100L : null)
             .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? Long.valueOf((400 + i * 100) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? (400 + i * 100) * 100L : null)
             .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? Long.valueOf((600 + i * 200) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? (600 + i * 200) * 100L : null)
             .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, i < 3 ? currency : null)
-            .set(
-                PROPERTIES.ANNUAL_MANAGEMENT_FEE,
-                i < 2 ? Long.valueOf((1800 + i * 600) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE, i < 2 ? (1800 + i * 600) * 100L : null)
             .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? currency : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? Long.valueOf(500_00L) : null)
+            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? 500_00L : null)
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? currency : null)
             .set(
                 PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
@@ -380,7 +425,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH, i < 4 ? "9" : null)
             .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
             .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
-            .set(PROPERTIES.LAND_VALUE, i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)
+            .set(PROPERTIES.LAND_VALUE, i < 3 ? (80_000 + i * 20_000) * 100L : null)
             .set(PROPERTIES.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
             .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(PROPERTIES.UPDATED_AT, now)
@@ -466,7 +511,7 @@ public class DemoPropertyGenerator {
 
   // --- Category-specific addresses ---
 
-  private String[] streetsForCategory(CountryData country, String category) {
+  private List<String> streetsForCategory(CountryData country, String category) {
     return switch (category) {
       case "COMMERCIAL", "MIXED_USE" -> country.commercialStreets();
       case "INDUSTRIAL" -> country.industrialStreets();
@@ -583,7 +628,7 @@ public class DemoPropertyGenerator {
       BigDecimal area,
       int bedrooms,
       int bathrooms,
-      UUID createdBy,
+      @Nullable UUID createdBy,
       LocalDateTime now) {
     switch (category) {
       case "RESIDENTIAL" -> {
@@ -639,39 +684,39 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_COMMERCIAL_DETAILS.UPDATED_BY, createdBy)
             .execute();
       }
-      case "INDUSTRIAL" -> {
-        dsl.insertInto(PROPERTY_INDUSTRIAL_DETAILS)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.ID, UUID.randomUUID())
-            .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, propertyId)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M,
-                BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-                BigDecimal.valueOf(1000 + random.nextInt(4000)))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
-                random.nextInt(3) == 0 ? BigDecimal.valueOf(5 + random.nextInt(20)) : null)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION, random.nextInt(4) == 0)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, true)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, random.nextBoolean())
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE,
-                BigDecimal.valueOf(random.nextInt(500, 5000)))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, "sqm")
-            .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, "INDUSTRIAL")
-            .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_AT, now)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY, createdBy)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY, createdBy)
-            .execute();
-      }
+      case "INDUSTRIAL" ->
+          dsl.insertInto(PROPERTY_INDUSTRIAL_DETAILS)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.ID, UUID.randomUUID())
+              .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, propertyId)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M,
+                  BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
+                  BigDecimal.valueOf(1000 + random.nextInt(4000)))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
+                  random.nextInt(3) == 0 ? BigDecimal.valueOf(5 + random.nextInt(20)) : null)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION, random.nextInt(4) == 0)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, true)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, random.nextBoolean())
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE,
+                  BigDecimal.valueOf(random.nextInt(500, 5000)))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, "sqm")
+              .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, "INDUSTRIAL")
+              .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_AT, now)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY, createdBy)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY, createdBy)
+              .execute();
+
       case "AGRICULTURAL" -> {
         BigDecimal totalLand = area;
         BigDecimal arableLand =
@@ -719,7 +764,8 @@ public class DemoPropertyGenerator {
 
   private String generatePostalCode(String format) {
     StringBuilder sb = new StringBuilder();
-    for (char c : format.toCharArray()) {
+    for (int i = 0; i < format.length(); i++) {
+      char c = format.charAt(i);
       if (c == '#') {
         sb.append(random.nextInt(0, 10));
       } else if (c == 'A') {
@@ -731,6 +777,10 @@ public class DemoPropertyGenerator {
       }
     }
     return sb.toString();
+  }
+
+  private String pick(List<String> list) {
+    return list.get(random.nextInt(list.size()));
   }
 
   private String pick(String[] array) {

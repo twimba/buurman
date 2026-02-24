@@ -51,8 +51,9 @@ export const TenantForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.firstName.trim())
+    if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
+    }
     if (
       formData.email?.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email!)
@@ -61,7 +62,9 @@ export const TenantForm = ({
     }
     if (formData.phone) {
       const phoneErr = validatePhoneE164(formData.phone);
-      if (phoneErr) newErrors.phone = phoneErr;
+      if (phoneErr) {
+        newErrors.phone = phoneErr;
+      }
     }
 
     setErrors(newErrors);
@@ -69,7 +72,9 @@ export const TenantForm = ({
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
 
     try {
       await onSubmit({

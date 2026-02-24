@@ -1,23 +1,24 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record NotificationResponse(
     String identifier,
     String notificationType,
     String channel,
-    String subject,
-    String body,
-    String recipientEmail,
-    String recipientPhone,
+    Optional<String> subject,
+    Optional<String> body,
+    Optional<String> recipientEmail,
+    Optional<String> recipientPhone,
     String status,
-    String providerStatus,
-    String providerError,
+    Optional<String> providerStatus,
+    Optional<String> providerError,
     int openCount,
     int clickCount,
-    Instant firstOpenedAt,
-    Instant firstClickedAt,
-    String resentFromIdentifier,
-    String resendReason,
+    Optional<Instant> firstOpenedAt,
+    Optional<Instant> firstClickedAt,
+    Optional<String> resentFromIdentifier,
+    Optional<String> resendReason,
     Instant createdAt,
-    Instant statusUpdatedAt) {}
+    Optional<Instant> statusUpdatedAt) {}

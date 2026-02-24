@@ -42,7 +42,9 @@ const RegisterPage: React.FC = () => {
   const [codeError, setCodeError] = useState('');
 
   const handleValidateCode = async (code: string) => {
-    if (!code.trim()) return;
+    if (!code.trim()) {
+      return;
+    }
     setCodeError('');
     try {
       const result = await validateCodeMutation.mutateAsync(code.trim());
@@ -129,21 +131,32 @@ const RegisterPage: React.FC = () => {
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (!allRulesMet)
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    }
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (!allRulesMet) {
       newErrors.password = 'Password does not meet all requirements';
-    if (formData.password !== formData.confirmPassword)
+    }
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
 
     try {
       await registerMutation.mutateAsync({

@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Locale;
+
+import org.jspecify.annotations.Nullable;
 
 /**
  * Shared HTML building utilities for all booklet/report exporters. All methods are static and
@@ -17,8 +20,10 @@ final class BookletHelper {
 
   // ── Formatting ──────────────────────────────────────────────────
 
-  static String escapeHtml(String text) {
-    if (text == null) return "";
+  static String escapeHtml(@Nullable String text) {
+    if (text == null) {
+      return "";
+    }
     return text.replace("&", "&amp;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
@@ -26,8 +31,10 @@ final class BookletHelper {
         .replace("'", "&#39;");
   }
 
-  static String sanitizeRichText(String html) {
-    if (html == null) return "";
+  static String sanitizeRichText(@Nullable String html) {
+    if (html == null) {
+      return "";
+    }
     return html.replaceAll("(?i)<script[^>]*>.*?</script>", "")
         .replaceAll("(?i)<iframe[^>]*>.*?</iframe>", "")
         .replaceAll("(?i)<object[^>]*>.*?</object>", "")
@@ -37,23 +44,66 @@ final class BookletHelper {
         .replaceAll("(?i)\\s+on\\w+\\s*=\\s*'[^']*'", "");
   }
 
-  static String formatEnumValue(String value) {
-    if (value == null) return "";
+  static String formatEnumValue(@Nullable String value) {
+    if (value == null) {
+      return "";
+    }
     return Arrays.stream(value.split("_"))
-        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+        .map(
+            word ->
+                word.substring(0, 1).toUpperCase(Locale.ROOT)
+                    + word.substring(1).toLowerCase(Locale.ROOT))
         .collect(joining(" "));
   }
 
-  static String fmt(BigDecimal value) {
+  static String fmt(@Nullable BigDecimal value) {
     return value != null ? String.format("%,.2f", value) : "0.00";
   }
 
-  static String formatDate(LocalDate date, DateTimeFormatter fmt) {
+  static String formatDate(@Nullable LocalDate date, DateTimeFormatter fmt) {
     return date != null ? date.format(fmt) : "—";
   }
 
-  static boolean isTrue(Boolean value) {
+  static boolean isTrue(@Nullable Boolean value) {
     return Boolean.TRUE.equals(value);
+  }
+
+  // ── Null-safe display utilities ───────────────────────────────────
+
+  static String displayOrDash(@Nullable Object value) {
+    return value != null ? value.toString() : "—";
+  }
+
+  static String displayBool(@Nullable Boolean value) {
+    if (value == null) {
+      return "—";
+    }
+    return value ? "Yes" : "No";
+  }
+
+  static String displayBoolWithDetail(@Nullable Boolean value, @Nullable String detail) {
+    if (value == null) {
+      return "—";
+    }
+    if (!value) {
+      return "No";
+    }
+    return detail != null ? "Yes — " + detail : "Yes";
+  }
+
+  static String displayWithUnit(@Nullable Number value, String unit) {
+    if (value == null) {
+      return "—";
+    }
+    return value + " " + unit;
+  }
+
+  static String displayEnum(@Nullable Enum<?> value) {
+    if (value == null) {
+      return "—";
+    }
+    return value.name().replace('_', ' ').substring(0, 1).toUpperCase(Locale.ROOT)
+        + value.name().replace('_', ' ').substring(1).toLowerCase(Locale.ROOT);
   }
 
   // ── Document structure ──────────────────────────────────────────
@@ -95,10 +145,12 @@ final class BookletHelper {
     html.append("</div>");
   }
 
-  static void appendStatusBadge(StringBuilder html, String status) {
+  static void appendStatusBadge(StringBuilder html, @Nullable String status) {
     String statusStr = status != null ? status : "";
     html.append("<div style='text-align:center;margin:30px 0;'>");
-    html.append("<span class='status-badge status-").append(statusStr.toLowerCase()).append("'>");
+    html.append("<span class='status-badge status-")
+        .append(statusStr.toLowerCase(Locale.ROOT))
+        .append("'>");
     html.append(formatEnumValue(statusStr));
     html.append("</span></div>");
   }
@@ -132,12 +184,12 @@ final class BookletHelper {
     html.append("<h2 class='section-title'>").append(title).append("</h2>");
   }
 
-  static void appendField(StringBuilder html, String label, String value) {
+  static void appendField(StringBuilder html, String label, @Nullable String value) {
     html.append("<td><div class='fg-label'>").append(escapeHtml(label)).append("</div>");
     html.append("<div class='fg-value'>").append(value != null ? value : "—").append("</div></td>");
   }
 
-  static void appendTextBlock(StringBuilder html, String label, String richTextContent) {
+  static void appendTextBlock(StringBuilder html, String label, @Nullable String richTextContent) {
     if (richTextContent != null && !richTextContent.isBlank()) {
       html.append("<div class='text-block'><strong>")
           .append(escapeHtml(label))
@@ -171,7 +223,7 @@ final class BookletHelper {
       StringBuilder html,
       String label,
       String amount,
-      String subtitle,
+      @Nullable String subtitle,
       String bgColor,
       String accentColor,
       String textColor) {
@@ -198,7 +250,7 @@ final class BookletHelper {
 
   // ── Check items (safety/accessibility) ──────────────────────────
 
-  static void appendCheckItem(StringBuilder html, String label, Boolean value) {
+  static void appendCheckItem(StringBuilder html, String label, @Nullable Boolean value) {
     if (isTrue(value)) {
       html.append("<div class='check-item'><span class='check-icon'>&#10003;</span>")
           .append(escapeHtml(label))

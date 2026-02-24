@@ -1,13 +1,19 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class PaymentInstruction {
 
   public enum PaymentMethod {
@@ -27,18 +33,18 @@ public class PaymentInstruction {
   private String name;
   private String description;
   private PaymentMethod paymentMethod;
-  private String bankName;
-  private String accountHolderName;
-  private String iban;
-  private String bicSwift;
-  private String accountNumber;
-  private String routingNumber;
-  private String paymentReference;
-  private String additionalDetails;
-  private Boolean isDefault;
+  @Builder.Default private Optional<String> bankName = Optional.empty();
+  @Builder.Default private Optional<String> accountHolderName = Optional.empty();
+  @Builder.Default private Optional<String> iban = Optional.empty();
+  @Builder.Default private Optional<String> bicSwift = Optional.empty();
+  @Builder.Default private Optional<String> accountNumber = Optional.empty();
+  @Builder.Default private Optional<String> routingNumber = Optional.empty();
+  @Builder.Default private Optional<String> paymentReference = Optional.empty();
+  @Builder.Default private Optional<String> additionalDetails = Optional.empty();
+  @Builder.Default private Boolean isDefault = false;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;
   private UUID updatedBy;
-  private Instant deletedAt;
+  @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 }

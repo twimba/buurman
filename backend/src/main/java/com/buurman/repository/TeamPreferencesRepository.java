@@ -41,15 +41,14 @@ public class TeamPreferencesRepository {
 
     if (prefs.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          prefs.getCreatedAt() != null ? LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC) : now;
+      LocalDateTime createdAt = now;
 
       dsl.insertInto(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.ID, newId)
           .set(TEAM_PREFERENCES.TEAM_ID, prefs.getTeamId())
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
           .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
@@ -64,7 +63,7 @@ public class TeamPreferencesRepository {
       dsl.update(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
           .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
@@ -79,10 +78,11 @@ public class TeamPreferencesRepository {
 
   /** Find all team IDs where auto payment generation is enabled. */
   public List<UUID> findTeamIdsWithAutoGenerationEnabled() {
-    return dsl.select(TEAM_PREFERENCES.TEAM_ID)
-        .from(TEAM_PREFERENCES)
-        .where(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED.isTrue())
-        .fetch(TEAM_PREFERENCES.TEAM_ID);
+    return List.copyOf(
+        dsl.select(TEAM_PREFERENCES.TEAM_ID)
+            .from(TEAM_PREFERENCES)
+            .where(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED.isTrue())
+            .fetch(TEAM_PREFERENCES.TEAM_ID));
   }
 
   private TeamPreferences createDefaults(UUID teamId) {
@@ -97,13 +97,13 @@ public class TeamPreferencesRepository {
     prefs.setTeamId(record.getTeamId());
     prefs.setPaymentsAheadCount(record.getPaymentsAheadCount());
     prefs.setAutoGenerationEnabled(record.getAutoGenerationEnabled());
-    prefs.setDefaultCurrency(record.getDefaultCurrency());
+    prefs.setDefaultCurrency(Optional.ofNullable(record.getDefaultCurrency()));
     prefs.setDefaultCountry(record.getDefaultCountry());
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
-    prefs.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    prefs.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    prefs.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     return prefs;
   }
 }

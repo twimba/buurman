@@ -11,6 +11,7 @@ import static org.springframework.http.ProblemDetail.forStatusAndDetail;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -183,8 +184,10 @@ public class GlobalExceptionHandler {
   private String extractJooqConstraintMessage(
       org.jooq.exception.IntegrityConstraintViolationException ex) {
     String msg = ex.getMessage();
-    if (msg == null) return "A data conflict occurred";
-    String lower = msg.toLowerCase();
+    if (msg == null) {
+      return "A data conflict occurred";
+    }
+    String lower = msg.toLowerCase(Locale.ROOT);
     if (lower.contains("chk_cpi_dates")) {
       return "The effective date range conflicts with an existing payment instruction";
     }
@@ -202,9 +205,11 @@ public class GlobalExceptionHandler {
 
   private String extractDataIntegrityMessage(DataIntegrityViolationException ex) {
     String cause = ex.getMostSpecificCause().getMessage();
-    if (cause == null) return "A data conflict occurred";
+    if (cause == null) {
+      return "A data conflict occurred";
+    }
 
-    String lowerCause = cause.toLowerCase();
+    String lowerCause = cause.toLowerCase(Locale.ROOT);
     if (lowerCause.contains("uq_contract_parties_contract_tenant")) {
       return "This tenant is already a party to this contract";
     }

@@ -38,12 +38,16 @@ export const AdjustRentModal = ({
   }, [rentAmount]);
 
   const percentageChange = useMemo(() => {
-    if (parsedAmount === null || currentRent <= 0) return null;
+    if (parsedAmount === null || currentRent <= 0) {
+      return null;
+    }
     return ((parsedAmount - currentRent) / currentRent) * 100;
   }, [parsedAmount, currentRent]);
 
   const submitForm = () => {
-    if (parsedAmount === null || parsedAmount <= 0) return;
+    if (parsedAmount === null || parsedAmount <= 0) {
+      return;
+    }
     onConfirm(parsedAmount, effectiveFrom, notes || undefined);
   };
 

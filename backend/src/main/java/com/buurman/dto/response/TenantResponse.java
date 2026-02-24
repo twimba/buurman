@@ -2,18 +2,19 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public record TenantResponse(
     String identifier,
     String firstName,
     String lastName,
-    String email,
-    String phone,
-    String taxNumber,
-    String idNumber,
-    String additionalInfo,
-    String mainPhotoUrl,
-    String mainPhotoThumbnailUrl,
+    Optional<String> email,
+    Optional<String> phone,
+    Optional<String> taxNumber,
+    Optional<String> idNumber,
+    Optional<String> additionalInfo,
+    Optional<String> mainPhotoUrl,
+    Optional<String> mainPhotoThumbnailUrl,
     List<TenantPropertyAssignment> activeProperties,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

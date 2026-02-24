@@ -16,6 +16,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Table;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentInstruction;
@@ -59,10 +60,8 @@ public class PaymentInstructionRepository {
     if (pi.getId() == null) {
       UUID id = UUID.randomUUID();
       String identifier = newPaymentInstructionId().value();
-      LocalDateTime createdAt =
-          pi.getCreatedAt() != null ? LocalDateTime.ofInstant(pi.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          pi.getUpdatedAt() != null ? LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(TABLE)
           .set(ID, id)
@@ -71,14 +70,14 @@ public class PaymentInstructionRepository {
           .set(NAME, pi.getName())
           .set(DESCRIPTION, pi.getDescription())
           .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
-          .set(BANK_NAME, pi.getBankName())
-          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
-          .set(IBAN, pi.getIban())
-          .set(BIC_SWIFT, pi.getBicSwift())
-          .set(ACCOUNT_NUMBER, pi.getAccountNumber())
-          .set(ROUTING_NUMBER, pi.getRoutingNumber())
-          .set(PAYMENT_REFERENCE, pi.getPaymentReference())
-          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+          .set(BANK_NAME, pi.getBankName().orElse(null))
+          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName().orElse(null))
+          .set(IBAN, pi.getIban().orElse(null))
+          .set(BIC_SWIFT, pi.getBicSwift().orElse(null))
+          .set(ACCOUNT_NUMBER, pi.getAccountNumber().orElse(null))
+          .set(ROUTING_NUMBER, pi.getRoutingNumber().orElse(null))
+          .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
+          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
           .set(CREATED_AT, createdAt)
           .set(UPDATED_AT, updatedAt)
@@ -91,21 +90,20 @@ public class PaymentInstructionRepository {
       pi.setCreatedAt(createdAt.toInstant(UTC));
       pi.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          pi.getUpdatedAt() != null ? LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = now;
 
       dsl.update(TABLE)
           .set(NAME, pi.getName())
           .set(DESCRIPTION, pi.getDescription())
           .set(PAYMENT_METHOD, pi.getPaymentMethod().name())
-          .set(BANK_NAME, pi.getBankName())
-          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName())
-          .set(IBAN, pi.getIban())
-          .set(BIC_SWIFT, pi.getBicSwift())
-          .set(ACCOUNT_NUMBER, pi.getAccountNumber())
-          .set(ROUTING_NUMBER, pi.getRoutingNumber())
-          .set(PAYMENT_REFERENCE, pi.getPaymentReference())
-          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails())
+          .set(BANK_NAME, pi.getBankName().orElse(null))
+          .set(ACCOUNT_HOLDER_NAME, pi.getAccountHolderName().orElse(null))
+          .set(IBAN, pi.getIban().orElse(null))
+          .set(BIC_SWIFT, pi.getBicSwift().orElse(null))
+          .set(ACCOUNT_NUMBER, pi.getAccountNumber().orElse(null))
+          .set(ROUTING_NUMBER, pi.getRoutingNumber().orElse(null))
+          .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
+          .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
           .set(UPDATED_AT, updatedAt)
           .set(UPDATED_BY, pi.getUpdatedBy())
@@ -116,11 +114,12 @@ public class PaymentInstructionRepository {
   }
 
   public List<PaymentInstruction> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(TABLE)
-        .where(TEAM_ID.eq(teamId).and(DELETED_AT.isNull()))
-        .orderBy(CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TABLE)
+            .where(TEAM_ID.eq(teamId).and(DELETED_AT.isNull()))
+            .orderBy(CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PaymentInstruction> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -176,24 +175,30 @@ public class PaymentInstructionRepository {
     pi.setName(record.get(NAME));
     pi.setDescription(record.get(DESCRIPTION));
     pi.setPaymentMethod(PaymentInstruction.PaymentMethod.valueOf(record.get(PAYMENT_METHOD)));
-    pi.setBankName(record.get(BANK_NAME));
-    pi.setAccountHolderName(record.get(ACCOUNT_HOLDER_NAME));
-    pi.setIban(record.get(IBAN));
-    pi.setBicSwift(record.get(BIC_SWIFT));
-    pi.setAccountNumber(record.get(ACCOUNT_NUMBER));
-    pi.setRoutingNumber(record.get(ROUTING_NUMBER));
-    pi.setPaymentReference(record.get(PAYMENT_REFERENCE));
-    pi.setAdditionalDetails(record.get(ADDITIONAL_DETAILS));
+    pi.setBankName(Optional.ofNullable(record.get(BANK_NAME)));
+    pi.setAccountHolderName(Optional.ofNullable(record.get(ACCOUNT_HOLDER_NAME)));
+    pi.setIban(Optional.ofNullable(record.get(IBAN)));
+    pi.setBicSwift(Optional.ofNullable(record.get(BIC_SWIFT)));
+    pi.setAccountNumber(Optional.ofNullable(record.get(ACCOUNT_NUMBER)));
+    pi.setRoutingNumber(Optional.ofNullable(record.get(ROUTING_NUMBER)));
+    pi.setPaymentReference(Optional.ofNullable(record.get(PAYMENT_REFERENCE)));
+    pi.setAdditionalDetails(Optional.ofNullable(record.get(ADDITIONAL_DETAILS)));
     pi.setIsDefault(record.get(IS_DEFAULT));
-    pi.setCreatedAt(toInstant(record.get("created_at")));
-    pi.setUpdatedAt(toInstant(record.get("updated_at")));
+    Instant createdAt = toInstant(record.get("created_at"));
+    if (createdAt != null) {
+      pi.setCreatedAt(createdAt);
+    }
+    Instant updatedAt = toInstant(record.get("updated_at"));
+    if (updatedAt != null) {
+      pi.setUpdatedAt(updatedAt);
+    }
     pi.setCreatedBy(record.get(CREATED_BY));
     pi.setUpdatedBy(record.get(UPDATED_BY));
-    pi.setDeletedAt(toInstant(record.get("deleted_at")));
+    pi.setDeletedAt(Optional.ofNullable(toInstant(record.get("deleted_at"))));
     return pi;
   }
 
-  private static Instant toInstant(Object val) {
+  private static @Nullable Instant toInstant(@Nullable Object val) {
     if (val instanceof LocalDateTime ldt) {
       return ldt.toInstant(UTC);
     }

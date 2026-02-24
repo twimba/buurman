@@ -6,8 +6,10 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,8 @@ public class PropertyAmenityService {
   private final PropertyAmenityRepository propertyAmenityRepository;
   private final PropertyRepository propertyRepository;
 
-  public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped(String propertyCategory) {
+  public Map<String, List<AmenityResponse>> getAllAmenitiesGrouped(
+      @Nullable String propertyCategory) {
     List<Amenity> amenities;
     if (propertyCategory != null && !propertyCategory.isBlank()) {
       amenities = amenityRepository.findByApplicableCategory(propertyCategory);
@@ -56,7 +59,7 @@ public class PropertyAmenityService {
   public List<PropertyAmenityResponse> getPropertyAmenities(
       String propertyIdentifier, UserPrincipal principal) {
     Property property = resolveProperty(propertyIdentifier, principal);
-    return buildPropertyAmenityResponses(property.getId(), principal.getTeamId());
+    return buildPropertyAmenityResponses(property.getId(), principal.requireTeamId());
   }
 
   @Transactional
@@ -69,7 +72,7 @@ public class PropertyAmenityService {
 
     propertyAmenityRepository
         .findByPropertyIdAndAmenityIdAndTeamId(
-            property.getId(), amenity.getId(), principal.getTeamId())
+            property.getId(), amenity.getId(), principal.requireTeamId())
         .ifPresent(
             existing -> {
               throw new BusinessRuleException("Amenity already linked to this property");
@@ -78,7 +81,7 @@ public class PropertyAmenityService {
     PropertyAmenity pa = new PropertyAmenity();
     pa.setPropertyId(property.getId());
     pa.setAmenityId(amenity.getId());
-    pa.setTeamId(principal.getTeamId());
+    pa.setTeamId(principal.requireTeamId());
     pa.setNotes(request.notes());
     pa.setCreatedBy(principal.getUserId());
     pa.setUpdatedBy(principal.getUserId());
@@ -98,9 +101,9 @@ public class PropertyAmenityService {
 
     PropertyAmenity pa =
         propertyAmenityRepository.getByPropertyIdAndAmenityIdAndTeamId(
-            property.getId(), amenity.getId(), principal.getTeamId());
+            property.getId(), amenity.getId(), principal.requireTeamId());
 
-    propertyAmenityRepository.softDeleteByIdAndTeamId(pa.getId(), principal.getTeamId());
+    propertyAmenityRepository.softDeleteByIdAndTeamId(pa.getId(), principal.requireTeamId());
   }
 
   public List<PropertyAmenityResponse> buildPropertyAmenityResponses(UUID propertyId, UUID teamId) {
@@ -114,15 +117,11 @@ public class PropertyAmenityService {
         amenityRepository.findAll().stream().collect(toMap(Amenity::getId, identity()));
 
     return links.stream()
-        .map(
-            pa -> {
-              Amenity amenity = amenityMap.get(pa.getAmenityId());
-              if (amenity == null) {
-                return null;
-              }
-              return toPropertyAmenityResponse(amenity, pa);
-            })
-        .filter(r -> r != null)
+        .flatMap(
+            pa ->
+                Optional.ofNullable(amenityMap.get(pa.getAmenityId()))
+                    .map(amenity -> toPropertyAmenityResponse(amenity, pa))
+                    .stream())
         .toList();
   }
 
@@ -131,11 +130,12 @@ public class PropertyAmenityService {
         amenity.getIdentifier(),
         amenity.getName(),
         amenity.getCategory(),
-        amenity.getIcon(),
+        Optional.ofNullable(amenity.getIcon()),
         pa.getNotes());
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
-    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+    return propertyRepository.getByIdentifierAndTeamId(
+        propertyIdentifier, principal.requireTeamId());
   }
 }

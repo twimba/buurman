@@ -1,11 +1,14 @@
 package com.buurman.service;
 
+import static com.buurman.util.FeatureFlags.EMAIL_NOTIFICATIONS;
+import static com.buurman.util.FeatureFlags.SMS_NOTIFICATIONS;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +23,6 @@ import com.buurman.dto.response.UserPreferencesResponse;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.security.UserPrincipal;
-import com.buurman.util.FeatureFlags;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +43,7 @@ public class UserPreferencesService {
   @Transactional
   public UserPreferencesResponse updatePreferences(
       UserPrincipal principal, UpdateUserPreferencesRequest request) {
-    UserPreferences prefs =
+    final UserPreferences prefs =
         preferencesRepository
             .findByUserId(principal.getUserId())
             .orElseGet(
@@ -51,40 +53,34 @@ public class UserPreferencesService {
                   return newPrefs;
                 });
 
-    if (request.theme() != null) {
-      prefs.setTheme(request.theme());
-    }
-    if (request.language() != null) {
-      prefs.setLanguage(request.language());
-    }
-    if (request.timezone() != null) {
-      prefs.setTimezone(request.timezone());
-    }
-    if (request.dateFormat() != null) {
-      prefs.setDateFormat(request.dateFormat());
-    }
-    if (request.currencyFormat() != null) {
-      prefs.setCurrencyFormat(request.currencyFormat());
-    }
-    if (request.emailNotifications() != null) {
-      if (request.emailNotifications()
-          && !featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal)) {
-        prefs.setEmailNotifications(false);
-      } else {
-        prefs.setEmailNotifications(request.emailNotifications());
-      }
-    }
-    if (request.smsNotifications() != null) {
-      if (request.smsNotifications()
-          && !featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal)) {
-        prefs.setSmsNotifications(false);
-      } else {
-        prefs.setSmsNotifications(request.smsNotifications());
-      }
-    }
+    request.theme().ifPresent(prefs::setTheme);
+    request.language().ifPresent(prefs::setLanguage);
+    request.timezone().ifPresent(prefs::setTimezone);
+    request.dateFormat().ifPresent(prefs::setDateFormat);
+    request.currencyFormat().ifPresent(cf -> prefs.setCurrencyFormat(Optional.of(cf)));
+    request
+        .emailNotifications()
+        .ifPresent(
+            enabled -> {
+              if (enabled && !featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal)) {
+                prefs.setEmailNotifications(false);
+              } else {
+                prefs.setEmailNotifications(enabled);
+              }
+            });
+    request
+        .smsNotifications()
+        .ifPresent(
+            enabled -> {
+              if (enabled && !featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal)) {
+                prefs.setSmsNotifications(false);
+              } else {
+                prefs.setSmsNotifications(enabled);
+              }
+            });
 
-    prefs = preferencesRepository.save(prefs);
-    return toResponse(prefs);
+    UserPreferences savedPrefs = preferencesRepository.save(prefs);
+    return toResponse(savedPrefs);
   }
 
   public NotificationTypePreferencesResponse getNotificationTypePreferences(
@@ -92,9 +88,8 @@ public class UserPreferencesService {
     UserPreferences globalPrefs =
         preferencesRepository.findByUserId(principal.getUserId()).orElseGet(UserPreferences::new);
 
-    boolean smsAvailable = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
-    boolean emailAvailable =
-        featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
+    boolean smsAvailable = featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal);
+    boolean emailAvailable = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> saved =
         notifTypePrefRepository.findByUserId(principal.getUserId());
@@ -109,8 +104,8 @@ public class UserPreferencesService {
           new NotificationTypePreferencesResponse.Entry(
               type.name(),
               type.getDisplayName(),
-              pref != null ? pref.isEmailEnabled() : true,
-              pref != null ? pref.isSmsEnabled() : false));
+              pref == null || pref.isEmailEnabled(),
+              pref != null && pref.isSmsEnabled()));
     }
 
     return new NotificationTypePreferencesResponse(
@@ -125,9 +120,8 @@ public class UserPreferencesService {
   public NotificationTypePreferencesResponse updateNotificationTypePreferences(
       UserPrincipal principal, UpdateNotificationTypePreferencesRequest request) {
 
-    boolean smsAvailable = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS, principal);
-    boolean emailAvailable =
-        featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS, principal);
+    boolean smsAvailable = featureFlagService.isEnabled(SMS_NOTIFICATIONS, principal);
+    boolean emailAvailable = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS, principal);
 
     List<UserNotificationTypePreference> prefs = new ArrayList<>();
     for (UpdateNotificationTypePreferencesRequest.Entry entry : request.preferences()) {
@@ -149,10 +143,10 @@ public class UserPreferencesService {
 
   private UserPreferencesResponse toResponse(UserPreferences prefs) {
     return new UserPreferencesResponse(
-        prefs.getTheme(),
-        prefs.getLanguage(),
-        prefs.getTimezone(),
-        prefs.getDateFormat(),
+        Optional.of(prefs.getTheme()),
+        Optional.of(prefs.getLanguage()),
+        Optional.of(prefs.getTimezone()),
+        Optional.of(prefs.getDateFormat()),
         prefs.getCurrencyFormat(),
         prefs.isEmailNotifications(),
         prefs.isSmsNotifications());

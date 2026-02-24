@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import com.buurman.domain.TenantAddress;
 
@@ -12,8 +13,8 @@ public record TenantAddressResponse(
     String country,
     TenantAddress.AddressType addressType,
     TenantAddress.AddressStatus status,
-    Double latitude,
-    Double longitude,
-    String geocodeAccuracy,
+    Optional<Double> latitude,
+    Optional<Double> longitude,
+    Optional<String> geocodeAccuracy,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

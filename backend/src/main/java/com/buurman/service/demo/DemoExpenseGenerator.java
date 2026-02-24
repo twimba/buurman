@@ -66,7 +66,7 @@ public class DemoExpenseGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID createdBy = ctx.getAdminUserForTeam(teamKey);
+      UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
 
@@ -82,6 +82,9 @@ public class DemoExpenseGenerator {
         for (int i = 0; i < expenseCount; i++) {
           String category = CATEGORIES[random.nextInt(CATEGORIES.length)];
           ExpenseTemplate template = TEMPLATES.get(category);
+          if (template == null) {
+            continue;
+          }
 
           BigDecimal amount =
               BigDecimal.valueOf(random.nextInt(template.minAmount(), template.maxAmount() + 1));

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -104,7 +105,7 @@ public class KeycloakService {
 
   // --- Backoffice realm user management (Buurmies) ---
 
-  public List<UserRepresentation> listRealmUsers(String search, int first, int max) {
+  public List<UserRepresentation> listRealmUsers(@Nullable String search, int first, int max) {
     UsersResource usersResource = keycloak.realm(backofficeRealm).users();
     if (search != null && !search.isBlank()) {
       return usersResource.search(search, first, max);
@@ -112,7 +113,7 @@ public class KeycloakService {
     return usersResource.list(first, max);
   }
 
-  public int countRealmUsers(String search) {
+  public int countRealmUsers(@Nullable String search) {
     UsersResource usersResource = keycloak.realm(backofficeRealm).users();
     if (search != null && !search.isBlank()) {
       return usersResource.count(search);
@@ -173,7 +174,7 @@ public class KeycloakService {
 
   public String createRealmUser(
       String email,
-      String username,
+      @Nullable String username,
       String firstName,
       String lastName,
       String password,

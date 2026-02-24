@@ -8,6 +8,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,12 +16,12 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Tenant;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.TenantsRecord;
 import com.buurman.mapper.TenantRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -65,42 +66,45 @@ public class TenantRepository {
   }
 
   public List<Tenant> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(TENANTS)
-        .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull()))
-        .orderBy(TENANTS.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull()))
+            .orderBy(TENANTS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Tenant> searchByTeamId(UUID teamId, String searchTerm) {
-    String searchPattern = "%" + searchTerm.toLowerCase() + "%";
-    return dsl.selectFrom(TENANTS)
-        .where(
-            TENANTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(TENANTS.DELETED_AT.isNull())
-                .and(
-                    lower(TENANTS.FIRST_NAME)
-                        .like(searchPattern)
-                        .or(lower(TENANTS.LAST_NAME).like(searchPattern))
-                        .or(lower(TENANTS.EMAIL).like(searchPattern))
-                        .or(TENANTS.PHONE.like(searchPattern))))
-        .orderBy(TENANTS.CREATED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(TENANTS.DELETED_AT.isNull())
+                    .and(
+                        lower(TENANTS.FIRST_NAME)
+                            .like(searchPattern)
+                            .or(lower(TENANTS.LAST_NAME).like(searchPattern))
+                            .or(lower(TENANTS.EMAIL).like(searchPattern))
+                            .or(TENANTS.PHONE.like(searchPattern))))
+            .orderBy(TENANTS.CREATED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<Tenant> findByCurrentPropertyId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(TENANTS)
-        .where(
-            TENANTS
-                .CURRENT_PROPERTY_ID
-                .eq(propertyId)
-                .and(TENANTS.TEAM_ID.eq(teamId))
-                .and(TENANTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS
+                    .CURRENT_PROPERTY_ID
+                    .eq(propertyId)
+                    .and(TENANTS.TEAM_ID.eq(teamId))
+                    .and(TENANTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<Tenant> findByEmailAndTeamId(String email, UUID teamId) {
@@ -131,13 +135,13 @@ public class TenantRepository {
           .set(TENANTS.IDENTIFIER, tenant.getIdentifier())
           .set(TENANTS.TEAM_ID, tenant.getTeamId())
           .set(TENANTS.FIRST_NAME, tenant.getFirstName())
-          .set(TENANTS.LAST_NAME, tenant.getLastName())
-          .set(TENANTS.EMAIL, tenant.getEmail())
-          .set(TENANTS.PHONE, tenant.getPhone())
-          .set(TENANTS.TAX_NUMBER, tenant.getTaxNumber())
-          .set(TENANTS.ID_NUMBER, tenant.getIdNumber())
-          .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo())
-          .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId())
+          .set(TENANTS.LAST_NAME, tenant.getLastName().orElse(null))
+          .set(TENANTS.EMAIL, tenant.getEmail().orElse(null))
+          .set(TENANTS.PHONE, tenant.getPhone().orElse(null))
+          .set(TENANTS.TAX_NUMBER, tenant.getTaxNumber().orElse(null))
+          .set(TENANTS.ID_NUMBER, tenant.getIdNumber().orElse(null))
+          .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo().orElse(null))
+          .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId().orElse(null))
           .set(TENANTS.CREATED_AT, createdAt)
           .set(TENANTS.UPDATED_AT, updatedAt)
           .set(TENANTS.CREATED_BY, tenant.getCreatedBy())
@@ -154,13 +158,13 @@ public class TenantRepository {
 
       dsl.update(TENANTS)
           .set(TENANTS.FIRST_NAME, tenant.getFirstName())
-          .set(TENANTS.LAST_NAME, tenant.getLastName())
-          .set(TENANTS.EMAIL, tenant.getEmail())
-          .set(TENANTS.PHONE, tenant.getPhone())
-          .set(TENANTS.TAX_NUMBER, tenant.getTaxNumber())
-          .set(TENANTS.ID_NUMBER, tenant.getIdNumber())
-          .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo())
-          .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId())
+          .set(TENANTS.LAST_NAME, tenant.getLastName().orElse(null))
+          .set(TENANTS.EMAIL, tenant.getEmail().orElse(null))
+          .set(TENANTS.PHONE, tenant.getPhone().orElse(null))
+          .set(TENANTS.TAX_NUMBER, tenant.getTaxNumber().orElse(null))
+          .set(TENANTS.ID_NUMBER, tenant.getIdNumber().orElse(null))
+          .set(TENANTS.ADDITIONAL_INFO, tenant.getAdditionalInfo().orElse(null))
+          .set(TENANTS.CURRENT_PROPERTY_ID, tenant.getCurrentPropertyId().orElse(null))
           .set(TENANTS.UPDATED_AT, updatedAt)
           .set(TENANTS.UPDATED_BY, tenant.getUpdatedBy())
           .where(TENANTS.ID.eq(tenant.getId()).and(TENANTS.TEAM_ID.eq(tenant.getTeamId())))
@@ -173,10 +177,10 @@ public class TenantRepository {
   }
 
   public PaginatedResult<Tenant> findAllByTeamIdPaginated(
-      UUID teamId, String search, PageRequest pageRequest) {
+      UUID teamId, @Nullable String search, PageRequest pageRequest) {
     Condition condition = TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull());
     if (search != null && !search.isBlank()) {
-      String pattern = "%" + search.toLowerCase() + "%";
+      String pattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(TENANTS.FIRST_NAME)
@@ -192,23 +196,19 @@ public class TenantRepository {
             "lastName", TENANTS.LAST_NAME,
             "email", TENANTS.EMAIL);
     return PaginationHelper.paginate(
-        dsl,
-        TENANTS,
-        condition,
-        sortableFields,
-        TENANTS.CREATED_AT,
-        pageRequest,
-        r -> mapper.toDomain((TenantsRecord) r));
+        dsl, TENANTS, condition, sortableFields, TENANTS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
   public List<Tenant> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(TENANTS)
-        .where(TENANTS.ID.in(ids).and(TENANTS.TEAM_ID.eq(teamId)).and(TENANTS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TENANTS)
+            .where(
+                TENANTS.ID.in(ids).and(TENANTS.TEAM_ID.eq(teamId)).and(TENANTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

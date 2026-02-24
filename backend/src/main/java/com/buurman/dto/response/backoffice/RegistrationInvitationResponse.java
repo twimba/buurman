@@ -1,13 +1,14 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record RegistrationInvitationResponse(
     String identifier,
     String code,
-    Integer maxUsages,
+    Optional<Integer> maxUsages,
     int usageCount,
-    Instant expiresAt,
+    Optional<Instant> expiresAt,
     boolean revoked,
     String status,
     String createdBy,

@@ -2,8 +2,10 @@ package com.buurman.service.backoffice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -131,7 +133,7 @@ public class BackofficeConfigInspector {
   }
 
   private void addS3Config(List<ConfigEntry> entries) {
-    addEntry(entries, "AWS S3", "endpoint", awsS3Properties.endpoint());
+    addEntry(entries, "AWS S3", "endpoint", awsS3Properties.endpoint().orElse(null));
     addEntry(entries, "AWS S3", "region", awsS3Properties.region());
     addEntry(entries, "AWS S3", "accessKey", obfuscate("key", awsS3Properties.accessKey()));
     addEntry(entries, "AWS S3", "secretKey", obfuscate("secret", awsS3Properties.secretKey()));
@@ -147,7 +149,10 @@ public class BackofficeConfigInspector {
       addEntry(entries, "Twilio", "authToken", obfuscate("token", twilio.authToken()));
       addEntry(entries, "Twilio", "fromNumber", twilio.fromNumber());
       addEntry(
-          entries, "Twilio", "messagingServiceSid", obfuscate("sid", twilio.messagingServiceSid()));
+          entries,
+          "Twilio",
+          "messagingServiceSid",
+          obfuscate("sid", twilio.messagingServiceSid().orElse(null)));
     }
   }
 
@@ -172,8 +177,13 @@ public class BackofficeConfigInspector {
     if (fs != null) {
       addEntry(entries, "Flagsmith", "apiUrl", fs.apiUrl());
       addEntry(entries, "Flagsmith", "enableAnalytics", String.valueOf(fs.enableAnalytics()));
-      addEntry(entries, "Flagsmith", "serverSideKey", obfuscate("key", fs.serverSideKey()));
-      addEntry(entries, "Flagsmith", "adminPassword", obfuscate("password", fs.adminPassword()));
+      addEntry(
+          entries, "Flagsmith", "serverSideKey", obfuscate("key", fs.serverSideKey().orElse(null)));
+      addEntry(
+          entries,
+          "Flagsmith",
+          "adminPassword",
+          obfuscate("password", fs.adminPassword().orElse(null)));
       addEntry(entries, "Flagsmith", "projectName", fs.projectName());
       addEntry(entries, "Flagsmith", "environmentName", fs.environmentName());
     }
@@ -197,15 +207,16 @@ public class BackofficeConfigInspector {
         obfuscate("password", environment.getProperty("spring.mail.password")));
   }
 
-  private void addEntry(List<ConfigEntry> entries, String category, String key, String value) {
-    entries.add(new ConfigEntry(category, key, value != null ? value : "\u2014"));
+  private void addEntry(
+      List<ConfigEntry> entries, String category, String key, @Nullable String value) {
+    entries.add(new ConfigEntry(category, key, value != null ? value : "—"));
   }
 
-  private String obfuscate(String fieldName, String value) {
+  private String obfuscate(String fieldName, @Nullable String value) {
     if (value == null || value.isBlank()) {
-      return "\u2014";
+      return "—";
     }
-    String lowerField = fieldName.toLowerCase();
+    String lowerField = fieldName.toLowerCase(Locale.ROOT);
     for (String keyword : SENSITIVE_KEYWORDS) {
       if (lowerField.contains(keyword)) {
         return "********";

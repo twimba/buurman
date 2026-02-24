@@ -7,11 +7,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +39,6 @@ public class PhotoService {
 
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
-  private final ThumbnailService thumbnailService;
   private final PhotoMapper photoMapper;
   private final AuditService auditService;
   private final MetricsService metricsService;
@@ -46,14 +48,12 @@ public class PhotoService {
   public PhotoService(
       PhotoRepository photoRepository,
       S3StorageService s3StorageService,
-      ThumbnailService thumbnailService,
       PhotoMapper photoMapper,
       AuditService auditService,
       MetricsService metricsService,
       AppProperties appProperties) {
     this.photoRepository = photoRepository;
     this.s3StorageService = s3StorageService;
-    this.thumbnailService = thumbnailService;
     this.photoMapper = photoMapper;
     this.auditService = auditService;
     this.metricsService = metricsService;
@@ -67,8 +67,8 @@ public class PhotoService {
       String entityType,
       UUID entityId,
       String entityIdentifier,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
 
     // Validate file size
@@ -104,46 +104,29 @@ public class PhotoService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, principal.getTeamIdentifier(), entityType, entityIdentifier);
-
-    // Generate and upload thumbnail
-    String thumbnailFileKey = null;
-    try (InputStream thumbInput = file.getInputStream()) {
-      var thumbnailData = thumbnailService.generateThumbnail(thumbInput);
-      if (thumbnailData.isPresent()) {
-        thumbnailFileKey =
-            s3StorageService.uploadFile(
-                thumbnailData.get(),
-                "image/jpeg",
-                principal.getTeamIdentifier(),
-                entityType,
-                entityIdentifier,
-                "thumb_" + file.getOriginalFilename());
-      }
-    } catch (IOException e) {
-      log.warn(
-          "Failed to generate thumbnail for {}: {}", file.getOriginalFilename(), e.getMessage());
-    }
+            file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
 
     // Save photo metadata
     Photo photo = new Photo();
-    photo.setTeamId(principal.getTeamId());
+    photo.setTeamId(principal.requireTeamId());
     photo.setEntityType(entityType);
     photo.setEntityId(entityId);
     photo.setFileKey(fileKey);
-    photo.setFileName(file.getOriginalFilename());
+    String originalFilename = file.getOriginalFilename();
+    photo.setFileName(originalFilename != null ? originalFilename : "unnamed");
     photo.setFileSize(file.getSize());
     photo.setMimeType(mimeType);
-    photo.setTitle(title);
-    photo.setNotes(notes);
+    photo.setTitle(Optional.ofNullable(title));
+    photo.setNotes(Optional.ofNullable(notes));
     photo.setIsMainPhoto(false);
     photo.setUploadedBy(principal.getUserId());
-    photo.setThumbnailFileKey(thumbnailFileKey);
 
+    // Thumbnail will be generated asynchronously by ThumbnailBackfillJob
     Photo savedPhoto = photoRepository.save(photo);
 
     metricsService.incrementCounter("photo.upload.total", "entity_type", entityType);
-    metricsService.recordHistogram("photo.upload.bytes", file.getSize(), "entity_type", entityType);
+    metricsService.recordHistogram(
+        "photo.upload.bytes", (double) file.getSize(), "entity_type", entityType);
 
     log.info(
         "Photo uploaded: {} for entity {}/{}", savedPhoto.getIdentifier(), entityType, entityId);
@@ -151,13 +134,11 @@ public class PhotoService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("photoAdded", savedPhoto.getFileName());
-    if (savedPhoto.getTitle() != null && !savedPhoto.getTitle().isEmpty()) {
-      changedFields.put("title", savedPhoto.getTitle());
-    }
+    savedPhoto.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
 
     auditService.logUpdate(
-        principal.getTeamId(),
-        entityType.toUpperCase(),
+        principal.requireTeamId(),
+        entityType.toUpperCase(Locale.ROOT),
         entityId,
         principal.getUserId(),
         java.util.Map.of("photoCount", "unchanged"),
@@ -169,17 +150,17 @@ public class PhotoService {
 
   public List<PhotoResponse> getPhotos(String entityType, UUID entityId, UserPrincipal principal) {
     List<Photo> photos =
-        photoRepository.findByEntityAndTeamId(entityType, entityId, principal.getTeamId());
+        photoRepository.findByEntityAndTeamId(entityType, entityId, principal.requireTeamId());
     return photos.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
   public PhotoResponse getPhoto(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(photo);
   }
 
   public URL getDownloadUrl(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     metricsService.incrementCounter("photo.download.total", "entity_type", photo.getEntityType());
 
@@ -188,16 +169,14 @@ public class PhotoService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deletePhoto(String identifier, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Soft delete in database
-    photoRepository.softDeleteByIdAndTeamId(photo.getId(), principal.getTeamId());
+    photoRepository.softDeleteByIdAndTeamId(photo.getId(), principal.requireTeamId());
 
     // Delete from S3
     s3StorageService.deleteFile(photo.getFileKey());
-    if (photo.getThumbnailFileKey() != null) {
-      s3StorageService.deleteFile(photo.getThumbnailFileKey());
-    }
+    photo.getThumbnailFileKey().ifPresent(s3StorageService::deleteFile);
 
     metricsService.incrementCounter("photo.delete.total", "entity_type", photo.getEntityType());
 
@@ -206,13 +185,11 @@ public class PhotoService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("photoRemoved", photo.getFileName());
-    if (photo.getTitle() != null && !photo.getTitle().isEmpty()) {
-      changedFields.put("title", photo.getTitle());
-    }
+    photo.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
 
     auditService.logUpdate(
-        principal.getTeamId(),
-        photo.getEntityType().toUpperCase(),
+        principal.requireTeamId(),
+        photo.getEntityType().toUpperCase(Locale.ROOT),
         photo.getEntityId(),
         principal.getUserId(),
         java.util.Map.of("photoCount", "unchanged"),
@@ -223,10 +200,10 @@ public class PhotoService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse updatePhoto(
       String identifier, UpdatePhotoRequest request, UserPrincipal principal) {
-    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    String oldTitle = photo.getTitle();
-    String oldNotes = photo.getNotes();
+    Optional<String> oldTitle = photo.getTitle();
+    Optional<String> oldNotes = photo.getNotes();
 
     photo.setTitle(request.title());
     photo.setNotes(request.notes());
@@ -238,15 +215,15 @@ public class PhotoService {
     Map<String, Object> oldValues = new java.util.HashMap<>();
     Map<String, Object> newValues = new java.util.HashMap<>();
 
-    if (!java.util.Objects.equals(oldTitle, request.title())) {
-      changedFields.put("title", request.title());
-      oldValues.put("title", oldTitle);
-      newValues.put("title", request.title());
+    if (!java.util.Objects.equals(oldTitle.orElse(null), request.title().orElse(null))) {
+      changedFields.put("title", request.title().orElse(null));
+      oldValues.put("title", oldTitle.orElse(null));
+      newValues.put("title", request.title().orElse(null));
     }
-    if (!java.util.Objects.equals(oldNotes, request.notes())) {
-      changedFields.put("notes", request.notes());
-      oldValues.put("notes", oldNotes);
-      newValues.put("notes", request.notes());
+    if (!java.util.Objects.equals(oldNotes.orElse(null), request.notes().orElse(null))) {
+      changedFields.put("notes", request.notes().orElse(null));
+      oldValues.put("notes", oldNotes.orElse(null));
+      newValues.put("notes", request.notes().orElse(null));
     }
 
     if (!changedFields.isEmpty()) {
@@ -256,8 +233,8 @@ public class PhotoService {
       newValues.put("fileName", photo.getFileName());
 
       auditService.logUpdate(
-          principal.getTeamId(),
-          photo.getEntityType().toUpperCase(),
+          principal.requireTeamId(),
+          photo.getEntityType().toUpperCase(Locale.ROOT),
           photo.getEntityId(),
           principal.getUserId(),
           oldValues,
@@ -272,7 +249,7 @@ public class PhotoService {
   public PhotoResponse setMainPhoto(
       UUID photoId, String entityType, UUID entityId, UserPrincipal principal) {
     // Verify the photo exists and belongs to the team
-    Photo photo = photoRepository.getByIdAndTeamId(photoId, principal.getTeamId());
+    Photo photo = photoRepository.getByIdAndTeamId(photoId, principal.requireTeamId());
 
     // Verify it belongs to the correct entity
     if (!entityType.equals(photo.getEntityType()) || !entityId.equals(photo.getEntityId())) {
@@ -280,7 +257,7 @@ public class PhotoService {
     }
 
     // Unset any existing main photo for this entity
-    photoRepository.unsetMainPhotoForEntity(entityType, entityId, principal.getTeamId());
+    photoRepository.unsetMainPhotoForEntity(entityType, entityId, principal.requireTeamId());
 
     // Set this photo as main
     photo.setIsMainPhoto(true);
@@ -292,10 +269,13 @@ public class PhotoService {
   }
 
   public PageResponse<PhotoResponse> searchPhotosPaginated(
-      String search, String entityType, UserPrincipal principal, PageRequest pageRequest) {
+      @Nullable String search,
+      @Nullable String entityType,
+      UserPrincipal principal,
+      PageRequest pageRequest) {
     PaginatedResult<Photo> result =
         photoRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), search, entityType, pageRequest);
+            principal.requireTeamId(), search, entityType, pageRequest);
     List<PhotoResponse> responses =
         result.items().stream().map(this::toResponseWithDownloadUrl).toList();
     return PageResponse.of(
@@ -306,10 +286,11 @@ public class PhotoService {
     PhotoResponse response = photoMapper.toResponse(photo);
     String downloadUrl = s3StorageService.generatePresignedUrl(photo.getFileKey()).toString();
 
-    String thumbnailUrl = null;
-    if (photo.getThumbnailFileKey() != null) {
-      thumbnailUrl = s3StorageService.generatePresignedUrl(photo.getThumbnailFileKey()).toString();
-    }
+    String thumbnailUrl =
+        photo
+            .getThumbnailFileKey()
+            .map(key -> s3StorageService.generatePresignedUrl(key).toString())
+            .orElse(null);
 
     return new PhotoResponse(
         response.identifier(),
@@ -323,8 +304,8 @@ public class PhotoService {
         response.notes(),
         response.isMainPhoto(),
         response.uploadedAt(),
-        downloadUrl,
-        thumbnailUrl);
+        Optional.of(downloadUrl),
+        Optional.ofNullable(thumbnailUrl));
   }
 
   public byte[] bulkDownload(List<String> photoIdentifiers, UserPrincipal principal) {
@@ -334,7 +315,7 @@ public class PhotoService {
 
     // Fetch all photos by identifiers
     List<Photo> photos =
-        photoRepository.findByIdentifiersAndTeamId(photoIdentifiers, principal.getTeamId());
+        photoRepository.findByIdentifiersAndTeamId(photoIdentifiers, principal.requireTeamId());
 
     if (photos.isEmpty()) {
       throw new IllegalArgumentException("No photos found");
@@ -373,7 +354,9 @@ public class PhotoService {
       zos.finish();
       metricsService.incrementCounter("photo.bulk.download.total");
       log.info(
-          "Created zip archive with {} photos for team {}", photos.size(), principal.getTeamId());
+          "Created zip archive with {} photos for team {}",
+          photos.size(),
+          principal.requireTeamId());
       return baos.toByteArray();
 
     } catch (Exception e) {

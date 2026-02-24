@@ -61,7 +61,9 @@ export const PropertyListPage = () => {
     useState<ReturnType<typeof setTimeout>>();
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    if (debounceTimer) clearTimeout(debounceTimer);
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
     const timer = setTimeout(() => {
       setDebouncedQuery(value);
       resetPage();

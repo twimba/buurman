@@ -11,7 +11,7 @@ import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.UpdateTenantAddressRequest;
 import com.buurman.dto.response.TenantAddressResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = OptionalMappingConfig.class)
 public interface TenantAddressMapper {
 
   TenantAddressResponse toResponse(TenantAddress address);

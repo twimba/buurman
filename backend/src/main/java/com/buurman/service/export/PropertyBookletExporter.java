@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Amenity;
@@ -188,11 +189,11 @@ public class PropertyBookletExporter {
 
   private String buildHtml(
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       List<Contract> contracts,
       List<Payment> payments,
       List<Expense> expenses,
@@ -202,7 +203,7 @@ public class PropertyBookletExporter {
       List<PropertyAmenity> propertyAmenities,
       List<Amenity> allAmenities,
       List<Photo> photos,
-      PropertyDashboardResponse dashboard) {
+      @Nullable PropertyDashboardResponse dashboard) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     Map<UUID, Amenity> amenityMap =
@@ -253,7 +254,7 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    String currency = property.getPurchasePriceCurrency();
+    String currency = property.getPurchasePriceCurrency().orElse(null);
     appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
@@ -271,11 +272,11 @@ public class PropertyBookletExporter {
   private void appendCoverPage(
       StringBuilder html,
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       String generatedDate,
       String location,
       String area) {
@@ -310,24 +311,17 @@ public class PropertyBookletExporter {
       String location,
       String area) {
     html.append("<tr>");
-    appendCoverCell(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String bedBath =
-        (details.getBedrooms() != null ? details.getBedrooms() + " bed" : "—")
+        details.getBedrooms().map(v -> v + " bed").orElse("—")
             + " / "
-            + (details.getBathrooms() != null ? details.getBathrooms() + " bath" : "—");
+            + details.getBathrooms().map(v -> v + " bath").orElse("—");
     appendCoverCell(html, "Bedrooms / Bathrooms", bedBath);
     appendCoverCell(html, "Total Area", area);
     html.append("</tr><tr>");
-    appendCoverCell(
-        html,
-        "Year Built",
-        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
+    appendCoverCell(html, "Year Built", property.getYearBuilt().map(Object::toString).orElse("—"));
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("</tr>");
   }
@@ -335,25 +329,20 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryCommercial(
       StringBuilder html, Property property, PropertyCommercialDetails details, String location) {
     html.append("<tr>");
-    appendCoverCell(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
-    String usable = buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit());
-    String common = buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit());
+    String usable =
+        buildAreaDisplay(
+            details.getUsableAreaValue().orElse(null), details.getUsableAreaUnit().orElse(null));
+    String common =
+        buildAreaDisplay(
+            details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null));
     appendCoverCell(html, "Usable / Common Area", usable + " / " + common);
-    appendCoverCell(
-        html,
-        "Floor Level",
-        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
+    appendCoverCell(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Ceiling Height",
-        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+        html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("</tr>");
   }
@@ -365,27 +354,16 @@ public class PropertyBookletExporter {
       String location,
       String area) {
     html.append("<tr>");
-    appendCoverCell(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);
-    appendCoverCell(
-        html,
-        "Clear Height",
-        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
+    appendCoverCell(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Loading Docks",
-        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+        html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
     appendCoverCell(
-        html,
-        "Power Capacity",
-        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+        html, "Power Capacity", details.getPowerCapacityKva().map(v -> v + " kVA").orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -395,30 +373,27 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryAgricultural(
       StringBuilder html, Property property, PropertyAgriculturalDetails details, String location) {
     html.append("<tr>");
-    appendCoverCell(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(
         html,
         "Total Land Area",
-        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+        buildAreaDisplay(
+            details.getTotalLandAreaValue().orElse(null),
+            details.getTotalLandAreaUnit().orElse(null)));
     appendCoverCell(
         html,
         "Arable Area",
-        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+        buildAreaDisplay(
+            details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendCoverCell(
-        html,
-        "Soil Type",
-        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+        html, "Soil Type", details.getSoilType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendCoverCell(
         html,
         "Current Use",
-        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+        details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -428,18 +403,11 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryMixedUse(
       StringBuilder html, Property property, String location, String area) {
     html.append("<tr>");
-    appendCoverCell(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
+    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);
-    appendCoverCell(
-        html,
-        "Year Built",
-        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
+    appendCoverCell(html, "Year Built", property.getYearBuilt().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -451,41 +419,27 @@ public class PropertyBookletExporter {
   private void appendPropertyOverviewPage(
       StringBuilder html,
       Property property,
-      PropertyCategory category,
-      PropertyResidentialDetails residentialDetails,
-      PropertyCommercialDetails commercialDetails,
-      PropertyIndustrialDetails industrialDetails,
-      PropertyAgriculturalDetails agriculturalDetails,
+      @Nullable PropertyCategory category,
+      @Nullable PropertyResidentialDetails residentialDetails,
+      @Nullable PropertyCommercialDetails commercialDetails,
+      @Nullable PropertyIndustrialDetails industrialDetails,
+      @Nullable PropertyAgriculturalDetails agriculturalDetails,
       String area) {
     appendPageStart(html, "Property Overview");
 
     appendSectionTitle(html, "Property Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(
-        html,
-        "Property Type",
-        formatEnumValue(
-            property.getPropertyType() != null ? property.getPropertyType().name() : ""));
-    appendField(
-        html,
-        "Status",
-        formatEnumValue(property.getStatus() != null ? property.getStatus().name() : ""));
+    appendField(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendField(html, "Status", formatEnumValue(property.getStatus().name()));
     html.append("</tr><tr>");
     appendField(html, "Total Area", area);
     appendField(
-        html,
-        "Number of Floors",
-        property.getNumberOfFloors() != null ? property.getNumberOfFloors().toString() : "—");
+        html, "Number of Floors", property.getNumberOfFloors().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
+    appendField(html, "Year Built", property.getYearBuilt().map(Object::toString).orElse("—"));
     appendField(
-        html,
-        "Year Built",
-        property.getYearBuilt() != null ? property.getYearBuilt().toString() : "—");
-    appendField(
-        html,
-        "Last Renovated",
-        property.getYearLastRenovated() != null ? property.getYearLastRenovated().toString() : "—");
+        html, "Last Renovated", property.getYearLastRenovated().map(Object::toString).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
 
@@ -501,7 +455,7 @@ public class PropertyBookletExporter {
       appendAgriculturalDetailsSection(html, agriculturalDetails);
     }
 
-    appendTextBlock(html, "Structural Notes", property.getStructuralNotes());
+    appendTextBlock(html, "Structural Notes", property.getStructuralNotes().orElse(null));
 
     appendPageEnd(html);
   }
@@ -511,21 +465,13 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Residential Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(
-        html, "Bedrooms", details.getBedrooms() != null ? details.getBedrooms().toString() : "—");
-    appendField(
-        html,
-        "Bathrooms",
-        details.getBathrooms() != null ? details.getBathrooms().toString() : "—");
+    appendField(html, "Bedrooms", details.getBedrooms().map(Object::toString).orElse("—"));
+    appendField(html, "Bathrooms", details.getBathrooms().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Furnished",
-        details.getFurnished() != null ? (isTrue(details.getFurnished()) ? "Yes" : "No") : "—");
+        html, "Furnished", details.getFurnished().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
-        html,
-        "Pet Policy",
-        details.getPetPolicy() != null ? formatEnumValue(details.getPetPolicy()) : "—");
+        html, "Pet Policy", details.getPetPolicy().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -538,62 +484,42 @@ public class PropertyBookletExporter {
     appendField(
         html,
         "Usable Area",
-        buildAreaDisplay(details.getUsableAreaValue(), details.getUsableAreaUnit()));
+        buildAreaDisplay(
+            details.getUsableAreaValue().orElse(null), details.getUsableAreaUnit().orElse(null)));
     appendField(
         html,
         "Common Area",
-        buildAreaDisplay(details.getCommonAreaValue(), details.getCommonAreaUnit()));
+        buildAreaDisplay(
+            details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null)));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Floor Level",
-        details.getFloorLevel() != null ? details.getFloorLevel().toString() : "—");
-    appendField(
-        html,
-        "Ceiling Height",
-        details.getCeilingHeightM() != null ? details.getCeilingHeightM() + " m" : "—");
+    appendField(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
+    appendField(html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Storefront",
-        details.getHasStorefront() != null
-            ? (isTrue(details.getHasStorefront()) ? "Yes" : "No")
-            : "—");
+        details.getHasStorefront().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Signage Rights",
-        details.getHasSignageRights() != null
-            ? (isTrue(details.getHasSignageRights()) ? "Yes" : "No")
-            : "—");
+        details.getHasSignageRights().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
-    appendField(
-        html,
-        "Max Occupancy",
-        details.getMaxOccupancy() != null ? details.getMaxOccupancy().toString() : "—");
-    appendField(
-        html,
-        "Restrooms",
-        details.getRestroomCount() != null ? details.getRestroomCount().toString() : "—");
+    appendField(html, "Max Occupancy", details.getMaxOccupancy().map(Object::toString).orElse("—"));
+    appendField(html, "Restrooms", details.getRestroomCount().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Kitchen Facility",
-        details.getHasKitchenFacility() != null
-            ? (isTrue(details.getHasKitchenFacility()) ? "Yes" : "No")
-            : "—");
+        details.getHasKitchenFacility().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Accessibility Compliant",
-        details.getAccessibilityCompliant() != null
-            ? (isTrue(details.getAccessibilityCompliant()) ? "Yes" : "No")
-            : "—");
+        details.getAccessibilityCompliant().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("<td></td>");
     html.append("</tr>");
     html.append("</table>");
@@ -604,76 +530,61 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Industrial Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(
-        html,
-        "Clear Height",
-        details.getClearHeightM() != null ? details.getClearHeightM() + " m" : "—");
-    appendField(
-        html,
-        "Loading Docks",
-        details.getLoadingDocks() != null ? details.getLoadingDocks().toString() : "—");
+    appendField(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
+    appendField(html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Drive-In Doors",
-        details.getDriveInDoors() != null ? details.getDriveInDoors().toString() : "—");
+        html, "Drive-In Doors", details.getDriveInDoors().map(Object::toString).orElse("—"));
     appendField(
         html,
         "Floor Load Capacity",
-        details.getFloorLoadCapacityKgSqm() != null
-            ? details.getFloorLoadCapacityKgSqm() + " kg/sqm"
-            : "—");
+        details.getFloorLoadCapacityKgSqm().map(v -> v + " kg/sqm").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Power Capacity",
-        details.getPowerCapacityKva() != null ? details.getPowerCapacityKva() + " kVA" : "—");
+        html, "Power Capacity", details.getPowerCapacityKva().map(v -> v + " kVA").orElse("—"));
     appendField(
         html,
         "Three-Phase Power",
-        details.getHasThreePhasePower() != null
-            ? (isTrue(details.getHasThreePhasePower()) ? "Yes" : "No")
-            : "—");
+        details.getHasThreePhasePower().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Crane",
-        details.getHasCrane() != null
-            ? (isTrue(details.getHasCrane())
-                ? "Yes"
-                    + (details.getCraneCapacityTons() != null
-                        ? " (" + details.getCraneCapacityTons() + " tons)"
-                        : "")
-                : "No")
-            : "—");
+        details
+            .getHasCrane()
+            .map(
+                v ->
+                    isTrue(v)
+                        ? "Yes"
+                            + details
+                                .getCraneCapacityTons()
+                                .map(t -> " (" + t + " tons)")
+                                .orElse("")
+                        : "No")
+            .orElse("—"));
     appendField(
         html,
         "Hazmat Certification",
-        details.getHasHazmatCertification() != null
-            ? (isTrue(details.getHasHazmatCertification()) ? "Yes" : "No")
-            : "—");
+        details.getHasHazmatCertification().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Ventilation System",
-        details.getHasVentilationSystem() != null
-            ? (isTrue(details.getHasVentilationSystem()) ? "Yes" : "No")
-            : "—");
+        details.getHasVentilationSystem().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
         html,
         "Climate Control",
-        details.getHasClimateControl() != null
-            ? (isTrue(details.getHasClimateControl()) ? "Yes" : "No")
-            : "—");
+        details.getHasClimateControl().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, "Yard Area", buildAreaDisplay(details.getYardAreaValue(), details.getYardAreaUnit()));
+        html,
+        "Yard Area",
+        buildAreaDisplay(
+            details.getYardAreaValue().orElse(null), details.getYardAreaUnit().orElse(null)));
     appendField(
         html,
         "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -686,91 +597,94 @@ public class PropertyBookletExporter {
     appendField(
         html,
         "Total Land Area",
-        buildAreaDisplay(details.getTotalLandAreaValue(), details.getTotalLandAreaUnit()));
+        buildAreaDisplay(
+            details.getTotalLandAreaValue().orElse(null),
+            details.getTotalLandAreaUnit().orElse(null)));
     appendField(
         html,
         "Arable Area",
-        buildAreaDisplay(details.getArableAreaValue(), details.getArableAreaUnit()));
+        buildAreaDisplay(
+            details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Soil Type",
-        details.getSoilType() != null ? formatEnumValue(details.getSoilType()) : "—");
+        html, "Soil Type", details.getSoilType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Water Rights",
-        details.getHasWaterRights() != null
-            ? (isTrue(details.getHasWaterRights()) ? "Yes" : "No")
-            : "—");
+        details.getHasWaterRights().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Water Source",
-        details.getWaterSource() != null ? formatEnumValue(details.getWaterSource()) : "—");
+        details.getWaterSource().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Irrigation",
-        details.getIrrigationType() != null ? formatEnumValue(details.getIrrigationType()) : "—");
+        details.getIrrigationType().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html,
-        "Fencing",
-        details.getFencingType() != null ? formatEnumValue(details.getFencingType()) : "—");
+        html, "Fencing", details.getFencingType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Outbuildings",
-        details.getHasOutbuildings() != null
-            ? (isTrue(details.getHasOutbuildings())
-                ? "Yes"
-                    + (details.getOutbuildingDetails() != null
-                        ? " — " + escapeHtml(details.getOutbuildingDetails())
-                        : "")
-                : "No")
-            : "—");
+        details
+            .getHasOutbuildings()
+            .map(
+                v ->
+                    isTrue(v)
+                        ? "Yes"
+                            + details
+                                .getOutbuildingDetails()
+                                .map(d -> " — " + escapeHtml(d))
+                                .orElse("")
+                        : "No")
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         "Current Use",
-        details.getCurrentUse() != null ? formatEnumValue(details.getCurrentUse()) : "—");
+        details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Zoning",
-        details.getZoningClassification() != null
-            ? escapeHtml(details.getZoningClassification())
-            : "—");
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
 
   private void appendConstructionSection(StringBuilder html, Property property) {
     boolean hasConstruction =
-        property.getConstructionType() != null
-            || property.getFoundationType() != null
-            || property.getRoofType() != null
-            || property.getWindowType() != null
-            || property.getWallConstruction() != null
-            || property.getFlooringType() != null;
+        property.getConstructionType().isPresent()
+            || property.getFoundationType().isPresent()
+            || property.getRoofType().isPresent()
+            || property.getWindowType().isPresent()
+            || property.getWallConstruction().isPresent()
+            || property.getFlooringType().isPresent();
 
-    if (!hasConstruction) return;
+    if (!hasConstruction) {
+      return;
+    }
 
     appendSectionTitle(html, "Construction");
     html.append("<table class='detail-grid'>");
-    if (property.getConstructionType() != null || property.getFoundationType() != null) {
+    if (property.getConstructionType().isPresent() || property.getFoundationType().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Construction Type", formatEnumValue(property.getConstructionType()));
-      appendField(html, "Foundation", formatEnumValue(property.getFoundationType()));
+      appendField(
+          html, "Construction Type", formatEnumValue(property.getConstructionType().orElse(null)));
+      appendField(html, "Foundation", formatEnumValue(property.getFoundationType().orElse(null)));
       html.append("</tr>");
     }
-    if (property.getRoofType() != null || property.getWindowType() != null) {
+    if (property.getRoofType().isPresent() || property.getWindowType().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Roof Type", formatEnumValue(property.getRoofType()));
-      appendField(html, "Window Type", formatEnumValue(property.getWindowType()));
+      appendField(html, "Roof Type", formatEnumValue(property.getRoofType().orElse(null)));
+      appendField(html, "Window Type", formatEnumValue(property.getWindowType().orElse(null)));
       html.append("</tr>");
     }
-    if (property.getWallConstruction() != null || property.getFlooringType() != null) {
+    if (property.getWallConstruction().isPresent() || property.getFlooringType().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Wall Construction", formatEnumValue(property.getWallConstruction()));
-      appendField(html, "Flooring", formatEnumValue(property.getFlooringType()));
+      appendField(
+          html, "Wall Construction", formatEnumValue(property.getWallConstruction().orElse(null)));
+      appendField(html, "Flooring", formatEnumValue(property.getFlooringType().orElse(null)));
       html.append("</tr>");
     }
     html.append("</table>");
@@ -780,28 +694,36 @@ public class PropertyBookletExporter {
 
   private void appendBuildingSpecsPage(StringBuilder html, Property property) {
     boolean hasEnergyData =
-        property.getEnergyEfficiencyRating() != null
-            || property.getHeatingType() != null
-            || property.getCoolingType() != null
-            || property.getHotWaterSystem() != null
-            || property.getEnergyCertificateExpiryDate() != null
-            || property.getInsulationNotes() != null;
+        property.getEnergyEfficiencyRating().isPresent()
+            || property.getHeatingType().isPresent()
+            || property.getCoolingType().isPresent()
+            || property.getHotWaterSystem().isPresent()
+            || property.getEnergyCertificateExpiryDate().isPresent()
+            || property.getInsulationNotes().isPresent();
     boolean hasUtilitiesData =
-        property.getElectricityConnectionType() != null
-            || property.getWaterConnectionType() != null
-            || property.getHasGasConnection() != null
-            || property.getSewageType() != null
-            || property.getInternetConnectionType() != null;
+        property.getElectricityConnectionType().isPresent()
+            || property.getWaterConnectionType().isPresent()
+            || property.getHasGasConnection().isPresent()
+            || property.getSewageType().isPresent()
+            || property.getInternetConnectionType().isPresent();
     boolean hasParkingData =
-        property.getParkingType() != null || property.getParkingSpaces() != null;
+        property.getParkingType().isPresent() || property.getParkingSpaces().isPresent();
 
-    if (!hasEnergyData && !hasUtilitiesData && !hasParkingData) return;
+    if (!hasEnergyData && !hasUtilitiesData && !hasParkingData) {
+      return;
+    }
 
     appendPageStart(html, "Building Specifications");
 
-    if (hasEnergyData) appendEnergySection(html, property);
-    if (hasUtilitiesData) appendUtilitiesSection(html, property);
-    if (hasParkingData) appendParkingSection(html, property);
+    if (hasEnergyData) {
+      appendEnergySection(html, property);
+    }
+    if (hasUtilitiesData) {
+      appendUtilitiesSection(html, property);
+    }
+    if (hasParkingData) {
+      appendParkingSection(html, property);
+    }
 
     appendPageEnd(html);
   }
@@ -809,8 +731,8 @@ public class PropertyBookletExporter {
   private void appendEnergySection(StringBuilder html, Property property) {
     appendSectionTitle(html, "Energy &amp; Climate");
 
-    if (property.getEnergyEfficiencyRating() != null) {
-      String ratingColor = getEnergyRatingColor(property.getEnergyEfficiencyRating());
+    if (property.getEnergyEfficiencyRating().isPresent()) {
+      String ratingColor = getEnergyRatingColor(property.getEnergyEfficiencyRating().orElse(null));
       html.append("<div style='margin-bottom: 16px;'>");
       html.append(
               "<span style='display:inline-block;padding:8px"
@@ -818,7 +740,7 @@ public class PropertyBookletExporter {
                   + "font-size:22px;font-weight:700;letter-spacing:1px;background-color:")
           .append(ratingColor)
           .append(";'>")
-          .append(escapeHtml(property.getEnergyEfficiencyRating()))
+          .append(escapeHtml(property.getEnergyEfficiencyRating().orElse(null)))
           .append("</span>");
       html.append(
           "<span style='margin-left:12px;font-size:13px;color:#718096;'>Energy Efficiency"
@@ -827,71 +749,74 @@ public class PropertyBookletExporter {
     }
 
     html.append("<table class='detail-grid'>");
-    if (property.getHeatingType() != null || property.getCoolingType() != null) {
+    if (property.getHeatingType().isPresent() || property.getCoolingType().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Heating System", formatEnumValue(property.getHeatingType()));
-      appendField(html, "Cooling System", formatEnumValue(property.getCoolingType()));
+      appendField(html, "Heating System", formatEnumValue(property.getHeatingType().orElse(null)));
+      appendField(html, "Cooling System", formatEnumValue(property.getCoolingType().orElse(null)));
       html.append("</tr>");
     }
-    if (property.getHotWaterSystem() != null || property.getEnergyCertificateExpiryDate() != null) {
+    if (property.getHotWaterSystem().isPresent()
+        || property.getEnergyCertificateExpiryDate().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Hot Water System", formatEnumValue(property.getHotWaterSystem()));
+      appendField(
+          html, "Hot Water System", formatEnumValue(property.getHotWaterSystem().orElse(null)));
       appendField(
           html,
           "Certificate Expiry",
-          property.getEnergyCertificateExpiryDate() != null
-              ? property
-                  .getEnergyCertificateExpiryDate()
-                  .format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-              : "—");
+          property
+              .getEnergyCertificateExpiryDate()
+              .map(d -> d.format(DateTimeFormatter.ofPattern("MMM d, yyyy")))
+              .orElse("—"));
       html.append("</tr>");
     }
     html.append("</table>");
 
-    appendTextBlock(html, "Insulation Notes", property.getInsulationNotes());
+    appendTextBlock(html, "Insulation Notes", property.getInsulationNotes().orElse(null));
   }
 
   private void appendUtilitiesSection(StringBuilder html, Property property) {
     appendSectionTitle(html, "Utilities &amp; Infrastructure");
     html.append("<table class='detail-grid'>");
 
-    if (property.getElectricityConnectionType() != null
-        || property.getElectricityCapacityAmps() != null) {
+    if (property.getElectricityConnectionType().isPresent()
+        || property.getElectricityCapacityAmps().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Electricity", formatEnumValue(property.getElectricityConnectionType()));
+      appendField(
+          html,
+          "Electricity",
+          formatEnumValue(property.getElectricityConnectionType().orElse(null)));
       appendField(
           html,
           "Capacity",
-          property.getElectricityCapacityAmps() != null
-              ? property.getElectricityCapacityAmps() + " Amps"
-              : "—");
+          property.getElectricityCapacityAmps().map(a -> a + " Amps").orElse("—"));
       html.append("</tr>");
     }
-    if (property.getWaterConnectionType() != null || property.getHasGasConnection() != null) {
+    if (property.getWaterConnectionType().isPresent()
+        || property.getHasGasConnection().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Water", formatEnumValue(property.getWaterConnectionType()));
+      appendField(html, "Water", formatEnumValue(property.getWaterConnectionType().orElse(null)));
       String gasText =
-          property.getHasGasConnection() != null
-              ? (isTrue(property.getHasGasConnection()) ? "Connected" : "Not Connected")
-              : "—";
+          property
+              .getHasGasConnection()
+              .map(g -> isTrue(g) ? "Connected" : "Not Connected")
+              .orElse("—");
       appendField(html, "Gas Connection", gasText);
       html.append("</tr>");
     }
-    if (property.getSewageType() != null || property.getInternetConnectionType() != null) {
+    if (property.getSewageType().isPresent() || property.getInternetConnectionType().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Sewage", formatEnumValue(property.getSewageType()));
-      appendField(html, "Internet", formatEnumValue(property.getInternetConnectionType()));
+      appendField(html, "Sewage", formatEnumValue(property.getSewageType().orElse(null)));
+      appendField(
+          html, "Internet", formatEnumValue(property.getInternetConnectionType().orElse(null)));
       html.append("</tr>");
     }
-    if (property.getInternetMaxSpeedMbps() != null || property.getInternetStatus() != null) {
+    if (property.getInternetMaxSpeedMbps().isPresent()
+        || property.getInternetStatus().isPresent()) {
       html.append("<tr>");
       appendField(
-          html,
-          "Max Speed",
-          property.getInternetMaxSpeedMbps() != null
-              ? property.getInternetMaxSpeedMbps() + " Mbps"
-              : "—");
-      appendField(html, "Internet Status", formatEnumValue(property.getInternetStatus()));
+          html, "Max Speed", property.getInternetMaxSpeedMbps().map(s -> s + " Mbps").orElse("—"));
+      appendField(
+          html, "Internet Status", formatEnumValue(property.getInternetStatus().orElse(null)));
       html.append("</tr>");
     }
     html.append("</table>");
@@ -901,11 +826,9 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Parking");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Parking Type", formatEnumValue(property.getParkingType()));
+    appendField(html, "Parking Type", formatEnumValue(property.getParkingType().orElse(null)));
     appendField(
-        html,
-        "Parking Spaces",
-        property.getParkingSpaces() != null ? property.getParkingSpaces().toString() : "—");
+        html, "Parking Spaces", property.getParkingSpaces().map(Object::toString).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -919,7 +842,9 @@ public class PropertyBookletExporter {
       List<PropertyOutdoorArea> outdoorAreas) {
     boolean hasAmenities = !propertyAmenities.isEmpty();
     boolean hasOutdoorAreas = !outdoorAreas.isEmpty();
-    if (!hasAmenities && !hasOutdoorAreas) return;
+    if (!hasAmenities && !hasOutdoorAreas) {
+      return;
+    }
 
     appendPageStart(html, "Features &amp; Outdoor Spaces");
 
@@ -965,10 +890,10 @@ public class PropertyBookletExporter {
         html.append("<div style='font-size:15px;font-weight:600;color:#276749;'>")
             .append(escapeHtml(formatEnumValue(oa.getType())))
             .append("</div>");
-        if (oa.getAreaValue() != null) {
+        if (oa.getAreaValue().isPresent()) {
           String unit = oa.getAreaUnit() != null ? oa.getAreaUnit() : "sqm";
           html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
-              .append(oa.getAreaValue())
+              .append(oa.getAreaValue().get())
               .append(" ")
               .append(unit)
               .append("</div>");
@@ -982,28 +907,30 @@ public class PropertyBookletExporter {
 
   // ── Page: Safety & Accessibility ────────────────────────────────
 
-  private void appendSafetyPage(StringBuilder html, Property property, PropertyCategory category) {
+  private void appendSafetyPage(
+      StringBuilder html, Property property, @Nullable PropertyCategory category) {
     boolean hasSafetyData =
-        isTrue(property.getHasSmokeDetectors())
-            || isTrue(property.getHasCoDetectors())
-            || isTrue(property.getHasFireExtinguisher())
-            || isTrue(property.getHasSprinklerSystem())
-            || isTrue(property.getHasAlarmSystem())
-            || isTrue(property.getHasSecurityCameras())
-            || isTrue(property.getHasSecureEntry())
-            || (property.getSafetyNotes() != null && !property.getSafetyNotes().isBlank());
+        isTrue(property.getHasSmokeDetectors().orElse(null))
+            || isTrue(property.getHasCoDetectors().orElse(null))
+            || isTrue(property.getHasFireExtinguisher().orElse(null))
+            || isTrue(property.getHasSprinklerSystem().orElse(null))
+            || isTrue(property.getHasAlarmSystem().orElse(null))
+            || isTrue(property.getHasSecurityCameras().orElse(null))
+            || isTrue(property.getHasSecureEntry().orElse(null))
+            || property.getSafetyNotes().filter(s -> !s.isBlank()).isPresent();
 
     boolean skipAccessibility = category == PropertyCategory.INDUSTRIAL;
     boolean hasAccessibilityData =
         !skipAccessibility
-            && (isTrue(property.getIsWheelchairAccessible())
-                || isTrue(property.getHasElevator())
-                || isTrue(property.getHasStepFreeEntrance())
-                || isTrue(property.getHasAdaptedBathroom())
-                || (property.getAccessibilityNotes() != null
-                    && !property.getAccessibilityNotes().isBlank()));
+            && (isTrue(property.getIsWheelchairAccessible().orElse(null))
+                || isTrue(property.getHasElevator().orElse(null))
+                || isTrue(property.getHasStepFreeEntrance().orElse(null))
+                || isTrue(property.getHasAdaptedBathroom().orElse(null))
+                || property.getAccessibilityNotes().filter(s -> !s.isBlank()).isPresent());
 
-    if (!hasSafetyData && !hasAccessibilityData) return;
+    if (!hasSafetyData && !hasAccessibilityData) {
+      return;
+    }
 
     appendPageStart(html, "Safety &amp; Accessibility");
 
@@ -1012,16 +939,16 @@ public class PropertyBookletExporter {
       html.append(
           "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
               + "padding:16px 18px;margin-bottom:10px;'>");
-      appendCheckItem(html, "Smoke Detectors", property.getHasSmokeDetectors());
-      appendCheckItem(html, "CO Detectors", property.getHasCoDetectors());
-      appendCheckItem(html, "Fire Extinguisher", property.getHasFireExtinguisher());
-      appendCheckItem(html, "Sprinkler System", property.getHasSprinklerSystem());
-      appendCheckItem(html, "Alarm System", property.getHasAlarmSystem());
-      appendCheckItem(html, "Security Cameras", property.getHasSecurityCameras());
-      appendCheckItem(html, "Secure Entry", property.getHasSecureEntry());
+      appendCheckItem(html, "Smoke Detectors", property.getHasSmokeDetectors().orElse(null));
+      appendCheckItem(html, "CO Detectors", property.getHasCoDetectors().orElse(null));
+      appendCheckItem(html, "Fire Extinguisher", property.getHasFireExtinguisher().orElse(null));
+      appendCheckItem(html, "Sprinkler System", property.getHasSprinklerSystem().orElse(null));
+      appendCheckItem(html, "Alarm System", property.getHasAlarmSystem().orElse(null));
+      appendCheckItem(html, "Security Cameras", property.getHasSecurityCameras().orElse(null));
+      appendCheckItem(html, "Secure Entry", property.getHasSecureEntry().orElse(null));
       html.append("</div>");
 
-      appendTextBlock(html, "Safety Notes", property.getSafetyNotes());
+      appendTextBlock(html, "Safety Notes", property.getSafetyNotes().orElse(null));
     }
 
     if (hasAccessibilityData) {
@@ -1029,13 +956,14 @@ public class PropertyBookletExporter {
       html.append(
           "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
               + "padding:16px 18px;margin-bottom:10px;'>");
-      appendCheckItem(html, "Wheelchair Accessible", property.getIsWheelchairAccessible());
-      appendCheckItem(html, "Elevator", property.getHasElevator());
-      appendCheckItem(html, "Step-Free Entrance", property.getHasStepFreeEntrance());
-      appendCheckItem(html, "Adapted Bathroom", property.getHasAdaptedBathroom());
+      appendCheckItem(
+          html, "Wheelchair Accessible", property.getIsWheelchairAccessible().orElse(null));
+      appendCheckItem(html, "Elevator", property.getHasElevator().orElse(null));
+      appendCheckItem(html, "Step-Free Entrance", property.getHasStepFreeEntrance().orElse(null));
+      appendCheckItem(html, "Adapted Bathroom", property.getHasAdaptedBathroom().orElse(null));
       html.append("</div>");
 
-      appendTextBlock(html, "Accessibility Notes", property.getAccessibilityNotes());
+      appendTextBlock(html, "Accessibility Notes", property.getAccessibilityNotes().orElse(null));
     }
 
     appendPageEnd(html);
@@ -1044,17 +972,21 @@ public class PropertyBookletExporter {
   // ── Page: Photo Gallery ─────────────────────────────────────────
 
   private void appendPhotoGalleryPage(StringBuilder html, List<Photo> photos) {
-    if (photos.isEmpty()) return;
+    if (photos.isEmpty()) {
+      return;
+    }
 
     List<String[]> photoEntries = new ArrayList<>();
     for (Photo photo : photos) {
       String dataUri = photoToBase64DataUri(photo);
       if (dataUri != null) {
-        String label = photo.getTitle() != null ? photo.getTitle() : photo.getFileName();
+        String label = photo.getTitle().orElse(photo.getFileName());
         photoEntries.add(new String[] {dataUri, label, isTrue(photo.getIsMainPhoto()) ? "1" : "0"});
       }
     }
-    if (photoEntries.isEmpty()) return;
+    if (photoEntries.isEmpty()) {
+      return;
+    }
 
     appendPageStart(html, "Photo Gallery");
     html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
@@ -1065,7 +997,9 @@ public class PropertyBookletExporter {
 
     html.append("<table style='width:100%;border-collapse:collapse;'>");
     for (int i = 0; i < photoEntries.size(); i++) {
-      if (i % 3 == 0) html.append("<tr>");
+      if (i % 3 == 0) {
+        html.append("<tr>");
+      }
       String[] entry = photoEntries.get(i);
       boolean isMain = "1".equals(entry[2]);
 
@@ -1089,9 +1023,7 @@ public class PropertyBookletExporter {
 
       if (i % 3 == 2 || i == photoEntries.size() - 1) {
         if (i == photoEntries.size() - 1) {
-          for (int pad = (i % 3) + 1; pad < 3; pad++) {
-            html.append("<td style='width:33%;'></td>");
-          }
+          html.append("<td style='width:33%;'></td>".repeat(3 - ((i % 3) + 1)));
         }
         html.append("</tr>");
       }
@@ -1103,8 +1035,13 @@ public class PropertyBookletExporter {
   // ── Page: Financial Overview ────────────────────────────────────
 
   private void appendFinancialOverviewPage(
-      StringBuilder html, Map<Integer, FinancialYearSummary> yearSummaries, String currency) {
-    if (yearSummaries.isEmpty()) return;
+      StringBuilder html,
+      Map<Integer, FinancialYearSummary> yearSummaries,
+      @Nullable String currency) {
+    if (yearSummaries.isEmpty()) {
+      return;
+    }
+    String ccy = currency != null ? currency : "EUR";
 
     appendPageStart(html, "Financial Overview");
 
@@ -1122,21 +1059,21 @@ public class PropertyBookletExporter {
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Income</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>")
-          .append(CurrencyUtils.formatCurrency(summary.income, currency))
+          .append(CurrencyUtils.formatCurrency(summary.income, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Expenses</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>")
-          .append(CurrencyUtils.formatCurrency(summary.expenses, currency))
+          .append(CurrencyUtils.formatCurrency(summary.expenses, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
                   + " style='font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;'>Net"
                   + " Profit</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>")
-          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), currency))
+          .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), ccy))
           .append("</div></td>");
       html.append("</tr></table>");
       html.append("</div>");
@@ -1148,7 +1085,9 @@ public class PropertyBookletExporter {
   // ── Page: Contracts ─────────────────────────────────────────────
 
   private void appendContractsPage(StringBuilder html, List<Contract> contracts, UUID teamId) {
-    if (contracts.isEmpty()) return;
+    if (contracts.isEmpty()) {
+      return;
+    }
 
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
     Map<UUID, Tenant> primaryTenants =
@@ -1169,9 +1108,7 @@ public class PropertyBookletExporter {
       Tenant tenant = primaryTenants.get(contract.getId());
       String tenantName =
           tenant != null
-              ? tenant.getFirstName()
-                  + " "
-                  + (tenant.getLastName() != null ? tenant.getLastName() : "")
+              ? tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("")
               : "Unknown";
 
       html.append("<tr>");
@@ -1179,7 +1116,7 @@ public class PropertyBookletExporter {
       html.append("<td>").append(escapeHtml(tenantName)).append("</td>");
       html.append("<td>").append(contract.getStartDate()).append("</td>");
       html.append("<td>")
-          .append(contract.getEndDate() != null ? contract.getEndDate().toString() : "Ongoing")
+          .append(contract.getEndDate().map(Object::toString).orElse("Ongoing"))
           .append("</td>");
       html.append("<td>")
           .append(
@@ -1202,7 +1139,7 @@ public class PropertyBookletExporter {
 
   private void appendDashboardPage(StringBuilder html, PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency() != null ? escapeHtml(s.currency()) : "";
+    String currency = s.currency().map(BookletHelper::escapeHtml).orElse("");
 
     appendPageStart(html, "Investment Dashboard");
 
@@ -1210,15 +1147,16 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Key Metrics");
     html.append("<table style='width:100%;border-collapse:collapse;margin-bottom:16px;'>");
     html.append("<tr>");
-    appendMetricCell(html, "Total ROI", fmtPct(s.totalRoiPercent()));
-    appendMetricCell(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent()));
-    appendMetricCell(html, "Cap Rate", fmtPct(s.capRatePercent()));
-    appendMetricCell(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent()));
+    appendMetricCell(html, "Total ROI", fmtPct(s.totalRoiPercent().orElse(null)));
+    appendMetricCell(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent().orElse(null)));
+    appendMetricCell(html, "Cap Rate", fmtPct(s.capRatePercent().orElse(null)));
+    appendMetricCell(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent().orElse(null)));
     html.append("</tr><tr>");
-    appendMetricCell(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
-    appendMetricCell(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
-    appendMetricCell(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
-    appendMetricCell(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
+    appendMetricCell(
+        html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow().orElse(null), currency));
+    appendMetricCell(html, "Annual NOI", fmtMoney(s.annualNoi().orElse(null), currency));
+    appendMetricCell(html, "Total Equity", fmtMoney(s.totalEquity().orElse(null), currency));
+    appendMetricCell(html, "Occupancy", fmtPct(s.occupancyRatePercent().orElse(null)));
     html.append("</tr>");
     html.append("</table>");
 
@@ -1273,10 +1211,15 @@ public class PropertyBookletExporter {
     html.append("<table class='payment-table'><thead><tr>");
     html.append("<th>Item</th><th>Amount</th>");
     html.append("</tr></thead><tbody>");
-    appendEquityRow(html, "Purchase Price", dashboard.equity().purchasePrice(), currency);
     appendEquityRow(
-        html, "Current Market Value", dashboard.equity().currentMarketValue(), currency);
-    appendEquityRow(html, "Mortgage Balance", dashboard.equity().mortgageBalance(), currency);
+        html, "Purchase Price", dashboard.equity().purchasePrice().orElse(null), currency);
+    appendEquityRow(
+        html,
+        "Current Market Value",
+        dashboard.equity().currentMarketValue().orElse(null),
+        currency);
+    appendEquityRow(
+        html, "Mortgage Balance", dashboard.equity().mortgageBalance().orElse(null), currency);
     html.append("</tbody></table>");
 
     appendPageEnd(html);
@@ -1294,23 +1237,19 @@ public class PropertyBookletExporter {
   }
 
   private void appendEquityRow(
-      StringBuilder html, String label, BigDecimal value, String currency) {
+      StringBuilder html, String label, @Nullable BigDecimal value, String currency) {
     html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
     html.append("<td style='text-align:right;'>")
         .append(fmtMoney(value, currency))
         .append("</td></tr>");
   }
 
-  private static String fmtPct(BigDecimal value) {
+  private static String fmtPct(@Nullable BigDecimal value) {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currencyCode) {
+  private static String fmtMoney(@Nullable BigDecimal value, String currencyCode) {
     return CurrencyUtils.formatCurrency(value, currencyCode);
-  }
-
-  private static String fmtNum(BigDecimal value) {
-    return value != null ? String.format("%,.2f", value) : "N/A";
   }
 
   // ── Helpers ─────────────────────────────────────────────────────
@@ -1328,19 +1267,22 @@ public class PropertyBookletExporter {
   }
 
   private String buildAreaString(Property property) {
-    if (property.getAreaValue() == null) return "—";
-    String unit = property.getAreaUnit() != null ? property.getAreaUnit() : "sqm";
-    return property.getAreaValue() + " " + unit;
+    if (property.getAreaValue().isEmpty()) {
+      return "—";
+    }
+    String unit = property.getAreaUnit().orElse("sqm");
+    return property.getAreaValue().get() + " " + unit;
   }
 
-  private String buildAreaDisplay(BigDecimal value, String unit) {
-    if (value == null) return "—";
+  private String buildAreaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
+    if (value == null) {
+      return "—";
+    }
     return value + " " + (unit != null ? unit : "sqm");
   }
 
-  private String photoToBase64DataUri(Photo photo) {
-    String fileKey =
-        photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
+  private @Nullable String photoToBase64DataUri(Photo photo) {
+    String fileKey = photo.getThumbnailFileKey().orElse(photo.getFileKey());
     try (InputStream is = s3StorageService.downloadFile(fileKey)) {
       byte[] bytes = is.readAllBytes();
       String mime = photo.getMimeType() != null ? photo.getMimeType() : "image/jpeg";
@@ -1355,10 +1297,15 @@ public class PropertyBookletExporter {
     Map<Integer, FinancialYearSummary> summaries = new TreeMap<>(Comparator.reverseOrder());
 
     for (Payment payment : payments) {
-      if (payment.getStatus() == PAID && payment.getPaymentDate() != null) {
-        int year = payment.getPaymentDate().getYear();
-        summaries.computeIfAbsent(year, FinancialYearSummary::new);
-        summaries.get(year).addIncome(payment.getAmount());
+      if (payment.getStatus() == PAID) {
+        payment
+            .getPaymentDate()
+            .ifPresent(
+                paymentDate -> {
+                  int year = paymentDate.getYear();
+                  summaries.computeIfAbsent(year, FinancialYearSummary::new);
+                  summaries.get(year).addIncome(payment.getAmount());
+                });
       }
     }
     for (Expense expense : expenses) {
@@ -1369,8 +1316,10 @@ public class PropertyBookletExporter {
     return summaries;
   }
 
-  private String getEnergyRatingColor(String rating) {
-    if (rating == null) return "#6b7280";
+  private String getEnergyRatingColor(@Nullable String rating) {
+    if (rating == null) {
+      return "#6b7280";
+    }
     return switch (rating) {
       case "A++" -> "#065f46";
       case "A+" -> "#047857";

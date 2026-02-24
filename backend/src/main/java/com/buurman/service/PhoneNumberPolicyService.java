@@ -2,8 +2,11 @@ package com.buurman.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +30,7 @@ public class PhoneNumberPolicyService {
 
   private final PhoneNumberPolicyRepository policyRepository;
 
-  private volatile PhoneNumberPolicy cachedPolicy;
+  private volatile @Nullable PhoneNumberPolicy cachedPolicy;
 
   public PhoneNumberPolicy getPolicy() {
     PhoneNumberPolicy policy = cachedPolicy;
@@ -41,15 +44,15 @@ public class PhoneNumberPolicyService {
 
   @Transactional
   public PhoneNumberPolicy updatePolicy(PhoneNumberPolicy policy) {
-    CountryGroups.validateMatrix(policy.getPolicyMatrix());
+    policy.getPolicyMatrix().ifPresent(CountryGroups::validateMatrix);
     PhoneNumberPolicy saved = policyRepository.save(policy);
     cachedPolicy = saved;
-    log.info("Phone number policy updated by {}", policy.getUpdatedBy());
+    log.info("Phone number policy updated by {}", policy.getUpdatedBy().orElse("unknown"));
     return saved;
   }
 
   public void validate(String phone) {
-    if (phone == null || phone.isBlank()) {
+    if (phone.isBlank()) {
       return;
     }
 
@@ -62,17 +65,16 @@ public class PhoneNumberPolicyService {
 
     String regionCode = PHONE_UTIL.getRegionCodeForNumber(parsed);
     PhoneNumberUtil.PhoneNumberType type = PHONE_UTIL.getNumberType(parsed);
-    String typeStr = mapNumberType(type);
+    String typeStr = mapNumberType(type).orElse(null);
 
     PhoneNumberPolicy policy = getPolicy();
 
-    if (!policy.isAllowed(regionCode, typeStr)) {
+    if (!policy.isAllowed(Optional.ofNullable(regionCode), Optional.ofNullable(typeStr))) {
       // Determine specific error message
       if (regionCode == null
-          || policy.getPolicyMatrix() == null
-          || !policy.getPolicyMatrix().containsKey(regionCode)
-          || policy.getPolicyMatrix().get(regionCode) == null
-          || policy.getPolicyMatrix().get(regionCode).isEmpty()) {
+          || policy.getPolicyMatrix().isEmpty()
+          || !policy.getPolicyMatrix().map(m -> m.containsKey(regionCode)).orElse(false)
+          || policy.getPolicyMatrix().map(m -> m.get(regionCode)).map(List::isEmpty).orElse(true)) {
         throw new PhoneNumberPolicyException("Phone numbers from this country are not allowed");
       }
       throw new PhoneNumberPolicyException(
@@ -80,24 +82,24 @@ public class PhoneNumberPolicyService {
     }
   }
 
-  private String mapNumberType(PhoneNumberUtil.PhoneNumberType type) {
+  private Optional<String> mapNumberType(PhoneNumberUtil.PhoneNumberType type) {
     return switch (type) {
-      case FIXED_LINE -> "FIXED_LINE";
-      case MOBILE -> "MOBILE";
-      case FIXED_LINE_OR_MOBILE -> "FIXED_LINE_OR_MOBILE";
-      case TOLL_FREE -> "TOLL_FREE";
-      case PREMIUM_RATE -> "PREMIUM_RATE";
-      case SHARED_COST -> "SHARED_COST";
-      case VOIP -> "VOIP";
-      case PERSONAL_NUMBER -> "PERSONAL_NUMBER";
-      case PAGER -> "PAGER";
-      case UAN -> "UAN";
-      case VOICEMAIL -> "VOICEMAIL";
-      case UNKNOWN -> "UNKNOWN";
+      case FIXED_LINE -> Optional.of("FIXED_LINE");
+      case MOBILE -> Optional.of("MOBILE");
+      case FIXED_LINE_OR_MOBILE -> Optional.of("FIXED_LINE_OR_MOBILE");
+      case TOLL_FREE -> Optional.of("TOLL_FREE");
+      case PREMIUM_RATE -> Optional.of("PREMIUM_RATE");
+      case SHARED_COST -> Optional.of("SHARED_COST");
+      case VOIP -> Optional.of("VOIP");
+      case PERSONAL_NUMBER -> Optional.of("PERSONAL_NUMBER");
+      case PAGER -> Optional.of("PAGER");
+      case UAN -> Optional.of("UAN");
+      case VOICEMAIL -> Optional.of("VOICEMAIL");
+      case UNKNOWN -> Optional.empty();
     };
   }
 
-  private String humanReadableType(String type) {
+  private String humanReadableType(@Nullable String type) {
     if (type == null) {
       return "UNKNOWN";
     }
@@ -114,7 +116,7 @@ public class PhoneNumberPolicyService {
       case "PAGER" -> "pager";
       case "UAN" -> "universal access";
       case "VOICEMAIL" -> "voicemail";
-      default -> type.toLowerCase().replace('_', ' ');
+      default -> type.toLowerCase(Locale.ROOT).replace('_', ' ');
     };
   }
 
@@ -135,7 +137,7 @@ public class PhoneNumberPolicyService {
       matrix.put(code, defaultTypes);
     }
 
-    policy.setPolicyMatrix(matrix);
+    policy.setPolicyMatrix(Optional.of(matrix));
     policy.setMaxCodesPerHour(3);
     policy.setVerificationCodeExpiryMinutes(10);
     return policy;

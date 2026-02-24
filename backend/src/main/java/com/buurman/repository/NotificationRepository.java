@@ -17,9 +17,10 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
-import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.dto.request.PageRequest;
@@ -51,10 +52,11 @@ public class NotificationRepository {
             : now;
 
     JSONB contentVariablesJson = null;
-    if (notification.getContentVariables() != null) {
+    if (notification.getContentVariables().isPresent()) {
       try {
         contentVariablesJson =
-            JSONB.valueOf(objectMapper.writeValueAsString(notification.getContentVariables()));
+            JSONB.valueOf(
+                objectMapper.writeValueAsString(notification.getContentVariables().get()));
       } catch (JsonProcessingException e) {
         throw new RuntimeException("Failed to serialize content variables", e);
       }
@@ -63,22 +65,22 @@ public class NotificationRepository {
     dsl.insertInto(NOTIFICATIONS)
         .set(NOTIFICATIONS.ID, id)
         .set(NOTIFICATIONS.IDENTIFIER, identifier)
-        .set(NOTIFICATIONS.TEAM_ID, notification.getTeamId())
+        .set(NOTIFICATIONS.TEAM_ID, notification.getTeamId().orElse(null))
         .set(NOTIFICATIONS.NOTIFICATION_TYPE, notification.getNotificationType().name())
-        .set(NOTIFICATIONS.SUBJECT, notification.getSubject())
+        .set(NOTIFICATIONS.SUBJECT, notification.getSubject().orElse(null))
         .set(NOTIFICATIONS.BODY, notification.getBody())
-        .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail())
-        .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone())
-        .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId())
-        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, notification.getRecipientTenantId())
+        .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, notification.getRecipientTenantId().orElse(null))
         .set(NOTIFICATIONS.CHANNEL, notification.getChannel().name())
-        .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate())
+        .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate().orElse(null))
         .set(NOTIFICATIONS.CONTENT_VARIABLES, contentVariablesJson)
         .set(NOTIFICATIONS.STATUS, notification.getStatus().name())
-        .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId())
-        .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason())
+        .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId().orElse(null))
+        .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason().orElse(null))
         .set(NOTIFICATIONS.CREATED_AT, createdAt)
-        .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy())
+        .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy().orElse(null))
         .execute();
 
     notification.setId(id);
@@ -88,40 +90,48 @@ public class NotificationRepository {
     return notification;
   }
 
-  public Optional<Notification> findByIdentifierAndTeamId(String identifier, UUID teamId) {
-    return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.IDENTIFIER.eq(identifier).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
-        .fetchOptional()
-        .map(mapper::toDomain);
+  /**
+   * Find notification by identifier. When teamId is null, searches across all teams (admin/system
+   * use only). For tenant-scoped lookups, always pass a non-null teamId.
+   */
+  public Optional<Notification> findByIdentifierAndTeamId(
+      String identifier, @Nullable UUID teamId) {
+    Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);
+    if (teamId != null) {
+      condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
+    }
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
-  public Notification getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Notification getByIdentifierAndTeamId(String identifier, @Nullable UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
-  public Optional<Notification> findByIdAndTeamId(UUID id, UUID teamId) {
-    return dsl.selectFrom(NOTIFICATIONS)
-        .where(NOTIFICATIONS.ID.eq(id).and(NOTIFICATIONS.TEAM_ID.eq(teamId)))
-        .fetchOptional()
-        .map(mapper::toDomain);
+  /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
+  public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
+    Condition condition = NOTIFICATIONS.ID.eq(id);
+    if (teamId != null) {
+      condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
+    }
+    return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
   public Optional<Notification> findByProviderMessageId(String providerMessageId) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.PROVIDER_MESSAGE_ID.eq(providerMessageId))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public PaginatedResult<Notification> findAllByTeamIdPaginated(
       UUID teamId,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo,
       PageRequest pageRequest) {
 
     Condition condition = NOTIFICATIONS.TEAM_ID.eq(teamId);
@@ -161,15 +171,18 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
   public void updateStatus(
       UUID id,
       NotificationStatus status,
-      String providerMessageId,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerMessageId,
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.STATUS, status.name())
@@ -184,8 +197,8 @@ public class NotificationRepository {
   public void updateStatusByProviderMessageId(
       String providerMessageId,
       NotificationStatus status,
-      String providerStatus,
-      String providerError) {
+      @Nullable String providerStatus,
+      @Nullable String providerError) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(NOTIFICATIONS)
         .set(NOTIFICATIONS.STATUS, status.name())
@@ -218,37 +231,41 @@ public class NotificationRepository {
         .execute();
   }
 
-  public List<Record2<String, Integer>> countByTeamIdGroupedByStatus(UUID teamId) {
+  public List<LabelCount> countByTeamIdGroupedByStatus(UUID teamId) {
     return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
         .from(NOTIFICATIONS)
         .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
         .groupBy(NOTIFICATIONS.STATUS)
-        .fetch();
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
-  public List<Record2<String, Integer>> countByTeamIdGroupedByChannel(UUID teamId) {
+  public List<LabelCount> countByTeamIdGroupedByChannel(UUID teamId) {
     return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
         .from(NOTIFICATIONS)
         .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
         .groupBy(NOTIFICATIONS.CHANNEL)
-        .fetch();
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
   public long countByTeamId(UUID teamId) {
-    return dsl.selectCount()
-        .from(NOTIFICATIONS)
-        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-        .fetchOne(0, long.class);
+    Long result =
+        dsl.selectCount()
+            .from(NOTIFICATIONS)
+            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+            .fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
   public PaginatedResult<Notification> findAllPaginatedUnscoped(
-      UUID teamId,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      LocalDateTime dateFrom,
-      LocalDateTime dateTo,
+      @Nullable UUID teamId,
+      @Nullable String type,
+      @Nullable String channel,
+      @Nullable String status,
+      @Nullable String recipientEmail,
+      @Nullable LocalDateTime dateFrom,
+      @Nullable LocalDateTime dateTo,
       PageRequest pageRequest) {
 
     Condition condition = trueCondition();
@@ -291,16 +308,17 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
   public Optional<Notification> findByIdentifierUnscoped(String identifier) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .map(
-            r ->
-                mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        .flatMap(mapper::toDomain);
   }
 
   public Notification getByIdentifierUnscoped(String identifier) {
@@ -309,20 +327,23 @@ public class NotificationRepository {
   }
 
   public long countAll() {
-    return dsl.selectCount().from(NOTIFICATIONS).fetchOne(0, long.class);
+    Long result = dsl.selectCount().from(NOTIFICATIONS).fetchOne(0, Long.class);
+    return result != null ? result : 0L;
   }
 
-  public List<Record2<String, Integer>> countGroupedByStatus() {
+  public List<LabelCount> countGroupedByStatus() {
     return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
         .from(NOTIFICATIONS)
         .groupBy(NOTIFICATIONS.STATUS)
-        .fetch();
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
-  public List<Record2<String, Integer>> countGroupedByChannel() {
+  public List<LabelCount> countGroupedByChannel() {
     return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
         .from(NOTIFICATIONS)
         .groupBy(NOTIFICATIONS.CHANNEL)
-        .fetch();
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 }

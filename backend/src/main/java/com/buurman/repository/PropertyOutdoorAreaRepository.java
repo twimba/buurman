@@ -25,16 +25,17 @@ public class PropertyOutdoorAreaRepository {
   private final Clock clock;
 
   public List<PropertyOutdoorArea> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
-        .where(
-            PROPERTY_OUTDOOR_AREAS
-                .PROPERTY_ID
-                .eq(propertyId)
-                .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(teamId))
-                .and(PROPERTY_OUTDOOR_AREAS.DELETED_AT.isNull()))
-        .orderBy(PROPERTY_OUTDOOR_AREAS.CREATED_AT.asc())
-        .fetch()
-        .map(this::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
+            .where(
+                PROPERTY_OUTDOOR_AREAS
+                    .PROPERTY_ID
+                    .eq(propertyId)
+                    .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(teamId))
+                    .and(PROPERTY_OUTDOOR_AREAS.DELETED_AT.isNull()))
+            .orderBy(PROPERTY_OUTDOOR_AREAS.CREATED_AT.asc())
+            .fetch()
+            .map(this::toDomain));
   }
 
   public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -59,10 +60,8 @@ public class PropertyOutdoorAreaRepository {
 
     if (area.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          area.getCreatedAt() != null ? LocalDateTime.ofInstant(area.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          area.getUpdatedAt() != null ? LocalDateTime.ofInstant(area.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.ID, newId)
@@ -70,7 +69,7 @@ public class PropertyOutdoorAreaRepository {
           .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, area.getPropertyId())
           .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, area.getTeamId())
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
-          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
+          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
           .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, createdAt)
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
@@ -82,12 +81,11 @@ public class PropertyOutdoorAreaRepository {
       area.setCreatedAt(createdAt.toInstant(UTC));
       area.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          area.getUpdatedAt() != null ? LocalDateTime.ofInstant(area.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = now;
 
       dsl.update(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
-          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue())
+          .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
@@ -120,13 +118,13 @@ public class PropertyOutdoorAreaRepository {
     area.setPropertyId(record.getPropertyId());
     area.setTeamId(record.getTeamId());
     area.setType(record.getType());
-    area.setAreaValue(record.getAreaValue());
+    area.setAreaValue(Optional.ofNullable(record.getAreaValue()));
     area.setAreaUnit(record.getAreaUnit());
-    area.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    area.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    area.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    area.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     area.setCreatedBy(record.getCreatedBy());
     area.setUpdatedBy(record.getUpdatedBy());
-    area.setDeletedAt(record.getDeletedAt() == null ? null : record.getDeletedAt().toInstant(UTC));
+    area.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return area;
   }
 }

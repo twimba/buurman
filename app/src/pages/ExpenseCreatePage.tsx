@@ -67,6 +67,9 @@ export const ExpenseCreatePage = () => {
   const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
 
   const prefilledPropertyId = searchParams.get('propertyId') || undefined;
+  const backUrl = prefilledPropertyId
+    ? `/properties/${prefilledPropertyId}?tab=expenses`
+    : '/expenses';
 
   const [continueAdding, setContinueAdding] = useState(false);
   const [resetKey, setResetKey] = useState(0);
@@ -84,12 +87,12 @@ export const ExpenseCreatePage = () => {
       setAddedCount((c) => c + 1);
       setResetKey((k) => k + 1);
     } else {
-      navigate('/expenses');
+      navigate(backUrl);
     }
   };
 
   const handleCancel = () => {
-    navigate('/expenses');
+    navigate(backUrl);
   };
 
   const handleBulkSubmit = (
@@ -141,7 +144,9 @@ export const ExpenseCreatePage = () => {
 
         setBulkSubmitting(false);
         callbacks.onComplete();
-        if (!hasErrors) navigate('/expenses');
+        if (!hasErrors) {
+          navigate(backUrl);
+        }
       })
       .catch((e) => {
         rows.forEach((_, i) => callbacks.onRowError(i, getErrorMessage(e)));
@@ -156,7 +161,7 @@ export const ExpenseCreatePage = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
-            onClick={() => navigate('/expenses')}
+            onClick={() => navigate(backUrl)}
             className="p-2 hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#1e2130] rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />

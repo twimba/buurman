@@ -35,19 +35,25 @@ public class TeamInvitationRepository {
           .set(TEAM_INVITATIONS.ID, newId)
           .set(TEAM_INVITATIONS.TEAM_ID, invitation.getTeamId())
           .set(TEAM_INVITATIONS.EMAIL, invitation.getEmail())
-          .set(TEAM_INVITATIONS.ROLE, invitation.getRole())
+          .set(TEAM_INVITATIONS.ROLE, invitation.getRole().name())
           .set(TEAM_INVITATIONS.TOKEN, invitation.getToken())
           .set(TEAM_INVITATIONS.EXPIRES_AT, mapper.toLocalDateTime(invitation.getExpiresAt()))
           .set(TEAM_INVITATIONS.INVITED_BY, invitation.getInvitedBy())
           .set(TEAM_INVITATIONS.INVITED_AT, mapper.toLocalDateTime(invitation.getInvitedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_AT, mapper.toLocalDateTime(invitation.getAcceptedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy())
-          .set(TEAM_INVITATIONS.EMAIL_SENT_AT, mapper.toLocalDateTime(invitation.getEmailSentAt()))
-          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError())
-          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName())
-          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName())
-          .set(TEAM_INVITATIONS.RESENT_AT, mapper.toLocalDateTime(invitation.getResentAt()))
-          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount())
+          .set(
+              TEAM_INVITATIONS.ACCEPTED_AT,
+              mapper.toLocalDateTime(invitation.getAcceptedAt().orElse(null)))
+          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy().orElse(null))
+          .set(
+              TEAM_INVITATIONS.EMAIL_SENT_AT,
+              mapper.toLocalDateTime(invitation.getEmailSentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName().orElse(null))
+          .set(
+              TEAM_INVITATIONS.RESENT_AT,
+              mapper.toLocalDateTime(invitation.getResentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount().orElse(null))
           .execute();
 
       invitation.setId(newId);
@@ -56,19 +62,25 @@ public class TeamInvitationRepository {
       dsl.update(TEAM_INVITATIONS)
           .set(TEAM_INVITATIONS.TEAM_ID, invitation.getTeamId())
           .set(TEAM_INVITATIONS.EMAIL, invitation.getEmail())
-          .set(TEAM_INVITATIONS.ROLE, invitation.getRole())
+          .set(TEAM_INVITATIONS.ROLE, invitation.getRole().name())
           .set(TEAM_INVITATIONS.TOKEN, invitation.getToken())
           .set(TEAM_INVITATIONS.EXPIRES_AT, mapper.toLocalDateTime(invitation.getExpiresAt()))
           .set(TEAM_INVITATIONS.INVITED_BY, invitation.getInvitedBy())
           .set(TEAM_INVITATIONS.INVITED_AT, mapper.toLocalDateTime(invitation.getInvitedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_AT, mapper.toLocalDateTime(invitation.getAcceptedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy())
-          .set(TEAM_INVITATIONS.EMAIL_SENT_AT, mapper.toLocalDateTime(invitation.getEmailSentAt()))
-          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError())
-          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName())
-          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName())
-          .set(TEAM_INVITATIONS.RESENT_AT, mapper.toLocalDateTime(invitation.getResentAt()))
-          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount())
+          .set(
+              TEAM_INVITATIONS.ACCEPTED_AT,
+              mapper.toLocalDateTime(invitation.getAcceptedAt().orElse(null)))
+          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy().orElse(null))
+          .set(
+              TEAM_INVITATIONS.EMAIL_SENT_AT,
+              mapper.toLocalDateTime(invitation.getEmailSentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName().orElse(null))
+          .set(
+              TEAM_INVITATIONS.RESENT_AT,
+              mapper.toLocalDateTime(invitation.getResentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount().orElse(null))
           .where(TEAM_INVITATIONS.ID.eq(invitation.getId()))
           .execute();
     }
@@ -96,11 +108,12 @@ public class TeamInvitationRepository {
   }
 
   public List<TeamInvitation> findByTeamIdAndAcceptedAtIsNull(UUID teamId) {
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<TeamInvitation> findPendingByEmailAndTeamId(String email, UUID teamId) {
@@ -117,25 +130,27 @@ public class TeamInvitationRepository {
 
   public List<TeamInvitation> findPendingByTeamId(UUID teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
-        .and(TEAM_INVITATIONS.DELETED_AT.isNull())
-        .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.TEAM_ID.eq(teamId))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
+            .and(TEAM_INVITATIONS.DELETED_AT.isNull())
+            .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public List<TeamInvitation> findPendingByEmail(String email) {
     LocalDateTime now = LocalDateTime.now(clock);
-    return dsl.selectFrom(TEAM_INVITATIONS)
-        .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
-        .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
-        .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
-        .and(TEAM_INVITATIONS.DELETED_AT.isNull())
-        .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_INVITATIONS)
+            .where(TEAM_INVITATIONS.EMAIL.equalIgnoreCase(email))
+            .and(TEAM_INVITATIONS.ACCEPTED_AT.isNull())
+            .and(TEAM_INVITATIONS.EXPIRES_AT.greaterThan(now))
+            .and(TEAM_INVITATIONS.DELETED_AT.isNull())
+            .orderBy(TEAM_INVITATIONS.INVITED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 }

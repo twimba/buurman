@@ -10,15 +10,18 @@ import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.UlidGenerator.newContractId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +88,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse createContract(CreateContractRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     // Resolve property by identifier
     Property property =
@@ -102,12 +105,12 @@ public class ContractService {
             });
 
     // Validate dates
-    if (request.endDate() != null && request.endDate().isBefore(request.startDate())) {
+    if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
       throw new IllegalArgumentException("End date must be on or after start date");
     }
 
     // Validate FIXED_TERM contracts have end date
-    if (request.contractType() == FIXED_TERM && request.endDate() == null) {
+    if (request.contractType() == FIXED_TERM && request.endDate().isEmpty()) {
       throw new IllegalArgumentException("FIXED_TERM contracts must have an end date");
     }
 
@@ -123,13 +126,11 @@ public class ContractService {
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
-    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
-    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
-
-    // Set defaults
-    if (contract.getAutoRenewal() == null) {
-      contract.setAutoRenewal(false);
-    }
+    validateCurrencyRequired(
+        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+    validateCurrencyRequired(
+        contract.getSecurityDepositCurrency().orElse(null),
+        contract.getSecurityDeposit().orElse(null));
 
     Contract savedContract = contractRepository.save(contract);
 
@@ -161,19 +162,16 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(savedContract.getId(), teamId);
 
-    String propertyName =
-        property.getStreet() != null
-            ? property.getStreet() + ", " + property.getCity()
-            : property.getIdentifier();
-    String tenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String propertyName = property.getStreet() + ", " + property.getCity();
+    String tenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     Map<String, Object> contractVars = new HashMap<>();
     contractVars.put("propertyName", propertyName);
     contractVars.put("tenantName", tenantName);
     contractVars.put(
         "rentAmount", savedContract.getRentAmountCurrency() + " " + savedContract.getRentAmount());
     contractVars.put("startDate", savedContract.getStartDate().toString());
-    contractVars.put(
-        "endDate", savedContract.getEndDate() != null ? savedContract.getEndDate().toString() : "");
+    contractVars.put("endDate", savedContract.getEndDate().map(LocalDate::toString).orElse(""));
     contractVars.put("baseUrl", appProperties.email().baseUrl());
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
@@ -188,23 +186,23 @@ public class ContractService {
   }
 
   public List<ContractResponse> getAllContracts(UserPrincipal principal) {
-    List<Contract> contracts = contractRepository.findAllByTeamId(principal.getTeamId());
-    return toResponses(contracts, principal.getTeamId());
+    List<Contract> contracts = contractRepository.findAllByTeamId(principal.requireTeamId());
+    return toResponses(contracts, principal.requireTeamId());
   }
 
   public PageResponse<ContractResponse> getContractsPaginated(
-      UserPrincipal principal, String status, PageRequest pageRequest) {
+      UserPrincipal principal, @Nullable String status, PageRequest pageRequest) {
     PaginatedResult<Contract> result =
         contractRepository.findAllByTeamIdPaginated(
-            principal.getTeamId(), status, null, null, pageRequest);
-    List<ContractResponse> responses = toResponses(result.items(), principal.getTeamId());
+            principal.requireTeamId(), status, null, null, pageRequest);
+    List<ContractResponse> responses = toResponses(result.items(), principal.requireTeamId());
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public List<ContractResponse> getContractsByProperty(
       String propertyIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -214,7 +212,7 @@ public class ContractService {
 
   public List<ContractResponse> getContractsByTenant(
       String tenantIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
@@ -224,21 +222,21 @@ public class ContractService {
 
   public List<ContractResponse> getContractsByStatus(
       Contract.ContractStatus status, UserPrincipal principal) {
-    List<Contract> contracts = contractRepository.findByStatus(status, principal.getTeamId());
-    return toResponses(contracts, principal.getTeamId());
+    List<Contract> contracts = contractRepository.findByStatus(status, principal.requireTeamId());
+    return toResponses(contracts, principal.requireTeamId());
   }
 
   public ContractResponse getContract(String identifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
-    return toResponse(contract, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+    return toResponse(contract, principal.requireTeamId());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse updateContract(
       String identifier, UpdateContractRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -259,7 +257,7 @@ public class ContractService {
         propertyRepository.getByIdentifierAndTeamId(request.propertyIdentifier(), teamId);
 
     // Validate dates
-    if (request.endDate() != null && request.endDate().isBefore(request.startDate())) {
+    if (request.endDate().isPresent() && request.endDate().get().isBefore(request.startDate())) {
       throw new IllegalArgumentException("End date must be on or after start date");
     }
 
@@ -303,8 +301,11 @@ public class ContractService {
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
-    validateCurrencyRequired(contract.getDepositAmountCurrency(), contract.getDepositAmount());
-    validateCurrencyRequired(contract.getSecurityDepositCurrency(), contract.getSecurityDeposit());
+    validateCurrencyRequired(
+        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+    validateCurrencyRequired(
+        contract.getSecurityDepositCurrency().orElse(null),
+        contract.getSecurityDeposit().orElse(null));
 
     Contract updatedContract = contractRepository.save(contract);
 
@@ -327,41 +328,46 @@ public class ContractService {
     if (!oldContract.getStartDate().equals(updatedContract.getStartDate())) {
       changedFields.put("startDate", updatedContract.getStartDate());
     }
-    if (!java.util.Objects.equals(oldContract.getEndDate(), updatedContract.getEndDate())) {
-      changedFields.put("endDate", updatedContract.getEndDate());
+    if (!oldContract.getEndDate().equals(updatedContract.getEndDate())) {
+      changedFields.put("endDate", updatedContract.getEndDate().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getSignedDate(), updatedContract.getSignedDate())) {
-      changedFields.put("signedDate", updatedContract.getSignedDate());
+    if (!oldContract.getSignedDate().equals(updatedContract.getSignedDate())) {
+      changedFields.put("signedDate", updatedContract.getSignedDate().orElse(null));
     }
     if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0) {
       changedFields.put("rentAmount", updatedContract.getRentAmount());
     }
-    if (!bigDecimalEquals(oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
-      changedFields.put("depositAmount", updatedContract.getDepositAmount());
+    if (optionalBigDecimalNotEquals(
+        oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
+      changedFields.put("depositAmount", updatedContract.getDepositAmount().orElse(null));
     }
-    if (!bigDecimalEquals(oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
-      changedFields.put("securityDeposit", updatedContract.getSecurityDeposit());
+    if (optionalBigDecimalNotEquals(
+        oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
+      changedFields.put("securityDeposit", updatedContract.getSecurityDeposit().orElse(null));
     }
     if (!java.util.Objects.equals(
         oldContract.getRentAmountCurrency(), updatedContract.getRentAmountCurrency())) {
       changedFields.put("rentAmountCurrency", updatedContract.getRentAmountCurrency());
     }
-    if (!java.util.Objects.equals(
-        oldContract.getDepositAmountCurrency(), updatedContract.getDepositAmountCurrency())) {
-      changedFields.put("depositAmountCurrency", updatedContract.getDepositAmountCurrency());
+    if (!oldContract
+        .getDepositAmountCurrency()
+        .equals(updatedContract.getDepositAmountCurrency())) {
+      changedFields.put(
+          "depositAmountCurrency", updatedContract.getDepositAmountCurrency().orElse(null));
     }
-    if (!java.util.Objects.equals(
-        oldContract.getSecurityDepositCurrency(), updatedContract.getSecurityDepositCurrency())) {
-      changedFields.put("securityDepositCurrency", updatedContract.getSecurityDepositCurrency());
+    if (!oldContract
+        .getSecurityDepositCurrency()
+        .equals(updatedContract.getSecurityDepositCurrency())) {
+      changedFields.put(
+          "securityDepositCurrency", updatedContract.getSecurityDepositCurrency().orElse(null));
     }
     if (!oldContract.getPaymentFrequency().equals(updatedContract.getPaymentFrequency())) {
       changedFields.put("paymentFrequency", updatedContract.getPaymentFrequency());
     }
-    if (!java.util.Objects.equals(
-        oldContract.getPaymentDueDay(), updatedContract.getPaymentDueDay())) {
-      changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay());
+    if (!oldContract.getPaymentDueDay().equals(updatedContract.getPaymentDueDay())) {
+      changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay().orElse(null));
     }
-    if (!oldContract.getAutoRenewal().equals(updatedContract.getAutoRenewal())) {
+    if (!java.util.Objects.equals(oldContract.getAutoRenewal(), updatedContract.getAutoRenewal())) {
       changedFields.put("autoRenewal", updatedContract.getAutoRenewal());
     }
     if (!java.util.Objects.equals(
@@ -372,16 +378,15 @@ public class ContractService {
         oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
       changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
     }
-    if (!bigDecimalEquals(
+    if (optionalBigDecimalNotEquals(
         oldContract.getLateFeePercentage(), updatedContract.getLateFeePercentage())) {
-      changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage());
+      changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage().orElse(null));
     }
-    if (!java.util.Objects.equals(
-        oldContract.getTermsAndConditions(), updatedContract.getTermsAndConditions())) {
-      changedFields.put("termsAndConditions", updatedContract.getTermsAndConditions());
+    if (!oldContract.getTermsAndConditions().equals(updatedContract.getTermsAndConditions())) {
+      changedFields.put("termsAndConditions", updatedContract.getTermsAndConditions().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getNotes(), updatedContract.getNotes())) {
-      changedFields.put("notes", updatedContract.getNotes());
+    if (!oldContract.getNotes().equals(updatedContract.getNotes())) {
+      changedFields.put("notes", updatedContract.getNotes().orElse(null));
     }
 
     // Log to audit trail
@@ -400,7 +405,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public void deleteContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -422,7 +427,7 @@ public class ContractService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse changeContractStatus(
       String identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -509,9 +514,7 @@ public class ContractService {
     // Log to audit trail
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("status", newStatus);
-    if (request.reason() != null) {
-      changedFields.put("statusChangeReason", request.reason());
-    }
+    request.reason().ifPresent(r -> changedFields.put("statusChangeReason", r));
 
     auditService.logUpdate(
         teamId,
@@ -527,10 +530,11 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
     String scPropertyName =
-        statusChangeProperty != null && statusChangeProperty.getStreet() != null
+        statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
             : identifier;
-    String scTenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String scTenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -552,7 +556,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse reopenContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -627,10 +631,11 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
     String reopenPropertyName =
-        reopenProperty != null && reopenProperty.getStreet() != null
+        reopenProperty != null
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
             : identifier;
-    String reopenTenantName = primaryTenant.getFirstName() + " " + primaryTenant.getLastName();
+    String reopenTenantName =
+        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -655,11 +660,12 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse duplicateContract(String identifier, UserPrincipal principal) {
-    UUID teamId = principal.getTeamId();
+    UUID teamId = principal.requireTeamId();
 
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Create new contract with same data (without tenantId)
+    @SuppressWarnings("NullAway") // ID is null for new entities, assigned by repository on save
     Contract newContract =
         new Contract(
             null, // New ID will be generated
@@ -689,7 +695,7 @@ public class ContractService {
             clock.instant(),
             principal.getUserId(),
             principal.getUserId(),
-            null);
+            Optional.empty());
 
     Contract savedContract = contractRepository.save(newContract);
 
@@ -720,53 +726,50 @@ public class ContractService {
   public DocumentResponse uploadDocument(
       String contractIdentifier,
       MultipartFile file,
-      String title,
-      String notes,
+      @Nullable String title,
+      @Nullable String notes,
       UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
         file, "CONTRACT", contract.getId(), contract.getIdentifier(), title, notes, principal);
   }
 
   public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.getDocuments("CONTRACT", contract.getId(), principal);
   }
 
   public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(document.getIdentifier(), principal);
   }
 
   public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
     Document document =
-        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.getTeamId());
+        documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     documentService.deleteDocument(document.getIdentifier(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
       String contractIdentifier, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
-    return auditService.getEntityAuditLog(principal.getTeamId(), "CONTRACT", contract.getId());
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
+    return auditService.getEntityAuditLog(principal.requireTeamId(), "CONTRACT", contract.getId());
   }
 
   public Map<String, Object> generatePayments(
       String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
-        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.getTeamId());
-    boolean markAsPaid = Boolean.TRUE.equals(request.markAsPaid());
-    LocalDate paymentDate =
-        markAsPaid
-            ? (request.paymentDate() != null ? request.paymentDate() : LocalDate.now())
-            : null;
+        contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
+    boolean markAsPaid = request.markAsPaid().map(Boolean.TRUE::equals).orElse(false);
+    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
     int generated =
         paymentSchedulingService.generatePaymentsManually(
             contract.getId(),
-            principal.getTeamId(),
+            principal.requireTeamId(),
             principal.getUserId(),
             request.count(),
             markAsPaid,
@@ -808,18 +811,18 @@ public class ContractService {
     List<ContractPartyResponse> partyResponses =
         contractPartyService.buildPartyResponses(parties, teamId);
 
-    TenantSummary primaryTenant =
+    Optional<TenantSummary> primaryTenant =
         partyResponses.stream()
             .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
             .map(ContractPartyResponse::tenant)
-            .findFirst()
-            .orElse(null);
+            .flatMap(Optional::stream)
+            .findFirst();
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
     return new ContractResponse(
         contract.getIdentifier(),
-        propertySummary,
+        Optional.ofNullable(propertySummary),
         partyResponses,
         primaryTenant,
         contract.getContractType(),
@@ -842,12 +845,14 @@ public class ContractService {
         contract.getTermsAndConditions(),
         contract.getNotes(),
         contract.getCreatedAt(),
-        contract.getUpdatedAt());
+        Optional.of(contract.getUpdatedAt()));
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and tenants). */
   private List<ContractResponse> toResponses(List<Contract> contracts, UUID teamId) {
-    if (contracts.isEmpty()) return List.of();
+    if (contracts.isEmpty()) {
+      return List.of();
+    }
 
     // Batch load properties
     List<UUID> propertyIds = contracts.stream().map(Contract::getPropertyId).distinct().toList();
@@ -864,7 +869,7 @@ public class ContractService {
     List<UUID> allTenantIds =
         partiesByContract.values().stream()
             .flatMap(List::stream)
-            .map(ContractParty::getTenantId)
+            .flatMap(p -> p.getTenantId().stream())
             .distinct()
             .toList();
     Map<UUID, Tenant> tenantMap =
@@ -875,8 +880,8 @@ public class ContractService {
         .map(
             contract -> {
               Property property = propertyMap.get(contract.getPropertyId());
-              PropertySummary propertySummary =
-                  property != null ? propertyMapper.toSummary(property) : null;
+              Optional<PropertySummary> propertySummary =
+                  Optional.ofNullable(property).map(propertyMapper::toSummary);
 
               List<ContractParty> parties =
                   partiesByContract.getOrDefault(contract.getId(), List.of());
@@ -884,20 +889,20 @@ public class ContractService {
                   parties.stream()
                       .map(
                           party -> {
-                            Tenant tenant = tenantMap.get(party.getTenantId());
-                            TenantSummary summary =
-                                tenant != null ? tenantMapper.toSummary(tenant) : null;
+                            Tenant tenant = party.getTenantId().map(tenantMap::get).orElse(null);
+                            Optional<TenantSummary> summary =
+                                Optional.ofNullable(tenant).map(tenantMapper::toSummary);
                             return new ContractPartyResponse(
                                 party.getIdentifier(), summary, party.getRole());
                           })
                       .toList();
 
-              TenantSummary primaryTenant =
+              Optional<TenantSummary> primaryTenant =
                   partyResponses.stream()
                       .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
                       .map(ContractPartyResponse::tenant)
-                      .findFirst()
-                      .orElse(null);
+                      .flatMap(Optional::stream)
+                      .findFirst();
 
               return new ContractResponse(
                   contract.getIdentifier(),
@@ -924,12 +929,12 @@ public class ContractService {
                   contract.getTermsAndConditions(),
                   contract.getNotes(),
                   contract.getCreatedAt(),
-                  contract.getUpdatedAt());
+                  Optional.of(contract.getUpdatedAt()));
             })
         .toList();
   }
 
-  private void validateCurrencyRequired(String currency, java.math.BigDecimal amount) {
+  private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {
     if (currency != null && !currency.isBlank()) {
       try {
         java.util.Currency.getInstance(currency);
@@ -943,14 +948,15 @@ public class ContractService {
     }
   }
 
-  private static boolean bigDecimalEquals(java.math.BigDecimal a, java.math.BigDecimal b) {
-    if (a == null && b == null) {
-      return true;
-    }
-    if (a == null || b == null) {
+  private static boolean optionalBigDecimalNotEquals(
+      Optional<BigDecimal> a, Optional<BigDecimal> b) {
+    if (a.isEmpty() && b.isEmpty()) {
       return false;
     }
-    return a.compareTo(b) == 0;
+    if (a.isEmpty() || b.isEmpty()) {
+      return true;
+    }
+    return a.get().compareTo(b.get()) != 0;
   }
 
   private void updatePropertyStatusBasedOnContract(
@@ -959,7 +965,7 @@ public class ContractService {
       Contract.ContractStatus oldStatus,
       UserPrincipal principal) {
     Property property =
-        propertyRepository.findByIdAndTeamId(propertyId, principal.getTeamId()).orElse(null);
+        propertyRepository.findByIdAndTeamId(propertyId, principal.requireTeamId()).orElse(null);
 
     if (property == null) {
       log.warn("Property {} not found for contract status update", propertyId);
@@ -973,7 +979,7 @@ public class ContractService {
     } else if (oldStatus == ACTIVE && (newStatus == EXPIRED || newStatus == TERMINATED)) {
       boolean hasOtherActiveContracts =
           contractRepository
-              .findActiveContractByPropertyId(propertyId, principal.getTeamId())
+              .findActiveContractByPropertyId(propertyId, principal.requireTeamId())
               .isPresent();
 
       if (!hasOtherActiveContracts) {

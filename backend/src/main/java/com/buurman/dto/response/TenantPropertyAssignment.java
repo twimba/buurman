@@ -1,3 +1,5 @@
 package com.buurman.dto.response;
 
-public record TenantPropertyAssignment(PropertySummary property, String role) {}
+import java.util.Optional;
+
+public record TenantPropertyAssignment(PropertySummary property, Optional<String> role) {}

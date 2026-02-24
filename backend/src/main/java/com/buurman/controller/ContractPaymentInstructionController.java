@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,9 +53,9 @@ public class ContractPaymentInstructionController {
       summary = "Get current payment instruction",
       description = "Get the currently active payment instruction for a contract")
   @GetMapping("/current")
-  public ContractPaymentInstructionResponse getCurrent(
+  public @Nullable ContractPaymentInstructionResponse getCurrent(
       @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
-    return service.getCurrent(contractIdentifier, principal);
+    return service.getCurrent(contractIdentifier, principal).orElse(null);
   }
 
   @Operation(

@@ -5,8 +5,10 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +48,8 @@ public class BackofficeTeamService {
   private final BackofficeTeamStatsRepository statsRepository;
 
   @Transactional(readOnly = true)
-  public PageResponse<BackofficeTeamResponse> listTeams(PageRequest pageRequest, String search) {
+  public PageResponse<BackofficeTeamResponse> listTeams(
+      PageRequest pageRequest, @Nullable String search) {
     PaginatedResult<Team> result = teamRepository.findAllPaginated(pageRequest, search);
     List<BackofficeTeamResponse> responses =
         result.items().stream().map(this::toListResponse).toList();
@@ -70,13 +73,13 @@ public class BackofficeTeamService {
                 m -> {
                   User u = usersById.get(m.getUserId());
                   return new MemberInfo(
-                      u != null ? u.getEmail() : null,
-                      u != null ? u.getFirstName() : null,
-                      u != null ? u.getLastName() : null,
-                      m.getRole(),
+                      Optional.ofNullable(u).map(User::getEmail),
+                      Optional.ofNullable(u).map(User::getFirstName),
+                      Optional.ofNullable(u).map(User::getLastName),
+                      m.getRole().name(),
                       m.isOwner(),
                       m.getJoinedAt(),
-                      u != null && u.getDisabledAt() != null);
+                      u != null && u.getDisabledAt().isPresent());
                 })
             .toList();
 
@@ -86,12 +89,14 @@ public class BackofficeTeamService {
     // Financial snapshot — derive currency from actual contract data
     TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
     var activeRent = statsRepository.sumActiveRentForTeam(team.getId());
-    String currency =
-        activeRent.getValue() != null ? activeRent.getValue() : prefs.getDefaultCurrency();
+    Optional<String> currency =
+        activeRent.getValue() != null
+            ? Optional.of(activeRent.getValue())
+            : prefs.getDefaultCurrency();
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
-            activeRent.getKey(),
+            Optional.ofNullable(activeRent.getKey()),
             currency,
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),
@@ -101,23 +106,23 @@ public class BackofficeTeamService {
     // Settings
     SettingsInfo settingsInfo =
         new SettingsInfo(
-            prefs.getPaymentsAheadCount(),
+            Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
             prefs.getDefaultCurrency(),
-            prefs.getDefaultCountry(),
-            prefs.getTimezone(),
-            prefs.getDateFormat(),
-            prefs.getFiscalYearStartMonth());
+            Optional.ofNullable(prefs.getDefaultCountry()),
+            Optional.ofNullable(prefs.getTimezone()),
+            Optional.ofNullable(prefs.getDateFormat()),
+            Optional.ofNullable(prefs.getFiscalYearStartMonth()));
 
     return new BackofficeTeamDetailResponse(
         team.getIdentifier(),
         team.getName(),
         team.getCreatedAt(),
-        team.getUpdatedAt(),
+        Optional.ofNullable(team.getUpdatedAt()),
         memberInfos,
         dataCounts,
         financialSnapshot,
-        settingsInfo);
+        Optional.of(settingsInfo));
   }
 
   @Transactional
@@ -130,7 +135,7 @@ public class BackofficeTeamService {
 
     log.info(
         "Backoffice user {} updated team {} name to '{}'",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         request.name());
     return toListResponse(team);
@@ -143,7 +148,7 @@ public class BackofficeTeamService {
     teamRepository.softDeleteById(team.getId());
     log.info(
         "Backoffice user {} soft-deleted team {} ({})",
-        principal.getEmail(),
+        principal.getEmail().orElse("unknown"),
         identifier,
         team.getName());
   }
@@ -164,8 +169,8 @@ public class BackofficeTeamService {
         team.getIdentifier(),
         team.getName(),
         memberCount,
-        ownerEmail,
+        Optional.ofNullable(ownerEmail),
         team.getCreatedAt(),
-        team.getUpdatedAt());
+        Optional.ofNullable(team.getUpdatedAt()));
   }
 }

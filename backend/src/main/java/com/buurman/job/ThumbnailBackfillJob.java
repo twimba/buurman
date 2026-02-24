@@ -1,7 +1,10 @@
 package com.buurman.job;
 
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -43,23 +46,11 @@ public class ThumbnailBackfillJob implements Job {
       try (InputStream is = s3StorageService.downloadFile(photo.getFileKey())) {
         var thumbData = thumbnailService.generateThumbnail(is);
         if (thumbData.isPresent()) {
-          // Parse team/entity identifiers from file key
-          // Key pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
-          String[] parts = photo.getFileKey().split("/");
-          String teamIdentifier = parts[0];
-          String entityType = parts[1];
-          String entityIdentifier = parts[2];
+          String thumbnailFileKey = S3StorageService.deriveThumbnailKey(photo.getFileKey());
 
-          String thumbnailFileKey =
-              s3StorageService.uploadFile(
-                  thumbData.get(),
-                  "image/jpeg",
-                  teamIdentifier,
-                  entityType,
-                  entityIdentifier,
-                  "thumb_" + photo.getFileName());
+          s3StorageService.uploadFile(thumbData.get(), IMAGE_JPEG_VALUE, thumbnailFileKey);
 
-          photo.setThumbnailFileKey(thumbnailFileKey);
+          photo.setThumbnailFileKey(Optional.of(thumbnailFileKey));
           photoRepository.save(photo);
           success++;
         } else {

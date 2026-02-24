@@ -2,6 +2,9 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.CalendarFeed;
@@ -10,9 +13,9 @@ import com.buurman.jooq.generated.tables.records.CalendarFeedsRecord;
 @Component
 public class CalendarFeedRecordMapper {
 
-  public CalendarFeed toDomain(CalendarFeedsRecord record) {
+  public Optional<CalendarFeed> toDomain(@Nullable CalendarFeedsRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     CalendarFeed feed = new CalendarFeed();
@@ -22,16 +25,16 @@ public class CalendarFeedRecordMapper {
     feed.setUserId(record.getUserId());
     feed.setFeedToken(record.getFeedToken());
     feed.setFeedType(CalendarFeed.FeedType.valueOf(record.getFeedType()));
-    feed.setContractId(record.getContractId());
-    feed.setPropertyId(record.getPropertyId());
-    feed.setTenantId(record.getTenantId());
+    feed.setContractId(Optional.ofNullable(record.getContractId()));
+    feed.setPropertyId(Optional.ofNullable(record.getPropertyId()));
+    feed.setTenantId(Optional.ofNullable(record.getTenantId()));
     feed.setEnabled(record.getEnabled());
-    feed.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    feed.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    feed.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    feed.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     feed.setCreatedBy(record.getCreatedBy());
     feed.setUpdatedBy(record.getUpdatedBy());
-    feed.setDeletedAt(record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
+    feed.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
-    return feed;
+    return Optional.of(feed);
   }
 }

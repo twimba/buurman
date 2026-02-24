@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.TenantAddress.AddressStatus;
+import com.buurman.domain.TenantAddress.AddressType;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.UpdateTenantAddressRequest;
 import com.buurman.dto.response.TenantAddressResponse;
@@ -40,19 +43,24 @@ public class TenantAddressService {
   public TenantAddressResponse createAddress(
       UUID tenantId, CreateTenantAddressRequest request, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
+    Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     // Check for unique ACTIVE CURRENT address constraint
-    if (request.addressType() == TenantAddress.AddressType.CURRENT
-        && (request.status() == null || request.status() == TenantAddress.AddressStatus.ACTIVE)) {
+    if (request.addressType() == AddressType.CURRENT
+        && (request.status().isEmpty()
+            || request
+                    .status()
+                    .orElseThrow(
+                        () -> new IllegalStateException("Status is empty after isEmpty check"))
+                == AddressStatus.ACTIVE)) {
       List<TenantAddress> existingAddresses =
-          addressRepository.findByTenantId(tenantId, principal.getTeamId());
+          addressRepository.findByTenantId(tenantId, principal.requireTeamId());
       boolean hasActiveCurrent =
           existingAddresses.stream()
               .anyMatch(
                   addr ->
-                      addr.getAddressType() == TenantAddress.AddressType.CURRENT
-                          && addr.getStatus() == TenantAddress.AddressStatus.ACTIVE);
+                      addr.getAddressType() == AddressType.CURRENT
+                          && addr.getStatus() == AddressStatus.ACTIVE);
       if (hasActiveCurrent) {
         throw new IllegalArgumentException(
             "Tenant already has an active CURRENT address. Please set existing address to INACTIVE"
@@ -62,27 +70,23 @@ public class TenantAddressService {
 
     TenantAddress address = addressMapper.toEntity(request);
     address.setTenantId(tenantId);
-    address.setTeamId(principal.getTeamId());
+    address.setTeamId(principal.requireTeamId());
     address.setCreatedBy(principal.getUserId());
     address.setUpdatedBy(principal.getUserId());
     address.setCreatedAt(clock.instant());
     address.setUpdatedAt(clock.instant());
+    address.setStatus(request.status().orElse(AddressStatus.ACTIVE));
 
-    // Set default status if not provided
-    if (address.getStatus() == null) {
-      address.setStatus(TenantAddress.AddressStatus.ACTIVE);
-    }
-
-    if (address.getLatitude() == null || address.getLongitude() == null) {
+    if (address.getLatitude().isEmpty() || address.getLongitude().isEmpty()) {
       geocodingService
           .geocode(
               request.street(), request.city(),
-              request.postalCode(), request.country())
+              request.postalCode().orElse(null), request.country())
           .ifPresent(
               result -> {
-                address.setLatitude(result.latitude().doubleValue());
-                address.setLongitude(result.longitude().doubleValue());
-                address.setGeocodeAccuracy(result.accuracy());
+                address.setLatitude(Optional.of(result.latitude().doubleValue()));
+                address.setLongitude(Optional.of(result.longitude().doubleValue()));
+                address.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 
@@ -90,14 +94,14 @@ public class TenantAddressService {
     log.info(
         "Address created for tenant {} in team {}: {} - {}, {}",
         tenantId,
-        principal.getTeamId(),
+        principal.requireTeamId(),
         savedAddress.getStreet(),
         savedAddress.getCity(),
         savedAddress.getCountry());
 
     // Log to audit trail
     auditService.logCreate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "TENANT_ADDRESS",
         savedAddress.getId(),
         principal.getUserId(),
@@ -108,15 +112,16 @@ public class TenantAddressService {
 
   public List<TenantAddressResponse> getAddresses(UUID tenantId, UserPrincipal principal) {
     // Verify tenant exists and belongs to user's team
-    tenantRepository.getByIdAndTeamId(tenantId, principal.getTeamId());
+    tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     List<TenantAddress> addresses =
-        addressRepository.findByTenantId(tenantId, principal.getTeamId());
+        addressRepository.findByTenantId(tenantId, principal.requireTeamId());
     return addresses.stream().map(addressMapper::toResponse).toList();
   }
 
   public TenantAddressResponse getAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
@@ -127,47 +132,49 @@ public class TenantAddressService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantAddressResponse updateAddress(
       UUID tenantId, UUID addressId, UpdateTenantAddressRequest request, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
 
     // Store old values for audit
     TenantAddress oldAddress =
-        new TenantAddress(
-            address.getId(),
-            address.getTenantId(),
-            address.getTeamId(),
-            address.getStreet(),
-            address.getCity(),
-            address.getPostalCode(),
-            address.getCountry(),
-            address.getAddressType(),
-            address.getStatus(),
-            address.getLatitude(),
-            address.getLongitude(),
-            address.getGeocodeAccuracy(),
-            address.getCreatedAt(),
-            address.getUpdatedAt(),
-            address.getCreatedBy(),
-            address.getUpdatedBy(),
-            address.getDeletedAt());
+        TenantAddress.builder()
+            .id(address.getId())
+            .identifier(address.getIdentifier())
+            .tenantId(address.getTenantId())
+            .teamId(address.getTeamId())
+            .street(address.getStreet())
+            .city(address.getCity())
+            .postalCode(address.getPostalCode())
+            .country(address.getCountry())
+            .addressType(address.getAddressType())
+            .status(address.getStatus())
+            .latitude(address.getLatitude())
+            .longitude(address.getLongitude())
+            .geocodeAccuracy(address.getGeocodeAccuracy())
+            .createdAt(address.getCreatedAt())
+            .updatedAt(address.getUpdatedAt())
+            .createdBy(address.getCreatedBy())
+            .updatedBy(address.getUpdatedBy())
+            .deletedAt(address.getDeletedAt())
+            .build();
 
     // Check for unique ACTIVE CURRENT address constraint
-    if (request.addressType() == TenantAddress.AddressType.CURRENT
-        && request.status() == TenantAddress.AddressStatus.ACTIVE) {
+    if (request.addressType() == AddressType.CURRENT && request.status() == AddressStatus.ACTIVE) {
       // If this address is being changed to CURRENT ACTIVE, check for conflicts
-      if (address.getAddressType() != TenantAddress.AddressType.CURRENT
-          || address.getStatus() != TenantAddress.AddressStatus.ACTIVE) {
+      if (address.getAddressType() != AddressType.CURRENT
+          || address.getStatus() != AddressStatus.ACTIVE) {
         List<TenantAddress> existingAddresses =
-            addressRepository.findByTenantId(address.getTenantId(), principal.getTeamId());
+            addressRepository.findByTenantId(address.getTenantId(), principal.requireTeamId());
         boolean hasOtherActiveCurrent =
             existingAddresses.stream()
                 .anyMatch(
                     addr ->
                         !addr.getId().equals(addressId)
-                            && addr.getAddressType() == TenantAddress.AddressType.CURRENT
-                            && addr.getStatus() == TenantAddress.AddressStatus.ACTIVE);
+                            && addr.getAddressType() == AddressType.CURRENT
+                            && addr.getStatus() == AddressStatus.ACTIVE);
         if (hasOtherActiveCurrent) {
           throw new IllegalArgumentException(
               "Tenant already has an active CURRENT address. Please set existing address to"
@@ -193,16 +200,16 @@ public class TenantAddressService {
             || !java.util.Objects.equals(oldPostalCode, address.getPostalCode())
             || !java.util.Objects.equals(oldCountry, address.getCountry());
 
-    if (addressChanged && (address.getLatitude() == null || address.getLongitude() == null)) {
+    if (addressChanged && (address.getLatitude().isEmpty() || address.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               address.getStreet(), address.getCity(),
               address.getPostalCode(), address.getCountry())
           .ifPresent(
               result -> {
-                address.setLatitude(result.latitude().doubleValue());
-                address.setLongitude(result.longitude().doubleValue());
-                address.setGeocodeAccuracy(result.accuracy());
+                address.setLatitude(Optional.of(result.latitude().doubleValue()));
+                address.setLongitude(Optional.of(result.longitude().doubleValue()));
+                address.setGeocodeAccuracy(Optional.ofNullable(result.accuracy()));
               });
     }
 
@@ -211,7 +218,7 @@ public class TenantAddressService {
         "Address updated: {} for tenant {} in team {}",
         addressId,
         address.getTenantId(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     // Determine changed fields for audit
     Map<String, Object> changedFields = new HashMap<>();
@@ -242,7 +249,7 @@ public class TenantAddressService {
 
     // Log to audit trail
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "TENANT_ADDRESS",
         updatedAddress.getId(),
         principal.getUserId(),
@@ -256,20 +263,21 @@ public class TenantAddressService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteAddress(UUID tenantId, UUID addressId, UserPrincipal principal) {
-    TenantAddress address = addressRepository.getByIdAndTeamId(addressId, principal.getTeamId());
+    TenantAddress address =
+        addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getTenantId().equals(tenantId)) {
       throw new IllegalArgumentException("Address does not belong to the specified tenant");
     }
 
-    addressRepository.softDeleteByIdAndTeamId(addressId, principal.getTeamId());
+    addressRepository.softDeleteByIdAndTeamId(addressId, principal.requireTeamId());
     log.info(
         "Address soft deleted: {} for tenant {} in team {}",
         addressId,
         address.getTenantId(),
-        principal.getTeamId());
+        principal.requireTeamId());
 
     // Log to audit trail
     auditService.logDelete(
-        principal.getTeamId(), "TENANT_ADDRESS", addressId, principal.getUserId(), address);
+        principal.requireTeamId(), "TENANT_ADDRESS", addressId, principal.getUserId(), address);
   }
 }

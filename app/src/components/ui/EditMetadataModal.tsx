@@ -24,14 +24,18 @@ export const EditMetadataModal = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCancel();
+      if (e.key === 'Escape') {
+        onCancel();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onCancel]);
 
   const handleSave = () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     const cleanNotes = editNotes.trim();
     // Treat empty editor content as null
     const notesValue =

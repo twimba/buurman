@@ -402,7 +402,9 @@ export const AuditLogPage = () => {
                                 {Object.entries(activity.changedFields!).map(
                                   ([field, value]) => {
                                     // Skip internal fields
-                                    if (field === 'documentCount') return null;
+                                    if (field === 'documentCount') {
+                                      return null;
+                                    }
 
                                     // Special handling for document operations
                                     if (

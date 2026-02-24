@@ -1,11 +1,12 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record BackofficeTeamResponse(
     String identifier,
     String teamName,
     long memberCount,
-    String ownerEmail,
+    Optional<String> ownerEmail,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

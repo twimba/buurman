@@ -13,10 +13,10 @@ public final class DemoUsers {
       String firstName,
       String lastName,
       String password,
-      Map<String, TeamRole> teamRoles // teamKey -> role
+      Map<String, MemberRole> teamRoles // teamKey -> role
       ) {}
 
-  public record TeamRole(String role, boolean isOwner) {}
+  public record MemberRole(com.buurman.domain.TeamRole role, boolean isOwner) {}
 
   public static final DemoUser DEMO_USER =
       new DemoUser(
@@ -25,9 +25,9 @@ public final class DemoUsers {
           "User",
           "buurman",
           Map.of(
-              "demo-team", new TeamRole("TEAM_ADMIN", true),
-              "team-alpha", new TeamRole("TEAM_EDITOR", false),
-              "team-beta", new TeamRole("TEAM_VIEWER", false)));
+              "demo-team", new MemberRole(com.buurman.domain.TeamRole.TEAM_ADMIN, true),
+              "team-alpha", new MemberRole(com.buurman.domain.TeamRole.TEAM_EDITOR, false),
+              "team-beta", new MemberRole(com.buurman.domain.TeamRole.TEAM_VIEWER, false)));
 
   public static final DemoUser ADMIN_TEAM1 =
       new DemoUser(
@@ -35,7 +35,7 @@ public final class DemoUsers {
           "John",
           "Smith",
           "admin@demo.buurman.io",
-          Map.of("team-alpha", new TeamRole("TEAM_ADMIN", true)));
+          Map.of("team-alpha", new MemberRole(com.buurman.domain.TeamRole.TEAM_ADMIN, true)));
 
   public static final DemoUser EDITOR_TEAM1 =
       new DemoUser(
@@ -43,7 +43,7 @@ public final class DemoUsers {
           "Jane",
           "Doe",
           "editor@demo.buurman.io",
-          Map.of("team-alpha", new TeamRole("TEAM_EDITOR", false)));
+          Map.of("team-alpha", new MemberRole(com.buurman.domain.TeamRole.TEAM_EDITOR, false)));
 
   public static final DemoUser VIEWER_TEAM1 =
       new DemoUser(
@@ -51,7 +51,7 @@ public final class DemoUsers {
           "Bob",
           "Wilson",
           "viewer@demo.buurman.io",
-          Map.of("team-alpha", new TeamRole("TEAM_VIEWER", false)));
+          Map.of("team-alpha", new MemberRole(com.buurman.domain.TeamRole.TEAM_VIEWER, false)));
 
   public static final DemoUser ADMIN_TEAM2 =
       new DemoUser(
@@ -59,7 +59,7 @@ public final class DemoUsers {
           "Alice",
           "Johnson",
           "admin.team2@demo.buurman.io",
-          Map.of("team-beta", new TeamRole("TEAM_ADMIN", true)));
+          Map.of("team-beta", new MemberRole(com.buurman.domain.TeamRole.TEAM_ADMIN, true)));
 
   public static final DemoUser EDITOR_TEAM2 =
       new DemoUser(
@@ -67,7 +67,7 @@ public final class DemoUsers {
           "Charlie",
           "Brown",
           "editor.team2@demo.buurman.io",
-          Map.of("team-beta", new TeamRole("TEAM_EDITOR", false)));
+          Map.of("team-beta", new MemberRole(com.buurman.domain.TeamRole.TEAM_EDITOR, false)));
 
   public static final DemoUser VIEWER_TEAM2 =
       new DemoUser(
@@ -75,7 +75,7 @@ public final class DemoUsers {
           "Diana",
           "Prince",
           "viewer.team2@demo.buurman.io",
-          Map.of("team-beta", new TeamRole("TEAM_VIEWER", false)));
+          Map.of("team-beta", new MemberRole(com.buurman.domain.TeamRole.TEAM_VIEWER, false)));
 
   public static final List<DemoUser> ALL_USERS =
       List.of(

@@ -34,32 +34,36 @@ public class RegistrationInvitationUsageRepository {
   }
 
   public List<RegistrationInvitationUsage> findByInvitationId(UUID invitationId) {
-    return dsl.select(
-            REGISTRATION_INVITATION_USAGES.ID,
-            REGISTRATION_INVITATION_USAGES.INVITATION_ID,
-            REGISTRATION_INVITATION_USAGES.USER_ID,
-            REGISTRATION_INVITATION_USAGES.USED_AT,
-            USERS.EMAIL,
-            USERS.FIRST_NAME,
-            USERS.LAST_NAME)
-        .from(REGISTRATION_INVITATION_USAGES)
-        .join(USERS)
-        .on(REGISTRATION_INVITATION_USAGES.USER_ID.eq(USERS.ID))
-        .where(REGISTRATION_INVITATION_USAGES.INVITATION_ID.eq(invitationId))
-        .orderBy(REGISTRATION_INVITATION_USAGES.USED_AT.desc())
-        .fetch(
-            record -> {
-              RegistrationInvitationUsage usage = new RegistrationInvitationUsage();
-              usage.setId(record.get(REGISTRATION_INVITATION_USAGES.ID));
-              usage.setInvitationId(record.get(REGISTRATION_INVITATION_USAGES.INVITATION_ID));
-              usage.setUserId(record.get(REGISTRATION_INVITATION_USAGES.USER_ID));
-              usage.setUsedAt(record.get(REGISTRATION_INVITATION_USAGES.USED_AT).toInstant(UTC));
-              usage.setUserEmail(record.get(USERS.EMAIL));
-              String firstName = record.get(USERS.FIRST_NAME);
-              String lastName = record.get(USERS.LAST_NAME);
-              usage.setUserName(
-                  (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : ""));
-              return usage;
-            });
+    return List.copyOf(
+        dsl.select(
+                REGISTRATION_INVITATION_USAGES.ID,
+                REGISTRATION_INVITATION_USAGES.INVITATION_ID,
+                REGISTRATION_INVITATION_USAGES.USER_ID,
+                REGISTRATION_INVITATION_USAGES.USED_AT,
+                USERS.EMAIL,
+                USERS.FIRST_NAME,
+                USERS.LAST_NAME)
+            .from(REGISTRATION_INVITATION_USAGES)
+            .join(USERS)
+            .on(REGISTRATION_INVITATION_USAGES.USER_ID.eq(USERS.ID))
+            .where(REGISTRATION_INVITATION_USAGES.INVITATION_ID.eq(invitationId))
+            .orderBy(REGISTRATION_INVITATION_USAGES.USED_AT.desc())
+            .fetch(
+                record -> {
+                  RegistrationInvitationUsage usage = new RegistrationInvitationUsage();
+                  usage.setId(record.get(REGISTRATION_INVITATION_USAGES.ID));
+                  usage.setInvitationId(record.get(REGISTRATION_INVITATION_USAGES.INVITATION_ID));
+                  usage.setUserId(record.get(REGISTRATION_INVITATION_USAGES.USER_ID));
+                  usage.setUsedAt(
+                      record.get(REGISTRATION_INVITATION_USAGES.USED_AT).toInstant(UTC));
+                  usage.setUserEmail(record.get(USERS.EMAIL));
+                  String firstName = record.get(USERS.FIRST_NAME);
+                  String lastName = record.get(USERS.LAST_NAME);
+                  usage.setUserName(
+                      (firstName != null ? firstName : "")
+                          + " "
+                          + (lastName != null ? lastName : ""));
+                  return usage;
+                }));
   }
 }

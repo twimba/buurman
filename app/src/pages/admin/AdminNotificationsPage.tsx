@@ -113,7 +113,9 @@ export const AdminNotificationsPage = () => {
     }
   };
 
-  if (teamLoading || !canEditTeamSettings) return null;
+  if (teamLoading || !canEditTeamSettings) {
+    return null;
+  }
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);

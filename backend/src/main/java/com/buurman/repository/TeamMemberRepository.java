@@ -47,7 +47,7 @@ public class TeamMemberRepository {
           .set(TEAM_MEMBERS.ID, newId)
           .set(TEAM_MEMBERS.TEAM_ID, teamMember.getTeamId())
           .set(TEAM_MEMBERS.USER_ID, teamMember.getUserId())
-          .set(TEAM_MEMBERS.ROLE, teamMember.getRole())
+          .set(TEAM_MEMBERS.ROLE, teamMember.getRole().name())
           .set(TEAM_MEMBERS.IS_OWNER, teamMember.isOwner())
           .set(TEAM_MEMBERS.INVITED_AT, mapper.toLocalDateTime(teamMember.getInvitedAt()))
           .set(TEAM_MEMBERS.INVITED_BY, teamMember.getInvitedBy())
@@ -60,7 +60,7 @@ public class TeamMemberRepository {
       dsl.update(TEAM_MEMBERS)
           .set(TEAM_MEMBERS.TEAM_ID, teamMember.getTeamId())
           .set(TEAM_MEMBERS.USER_ID, teamMember.getUserId())
-          .set(TEAM_MEMBERS.ROLE, teamMember.getRole())
+          .set(TEAM_MEMBERS.ROLE, teamMember.getRole().name())
           .set(TEAM_MEMBERS.IS_OWNER, teamMember.isOwner())
           .set(TEAM_MEMBERS.INVITED_AT, mapper.toLocalDateTime(teamMember.getInvitedAt()))
           .set(TEAM_MEMBERS.INVITED_BY, teamMember.getInvitedBy())
@@ -81,11 +81,12 @@ public class TeamMemberRepository {
   }
 
   public List<TeamMember> findAllByUserId(UUID userId) {
-    return dsl.selectFrom(TEAM_MEMBERS)
-        .where(TEAM_MEMBERS.USER_ID.eq(userId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
-        .orderBy(TEAM_MEMBERS.INVITED_AT.asc())
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.USER_ID.eq(userId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
+            .orderBy(TEAM_MEMBERS.INVITED_AT.asc())
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public Optional<TeamMember> findByUserIdAndTeamId(UUID userId, UUID teamId) {
@@ -118,10 +119,11 @@ public class TeamMemberRepository {
   }
 
   public List<TeamMember> findByTeamId(UUID teamId) {
-    return dsl.selectFrom(TEAM_MEMBERS)
-        .where(TEAM_MEMBERS.TEAM_ID.eq(teamId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
-        .fetch()
-        .map(mapper::toDomain);
+    return List.copyOf(
+        dsl.selectFrom(TEAM_MEMBERS)
+            .where(TEAM_MEMBERS.TEAM_ID.eq(teamId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
   }
 
   public boolean existsByTeamIdAndUserId(UUID teamId, UUID userId) {

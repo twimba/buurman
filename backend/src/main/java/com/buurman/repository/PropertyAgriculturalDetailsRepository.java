@@ -34,7 +34,7 @@ public class PropertyAgriculturalDetailsRepository {
         .map(this::toDomain);
   }
 
-  public PropertyAgriculturalDetails save(PropertyAgriculturalDetails details) {
+  public void save(PropertyAgriculturalDetails details) {
     LocalDateTime now = LocalDateTime.now(clock);
 
     if (details.getId() == null) {
@@ -43,21 +43,37 @@ public class PropertyAgriculturalDetailsRepository {
           .set(PROPERTY_AGRICULTURAL_DETAILS.ID, newId)
           .set(PROPERTY_AGRICULTURAL_DETAILS.PROPERTY_ID, details.getPropertyId())
           .set(PROPERTY_AGRICULTURAL_DETAILS.TEAM_ID, details.getTeamId())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE, details.getTotalLandAreaValue())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_UNIT, details.getTotalLandAreaUnit())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_VALUE, details.getArableAreaValue())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_UNIT, details.getArableAreaUnit())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.SOIL_TYPE, details.getSoilType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.HAS_WATER_RIGHTS, details.getHasWaterRights())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.WATER_SOURCE, details.getWaterSource())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.IRRIGATION_TYPE, details.getIrrigationType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.FENCING_TYPE, details.getFencingType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.HAS_OUTBUILDINGS, details.getHasOutbuildings())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.OUTBUILDING_DETAILS, details.getOutbuildingDetails())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.CURRENT_USE, details.getCurrentUse())
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE,
+              details.getTotalLandAreaValue().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_UNIT,
+              details.getTotalLandAreaUnit().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_VALUE,
+              details.getArableAreaValue().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_UNIT,
+              details.getArableAreaUnit().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.SOIL_TYPE, details.getSoilType().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.HAS_WATER_RIGHTS,
+              details.getHasWaterRights().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.WATER_SOURCE, details.getWaterSource().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.IRRIGATION_TYPE,
+              details.getIrrigationType().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.FENCING_TYPE, details.getFencingType().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.HAS_OUTBUILDINGS,
+              details.getHasOutbuildings().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.OUTBUILDING_DETAILS,
+              details.getOutbuildingDetails().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.CURRENT_USE, details.getCurrentUse().orElse(null))
           .set(
               PROPERTY_AGRICULTURAL_DETAILS.ZONING_CLASSIFICATION,
-              details.getZoningClassification())
+              details.getZoningClassification().orElse(null))
           .set(PROPERTY_AGRICULTURAL_DETAILS.CREATED_AT, now)
           .set(PROPERTY_AGRICULTURAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_AGRICULTURAL_DETAILS.CREATED_BY, details.getCreatedBy())
@@ -68,21 +84,37 @@ public class PropertyAgriculturalDetailsRepository {
       details.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(PROPERTY_AGRICULTURAL_DETAILS)
-          .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE, details.getTotalLandAreaValue())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_UNIT, details.getTotalLandAreaUnit())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_VALUE, details.getArableAreaValue())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_UNIT, details.getArableAreaUnit())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.SOIL_TYPE, details.getSoilType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.HAS_WATER_RIGHTS, details.getHasWaterRights())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.WATER_SOURCE, details.getWaterSource())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.IRRIGATION_TYPE, details.getIrrigationType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.FENCING_TYPE, details.getFencingType())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.HAS_OUTBUILDINGS, details.getHasOutbuildings())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.OUTBUILDING_DETAILS, details.getOutbuildingDetails())
-          .set(PROPERTY_AGRICULTURAL_DETAILS.CURRENT_USE, details.getCurrentUse())
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE,
+              details.getTotalLandAreaValue().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_UNIT,
+              details.getTotalLandAreaUnit().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_VALUE,
+              details.getArableAreaValue().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_UNIT,
+              details.getArableAreaUnit().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.SOIL_TYPE, details.getSoilType().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.HAS_WATER_RIGHTS,
+              details.getHasWaterRights().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.WATER_SOURCE, details.getWaterSource().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.IRRIGATION_TYPE,
+              details.getIrrigationType().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.FENCING_TYPE, details.getFencingType().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.HAS_OUTBUILDINGS,
+              details.getHasOutbuildings().orElse(null))
+          .set(
+              PROPERTY_AGRICULTURAL_DETAILS.OUTBUILDING_DETAILS,
+              details.getOutbuildingDetails().orElse(null))
+          .set(PROPERTY_AGRICULTURAL_DETAILS.CURRENT_USE, details.getCurrentUse().orElse(null))
           .set(
               PROPERTY_AGRICULTURAL_DETAILS.ZONING_CLASSIFICATION,
-              details.getZoningClassification())
+              details.getZoningClassification().orElse(null))
           .set(PROPERTY_AGRICULTURAL_DETAILS.UPDATED_AT, now)
           .set(PROPERTY_AGRICULTURAL_DETAILS.UPDATED_BY, details.getUpdatedBy())
           .where(
@@ -93,7 +125,6 @@ public class PropertyAgriculturalDetailsRepository {
           .execute();
       details.setUpdatedAt(now.toInstant(UTC));
     }
-    return details;
   }
 
   public void deleteByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
@@ -112,21 +143,21 @@ public class PropertyAgriculturalDetailsRepository {
     d.setId(record.getId());
     d.setPropertyId(record.getPropertyId());
     d.setTeamId(record.getTeamId());
-    d.setTotalLandAreaValue(record.getTotalLandAreaValue());
-    d.setTotalLandAreaUnit(record.getTotalLandAreaUnit());
-    d.setArableAreaValue(record.getArableAreaValue());
-    d.setArableAreaUnit(record.getArableAreaUnit());
-    d.setSoilType(record.getSoilType());
-    d.setHasWaterRights(record.getHasWaterRights());
-    d.setWaterSource(record.getWaterSource());
-    d.setIrrigationType(record.getIrrigationType());
-    d.setFencingType(record.getFencingType());
-    d.setHasOutbuildings(record.getHasOutbuildings());
-    d.setOutbuildingDetails(record.getOutbuildingDetails());
-    d.setCurrentUse(record.getCurrentUse());
-    d.setZoningClassification(record.getZoningClassification());
-    d.setCreatedAt(record.getCreatedAt() == null ? null : record.getCreatedAt().toInstant(UTC));
-    d.setUpdatedAt(record.getUpdatedAt() == null ? null : record.getUpdatedAt().toInstant(UTC));
+    d.setTotalLandAreaValue(Optional.ofNullable(record.getTotalLandAreaValue()));
+    d.setTotalLandAreaUnit(Optional.ofNullable(record.getTotalLandAreaUnit()));
+    d.setArableAreaValue(Optional.ofNullable(record.getArableAreaValue()));
+    d.setArableAreaUnit(Optional.ofNullable(record.getArableAreaUnit()));
+    d.setSoilType(Optional.ofNullable(record.getSoilType()));
+    d.setHasWaterRights(Optional.ofNullable(record.getHasWaterRights()));
+    d.setWaterSource(Optional.ofNullable(record.getWaterSource()));
+    d.setIrrigationType(Optional.ofNullable(record.getIrrigationType()));
+    d.setFencingType(Optional.ofNullable(record.getFencingType()));
+    d.setHasOutbuildings(Optional.ofNullable(record.getHasOutbuildings()));
+    d.setOutbuildingDetails(Optional.ofNullable(record.getOutbuildingDetails()));
+    d.setCurrentUse(Optional.ofNullable(record.getCurrentUse()));
+    d.setZoningClassification(Optional.ofNullable(record.getZoningClassification()));
+    d.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    d.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     d.setCreatedBy(record.getCreatedBy());
     d.setUpdatedBy(record.getUpdatedBy());
     return d;

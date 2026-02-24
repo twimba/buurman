@@ -32,13 +32,14 @@ public class PaymentInstructionService {
   private final Clock clock;
 
   public List<PaymentInstructionResponse> getAll(UserPrincipal principal) {
-    return repository.findAllByTeamId(principal.getTeamId()).stream()
+    return repository.findAllByTeamId(principal.requireTeamId()).stream()
         .map(mapper::toResponse)
         .toList();
   }
 
   public PaymentInstructionResponse getByIdentifier(String identifier, UserPrincipal principal) {
-    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    PaymentInstruction pi =
+        repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return mapper.toResponse(pi);
   }
 
@@ -47,22 +48,28 @@ public class PaymentInstructionService {
   public PaymentInstructionResponse create(
       CreatePaymentInstructionRequest request, UserPrincipal principal) {
     PaymentInstruction pi = mapper.toEntity(request);
-    pi.setTeamId(principal.getTeamId());
+    pi.setTeamId(principal.requireTeamId());
     pi.setCreatedBy(principal.getUserId());
     pi.setUpdatedBy(principal.getUserId());
     pi.setCreatedAt(clock.instant());
     pi.setUpdatedAt(clock.instant());
 
-    if (Boolean.TRUE.equals(request.isDefault())) {
-      repository.clearDefaultByTeamId(principal.getTeamId());
+    if (request.isDefault().orElse(false)) {
+      repository.clearDefaultByTeamId(principal.requireTeamId());
     }
 
     PaymentInstruction saved = repository.save(pi);
     log.info(
-        "Payment instruction created: {} in team {}", saved.getIdentifier(), principal.getTeamId());
+        "Payment instruction created: {} in team {}",
+        saved.getIdentifier(),
+        principal.requireTeamId());
 
     auditService.logCreate(
-        principal.getTeamId(), "PAYMENT_INSTRUCTION", saved.getId(), principal.getUserId(), saved);
+        principal.requireTeamId(),
+        "PAYMENT_INSTRUCTION",
+        saved.getId(),
+        principal.getUserId(),
+        saved);
 
     return mapper.toResponse(saved);
   }
@@ -71,15 +78,16 @@ public class PaymentInstructionService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentInstructionResponse update(
       String identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
-    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    PaymentInstruction pi =
+        repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Store old values for audit
     String oldName = pi.getName();
     String oldPaymentMethod = pi.getPaymentMethod() != null ? pi.getPaymentMethod().name() : null;
     Boolean oldIsDefault = pi.getIsDefault();
 
-    if (Boolean.TRUE.equals(request.isDefault()) && !Boolean.TRUE.equals(pi.getIsDefault())) {
-      repository.clearDefaultByTeamId(principal.getTeamId());
+    if (request.isDefault().orElse(false) && !pi.getIsDefault()) {
+      repository.clearDefaultByTeamId(principal.requireTeamId());
     }
 
     mapper.updateEntity(pi, request);
@@ -87,7 +95,7 @@ public class PaymentInstructionService {
     pi.setUpdatedAt(clock.instant());
 
     PaymentInstruction updated = repository.save(pi);
-    log.info("Payment instruction updated: {} in team {}", identifier, principal.getTeamId());
+    log.info("Payment instruction updated: {} in team {}", identifier, principal.requireTeamId());
 
     Map<String, Object> changedFields = new HashMap<>();
     if (!Objects.equals(oldName, updated.getName())) {
@@ -103,7 +111,7 @@ public class PaymentInstructionService {
     }
 
     auditService.logUpdate(
-        principal.getTeamId(),
+        principal.requireTeamId(),
         "PAYMENT_INSTRUCTION",
         updated.getId(),
         principal.getUserId(),
@@ -117,12 +125,13 @@ public class PaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void delete(String identifier, UserPrincipal principal) {
-    PaymentInstruction pi = repository.getByIdentifierAndTeamId(identifier, principal.getTeamId());
+    PaymentInstruction pi =
+        repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    repository.softDeleteByIdAndTeamId(pi.getId(), principal.getTeamId());
-    log.info("Payment instruction deleted: {} in team {}", identifier, principal.getTeamId());
+    repository.softDeleteByIdAndTeamId(pi.getId(), principal.requireTeamId());
+    log.info("Payment instruction deleted: {} in team {}", identifier, principal.requireTeamId());
 
     auditService.logDelete(
-        principal.getTeamId(), "PAYMENT_INSTRUCTION", pi.getId(), principal.getUserId(), pi);
+        principal.requireTeamId(), "PAYMENT_INSTRUCTION", pi.getId(), principal.getUserId(), pi);
   }
 }

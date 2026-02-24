@@ -1,4 +1,4 @@
-package com.buurman.security;
+package com.buurman.config;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -17,6 +17,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -27,10 +28,16 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.TeamRole;
+import com.buurman.security.BackofficeJwtAuthenticationConverter;
+import com.buurman.security.EmailVerificationFilter;
+import com.buurman.security.JwtAuthenticationConverter;
+import com.buurman.security.MdcFilter;
+import com.buurman.security.RateLimitFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
   private final JwtAuthenticationConverter jwtAuthenticationConverter;
@@ -76,7 +83,7 @@ public class SecurityConfig {
   public SecurityFilterChain backofficeFilterChain(HttpSecurity http) throws Exception {
     http.securityMatcher("/backoffice/**")
         .cors(cors -> cors.configurationSource(backofficeCorsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
         .authorizeHttpRequests(
             auth ->
@@ -100,7 +107,7 @@ public class SecurityConfig {
   @Order(3)
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
         .authorizeHttpRequests(
             auth ->
@@ -166,7 +173,7 @@ public class SecurityConfig {
 
   private JwtDecoder backofficeJwtDecoder() {
     NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(backofficeJwkSetUri).build();
-    if (backofficeIssuerUri != null && !backofficeIssuerUri.isBlank()) {
+    if (!backofficeIssuerUri.isBlank()) {
       decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(backofficeIssuerUri));
     }
     return decoder;
@@ -174,6 +181,6 @@ public class SecurityConfig {
 
   @Bean
   public RoleHierarchy roleHierarchy() {
-    return RoleHierarchyImpl.fromHierarchy("ROLE_TEAM_ADMIN > ROLE_TEAM_EDITOR > ROLE_TEAM_VIEWER");
+    return RoleHierarchyImpl.fromHierarchy(TeamRole.hierarchy());
   }
 }

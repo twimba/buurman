@@ -11,7 +11,6 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,13 +23,14 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record2;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.AmountStats;
+import com.buurman.domain.MonthlyAmount;
 import com.buurman.domain.Payment;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.PaymentsRecord;
 import com.buurman.mapper.PaymentRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -55,7 +55,7 @@ public class PaymentRepository {
                 .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Payment getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -68,24 +68,24 @@ public class PaymentRepository {
         .where(
             PAYMENTS.ID.eq(id).and(PAYMENTS.TEAM_ID.eq(teamId)).and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
-  }
-
-  public Payment getByIdAndTeamId(UUID id, UUID teamId) {
-    return findByIdAndTeamId(id, teamId)
-        .orElseThrow(() -> new NotFoundException("Payment not found"));
+        .flatMap(mapper::toDomain);
   }
 
   public List<Payment> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Payment> findByContractId(UUID contractId, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .CONTRACT_ID
@@ -94,13 +94,19 @@ public class PaymentRepository {
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Payment> findPaidByContractIdsAndDateRange(
       Collection<UUID> contractIds, UUID teamId, LocalDate from, LocalDate to) {
-    if (contractIds.isEmpty()) return List.of();
-    return dsl.selectFrom(PAYMENTS)
+    if (contractIds.isEmpty()) {
+      return List.of();
+    }
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .CONTRACT_ID
@@ -112,25 +118,16 @@ public class PaymentRepository {
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.PAYMENT_DATE.asc())
         .fetch()
-        .map(mapper::toDomain);
-  }
-
-  public List<Payment> findByStatus(Payment.PaymentStatus status, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .STATUS
-                .eq(status.name())
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.desc())
-        .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Payment> findOverduePayments(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .TEAM_ID
@@ -140,24 +137,15 @@ public class PaymentRepository {
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.asc())
         .fetch()
-        .map(mapper::toDomain);
-  }
-
-  public List<Payment> findByDueDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.DUE_DATE.between(startDate, endDate))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.asc())
-        .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Payment> findByDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .TEAM_ID
@@ -167,7 +155,10 @@ public class PaymentRepository {
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.PAYMENT_DATE.asc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Payment save(Payment payment) {
@@ -193,10 +184,10 @@ public class PaymentRepository {
           .set(PAYMENTS.CONTRACT_ID, payment.getContractId())
           .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))
           .set(PAYMENTS.CURRENCY, currency)
-          .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
+          .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate().orElse(null))
           .set(PAYMENTS.DUE_DATE, payment.getDueDate())
           .set(PAYMENTS.STATUS, payment.getStatus().name())
-          .set(PAYMENTS.NOTES, payment.getNotes())
+          .set(PAYMENTS.NOTES, payment.getNotes().orElse(null))
           .set(
               PAYMENTS.AUTO_GENERATED,
               payment.getAutoGenerated() != null ? payment.getAutoGenerated() : false)
@@ -220,10 +211,10 @@ public class PaymentRepository {
       dsl.update(PAYMENTS)
           .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))
           .set(PAYMENTS.CURRENCY, currency)
-          .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
+          .set(PAYMENTS.PAYMENT_DATE, payment.getPaymentDate().orElse(null))
           .set(PAYMENTS.DUE_DATE, payment.getDueDate())
           .set(PAYMENTS.STATUS, payment.getStatus().name())
-          .set(PAYMENTS.NOTES, payment.getNotes())
+          .set(PAYMENTS.NOTES, payment.getNotes().orElse(null))
           .set(PAYMENTS.UPDATED_AT, updatedAt)
           .set(PAYMENTS.UPDATED_BY, payment.getUpdatedBy())
           .where(PAYMENTS.ID.eq(payment.getId()).and(PAYMENTS.TEAM_ID.eq(payment.getTeamId())))
@@ -248,7 +239,8 @@ public class PaymentRepository {
 
   public List<Payment> findPendingByContractIdFromDate(
       UUID contractId, UUID teamId, LocalDate fromDate) {
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .CONTRACT_ID
@@ -258,12 +250,16 @@ public class PaymentRepository {
                 .and(PAYMENTS.DUE_DATE.ge(fromDate))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Payment> findFuturePendingByContractId(UUID contractId, UUID teamId) {
     LocalDate today = LocalDate.now(clock);
-    return dsl.selectFrom(PAYMENTS)
+    return dsl
+        .selectFrom(PAYMENTS)
         .where(
             PAYMENTS
                 .CONTRACT_ID
@@ -273,16 +269,19 @@ public class PaymentRepository {
                 .and(PAYMENTS.DUE_DATE.gt(today))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public PaginatedResult<Payment> findAllByTeamIdPaginated(
       UUID teamId,
-      String status,
-      UUID contractId,
-      UUID propertyId,
-      LocalDate dateFrom,
-      LocalDate dateTo,
+      @Nullable String status,
+      @Nullable UUID contractId,
+      @Nullable UUID propertyId,
+      @Nullable LocalDate dateFrom,
+      @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     Condition condition = PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
@@ -329,10 +328,13 @@ public class PaymentRepository {
         sortableFields,
         PAYMENTS.DUE_DATE,
         pageRequest,
-        r -> mapper.toDomain((PaymentsRecord) r));
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map payment record")));
   }
 
-  public Record2<Integer, BigDecimal> getPendingStats(UUID teamId) {
+  public Optional<AmountStats> getPendingStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -342,10 +344,14 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name()))
                 .and(PAYMENTS.DUE_DATE.ge(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOne();
+        .fetchOptional()
+        .map(
+            r ->
+                new AmountStats(
+                    r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
-  public Record2<Integer, BigDecimal> getOverdueStats(UUID teamId) {
+  public Optional<AmountStats> getOverdueStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -355,10 +361,14 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.eq(PENDING.name()))
                 .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOne();
+        .fetchOptional()
+        .map(
+            r ->
+                new AmountStats(
+                    r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
-  public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
+  public List<MonthlyAmount> getMonthlyPaidTrend(UUID teamId, int months) {
     LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
     return dsl.select(
             field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
@@ -374,30 +384,31 @@ public class PaymentRepository {
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
         .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
-        .fetch();
+        .fetch()
+        .map(r -> new MonthlyAmount(r.value1(), Optional.ofNullable(r.value2())));
   }
 
-  public String findCurrencyByTeamId(UUID teamId) {
+  public Optional<String> findCurrencyByTeamId(UUID teamId) {
     return dsl.select(PAYMENTS.CURRENCY)
         .from(PAYMENTS)
         .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()))
         .limit(1)
         .fetchOptional()
-        .map(r -> r.get(PAYMENTS.CURRENCY))
-        .orElse(null);
+        .map(r -> r.get(PAYMENTS.CURRENCY));
   }
 
-  public LocalDate findEarliestPaymentDate(UUID teamId) {
-    return dsl.select(min(PAYMENTS.PAYMENT_DATE))
-        .from(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.DELETED_AT.isNull())
-                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                .and(PAYMENTS.STATUS.eq(PAID.name())))
-        .fetchOne(min(PAYMENTS.PAYMENT_DATE));
+  public Optional<LocalDate> findEarliestPaymentDate(UUID teamId) {
+    return Optional.ofNullable(
+        dsl.select(min(PAYMENTS.PAYMENT_DATE))
+            .from(PAYMENTS)
+            .where(
+                PAYMENTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(PAYMENTS.DELETED_AT.isNull())
+                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                    .and(PAYMENTS.STATUS.eq(PAID.name())))
+            .fetchOne(min(PAYMENTS.PAYMENT_DATE)));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

@@ -2,6 +2,9 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Expense;
@@ -11,9 +14,9 @@ import com.buurman.util.CurrencyUtils;
 @Component
 public class ExpenseRecordMapper {
 
-  public Expense toDomain(ExpensesRecord record) {
+  public Optional<Expense> toDomain(@Nullable ExpensesRecord record) {
     if (record == null) {
-      return null;
+      return Optional.empty();
     }
 
     Expense expense = new Expense();
@@ -26,16 +29,13 @@ public class ExpenseRecordMapper {
     expense.setCurrency(record.getCurrency());
     expense.setExpenseDate(record.getExpenseDate());
     expense.setDescription(record.getDescription());
-    expense.setNotes(record.getNotes());
-    expense.setCreatedAt(
-        record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    expense.setUpdatedAt(
-        record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    expense.setNotes(Optional.ofNullable(record.getNotes()));
+    expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    expense.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     expense.setCreatedBy(record.getCreatedBy());
     expense.setUpdatedBy(record.getUpdatedBy());
-    expense.setDeletedAt(
-        record.getDeletedAt() != null ? record.getDeletedAt().toInstant(UTC) : null);
+    expense.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
-    return expense;
+    return Optional.of(expense);
   }
 }

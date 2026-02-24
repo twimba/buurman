@@ -14,7 +14,9 @@ const getErrorMessage = (error: unknown): string => {
       data.detail || data.message || data.title || "Failed to create buurmy"
     );
   }
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) {
+    return error.message;
+  }
   return "Failed to create buurmy";
 };
 
@@ -36,7 +38,9 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);

@@ -73,7 +73,9 @@ export const getCurrencyByCode = (code: string): Currency | undefined => {
 
 export const formatCurrency = (code: string): string => {
   const currency = getCurrencyByCode(code);
-  if (!currency) return code;
+  if (!currency) {
+    return code;
+  }
   return `${currency.symbol} ${currency.name} (${currency.code})`;
 };
 

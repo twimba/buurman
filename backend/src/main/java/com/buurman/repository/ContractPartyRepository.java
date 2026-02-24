@@ -47,21 +47,15 @@ public class ContractPartyRepository {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
 
-    Timestamp createdAt =
-        party.getCreatedAt() != null
-            ? Timestamp.from(party.getCreatedAt())
-            : Timestamp.valueOf(now);
-    Timestamp updatedAt =
-        party.getUpdatedAt() != null
-            ? Timestamp.from(party.getUpdatedAt())
-            : Timestamp.valueOf(now);
+    Timestamp createdAt = Timestamp.from(party.getCreatedAt());
+    Timestamp updatedAt = Timestamp.from(party.getUpdatedAt());
 
     dsl.insertInto(CONTRACT_PARTIES)
         .set(ID, id)
         .set(IDENTIFIER, party.getIdentifier())
         .set(TEAM_ID, party.getTeamId())
         .set(CONTRACT_ID, party.getContractId())
-        .set(TENANT_ID, party.getTenantId())
+        .set(TENANT_ID, party.getTenantId().orElse(null))
         .set(ROLE, party.getRole().name())
         .set(CREATED_AT, createdAt)
         .set(UPDATED_AT, updatedAt)
@@ -76,22 +70,24 @@ public class ContractPartyRepository {
   }
 
   public List<ContractParty> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return dsl.select()
-        .from(CONTRACT_PARTIES)
-        .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(ROLE.asc(), CREATED_AT.asc())
-        .fetch(this::toDomain);
+    return List.copyOf(
+        dsl.select()
+            .from(CONTRACT_PARTIES)
+            .where(CONTRACT_ID.eq(contractId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(ROLE.asc(), CREATED_AT.asc())
+            .fetch(this::toDomain));
   }
 
   public List<ContractParty> findByContractIdsAndTeamId(Collection<UUID> contractIds, UUID teamId) {
     if (contractIds == null || contractIds.isEmpty()) {
       return List.of();
     }
-    return dsl.select()
-        .from(CONTRACT_PARTIES)
-        .where(CONTRACT_ID.in(contractIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
-        .orderBy(CONTRACT_ID.asc(), ROLE.asc(), CREATED_AT.asc())
-        .fetch(this::toDomain);
+    return List.copyOf(
+        dsl.select()
+            .from(CONTRACT_PARTIES)
+            .where(CONTRACT_ID.in(contractIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(CONTRACT_ID.asc(), ROLE.asc(), CREATED_AT.asc())
+            .fetch(this::toDomain));
   }
 
   public ContractParty getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -172,20 +168,24 @@ public class ContractPartyRepository {
     party.setIdentifier(record.get(IDENTIFIER));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
-    party.setTenantId(record.get(TENANT_ID));
+    party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));
     party.setRole(ContractPartyRole.valueOf(record.get(ROLE)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
-    party.setCreatedAt(createdAtVal != null ? createdAtVal.toInstant() : null);
+    if (createdAtVal != null) {
+      party.setCreatedAt(createdAtVal.toInstant());
+    }
 
     Timestamp updatedAtVal = record.get(UPDATED_AT);
-    party.setUpdatedAt(updatedAtVal != null ? updatedAtVal.toInstant() : null);
+    if (updatedAtVal != null) {
+      party.setUpdatedAt(updatedAtVal.toInstant());
+    }
 
     party.setCreatedBy(record.get(CREATED_BY));
     party.setUpdatedBy(record.get(UPDATED_BY));
 
     Timestamp deletedAtVal = record.get(DELETED_AT);
-    party.setDeletedAt(deletedAtVal != null ? deletedAtVal.toInstant() : null);
+    party.setDeletedAt(Optional.ofNullable(deletedAtVal).map(Timestamp::toInstant));
 
     return party;
   }

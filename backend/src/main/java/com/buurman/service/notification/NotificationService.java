@@ -3,13 +3,17 @@ package com.buurman.service.notification;
 import static com.buurman.domain.NotificationChannel.EMAIL;
 import static com.buurman.domain.NotificationChannel.SMS;
 import static com.buurman.domain.NotificationStatus.PENDING;
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
+import static com.buurman.domain.TeamRole.TEAM_EDITOR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,10 +80,9 @@ public class NotificationService {
   }
 
   @Transactional
-  public List<Notification> send(SendNotificationRequest request) {
+  public void send(SendNotificationRequest request) {
     request = resolveRecipientPhone(request);
     List<NotificationChannel> channels = resolveChannels(request);
-    List<Notification> notifications = new ArrayList<>();
 
     for (NotificationChannel channel : channels) {
       if (!canSendViaChannel(channel, request)) {
@@ -108,10 +111,10 @@ public class NotificationService {
       notification.setRecipientUserId(request.recipientUserId());
       notification.setRecipientTenantId(request.recipientTenantId());
       notification.setChannel(channel);
-      notification.setContentTemplate(request.templateName());
-      notification.setContentVariables(request.templateVariables());
+      notification.setContentTemplate(Optional.of(request.templateName()));
+      notification.setContentVariables(Optional.of(request.templateVariables()));
       notification.setStatus(PENDING);
-      notification.setCreatedBy(request.createdBy());
+      notification.setCreatedBy(Optional.of(request.createdBy()));
 
       notification = notificationRepository.save(notification);
 
@@ -122,13 +125,13 @@ public class NotificationService {
 
       NotificationSendRequest sendRequest =
           new NotificationSendRequest(
-              notification.getId(),
+              Optional.of(notification.getId()),
               request.recipientEmail(),
               request.recipientPhone(),
               content.subject(),
               content.body(),
-              null,
-              null);
+              Optional.empty(),
+              Optional.empty());
 
       try {
         outbox.setPayload(objectMapper.writeValueAsString(sendRequest));
@@ -137,18 +140,17 @@ public class NotificationService {
       }
 
       outboxRepository.save(outbox);
-      notifications.add(notification);
     }
-
-    return notifications;
   }
 
   @Transactional
-  public List<Notification> sendToTeam(SendNotificationRequest request) {
-    List<Notification> allNotifications = new ArrayList<>();
-    List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId());
+  public void sendToTeam(SendNotificationRequest request) {
+    if (request.teamId().isEmpty()) {
+      return;
+    }
+    List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId().get());
     for (TeamMember member : members) {
-      if (!"TEAM_ADMIN".equals(member.getRole()) && !"TEAM_EDITOR".equals(member.getRole())) {
+      if (member.getRole() != TEAM_ADMIN && member.getRole() != TEAM_EDITOR) {
         continue;
       }
       userRepository
@@ -157,24 +159,24 @@ public class NotificationService {
               user -> {
                 SendNotificationRequest perUser =
                     SendNotificationRequest.builder()
-                        .teamId(request.teamId())
+                        .teamId(request.teamId().orElse(null))
                         .notificationType(request.notificationType())
                         .recipientUserId(user.getId())
-                        .recipientTenantId(request.recipientTenantId())
+                        .recipientTenantId(request.recipientTenantId().orElse(null))
                         .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone())
+                        .recipientPhone(user.getPhone().orElse(null))
                         .templateName(request.templateName())
                         .templateVariables(request.templateVariables())
                         .createdBy(request.createdBy())
                         .build();
-                allNotifications.addAll(send(perUser));
+                send(perUser);
               });
     }
-    return allNotifications;
   }
 
   @Transactional
-  public Notification resend(UUID teamId, String notificationIdentifier, UUID userId) {
+  public Notification resend(
+      @Nullable UUID teamId, String notificationIdentifier, @Nullable UUID userId) {
     Notification original =
         notificationRepository.getByIdentifierAndTeamId(notificationIdentifier, teamId);
 
@@ -183,8 +185,14 @@ public class NotificationService {
       throw new ExternalServiceException("No sender for channel: " + original.getChannel());
     }
 
-    RenderedContent content =
-        sender.render(original.getContentTemplate(), original.getContentVariables());
+    String contentTemplate = original.getContentTemplate().orElse(null);
+    Map<String, Object> contentVariables = original.getContentVariables().orElse(null);
+    if (contentTemplate == null || contentVariables == null) {
+      throw new ExternalServiceException(
+          "Cannot resend notification without content template and variables");
+    }
+
+    RenderedContent content = sender.render(contentTemplate, contentVariables);
 
     Notification resent = new Notification();
     resent.setTeamId(original.getTeamId());
@@ -199,9 +207,9 @@ public class NotificationService {
     resent.setContentTemplate(original.getContentTemplate());
     resent.setContentVariables(original.getContentVariables());
     resent.setStatus(NotificationStatus.PENDING);
-    resent.setResentFromId(original.getId());
-    resent.setResendReason("Resent by user");
-    resent.setCreatedBy(userId);
+    resent.setResentFromId(Optional.of(original.getId()));
+    resent.setResendReason(Optional.of("Resent by user"));
+    resent.setCreatedBy(Optional.ofNullable(userId));
 
     resent = notificationRepository.save(resent);
 
@@ -212,13 +220,13 @@ public class NotificationService {
 
     NotificationSendRequest sendRequest =
         new NotificationSendRequest(
-            resent.getId(),
+            Optional.of(resent.getId()),
             resent.getRecipientEmail(),
             resent.getRecipientPhone(),
             content.subject(),
             content.body(),
-            null,
-            null);
+            Optional.empty(),
+            Optional.empty());
 
     try {
       outbox.setPayload(objectMapper.writeValueAsString(sendRequest));
@@ -232,7 +240,7 @@ public class NotificationService {
 
   private List<NotificationChannel> resolveChannels(SendNotificationRequest request) {
     // No user → EMAIL only (e.g., tenant notifications)
-    if (request.recipientUserId() == null) {
+    if (request.recipientUserId().isEmpty()) {
       return List.of(EMAIL);
     }
 
@@ -252,7 +260,7 @@ public class NotificationService {
 
     UserPreferences globalPrefs =
         userPreferencesRepository
-            .findByUserId(request.recipientUserId())
+            .findByUserId(request.recipientUserId().get())
             .orElseGet(UserPreferences::new);
 
     // System notification types (essential) → always eligible for email regardless of flag
@@ -270,7 +278,7 @@ public class NotificationService {
     // Configurable (business) types → email gated by feature flag
     UserNotificationTypePreference typePref =
         notifTypePrefRepository
-            .findByUserIdAndType(request.recipientUserId(), type)
+            .findByUserIdAndType(request.recipientUserId().get(), type)
             .orElseGet(UserNotificationTypePreference::new);
 
     List<NotificationChannel> channels = new ArrayList<>();
@@ -285,24 +293,24 @@ public class NotificationService {
   }
 
   private SendNotificationRequest resolveRecipientPhone(SendNotificationRequest request) {
-    if (request.recipientPhone() != null && !request.recipientPhone().isBlank()) {
+    if (request.recipientPhone().filter(p -> !p.isBlank()).isPresent()) {
       return request;
     }
-    if (request.recipientUserId() == null) {
+    if (request.recipientUserId().isEmpty()) {
       return request;
     }
     return userRepository
-        .findById(request.recipientUserId())
-        .map(User::getPhone)
-        .filter(phone -> phone != null && !phone.isBlank())
+        .findById(request.recipientUserId().get())
+        .flatMap(User::getPhone)
+        .filter(phone -> !phone.isBlank())
         .map(
             phone ->
                 SendNotificationRequest.builder()
-                    .teamId(request.teamId())
+                    .teamId(request.teamId().orElse(null))
                     .notificationType(request.notificationType())
-                    .recipientUserId(request.recipientUserId())
-                    .recipientTenantId(request.recipientTenantId())
-                    .recipientEmail(request.recipientEmail())
+                    .recipientUserId(request.recipientUserId().orElse(null))
+                    .recipientTenantId(request.recipientTenantId().orElse(null))
+                    .recipientEmail(request.recipientEmail().orElse(null))
                     .recipientPhone(phone)
                     .templateName(request.templateName())
                     .templateVariables(request.templateVariables())
@@ -313,9 +321,9 @@ public class NotificationService {
 
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {
     return switch (channel) {
-      case EMAIL -> request.recipientEmail() != null && !request.recipientEmail().isBlank();
+      case EMAIL -> request.recipientEmail().filter(e -> !e.isBlank()).isPresent();
       case SMS -> {
-        if (request.recipientPhone() == null || request.recipientPhone().isBlank()) {
+        if (request.recipientPhone().filter(p -> !p.isBlank()).isEmpty()) {
           yield false;
         }
         // Allow phone verification SMS to unverified phones
@@ -323,9 +331,9 @@ public class NotificationService {
           yield true;
         }
         // Block other SMS to users with unverified phones
-        if (request.recipientUserId() != null) {
-          User user = userRepository.findById(request.recipientUserId()).orElse(null);
-          yield user != null && user.getPhoneVerifiedAt() != null;
+        if (request.recipientUserId().isPresent()) {
+          User user = userRepository.findById(request.recipientUserId().get()).orElse(null);
+          yield user != null && user.getPhoneVerifiedAt().isPresent();
         }
         yield true; // Non-user SMS (e.g. tenant notifications)
       }

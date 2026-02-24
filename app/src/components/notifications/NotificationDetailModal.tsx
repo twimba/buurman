@@ -38,7 +38,9 @@ const EmailBodyPreview = ({ body }: { body: string }) => {
 
   useEffect(() => {
     const iframe = iframeRef.current;
-    if (!iframe) return;
+    if (!iframe) {
+      return;
+    }
 
     const handleLoad = () => {
       const doc = iframe.contentDocument;
@@ -113,14 +115,18 @@ export const NotificationDetailModal = ({
 }: NotificationDetailModalProps) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return '-';
+    if (!dateStr) {
+      return '-';
+    }
     return new Date(dateStr).toLocaleString();
   };
 

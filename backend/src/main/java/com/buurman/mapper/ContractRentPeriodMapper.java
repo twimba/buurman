@@ -3,6 +3,7 @@ package com.buurman.mapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -12,17 +13,19 @@ import com.buurman.dto.response.RentPeriodResponse;
 @Component
 public class ContractRentPeriodMapper {
 
-  public RentPeriodResponse toResponse(ContractRentPeriod period, BigDecimal previousRentAmount) {
-    BigDecimal percentageChange = null;
-    if (previousRentAmount != null && previousRentAmount.compareTo(BigDecimal.ZERO) > 0) {
-      percentageChange =
-          period
-              .getRentAmount()
-              .subtract(previousRentAmount)
-              .divide(previousRentAmount, 4, RoundingMode.HALF_UP)
-              .multiply(BigDecimal.valueOf(100))
-              .setScale(2, RoundingMode.HALF_UP);
-    }
+  public RentPeriodResponse toResponse(
+      ContractRentPeriod period, Optional<BigDecimal> previousRentAmount) {
+    Optional<BigDecimal> percentageChange =
+        previousRentAmount
+            .filter(p -> p.compareTo(BigDecimal.ZERO) > 0)
+            .map(
+                p ->
+                    period
+                        .getRentAmount()
+                        .subtract(p)
+                        .divide(p, 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100))
+                        .setScale(2, RoundingMode.HALF_UP));
 
     return new RentPeriodResponse(
         period.getIdentifier(),
@@ -43,8 +46,10 @@ public class ContractRentPeriodMapper {
             i -> {
               ContractRentPeriod current = periods.get(i);
               // The "previous" period is the next item in the list (since list is DESC)
-              BigDecimal previousAmount =
-                  (i + 1 < periods.size()) ? periods.get(i + 1).getRentAmount() : null;
+              Optional<BigDecimal> previousAmount =
+                  (i + 1 < periods.size())
+                      ? Optional.of(periods.get(i + 1).getRentAmount())
+                      : Optional.empty();
               return toResponse(current, previousAmount);
             })
         .toList();

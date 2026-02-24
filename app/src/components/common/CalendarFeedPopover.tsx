@@ -31,7 +31,9 @@ export const CalendarFeedButton = ({
   const createMutation = useCreateCalendarFeed();
 
   const existingFeed = feeds.find((f) => {
-    if (f.feedType !== feedType) return false;
+    if (f.feedType !== feedType) {
+      return false;
+    }
     switch (feedType) {
       case CalendarFeedType.CONTRACT:
         return f.contractIdentifier === entityIdentifier;

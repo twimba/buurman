@@ -1,20 +1,21 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record PaymentInstructionResponse(
     String identifier,
     String name,
-    String description,
+    Optional<String> description,
     String paymentMethod,
-    String bankName,
-    String accountHolderName,
-    String iban,
-    String bicSwift,
-    String accountNumber,
-    String routingNumber,
-    String paymentReference,
-    String additionalDetails,
-    Boolean isDefault,
+    Optional<String> bankName,
+    Optional<String> accountHolderName,
+    Optional<String> iban,
+    Optional<String> bicSwift,
+    Optional<String> accountNumber,
+    Optional<String> routingNumber,
+    Optional<String> paymentReference,
+    Optional<String> additionalDetails,
+    Optional<Boolean> isDefault,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

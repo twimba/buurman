@@ -1,3 +1,5 @@
 package com.buurman.dto.request.backoffice;
 
-public record SetLogLevelRequest(String level) {}
+import java.util.Optional;
+
+public record SetLogLevelRequest(Optional<String> level) {}

@@ -1,9 +1,11 @@
 package com.buurman.dto.request;
 
+import java.util.Optional;
+
 public record NotificationFilterRequest(
-    String type,
-    String channel,
-    String status,
-    String recipientEmail,
-    String dateFrom,
-    String dateTo) {}
+    Optional<String> type,
+    Optional<String> channel,
+    Optional<String> status,
+    Optional<String> recipientEmail,
+    Optional<String> dateFrom,
+    Optional<String> dateTo) {}

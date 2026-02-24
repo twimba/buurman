@@ -1,10 +1,12 @@
 package com.buurman.dto.response;
 
+import java.util.Optional;
+
 public record UserPreferencesResponse(
-    String theme,
-    String language,
-    String timezone,
-    String dateFormat,
-    String currencyFormat,
+    Optional<String> theme,
+    Optional<String> language,
+    Optional<String> timezone,
+    Optional<String> dateFormat,
+    Optional<String> currencyFormat,
     boolean emailNotifications,
     boolean smsNotifications) {}

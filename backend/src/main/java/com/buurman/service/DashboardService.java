@@ -4,20 +4,18 @@ import static com.buurman.domain.Property.PropertyStatus.MAINTENANCE;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
-import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
-import static com.buurman.jooq.generated.Tables.CONTRACTS;
-import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jooq.Record;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.domain.Property;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -74,36 +72,31 @@ public class DashboardService {
     return auditLogRepository.findRecentByTeamId(teamId, limit).stream()
         .map(
             record -> {
-              String entityType = record.get(AUDIT_LOG.ENTITY_TYPE);
-              UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
-              String action = record.get(AUDIT_LOG.ACTION);
-              String firstName = record.get(USERS.FIRST_NAME);
-              String lastName = record.get(USERS.LAST_NAME);
+              String entityType = record.entityType();
+              UUID entityId = record.entityId();
+              String action = record.action();
               String userName =
-                  (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
+                  record
+                      .firstName()
+                      .flatMap(fn -> record.lastName().map(ln -> fn + " " + ln))
+                      .orElse("Unknown");
 
-              // Get entity name based on type
+              // Get entity name and identifier based on type
               String entityName =
                   auditLogRepository.findEntityName(entityType, entityId, teamId).orElse("Unknown");
-
-              // Resolve entity identifier
               String entityIdentifier =
                   auditLogRepository
                       .findEntityIdentifier(entityType, entityId, teamId)
-                      .orElse(entityId != null ? entityId.toString() : "unknown");
+                      .orElse(entityId.toString());
 
               // Build description
               String description =
                   buildActivityDescription(action, entityType, entityName, userName);
 
+              Instant instant = record.timestamp().toInstant(UTC);
+
               return new RecentActivityResponse(
-                  entityType,
-                  entityIdentifier,
-                  entityName,
-                  action,
-                  userName,
-                  record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
-                  description);
+                  entityType, entityIdentifier, entityName, action, userName, instant, description);
             })
         .toList();
   }
@@ -123,21 +116,22 @@ public class DashboardService {
   }
 
   private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
-    List<Record> activeContracts = contractRepository.findActiveContractIncomeByTeamId(teamId);
+    List<ContractIncomeEntry> activeContracts =
+        contractRepository.findActiveContractIncomeByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
       return new DashboardStatsResponse.MonthlyIncome(
-          BigDecimal.ZERO, teamService.getDefaultCurrency(teamId));
+          BigDecimal.ZERO, teamService.getDefaultCurrency(teamId).orElse("EUR"));
     }
 
     // Group by currency and calculate monthly income
     Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
 
     for (var contract : activeContracts) {
-      String currency = contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY);
+      String currency = contract.rentAmountCurrency();
       BigDecimal rentAmount =
-          CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
-      String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
+          CurrencyUtils.toMajorUnits(contract.rentAmount().longValueExact(), currency);
+      String paymentFrequency = contract.paymentFrequency();
 
       // Convert to monthly amount based on payment frequency
       BigDecimal monthlyAmount =

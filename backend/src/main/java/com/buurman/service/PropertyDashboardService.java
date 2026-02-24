@@ -7,14 +7,17 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MONTHS;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +56,7 @@ public class PropertyDashboardService {
   private static final int DEFAULT_MONTHS = 12;
   public static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
+  private final Clock clock;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final PaymentRepository paymentRepository;
@@ -61,9 +65,9 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyDashboardResponse getDashboard(
-      String propertyIdentifier, Integer months, UserPrincipal principal) {
+      String propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
     int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
-    return getDashboardData(propertyIdentifier, effectiveMonths, principal.getTeamId());
+    return getDashboardData(propertyIdentifier, effectiveMonths, principal.requireTeamId());
   }
 
   /** Internal method for use by other services (authorization handled by caller). */
@@ -75,8 +79,8 @@ public class PropertyDashboardService {
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
 
-    String currency = property.getPurchasePriceCurrency();
-    LocalDate now = LocalDate.now();
+    String currency = property.getPurchasePriceCurrency().orElse(null);
+    LocalDate now = LocalDate.now(clock);
 
     LocalDate startDate;
     if (months <= 0) {
@@ -96,12 +100,12 @@ public class PropertyDashboardService {
 
       // Earliest date across purchase date, payments, and expenses
       LocalDate earliest = now;
-      if (property.getPurchaseDate() != null) {
-        earliest = property.getPurchaseDate();
+      if (property.getPurchaseDate().isPresent()) {
+        earliest = property.getPurchaseDate().get();
       }
       for (Payment p : unfilteredPayments) {
-        if (p.getPaymentDate() != null && p.getPaymentDate().isBefore(earliest)) {
-          earliest = p.getPaymentDate();
+        if (p.getPaymentDate().isPresent() && p.getPaymentDate().get().isBefore(earliest)) {
+          earliest = p.getPaymentDate().get();
         }
       }
       for (Expense e : unfilteredExpenses) {
@@ -173,11 +177,11 @@ public class PropertyDashboardService {
       List<Expense> expenses,
       int months) {
 
-    BigDecimal purchasePrice = property.getPurchasePrice();
-    BigDecimal marketValue = property.getCurrentMarketValue();
-    BigDecimal mortgageAmount = property.getMortgageAmount();
-    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
-    String currency = property.getPurchasePriceCurrency();
+    BigDecimal purchasePrice = property.getPurchasePrice().orElse(null);
+    BigDecimal marketValue = property.getCurrentMarketValue().orElse(null);
+    BigDecimal mortgageAmount = property.getMortgageAmount().orElse(null);
+    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
+    String currency = property.getPurchasePriceCurrency().orElse(null);
 
     BigDecimal totalIncome = sumAmounts(payments.stream().map(Payment::getAmount).toList());
     BigDecimal totalExpenses = sumAmounts(expenses.stream().map(Expense::getAmount).toList());
@@ -196,30 +200,31 @@ public class PropertyDashboardService {
     BigDecimal annualOperatingCosts =
         sumAmounts(
             java.util.Arrays.asList(
-                property.getAnnualPropertyTax(),
-                property.getAnnualInsurance(),
-                property.getAnnualHoaFee(),
-                property.getAnnualManagementFee(),
-                property.getAnnualMaintenanceReserve()));
+                property.getAnnualPropertyTax().orElse(null),
+                property.getAnnualInsurance().orElse(null),
+                property.getAnnualHoaFee().orElse(null),
+                property.getAnnualManagementFee().orElse(null),
+                property.getAnnualMaintenanceReserve().orElse(null)));
 
     // Annual NOI = income - recorded expenses - property-level operating costs (excluding mortgage)
     BigDecimal annualNoi = annualIncome.subtract(annualExpenses).subtract(annualOperatingCosts);
 
     // Monthly Cash Flow = avg monthly income - avg monthly expenses - operating costs/12 - mortgage
-    BigDecimal avgMonthlyIncome =
+    Optional<BigDecimal> avgMonthlyIncome =
         divideOrNull(totalIncome, BigDecimal.valueOf(Math.max(months, 1)));
-    BigDecimal avgMonthlyExpenses =
+    Optional<BigDecimal> avgMonthlyExpenses =
         divideOrNull(totalExpenses, BigDecimal.valueOf(Math.max(months, 1)));
     BigDecimal monthlyOperatingCosts =
         annualOperatingCosts.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
-    BigDecimal monthlyCashFlow = null;
-    if (avgMonthlyIncome != null) {
-      monthlyCashFlow =
-          avgMonthlyIncome
-              .subtract(avgMonthlyExpenses != null ? avgMonthlyExpenses : ZERO)
-              .subtract(monthlyOperatingCosts)
-              .subtract(monthlyMortgage != null ? monthlyMortgage : ZERO);
-    }
+    BigDecimal monthlyCashFlow =
+        avgMonthlyIncome
+            .map(
+                income ->
+                    income
+                        .subtract(avgMonthlyExpenses.orElse(ZERO))
+                        .subtract(monthlyOperatingCosts)
+                        .subtract(monthlyMortgage != null ? monthlyMortgage : ZERO))
+            .orElse(null);
 
     // Total Equity = market value - mortgage balance
     BigDecimal totalEquity = null;
@@ -228,7 +233,7 @@ public class PropertyDashboardService {
     }
 
     // Equity Growth % = (marketValue - purchasePrice) / purchasePrice * 100
-    BigDecimal equityGrowthPercent = percentChange(purchasePrice, marketValue);
+    BigDecimal equityGrowthPercent = percentChange(purchasePrice, marketValue).orElse(null);
 
     // Total ROI = (marketValue - purchasePrice + netIncome) / purchasePrice * 100
     BigDecimal totalRoiPercent = null;
@@ -244,8 +249,8 @@ public class PropertyDashboardService {
 
     // Annualized ROI = totalROI / yearsOwned
     BigDecimal annualizedRoiPercent = null;
-    if (totalRoiPercent != null && property.getPurchaseDate() != null) {
-      long daysOwned = DAYS.between(property.getPurchaseDate(), LocalDate.now());
+    if (totalRoiPercent != null && property.getPurchaseDate().isPresent()) {
+      long daysOwned = DAYS.between(property.getPurchaseDate().get(), LocalDate.now(clock));
       if (daysOwned > 0) {
         BigDecimal yearsOwned =
             BigDecimal.valueOf(daysOwned).divide(BigDecimal.valueOf(365.25), 4, HALF_UP);
@@ -275,7 +280,8 @@ public class PropertyDashboardService {
     }
 
     // Occupancy Rate over the selected period
-    BigDecimal occupancyRatePercent = calculateOccupancyRate(contracts, LocalDate.now(), months);
+    BigDecimal occupancyRatePercent =
+        calculateOccupancyRate(contracts, LocalDate.now(clock), months).orElse(null);
 
     // Gross Rent Multiplier = market value / annual gross rent
     BigDecimal grossRentMultiplier = null;
@@ -284,17 +290,17 @@ public class PropertyDashboardService {
     }
 
     return new SummaryMetrics(
-        totalRoiPercent,
-        annualizedRoiPercent,
-        capRatePercent,
-        cashOnCashPercent,
-        monthlyCashFlow,
-        annualNoi,
-        totalEquity,
-        equityGrowthPercent,
-        occupancyRatePercent,
-        grossRentMultiplier,
-        currency);
+        Optional.ofNullable(totalRoiPercent),
+        Optional.ofNullable(annualizedRoiPercent),
+        Optional.ofNullable(capRatePercent),
+        Optional.ofNullable(cashOnCashPercent),
+        Optional.ofNullable(monthlyCashFlow),
+        Optional.ofNullable(annualNoi),
+        Optional.ofNullable(totalEquity),
+        Optional.ofNullable(equityGrowthPercent),
+        Optional.ofNullable(occupancyRatePercent),
+        Optional.ofNullable(grossRentMultiplier),
+        Optional.ofNullable(currency));
   }
 
   private CashFlowChartData buildCashFlowChart(
@@ -303,35 +309,37 @@ public class PropertyDashboardService {
       Property property,
       LocalDate now,
       int months) {
-    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment();
+    BigDecimal monthlyMortgage = property.getMonthlyMortgagePayment().orElse(null);
 
     // Build per-month operating cost map (due-month-aware)
     Map<Integer, BigDecimal> operatingCostsByMonth = new java.util.HashMap<>();
     addAnnualCostToMonth(
         operatingCostsByMonth,
-        property.getAnnualPropertyTax(),
-        property.getAnnualPropertyTaxDueMonth());
+        property.getAnnualPropertyTax().orElse(null),
+        property.getAnnualPropertyTaxDueMonth().orElse(null));
     addAnnualCostToMonth(
         operatingCostsByMonth,
-        property.getAnnualInsurance(),
-        property.getAnnualInsuranceDueMonth());
-    addAnnualCostToMonth(
-        operatingCostsByMonth, property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
+        property.getAnnualInsurance().orElse(null),
+        property.getAnnualInsuranceDueMonth().orElse(null));
     addAnnualCostToMonth(
         operatingCostsByMonth,
-        property.getAnnualManagementFee(),
-        property.getAnnualManagementFeeDueMonth());
+        property.getAnnualHoaFee().orElse(null),
+        property.getAnnualHoaFeeDueMonth().orElse(null));
     addAnnualCostToMonth(
         operatingCostsByMonth,
-        property.getAnnualMaintenanceReserve(),
-        property.getAnnualMaintenanceReserveDueMonth());
+        property.getAnnualManagementFee().orElse(null),
+        property.getAnnualManagementFeeDueMonth().orElse(null));
+    addAnnualCostToMonth(
+        operatingCostsByMonth,
+        property.getAnnualMaintenanceReserve().orElse(null),
+        property.getAnnualMaintenanceReserveDueMonth().orElse(null));
 
     Map<YearMonth, BigDecimal> incomeByMonth =
         payments.stream()
-            .filter(p -> p.getPaymentDate() != null)
+            .filter(p -> p.getPaymentDate().isPresent())
             .collect(
                 Collectors.groupingBy(
-                    p -> YearMonth.from(p.getPaymentDate()),
+                    p -> YearMonth.from(p.getPaymentDate().get()),
                     Collectors.reducing(ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<YearMonth, BigDecimal> expensesByMonth =
@@ -375,9 +383,9 @@ public class PropertyDashboardService {
     // Add property-level annual operating costs to breakdown.
     // MANAGEMENT and MAINTENANCE_RESERVE are excluded — they are budget allocations,
     // not actual incurred expenses recorded against the property.
-    addIfNotNull(byCategory, "PROPERTY_TAX", property.getAnnualPropertyTax());
-    addIfNotNull(byCategory, "INSURANCE", property.getAnnualInsurance());
-    addIfNotNull(byCategory, "HOA", property.getAnnualHoaFee());
+    addIfNotNull(byCategory, "PROPERTY_TAX", property.getAnnualPropertyTax().orElse(null));
+    addIfNotNull(byCategory, "INSURANCE", property.getAnnualInsurance().orElse(null));
+    addIfNotNull(byCategory, "HOA", property.getAnnualHoaFee().orElse(null));
 
     List<CategorySlice> slices =
         byCategory.entrySet().stream()
@@ -407,15 +415,18 @@ public class PropertyDashboardService {
     addAnnualCostToTimeline(
         monthlyMap,
         "PROPERTY_TAX",
-        property.getAnnualPropertyTax(),
-        property.getAnnualPropertyTaxDueMonth());
+        property.getAnnualPropertyTax().orElse(null),
+        property.getAnnualPropertyTaxDueMonth().orElse(null));
     addAnnualCostToTimeline(
         monthlyMap,
         "INSURANCE",
-        property.getAnnualInsurance(),
-        property.getAnnualInsuranceDueMonth());
+        property.getAnnualInsurance().orElse(null),
+        property.getAnnualInsuranceDueMonth().orElse(null));
     addAnnualCostToTimeline(
-        monthlyMap, "HOA", property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth());
+        monthlyMap,
+        "HOA",
+        property.getAnnualHoaFee().orElse(null),
+        property.getAnnualHoaFeeDueMonth().orElse(null));
 
     List<ExpenseTimelineMonth> timeline =
         monthlyMap.entrySet().stream()
@@ -429,7 +440,7 @@ public class PropertyDashboardService {
    * Parses a comma-separated month string (e.g. "1,3,7") into a list of month numbers. Returns null
    * if the input is null or blank (meaning all months).
    */
-  private static List<Integer> parseDueMonths(String dueMonths) {
+  private static @Nullable List<Integer> parseDueMonths(@Nullable String dueMonths) {
     if (dueMonths == null || dueMonths.isBlank()) {
       return null;
     }
@@ -445,7 +456,9 @@ public class PropertyDashboardService {
    * among those months. Otherwise, it's spread evenly across all 12 months.
    */
   private static void addAnnualCostToMonth(
-      Map<Integer, BigDecimal> monthMap, BigDecimal annualAmount, String dueMonths) {
+      Map<Integer, BigDecimal> monthMap,
+      @Nullable BigDecimal annualAmount,
+      @Nullable String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
@@ -470,8 +483,8 @@ public class PropertyDashboardService {
   private static void addAnnualCostToTimeline(
       Map<YearMonth, Map<String, BigDecimal>> timeline,
       String category,
-      BigDecimal annualAmount,
-      String dueMonths) {
+      @Nullable BigDecimal annualAmount,
+      @Nullable String dueMonths) {
     if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
       return;
     }
@@ -491,7 +504,8 @@ public class PropertyDashboardService {
     }
   }
 
-  private static void addIfNotNull(Map<String, BigDecimal> map, String key, BigDecimal value) {
+  private static void addIfNotNull(
+      Map<String, BigDecimal> map, String key, @Nullable BigDecimal value) {
     if (value != null && value.compareTo(ZERO) > 0) {
       map.merge(key, value, BigDecimal::add);
     }
@@ -523,10 +537,7 @@ public class PropertyDashboardService {
           continue;
         }
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
-        LocalDate cEnd =
-            (c.getEndDate() == null || c.getEndDate().isAfter(monthEnd))
-                ? monthEnd
-                : c.getEndDate();
+        LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
         if (!cStart.isAfter(cEnd)) {
           occupiedDays += DAYS.between(cStart, cEnd) + 1;
         }
@@ -559,7 +570,8 @@ public class PropertyDashboardService {
                   c ->
                       c.getStatus() == ContractStatus.ACTIVE
                           && !c.getStartDate().isAfter(monthEnd)
-                          && (c.getEndDate() == null || !c.getEndDate().isBefore(monthStart)))
+                          && (c.getEndDate().isEmpty()
+                              || !c.getEndDate().get().isBefore(monthStart)))
               .map(c -> c.getRentAmount() != null ? c.getRentAmount() : ZERO)
               .reduce(ZERO, BigDecimal::add);
 
@@ -567,39 +579,41 @@ public class PropertyDashboardService {
       BigDecimal expectedExpenses = ZERO;
 
       // Monthly mortgage payment
-      if (property.getMonthlyMortgagePayment() != null
-          && property.getMonthlyMortgagePayment().compareTo(ZERO) > 0) {
-        expectedExpenses = expectedExpenses.add(property.getMonthlyMortgagePayment());
+      if (property.getMonthlyMortgagePayment().isPresent()
+          && property.getMonthlyMortgagePayment().get().compareTo(ZERO) > 0) {
+        expectedExpenses = expectedExpenses.add(property.getMonthlyMortgagePayment().get());
       }
 
       // Add annual costs that are due in this month
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualPropertyTax(),
-                  property.getAnnualPropertyTaxDueMonth(),
+                  property.getAnnualPropertyTax().orElse(null),
+                  property.getAnnualPropertyTaxDueMonth().orElse(null),
                   monthNumber));
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualInsurance(),
-                  property.getAnnualInsuranceDueMonth(),
+                  property.getAnnualInsurance().orElse(null),
+                  property.getAnnualInsuranceDueMonth().orElse(null),
                   monthNumber));
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualHoaFee(), property.getAnnualHoaFeeDueMonth(), monthNumber));
-      expectedExpenses =
-          expectedExpenses.add(
-              getMonthlyShareOfAnnualCost(
-                  property.getAnnualManagementFee(),
-                  property.getAnnualManagementFeeDueMonth(),
+                  property.getAnnualHoaFee().orElse(null),
+                  property.getAnnualHoaFeeDueMonth().orElse(null),
                   monthNumber));
       expectedExpenses =
           expectedExpenses.add(
               getMonthlyShareOfAnnualCost(
-                  property.getAnnualMaintenanceReserve(),
-                  property.getAnnualMaintenanceReserveDueMonth(),
+                  property.getAnnualManagementFee().orElse(null),
+                  property.getAnnualManagementFeeDueMonth().orElse(null),
+                  monthNumber));
+      expectedExpenses =
+          expectedExpenses.add(
+              getMonthlyShareOfAnnualCost(
+                  property.getAnnualMaintenanceReserve().orElse(null),
+                  property.getAnnualMaintenanceReserveDueMonth().orElse(null),
                   monthNumber));
 
       BigDecimal expectedNet = expectedIncome.subtract(expectedExpenses);
@@ -617,28 +631,32 @@ public class PropertyDashboardService {
    * months.
    */
   private BigDecimal getMonthlyShareOfAnnualCost(
-      BigDecimal annualAmount, String dueMonths, int currentMonth) {
-    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) return ZERO;
+      @Nullable BigDecimal annualAmount, @Nullable String dueMonths, int currentMonth) {
+    if (annualAmount == null || annualAmount.compareTo(ZERO) <= 0) {
+      return ZERO;
+    }
     if (dueMonths == null || dueMonths.isBlank()) {
       // If no due months specified, spread evenly across 12 months
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }
     List<Integer> months = parseDueMonths(dueMonths);
-    if (months.isEmpty()) {
+    if (months == null || months.isEmpty()) {
       return annualAmount.divide(BigDecimal.valueOf(12), SCALE, HALF_UP);
     }
-    if (!months.contains(currentMonth)) return ZERO;
+    if (!months.contains(currentMonth)) {
+      return ZERO;
+    }
     return annualAmount.divide(BigDecimal.valueOf(months.size()), SCALE, HALF_UP);
   }
 
   private DataCompleteness buildDataCompleteness(
       Property property, List<Contract> contracts, UUID teamId) {
 
-    boolean hasPurchasePrice = property.getPurchasePrice() != null;
-    boolean hasMarketValue = property.getCurrentMarketValue() != null;
-    boolean hasMortgageInfo = property.getMortgageType() != null;
+    boolean hasPurchasePrice = property.getPurchasePrice().isPresent();
+    boolean hasMarketValue = property.getCurrentMarketValue().isPresent();
+    boolean hasMortgageInfo = property.getMortgageType().isPresent();
     boolean hasOperatingCosts =
-        property.getAnnualPropertyTax() != null || property.getAnnualInsurance() != null;
+        property.getAnnualPropertyTax().isPresent() || property.getAnnualInsurance().isPresent();
     boolean hasContracts = !contracts.isEmpty();
     // Use all-time checks for payments/expenses (independent of period filter)
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
@@ -646,7 +664,7 @@ public class PropertyDashboardService {
         !contractIds.isEmpty()
             && !paymentRepository
                 .findPaidByContractIdsAndDateRange(
-                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now())
+                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now(clock))
                 .isEmpty();
     boolean hasExpenses = !expenseRepository.findByPropertyId(property.getId(), teamId).isEmpty();
 
@@ -674,11 +692,12 @@ public class PropertyDashboardService {
         percent);
   }
 
-  private BigDecimal calculateOccupancyRate(List<Contract> contracts, LocalDate now, int months) {
+  private Optional<BigDecimal> calculateOccupancyRate(
+      List<Contract> contracts, LocalDate now, int months) {
     LocalDate start = now.minusMonths(months);
     long totalDays = DAYS.between(start, now);
     if (totalDays <= 0) {
-      return null;
+      return Optional.empty();
     }
 
     long occupiedDays = 0;
@@ -693,34 +712,36 @@ public class PropertyDashboardService {
       }
 
       LocalDate cStart = c.getStartDate().isBefore(start) ? start : c.getStartDate();
-      LocalDate cEnd =
-          (c.getEndDate() == null || c.getEndDate().isAfter(now)) ? now : c.getEndDate();
+      LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(now)).orElse(now);
       if (!cStart.isAfter(cEnd)) {
         occupiedDays += DAYS.between(cStart, cEnd) + 1;
       }
     }
     occupiedDays = Math.min(occupiedDays, totalDays);
 
-    return BigDecimal.valueOf(occupiedDays)
-        .multiply(ONE_HUNDRED)
-        .divide(BigDecimal.valueOf(totalDays), SCALE, HALF_UP);
+    return Optional.of(
+        BigDecimal.valueOf(occupiedDays)
+            .multiply(ONE_HUNDRED)
+            .divide(BigDecimal.valueOf(totalDays), SCALE, HALF_UP));
   }
 
   private static BigDecimal sumAmounts(List<BigDecimal> amounts) {
     return amounts.stream().filter(java.util.Objects::nonNull).reduce(ZERO, BigDecimal::add);
   }
 
-  private static BigDecimal divideOrNull(BigDecimal numerator, BigDecimal denominator) {
+  private static Optional<BigDecimal> divideOrNull(
+      @Nullable BigDecimal numerator, BigDecimal denominator) {
     if (numerator == null || denominator == null || denominator.compareTo(ZERO) == 0) {
-      return null;
+      return Optional.empty();
     }
-    return numerator.divide(denominator, SCALE, HALF_UP);
+    return Optional.of(numerator.divide(denominator, SCALE, HALF_UP));
   }
 
-  private static BigDecimal percentChange(BigDecimal from, BigDecimal to) {
+  private static Optional<BigDecimal> percentChange(
+      @Nullable BigDecimal from, @Nullable BigDecimal to) {
     if (from == null || to == null || from.compareTo(ZERO) == 0) {
-      return null;
+      return Optional.empty();
     }
-    return to.subtract(from).multiply(ONE_HUNDRED).divide(from, SCALE, HALF_UP);
+    return Optional.of(to.subtract(from).multiply(ONE_HUNDRED).divide(from, SCALE, HALF_UP));
   }
 }

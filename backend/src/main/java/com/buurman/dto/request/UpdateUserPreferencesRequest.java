@@ -1,12 +1,14 @@
 package com.buurman.dto.request;
 
+import java.util.Optional;
+
 import jakarta.validation.constraints.Pattern;
 
 public record UpdateUserPreferencesRequest(
-    @Pattern(regexp = "light|dark|system") String theme,
-    @Pattern(regexp = "[a-z]{2}") String language,
-    String timezone,
-    String dateFormat,
-    String currencyFormat,
-    Boolean emailNotifications,
-    Boolean smsNotifications) {}
+    Optional<@Pattern(regexp = "light|dark|system") String> theme,
+    Optional<@Pattern(regexp = "[a-z]{2}") String> language,
+    Optional<String> timezone,
+    Optional<String> dateFormat,
+    Optional<String> currencyFormat,
+    Optional<Boolean> emailNotifications,
+    Optional<Boolean> smsNotifications) {}

@@ -5,6 +5,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.min;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,13 +18,13 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import com.buurman.mapper.ContractRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -48,7 +49,7 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -65,7 +66,7 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract getByIdAndTeamId(UUID id, UUID teamId) {
@@ -77,7 +78,8 @@ public class ContractRepository {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(
             CONTRACTS
                 .ID
@@ -85,19 +87,27 @@ public class ContractRepository {
                 .and(CONTRACTS.TEAM_ID.eq(teamId))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findAllByTeamId(UUID teamId) {
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull()))
         .orderBy(CONTRACTS.CREATED_AT.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByPropertyId(UUID propertyId, UUID teamId) {
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(
             CONTRACTS
                 .PROPERTY_ID
@@ -106,7 +116,10 @@ public class ContractRepository {
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .orderBy(CONTRACTS.START_DATE.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByTenantIdViaParties(UUID tenantId, UUID teamId) {
@@ -116,7 +129,8 @@ public class ContractRepository {
     var CP_TEAM_ID = org.jooq.impl.DSL.field("contract_parties.team_id", UUID.class);
     var CP_DELETED_AT = org.jooq.impl.DSL.field("contract_parties.deleted_at", LocalDateTime.class);
 
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .whereExists(
             dsl.selectOne()
                 .from(CONTRACT_PARTIES)
@@ -130,11 +144,15 @@ public class ContractRepository {
         .and(CONTRACTS.DELETED_AT.isNull())
         .orderBy(CONTRACTS.START_DATE.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<Contract> findByStatus(Contract.ContractStatus status, UUID teamId) {
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(
             CONTRACTS
                 .STATUS
@@ -143,7 +161,10 @@ public class ContractRepository {
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .orderBy(CONTRACTS.START_DATE.desc())
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public Optional<Contract> findActiveContractByPropertyId(UUID propertyId, UUID teamId) {
@@ -156,7 +177,7 @@ public class ContractRepository {
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(mapper::toDomain);
+        .flatMap(mapper::toDomain);
   }
 
   public Contract save(Contract contract) {
@@ -165,14 +186,8 @@ public class ContractRepository {
     if (contract.getId() == null) {
       // Insert
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt =
-          contract.getCreatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getCreatedAt(), UTC)
-              : now;
-      LocalDateTime updatedAt =
-          contract.getUpdatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
-              : now;
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
@@ -181,8 +196,8 @@ public class ContractRepository {
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
-          .set(CONTRACTS.END_DATE, contract.getEndDate())
-          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+          .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
+          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
           .set(
               CONTRACTS.RENT_AMOUNT,
               CurrencyUtils.toMinorUnits(
@@ -191,22 +206,26 @@ public class ContractRepository {
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
+                  contract.getDepositAmount().orElse(null),
+                  contract.getDepositAmountCurrency().orElse(null)))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
-          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
+                  contract.getSecurityDeposit().orElse(null),
+                  contract.getSecurityDepositCurrency().orElse(null)))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+              contract.getSecurityDepositCurrency().orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
-          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
           .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
           .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
-          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
           .set(CONTRACTS.STATUS, contract.getStatus().name())
-          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
-          .set(CONTRACTS.NOTES, contract.getNotes())
+          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
+          .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
           .set(CONTRACTS.CREATED_AT, createdAt)
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -218,17 +237,14 @@ public class ContractRepository {
       contract.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
       // Update
-      LocalDateTime updatedAt =
-          contract.getUpdatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
-              : now;
+      LocalDateTime updatedAt = now;
 
       dsl.update(CONTRACTS)
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
           .set(CONTRACTS.START_DATE, contract.getStartDate())
-          .set(CONTRACTS.END_DATE, contract.getEndDate())
-          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate())
+          .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
+          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
           .set(
               CONTRACTS.RENT_AMOUNT,
               CurrencyUtils.toMinorUnits(
@@ -237,22 +253,26 @@ public class ContractRepository {
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount(), contract.getDepositAmountCurrency()))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency())
+                  contract.getDepositAmount().orElse(null),
+                  contract.getDepositAmountCurrency().orElse(null)))
+          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
               CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit(), contract.getSecurityDepositCurrency()))
-          .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, contract.getSecurityDepositCurrency())
+                  contract.getSecurityDeposit().orElse(null),
+                  contract.getSecurityDepositCurrency().orElse(null)))
+          .set(
+              CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+              contract.getSecurityDepositCurrency().orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
-          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay())
+          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
           .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
           .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
-          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage())
+          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
           .set(CONTRACTS.STATUS, contract.getStatus().name())
-          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions())
-          .set(CONTRACTS.NOTES, contract.getNotes())
+          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
+          .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
           .where(CONTRACTS.ID.eq(contract.getId()).and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))
@@ -265,7 +285,11 @@ public class ContractRepository {
   }
 
   public PaginatedResult<Contract> findAllByTeamIdPaginated(
-      UUID teamId, String status, UUID propertyId, UUID tenantId, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String status,
+      @Nullable UUID propertyId,
+      @Nullable UUID tenantId,
+      PageRequest pageRequest) {
     Condition condition = CONTRACTS.TEAM_ID.eq(teamId).and(CONTRACTS.DELETED_AT.isNull());
     if (status != null && !status.isEmpty()) {
       condition = condition.and(CONTRACTS.STATUS.eq(status));
@@ -305,11 +329,15 @@ public class ContractRepository {
         sortableFields,
         CONTRACTS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((ContractsRecord) r));
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(
             CONTRACTS
                 .TEAM_ID
@@ -317,12 +345,15 @@ public class ContractRepository {
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
-  public List<Record> findActiveContractIncomeByTeamId(UUID teamId) {
-    return dsl
-        .select(CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
+  public List<ContractIncomeEntry> findActiveContractIncomeByTeamId(UUID teamId) {
+    return dsl.select(
+            CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
         .from(CONTRACTS)
         .where(
             CONTRACTS
@@ -331,13 +362,17 @@ public class ContractRepository {
                 .and(CONTRACTS.STATUS.eq("ACTIVE"))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
-        .stream()
-        .map(r -> (Record) r)
-        .toList();
+        .map(
+            r ->
+                new ContractIncomeEntry(
+                    BigDecimal.valueOf(r.get(CONTRACTS.RENT_AMOUNT)),
+                    r.get(CONTRACTS.RENT_AMOUNT_CURRENCY),
+                    r.get(CONTRACTS.PAYMENT_FREQUENCY)));
   }
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
-    return dsl.selectFrom(CONTRACTS)
+    return dsl
+        .selectFrom(CONTRACTS)
         .where(
             CONTRACTS
                 .TEAM_ID
@@ -347,19 +382,23 @@ public class ContractRepository {
                 .and(CONTRACTS.END_DATE.le(beforeDate))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
-        .map(mapper::toDomain);
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
-  public LocalDate findEarliestStartDate(UUID teamId) {
-    return dsl.select(min(CONTRACTS.START_DATE))
-        .from(CONTRACTS)
-        .where(
-            CONTRACTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(CONTRACTS.DELETED_AT.isNull())
-                .and(CONTRACTS.START_DATE.isNotNull()))
-        .fetchOne(min(CONTRACTS.START_DATE));
+  public Optional<LocalDate> findEarliestStartDate(UUID teamId) {
+    return Optional.ofNullable(
+        dsl.select(min(CONTRACTS.START_DATE))
+            .from(CONTRACTS)
+            .where(
+                CONTRACTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(CONTRACTS.DELETED_AT.isNull())
+                    .and(CONTRACTS.START_DATE.isNotNull()))
+            .fetchOne(min(CONTRACTS.START_DATE)));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {

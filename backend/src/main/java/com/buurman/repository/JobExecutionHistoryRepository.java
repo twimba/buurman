@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.Condition;
@@ -16,6 +17,7 @@ import org.jooq.Record;
 import org.jooq.SortField;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.SortDirection;
@@ -66,7 +68,7 @@ public class JobExecutionHistoryRepository {
   }
 
   public void markCompleted(
-      UUID id, Instant endedAt, long durationMs, String status, String errorMessage) {
+      UUID id, Instant endedAt, long durationMs, String status, @Nullable String errorMessage) {
     dsl.update(TABLE)
         .set(ENDED_AT, Timestamp.from(endedAt))
         .set(DURATION_MS, durationMs)
@@ -77,7 +79,9 @@ public class JobExecutionHistoryRepository {
   }
 
   public PageResponse<JobExecutionHistoryResponse> findAll(
-      PageRequest pageRequest, List<String> jobNameFilter, String statusFilter) {
+      PageRequest pageRequest,
+      @Nullable List<String> jobNameFilter,
+      @Nullable String statusFilter) {
     List<Condition> conditions = new ArrayList<>();
     if (jobNameFilter != null && !jobNameFilter.isEmpty()) {
       conditions.add(JOB_NAME.in(jobNameFilter));
@@ -91,15 +95,18 @@ public class JobExecutionHistoryRepository {
     int total = dsl.fetchCount(dsl.selectFrom(TABLE).where(where));
 
     SortField<?> sortField = STARTED_AT.desc();
-    if (pageRequest.sort() != null) {
+    if (pageRequest.sort().isPresent()) {
       Field<?> field =
-          switch (pageRequest.sort()) {
+          switch (pageRequest.sort().get()) {
             case "jobName" -> JOB_NAME;
             case "status" -> STATUS;
             case "durationMs" -> DURATION_MS;
             default -> STARTED_AT;
           };
-      sortField = pageRequest.direction() == SortDirection.ASC ? field.asc() : field.desc();
+      sortField =
+          pageRequest.direction().orElse(SortDirection.DESC) == SortDirection.ASC
+              ? field.asc()
+              : field.desc();
     }
 
     var records =
@@ -111,18 +118,21 @@ public class JobExecutionHistoryRepository {
             .fetch();
 
     List<JobExecutionHistoryResponse> items =
-        records.map(
-            r ->
-                new JobExecutionHistoryResponse(
-                    r.get(ID).toString(),
-                    r.get(JOB_NAME),
-                    r.get(JOB_GROUP),
-                    formatTimestamp(r.get(STARTED_AT)),
-                    formatTimestamp(r.get(ENDED_AT)),
-                    r.get(DURATION_MS),
-                    r.get(STATUS),
-                    r.get(ERROR_MESSAGE),
-                    r.get(NODE_ID)));
+        List.copyOf(
+            records.map(
+                r -> {
+                  String startedAt = formatTimestamp(r.get(STARTED_AT));
+                  return new JobExecutionHistoryResponse(
+                      r.get(ID).toString(),
+                      r.get(JOB_NAME),
+                      r.get(JOB_GROUP),
+                      startedAt != null ? startedAt : "",
+                      Optional.ofNullable(formatTimestamp(r.get(ENDED_AT))),
+                      Optional.ofNullable(r.get(DURATION_MS)),
+                      r.get(STATUS),
+                      Optional.ofNullable(r.get(ERROR_MESSAGE)),
+                      Optional.ofNullable(r.get(NODE_ID)));
+                }));
 
     return PageResponse.of(items, pageRequest.page(), pageRequest.size(), total);
   }
@@ -131,7 +141,7 @@ public class JobExecutionHistoryRepository {
     return dsl.deleteFrom(TABLE).where(STARTED_AT.lt(Timestamp.from(cutoff))).execute();
   }
 
-  private String formatTimestamp(Timestamp ts) {
+  private @Nullable String formatTimestamp(@Nullable Timestamp ts) {
     if (ts == null) {
       return null;
     }

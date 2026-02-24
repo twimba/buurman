@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,7 @@ public class BackofficeSettingsController {
       @Valid @RequestBody UpdatePhoneNumberPolicyRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     PhoneNumberPolicy policy = policyService.getPolicy();
-    policy.setPolicyMatrix(request.policyMatrix());
+    policy.setPolicyMatrix(Optional.ofNullable(request.policyMatrix()));
     policy.setMaxCodesPerHour(request.maxCodesPerHour());
     policy.setVerificationCodeExpiryMinutes(request.verificationCodeExpiryMinutes());
     policy.setUpdatedBy(principal.getEmail());
@@ -81,8 +82,9 @@ public class BackofficeSettingsController {
   }
 
   private BackofficePhoneNumberPolicyResponse toResponse(PhoneNumberPolicy policy) {
+    Map<String, List<String>> matrix = policy.getPolicyMatrix().orElse(Map.of());
     return new BackofficePhoneNumberPolicyResponse(
-        policy.getPolicyMatrix(),
+        matrix,
         policy.getMaxCodesPerHour(),
         policy.getVerificationCodeExpiryMinutes(),
         policy.getUpdatedAt(),

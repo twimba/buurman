@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,16 +61,18 @@ public class BackofficeFeatureFlagController {
       boolean isActive,
       Map<String, Object> flags) {}
 
-  public record UpdateFeatureFlagRequest(Boolean enabled, String value) {}
+  public record UpdateFeatureFlagRequest(@Nullable Boolean enabled, @Nullable String value) {}
 
-  public record FeatureFlagUpdateResponse(String flagName, boolean enabled, Object value) {}
+  public record FeatureFlagUpdateResponse(
+      String flagName, boolean enabled, @Nullable Object value) {}
 
-  public record SegmentFlagOverride(String flagName, boolean enabled, Object value) {}
+  public record SegmentFlagOverride(
+      @Nullable String flagName, boolean enabled, @Nullable Object value) {}
 
   public record SegmentEvaluation(
       long segmentId,
-      String segmentName,
-      String description,
+      @Nullable String segmentName,
+      @Nullable String description,
       Map<String, SegmentFlagOverride> overrides) {}
 
   // --- Read endpoints ---
@@ -102,7 +107,7 @@ public class BackofficeFeatureFlagController {
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
-    UUID activeTeamId = resolveActiveTeamId(user, memberships);
+    Optional<UUID> activeTeamId = resolveActiveTeamId(user, memberships);
 
     List<TeamFlagEvaluation> evaluations = new ArrayList<>();
 
@@ -113,7 +118,9 @@ public class BackofficeFeatureFlagController {
       }
 
       String identity =
-          FlagsmithAdminService.buildIdentity(team.getIdentifier(), user.getIdentifier());
+          FeatureFlagService.buildIdentity(
+              Objects.requireNonNull(team.getIdentifier()),
+              Objects.requireNonNull(user.getIdentifier()));
 
       Map<String, Object> traits = new HashMap<>();
       traits.put("team", team.getIdentifier());
@@ -126,9 +133,9 @@ public class BackofficeFeatureFlagController {
           new TeamFlagEvaluation(
               team.getIdentifier(),
               team.getName(),
-              membership.getRole(),
+              membership.getRole().name(),
               membership.isOwner(),
-              membership.getTeamId().equals(activeTeamId),
+              activeTeamId.map(membership.getTeamId()::equals).orElse(false),
               flags));
     }
 
@@ -170,7 +177,7 @@ public class BackofficeFeatureFlagController {
       @PathVariable String flagName,
       @RequestBody UpdateFeatureFlagRequest request) {
 
-    String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
 
     // Find the feature ID from the global feature states
     FeatureStateInfo globalState =
@@ -227,7 +234,7 @@ public class BackofficeFeatureFlagController {
       @PathVariable String teamIdentifier,
       @PathVariable String flagName) {
 
-    String identity = FlagsmithAdminService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
 
     FeatureStateInfo globalState =
         flagsmithAdminService
@@ -358,23 +365,23 @@ public class BackofficeFeatureFlagController {
 
   // --- Internal ---
 
-  private UUID resolveActiveTeamId(User user, List<TeamMember> memberships) {
+  private Optional<UUID> resolveActiveTeamId(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
-    UUID activeTeamId = user.getActiveTeamId();
-    if (activeTeamId != null
-        && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamId))) {
-      return activeTeamId;
+    Optional<UUID> activeTeamIdOpt = user.getActiveTeamId();
+    if (activeTeamIdOpt.isPresent()
+        && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamIdOpt.get()))) {
+      return activeTeamIdOpt;
     }
 
-    UUID defaultTeamId = user.getDefaultTeamId();
-    if (defaultTeamId != null
-        && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamId))) {
-      return defaultTeamId;
+    Optional<UUID> defaultTeamIdOpt = user.getDefaultTeamId();
+    if (defaultTeamIdOpt.isPresent()
+        && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamIdOpt.get()))) {
+      return defaultTeamIdOpt;
     }
 
-    return memberships.getFirst().getTeamId();
+    return Optional.of(memberships.getFirst().getTeamId());
   }
 }

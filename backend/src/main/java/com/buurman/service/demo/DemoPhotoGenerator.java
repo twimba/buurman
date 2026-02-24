@@ -1,14 +1,16 @@
 package com.buurman.service.demo;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.buurman.domain.Photo;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.service.S3StorageService;
-import com.buurman.service.ThumbnailService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,19 +42,14 @@ public class DemoPhotoGenerator {
 
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
-  private final ThumbnailService thumbnailService;
   private final Random random = new Random(42);
 
   /** Photo pool loaded once from classpath, keyed by room category. */
   private final Map<String, List<byte[]>> photoPool;
 
-  public DemoPhotoGenerator(
-      PhotoRepository photoRepository,
-      S3StorageService s3StorageService,
-      ThumbnailService thumbnailService) {
+  public DemoPhotoGenerator(PhotoRepository photoRepository, S3StorageService s3StorageService) {
     this.photoRepository = photoRepository;
     this.s3StorageService = s3StorageService;
-    this.thumbnailService = thumbnailService;
     this.photoPool = loadPhotoPool();
   }
 
@@ -68,7 +64,11 @@ public class DemoPhotoGenerator {
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
-      UUID uploadedBy = ctx.getAdminUserForTeam(teamKey);
+      Optional<UUID> uploadedByOpt = ctx.getAdminUserForTeam(teamKey);
+      if (uploadedByOpt.isEmpty()) {
+        continue;
+      }
+      UUID uploadedBy = uploadedByOpt.get();
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
       if (propertyIds == null) {
         continue;
@@ -141,38 +141,25 @@ public class DemoPhotoGenerator {
       }
 
       try {
-        String fileName = slot.title.toLowerCase().replace(" ", "-") + ".jpg";
+        String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ".jpg";
         String fileKey =
             s3StorageService.uploadFile(
                 imageData, "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier, fileName);
-
-        // Generate thumbnail
-        String thumbnailFileKey = null;
-        var thumbData = thumbnailService.generateThumbnail(new ByteArrayInputStream(imageData));
-        if (thumbData.isPresent()) {
-          thumbnailFileKey =
-              s3StorageService.uploadFile(
-                  thumbData.get(),
-                  "image/jpeg",
-                  teamIdentifier,
-                  "PROPERTY",
-                  propertyIdentifier,
-                  "thumb_" + fileName);
-        }
 
         Photo photo = new Photo();
         photo.setTeamId(teamId);
         photo.setEntityType("PROPERTY");
         photo.setEntityId(propertyId);
         photo.setFileKey(fileKey);
-        photo.setThumbnailFileKey(thumbnailFileKey);
+
         photo.setFileName(fileName);
         photo.setFileSize((long) imageData.length);
         photo.setMimeType("image/jpeg");
-        photo.setTitle(slot.title);
+        photo.setTitle(Optional.of(slot.title));
         photo.setIsMainPhoto(slot.isMain);
         photo.setUploadedBy(uploadedBy);
 
+        // Thumbnail will be generated asynchronously by ThumbnailBackfillJob
         photoRepository.save(photo);
         count++;
       } catch (Exception e) {
@@ -182,7 +169,8 @@ public class DemoPhotoGenerator {
     return count;
   }
 
-  private byte[] pickRandom(String category) {
+  @SuppressWarnings("NullAway")
+  private byte @Nullable [] pickRandom(String category) {
     List<byte[]> pool = photoPool.get(category);
     if (pool == null || pool.isEmpty()) {
       pool = photoPool.values().stream().filter(l -> !l.isEmpty()).findFirst().orElse(null);

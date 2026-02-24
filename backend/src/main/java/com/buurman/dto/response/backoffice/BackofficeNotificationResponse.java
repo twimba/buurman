@@ -1,25 +1,26 @@
 package com.buurman.dto.response.backoffice;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public record BackofficeNotificationResponse(
     String identifier,
-    String teamIdentifier,
-    String teamName,
+    Optional<String> teamIdentifier,
+    Optional<String> teamName,
     String notificationType,
     String channel,
-    String subject,
-    String body,
-    String recipientEmail,
-    String recipientPhone,
+    Optional<String> subject,
+    Optional<String> body,
+    Optional<String> recipientEmail,
+    Optional<String> recipientPhone,
     String status,
-    String providerStatus,
-    String providerError,
+    Optional<String> providerStatus,
+    Optional<String> providerError,
     int openCount,
     int clickCount,
-    Instant firstOpenedAt,
-    Instant firstClickedAt,
-    String resentFromIdentifier,
-    String resendReason,
+    Optional<Instant> firstOpenedAt,
+    Optional<Instant> firstClickedAt,
+    Optional<String> resentFromIdentifier,
+    Optional<String> resendReason,
     Instant createdAt,
-    Instant statusUpdatedAt) {}
+    Optional<Instant> statusUpdatedAt) {}

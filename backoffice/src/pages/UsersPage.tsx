@@ -44,7 +44,9 @@ export const UsersPage = () => {
   };
 
   const handleAction = () => {
-    if (!actionTarget) return;
+    if (!actionTarget) {
+      return;
+    }
     const mutation =
       actionTarget.action === "disable" ? disableUser : enableUser;
     mutation.mutate(actionTarget.identifier, {

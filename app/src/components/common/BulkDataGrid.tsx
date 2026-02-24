@@ -92,7 +92,9 @@ function parseClipboard(
 
 function normalizeDate(raw: string, dateFormat?: DateFormat): string {
   // Already ISO
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return raw;
+  }
 
   const match = raw.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
   if (match) {
@@ -118,7 +120,9 @@ function normalizeDate(raw: string, dateFormat?: DateFormat): string {
 
   // Fallback: try native Date parsing
   const parsed = new Date(raw);
-  if (!isNaN(parsed.getTime())) return parsed.toISOString().split('T')[0];
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString().split('T')[0];
+  }
   return raw;
 }
 
@@ -129,13 +133,19 @@ function matchSelectOption(
   const lower = val.toLowerCase();
   // Exact value match
   const exact = options.find((o) => o.value.toLowerCase() === lower);
-  if (exact) return exact.value;
+  if (exact) {
+    return exact.value;
+  }
   // Exact label match
   const label = options.find((o) => o.label.toLowerCase() === lower);
-  if (label) return label.value;
+  if (label) {
+    return label.value;
+  }
   // Prefix match on label
   const prefix = options.find((o) => o.label.toLowerCase().startsWith(lower));
-  if (prefix) return prefix.value;
+  if (prefix) {
+    return prefix.value;
+  }
   return undefined;
 }
 
@@ -148,18 +158,27 @@ function isRowEmpty(row: RowData, columns: ColumnDef[]): boolean {
 
 function isRowValid(row: RowData, columns: ColumnDef[]): boolean {
   return columns.every((col) => {
-    if (!col.required) return true;
+    if (!col.required) {
+      return true;
+    }
     const val = row[col.key];
-    if (!val) return false;
-    if (col.type === 'number' && (isNaN(Number(val)) || Number(val) <= 0))
+    if (!val) {
       return false;
-    if (col.type === 'date' && !isValidDate(val)) return false;
+    }
+    if (col.type === 'number' && (isNaN(Number(val)) || Number(val) <= 0)) {
+      return false;
+    }
+    if (col.type === 'date' && !isValidDate(val)) {
+      return false;
+    }
     return true;
   });
 }
 
 function isValidDate(val: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+    return false;
+  }
   const d = new Date(val + 'T00:00:00');
   return !isNaN(d.getTime());
 }
@@ -169,12 +188,21 @@ function isCellInvalid(
   col: ColumnDef,
   rowEmpty: boolean
 ): boolean {
-  if (rowEmpty) return false; // don't flag completely empty rows
-  if (!col.required) return false;
-  if (!value) return true;
-  if (col.type === 'number' && (isNaN(Number(value)) || Number(value) <= 0))
+  if (rowEmpty) {
+    return false; // don't flag completely empty rows
+  }
+  if (!col.required) {
+    return false;
+  }
+  if (!value) {
     return true;
-  if (col.type === 'date' && !isValidDate(value)) return true;
+  }
+  if (col.type === 'number' && (isNaN(Number(value)) || Number(value) <= 0)) {
+    return true;
+  }
+  if (col.type === 'date' && !isValidDate(value)) {
+    return true;
+  }
   return false;
 }
 
@@ -206,14 +234,18 @@ export const BulkDataGrid = ({
   const handlePaste = useCallback(
     (e: React.ClipboardEvent) => {
       const text = e.clipboardData.getData('text/plain');
-      if (!text.trim()) return;
+      if (!text.trim()) {
+        return;
+      }
 
       // Only intercept if not pasting into a focused input
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         // If the input is empty and text has newlines, treat as bulk paste
         const input = target as HTMLInputElement;
-        if (input.value || !text.includes('\n')) return;
+        if (input.value || !text.includes('\n')) {
+          return;
+        }
       }
 
       e.preventDefault();
@@ -221,7 +253,9 @@ export const BulkDataGrid = ({
       // from interfering with the React state update for that cell
       (document.activeElement as HTMLElement)?.blur();
       const parsed = parseClipboard(text, columns, dateFormat);
-      if (parsed.length === 0) return;
+      if (parsed.length === 0) {
+        return;
+      }
 
       setRows((prev) => {
         // Replace empty pending rows, keep submitted ones
@@ -290,7 +324,9 @@ export const BulkDataGrid = ({
       }
     });
 
-    if (toSubmit.length === 0) return;
+    if (toSubmit.length === 0) {
+      return;
+    }
 
     onSubmit(
       toSubmit.map((r) => r.data),
@@ -435,7 +471,9 @@ export const BulkDataGrid = ({
                             onPaste={(e) => {
                               const text =
                                 e.clipboardData.getData('text/plain');
-                              if (text.includes('\n')) e.preventDefault();
+                              if (text.includes('\n')) {
+                                e.preventDefault();
+                              }
                             }}
                             disabled={isDisabled}
                             placeholder={col.placeholder}

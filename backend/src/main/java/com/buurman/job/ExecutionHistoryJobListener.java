@@ -3,6 +3,7 @@ package com.buurman.job;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -59,7 +60,8 @@ public class ExecutionHistoryJobListener implements JobListener {
   }
 
   @Override
-  public void jobWasExecuted(JobExecutionContext context, JobExecutionException exception) {
+  public void jobWasExecuted(
+      JobExecutionContext context, @Nullable JobExecutionException exception) {
     Object executionIdObj = context.get("executionId");
     if (executionIdObj == null) {
       return;

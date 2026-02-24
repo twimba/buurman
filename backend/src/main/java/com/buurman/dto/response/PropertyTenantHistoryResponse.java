@@ -1,13 +1,14 @@
 package com.buurman.dto.response;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import com.buurman.domain.PropertyTenantHistory;
 
 public record PropertyTenantHistoryResponse(
     PropertySummary property,
-    Instant movedInAt,
-    Instant movedOutAt,
+    Optional<Instant> movedInAt,
+    Optional<Instant> movedOutAt,
     PropertyTenantHistory.ActionType actionType,
-    String performedBy,
+    Optional<String> performedBy,
     Instant performedAt) {}

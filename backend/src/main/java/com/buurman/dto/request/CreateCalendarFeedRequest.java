@@ -1,11 +1,13 @@
 package com.buurman.dto.request;
 
+import java.util.Optional;
+
 import com.buurman.domain.CalendarFeed;
 
 import jakarta.validation.constraints.NotNull;
 
 public record CreateCalendarFeedRequest(
     @NotNull CalendarFeed.FeedType feedType,
-    String contractIdentifier,
-    String propertyIdentifier,
-    String tenantIdentifier) {}
+    Optional<String> contractIdentifier,
+    Optional<String> propertyIdentifier,
+    Optional<String> tenantIdentifier) {}

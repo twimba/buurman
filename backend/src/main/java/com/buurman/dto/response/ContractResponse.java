@@ -4,32 +4,33 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.buurman.domain.Contract;
 
 public record ContractResponse(
     String identifier,
-    PropertySummary property,
+    Optional<PropertySummary> property,
     List<ContractPartyResponse> parties,
-    TenantSummary primaryTenant,
+    Optional<TenantSummary> primaryTenant,
     Contract.ContractType contractType,
     LocalDate startDate,
-    LocalDate endDate,
-    LocalDate signedDate,
+    Optional<LocalDate> endDate,
+    Optional<LocalDate> signedDate,
     BigDecimal rentAmount,
-    BigDecimal depositAmount,
-    BigDecimal securityDeposit,
+    Optional<BigDecimal> depositAmount,
+    Optional<BigDecimal> securityDeposit,
     String rentAmountCurrency,
-    String depositAmountCurrency,
-    String securityDepositCurrency,
+    Optional<String> depositAmountCurrency,
+    Optional<String> securityDepositCurrency,
     Contract.PaymentFrequency paymentFrequency,
-    Integer paymentDueDay,
+    Optional<Integer> paymentDueDay,
     Boolean autoRenewal,
     Integer renewalNoticeDays,
     Integer terminationNoticeDays,
-    BigDecimal lateFeePercentage,
+    Optional<BigDecimal> lateFeePercentage,
     Contract.ContractStatus status,
-    String termsAndConditions,
-    String notes,
+    Optional<String> termsAndConditions,
+    Optional<String> notes,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

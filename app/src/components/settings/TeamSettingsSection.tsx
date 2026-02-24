@@ -81,7 +81,9 @@ export const TeamSettingsSection = () => {
   );
 
   const handleInviteMember = () => {
-    if (!inviteEmail.trim()) return;
+    if (!inviteEmail.trim()) {
+      return;
+    }
     createInvitationMutation.mutate(
       { email: inviteEmail, role: inviteRole },
       {
@@ -95,7 +97,9 @@ export const TeamSettingsSection = () => {
   };
 
   const handleRemoveMember = () => {
-    if (!selectedMemberId) return;
+    if (!selectedMemberId) {
+      return;
+    }
     removeMemberMutation.mutate(selectedMemberId, {
       onSuccess: () => {
         setShowRemoveModal(false);
@@ -105,7 +109,9 @@ export const TeamSettingsSection = () => {
   };
 
   const handleUpdateRole = () => {
-    if (!selectedMemberId) return;
+    if (!selectedMemberId) {
+      return;
+    }
     updateRoleMutation.mutate(
       { memberId: selectedMemberId, data: { role: newRole } },
       {
@@ -118,7 +124,9 @@ export const TeamSettingsSection = () => {
   };
 
   const handleTransferOwnership = () => {
-    if (!selectedMemberId) return;
+    if (!selectedMemberId) {
+      return;
+    }
     transferOwnershipMutation.mutate(selectedMemberId, {
       onSuccess: () => {
         setShowTransferModal(false);

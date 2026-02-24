@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import java.util.Optional;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.AuditEntityType;
-import com.buurman.domain.AuditLog;
+import com.buurman.domain.AuditLog.Action;
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
@@ -37,25 +39,23 @@ public class AuditController {
   public PageResponse<RecentActivityResponse> getAllAuditLogs(
       @Parameter(
               description = "Filter by entity type (PROPERTY, TENANT, CONTRACT, PAYMENT, EXPENSE)")
-          @RequestParam(required = false)
-          AuditEntityType entityType,
-      @Parameter(description = "Filter by action (CREATE, UPDATE, DELETE, RESTORE)")
-          @RequestParam(required = false)
-          AuditLog.Action action,
-      @Parameter(description = "Search by user name, entity type, or action")
-          @RequestParam(required = false)
-          String search,
+          @RequestParam
+          Optional<AuditEntityType> entityType,
+      @Parameter(description = "Filter by action (CREATE, UPDATE, DELETE, RESTORE)") @RequestParam
+          Optional<Action> action,
+      @Parameter(description = "Search by user name, entity type, or action") @RequestParam
+          Optional<String> search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return auditService.getAllAuditLogsPaginated(
-        principal.getTeamId(),
-        entityType != null ? entityType.name() : null,
-        action != null ? action.name() : null,
-        search,
+        principal.requireTeamId(),
+        entityType.map(AuditEntityType::name).orElse(null),
+        action.map(Action::name).orElse(null),
+        search.orElse(null),
         pageRequest);
   }
 }

@@ -2,11 +2,12 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 public record PropertyOutdoorAreaResponse(
     String identifier,
     String type,
-    BigDecimal areaValue,
-    String areaUnit,
+    Optional<BigDecimal> areaValue,
+    Optional<String> areaUnit,
     Instant createdAt,
-    Instant updatedAt) {}
+    Optional<Instant> updatedAt) {}

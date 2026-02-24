@@ -3,6 +3,7 @@ package com.buurman.service;
 import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class PropertyOutdoorAreaService {
       String propertyIdentifier, UserPrincipal principal) {
     Property property = resolveProperty(propertyIdentifier, principal);
     return outdoorAreaRepository
-        .findByPropertyIdAndTeamId(property.getId(), principal.getTeamId())
+        .findByPropertyIdAndTeamId(property.getId(), principal.requireTeamId())
         .stream()
         .map(this::toResponse)
         .toList();
@@ -45,10 +46,10 @@ public class PropertyOutdoorAreaService {
     PropertyOutdoorArea area = new PropertyOutdoorArea();
     area.setIdentifier(newPropertyOutdoorAreaId().value());
     area.setPropertyId(property.getId());
-    area.setTeamId(principal.getTeamId());
+    area.setTeamId(principal.requireTeamId());
     area.setType(request.type());
     area.setAreaValue(request.areaValue());
-    area.setAreaUnit(request.areaUnit() != null ? request.areaUnit() : "sqm");
+    area.setAreaUnit(request.areaUnit().orElse("sqm"));
     area.setCreatedBy(principal.getUserId());
     area.setUpdatedBy(principal.getUserId());
 
@@ -67,13 +68,11 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.requireTeamId());
 
     area.setType(request.type());
     area.setAreaValue(request.areaValue());
-    if (request.areaUnit() != null) {
-      area.setAreaUnit(request.areaUnit());
-    }
+    request.areaUnit().ifPresent(area::setAreaUnit);
     area.setUpdatedBy(principal.getUserId());
 
     PropertyOutdoorArea updated = outdoorAreaRepository.save(area);
@@ -88,13 +87,14 @@ public class PropertyOutdoorAreaService {
     resolveProperty(propertyIdentifier, principal);
 
     PropertyOutdoorArea area =
-        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.getTeamId());
+        outdoorAreaRepository.getByIdentifierAndTeamId(areaIdentifier, principal.requireTeamId());
 
-    outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.getTeamId());
+    outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.requireTeamId());
   }
 
   private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
-    return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.getTeamId());
+    return propertyRepository.getByIdentifierAndTeamId(
+        propertyIdentifier, principal.requireTeamId());
   }
 
   private PropertyOutdoorAreaResponse toResponse(PropertyOutdoorArea area) {
@@ -102,8 +102,8 @@ public class PropertyOutdoorAreaService {
         area.getIdentifier(),
         area.getType(),
         area.getAreaValue(),
-        area.getAreaUnit(),
+        Optional.ofNullable(area.getAreaUnit()),
         area.getCreatedAt(),
-        area.getUpdatedAt());
+        Optional.ofNullable(area.getUpdatedAt()));
   }
 }

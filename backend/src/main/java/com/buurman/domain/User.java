@@ -1,13 +1,19 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("NullAway.Init")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
   private UUID id;
@@ -16,12 +22,12 @@ public class User {
   private String email;
   private String firstName;
   private String lastName;
-  private UUID defaultTeamId;
-  private UUID activeTeamId;
-  private String phone;
-  private Instant emailVerifiedAt;
-  private Instant phoneVerifiedAt;
-  private Instant disabledAt;
+  @Builder.Default private Optional<UUID> defaultTeamId = Optional.empty();
+  @Builder.Default private Optional<UUID> activeTeamId = Optional.empty();
+  @Builder.Default private Optional<String> phone = Optional.empty();
+  @Builder.Default private Optional<Instant> emailVerifiedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> phoneVerifiedAt = Optional.empty();
+  @Builder.Default private Optional<Instant> disabledAt = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
 
@@ -40,5 +46,9 @@ public class User {
     this.lastName = lastName;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+  }
+
+  public String getFullName() {
+    return getFirstName() + " " + getLastName();
   }
 }

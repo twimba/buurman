@@ -35,8 +35,12 @@ const countryToFlag = (countryCode: string): string => {
  * Falls back to a generic banknote emoji for unknown/unmappable codes.
  */
 export const getCurrencyFlag = (code: string): string => {
-  if (!code || code.length < 2) return '\uD83D\uDCB5'; // 💵
+  if (!code || code.length < 2) {
+    return '\uD83D\uDCB5'; // 💵
+  }
   const country = COUNTRY_OVERRIDES[code.toUpperCase()] ?? code.slice(0, 2);
-  if (!/^[A-Z]{2}$/.test(country.toUpperCase())) return '\uD83D\uDCB5'; // 💵
+  if (!/^[A-Z]{2}$/.test(country.toUpperCase())) {
+    return '\uD83D\uDCB5'; // 💵
+  }
   return countryToFlag(country);
 };

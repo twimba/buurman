@@ -3,7 +3,9 @@ package com.buurman.service.export;
 import static com.buurman.service.export.BookletHelper.escapeHtml;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -27,7 +29,7 @@ public class PropertyDashboardPdfExporter {
 
   private String buildHtml(PropertyDashboardResponse dashboard) {
     SummaryMetrics s = dashboard.summary();
-    String currency = s.currency();
+    String currency = s.currency().orElse(null);
 
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'/><style>");
@@ -39,17 +41,16 @@ public class PropertyDashboardPdfExporter {
 
     // Summary metrics
     html.append("<div class='summary'>");
-    metricCard(html, "Total ROI", fmtPct(s.totalRoiPercent()));
-    metricCard(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent()));
-    metricCard(html, "Cap Rate", fmtPct(s.capRatePercent()));
-    metricCard(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent()));
-    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
-    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
-    metricCard(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
-    metricCard(html, "Equity Growth", fmtPct(s.equityGrowthPercent()));
-    metricCard(html, "Occupancy", fmtPct(s.occupancyRatePercent()));
-    metricCard(
-        html, "GRM", s.grossRentMultiplier() != null ? s.grossRentMultiplier() + "x" : "N/A");
+    metricCard(html, "Total ROI", fmtPct(s.totalRoiPercent().orElse(null)));
+    metricCard(html, "Annualized ROI", fmtPct(s.annualizedRoiPercent().orElse(null)));
+    metricCard(html, "Cap Rate", fmtPct(s.capRatePercent().orElse(null)));
+    metricCard(html, "Cash-on-Cash", fmtPct(s.cashOnCashPercent().orElse(null)));
+    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow().orElse(null), currency));
+    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi().orElse(null), currency));
+    metricCard(html, "Total Equity", fmtMoney(s.totalEquity().orElse(null), currency));
+    metricCard(html, "Equity Growth", fmtPct(s.equityGrowthPercent().orElse(null)));
+    metricCard(html, "Occupancy", fmtPct(s.occupancyRatePercent().orElse(null)));
+    metricCard(html, "GRM", s.grossRentMultiplier().map(v -> v + "x").orElse("N/A"));
     html.append("</div>");
 
     // Cash flow table
@@ -87,9 +88,14 @@ public class PropertyDashboardPdfExporter {
     // Equity
     html.append("<h2>Equity Overview</h2>");
     html.append("<table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody>");
-    equityRow(html, "Purchase Price", dashboard.equity().purchasePrice(), currency);
-    equityRow(html, "Current Market Value", dashboard.equity().currentMarketValue(), currency);
-    equityRow(html, "Mortgage Balance", dashboard.equity().mortgageBalance(), currency);
+    equityRow(html, "Purchase Price", dashboard.equity().purchasePrice().orElse(null), currency);
+    equityRow(
+        html,
+        "Current Market Value",
+        dashboard.equity().currentMarketValue().orElse(null),
+        currency);
+    equityRow(
+        html, "Mortgage Balance", dashboard.equity().mortgageBalance().orElse(null), currency);
     html.append("</tbody></table>");
 
     html.append("</body></html>");
@@ -104,26 +110,32 @@ public class PropertyDashboardPdfExporter {
         .append("</div></div>");
   }
 
-  private void equityRow(StringBuilder html, String label, BigDecimal value, String currency) {
+  private void equityRow(
+      StringBuilder html, String label, @Nullable BigDecimal value, @Nullable String currency) {
     html.append("<tr><td>").append(escapeHtml(label)).append("</td>");
     html.append("<td class='right'>").append(fmtMoney(value, currency)).append("</td></tr>");
   }
 
-  private static String fmtPct(BigDecimal value) {
+  private static String fmtPct(@Nullable BigDecimal value) {
     return value != null ? value.toPlainString() + "%" : "N/A";
   }
 
-  private static String fmtMoney(BigDecimal value, String currencyCode) {
-    return CurrencyUtils.formatCurrency(value, currencyCode);
+  private static String fmtMoney(@Nullable BigDecimal value, @Nullable String currencyCode) {
+    return CurrencyUtils.formatCurrency(value, currencyCode != null ? currencyCode : "EUR");
   }
 
-  private static String humanize(String enumValue) {
-    if (enumValue == null || enumValue.isBlank()) return enumValue;
-    String[] words = enumValue.split("_");
+  private static String humanize(@Nullable String enumValue) {
+    if (enumValue == null || enumValue.isBlank()) {
+      return enumValue != null ? enumValue : "";
+    }
+    String[] words = enumValue.split("_", -1);
     StringBuilder sb = new StringBuilder();
     for (String w : words) {
-      if (!sb.isEmpty()) sb.append(' ');
-      sb.append(w.substring(0, 1).toUpperCase()).append(w.substring(1).toLowerCase());
+      if (!sb.isEmpty()) {
+        sb.append(' ');
+      }
+      sb.append(w.substring(0, 1).toUpperCase(Locale.ROOT))
+          .append(w.substring(1).toLowerCase(Locale.ROOT));
     }
     return sb.toString();
   }

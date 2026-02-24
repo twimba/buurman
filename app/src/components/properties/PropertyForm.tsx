@@ -70,7 +70,9 @@ export const PropertyForm = ({
     PropertyCategory.RESIDENTIAL;
 
   const resolveType = (): PropertyType => {
-    if (property?.propertyType) return property.propertyType as PropertyType;
+    if (property?.propertyType) {
+      return property.propertyType as PropertyType;
+    }
     const types = PROPERTY_TYPES_BY_CATEGORY[PropertyCategory.RESIDENTIAL];
     return types[0];
   };
@@ -189,7 +191,9 @@ export const PropertyForm = ({
 
   // When defaultCurrency loads asynchronously, fill in any unset currency fields
   useEffect(() => {
-    if (!defaultCurrency) return;
+    if (!defaultCurrency) {
+      return;
+    }
     const currencyFields = [
       'purchasePriceCurrency',
       'currentMarketValueCurrency',
@@ -204,10 +208,14 @@ export const PropertyForm = ({
     ] as const;
     setFormData((prev) => {
       const needsUpdate = currencyFields.some((f) => !prev[f]);
-      if (!needsUpdate) return prev;
+      if (!needsUpdate) {
+        return prev;
+      }
       const updated = { ...prev };
       for (const f of currencyFields) {
-        if (!updated[f]) updated[f] = defaultCurrency;
+        if (!updated[f]) {
+          updated[f] = defaultCurrency;
+        }
       }
       return updated;
     });
@@ -439,11 +447,18 @@ export const PropertyForm = ({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.street.trim()) newErrors.street = 'Street is required';
-    if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.postalCode.trim())
+    if (!formData.street.trim()) {
+      newErrors.street = 'Street is required';
+    }
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
+    }
+    if (!formData.postalCode.trim()) {
       newErrors.postalCode = 'Postal code is required';
-    if (!formData.country.trim()) newErrors.country = 'Country is required';
+    }
+    if (!formData.country.trim()) {
+      newErrors.country = 'Country is required';
+    }
 
     if (
       formData.areaValue !== null &&
@@ -539,7 +554,9 @@ export const PropertyForm = ({
   };
 
   const submitForm = async () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
 
     try {
       await onSubmit(formData);
