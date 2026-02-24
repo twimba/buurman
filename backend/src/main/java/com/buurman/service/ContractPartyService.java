@@ -177,8 +177,7 @@ public class ContractPartyService {
     ContractParty currentPrimary =
         contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId);
 
-    if (currentPrimary.getTenantId().isPresent()
-        && newTenant.getId().equals(currentPrimary.getTenantId().get())) {
+    if (currentPrimary.getTenantId().filter(newTenant.getId()::equals).isPresent()) {
       throw new IllegalArgumentException("This tenant is already the primary tenant");
     }
 
@@ -194,7 +193,7 @@ public class ContractPartyService {
     List<ContractParty> existingParties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     existingParties.stream()
-        .filter(p -> p.getTenantId().isPresent() && newTenant.getId().equals(p.getTenantId().get()))
+        .filter(p -> p.getTenantId().filter(newTenant.getId()::equals).isPresent())
         .findFirst()
         .ifPresent(
             existing -> contractPartyRepository.softDeleteByIdAndTeamId(existing.getId(), teamId));

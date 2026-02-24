@@ -535,10 +535,7 @@ public class PropertyDashboardService {
           continue;
         }
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
-        LocalDate cEnd =
-            (c.getEndDate().isEmpty() || c.getEndDate().get().isAfter(monthEnd))
-                ? monthEnd
-                : c.getEndDate().get();
+        LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
         if (!cStart.isAfter(cEnd)) {
           occupiedDays += DAYS.between(cStart, cEnd) + 1;
         }
@@ -713,10 +710,7 @@ public class PropertyDashboardService {
       }
 
       LocalDate cStart = c.getStartDate().isBefore(start) ? start : c.getStartDate();
-      LocalDate cEnd =
-          (c.getEndDate().isEmpty() || c.getEndDate().get().isAfter(now))
-              ? now
-              : c.getEndDate().get();
+      LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(now)).orElse(now);
       if (!cStart.isAfter(cEnd)) {
         occupiedDays += DAYS.between(cStart, cEnd) + 1;
       }
