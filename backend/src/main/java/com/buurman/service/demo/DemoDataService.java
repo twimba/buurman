@@ -407,6 +407,13 @@ public class DemoDataService {
             .fetch(PHOTOS.FILE_KEY));
 
     keys.addAll(
+        dsl.select(PHOTOS.THUMBNAIL_FILE_KEY)
+            .from(PHOTOS)
+            .where(PHOTOS.TEAM_ID.in(demoTeamIds))
+            .and(PHOTOS.THUMBNAIL_FILE_KEY.isNotNull())
+            .fetch(PHOTOS.THUMBNAIL_FILE_KEY));
+
+    keys.addAll(
         dsl.select(GENERATED_REPORTS.FILE_KEY)
             .from(GENERATED_REPORTS)
             .where(GENERATED_REPORTS.TEAM_ID.in(demoTeamIds))
