@@ -580,7 +580,7 @@ public class ContractBookletExporter {
     for (ContractPaymentInstruction cpi : sortedCpis) {
       boolean isCustom = cpi.getIsCustom();
       PaymentInstruction tpl =
-          (!isCustom) ? cpi.getPaymentInstructionId().map(piMap::get).orElse(null) : null;
+          !isCustom ? cpi.getPaymentInstructionId().map(piMap::get).orElse(null) : null;
 
       String piName =
           isCustom ? cpi.getCustomName().orElse(null) : (tpl != null ? tpl.getName() : null);
@@ -808,7 +808,9 @@ public class ContractBookletExporter {
             .append("</td>");
         html.append("<td>");
         String payStatus = payment.getStatus().name();
-        html.append("<span class='pay-status pay-").append(payStatus.toLowerCase()).append("'>");
+        html.append("<span class='pay-status pay-")
+            .append(payStatus.toLowerCase(Locale.ROOT))
+            .append("'>");
         html.append(formatEnumValue(payStatus)).append("</span>");
         html.append("</td>");
         html.append("<td>")

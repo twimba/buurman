@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.List;
@@ -147,7 +148,9 @@ public class PropertyService {
         request.currentMarketValue().orElse(null));
     validateCurrencyRequired(
         request.mortgageAmountCurrency().orElse(null), request.mortgageAmount().orElse(null));
-    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment().orElse(null))) {
+    BigDecimal monthlyMortgagePayment = request.monthlyMortgagePayment().orElse(null);
+    if (monthlyMortgagePayment == null
+        || Property.VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment) != 0) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency().orElse(null),
           request.monthlyMortgagePayment().orElse(null));
@@ -297,7 +300,9 @@ public class PropertyService {
         request.currentMarketValue().orElse(null));
     validateCurrencyRequired(
         request.mortgageAmountCurrency().orElse(null), request.mortgageAmount().orElse(null));
-    if (!Property.VARIABLE_PAYMENT_SENTINEL.equals(request.monthlyMortgagePayment().orElse(null))) {
+    BigDecimal monthlyMortgagePayment = request.monthlyMortgagePayment().orElse(null);
+    if (monthlyMortgagePayment == null
+        || Property.VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment) != 0) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency().orElse(null),
           request.monthlyMortgagePayment().orElse(null));

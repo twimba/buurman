@@ -6,6 +6,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -388,6 +389,7 @@ public class AuthService {
    */
   private String generateTeamName(String firstName, String lastName) {
     String fullName = (firstName + " " + lastName).trim();
-    return fullName.toLowerCase().replaceAll("\\s+", "-").replaceAll("[^a-z0-9-]", "") + "-team";
+    return fullName.toLowerCase(Locale.ROOT).replaceAll("\\s+", "-").replaceAll("[^a-z0-9-]", "")
+        + "-team";
   }
 }

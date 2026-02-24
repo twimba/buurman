@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -136,7 +137,7 @@ public class RegistrationInvitationService {
 
     boolean valid =
         invitationRepository
-            .findByCode(code.trim().toLowerCase())
+            .findByCode(code.trim().toLowerCase(Locale.ROOT))
             .map(RegistrationInvitation::isValid)
             .orElse(false);
 
@@ -150,7 +151,7 @@ public class RegistrationInvitationService {
   public void recordUsage(String code, UUID userId) {
     RegistrationInvitation invitation =
         invitationRepository
-            .findByCode(code.trim().toLowerCase())
+            .findByCode(code.trim().toLowerCase(Locale.ROOT))
             .orElseThrow(() -> new BusinessRuleException("Invalid invitation code"));
 
     int affected = invitationRepository.incrementUsageAtomically(invitation.getId());

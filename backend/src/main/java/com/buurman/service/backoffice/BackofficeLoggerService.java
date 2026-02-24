@@ -1,6 +1,7 @@
 package com.buurman.service.backoffice;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -28,13 +29,16 @@ public class BackofficeLoggerService {
             config ->
                 search == null
                     || search.isBlank()
-                    || config.getName().toLowerCase().contains(search.toLowerCase()))
+                    || config
+                        .getName()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(search.toLowerCase(Locale.ROOT)))
         .map(this::toResponse)
         .toList();
   }
 
   public LoggerConfigurationResponse setLogLevel(String loggerName, @Nullable String level) {
-    LogLevel logLevel = level != null ? LogLevel.valueOf(level.toUpperCase()) : null;
+    LogLevel logLevel = level != null ? LogLevel.valueOf(level.toUpperCase(Locale.ROOT)) : null;
     loggingSystem.setLogLevel(loggerName, logLevel);
     log.info("Set log level for '{}' to '{}'", loggerName, level);
 

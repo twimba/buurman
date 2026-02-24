@@ -124,7 +124,7 @@ public class DemoTenantGenerator {
           lastName = companyName;
           String slug =
               companyName
-                  .toLowerCase()
+                  .toLowerCase(Locale.ROOT)
                   .replaceAll("[^a-z0-9]+", "")
                   .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
           email = "info@" + slug + domain;
@@ -136,9 +136,9 @@ public class DemoTenantGenerator {
           firstName = faker.name().firstName();
           lastName = faker.name().lastName();
           email =
-              (firstName.toLowerCase()
+              (firstName.toLowerCase(Locale.ROOT)
                       + "."
-                      + lastName.toLowerCase()
+                      + lastName.toLowerCase(Locale.ROOT)
                       + "."
                       + teamKey.replace("-", "")
                       + i

@@ -3,9 +3,11 @@ package com.buurman.repository;
 import static com.buurman.jooq.generated.Tables.REGISTRATION_INVITATIONS;
 import static com.buurman.util.UlidGenerator.newRegistrationInvitationId;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.lower;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -99,14 +101,12 @@ public class RegistrationInvitationRepository {
     Condition condition = org.jooq.impl.DSL.trueCondition();
 
     if (search != null && !search.isBlank()) {
-      String pattern = "%" + search.toLowerCase() + "%";
+      String pattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
-              REGISTRATION_INVITATIONS
-                  .CODE
-                  .lower()
+              lower(REGISTRATION_INVITATIONS.CODE)
                   .like(pattern)
-                  .or(REGISTRATION_INVITATIONS.CREATED_BY.lower().like(pattern)));
+                  .or(lower(REGISTRATION_INVITATIONS.CREATED_BY).like(pattern)));
     }
 
     Map<String, Field<?>> sortableFields =

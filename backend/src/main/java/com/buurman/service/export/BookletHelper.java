@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
 
@@ -48,7 +49,10 @@ final class BookletHelper {
       return "";
     }
     return Arrays.stream(value.split("_"))
-        .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
+        .map(
+            word ->
+                word.substring(0, 1).toUpperCase(Locale.ROOT)
+                    + word.substring(1).toLowerCase(Locale.ROOT))
         .collect(joining(" "));
   }
 
@@ -98,8 +102,8 @@ final class BookletHelper {
     if (value == null) {
       return "—";
     }
-    return value.name().replace('_', ' ').substring(0, 1).toUpperCase()
-        + value.name().replace('_', ' ').substring(1).toLowerCase();
+    return value.name().replace('_', ' ').substring(0, 1).toUpperCase(Locale.ROOT)
+        + value.name().replace('_', ' ').substring(1).toLowerCase(Locale.ROOT);
   }
 
   // ── Document structure ──────────────────────────────────────────
@@ -144,7 +148,9 @@ final class BookletHelper {
   static void appendStatusBadge(StringBuilder html, @Nullable String status) {
     String statusStr = status != null ? status : "";
     html.append("<div style='text-align:center;margin:30px 0;'>");
-    html.append("<span class='status-badge status-").append(statusStr.toLowerCase()).append("'>");
+    html.append("<span class='status-badge status-")
+        .append(statusStr.toLowerCase(Locale.ROOT))
+        .append("'>");
     html.append(formatEnumValue(statusStr));
     html.append("</span></div>");
   }

@@ -2,6 +2,7 @@ package com.buurman.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -117,7 +118,7 @@ public class PhoneNumberPolicyService {
       case "PAGER" -> "pager";
       case "UAN" -> "universal access";
       case "VOICEMAIL" -> "voicemail";
-      default -> type.toLowerCase().replace('_', ' ');
+      default -> type.toLowerCase(Locale.ROOT).replace('_', ' ');
     };
   }
 

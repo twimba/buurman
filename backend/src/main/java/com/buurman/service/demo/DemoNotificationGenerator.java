@@ -705,16 +705,6 @@ public class DemoNotificationGenerator {
         .fetchOptional(field("tenant_id", UUID.class));
   }
 
-  private Optional<UUID> findPrimaryTenantIdForTenant(UUID tenantId, UUID teamId) {
-    // Find a contract for this tenant via contract_parties
-    return dsl.select(field("contract_id", UUID.class))
-        .from(table("contract_parties"))
-        .where(field("tenant_id", UUID.class).eq(tenantId))
-        .and(field("role", String.class).eq("PRIMARY_TENANT"))
-        .and(field("deleted_at").isNull())
-        .fetchOptional(field("contract_id", UUID.class));
-  }
-
   private void insertNotification(
       UUID teamId,
       @Nullable UUID createdBy,

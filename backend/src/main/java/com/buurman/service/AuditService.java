@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -157,8 +158,8 @@ public class AuditService {
     if (a == null || b == null) {
       return false;
     }
-    if (a instanceof java.math.BigDecimal && b instanceof java.math.BigDecimal) {
-      return ((java.math.BigDecimal) a).compareTo((java.math.BigDecimal) b) == 0;
+    if (a instanceof java.math.BigDecimal da && b instanceof java.math.BigDecimal db) {
+      return da.compareTo(db) == 0;
     }
     return a.equals(b);
   }
@@ -331,7 +332,8 @@ public class AuditService {
           default -> "modified";
         };
 
-    return String.format("%s %s this %s", userName, actionText, entityType.toLowerCase());
+    return String.format(
+        "%s %s this %s", userName, actionText, entityType.toLowerCase(Locale.ROOT));
   }
 
   private String formatRole(@Nullable String role) {

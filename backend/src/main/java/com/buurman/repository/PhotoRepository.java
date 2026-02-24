@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -168,7 +169,7 @@ public class PhotoRepository {
       UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
     Condition condition = PHOTOS.TEAM_ID.eq(teamId).and(PHOTOS.DELETED_AT.isNull());
     if (search != null && !search.trim().isEmpty()) {
-      String searchPattern = "%" + search.toLowerCase() + "%";
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(PHOTOS.TITLE)

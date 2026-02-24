@@ -315,9 +315,9 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String bedBath =
-        (details.getBedrooms().map(v -> v + " bed").orElse("—"))
+        details.getBedrooms().map(v -> v + " bed").orElse("—")
             + " / "
-            + (details.getBathrooms().map(v -> v + " bath").orElse("—"));
+            + details.getBathrooms().map(v -> v + " bath").orElse("—");
     appendCoverCell(html, "Bedrooms / Bathrooms", bedBath);
     appendCoverCell(html, "Total Area", area);
     html.append("</tr><tr>");
@@ -1236,10 +1236,6 @@ public class PropertyBookletExporter {
 
   private static String fmtMoney(@Nullable BigDecimal value, String currencyCode) {
     return CurrencyUtils.formatCurrency(value, currencyCode);
-  }
-
-  private static String fmtNum(@Nullable BigDecimal value) {
-    return value != null ? String.format("%,.2f", value) : "N/A";
   }
 
   // ── Helpers ─────────────────────────────────────────────────────

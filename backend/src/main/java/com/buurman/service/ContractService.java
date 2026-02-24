@@ -698,7 +698,7 @@ public class ContractService {
             clock.instant(),
             principal.getUserId(),
             principal.getUserId(),
-            null);
+            Optional.empty());
 
     Contract savedContract = contractRepository.save(newContract);
 
@@ -768,7 +768,7 @@ public class ContractService {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     boolean markAsPaid = request.markAsPaid().map(Boolean.TRUE::equals).orElse(false);
-    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now()) : null;
+    LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
     int generated =
         paymentSchedulingService.generatePaymentsManually(
             contract.getId(),

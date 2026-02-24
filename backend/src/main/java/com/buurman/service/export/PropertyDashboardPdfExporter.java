@@ -3,6 +3,7 @@ package com.buurman.service.export;
 import static com.buurman.service.export.BookletHelper.escapeHtml;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -127,13 +128,14 @@ public class PropertyDashboardPdfExporter {
     if (enumValue == null || enumValue.isBlank()) {
       return enumValue != null ? enumValue : "";
     }
-    String[] words = enumValue.split("_");
+    String[] words = enumValue.split("_", -1);
     StringBuilder sb = new StringBuilder();
     for (String w : words) {
       if (!sb.isEmpty()) {
         sb.append(' ');
       }
-      sb.append(w.substring(0, 1).toUpperCase()).append(w.substring(1).toLowerCase());
+      sb.append(w.substring(0, 1).toUpperCase(Locale.ROOT))
+          .append(w.substring(1).toLowerCase(Locale.ROOT));
     }
     return sb.toString();
   }

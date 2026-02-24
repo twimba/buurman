@@ -8,6 +8,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,7 +76,7 @@ public class TenantRepository {
   }
 
   public List<Tenant> searchByTeamId(UUID teamId, String searchTerm) {
-    String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+    String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
     return List.copyOf(
         dsl.selectFrom(TENANTS)
             .where(
@@ -180,7 +181,7 @@ public class TenantRepository {
       UUID teamId, @Nullable String search, PageRequest pageRequest) {
     Condition condition = TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull());
     if (search != null && !search.isBlank()) {
-      String pattern = "%" + search.toLowerCase() + "%";
+      String pattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(TENANTS.FIRST_NAME)

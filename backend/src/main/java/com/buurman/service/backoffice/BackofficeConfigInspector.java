@@ -2,6 +2,7 @@ package com.buurman.service.backoffice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
@@ -215,7 +216,7 @@ public class BackofficeConfigInspector {
     if (value == null || value.isBlank()) {
       return "\u2014";
     }
-    String lowerField = fieldName.toLowerCase();
+    String lowerField = fieldName.toLowerCase(Locale.ROOT);
     for (String keyword : SENSITIVE_KEYWORDS) {
       if (lowerField.contains(keyword)) {
         return "********";

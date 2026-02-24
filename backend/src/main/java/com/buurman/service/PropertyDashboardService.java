@@ -7,6 +7,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MONTHS;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class PropertyDashboardService {
   private static final int DEFAULT_MONTHS = 12;
   public static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
+  private final Clock clock;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final PaymentRepository paymentRepository;
@@ -78,7 +80,7 @@ public class PropertyDashboardService {
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
 
     @Nullable String currency = property.getPurchasePriceCurrency().orElse(null);
-    LocalDate now = LocalDate.now();
+    LocalDate now = LocalDate.now(clock);
 
     LocalDate startDate;
     if (months <= 0) {
@@ -248,7 +250,7 @@ public class PropertyDashboardService {
     // Annualized ROI = totalROI / yearsOwned
     BigDecimal annualizedRoiPercent = null;
     if (totalRoiPercent != null && property.getPurchaseDate().isPresent()) {
-      long daysOwned = DAYS.between(property.getPurchaseDate().get(), LocalDate.now());
+      long daysOwned = DAYS.between(property.getPurchaseDate().get(), LocalDate.now(clock));
       if (daysOwned > 0) {
         BigDecimal yearsOwned =
             BigDecimal.valueOf(daysOwned).divide(BigDecimal.valueOf(365.25), 4, HALF_UP);
@@ -279,7 +281,7 @@ public class PropertyDashboardService {
 
     // Occupancy Rate over the selected period
     BigDecimal occupancyRatePercent =
-        calculateOccupancyRate(contracts, LocalDate.now(), months).orElse(null);
+        calculateOccupancyRate(contracts, LocalDate.now(clock), months).orElse(null);
 
     // Gross Rent Multiplier = market value / annual gross rent
     BigDecimal grossRentMultiplier = null;
@@ -662,7 +664,7 @@ public class PropertyDashboardService {
         !contractIds.isEmpty()
             && !paymentRepository
                 .findPaidByContractIdsAndDateRange(
-                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now())
+                    contractIds, teamId, LocalDate.of(1970, 1, 1), LocalDate.now(clock))
                 .isEmpty();
     boolean hasExpenses = !expenseRepository.findByPropertyId(property.getId(), teamId).isEmpty();
 

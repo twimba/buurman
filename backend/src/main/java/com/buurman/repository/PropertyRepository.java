@@ -2,12 +2,14 @@ package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.lower;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -504,17 +506,15 @@ public class PropertyRepository {
       condition = condition.and(PROPERTIES.PROPERTY_CATEGORY.eq(category));
     }
     if (query != null && !query.isBlank()) {
-      String like = "%" + query.trim().toLowerCase() + "%";
+      String like = "%" + query.trim().toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
-              PROPERTIES
-                  .STREET
-                  .lower()
+              lower(PROPERTIES.STREET)
                   .like(like)
-                  .or(PROPERTIES.CITY.lower().like(like))
-                  .or(PROPERTIES.POSTAL_CODE.lower().like(like))
-                  .or(PROPERTIES.IDENTIFIER.lower().like(like))
-                  .or(PROPERTIES.PROPERTY_TYPE.lower().like(like)));
+                  .or(lower(PROPERTIES.CITY).like(like))
+                  .or(lower(PROPERTIES.POSTAL_CODE).like(like))
+                  .or(lower(PROPERTIES.IDENTIFIER).like(like))
+                  .or(lower(PROPERTIES.PROPERTY_TYPE).like(like)));
     }
     Map<String, Field<?>> sortableFields =
         Map.of(

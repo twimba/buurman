@@ -2,8 +2,6 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -36,9 +34,5 @@ public class TeamRecordMapper {
     team.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(team);
-  }
-
-  private @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {
-    return localDateTime == null ? null : localDateTime.toInstant(UTC);
   }
 }

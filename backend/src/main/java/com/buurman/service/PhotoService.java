@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -146,7 +147,8 @@ public class PhotoService {
     Photo savedPhoto = photoRepository.save(photo);
 
     metricsService.incrementCounter("photo.upload.total", "entity_type", entityType);
-    metricsService.recordHistogram("photo.upload.bytes", file.getSize(), "entity_type", entityType);
+    metricsService.recordHistogram(
+        "photo.upload.bytes", (double) file.getSize(), "entity_type", entityType);
 
     log.info(
         "Photo uploaded: {} for entity {}/{}", savedPhoto.getIdentifier(), entityType, entityId);
@@ -158,7 +160,7 @@ public class PhotoService {
 
     auditService.logUpdate(
         principal.requireTeamId(),
-        entityType.toUpperCase(),
+        entityType.toUpperCase(Locale.ROOT),
         entityId,
         principal.getUserId(),
         java.util.Map.of("photoCount", "unchanged"),
@@ -209,7 +211,7 @@ public class PhotoService {
 
     auditService.logUpdate(
         principal.requireTeamId(),
-        photo.getEntityType().toUpperCase(),
+        photo.getEntityType().toUpperCase(Locale.ROOT),
         photo.getEntityId(),
         principal.getUserId(),
         java.util.Map.of("photoCount", "unchanged"),
@@ -254,7 +256,7 @@ public class PhotoService {
 
       auditService.logUpdate(
           principal.requireTeamId(),
-          photo.getEntityType().toUpperCase(),
+          photo.getEntityType().toUpperCase(Locale.ROOT),
           photo.getEntityId(),
           principal.getUserId(),
           oldValues,

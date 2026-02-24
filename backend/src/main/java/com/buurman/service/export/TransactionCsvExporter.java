@@ -1,6 +1,7 @@
 package com.buurman.service.export;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +44,7 @@ public class TransactionCsvExporter {
             });
       }
 
-      return sw.toString().getBytes();
+      return sw.toString().getBytes(StandardCharsets.UTF_8);
     } catch (Exception e) {
       throw new ExternalServiceException("Failed to generate CSV", e);
     }

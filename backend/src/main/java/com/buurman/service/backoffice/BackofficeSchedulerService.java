@@ -148,6 +148,7 @@ public class BackofficeSchedulerService {
     return executionHistoryRepository.findAll(pageRequest, jobNameFilter, statusFilter);
   }
 
+  @SuppressWarnings("JavaUtilDate")
   private @Nullable String formatDate(@Nullable Date date) {
     if (date == null) {
       return null;

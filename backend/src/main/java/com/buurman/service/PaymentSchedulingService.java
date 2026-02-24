@@ -242,17 +242,12 @@ public class PaymentSchedulingService {
   private LocalDate calculateNextDueDate(LocalDate startDate, int periodIndex, Contract contract) {
     LocalDate nextDueDate = startDate;
 
-    switch (contract.getPaymentFrequency()) {
-      case MONTHLY:
-        nextDueDate = nextDueDate.plusMonths(periodIndex + 1);
-        break;
-      case QUARTERLY:
-        nextDueDate = nextDueDate.plusMonths((periodIndex + 1) * 3);
-        break;
-      case ANNUALLY:
-        nextDueDate = nextDueDate.plusYears(periodIndex + 1);
-        break;
-    }
+    nextDueDate =
+        switch (contract.getPaymentFrequency()) {
+          case MONTHLY -> nextDueDate.plusMonths(periodIndex + 1);
+          case QUARTERLY -> nextDueDate.plusMonths((periodIndex + 1) * 3L);
+          case ANNUALLY -> nextDueDate.plusYears(periodIndex + 1);
+        };
 
     int paymentDueDay = contract.getPaymentDueDay().orElse(1);
     int daysInMonth = nextDueDate.lengthOfMonth();
@@ -327,26 +322,21 @@ public class PaymentSchedulingService {
     log.debug("Handling contract status change to {} for contract {}", newStatus, contractId);
 
     switch (newStatus) {
-      case ACTIVE:
+      case ACTIVE -> {
         int paymentsCreated = generateFuturePaymentsForContract(contractId, teamId, userId);
         log.info(
             "Contract {} activated: generated {} future payments", contractId, paymentsCreated);
-        break;
-
-      case EXPIRED:
-      case TERMINATED:
-      case DRAFT:
+      }
+      case EXPIRED, TERMINATED, DRAFT -> {
         int paymentsCancelled = cancelFuturePaymentsForContract(contractId, teamId, userId);
         log.info(
             "Contract {} changed to {}: cancelled {} future payments",
             contractId,
             newStatus,
             paymentsCancelled);
-        break;
-
-      case PENDING_SIGNATURE:
-        log.debug("Contract {} moved to PENDING_SIGNATURE, no payment action needed", contractId);
-        break;
+      }
+      case PENDING_SIGNATURE ->
+          log.debug("Contract {} moved to PENDING_SIGNATURE, no payment action needed", contractId);
     }
   }
 }

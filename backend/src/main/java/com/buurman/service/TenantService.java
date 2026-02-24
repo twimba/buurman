@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.buurman.domain.User;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import com.buurman.domain.Property;
 import com.buurman.domain.PropertyTenantHistory;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.User;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;

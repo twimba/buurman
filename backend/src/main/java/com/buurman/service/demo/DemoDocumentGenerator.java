@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -298,7 +299,7 @@ public class DemoDocumentGenerator {
         String category = expense.get(EXPENSES.CATEGORY);
         String description = expense.get(EXPENSES.DESCRIPTION);
         DocTemplate doc = EXPENSE_DOCS.get(random.nextInt(EXPENSE_DOCS.size()));
-        String prefix = slugify(category.toLowerCase());
+        String prefix = slugify(category.toLowerCase(Locale.ROOT));
 
         if (uploadDocument(
             ctx,
@@ -403,7 +404,7 @@ public class DemoDocumentGenerator {
   }
 
   private String slugify(String input) {
-    return input.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
+    return input.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "");
   }
 
   private static Map<String, byte[]> loadPdfPool() {

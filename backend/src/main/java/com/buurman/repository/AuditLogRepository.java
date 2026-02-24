@@ -12,6 +12,7 @@ import static org.jooq.impl.DSL.lower;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -130,7 +131,7 @@ public class AuditLogRepository {
     }
 
     if (search != null && !search.isEmpty()) {
-      String searchPattern = "%" + search.toLowerCase() + "%";
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       query =
           query.and(
               lower(USERS.FIRST_NAME)
@@ -178,7 +179,7 @@ public class AuditLogRepository {
       condition = condition.and(AUDIT_LOG.ACTION.eq(action));
     }
     if (search != null && !search.isEmpty()) {
-      String searchPattern = "%" + search.toLowerCase() + "%";
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(USERS.FIRST_NAME)
@@ -298,7 +299,7 @@ public class AuditLogRepository {
   }
 
   public Optional<String> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {
-    return switch (entityType.toLowerCase()) {
+    return switch (entityType.toLowerCase(Locale.ROOT)) {
       case "property" ->
           dsl.select(PROPERTIES.IDENTIFIER)
               .from(PROPERTIES)
@@ -346,7 +347,7 @@ public class AuditLogRepository {
   }
 
   public Optional<String> findEntityName(String entityType, UUID entityId, UUID teamId) {
-    return switch (entityType.toLowerCase()) {
+    return switch (entityType.toLowerCase(Locale.ROOT)) {
       case "property" ->
           dsl.select(PROPERTIES.STREET, PROPERTIES.CITY)
               .from(PROPERTIES)

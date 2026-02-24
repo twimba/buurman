@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -118,7 +119,7 @@ public class DocumentService {
     metricsService.incrementCounter("document.upload.total", "entity_type", entityType);
     metricsService.incrementCounter("document.upload.bytes.total", "entity_type", entityType);
     metricsService.recordHistogram(
-        "document.upload.bytes", file.getSize(), "entity_type", entityType);
+        "document.upload.bytes", (double) file.getSize(), "entity_type", entityType);
 
     log.info(
         "Document uploaded: {} for entity {}/{}",
@@ -135,7 +136,7 @@ public class DocumentService {
         .ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
         principal.requireTeamId(),
-        entityType.toUpperCase(),
+        entityType.toUpperCase(Locale.ROOT),
         entityId,
         principal.getUserId(),
         java.util.Map.of("documentCount", "unchanged"),
@@ -184,7 +185,7 @@ public class DocumentService {
     document.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
         principal.requireTeamId(),
-        document.getEntityType().toUpperCase(),
+        document.getEntityType().toUpperCase(Locale.ROOT),
         document.getEntityId(),
         principal.getUserId(),
         java.util.Map.of("documentCount", "unchanged"),
@@ -230,7 +231,7 @@ public class DocumentService {
 
       auditService.logUpdate(
           principal.requireTeamId(),
-          document.getEntityType().toUpperCase(),
+          document.getEntityType().toUpperCase(Locale.ROOT),
           document.getEntityId(),
           principal.getUserId(),
           oldValues,

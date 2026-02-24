@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -170,7 +171,7 @@ public class DocumentRepository {
 
     // Add search filter if provided
     if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-      String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+      String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
       query =
           query.and(
               lower(DOCUMENTS.TITLE)
@@ -210,7 +211,7 @@ public class DocumentRepository {
       UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
     Condition condition = DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull());
     if (search != null && !search.trim().isEmpty()) {
-      String searchPattern = "%" + search.toLowerCase() + "%";
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
       condition =
           condition.and(
               lower(DOCUMENTS.TITLE)
