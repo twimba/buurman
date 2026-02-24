@@ -7,9 +7,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,29 +86,27 @@ public class ExpenseController {
       description = "Get all expenses with optional filters and pagination")
   @GetMapping
   public PageResponse<ExpenseResponse> getExpenses(
-      @RequestParam(required = false) @Nullable ExpenseCategory category,
-      @RequestParam(required = false) @Nullable String propertyIdentifier,
-      @RequestParam(required = false) @Nullable LocalDate dateFrom,
-      @RequestParam(required = false) @Nullable LocalDate dateTo,
+      @RequestParam Optional<ExpenseCategory> category,
+      @RequestParam Optional<String> propertyIdentifier,
+      @RequestParam Optional<LocalDate> dateFrom,
+      @RequestParam Optional<LocalDate> dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    UUID propertyId = null;
-    if (propertyIdentifier != null) {
-      var property =
-          expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());
-      propertyId = property;
-    }
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
+    UUID propertyId =
+        propertyIdentifier
+            .map(id -> expenseService.resolvePropertyId(id, principal.requireTeamId()))
+            .orElse(null);
     return expenseService.getExpensesPaginated(
         principal,
-        category != null ? category.name() : null,
+        category.map(ExpenseCategory::name).orElse(null),
         propertyId,
-        dateFrom,
-        dateTo,
+        dateFrom.orElse(null),
+        dateTo.orElse(null),
         pageRequest);
   }
 
@@ -150,10 +148,11 @@ public class ExpenseController {
   public DocumentResponse uploadDocument(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) @Nullable String title,
-      @RequestParam(required = false) @Nullable String notes,
+      @RequestParam Optional<String> title,
+      @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return expenseService.uploadExpenseDocument(identifier, file, title, notes, principal);
+    return expenseService.uploadExpenseDocument(
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Operation(summary = "List documents", description = "Get all documents for an expense")

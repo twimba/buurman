@@ -4,7 +4,8 @@ import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,19 +55,19 @@ public class PropertyDashboardController {
   @GetMapping
   public PropertyDashboardResponse getDashboard(
       @PathVariable String identifier,
-      @RequestParam(required = false) @Nullable Integer months,
+      @RequestParam Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return dashboardService.getDashboard(identifier, months, principal);
+    return dashboardService.getDashboard(identifier, months.orElse(null), principal);
   }
 
   @Operation(summary = "Export dashboard as PDF")
   @GetMapping("/export/pdf")
   public ResponseEntity<byte[]> exportPdf(
       @PathVariable String identifier,
-      @RequestParam(required = false) @Nullable Integer months,
+      @RequestParam Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(identifier, months, principal);
+        dashboardService.getDashboard(identifier, months.orElse(null), principal);
     byte[] pdf = exportService.generatePropertyDashboardPDF(dashboard);
     return ResponseEntity.ok()
         .header(
@@ -79,10 +80,10 @@ public class PropertyDashboardController {
   @GetMapping("/export/csv")
   public ResponseEntity<byte[]> exportCsv(
       @PathVariable String identifier,
-      @RequestParam(required = false) @Nullable Integer months,
+      @RequestParam Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(identifier, months, principal);
+        dashboardService.getDashboard(identifier, months.orElse(null), principal);
     byte[] csv = exportService.generatePropertyDashboardCSV(dashboard);
     return ResponseEntity.ok()
         .header(

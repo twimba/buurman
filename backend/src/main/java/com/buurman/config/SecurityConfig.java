@@ -173,7 +173,7 @@ public class SecurityConfig {
 
   private JwtDecoder backofficeJwtDecoder() {
     NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(backofficeJwkSetUri).build();
-    if (backofficeIssuerUri != null && !backofficeIssuerUri.isBlank()) {
+    if (!backofficeIssuerUri.isBlank()) {
       decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(backofficeIssuerUri));
     }
     return decoder;

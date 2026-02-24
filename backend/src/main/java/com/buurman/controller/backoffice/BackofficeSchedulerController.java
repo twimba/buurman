@@ -1,8 +1,8 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.quartz.SchedulerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,13 +90,14 @@ public class BackofficeSchedulerController {
       description = "Get paginated job execution history with optional filters")
   @GetMapping("/history")
   public PageResponse<JobExecutionHistoryResponse> getHistory(
-      @RequestParam(required = false) @Nullable List<String> jobName,
-      @RequestParam(required = false) @Nullable String status,
+      @RequestParam Optional<List<String>> jobName,
+      @RequestParam Optional<String> status,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return schedulerService.getExecutionHistory(pageRequest, jobName, status);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
+    return schedulerService.getExecutionHistory(
+        pageRequest, jobName.orElse(null), status.orElse(null));
   }
 }

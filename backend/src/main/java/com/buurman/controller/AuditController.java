@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,25 +39,23 @@ public class AuditController {
   public PageResponse<RecentActivityResponse> getAllAuditLogs(
       @Parameter(
               description = "Filter by entity type (PROPERTY, TENANT, CONTRACT, PAYMENT, EXPENSE)")
-          @RequestParam(required = false)
-          @Nullable AuditEntityType entityType,
-      @Parameter(description = "Filter by action (CREATE, UPDATE, DELETE, RESTORE)")
-          @RequestParam(required = false)
-          @Nullable Action action,
-      @Parameter(description = "Search by user name, entity type, or action")
-          @RequestParam(required = false)
-          @Nullable String search,
+          @RequestParam
+          Optional<AuditEntityType> entityType,
+      @Parameter(description = "Filter by action (CREATE, UPDATE, DELETE, RESTORE)") @RequestParam
+          Optional<Action> action,
+      @Parameter(description = "Search by user name, entity type, or action") @RequestParam
+          Optional<String> search,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return auditService.getAllAuditLogsPaginated(
         principal.requireTeamId(),
-        entityType != null ? entityType.name() : null,
-        action != null ? action.name() : null,
-        search,
+        entityType.map(AuditEntityType::name).orElse(null),
+        action.map(Action::name).orElse(null),
+        search.orElse(null),
         pageRequest);
   }
 }

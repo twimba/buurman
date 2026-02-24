@@ -1,8 +1,8 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,9 +33,8 @@ public class BackofficeLoggerController {
 
   @Operation(summary = "List all loggers")
   @GetMapping
-  public List<LoggerConfigurationResponse> listLoggers(
-      @RequestParam(required = false) @Nullable String search) {
-    return loggerService.listLoggers(search);
+  public List<LoggerConfigurationResponse> listLoggers(@RequestParam Optional<String> search) {
+    return loggerService.listLoggers(search.orElse(null));
   }
 
   @Operation(summary = "Set log level")

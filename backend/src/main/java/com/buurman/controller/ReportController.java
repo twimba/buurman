@@ -77,13 +77,15 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) @Nullable List<String> propertyIdentifiers,
-      @RequestParam(required = false) @Nullable String currency,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @RequestParam Optional<String> currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
-    return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+            .orElse(null);
+    return reportService.getFinancialOverview(
+        startDate, endDate, propertyIds, currency.orElse(null), principal);
   }
 
   @Operation(
@@ -92,15 +94,17 @@ public class ReportController {
   @GetMapping("/charts/income-trend")
   public IncomeTrendResponse getIncomeTrend(
       @RequestParam(defaultValue = "12") int months,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
-    if (startDate != null && endDate != null) {
-      return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+            .orElse(null);
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getIncomeTrendByDateRange(
+          startDate.get(), endDate.get(), propertyIds, principal);
     }
     return reportService.getIncomeTrend(months, propertyIds, principal);
   }
@@ -112,11 +116,12 @@ public class ReportController {
   public ExpenseBreakdownResponse getExpenseBreakdown(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+            .orElse(null);
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
@@ -127,11 +132,12 @@ public class ReportController {
   public PropertyComparisonResponse getPropertyComparison(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam(required = false) List<String> propertyIdentifiers,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId())
+            .orElse(null);
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
@@ -141,12 +147,12 @@ public class ReportController {
   @GetMapping("/charts/occupancy-trend")
   public OccupancyTrendResponse getOccupancyTrend(
       @RequestParam(defaultValue = "12") int months,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    if (startDate != null && endDate != null) {
-      return reportService.getOccupancyTrendByDateRange(startDate, endDate, principal);
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getOccupancyTrendByDateRange(startDate.get(), endDate.get(), principal);
     }
     return reportService.getOccupancyTrend(months, principal);
   }
@@ -166,12 +172,13 @@ public class ReportController {
       description = "Download transaction history as CSV file")
   @GetMapping("/export/transactions/csv")
   public ResponseEntity<byte[]> exportTransactionHistoryCSV(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] csv =
-        exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId());
+        exportService.generateTransactionHistoryCSV(
+            startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transactions.csv")
@@ -184,12 +191,13 @@ public class ReportController {
       description = "Download transaction history as PDF file")
   @GetMapping("/export/transactions/pdf")
   public ResponseEntity<byte[]> exportTransactionHistoryPDF(
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DATE) @Nullable LocalDate endDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
+      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
-        exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId());
+        exportService.generateTransactionHistoryPDF(
+            startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
 
     return ResponseEntity.ok()
         .header(CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf")

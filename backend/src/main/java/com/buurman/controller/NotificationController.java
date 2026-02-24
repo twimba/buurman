@@ -2,7 +2,8 @@ package com.buurman.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,28 +44,28 @@ public class NotificationController {
       description = "Paginated list of all team notifications (Admin only)")
   @GetMapping
   public PageResponse<NotificationResponse> getNotifications(
-      @RequestParam(required = false) @Nullable NotificationType type,
-      @RequestParam(required = false) @Nullable NotificationChannel channel,
-      @RequestParam(required = false) @Nullable NotificationStatus status,
-      @RequestParam(required = false) @Nullable String recipientEmail,
-      @RequestParam(required = false) @Nullable String dateFrom,
-      @RequestParam(required = false) @Nullable String dateTo,
+      @RequestParam Optional<NotificationType> type,
+      @RequestParam Optional<NotificationChannel> channel,
+      @RequestParam Optional<NotificationStatus> status,
+      @RequestParam Optional<String> recipientEmail,
+      @RequestParam Optional<String> dateFrom,
+      @RequestParam Optional<String> dateTo,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "25") int size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     PaginatedResult<NotificationResponse> result =
         centerService.getNotifications(
             principal,
-            type != null ? type.name() : null,
-            channel != null ? channel.name() : null,
-            status != null ? status.name() : null,
-            recipientEmail,
-            dateFrom,
-            dateTo,
+            type.map(NotificationType::name).orElse(null),
+            channel.map(NotificationChannel::name).orElse(null),
+            status.map(NotificationStatus::name).orElse(null),
+            recipientEmail.orElse(null),
+            dateFrom.orElse(null),
+            dateTo.orElse(null),
             pageRequest);
 
     return PageResponse.of(result.items(), page, size, result.totalElements());

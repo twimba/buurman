@@ -6,8 +6,8 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,32 +77,32 @@ public class ContractController {
       description = "Get all contracts with optional filters and pagination")
   @GetMapping
   public PageResponse<ContractResponse> getContracts(
-      @RequestParam(required = false) @Nullable ContractStatus status,
-      @RequestParam(required = false) @Nullable String propertyIdentifier,
-      @RequestParam(required = false) @Nullable String tenantIdentifier,
+      @RequestParam Optional<ContractStatus> status,
+      @RequestParam Optional<String> propertyIdentifier,
+      @RequestParam Optional<String> tenantIdentifier,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     // When filtering by property or tenant identifier, use the existing non-paginated methods
     // wrapped in PageResponse
-    if (propertyIdentifier != null) {
+    if (propertyIdentifier.isPresent()) {
       List<ContractResponse> results =
-          contractService.getContractsByProperty(propertyIdentifier, principal);
+          contractService.getContractsByProperty(propertyIdentifier.get(), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
-    if (tenantIdentifier != null) {
+    if (tenantIdentifier.isPresent()) {
       List<ContractResponse> results =
-          contractService.getContractsByTenant(tenantIdentifier, principal);
+          contractService.getContractsByTenant(tenantIdentifier.get(), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return contractService.getContractsPaginated(
-        principal, status != null ? status.name() : null, pageRequest);
+        principal, status.map(ContractStatus::name).orElse(null), pageRequest);
   }
 
   @Operation(summary = "Get contract details", description = "Get details of a specific contract")
@@ -208,10 +208,11 @@ public class ContractController {
   public DocumentResponse uploadDocument(
       @PathVariable String identifier,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(required = false) @Nullable String title,
-      @RequestParam(required = false) @Nullable String notes,
+      @RequestParam Optional<String> title,
+      @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
-    return contractService.uploadDocument(identifier, file, title, notes, principal);
+    return contractService.uploadDocument(
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Operation(summary = "List documents", description = "Get all documents for a contract")

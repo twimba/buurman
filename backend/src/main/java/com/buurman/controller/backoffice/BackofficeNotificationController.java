@@ -4,6 +4,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,24 +41,31 @@ public class BackofficeNotificationController {
       description = "Get all notifications with filtering and pagination")
   @GetMapping
   public PageResponse<BackofficeNotificationResponse> listNotifications(
-      @RequestParam(required = false) @Nullable String teamIdentifier,
-      @RequestParam(required = false) @Nullable String type,
-      @RequestParam(required = false) @Nullable String channel,
-      @RequestParam(required = false) @Nullable String status,
-      @RequestParam(required = false) @Nullable String recipientEmail,
-      @RequestParam(required = false) @Nullable String dateFrom,
-      @RequestParam(required = false) @Nullable String dateTo,
+      @RequestParam Optional<String> teamIdentifier,
+      @RequestParam Optional<String> type,
+      @RequestParam Optional<String> channel,
+      @RequestParam Optional<String> status,
+      @RequestParam Optional<String> recipientEmail,
+      @RequestParam Optional<String> dateFrom,
+      @RequestParam Optional<String> dateTo,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction) {
 
-    LocalDateTime from = parseDateTime(dateFrom);
-    LocalDateTime to = parseDateTime(dateTo);
+    LocalDateTime from = parseDateTime(dateFrom.orElse(null));
+    LocalDateTime to = parseDateTime(dateTo.orElse(null));
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return backofficeNotificationService.listNotifications(
-        pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
+        pageRequest,
+        teamIdentifier.orElse(null),
+        type.orElse(null),
+        channel.orElse(null),
+        status.orElse(null),
+        recipientEmail.orElse(null),
+        from,
+        to);
   }
 
   @Operation(summary = "Get notification", description = "Get notification details by identifier")

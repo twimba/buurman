@@ -4,8 +4,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
 
 import java.net.URL;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,17 +47,18 @@ public class DocumentController {
       summary = "Search and list all documents",
       description = "Search across all documents with optional filters and pagination")
   public ResponseEntity<PageResponse<DocumentResponse>> getAllDocuments(
-      @RequestParam(required = false) @Nullable String search,
-      @RequestParam(required = false) @Nullable String entityType,
+      @RequestParam Optional<String> search,
+      @RequestParam Optional<String> entityType,
       @RequestParam(defaultValue = "0") Integer page,
       @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam(required = false) @Nullable String sort,
+      @RequestParam Optional<String> sort,
       @RequestParam(defaultValue = "DESC") SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     PageResponse<DocumentResponse> documents =
-        documentService.searchDocumentsPaginated(search, entityType, principal, pageRequest);
+        documentService.searchDocumentsPaginated(
+            search.orElse(null), entityType.orElse(null), principal, pageRequest);
     return ResponseEntity.ok(documents);
   }
 
