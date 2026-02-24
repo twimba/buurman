@@ -102,8 +102,8 @@ public class PropertyDashboardService {
         earliest = property.getPurchaseDate().get();
       }
       for (Payment p : unfilteredPayments) {
-        if (p.getPaymentDate() != null && p.getPaymentDate().isBefore(earliest)) {
-          earliest = p.getPaymentDate();
+        if (p.getPaymentDate().isPresent() && p.getPaymentDate().get().isBefore(earliest)) {
+          earliest = p.getPaymentDate().get();
         }
       }
       for (Expense e : unfilteredExpenses) {
@@ -334,10 +334,10 @@ public class PropertyDashboardService {
 
     Map<YearMonth, BigDecimal> incomeByMonth =
         payments.stream()
-            .filter(p -> p.getPaymentDate() != null)
+            .filter(p -> p.getPaymentDate().isPresent())
             .collect(
                 Collectors.groupingBy(
-                    p -> YearMonth.from(p.getPaymentDate()),
+                    p -> YearMonth.from(p.getPaymentDate().get()),
                     Collectors.reducing(ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<YearMonth, BigDecimal> expensesByMonth =

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -369,16 +370,16 @@ public class BackofficeFeatureFlagController {
       return null;
     }
 
-    UUID activeTeamId = user.getActiveTeamId();
-    if (activeTeamId != null
-        && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamId))) {
-      return activeTeamId;
+    Optional<UUID> activeTeamIdOpt = user.getActiveTeamId();
+    if (activeTeamIdOpt.isPresent()
+        && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamIdOpt.get()))) {
+      return activeTeamIdOpt.get();
     }
 
-    UUID defaultTeamId = user.getDefaultTeamId();
-    if (defaultTeamId != null
-        && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamId))) {
-      return defaultTeamId;
+    Optional<UUID> defaultTeamIdOpt = user.getDefaultTeamId();
+    if (defaultTeamIdOpt.isPresent()
+        && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamIdOpt.get()))) {
+      return defaultTeamIdOpt.get();
     }
 
     return memberships.getFirst().getTeamId();

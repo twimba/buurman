@@ -49,8 +49,8 @@ public class ContractPaymentInstructionService {
     // Batch-load templates to avoid N+1
     List<UUID> templateIds =
         history.stream()
-            .filter(cpi -> !cpi.getIsCustom() && cpi.getPaymentInstructionId() != null)
-            .map(ContractPaymentInstruction::getPaymentInstructionId)
+            .filter(cpi -> !cpi.getIsCustom())
+            .flatMap(cpi -> cpi.getPaymentInstructionId().stream())
             .distinct()
             .toList();
 
@@ -72,17 +72,13 @@ public class ContractPaymentInstructionService {
         .map(
             cpi -> {
               Map<UUID, PaymentInstruction> templateMap = Map.of();
-              if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
-                piRepository
-                    .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
-                    .ifPresent(pi -> {});
-                PaymentInstruction template =
-                    piRepository
-                        .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
-                        .orElse(null);
-                if (template != null) {
-                  templateMap = Map.of(template.getId(), template);
-                }
+              if (!cpi.getIsCustom()) {
+                templateMap =
+                    cpi.getPaymentInstructionId()
+                        .flatMap(
+                            piId -> piRepository.findByIdAndTeamId(piId, principal.requireTeamId()))
+                        .map(pi -> Map.of(pi.getId(), pi))
+                        .orElse(Map.of());
               }
               return toResolvedResponse(cpi, templateMap);
             });
@@ -177,7 +173,7 @@ public class ContractPaymentInstructionService {
     cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
-    cpi.setNotes(request.notes());
+    cpi.setNotes(Optional.ofNullable(request.notes()));
     cpi.setCreatedBy(principal.getUserId());
     cpi.setUpdatedBy(principal.getUserId());
     cpi.setCreatedAt(clock.instant());
@@ -188,21 +184,21 @@ public class ContractPaymentInstructionService {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
               request.paymentInstructionIdentifier(), principal.requireTeamId());
-      cpi.setPaymentInstructionId(template.getId());
+      cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
       cpi.setIsCustom(true);
-      cpi.setCustomName(request.customName());
-      cpi.setCustomDescription(request.customDescription());
-      cpi.setCustomPaymentMethod(request.customPaymentMethod());
-      cpi.setCustomBankName(request.customBankName());
-      cpi.setCustomAccountHolderName(request.customAccountHolderName());
-      cpi.setCustomIban(request.customIban());
-      cpi.setCustomBicSwift(request.customBicSwift());
-      cpi.setCustomAccountNumber(request.customAccountNumber());
-      cpi.setCustomRoutingNumber(request.customRoutingNumber());
-      cpi.setCustomPaymentReference(request.customPaymentReference());
-      cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
+      cpi.setCustomName(Optional.ofNullable(request.customName()));
+      cpi.setCustomDescription(Optional.ofNullable(request.customDescription()));
+      cpi.setCustomPaymentMethod(Optional.ofNullable(request.customPaymentMethod()));
+      cpi.setCustomBankName(Optional.ofNullable(request.customBankName()));
+      cpi.setCustomAccountHolderName(Optional.ofNullable(request.customAccountHolderName()));
+      cpi.setCustomIban(Optional.ofNullable(request.customIban()));
+      cpi.setCustomBicSwift(Optional.ofNullable(request.customBicSwift()));
+      cpi.setCustomAccountNumber(Optional.ofNullable(request.customAccountNumber()));
+      cpi.setCustomRoutingNumber(Optional.ofNullable(request.customRoutingNumber()));
+      cpi.setCustomPaymentReference(Optional.ofNullable(request.customPaymentReference()));
+      cpi.setCustomAdditionalDetails(Optional.ofNullable(request.customAdditionalDetails()));
     }
 
     ContractPaymentInstruction saved = cpiRepository.save(cpi);
@@ -289,7 +285,7 @@ public class ContractPaymentInstructionService {
     cpi.setTeamId(principal.requireTeamId());
     cpi.setContractId(contract.getId());
     cpi.setEffectiveFrom(request.effectiveFrom());
-    cpi.setNotes(request.notes());
+    cpi.setNotes(Optional.ofNullable(request.notes()));
     cpi.setCreatedBy(principal.getUserId());
     cpi.setUpdatedBy(principal.getUserId());
     cpi.setCreatedAt(clock.instant());
@@ -300,21 +296,21 @@ public class ContractPaymentInstructionService {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
               request.paymentInstructionIdentifier(), principal.requireTeamId());
-      cpi.setPaymentInstructionId(template.getId());
+      cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
       cpi.setIsCustom(true);
-      cpi.setCustomName(request.customName());
-      cpi.setCustomDescription(request.customDescription());
-      cpi.setCustomPaymentMethod(request.customPaymentMethod());
-      cpi.setCustomBankName(request.customBankName());
-      cpi.setCustomAccountHolderName(request.customAccountHolderName());
-      cpi.setCustomIban(request.customIban());
-      cpi.setCustomBicSwift(request.customBicSwift());
-      cpi.setCustomAccountNumber(request.customAccountNumber());
-      cpi.setCustomRoutingNumber(request.customRoutingNumber());
-      cpi.setCustomPaymentReference(request.customPaymentReference());
-      cpi.setCustomAdditionalDetails(request.customAdditionalDetails());
+      cpi.setCustomName(Optional.ofNullable(request.customName()));
+      cpi.setCustomDescription(Optional.ofNullable(request.customDescription()));
+      cpi.setCustomPaymentMethod(Optional.ofNullable(request.customPaymentMethod()));
+      cpi.setCustomBankName(Optional.ofNullable(request.customBankName()));
+      cpi.setCustomAccountHolderName(Optional.ofNullable(request.customAccountHolderName()));
+      cpi.setCustomIban(Optional.ofNullable(request.customIban()));
+      cpi.setCustomBicSwift(Optional.ofNullable(request.customBicSwift()));
+      cpi.setCustomAccountNumber(Optional.ofNullable(request.customAccountNumber()));
+      cpi.setCustomRoutingNumber(Optional.ofNullable(request.customRoutingNumber()));
+      cpi.setCustomPaymentReference(Optional.ofNullable(request.customPaymentReference()));
+      cpi.setCustomAdditionalDetails(Optional.ofNullable(request.customAdditionalDetails()));
     }
 
     return cpi;
@@ -322,9 +318,9 @@ public class ContractPaymentInstructionService {
 
   private Map<UUID, PaymentInstruction> loadTemplateMap(
       ContractPaymentInstruction cpi, UserPrincipal principal) {
-    if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
-      return piRepository
-          .findByIdAndTeamId(cpi.getPaymentInstructionId(), principal.requireTeamId())
+    if (!cpi.getIsCustom()) {
+      return cpi.getPaymentInstructionId()
+          .flatMap(piId -> piRepository.findByIdAndTeamId(piId, principal.requireTeamId()))
           .map(pi -> Map.of(pi.getId(), pi))
           .orElse(Map.of());
     }
@@ -334,31 +330,32 @@ public class ContractPaymentInstructionService {
   private ContractPaymentInstructionResponse toResolvedResponse(
       ContractPaymentInstruction cpi, Map<UUID, PaymentInstruction> templateMap) {
 
-    if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
-      PaymentInstruction template = templateMap.get(cpi.getPaymentInstructionId());
-      if (template != null) {
-        return new ContractPaymentInstructionResponse(
-            cpi.getIdentifier(),
-            Optional.of(template.getIdentifier()),
-            Optional.of(false),
-            Optional.ofNullable(template.getName()),
-            Optional.ofNullable(template.getDescription()),
-            Optional.ofNullable(
-                template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null),
-            Optional.ofNullable(template.getBankName()),
-            Optional.ofNullable(template.getAccountHolderName()),
-            Optional.ofNullable(template.getIban()),
-            Optional.ofNullable(template.getBicSwift()),
-            Optional.ofNullable(template.getAccountNumber()),
-            Optional.ofNullable(template.getRoutingNumber()),
-            Optional.ofNullable(template.getPaymentReference()),
-            Optional.ofNullable(template.getAdditionalDetails()),
-            Optional.ofNullable(cpi.getEffectiveFrom()),
-            Optional.ofNullable(cpi.getEffectiveTo()),
-            Optional.ofNullable(cpi.getNotes()),
-            cpi.getCreatedAt(),
-            Optional.ofNullable(cpi.getUpdatedAt()));
-      }
+    Optional<PaymentInstruction> maybeTemplate =
+        cpi.getIsCustom() ? Optional.empty() : cpi.getPaymentInstructionId().map(templateMap::get);
+
+    if (maybeTemplate.isPresent()) {
+      PaymentInstruction template = maybeTemplate.get();
+      return new ContractPaymentInstructionResponse(
+          cpi.getIdentifier(),
+          Optional.of(template.getIdentifier()),
+          Optional.of(false),
+          Optional.ofNullable(template.getName()),
+          Optional.ofNullable(template.getDescription()),
+          Optional.ofNullable(
+              template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null),
+          template.getBankName(),
+          template.getAccountHolderName(),
+          template.getIban(),
+          template.getBicSwift(),
+          template.getAccountNumber(),
+          template.getRoutingNumber(),
+          template.getPaymentReference(),
+          template.getAdditionalDetails(),
+          Optional.ofNullable(cpi.getEffectiveFrom()),
+          cpi.getEffectiveTo(),
+          cpi.getNotes(),
+          cpi.getCreatedAt(),
+          Optional.ofNullable(cpi.getUpdatedAt()));
     }
 
     // Custom or template not found
@@ -366,20 +363,20 @@ public class ContractPaymentInstructionService {
         cpi.getIdentifier(),
         Optional.empty(),
         Optional.of(true),
-        Optional.ofNullable(cpi.getCustomName()),
-        Optional.ofNullable(cpi.getCustomDescription()),
-        Optional.ofNullable(cpi.getCustomPaymentMethod()),
-        Optional.ofNullable(cpi.getCustomBankName()),
-        Optional.ofNullable(cpi.getCustomAccountHolderName()),
-        Optional.ofNullable(cpi.getCustomIban()),
-        Optional.ofNullable(cpi.getCustomBicSwift()),
-        Optional.ofNullable(cpi.getCustomAccountNumber()),
-        Optional.ofNullable(cpi.getCustomRoutingNumber()),
-        Optional.ofNullable(cpi.getCustomPaymentReference()),
-        Optional.ofNullable(cpi.getCustomAdditionalDetails()),
+        cpi.getCustomName(),
+        cpi.getCustomDescription(),
+        cpi.getCustomPaymentMethod(),
+        cpi.getCustomBankName(),
+        cpi.getCustomAccountHolderName(),
+        cpi.getCustomIban(),
+        cpi.getCustomBicSwift(),
+        cpi.getCustomAccountNumber(),
+        cpi.getCustomRoutingNumber(),
+        cpi.getCustomPaymentReference(),
+        cpi.getCustomAdditionalDetails(),
         Optional.ofNullable(cpi.getEffectiveFrom()),
-        Optional.ofNullable(cpi.getEffectiveTo()),
-        Optional.ofNullable(cpi.getNotes()),
+        cpi.getEffectiveTo(),
+        cpi.getNotes(),
         cpi.getCreatedAt(),
         Optional.ofNullable(cpi.getUpdatedAt()));
   }

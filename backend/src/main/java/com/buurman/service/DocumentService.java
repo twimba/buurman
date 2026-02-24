@@ -109,8 +109,8 @@ public class DocumentService {
         java.util.Objects.requireNonNullElse(file.getOriginalFilename(), "unknown"));
     document.setFileSize(file.getSize());
     document.setMimeType(mimeType);
-    document.setTitle(title);
-    document.setNotes(notes);
+    document.setTitle(Optional.ofNullable(title));
+    document.setNotes(Optional.ofNullable(notes));
     document.setUploadedBy(principal.getUserId());
 
     Document savedDocument = documentRepository.save(document);
@@ -129,9 +129,10 @@ public class DocumentService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("documentAdded", savedDocument.getFileName());
-    if (savedDocument.getTitle() != null && !savedDocument.getTitle().isEmpty()) {
-      changedFields.put("title", savedDocument.getTitle());
-    }
+    savedDocument
+        .getTitle()
+        .filter(t -> !t.isEmpty())
+        .ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
         principal.requireTeamId(),
         entityType.toUpperCase(),
@@ -180,9 +181,7 @@ public class DocumentService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("documentRemoved", document.getFileName());
-    if (document.getTitle() != null && !document.getTitle().isEmpty()) {
-      changedFields.put("title", document.getTitle());
-    }
+    document.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
     auditService.logUpdate(
         principal.requireTeamId(),
         document.getEntityType().toUpperCase(),
@@ -199,11 +198,11 @@ public class DocumentService {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    String oldTitle = document.getTitle();
-    String oldNotes = document.getNotes();
+    String oldTitle = document.getTitle().orElse(null);
+    String oldNotes = document.getNotes().orElse(null);
 
-    document.setTitle(request.title());
-    document.setNotes(request.notes());
+    document.setTitle(Optional.ofNullable(request.title()));
+    document.setNotes(Optional.ofNullable(request.notes()));
 
     documentRepository.save(document);
 

@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -73,16 +74,16 @@ public class TenantAddressService {
       address.setStatus(TenantAddress.AddressStatus.ACTIVE);
     }
 
-    if (address.getLatitude() == null || address.getLongitude() == null) {
+    if (address.getLatitude().isEmpty() || address.getLongitude().isEmpty()) {
       geocodingService
           .geocode(
               request.street(), request.city(),
               request.postalCode(), request.country())
           .ifPresent(
               result -> {
-                address.setLatitude(result.latitude().doubleValue());
-                address.setLongitude(result.longitude().doubleValue());
-                address.setGeocodeAccuracy(result.accuracy());
+                address.setLatitude(Optional.of(result.latitude().doubleValue()));
+                address.setLongitude(Optional.of(result.longitude().doubleValue()));
+                address.setGeocodeAccuracy(Optional.ofNullable(result.accuracy()));
               });
     }
 
@@ -197,16 +198,16 @@ public class TenantAddressService {
             || !java.util.Objects.equals(oldPostalCode, address.getPostalCode())
             || !java.util.Objects.equals(oldCountry, address.getCountry());
 
-    if (addressChanged && (address.getLatitude() == null || address.getLongitude() == null)) {
+    if (addressChanged && (address.getLatitude().isEmpty() || address.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               address.getStreet(), address.getCity(),
               address.getPostalCode(), address.getCountry())
           .ifPresent(
               result -> {
-                address.setLatitude(result.latitude().doubleValue());
-                address.setLongitude(result.longitude().doubleValue());
-                address.setGeocodeAccuracy(result.accuracy());
+                address.setLatitude(Optional.of(result.latitude().doubleValue()));
+                address.setLongitude(Optional.of(result.longitude().doubleValue()));
+                address.setGeocodeAccuracy(Optional.ofNullable(result.accuracy()));
               });
     }
 

@@ -62,7 +62,7 @@ public class PhoneVerificationCodeRepository {
               pvc.setPhone(record.getPhone());
               pvc.setCode(record.getCode());
               pvc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
-              pvc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+              pvc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(t -> t.toInstant(UTC)));
               pvc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
               return pvc;
             });

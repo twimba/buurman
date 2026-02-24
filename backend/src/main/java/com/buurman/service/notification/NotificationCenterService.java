@@ -118,34 +118,35 @@ public class NotificationCenterService {
   }
 
   private NotificationResponse toResponse(Notification notification) {
-    String resentFromIdentifier = null;
-    if (notification.getResentFromId() != null) {
-      resentFromIdentifier =
-          notificationRepository
-              .findByIdAndTeamId(notification.getResentFromId(), notification.getTeamId())
-              .map(Notification::getIdentifier)
-              .orElse(null);
-    }
+    String resentFromIdentifier =
+        notification
+            .getResentFromId()
+            .flatMap(
+                resentId ->
+                    notificationRepository.findByIdAndTeamId(
+                        resentId, notification.getTeamId().orElse(null)))
+            .map(Notification::getIdentifier)
+            .orElse(null);
 
     return new NotificationResponse(
         notification.getIdentifier(),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
-        Optional.ofNullable(notification.getSubject()),
+        notification.getSubject(),
         Optional.ofNullable(notification.getBody()),
-        Optional.ofNullable(notification.getRecipientEmail()),
-        Optional.ofNullable(notification.getRecipientPhone()),
+        notification.getRecipientEmail(),
+        notification.getRecipientPhone(),
         notification.getStatus().name(),
-        Optional.ofNullable(notification.getProviderStatus()),
-        Optional.ofNullable(notification.getProviderError()),
+        notification.getProviderStatus(),
+        notification.getProviderError(),
         notification.getOpenCount(),
         notification.getClickCount(),
-        Optional.ofNullable(notification.getFirstOpenedAt()),
-        Optional.ofNullable(notification.getFirstClickedAt()),
+        notification.getFirstOpenedAt(),
+        notification.getFirstClickedAt(),
         Optional.ofNullable(resentFromIdentifier),
-        Optional.ofNullable(notification.getResendReason()),
+        notification.getResendReason(),
         notification.getCreatedAt(),
-        Optional.ofNullable(notification.getStatusUpdatedAt()));
+        notification.getStatusUpdatedAt());
   }
 
   private @Nullable LocalDateTime parseDateTime(@Nullable String dateTimeStr) {

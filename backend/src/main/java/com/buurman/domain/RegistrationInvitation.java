@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,37 +18,37 @@ public class RegistrationInvitation {
   private UUID id;
   private String identifier;
   private String code;
-  private @Nullable Integer maxUsages;
+  @Builder.Default private Optional<Integer> maxUsages = Optional.empty();
   private int usageCount;
-  private @Nullable Instant expiresAt;
-  private @Nullable Instant revokedAt;
-  private @Nullable String revokedBy;
+  @Builder.Default private Optional<Instant> expiresAt = Optional.empty();
+  @Builder.Default private Optional<Instant> revokedAt = Optional.empty();
+  @Builder.Default private Optional<String> revokedBy = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private String createdBy;
-  private @Nullable String note;
+  @Builder.Default private Optional<String> note = Optional.empty();
 
   public boolean isValid() {
-    if (revokedAt != null) {
+    if (revokedAt.isPresent()) {
       return false;
     }
-    if (expiresAt != null && expiresAt.isBefore(Instant.now())) {
+    if (expiresAt.isPresent() && expiresAt.get().isBefore(Instant.now())) {
       return false;
     }
-    if (maxUsages != null && usageCount >= maxUsages) {
+    if (maxUsages.isPresent() && usageCount >= maxUsages.get()) {
       return false;
     }
     return true;
   }
 
   public String getStatus() {
-    if (revokedAt != null) {
+    if (revokedAt.isPresent()) {
       return "REVOKED";
     }
-    if (expiresAt != null && expiresAt.isBefore(Instant.now())) {
+    if (expiresAt.isPresent() && expiresAt.get().isBefore(Instant.now())) {
       return "EXPIRED";
     }
-    if (maxUsages != null && usageCount >= maxUsages) {
+    if (maxUsages.isPresent() && usageCount >= maxUsages.get()) {
       return "EXHAUSTED";
     }
     return "ACTIVE";

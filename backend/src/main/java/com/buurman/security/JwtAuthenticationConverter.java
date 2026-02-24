@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
@@ -112,23 +111,23 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     }
 
     // Priority 1: User's active team
-    UUID activeTeamId = user.getActiveTeamId();
-    if (activeTeamId != null) {
-      Optional<TeamMember> active =
-          memberships.stream().filter(m -> m.getTeamId().equals(activeTeamId)).findFirst();
-      if (active.isPresent()) {
-        return active;
-      }
+    Optional<TeamMember> active =
+        user.getActiveTeamId()
+            .flatMap(
+                teamId ->
+                    memberships.stream().filter(m -> m.getTeamId().equals(teamId)).findFirst());
+    if (active.isPresent()) {
+      return active;
     }
 
     // Priority 2: User's default team
-    UUID defaultTeamId = user.getDefaultTeamId();
-    if (defaultTeamId != null) {
-      Optional<TeamMember> defaultMember =
-          memberships.stream().filter(m -> m.getTeamId().equals(defaultTeamId)).findFirst();
-      if (defaultMember.isPresent()) {
-        return defaultMember;
-      }
+    Optional<TeamMember> defaultMember =
+        user.getDefaultTeamId()
+            .flatMap(
+                teamId ->
+                    memberships.stream().filter(m -> m.getTeamId().equals(teamId)).findFirst());
+    if (defaultMember.isPresent()) {
+      return defaultMember;
     }
 
     // Priority 3: First membership (oldest by invited_at)
@@ -159,7 +158,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     User user = new User();
     user.setKeycloakId(keycloakId);
     user.setEmail(email);
-    user.setEmailVerifiedAt(clock.instant());
+    user.setEmailVerifiedAt(Optional.of(clock.instant()));
 
     String[] nameParts = name != null ? name.split(" ", 2) : new String[] {"", ""};
     user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");

@@ -964,7 +964,7 @@ public class PropertyBookletExporter {
     for (Photo photo : photos) {
       String dataUri = photoToBase64DataUri(photo);
       if (dataUri != null) {
-        String label = photo.getTitle() != null ? photo.getTitle() : photo.getFileName();
+        String label = photo.getTitle().orElse(photo.getFileName());
         photoEntries.add(new String[] {dataUri, label, isTrue(photo.getIsMainPhoto()) ? "1" : "0"});
       }
     }
@@ -1274,8 +1274,7 @@ public class PropertyBookletExporter {
   }
 
   private @Nullable String photoToBase64DataUri(Photo photo) {
-    String fileKey =
-        photo.getThumbnailFileKey() != null ? photo.getThumbnailFileKey() : photo.getFileKey();
+    String fileKey = photo.getThumbnailFileKey().orElse(photo.getFileKey());
     try (InputStream is = s3StorageService.downloadFile(fileKey)) {
       byte[] bytes = is.readAllBytes();
       String mime = photo.getMimeType() != null ? photo.getMimeType() : "image/jpeg";
@@ -1290,10 +1289,15 @@ public class PropertyBookletExporter {
     Map<Integer, FinancialYearSummary> summaries = new TreeMap<>(Comparator.reverseOrder());
 
     for (Payment payment : payments) {
-      if (payment.getStatus() == PAID && payment.getPaymentDate() != null) {
-        int year = payment.getPaymentDate().getYear();
-        summaries.computeIfAbsent(year, FinancialYearSummary::new);
-        summaries.get(year).addIncome(payment.getAmount());
+      if (payment.getStatus() == PAID) {
+        payment
+            .getPaymentDate()
+            .ifPresent(
+                paymentDate -> {
+                  int year = paymentDate.getYear();
+                  summaries.computeIfAbsent(year, FinancialYearSummary::new);
+                  summaries.get(year).addIncome(payment.getAmount());
+                });
       }
     }
     for (Expense expense : expenses) {

@@ -73,9 +73,9 @@ public class RegistrationInvitationService {
 
     RegistrationInvitation invitation = new RegistrationInvitation();
     invitation.setCode(code);
-    invitation.setMaxUsages(request.maxUsages());
-    invitation.setExpiresAt(request.expiresAt());
-    invitation.setNote(request.note());
+    invitation.setMaxUsages(Optional.ofNullable(request.maxUsages()));
+    invitation.setExpiresAt(Optional.ofNullable(request.expiresAt()));
+    invitation.setNote(Optional.ofNullable(request.note()));
     String principalEmail = principal.getEmail() != null ? principal.getEmail() : "unknown";
     invitation.setCreatedBy(principalEmail);
 
@@ -113,7 +113,7 @@ public class RegistrationInvitationService {
   public void revoke(String identifier, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
-    if (invitation.getRevokedAt() != null) {
+    if (invitation.getRevokedAt().isPresent()) {
       throw new BusinessRuleException("Invitation is already revoked");
     }
 
@@ -257,14 +257,14 @@ public class RegistrationInvitationService {
     return new RegistrationInvitationResponse(
         inv.getIdentifier(),
         inv.getCode(),
-        Optional.ofNullable(inv.getMaxUsages()),
+        inv.getMaxUsages(),
         inv.getUsageCount(),
-        Optional.ofNullable(inv.getExpiresAt()),
-        inv.getRevokedAt() != null,
+        inv.getExpiresAt(),
+        inv.getRevokedAt().isPresent(),
         inv.getStatus(),
         inv.getCreatedBy(),
         inv.getCreatedAt(),
-        inv.getNote() != null && !inv.getNote().isBlank());
+        inv.getNote().filter(n -> !n.isBlank()).isPresent());
   }
 
   private RegistrationInvitationDetailResponse toDetailResponse(
@@ -281,17 +281,17 @@ public class RegistrationInvitationService {
     return new RegistrationInvitationDetailResponse(
         inv.getIdentifier(),
         inv.getCode(),
-        Optional.ofNullable(inv.getMaxUsages()),
+        inv.getMaxUsages(),
         inv.getUsageCount(),
-        Optional.ofNullable(inv.getExpiresAt()),
-        inv.getRevokedAt() != null,
-        Optional.ofNullable(inv.getRevokedBy()),
-        Optional.ofNullable(inv.getRevokedAt()),
+        inv.getExpiresAt(),
+        inv.getRevokedAt().isPresent(),
+        inv.getRevokedBy(),
+        inv.getRevokedAt(),
         inv.getStatus(),
         inv.getCreatedBy(),
         inv.getCreatedAt(),
-        Optional.ofNullable(inv.getUpdatedAt()),
-        Optional.ofNullable(inv.getNote()),
+        Optional.of(inv.getUpdatedAt()),
+        inv.getNote(),
         usageRecords);
   }
 }

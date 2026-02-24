@@ -92,7 +92,7 @@ public class NotificationSchedulerService {
                               .notificationType(NotificationType.CONTRACT_EXPIRY)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
-                              .recipientPhone(user.getPhone())
+                              .recipientPhone(user.getPhone().orElse(null))
                               .templateName("contract-expiry")
                               .templateVariables(
                                   Map.of(
@@ -155,7 +155,7 @@ public class NotificationSchedulerService {
                               .notificationType(NotificationType.PAYMENT_REMINDER)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
-                              .recipientPhone(user.getPhone())
+                              .recipientPhone(user.getPhone().orElse(null))
                               .templateName("payment-reminder")
                               .templateVariables(
                                   Map.of(

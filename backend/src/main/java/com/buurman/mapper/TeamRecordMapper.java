@@ -33,7 +33,7 @@ public class TeamRecordMapper {
     }
     team.setCreatedBy(record.getCreatedBy());
     team.setUpdatedBy(record.getUpdatedBy());
-    team.setDeletedAt(toInstant(record.getDeletedAt()));
+    team.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(team);
   }

@@ -171,11 +171,11 @@ public class DemoPhotoGenerator {
         photo.setEntityType("PROPERTY");
         photo.setEntityId(propertyId);
         photo.setFileKey(fileKey);
-        photo.setThumbnailFileKey(thumbnailFileKey);
+        photo.setThumbnailFileKey(Optional.ofNullable(thumbnailFileKey));
         photo.setFileName(fileName);
         photo.setFileSize((long) imageData.length);
         photo.setMimeType("image/jpeg");
-        photo.setTitle(slot.title);
+        photo.setTitle(Optional.of(slot.title));
         photo.setIsMainPhoto(slot.isMain);
         photo.setUploadedBy(uploadedBy);
 

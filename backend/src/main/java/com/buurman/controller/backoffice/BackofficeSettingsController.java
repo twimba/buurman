@@ -52,10 +52,10 @@ public class BackofficeSettingsController {
       @Valid @RequestBody UpdatePhoneNumberPolicyRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     PhoneNumberPolicy policy = policyService.getPolicy();
-    policy.setPolicyMatrix(request.policyMatrix());
+    policy.setPolicyMatrix(Optional.ofNullable(request.policyMatrix()));
     policy.setMaxCodesPerHour(request.maxCodesPerHour());
     policy.setVerificationCodeExpiryMinutes(request.verificationCodeExpiryMinutes());
-    policy.setUpdatedBy(principal.getEmail());
+    policy.setUpdatedBy(Optional.ofNullable(principal.getEmail()));
 
     policy = policyService.updatePolicy(policy);
     return toResponse(policy);
@@ -82,13 +82,12 @@ public class BackofficeSettingsController {
   }
 
   private BackofficePhoneNumberPolicyResponse toResponse(PhoneNumberPolicy policy) {
-    Map<String, List<String>> matrix =
-        policy.getPolicyMatrix() != null ? policy.getPolicyMatrix() : Map.of();
+    Map<String, List<String>> matrix = policy.getPolicyMatrix().orElse(Map.of());
     return new BackofficePhoneNumberPolicyResponse(
         matrix,
         policy.getMaxCodesPerHour(),
         policy.getVerificationCodeExpiryMinutes(),
-        Optional.ofNullable(policy.getUpdatedAt()),
-        Optional.ofNullable(policy.getUpdatedBy()));
+        policy.getUpdatedAt(),
+        policy.getUpdatedBy());
   }
 }

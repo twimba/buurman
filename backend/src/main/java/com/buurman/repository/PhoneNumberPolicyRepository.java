@@ -46,26 +46,25 @@ public class PhoneNumberPolicyRepository {
 
   public PhoneNumberPolicy save(PhoneNumberPolicy policy) {
     Timestamp now = Timestamp.from(clock.instant());
-    Timestamp updatedAt =
-        policy.getUpdatedAt() != null ? Timestamp.from(policy.getUpdatedAt()) : now;
+    Timestamp updatedAt = policy.getUpdatedAt().map(Timestamp::from).orElse(now);
 
     dsl.update(TABLE)
-        .set(POLICY_MATRIX, toJsonbMap(policy.getPolicyMatrix()))
+        .set(POLICY_MATRIX, toJsonbMap(policy.getPolicyMatrix().orElse(null)))
         .set(MAX_CODES_PER_HOUR, policy.getMaxCodesPerHour())
         .set(VERIFICATION_CODE_EXPIRY_MINUTES, policy.getVerificationCodeExpiryMinutes())
         .set(UPDATED_AT, updatedAt)
-        .set(UPDATED_BY, policy.getUpdatedBy())
+        .set(UPDATED_BY, policy.getUpdatedBy().orElse(null))
         .where(ID.eq(policy.getId()))
         .execute();
 
-    policy.setUpdatedAt(updatedAt.toInstant());
+    policy.setUpdatedAt(Optional.of(updatedAt.toInstant()));
     return policy;
   }
 
   private PhoneNumberPolicy toDomain(Record record) {
     PhoneNumberPolicy policy = new PhoneNumberPolicy();
     policy.setId(record.get(ID));
-    policy.setPolicyMatrix(fromJsonbMap(record.get(POLICY_MATRIX)));
+    policy.setPolicyMatrix(Optional.ofNullable(fromJsonbMap(record.get(POLICY_MATRIX))));
     Integer maxCodes = record.get(MAX_CODES_PER_HOUR);
     if (maxCodes != null) {
       policy.setMaxCodesPerHour(maxCodes);
@@ -76,9 +75,9 @@ public class PhoneNumberPolicyRepository {
     }
     Timestamp updatedAtTs = record.get(UPDATED_AT);
     if (updatedAtTs != null) {
-      policy.setUpdatedAt(updatedAtTs.toInstant());
+      policy.setUpdatedAt(Optional.of(updatedAtTs.toInstant()));
     }
-    policy.setUpdatedBy(record.get(UPDATED_BY));
+    policy.setUpdatedBy(Optional.ofNullable(record.get(UPDATED_BY)));
     return policy;
   }
 
@@ -90,9 +89,9 @@ public class PhoneNumberPolicyRepository {
     }
   }
 
-  private Map<String, List<String>> fromJsonbMap(JSONB jsonb) {
+  private @Nullable Map<String, List<String>> fromJsonbMap(@Nullable JSONB jsonb) {
     if (jsonb == null) {
-      return Map.of();
+      return null;
     }
     try {
       return objectMapper.readValue(jsonb.data(), new TypeReference<>() {});

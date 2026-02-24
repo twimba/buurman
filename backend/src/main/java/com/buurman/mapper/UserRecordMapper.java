@@ -18,20 +18,28 @@ public interface UserRecordMapper {
 
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
-  @Mapping(target = "emailVerifiedAt", expression = "java(toInstant(record.getEmailVerifiedAt()))")
-  @Mapping(target = "phoneVerifiedAt", expression = "java(toInstant(record.getPhoneVerifiedAt()))")
-  @Mapping(target = "disabledAt", expression = "java(toInstant(record.getDisabledAt()))")
+  @Mapping(
+      target = "emailVerifiedAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getEmailVerifiedAt())))")
+  @Mapping(
+      target = "phoneVerifiedAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getPhoneVerifiedAt())))")
+  @Mapping(
+      target = "disabledAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getDisabledAt())))")
   User toDomain(UsersRecord record);
 
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(user.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toLocalDateTime(user.getUpdatedAt()))")
   @Mapping(
       target = "emailVerifiedAt",
-      expression = "java(toLocalDateTime(user.getEmailVerifiedAt()))")
+      expression = "java(toLocalDateTime(user.getEmailVerifiedAt().orElse(null)))")
   @Mapping(
       target = "phoneVerifiedAt",
-      expression = "java(toLocalDateTime(user.getPhoneVerifiedAt()))")
-  @Mapping(target = "disabledAt", expression = "java(toLocalDateTime(user.getDisabledAt()))")
+      expression = "java(toLocalDateTime(user.getPhoneVerifiedAt().orElse(null)))")
+  @Mapping(
+      target = "disabledAt",
+      expression = "java(toLocalDateTime(user.getDisabledAt().orElse(null)))")
   @Mapping(target = "deletedAt", ignore = true)
   UsersRecord toRecord(User user);
 

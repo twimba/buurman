@@ -79,7 +79,7 @@ public class BackofficeTeamService {
                       m.getRole(),
                       m.isOwner(),
                       m.getJoinedAt(),
-                      u != null && u.getDisabledAt() != null);
+                      u != null && u.getDisabledAt().isPresent());
                 })
             .toList();
 
@@ -89,13 +89,15 @@ public class BackofficeTeamService {
     // Financial snapshot — derive currency from actual contract data
     TeamPreferences prefs = teamPreferencesRepository.getByTeamId(team.getId());
     var activeRent = statsRepository.sumActiveRentForTeam(team.getId());
-    String currency =
-        activeRent.getValue() != null ? activeRent.getValue() : prefs.getDefaultCurrency();
+    Optional<String> currency =
+        activeRent.getValue() != null
+            ? Optional.of(activeRent.getValue())
+            : prefs.getDefaultCurrency();
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
             Optional.ofNullable(activeRent.getKey()),
-            Optional.ofNullable(currency),
+            currency,
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),
             statsRepository.contractStatusDistribution(team.getId()),
@@ -106,7 +108,7 @@ public class BackofficeTeamService {
         new SettingsInfo(
             Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
-            Optional.ofNullable(prefs.getDefaultCurrency()),
+            prefs.getDefaultCurrency(),
             Optional.ofNullable(prefs.getDefaultCountry()),
             Optional.ofNullable(prefs.getTimezone()),
             Optional.ofNullable(prefs.getDateFormat()),

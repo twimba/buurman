@@ -254,9 +254,7 @@ public class ReportService {
         allPayments.stream()
             .collect(
                 groupingBy(
-                    p ->
-                        YearMonth.from(
-                            p.getPaymentDate() != null ? p.getPaymentDate() : p.getDueDate()),
+                    p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()
@@ -311,9 +309,7 @@ public class ReportService {
         allPayments.stream()
             .collect(
                 groupingBy(
-                    p ->
-                        YearMonth.from(
-                            p.getPaymentDate() != null ? p.getPaymentDate() : p.getDueDate()),
+                    p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()

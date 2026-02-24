@@ -267,16 +267,15 @@ public class TeamService {
       throw new BusinessRuleException("Invitation does not belong to this team");
     }
 
-    if (invitation.getAcceptedAt() != null) {
+    if (invitation.getAcceptedAt().isPresent()) {
       throw new BusinessRuleException("Invitation already accepted");
     }
 
     // Reset token, expiry, and resend tracking
     invitation.setToken(UUID.randomUUID().toString());
     invitation.setExpiresAt(clock.instant().plus(7, DAYS));
-    invitation.setResentAt(clock.instant());
-    invitation.setResentCount(
-        invitation.getResentCount() == null ? 1 : invitation.getResentCount() + 1);
+    invitation.setResentAt(Optional.of(clock.instant()));
+    invitation.setResentCount(Optional.of(invitation.getResentCount().map(c -> c + 1).orElse(1)));
 
     invitation = invitationRepository.save(invitation);
 
@@ -312,7 +311,7 @@ public class TeamService {
     TeamInvitation invitation = invitationRepository.getByToken(token);
 
     // Validate
-    if (invitation.getAcceptedAt() != null) {
+    if (invitation.getAcceptedAt().isPresent()) {
       throw new BusinessRuleException("Invitation already accepted");
     }
     if (invitation.getExpiresAt().isBefore(clock.instant())) {
@@ -342,13 +341,13 @@ public class TeamService {
     teamMemberRepository.save(member);
 
     // Mark invitation as accepted
-    invitation.setAcceptedAt(clock.instant());
-    invitation.setAcceptedBy(principal.getUserId());
+    invitation.setAcceptedAt(Optional.of(clock.instant()));
+    invitation.setAcceptedBy(Optional.of(principal.getUserId()));
     invitationRepository.save(invitation);
 
     // Switch to the invited team as default and active
-    user.setDefaultTeamId(invitation.getTeamId());
-    user.setActiveTeamId(invitation.getTeamId());
+    user.setDefaultTeamId(Optional.of(invitation.getTeamId()));
+    user.setActiveTeamId(Optional.of(invitation.getTeamId()));
     userRepository.save(user);
 
     // Notify inviter
@@ -361,7 +360,7 @@ public class TeamService {
               .notificationType(NotificationType.INVITATION_ACCEPTED)
               .recipientUserId(inviter.getId())
               .recipientEmail(inviter.getEmail())
-              .recipientPhone(inviter.getPhone())
+              .recipientPhone(inviter.getPhone().orElse(null))
               .templateName("invitation-accepted")
               .templateVariables(
                   Map.of(
@@ -469,7 +468,7 @@ public class TeamService {
 
     if (request.regional() != null) {
       if (request.regional().defaultCurrency() != null) {
-        prefs.setDefaultCurrency(request.regional().defaultCurrency());
+        prefs.setDefaultCurrency(Optional.of(request.regional().defaultCurrency()));
       }
       if (request.regional().defaultCountry() != null) {
         prefs.setDefaultCountry(request.regional().defaultCountry());
@@ -503,7 +502,9 @@ public class TeamService {
 
   /** Returns the team's configured default currency, or empty if not configured. */
   public Optional<String> getDefaultCurrency(UUID teamId) {
-    return teamPreferencesRepository.findByTeamId(teamId).map(TeamPreferences::getDefaultCurrency);
+    return teamPreferencesRepository
+        .findByTeamId(teamId)
+        .flatMap(TeamPreferences::getDefaultCurrency);
   }
 
   private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {
@@ -511,7 +512,7 @@ public class TeamService {
         new TeamPreferencesResponse.PaymentSettings(
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
-            Optional.ofNullable(prefs.getDefaultCurrency()),
+            prefs.getDefaultCurrency(),
             Optional.ofNullable(prefs.getDefaultCountry()),
             Optional.ofNullable(prefs.getTimezone()),
             Optional.ofNullable(prefs.getDateFormat()),

@@ -40,14 +40,20 @@ public class TeamInvitationRepository {
           .set(TEAM_INVITATIONS.EXPIRES_AT, mapper.toLocalDateTime(invitation.getExpiresAt()))
           .set(TEAM_INVITATIONS.INVITED_BY, invitation.getInvitedBy())
           .set(TEAM_INVITATIONS.INVITED_AT, mapper.toLocalDateTime(invitation.getInvitedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_AT, mapper.toLocalDateTime(invitation.getAcceptedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy())
-          .set(TEAM_INVITATIONS.EMAIL_SENT_AT, mapper.toLocalDateTime(invitation.getEmailSentAt()))
-          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError())
-          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName())
-          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName())
-          .set(TEAM_INVITATIONS.RESENT_AT, mapper.toLocalDateTime(invitation.getResentAt()))
-          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount())
+          .set(
+              TEAM_INVITATIONS.ACCEPTED_AT,
+              mapper.toLocalDateTime(invitation.getAcceptedAt().orElse(null)))
+          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy().orElse(null))
+          .set(
+              TEAM_INVITATIONS.EMAIL_SENT_AT,
+              mapper.toLocalDateTime(invitation.getEmailSentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName().orElse(null))
+          .set(
+              TEAM_INVITATIONS.RESENT_AT,
+              mapper.toLocalDateTime(invitation.getResentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount().orElse(null))
           .execute();
 
       invitation.setId(newId);
@@ -61,14 +67,20 @@ public class TeamInvitationRepository {
           .set(TEAM_INVITATIONS.EXPIRES_AT, mapper.toLocalDateTime(invitation.getExpiresAt()))
           .set(TEAM_INVITATIONS.INVITED_BY, invitation.getInvitedBy())
           .set(TEAM_INVITATIONS.INVITED_AT, mapper.toLocalDateTime(invitation.getInvitedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_AT, mapper.toLocalDateTime(invitation.getAcceptedAt()))
-          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy())
-          .set(TEAM_INVITATIONS.EMAIL_SENT_AT, mapper.toLocalDateTime(invitation.getEmailSentAt()))
-          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError())
-          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName())
-          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName())
-          .set(TEAM_INVITATIONS.RESENT_AT, mapper.toLocalDateTime(invitation.getResentAt()))
-          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount())
+          .set(
+              TEAM_INVITATIONS.ACCEPTED_AT,
+              mapper.toLocalDateTime(invitation.getAcceptedAt().orElse(null)))
+          .set(TEAM_INVITATIONS.ACCEPTED_BY, invitation.getAcceptedBy().orElse(null))
+          .set(
+              TEAM_INVITATIONS.EMAIL_SENT_AT,
+              mapper.toLocalDateTime(invitation.getEmailSentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.EMAIL_ERROR, invitation.getEmailError().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_FIRST_NAME, invitation.getPendingFirstName().orElse(null))
+          .set(TEAM_INVITATIONS.PENDING_LAST_NAME, invitation.getPendingLastName().orElse(null))
+          .set(
+              TEAM_INVITATIONS.RESENT_AT,
+              mapper.toLocalDateTime(invitation.getResentAt().orElse(null)))
+          .set(TEAM_INVITATIONS.RESENT_COUNT, invitation.getResentCount().orElse(null))
           .where(TEAM_INVITATIONS.ID.eq(invitation.getId()))
           .execute();
     }

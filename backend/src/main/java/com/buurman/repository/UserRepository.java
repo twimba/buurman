@@ -74,19 +74,15 @@ public class UserRepository {
           .set(USERS.EMAIL, user.getEmail())
           .set(USERS.FIRST_NAME, user.getFirstName())
           .set(USERS.LAST_NAME, user.getLastName())
-          .set(USERS.PHONE, user.getPhone())
-          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
-          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+          .set(USERS.PHONE, user.getPhone().orElse(null))
+          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId().orElse(null))
+          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId().orElse(null))
           .set(
               USERS.EMAIL_VERIFIED_AT,
-              user.getEmailVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC)
-                  : null)
+              user.getEmailVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(
               USERS.PHONE_VERIFIED_AT,
-              user.getPhoneVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC)
-                  : null)
+              user.getPhoneVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(USERS.CREATED_AT, createdAt)
           .set(USERS.UPDATED_AT, updatedAt)
           .execute();
@@ -105,19 +101,15 @@ public class UserRepository {
           .set(USERS.EMAIL, user.getEmail())
           .set(USERS.FIRST_NAME, user.getFirstName())
           .set(USERS.LAST_NAME, user.getLastName())
-          .set(USERS.PHONE, user.getPhone())
-          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId())
-          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId())
+          .set(USERS.PHONE, user.getPhone().orElse(null))
+          .set(USERS.DEFAULT_TEAM_ID, user.getDefaultTeamId().orElse(null))
+          .set(USERS.ACTIVE_TEAM_ID, user.getActiveTeamId().orElse(null))
           .set(
               USERS.EMAIL_VERIFIED_AT,
-              user.getEmailVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getEmailVerifiedAt(), UTC)
-                  : null)
+              user.getEmailVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(
               USERS.PHONE_VERIFIED_AT,
-              user.getPhoneVerifiedAt() != null
-                  ? LocalDateTime.ofInstant(user.getPhoneVerifiedAt(), UTC)
-                  : null)
+              user.getPhoneVerifiedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(null))
           .set(USERS.UPDATED_AT, updatedAt)
           .where(USERS.ID.eq(user.getId()))
           .execute();

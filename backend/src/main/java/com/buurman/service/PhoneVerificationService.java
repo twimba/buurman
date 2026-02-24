@@ -42,11 +42,11 @@ public class PhoneVerificationService {
   public void sendVerificationCode(UUID userId) {
     User user = userRepository.getById(userId);
 
-    if (user.getPhone() == null || user.getPhone().isBlank()) {
+    if (user.getPhone().map(String::isBlank).orElse(true)) {
       throw new VerificationCodeException("No phone number to verify");
     }
 
-    if (user.getPhoneVerifiedAt() != null) {
+    if (user.getPhoneVerifiedAt().isPresent()) {
       throw new VerificationCodeException("Phone is already verified");
     }
 
@@ -81,31 +81,32 @@ public class PhoneVerificationService {
   public UserProfileResponse verifyPhone(UUID userId, String code) {
     User user = userRepository.getById(userId);
 
-    if (user.getPhone() == null || user.getPhone().isBlank()) {
+    if (user.getPhone().map(String::isBlank).orElse(true)) {
       throw new VerificationCodeException("No phone number to verify");
     }
 
-    if (user.getPhoneVerifiedAt() != null) {
+    if (user.getPhoneVerifiedAt().isPresent()) {
       throw new VerificationCodeException("Phone is already verified");
     }
 
+    String phone = user.getPhone().orElseThrow();
     PhoneVerificationCode validCode =
         verificationCodeRepository
-            .findValidCode(userId, code, user.getPhone())
+            .findValidCode(userId, code, phone)
             .orElseThrow(
                 () -> new VerificationCodeException("Invalid or expired verification code"));
 
     verificationCodeRepository.markUsed(validCode.getId());
     userRepository.updatePhoneVerifiedAt(userId);
 
-    user.setPhoneVerifiedAt(clock.instant());
+    user.setPhoneVerifiedAt(Optional.of(clock.instant()));
 
     return new UserProfileResponse(
         java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        Optional.ofNullable(user.getPhone()),
+        user.getPhone(),
         true);
   }
 
@@ -118,20 +119,20 @@ public class PhoneVerificationService {
   public UserProfileResponse cancelVerification(UUID userId) {
     User user = userRepository.getById(userId);
 
-    if (user.getPhone() == null || user.getPhone().isBlank()) {
+    if (user.getPhone().map(String::isBlank).orElse(true)) {
       throw new VerificationCodeException("No phone number to cancel verification for");
     }
 
     verificationCodeRepository.invalidateAllForUser(userId);
     userRepository.clearPhoneVerifiedAt(userId);
-    user.setPhoneVerifiedAt(null);
+    user.setPhoneVerifiedAt(Optional.empty());
 
     return new UserProfileResponse(
         java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        Optional.ofNullable(user.getPhone()),
+        user.getPhone(),
         false);
   }
 
@@ -140,17 +141,17 @@ public class PhoneVerificationService {
 
     PhoneVerificationCode verificationCode = new PhoneVerificationCode();
     verificationCode.setUserId(user.getId());
-    verificationCode.setPhone(java.util.Objects.requireNonNull(user.getPhone()));
+    verificationCode.setPhone(user.getPhone().orElseThrow());
     verificationCode.setCode(code);
     verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
     verificationCodeRepository.save(verificationCode);
 
     SendNotificationRequest sendNotificationRequest =
         SendNotificationRequest.builder()
-            .teamId(user.getActiveTeamId())
+            .teamId(user.getActiveTeamId().orElse(null))
             .notificationType(PHONE_VERIFICATION_CODE)
             .recipientUserId(user.getId())
-            .recipientPhone(user.getPhone())
+            .recipientPhone(user.getPhone().orElse(null))
             .templateName("phone-verification-code")
             .templateVariables(
                 Map.of(

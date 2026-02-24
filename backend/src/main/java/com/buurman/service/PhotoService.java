@@ -137,11 +137,11 @@ public class PhotoService {
     photo.setFileName(originalFilename != null ? originalFilename : "unnamed");
     photo.setFileSize(file.getSize());
     photo.setMimeType(mimeType);
-    photo.setTitle(title);
-    photo.setNotes(notes);
+    photo.setTitle(Optional.ofNullable(title));
+    photo.setNotes(Optional.ofNullable(notes));
     photo.setIsMainPhoto(false);
     photo.setUploadedBy(principal.getUserId());
-    photo.setThumbnailFileKey(thumbnailFileKey);
+    photo.setThumbnailFileKey(Optional.ofNullable(thumbnailFileKey));
 
     Photo savedPhoto = photoRepository.save(photo);
 
@@ -154,9 +154,7 @@ public class PhotoService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("photoAdded", savedPhoto.getFileName());
-    if (savedPhoto.getTitle() != null && !savedPhoto.getTitle().isEmpty()) {
-      changedFields.put("title", savedPhoto.getTitle());
-    }
+    savedPhoto.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
 
     auditService.logUpdate(
         principal.requireTeamId(),
@@ -198,9 +196,7 @@ public class PhotoService {
 
     // Delete from S3
     s3StorageService.deleteFile(photo.getFileKey());
-    if (photo.getThumbnailFileKey() != null) {
-      s3StorageService.deleteFile(photo.getThumbnailFileKey());
-    }
+    photo.getThumbnailFileKey().ifPresent(s3StorageService::deleteFile);
 
     metricsService.incrementCounter("photo.delete.total", "entity_type", photo.getEntityType());
 
@@ -209,9 +205,7 @@ public class PhotoService {
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
     changedFields.put("photoRemoved", photo.getFileName());
-    if (photo.getTitle() != null && !photo.getTitle().isEmpty()) {
-      changedFields.put("title", photo.getTitle());
-    }
+    photo.getTitle().filter(t -> !t.isEmpty()).ifPresent(t -> changedFields.put("title", t));
 
     auditService.logUpdate(
         principal.requireTeamId(),
@@ -228,11 +222,11 @@ public class PhotoService {
       String identifier, UpdatePhotoRequest request, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    String oldTitle = photo.getTitle();
-    String oldNotes = photo.getNotes();
+    Optional<String> oldTitle = photo.getTitle();
+    Optional<String> oldNotes = photo.getNotes();
 
-    photo.setTitle(request.title());
-    photo.setNotes(request.notes());
+    photo.setTitle(Optional.ofNullable(request.title()));
+    photo.setNotes(Optional.ofNullable(request.notes()));
 
     photoRepository.save(photo);
 
@@ -241,14 +235,14 @@ public class PhotoService {
     Map<String, Object> oldValues = new java.util.HashMap<>();
     Map<String, Object> newValues = new java.util.HashMap<>();
 
-    if (!java.util.Objects.equals(oldTitle, request.title())) {
+    if (!java.util.Objects.equals(oldTitle.orElse(null), request.title())) {
       changedFields.put("title", request.title());
-      oldValues.put("title", oldTitle);
+      oldValues.put("title", oldTitle.orElse(null));
       newValues.put("title", request.title());
     }
-    if (!java.util.Objects.equals(oldNotes, request.notes())) {
+    if (!java.util.Objects.equals(oldNotes.orElse(null), request.notes())) {
       changedFields.put("notes", request.notes());
-      oldValues.put("notes", oldNotes);
+      oldValues.put("notes", oldNotes.orElse(null));
       newValues.put("notes", request.notes());
     }
 
@@ -312,10 +306,11 @@ public class PhotoService {
     PhotoResponse response = photoMapper.toResponse(photo);
     String downloadUrl = s3StorageService.generatePresignedUrl(photo.getFileKey()).toString();
 
-    @Nullable String thumbnailUrl = null;
-    if (photo.getThumbnailFileKey() != null) {
-      thumbnailUrl = s3StorageService.generatePresignedUrl(photo.getThumbnailFileKey()).toString();
-    }
+    @Nullable String thumbnailUrl =
+        photo
+            .getThumbnailFileKey()
+            .map(key -> s3StorageService.generatePresignedUrl(key).toString())
+            .orElse(null);
 
     return new PhotoResponse(
         response.identifier(),

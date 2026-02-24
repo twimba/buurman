@@ -43,12 +43,12 @@ public class PhoneNumberPolicyService {
 
   @Transactional
   public PhoneNumberPolicy updatePolicy(PhoneNumberPolicy policy) {
-    if (policy.getPolicyMatrix() != null) {
-      CountryGroups.validateMatrix(policy.getPolicyMatrix());
+    if (policy.getPolicyMatrix().isPresent()) {
+      CountryGroups.validateMatrix(policy.getPolicyMatrix().get());
     }
     PhoneNumberPolicy saved = policyRepository.save(policy);
     cachedPolicy = saved;
-    log.info("Phone number policy updated by {}", policy.getUpdatedBy());
+    log.info("Phone number policy updated by {}", policy.getUpdatedBy().orElse("unknown"));
     return saved;
   }
 
@@ -73,10 +73,9 @@ public class PhoneNumberPolicyService {
     if (!policy.isAllowed(regionCode, typeStr)) {
       // Determine specific error message
       if (regionCode == null
-          || policy.getPolicyMatrix() == null
-          || !policy.getPolicyMatrix().containsKey(regionCode)
-          || policy.getPolicyMatrix().get(regionCode) == null
-          || policy.getPolicyMatrix().get(regionCode).isEmpty()) {
+          || policy.getPolicyMatrix().isEmpty()
+          || !policy.getPolicyMatrix().map(m -> m.containsKey(regionCode)).orElse(false)
+          || policy.getPolicyMatrix().map(m -> m.get(regionCode)).map(List::isEmpty).orElse(true)) {
         throw new PhoneNumberPolicyException("Phone numbers from this country are not allowed");
       }
       throw new PhoneNumberPolicyException(
@@ -139,7 +138,7 @@ public class PhoneNumberPolicyService {
       matrix.put(code, defaultTypes);
     }
 
-    policy.setPolicyMatrix(matrix);
+    policy.setPolicyMatrix(Optional.of(matrix));
     policy.setMaxCodesPerHour(3);
     policy.setVerificationCodeExpiryMinutes(10);
     return policy;

@@ -43,7 +43,7 @@ public class UserTeamService {
       UpdateUserProfileRequest request, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
-    @Nullable String oldPhone = user.getPhone();
+    @Nullable String oldPhone = user.getPhone().orElse(null);
     @Nullable String newPhone = request.phone();
 
     // Validate phone against policy before saving
@@ -53,12 +53,12 @@ public class UserTeamService {
 
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
-    user.setPhone(newPhone);
+    user.setPhone(Optional.ofNullable(newPhone));
 
     // If phone changed or removed, clear verification
     boolean phoneChanged = !java.util.Objects.equals(oldPhone, newPhone);
     if (phoneChanged) {
-      user.setPhoneVerifiedAt(null);
+      user.setPhoneVerifiedAt(Optional.empty());
     }
 
     user = userRepository.save(user);
@@ -77,8 +77,8 @@ public class UserTeamService {
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
-        Optional.ofNullable(user.getPhone()),
-        user.getPhoneVerifiedAt() != null);
+        user.getPhone(),
+        user.getPhoneVerifiedAt().isPresent());
   }
 
   public List<UserTeamResponse> getUserTeams(UserPrincipal principal) {
@@ -97,8 +97,8 @@ public class UserTeamService {
                   team.getName(),
                   membership.getRole(),
                   membership.isOwner(),
-                  team.getId().equals(user.getDefaultTeamId()),
-                  team.getId().equals(user.getActiveTeamId()),
+                  user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
+                  user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),
                   memberCount,
                   membership.getJoinedAt());
             })
@@ -125,7 +125,7 @@ public class UserTeamService {
         team.getName(),
         membership.getRole(),
         membership.isOwner(),
-        team.getId().equals(user.getDefaultTeamId()),
+        user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
         true, // now active
         memberCount,
         membership.getJoinedAt());
@@ -152,7 +152,7 @@ public class UserTeamService {
         membership.getRole(),
         membership.isOwner(),
         true, // now default
-        team.getId().equals(user.getActiveTeamId()),
+        user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),
         memberCount,
         membership.getJoinedAt());
   }
@@ -179,13 +179,13 @@ public class UserTeamService {
     List<TeamMember> remainingMemberships =
         teamMemberRepository.findAllByUserId(principal.getUserId());
 
-    if (team.getId().equals(user.getActiveTeamId())) {
+    if (user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       @Nullable UUID newActiveTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
       userRepository.updateActiveTeamId(principal.getUserId(), newActiveTeamId);
     }
 
-    if (team.getId().equals(user.getDefaultTeamId())) {
+    if (user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       @Nullable UUID newDefaultTeamId =
           remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
       userRepository.updateDefaultTeamId(principal.getUserId(), newDefaultTeamId);

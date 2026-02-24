@@ -46,7 +46,7 @@ public class UserPreferencesRepository {
           .set(USER_PREFERENCES.LANGUAGE, prefs.getLanguage())
           .set(USER_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(USER_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
-          .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat())
+          .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat().orElse(null))
           .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
           .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
           .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
@@ -65,7 +65,7 @@ public class UserPreferencesRepository {
           .set(USER_PREFERENCES.LANGUAGE, prefs.getLanguage())
           .set(USER_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(USER_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
-          .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat())
+          .set(USER_PREFERENCES.CURRENCY_FORMAT, prefs.getCurrencyFormat().orElse(null))
           .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
           .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
           .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
@@ -86,7 +86,7 @@ public class UserPreferencesRepository {
     prefs.setLanguage(record.getLanguage());
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
-    prefs.setCurrencyFormat(record.getCurrencyFormat());
+    prefs.setCurrencyFormat(Optional.ofNullable(record.getCurrencyFormat()));
     prefs.setEmailNotifications(record.getEmailNotifications());
     prefs.setInAppNotifications(record.getInAppNotifications());
     prefs.setSmsNotifications(record.getSmsNotifications());

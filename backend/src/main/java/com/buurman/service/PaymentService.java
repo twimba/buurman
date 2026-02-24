@@ -184,7 +184,7 @@ public class PaymentService {
     payment.setUpdatedAt(clock.instant());
 
     if (markAsPaid) {
-      payment.setPaymentDate(paymentDate);
+      payment.setPaymentDate(Optional.ofNullable(paymentDate));
     }
 
     if (payment.getCurrency() == null || payment.getCurrency().isEmpty()) {
@@ -419,7 +419,7 @@ public class PaymentService {
       receival.setAmount(remainingBalance);
       receival.setCurrency(currency);
       receival.setReceivalDate(request.paymentDate());
-      receival.setNotes(request.notes());
+      receival.setNotes(Optional.ofNullable(request.notes()));
       receival.setCreatedBy(principal.getUserId());
       receival.setUpdatedBy(principal.getUserId());
       receival.setCreatedAt(clock.instant());
@@ -429,12 +429,12 @@ public class PaymentService {
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
-    payment.setPaymentDate(request.paymentDate());
+    payment.setPaymentDate(Optional.of(request.paymentDate()));
     Payment.PaymentStatus oldStatus = payment.getStatus();
     payment.setStatus(PAID);
-    if (request.notes() != null && !request.notes().isEmpty()) {
-      payment.setNotes(request.notes());
-    }
+    Optional.ofNullable(request.notes())
+        .filter(n -> !n.isEmpty())
+        .ifPresent(n -> payment.setNotes(Optional.of(n)));
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
 
@@ -509,7 +509,7 @@ public class PaymentService {
     receival.setAmount(request.amount());
     receival.setCurrency(currency);
     receival.setReceivalDate(request.receivalDate());
-    receival.setNotes(request.notes());
+    receival.setNotes(Optional.ofNullable(request.notes()));
     receival.setCreatedBy(principal.getUserId());
     receival.setUpdatedBy(principal.getUserId());
     receival.setCreatedAt(clock.instant());
@@ -680,11 +680,11 @@ public class PaymentService {
                 .map(PaymentReceival::getReceivalDate)
                 .max(LocalDate::compareTo)
                 .orElse(LocalDate.now(clock));
-        payment.setPaymentDate(latestDate);
+        payment.setPaymentDate(Optional.of(latestDate));
       }
     } else if (totalReceived.compareTo(BigDecimal.ZERO) > 0) {
       newStatus = PARTIALLY_PAID;
-      payment.setPaymentDate(null);
+      payment.setPaymentDate(Optional.empty());
     } else {
       // No receivals - check if overdue
       if (payment.getDueDate().isBefore(LocalDate.now(clock))) {
@@ -692,7 +692,7 @@ public class PaymentService {
       } else {
         newStatus = PENDING;
       }
-      payment.setPaymentDate(null);
+      payment.setPaymentDate(Optional.empty());
     }
 
     payment.setStatus(newStatus);
@@ -771,7 +771,7 @@ public class PaymentService {
       payment.setCurrency(contract.getRentAmountCurrency());
       payment.setDueDate(dueDate);
       payment.setStatus(PENDING);
-      payment.setNotes("Auto-generated for " + month);
+      payment.setNotes(Optional.of("Auto-generated for " + month));
       payment.setCreatedBy(principal.getUserId());
       payment.setUpdatedBy(principal.getUserId());
       payment.setCreatedAt(clock.instant());
@@ -892,7 +892,7 @@ public class PaymentService {
                     "amount",
                     payment.getCurrency() + " " + payment.getAmount(),
                     "paymentDate",
-                    payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "N/A",
+                    payment.getPaymentDate().map(LocalDate::toString).orElse("N/A"),
                     "baseUrl",
                     appProperties.email().baseUrl()))
             .createdBy(principal.getUserId())
@@ -1020,13 +1020,13 @@ public class PaymentService {
           docsByPaymentId.getOrDefault(payment.getId(), List.of());
       @Nullable DocumentResponse proofOfPayment =
           paymentDocs.stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
       @Nullable DocumentResponse receipt =
           paymentDocs.stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
@@ -1086,14 +1086,14 @@ public class PaymentService {
 
       @Nullable DocumentResponse proofOfPayment =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Proof"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Proof")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);
 
       @Nullable DocumentResponse receipt =
           documentRepository.findByEntityAndTeamId("PAYMENT", payment.getId(), teamId).stream()
-              .filter(doc -> doc.getTitle() != null && doc.getTitle().contains("Receipt"))
+              .filter(doc -> doc.getTitle().map(t -> t.contains("Receipt")).orElse(false))
               .findFirst()
               .map(documentMapper::toResponse)
               .orElse(null);

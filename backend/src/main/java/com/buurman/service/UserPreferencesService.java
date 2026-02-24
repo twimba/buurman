@@ -66,7 +66,7 @@ public class UserPreferencesService {
       prefs.setDateFormat(request.dateFormat());
     }
     if (request.currencyFormat() != null) {
-      prefs.setCurrencyFormat(request.currencyFormat());
+      prefs.setCurrencyFormat(Optional.of(request.currencyFormat()));
     }
     if (request.emailNotifications() != null) {
       if (request.emailNotifications()
@@ -155,7 +155,7 @@ public class UserPreferencesService {
         Optional.ofNullable(prefs.getLanguage()),
         Optional.ofNullable(prefs.getTimezone()),
         Optional.ofNullable(prefs.getDateFormat()),
-        Optional.ofNullable(prefs.getCurrencyFormat()),
+        prefs.getCurrencyFormat(),
         prefs.isEmailNotifications(),
         prefs.isSmsNotifications());
   }

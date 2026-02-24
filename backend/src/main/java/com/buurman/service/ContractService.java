@@ -874,7 +874,7 @@ public class ContractService {
     List<UUID> allTenantIds =
         partiesByContract.values().stream()
             .flatMap(List::stream)
-            .map(ContractParty::getTenantId)
+            .flatMap(p -> p.getTenantId().stream())
             .distinct()
             .toList();
     Map<UUID, Tenant> tenantMap =
@@ -894,7 +894,7 @@ public class ContractService {
                   parties.stream()
                       .map(
                           party -> {
-                            Tenant tenant = tenantMap.get(party.getTenantId());
+                            Tenant tenant = party.getTenantId().map(tenantMap::get).orElse(null);
                             Optional<TenantSummary> summary =
                                 Optional.ofNullable(tenant).map(tenantMapper::toSummary);
                             return new ContractPartyResponse(

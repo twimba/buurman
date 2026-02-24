@@ -59,7 +59,7 @@ public class EmailVerificationCodeRepository {
               evc.setUserId(record.getUserId());
               evc.setCode(record.getCode());
               evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
-              evc.setUsedAt(record.getUsedAt() != null ? record.getUsedAt().toInstant(UTC) : null);
+              evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
               evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
               return evc;
             });

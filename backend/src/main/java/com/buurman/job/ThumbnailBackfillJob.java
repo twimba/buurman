@@ -2,6 +2,7 @@ package com.buurman.job;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -59,7 +60,7 @@ public class ThumbnailBackfillJob implements Job {
                   entityIdentifier,
                   "thumb_" + photo.getFileName());
 
-          photo.setThumbnailFileKey(thumbnailFileKey);
+          photo.setThumbnailFileKey(Optional.of(thumbnailFileKey));
           photoRepository.save(photo);
           success++;
         } else {

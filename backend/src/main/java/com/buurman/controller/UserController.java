@@ -95,8 +95,7 @@ public class UserController {
   @GetMapping("/phone-policy")
   public PhoneNumberPolicyResponse getPhonePolicy() {
     PhoneNumberPolicy policy = phoneNumberPolicyService.getPolicy();
-    Map<String, List<String>> matrix =
-        policy.getPolicyMatrix() != null ? policy.getPolicyMatrix() : Map.of();
+    Map<String, List<String>> matrix = policy.getPolicyMatrix().orElse(Map.of());
     return new PhoneNumberPolicyResponse(matrix);
   }
 

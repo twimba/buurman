@@ -818,10 +818,7 @@ public class PropertyService {
     Optional<String> mainPhotoThumbnailUrl =
         mainPhoto.map(
             photo -> {
-              String key =
-                  photo.getThumbnailFileKey() != null
-                      ? photo.getThumbnailFileKey()
-                      : photo.getFileKey();
+              String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
               return s3StorageService.generatePresignedUrl(key).toString();
             });
 

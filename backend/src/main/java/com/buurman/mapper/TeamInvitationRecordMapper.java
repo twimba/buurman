@@ -18,12 +18,28 @@ public interface TeamInvitationRecordMapper {
 
   @Mapping(target = "expiresAt", expression = "java(toInstant(record.getExpiresAt()))")
   @Mapping(target = "invitedAt", expression = "java(toInstant(record.getInvitedAt()))")
-  @Mapping(target = "acceptedAt", expression = "java(toInstant(record.getAcceptedAt()))")
+  @Mapping(
+      target = "acceptedAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getAcceptedAt())))")
+  @Mapping(
+      target = "emailSentAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getEmailSentAt())))")
+  @Mapping(
+      target = "resentAt",
+      expression = "java(java.util.Optional.ofNullable(toInstant(record.getResentAt())))")
   TeamInvitation toDomain(TeamInvitationsRecord record);
 
   @Mapping(target = "expiresAt", expression = "java(toLocalDateTime(invitation.getExpiresAt()))")
   @Mapping(target = "invitedAt", expression = "java(toLocalDateTime(invitation.getInvitedAt()))")
-  @Mapping(target = "acceptedAt", expression = "java(toLocalDateTime(invitation.getAcceptedAt()))")
+  @Mapping(
+      target = "acceptedAt",
+      expression = "java(toLocalDateTime(invitation.getAcceptedAt().orElse(null)))")
+  @Mapping(
+      target = "emailSentAt",
+      expression = "java(toLocalDateTime(invitation.getEmailSentAt().orElse(null)))")
+  @Mapping(
+      target = "resentAt",
+      expression = "java(toLocalDateTime(invitation.getResentAt().orElse(null)))")
   @Mapping(target = "deletedAt", ignore = true)
   TeamInvitationsRecord toRecord(TeamInvitation invitation);
 

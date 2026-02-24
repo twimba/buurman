@@ -358,8 +358,8 @@ public class DemoDocumentGenerator {
       document.setFileName(fileName);
       document.setFileSize((long) pdfData.length);
       document.setMimeType("application/pdf");
-      document.setTitle(title);
-      document.setNotes(notes);
+      document.setTitle(Optional.of(title));
+      document.setNotes(Optional.ofNullable(notes));
       document.setUploadedBy(uploadedBy);
 
       documentRepository.save(document);

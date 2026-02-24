@@ -135,8 +135,8 @@ public class AuthService {
       team = teamRepository.save(team);
 
       // Set user's default and active team
-      user.setDefaultTeamId(team.getId());
-      user.setActiveTeamId(team.getId());
+      user.setDefaultTeamId(Optional.of(team.getId()));
+      user.setActiveTeamId(Optional.of(team.getId()));
       user = userRepository.save(user);
 
       // Add user as team admin and owner
@@ -216,22 +216,18 @@ public class AuthService {
     }
 
     // Priority: activeTeamId → defaultTeamId → first membership
-    UUID activeTeamId = user.getActiveTeamId();
-    if (activeTeamId != null) {
-      for (TeamMember m : memberships) {
-        if (m.getTeamId().equals(activeTeamId)) {
-          return Optional.of(m);
-        }
-      }
+    Optional<TeamMember> activeMatch =
+        user.getActiveTeamId()
+            .flatMap(id -> memberships.stream().filter(m -> m.getTeamId().equals(id)).findFirst());
+    if (activeMatch.isPresent()) {
+      return activeMatch;
     }
 
-    UUID defaultTeamId = user.getDefaultTeamId();
-    if (defaultTeamId != null) {
-      for (TeamMember m : memberships) {
-        if (m.getTeamId().equals(defaultTeamId)) {
-          return Optional.of(m);
-        }
-      }
+    Optional<TeamMember> defaultMatch =
+        user.getDefaultTeamId()
+            .flatMap(id -> memberships.stream().filter(m -> m.getTeamId().equals(id)).findFirst());
+    if (defaultMatch.isPresent()) {
+      return defaultMatch;
     }
 
     return Optional.of(memberships.get(0));
@@ -241,7 +237,7 @@ public class AuthService {
   public UserResponse verifyEmail(UUID userId, String code) {
     User user = userRepository.getById(userId);
 
-    if (user.getEmailVerifiedAt() != null) {
+    if (user.getEmailVerifiedAt().isPresent()) {
       throw new VerificationCodeException("Email is already verified");
     }
 
@@ -255,20 +251,21 @@ public class AuthService {
     userRepository.updateEmailVerifiedAt(userId);
 
     // Send welcome notification now that email is verified
-    user.setEmailVerifiedAt(clock.instant());
-    UUID welcomeTeamId = user.getActiveTeamId();
-    if (welcomeTeamId != null) {
-      notificationService.send(
-          SendNotificationRequest.builder()
-              .teamId(welcomeTeamId)
-              .notificationType(NotificationType.WELCOME)
-              .recipientUserId(user.getId())
-              .recipientEmail(user.getEmail())
-              .recipientPhone(user.getPhone())
-              .templateName("welcome")
-              .templateVariables(Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
-              .build());
-    }
+    user.setEmailVerifiedAt(Optional.of(clock.instant()));
+    user.getActiveTeamId()
+        .ifPresent(
+            welcomeTeamId ->
+                notificationService.send(
+                    SendNotificationRequest.builder()
+                        .teamId(welcomeTeamId)
+                        .notificationType(NotificationType.WELCOME)
+                        .recipientUserId(user.getId())
+                        .recipientEmail(user.getEmail())
+                        .recipientPhone(user.getPhone().orElse(null))
+                        .templateName("welcome")
+                        .templateVariables(
+                            Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
+                        .build()));
 
     Optional<TeamMember> member = getActiveMembership(user);
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
@@ -280,7 +277,7 @@ public class AuthService {
   public void resendVerificationCode(UUID userId) {
     User user = userRepository.getById(userId);
 
-    if (user.getEmailVerifiedAt() != null) {
+    if (user.getEmailVerifiedAt().isPresent()) {
       throw new VerificationCodeException("Email is already verified");
     }
 
@@ -303,26 +300,26 @@ public class AuthService {
     verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
     verificationCodeRepository.save(verificationCode);
 
-    UUID verificationTeamId = user.getActiveTeamId();
-    if (verificationTeamId != null) {
-      notificationService.send(
-          SendNotificationRequest.builder()
-              .teamId(verificationTeamId)
-              .notificationType(NotificationType.VERIFICATION_CODE)
-              .recipientUserId(user.getId())
-              .recipientEmail(user.getEmail())
-              .recipientPhone(user.getPhone())
-              .templateName("verification-code")
-              .templateVariables(
-                  Map.of(
-                      "userName",
-                      user.getFirstName(),
-                      "verificationCode",
-                      code,
-                      "expiresMinutes",
-                      15))
-              .build());
-    }
+    user.getActiveTeamId()
+        .ifPresent(
+            verificationTeamId ->
+                notificationService.send(
+                    SendNotificationRequest.builder()
+                        .teamId(verificationTeamId)
+                        .notificationType(NotificationType.VERIFICATION_CODE)
+                        .recipientUserId(user.getId())
+                        .recipientEmail(user.getEmail())
+                        .recipientPhone(user.getPhone().orElse(null))
+                        .templateName("verification-code")
+                        .templateVariables(
+                            Map.of(
+                                "userName",
+                                user.getFirstName(),
+                                "verificationCode",
+                                code,
+                                "expiresMinutes",
+                                15))
+                        .build()));
   }
 
   private void acceptInvitationForNewUser(String token, User user) {
@@ -333,7 +330,7 @@ public class AuthService {
         return;
       }
 
-      if (invitation.getAcceptedAt() != null
+      if (invitation.getAcceptedAt().isPresent()
           || invitation.getExpiresAt().isBefore(clock.instant())) {
         log.warn("Invitation already accepted or expired during registration: {}", token);
         return;
@@ -359,13 +356,13 @@ public class AuthService {
       teamMemberRepository.save(member);
 
       // Mark invitation as accepted
-      invitation.setAcceptedAt(clock.instant());
-      invitation.setAcceptedBy(user.getId());
+      invitation.setAcceptedAt(Optional.of(clock.instant()));
+      invitation.setAcceptedBy(Optional.of(user.getId()));
       invitationRepository.save(invitation);
 
       // Switch to the invited team as default and active
-      user.setDefaultTeamId(invitation.getTeamId());
-      user.setActiveTeamId(invitation.getTeamId());
+      user.setDefaultTeamId(Optional.of(invitation.getTeamId()));
+      user.setActiveTeamId(Optional.of(invitation.getTeamId()));
       userRepository.save(user);
 
       log.info(

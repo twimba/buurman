@@ -46,9 +46,9 @@ public class UserNotificationTypePreferenceRepository {
 
     for (UserNotificationTypePreference pref : prefs) {
       LocalDateTime createdAt =
-          pref.getCreatedAt() != null ? LocalDateTime.ofInstant(pref.getCreatedAt(), UTC) : now;
+          pref.getCreatedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(now);
       LocalDateTime updatedAt =
-          pref.getUpdatedAt() != null ? LocalDateTime.ofInstant(pref.getUpdatedAt(), UTC) : now;
+          pref.getUpdatedAt().map(v -> LocalDateTime.ofInstant(v, UTC)).orElse(now);
 
       dsl.insertInto(USER_NOTIFICATION_TYPE_PREFERENCES)
           .set(USER_NOTIFICATION_TYPE_PREFERENCES.ID, UUID.randomUUID())
@@ -74,13 +74,13 @@ public class UserNotificationTypePreferenceRepository {
   private UserNotificationTypePreference toDomain(
       com.buurman.jooq.generated.tables.records.UserNotificationTypePreferencesRecord record) {
     UserNotificationTypePreference pref = new UserNotificationTypePreference();
-    pref.setId(record.getId());
+    pref.setId(Optional.ofNullable(record.getId()));
     pref.setUserId(record.getUserId());
     pref.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
     pref.setEmailEnabled(record.getEmailEnabled());
     pref.setSmsEnabled(record.getSmsEnabled());
-    pref.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toInstant(UTC) : null);
-    pref.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toInstant(UTC) : null);
+    pref.setCreatedAt(Optional.ofNullable(record.getCreatedAt()).map(v -> v.toInstant(UTC)));
+    pref.setUpdatedAt(Optional.ofNullable(record.getUpdatedAt()).map(v -> v.toInstant(UTC)));
     return pref;
   }
 }

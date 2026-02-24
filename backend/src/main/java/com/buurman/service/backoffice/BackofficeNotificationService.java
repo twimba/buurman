@@ -78,7 +78,8 @@ public class BackofficeNotificationService {
     Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
-        notificationService.resend(original.getTeamId(), original.getIdentifier(), null);
+        notificationService.resend(
+            original.getTeamId().orElse(null), original.getIdentifier(), null);
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",
@@ -124,22 +125,19 @@ public class BackofficeNotificationService {
   private BackofficeNotificationResponse toResponse(Notification notification) {
     String teamIdentifier = null;
     String teamName = null;
-    if (notification.getTeamId() != null) {
-      Team team = teamRepository.findById(notification.getTeamId()).orElse(null);
+    if (notification.getTeamId().isPresent()) {
+      Team team = teamRepository.findById(notification.getTeamId().get()).orElse(null);
       if (team != null) {
         teamIdentifier = team.getIdentifier();
         teamName = team.getName();
       }
     }
 
-    String resentFromIdentifier = null;
-    if (notification.getResentFromId() != null) {
-      resentFromIdentifier =
-          notificationRepository
-              .findByIdentifierUnscoped(notification.getResentFromId().toString())
-              .map(Notification::getIdentifier)
-              .orElse(null);
-    }
+    Optional<String> resentFromIdentifier =
+        notification
+            .getResentFromId()
+            .flatMap(id -> notificationRepository.findByIdentifierUnscoped(id.toString()))
+            .map(Notification::getIdentifier);
 
     return new BackofficeNotificationResponse(
         notification.getIdentifier(),
@@ -147,20 +145,20 @@ public class BackofficeNotificationService {
         Optional.ofNullable(teamName),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
-        Optional.ofNullable(notification.getSubject()),
+        notification.getSubject(),
         Optional.ofNullable(notification.getBody()),
-        Optional.ofNullable(notification.getRecipientEmail()),
-        Optional.ofNullable(notification.getRecipientPhone()),
+        notification.getRecipientEmail(),
+        notification.getRecipientPhone(),
         notification.getStatus().name(),
-        Optional.ofNullable(notification.getProviderStatus()),
-        Optional.ofNullable(notification.getProviderError()),
+        notification.getProviderStatus(),
+        notification.getProviderError(),
         notification.getOpenCount(),
         notification.getClickCount(),
-        Optional.ofNullable(notification.getFirstOpenedAt()),
-        Optional.ofNullable(notification.getFirstClickedAt()),
-        Optional.ofNullable(resentFromIdentifier),
-        Optional.ofNullable(notification.getResendReason()),
+        notification.getFirstOpenedAt(),
+        notification.getFirstClickedAt(),
+        resentFromIdentifier,
+        notification.getResendReason(),
         notification.getCreatedAt(),
-        Optional.ofNullable(notification.getStatusUpdatedAt()));
+        notification.getStatusUpdatedAt());
   }
 }

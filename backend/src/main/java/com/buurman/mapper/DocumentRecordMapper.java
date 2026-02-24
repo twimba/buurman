@@ -20,10 +20,10 @@ public interface DocumentRecordMapper {
   @Mapping(
       target = "deletedAt",
       expression =
-          "java(Optional.ofNullable(record.getDeletedAt()).map(dt ->"
+          "java(java.util.Optional.ofNullable(record.getDeletedAt()).map(dt ->"
               + " dt.toInstant(java.time.ZoneOffset.UTC)))")
-  @Mapping(target = "title", expression = "java(Optional.ofNullable(record.getTitle()))")
-  @Mapping(target = "notes", expression = "java(Optional.ofNullable(record.getNotes()))")
+  @Mapping(target = "title", expression = "java(java.util.Optional.ofNullable(record.getTitle()))")
+  @Mapping(target = "notes", expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
   Document toDomain(DocumentsRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(document.getUploadedAt()))")

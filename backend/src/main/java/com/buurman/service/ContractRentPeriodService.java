@@ -85,8 +85,8 @@ public class ContractRentPeriodService {
     period.setRentAmount(request.rentAmount());
     period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(request.effectiveFrom());
-    period.setEffectiveTo(null);
-    period.setNotes(request.notes());
+    period.setEffectiveTo(Optional.empty());
+    period.setNotes(Optional.ofNullable(request.notes()));
     period.setCreatedBy(principal.getUserId());
     period.setUpdatedBy(principal.getUserId());
     period.setCreatedAt(clock.instant());
@@ -180,7 +180,7 @@ public class ContractRentPeriodService {
 
     period.setRentAmount(request.rentAmount());
     period.setEffectiveFrom(request.effectiveFrom());
-    period.setNotes(request.notes());
+    period.setNotes(Optional.ofNullable(request.notes()));
     period.setUpdatedBy(principal.getUserId());
     period.setUpdatedAt(clock.instant());
 
@@ -279,7 +279,7 @@ public class ContractRentPeriodService {
     period.setRentAmount(contract.getRentAmount());
     period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(contract.getStartDate());
-    period.setEffectiveTo(null);
+    period.setEffectiveTo(Optional.empty());
     period.setCreatedBy(principal.getUserId());
     period.setUpdatedBy(principal.getUserId());
     period.setCreatedAt(clock.instant());
@@ -327,7 +327,7 @@ public class ContractRentPeriodService {
                   p ->
                       !p.getDueDate().isBefore(effectiveFrom)
                           && p.getStatus() != PENDING
-                          && p.getDeletedAt() == null);
+                          && p.getDeletedAt().isEmpty());
       if (hasConflicting) {
         throw new BusinessRuleException(
             "Cannot set retroactive rent period: non-pending payments exist for dates after "

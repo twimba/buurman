@@ -32,8 +32,8 @@ public class ContractRentPeriodMapper {
         period.getRentAmount(),
         period.getCurrency(),
         period.getEffectiveFrom(),
-        Optional.ofNullable(period.getEffectiveTo()),
-        Optional.ofNullable(period.getNotes()),
+        period.getEffectiveTo(),
+        period.getNotes(),
         Optional.ofNullable(percentageChange),
         period.getCreatedAt());
   }

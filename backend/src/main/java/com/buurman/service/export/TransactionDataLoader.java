@@ -53,13 +53,13 @@ class TransactionDataLoader {
             : paymentRepository.findAllByTeamId(teamId);
 
     for (Payment payment : payments) {
-      if (payment.getStatus() == PAID && payment.getPaymentDate() != null) {
+      if (payment.getStatus() == PAID && payment.getPaymentDate().isPresent()) {
         String propertyName = resolvePropertyNameForPayment(payment, teamId);
 
         transactions.add(
             new TransactionRecord(
                 payment.getId().toString(),
-                payment.getPaymentDate(),
+                payment.getPaymentDate().get(),
                 "INCOME",
                 "Rent payment - " + propertyName,
                 propertyName,

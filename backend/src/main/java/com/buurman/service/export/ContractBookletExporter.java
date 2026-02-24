@@ -98,7 +98,9 @@ public class ContractBookletExporter {
     List<ContractParty> parties =
         contractPartyService.getPartiesForContract(contract.getId(), teamId);
     Set<UUID> tenantIds = new HashSet<>();
-    for (ContractParty party : parties) tenantIds.add(party.getTenantId());
+    for (ContractParty party : parties) {
+      party.getTenantId().ifPresent(tenantIds::add);
+    }
     Map<UUID, Tenant> tenantMap =
         tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
             .collect(toMap(Tenant::getId, t -> t));
@@ -125,8 +127,8 @@ public class ContractBookletExporter {
         contractPaymentInstructionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     Set<UUID> piIds = new HashSet<>();
     for (ContractPaymentInstruction cpi : allCpis) {
-      if (!cpi.getIsCustom() && cpi.getPaymentInstructionId() != null) {
-        piIds.add(cpi.getPaymentInstructionId());
+      if (!cpi.getIsCustom()) {
+        cpi.getPaymentInstructionId().ifPresent(piIds::add);
       }
     }
     Map<UUID, PaymentInstruction> piMap =
@@ -402,7 +404,7 @@ public class ContractBookletExporter {
         });
 
     for (ContractParty party : sortedParties) {
-      Tenant t = tenantMap.get(party.getTenantId());
+      Tenant t = party.getTenantId().map(tenantMap::get).orElse(null);
       if (t == null) {
         continue;
       }
@@ -429,37 +431,40 @@ public class ContractBookletExporter {
       html.append("</div>");
 
       html.append("<table class='party-details'>");
+      String phone = t.getPhone().orElse(null);
       if (t.getEmail() != null) {
         html.append("<tr><td class='pd-label'>Email</td><td class='pd-value'>")
             .append(escapeHtml(t.getEmail()))
             .append("</td>");
-        if (t.getPhone() != null) {
+        if (phone != null) {
           html.append("<td class='pd-label'>Phone</td><td class='pd-value'>")
-              .append(escapeHtml(t.getPhone()))
+              .append(escapeHtml(phone))
               .append("</td>");
         } else {
           html.append("<td></td><td></td>");
         }
         html.append("</tr>");
-      } else if (t.getPhone() != null) {
+      } else if (phone != null) {
         html.append("<tr><td class='pd-label'>Phone</td><td class='pd-value'>")
-            .append(escapeHtml(t.getPhone()))
+            .append(escapeHtml(phone))
             .append("</td><td></td><td></td></tr>");
       }
-      boolean hasTax = t.getTaxNumber() != null && !t.getTaxNumber().isBlank();
-      boolean hasId = t.getIdNumber() != null && !t.getIdNumber().isBlank();
+      String taxNumber = t.getTaxNumber().orElse(null);
+      String idNumber = t.getIdNumber().orElse(null);
+      boolean hasTax = taxNumber != null && !taxNumber.isBlank();
+      boolean hasId = idNumber != null && !idNumber.isBlank();
       if (hasTax || hasId) {
         html.append("<tr>");
         if (hasTax) {
           html.append("<td class='pd-label'>Tax Number</td><td class='pd-value'>")
-              .append(escapeHtml(t.getTaxNumber()))
+              .append(escapeHtml(taxNumber))
               .append("</td>");
         } else {
           html.append("<td></td><td></td>");
         }
         if (hasId) {
           html.append("<td class='pd-label'>ID Number</td><td class='pd-value'>")
-              .append(escapeHtml(t.getIdNumber()))
+              .append(escapeHtml(idNumber))
               .append("</td>");
         } else {
           html.append("<td></td><td></td>");
@@ -499,14 +504,14 @@ public class ContractBookletExporter {
 
     for (int i = 0; i < sorted.size(); i++) {
       ContractRentPeriod period = sorted.get(i);
-      boolean isCurrent = period.getEffectiveTo() == null;
+      boolean isCurrent = period.getEffectiveTo().isEmpty();
 
       html.append("<tr>");
       html.append("<td>").append(formatDate(period.getEffectiveFrom(), dateFmt)).append("</td>");
       html.append("<td>")
           .append(
-              period.getEffectiveTo() != null
-                  ? formatDate(period.getEffectiveTo(), dateFmt)
+              period.getEffectiveTo().isPresent()
+                  ? formatDate(period.getEffectiveTo().get(), dateFmt)
                   : "<span style='color:#166534;font-weight:600;'>Current</span>")
           .append("</td>");
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
@@ -566,53 +571,62 @@ public class ContractBookletExporter {
           LocalDate bDate = b.getEffectiveFrom();
           if (aDate == null && bDate == null) {
             return 0;
-          }
-          if (aDate == null) {
+          } else if (aDate == null) {
             return 1;
-          }
-          if (bDate == null) {
+          } else if (bDate == null) {
             return -1;
+          } else {
+            return bDate.compareTo(aDate);
           }
-          return bDate.compareTo(aDate);
         });
 
     for (ContractPaymentInstruction cpi : sortedCpis) {
       boolean isCustom = cpi.getIsCustom();
       PaymentInstruction tpl =
-          (!isCustom && cpi.getPaymentInstructionId() != null)
-              ? piMap.get(cpi.getPaymentInstructionId())
-              : null;
+          (!isCustom) ? cpi.getPaymentInstructionId().map(piMap::get).orElse(null) : null;
 
-      String piName = isCustom ? cpi.getCustomName() : (tpl != null ? tpl.getName() : null);
+      String piName =
+          isCustom ? cpi.getCustomName().orElse(null) : (tpl != null ? tpl.getName() : null);
       String piMethod =
           isCustom
-              ? cpi.getCustomPaymentMethod()
+              ? cpi.getCustomPaymentMethod().orElse(null)
               : (tpl != null && tpl.getPaymentMethod() != null
                   ? tpl.getPaymentMethod().name()
                   : null);
       String piBankName =
-          isCustom ? cpi.getCustomBankName() : (tpl != null ? tpl.getBankName() : null);
+          isCustom
+              ? cpi.getCustomBankName().orElse(null)
+              : (tpl != null ? tpl.getBankName().orElse(null) : null);
       String piAccountHolder =
           isCustom
-              ? cpi.getCustomAccountHolderName()
-              : (tpl != null ? tpl.getAccountHolderName() : null);
-      String piIban = isCustom ? cpi.getCustomIban() : (tpl != null ? tpl.getIban() : null);
+              ? cpi.getCustomAccountHolderName().orElse(null)
+              : (tpl != null ? tpl.getAccountHolderName().orElse(null) : null);
+      String piIban =
+          isCustom
+              ? cpi.getCustomIban().orElse(null)
+              : (tpl != null ? tpl.getIban().orElse(null) : null);
       String piBicSwift =
-          isCustom ? cpi.getCustomBicSwift() : (tpl != null ? tpl.getBicSwift() : null);
+          isCustom
+              ? cpi.getCustomBicSwift().orElse(null)
+              : (tpl != null ? tpl.getBicSwift().orElse(null) : null);
       String piAccountNumber =
-          isCustom ? cpi.getCustomAccountNumber() : (tpl != null ? tpl.getAccountNumber() : null);
+          isCustom
+              ? cpi.getCustomAccountNumber().orElse(null)
+              : (tpl != null ? tpl.getAccountNumber().orElse(null) : null);
       String piRoutingNumber =
-          isCustom ? cpi.getCustomRoutingNumber() : (tpl != null ? tpl.getRoutingNumber() : null);
+          isCustom
+              ? cpi.getCustomRoutingNumber().orElse(null)
+              : (tpl != null ? tpl.getRoutingNumber().orElse(null) : null);
       String piReference =
           isCustom
-              ? cpi.getCustomPaymentReference()
-              : (tpl != null ? tpl.getPaymentReference() : null);
+              ? cpi.getCustomPaymentReference().orElse(null)
+              : (tpl != null ? tpl.getPaymentReference().orElse(null) : null);
       String piDetails =
           isCustom
-              ? cpi.getCustomAdditionalDetails()
-              : (tpl != null ? tpl.getAdditionalDetails() : null);
+              ? cpi.getCustomAdditionalDetails().orElse(null)
+              : (tpl != null ? tpl.getAdditionalDetails().orElse(null) : null);
 
-      boolean isCurrent = cpi.getEffectiveTo() == null;
+      boolean isCurrent = cpi.getEffectiveTo().isEmpty();
       String accentColor = isCurrent ? "#2b6cb0" : "#a0aec0";
 
       html.append("<div class='pi-card' style='border-left-color:")
@@ -637,8 +651,7 @@ public class ContractBookletExporter {
       // Period
       String fromStr =
           cpi.getEffectiveFrom() != null ? formatDate(cpi.getEffectiveFrom(), dateFmt) : "—";
-      String toStr =
-          cpi.getEffectiveTo() != null ? formatDate(cpi.getEffectiveTo(), dateFmt) : "Present";
+      String toStr = cpi.getEffectiveTo().map(d -> formatDate(d, dateFmt)).orElse("Present");
       html.append("<div class='pi-period'>")
           .append(fromStr)
           .append(" — ")
@@ -686,12 +699,15 @@ public class ContractBookletExporter {
             .append(escapeHtml(piDetails))
             .append("</span></div>");
       }
-      if (cpi.getNotes() != null && !cpi.getNotes().isBlank()) {
-        html.append("<div class='pi-details'><span class='fg-label'>Notes</span><br/>");
-        html.append("<span style='font-size:13px;color:#2d3748;'>")
-            .append(escapeHtml(cpi.getNotes()))
-            .append("</span></div>");
-      }
+      cpi.getNotes()
+          .filter(n -> !n.isBlank())
+          .ifPresent(
+              n -> {
+                html.append("<div class='pi-details'><span class='fg-label'>Notes</span><br/>");
+                html.append("<span style='font-size:13px;color:#2d3748;'>")
+                    .append(escapeHtml(n))
+                    .append("</span></div>");
+              });
 
       html.append("</div>");
     }
@@ -799,10 +815,7 @@ public class ContractBookletExporter {
         html.append(formatEnumValue(payStatus)).append("</span>");
         html.append("</td>");
         html.append("<td>")
-            .append(
-                payment.getPaymentDate() != null
-                    ? formatDate(payment.getPaymentDate(), dateFmt)
-                    : "—")
+            .append(payment.getPaymentDate().map(d -> formatDate(d, dateFmt)).orElse("—"))
             .append("</td>");
         html.append("</tr>");
       }
@@ -819,7 +832,7 @@ public class ContractBookletExporter {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
-        .map(p -> tenantMap.get(p.getTenantId()));
+        .flatMap(p -> p.getTenantId().map(tenantMap::get));
   }
 
   private PaymentAggregation aggregatePayments(

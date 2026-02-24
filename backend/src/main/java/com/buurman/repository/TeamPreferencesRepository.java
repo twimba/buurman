@@ -49,7 +49,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TEAM_ID, prefs.getTeamId())
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
           .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
@@ -64,7 +64,7 @@ public class TeamPreferencesRepository {
       dsl.update(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
           .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
@@ -98,7 +98,7 @@ public class TeamPreferencesRepository {
     prefs.setTeamId(record.getTeamId());
     prefs.setPaymentsAheadCount(record.getPaymentsAheadCount());
     prefs.setAutoGenerationEnabled(record.getAutoGenerationEnabled());
-    prefs.setDefaultCurrency(record.getDefaultCurrency());
+    prefs.setDefaultCurrency(Optional.ofNullable(record.getDefaultCurrency()));
     prefs.setDefaultCountry(record.getDefaultCountry());
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());

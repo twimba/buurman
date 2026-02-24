@@ -39,17 +39,15 @@ public class RegistrationInvitationRepository {
         .set(REGISTRATION_INVITATIONS.ID, id)
         .set(REGISTRATION_INVITATIONS.IDENTIFIER, identifier)
         .set(REGISTRATION_INVITATIONS.CODE, invitation.getCode())
-        .set(REGISTRATION_INVITATIONS.MAX_USAGES, invitation.getMaxUsages())
+        .set(REGISTRATION_INVITATIONS.MAX_USAGES, invitation.getMaxUsages().orElse(null))
         .set(REGISTRATION_INVITATIONS.USAGE_COUNT, 0)
         .set(
             REGISTRATION_INVITATIONS.EXPIRES_AT,
-            invitation.getExpiresAt() != null
-                ? LocalDateTime.ofInstant(invitation.getExpiresAt(), UTC)
-                : null)
+            invitation.getExpiresAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(REGISTRATION_INVITATIONS.CREATED_AT, now)
         .set(REGISTRATION_INVITATIONS.UPDATED_AT, now)
         .set(REGISTRATION_INVITATIONS.CREATED_BY, invitation.getCreatedBy())
-        .set(REGISTRATION_INVITATIONS.NOTE, invitation.getNote())
+        .set(REGISTRATION_INVITATIONS.NOTE, invitation.getNote().orElse(null))
         .execute();
 
     invitation.setId(id);
@@ -175,15 +173,17 @@ public class RegistrationInvitationRepository {
     inv.setId(record.get(REGISTRATION_INVITATIONS.ID));
     inv.setIdentifier(record.get(REGISTRATION_INVITATIONS.IDENTIFIER));
     inv.setCode(record.get(REGISTRATION_INVITATIONS.CODE));
-    inv.setMaxUsages(record.get(REGISTRATION_INVITATIONS.MAX_USAGES));
+    inv.setMaxUsages(Optional.ofNullable(record.get(REGISTRATION_INVITATIONS.MAX_USAGES)));
     inv.setUsageCount(record.get(REGISTRATION_INVITATIONS.USAGE_COUNT));
-    inv.setExpiresAt(toInstant(record.get(REGISTRATION_INVITATIONS.EXPIRES_AT)));
-    inv.setRevokedAt(toInstant(record.get(REGISTRATION_INVITATIONS.REVOKED_AT)));
-    inv.setRevokedBy(record.get(REGISTRATION_INVITATIONS.REVOKED_BY));
+    inv.setExpiresAt(
+        Optional.ofNullable(toInstant(record.get(REGISTRATION_INVITATIONS.EXPIRES_AT))));
+    inv.setRevokedAt(
+        Optional.ofNullable(toInstant(record.get(REGISTRATION_INVITATIONS.REVOKED_AT))));
+    inv.setRevokedBy(Optional.ofNullable(record.get(REGISTRATION_INVITATIONS.REVOKED_BY)));
     inv.setCreatedAt(record.get(REGISTRATION_INVITATIONS.CREATED_AT).toInstant(UTC));
     inv.setUpdatedAt(record.get(REGISTRATION_INVITATIONS.UPDATED_AT).toInstant(UTC));
     inv.setCreatedBy(record.get(REGISTRATION_INVITATIONS.CREATED_BY));
-    inv.setNote(record.get(REGISTRATION_INVITATIONS.NOTE));
+    inv.setNote(Optional.ofNullable(record.get(REGISTRATION_INVITATIONS.NOTE)));
     return inv;
   }
 
