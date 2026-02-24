@@ -141,7 +141,6 @@ public class NotificationService {
 
       outboxRepository.save(outbox);
     }
-
   }
 
   @Transactional

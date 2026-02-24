@@ -254,14 +254,14 @@ public class AuditService {
   private String buildActivityDescription(
       String action, String entityType, String userName, Map<String, Object> changedFields) {
     // Check for document operations
-    if (changedFields != null && changedFields.containsKey("documentAdded")) {
+    if (changedFields.containsKey("documentAdded")) {
       String fileName = (String) changedFields.get("documentAdded");
       String category = (String) changedFields.get("category");
       String docType = "PHOTO".equals(category) ? "photo" : "document";
       return String.format("%s uploaded %s: %s", userName, docType, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("documentRemoved")) {
+    if (changedFields.containsKey("documentRemoved")) {
       String fileName = (String) changedFields.get("documentRemoved");
       String category = (String) changedFields.get("category");
       String docType = "PHOTO".equals(category) ? "photo" : "document";
@@ -269,40 +269,40 @@ public class AuditService {
     }
 
     // Check for photo operations
-    if (changedFields != null && changedFields.containsKey("photoAdded")) {
+    if (changedFields.containsKey("photoAdded")) {
       String fileName = (String) changedFields.get("photoAdded");
       return String.format("%s uploaded photo: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("photoRemoved")) {
+    if (changedFields.containsKey("photoRemoved")) {
       String fileName = (String) changedFields.get("photoRemoved");
       return String.format("%s removed photo: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("photoEdited")) {
+    if (changedFields.containsKey("photoEdited")) {
       String fileName = (String) changedFields.get("photoEdited");
       return String.format("%s edited photo metadata: %s", userName, fileName);
     }
 
-    if (changedFields != null && changedFields.containsKey("documentEdited")) {
+    if (changedFields.containsKey("documentEdited")) {
       String fileName = (String) changedFields.get("documentEdited");
       return String.format("%s edited document metadata: %s", userName, fileName);
     }
 
     // Check for contract party operations
-    if (changedFields != null && changedFields.containsKey("partyAdded")) {
+    if (changedFields.containsKey("partyAdded")) {
       String tenantName = (String) changedFields.get("partyAdded");
       String role = (String) changedFields.get("role");
       return String.format("%s added %s as %s", userName, tenantName, formatRole(role));
     }
 
-    if (changedFields != null && changedFields.containsKey("partyRemoved")) {
+    if (changedFields.containsKey("partyRemoved")) {
       String tenantName = (String) changedFields.get("partyRemoved");
       String role = (String) changedFields.get("role");
       return String.format("%s removed %s (%s)", userName, tenantName, formatRole(role));
     }
 
-    if (changedFields != null && changedFields.containsKey("primaryTenantChanged")) {
+    if (changedFields.containsKey("primaryTenantChanged")) {
       String newTenant = (String) changedFields.get("primaryTenantChanged");
       String oldTenant = (String) changedFields.get("previousPrimaryTenant");
       return String.format(
@@ -310,17 +310,17 @@ public class AuditService {
     }
 
     // Check for receival operations
-    if (changedFields != null && changedFields.containsKey("receivalRegistered")) {
+    if (changedFields.containsKey("receivalRegistered")) {
       return String.format(
           "%s registered a receival: %s", userName, changedFields.get("receivalRegistered"));
     }
 
-    if (changedFields != null && changedFields.containsKey("receivalUpdated")) {
+    if (changedFields.containsKey("receivalUpdated")) {
       return String.format(
           "%s updated a receival: %s", userName, changedFields.get("receivalUpdated"));
     }
 
-    if (changedFields != null && changedFields.containsKey("receivalDeleted")) {
+    if (changedFields.containsKey("receivalDeleted")) {
       return String.format(
           "%s deleted a receival: %s", userName, changedFields.get("receivalDeleted"));
     }

@@ -46,7 +46,7 @@ public class TeamPermissionService {
    * Validate that the user is a member of the target team. Throws CrossTeamAccessException if not.
    */
   public void validateTeamAccess(UserPrincipal principal, UUID teamId) {
-    if (!principal.hasTeam()) {
+    if (principal.hasNoTeam()) {
       throw new TeamMembershipNotFoundException("User is not a member of any team");
     }
     if (!principal.requireTeamId().equals(teamId)) {

@@ -151,96 +151,96 @@ public class FlagsmithConfig {
    * Thin wrapper around Flagsmith's admin REST API. Each method throws on failure so the caller can
    * handle everything in a single catch block.
    */
-    private record FlagsmithAdminApi(HttpClient http, ObjectMapper mapper, String baseUrl) {
+  private record FlagsmithAdminApi(HttpClient http, ObjectMapper mapper, String baseUrl) {
 
     String login(String email, String password) throws Exception {
-        ObjectNode body = mapper.createObjectNode().put("email", email).put("password", password);
+      ObjectNode body = mapper.createObjectNode().put("email", email).put("password", password);
 
-        JsonNode resp = post("/auth/login/", body, null);
-        if (!resp.has("key")) {
-          throw new IllegalStateException("login failed");
-        }
-        return resp.get("key").asText();
+      JsonNode resp = post("/auth/login/", body, null);
+      if (!resp.has("key")) {
+        throw new IllegalStateException("login failed");
       }
-
-      int findProjectId(String token, String projectName) throws Exception {
-        JsonNode projects = get("/projects/", token);
-        for (JsonNode p : asArray(projects)) {
-          if (projectName.equals(text(p, "name"))) {
-            return p.get("id").asInt();
-          }
-        }
-        throw new IllegalStateException("project '%s' not found".formatted(projectName));
-      }
-
-      String findEnvironmentClientKey(String token, int projectId, String envName) throws Exception {
-        JsonNode envs = get("/environments/?project=" + projectId, token);
-        for (JsonNode env : asArray(envs)) {
-          if (envName.equals(text(env, "name"))) {
-            return env.get("api_key").asText();
-          }
-        }
-        throw new IllegalStateException("environment '%s' not found".formatted(envName));
-      }
-
-      String findOrCreateServerKey(String token, String clientKey) throws Exception {
-        String path = "/environments/" + clientKey + "/api-keys/";
-        JsonNode keys = get(path, token);
-        for (JsonNode k : asArray(keys)) {
-          if (SERVER_KEY_NAME.equals(text(k, "name"))) {
-            return k.get("key").asText();
-          }
-        }
-
-        ObjectNode body = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
-        JsonNode created = post(path, body, token);
-        if (!created.has("key")) {
-          throw new IllegalStateException("failed to create server-side key");
-        }
-        return created.get("key").asText();
-      }
-
-      private JsonNode get(String path, String token) throws Exception {
-        HttpRequest req =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + path))
-                        .header("Authorization", "Token " + token)
-                        .GET()
-                        .timeout(REQUEST_TIMEOUT)
-                        .build();
-
-        return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
-      }
-
-      private JsonNode post(String path, JsonNode payload, @Nullable String token) throws Exception {
-        HttpRequest.Builder builder =
-                HttpRequest.newBuilder()
-                        .uri(URI.create(baseUrl + path))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
-                        .timeout(REQUEST_TIMEOUT);
-        if (token != null) {
-          builder.header("Authorization", "Token " + token);
-        }
-
-        return mapper.readTree(
-                http.send(builder.build(), HttpResponse.BodyHandlers.ofString()).body());
-      }
-
-      private static JsonNode asArray(JsonNode node) {
-        if (node.isArray()) {
-          return node;
-        }
-
-        if (node.has("results")) {
-          return node.get("results");
-        }
-
-        throw new IllegalStateException("unexpected response format");
-      }
-
-      private static @Nullable String text(JsonNode node, String field) {
-        return node.has(field) ? node.get(field).asText() : null;
-      }
+      return resp.get("key").asText();
     }
+
+    int findProjectId(String token, String projectName) throws Exception {
+      JsonNode projects = get("/projects/", token);
+      for (JsonNode p : asArray(projects)) {
+        if (projectName.equals(text(p, "name"))) {
+          return p.get("id").asInt();
+        }
+      }
+      throw new IllegalStateException("project '%s' not found".formatted(projectName));
+    }
+
+    String findEnvironmentClientKey(String token, int projectId, String envName) throws Exception {
+      JsonNode envs = get("/environments/?project=" + projectId, token);
+      for (JsonNode env : asArray(envs)) {
+        if (envName.equals(text(env, "name"))) {
+          return env.get("api_key").asText();
+        }
+      }
+      throw new IllegalStateException("environment '%s' not found".formatted(envName));
+    }
+
+    String findOrCreateServerKey(String token, String clientKey) throws Exception {
+      String path = "/environments/" + clientKey + "/api-keys/";
+      JsonNode keys = get(path, token);
+      for (JsonNode k : asArray(keys)) {
+        if (SERVER_KEY_NAME.equals(text(k, "name"))) {
+          return k.get("key").asText();
+        }
+      }
+
+      ObjectNode body = mapper.createObjectNode().put("name", SERVER_KEY_NAME);
+      JsonNode created = post(path, body, token);
+      if (!created.has("key")) {
+        throw new IllegalStateException("failed to create server-side key");
+      }
+      return created.get("key").asText();
+    }
+
+    private JsonNode get(String path, String token) throws Exception {
+      HttpRequest req =
+          HttpRequest.newBuilder()
+              .uri(URI.create(baseUrl + path))
+              .header("Authorization", "Token " + token)
+              .GET()
+              .timeout(REQUEST_TIMEOUT)
+              .build();
+
+      return mapper.readTree(http.send(req, HttpResponse.BodyHandlers.ofString()).body());
+    }
+
+    private JsonNode post(String path, JsonNode payload, @Nullable String token) throws Exception {
+      HttpRequest.Builder builder =
+          HttpRequest.newBuilder()
+              .uri(URI.create(baseUrl + path))
+              .header("Content-Type", "application/json")
+              .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
+              .timeout(REQUEST_TIMEOUT);
+      if (token != null) {
+        builder.header("Authorization", "Token " + token);
+      }
+
+      return mapper.readTree(
+          http.send(builder.build(), HttpResponse.BodyHandlers.ofString()).body());
+    }
+
+    private static JsonNode asArray(JsonNode node) {
+      if (node.isArray()) {
+        return node;
+      }
+
+      if (node.has("results")) {
+        return node.get("results");
+      }
+
+      throw new IllegalStateException("unexpected response format");
+    }
+
+    private static @Nullable String text(JsonNode node, String field) {
+      return node.has(field) ? node.get(field).asText() : null;
+    }
+  }
 }

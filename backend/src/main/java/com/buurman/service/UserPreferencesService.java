@@ -107,8 +107,8 @@ public class UserPreferencesService {
           new NotificationTypePreferencesResponse.Entry(
               type.name(),
               type.getDisplayName(),
-              pref != null ? pref.isEmailEnabled() : true,
-              pref != null ? pref.isSmsEnabled() : false));
+              pref == null || pref.isEmailEnabled(),
+              pref != null && pref.isSmsEnabled()));
     }
 
     return new NotificationTypePreferencesResponse(

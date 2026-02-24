@@ -120,8 +120,8 @@ public class UserPrincipal implements Principal {
     return emailVerified;
   }
 
-  public boolean hasTeam() {
-    return teamId.isPresent();
+  public boolean hasNoTeam() {
+    return teamId.isEmpty();
   }
 
   /** Returns team ID, throwing if the user has no active team membership. */

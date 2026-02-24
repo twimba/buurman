@@ -28,7 +28,7 @@ public class TeamMembershipAspect {
     }
 
     // Check if user has team membership
-    if (!principal.hasTeam()) {
+    if (principal.hasNoTeam()) {
       throw new TeamMembershipNotFoundException("User is not a member of any team");
     }
 

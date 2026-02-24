@@ -216,10 +216,7 @@ public class PropertyService {
         principal.getUserId(),
         savedProperty);
 
-    String propertyName =
-        savedProperty.getStreet() != null
-            ? savedProperty.getStreet() + ", " + savedProperty.getCity()
-            : savedProperty.getIdentifier();
+    String propertyName = savedProperty.getStreet() + ", " + savedProperty.getCity();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(principal.requireTeamId())

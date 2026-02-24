@@ -162,10 +162,7 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(savedContract.getId(), teamId);
 
-    String propertyName =
-        property.getStreet() != null
-            ? property.getStreet() + ", " + property.getCity()
-            : property.getIdentifier();
+    String propertyName = property.getStreet() + ", " + property.getCity();
     String tenantName =
         primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     Map<String, Object> contractVars = new HashMap<>();
@@ -340,11 +337,11 @@ public class ContractService {
     if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0) {
       changedFields.put("rentAmount", updatedContract.getRentAmount());
     }
-    if (!optionalBigDecimalEquals(
+    if (optionalBigDecimalNotEquals(
         oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
       changedFields.put("depositAmount", updatedContract.getDepositAmount().orElse(null));
     }
-    if (!optionalBigDecimalEquals(
+    if (optionalBigDecimalNotEquals(
         oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
       changedFields.put("securityDeposit", updatedContract.getSecurityDeposit().orElse(null));
     }
@@ -381,7 +378,7 @@ public class ContractService {
         oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
       changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
     }
-    if (!optionalBigDecimalEquals(
+    if (optionalBigDecimalNotEquals(
         oldContract.getLateFeePercentage(), updatedContract.getLateFeePercentage())) {
       changedFields.put("lateFeePercentage", updatedContract.getLateFeePercentage().orElse(null));
     }
@@ -533,7 +530,7 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
     String scPropertyName =
-        statusChangeProperty != null && statusChangeProperty.getStreet() != null
+        statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
             : identifier;
     String scTenantName =
@@ -634,7 +631,7 @@ public class ContractService {
     Tenant primaryTenant =
         contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
     String reopenPropertyName =
-        reopenProperty != null && reopenProperty.getStreet() != null
+        reopenProperty != null
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
             : identifier;
     String reopenTenantName =
@@ -951,14 +948,15 @@ public class ContractService {
     }
   }
 
-  private static boolean optionalBigDecimalEquals(Optional<BigDecimal> a, Optional<BigDecimal> b) {
+  private static boolean optionalBigDecimalNotEquals(
+      Optional<BigDecimal> a, Optional<BigDecimal> b) {
     if (a.isEmpty() && b.isEmpty()) {
-      return true;
-    }
-    if (a.isEmpty() || b.isEmpty()) {
       return false;
     }
-    return a.get().compareTo(b.get()) == 0;
+    if (a.isEmpty() || b.isEmpty()) {
+      return true;
+    }
+    return a.get().compareTo(b.get()) != 0;
   }
 
   private void updatePropertyStatusBasedOnContract(

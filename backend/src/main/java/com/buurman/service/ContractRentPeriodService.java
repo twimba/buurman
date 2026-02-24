@@ -389,7 +389,7 @@ public class ContractRentPeriodService {
           contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
 
       String propertyName =
-          property != null && property.getStreet() != null
+          property != null
               ? property.getStreet() + ", " + property.getCity()
               : contract.getIdentifier();
       String tenantName =
