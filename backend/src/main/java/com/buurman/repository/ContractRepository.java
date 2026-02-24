@@ -186,8 +186,8 @@ public class ContractRepository {
     if (contract.getId() == null) {
       // Insert
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt = LocalDateTime.ofInstant(contract.getCreatedAt(), UTC);
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC);
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
@@ -237,7 +237,7 @@ public class ContractRepository {
       contract.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
       // Update
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC);
+      LocalDateTime updatedAt = now;
 
       dsl.update(CONTRACTS)
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())

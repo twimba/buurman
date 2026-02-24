@@ -79,7 +79,7 @@ export const PaymentsPage = () => {
     handleSizeChange,
     handleSortChange,
     resetPage,
-  } = usePagination({ defaultSort: 'dueDate', defaultDirection: 'asc' });
+  } = usePagination({ defaultSort: 'dueDate' });
 
   const {
     data: paymentsData,

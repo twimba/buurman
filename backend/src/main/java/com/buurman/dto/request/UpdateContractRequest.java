@@ -18,8 +18,10 @@ public record UpdateContractRequest(
     Optional<LocalDate> endDate,
     Optional<LocalDate> signedDate,
     @NotNull(message = "Rent amount is required") @Positive(message = "Rent amount must be positive") BigDecimal rentAmount,
-    @PositiveOrZero(message = "Deposit amount must be zero or positive") Optional<BigDecimal> depositAmount,
-    @PositiveOrZero(message = "Security deposit must be zero or positive") Optional<BigDecimal> securityDeposit,
+    Optional<@PositiveOrZero(message = "Deposit amount must be zero or positive") BigDecimal>
+        depositAmount,
+    Optional<@PositiveOrZero(message = "Security deposit must be zero or positive") BigDecimal>
+        securityDeposit,
     Optional<String> rentAmountCurrency,
     Optional<String> depositAmountCurrency,
     Optional<String> securityDepositCurrency,
@@ -28,7 +30,8 @@ public record UpdateContractRequest(
     Optional<Boolean> autoRenewal,
     Optional<Integer> renewalNoticeDays,
     Optional<Integer> terminationNoticeDays,
-    @PositiveOrZero(message = "Late fee percentage must be zero or positive") Optional<BigDecimal> lateFeePercentage,
+    Optional<@PositiveOrZero(message = "Late fee percentage must be zero or positive") BigDecimal>
+        lateFeePercentage,
     Optional<String> termsAndConditions,
     Optional<String> notes) {
 

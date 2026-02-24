@@ -217,7 +217,7 @@ public class PropertyRepository {
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
               isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? Property.VARIABLE_PAYMENT_SENTINEL_DB
+                  ? (Long) Property.VARIABLE_PAYMENT_SENTINEL_DB
                   : CurrencyUtils.toMinorUnitsOrNull(
                       property.getMonthlyMortgagePayment().orElse(null),
                       property.getMonthlyMortgagePaymentCurrency().orElse(null)))
@@ -408,7 +408,7 @@ public class PropertyRepository {
           .set(
               PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
               isVariablePayment(property.getMonthlyMortgagePayment().orElse(null))
-                  ? Property.VARIABLE_PAYMENT_SENTINEL_DB
+                  ? (Long) Property.VARIABLE_PAYMENT_SENTINEL_DB
                   : CurrencyUtils.toMinorUnitsOrNull(
                       property.getMonthlyMortgagePayment().orElse(null),
                       property.getMonthlyMortgagePaymentCurrency().orElse(null)))

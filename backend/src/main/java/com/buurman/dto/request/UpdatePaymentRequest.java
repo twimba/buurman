@@ -9,7 +9,7 @@ import com.buurman.domain.Payment.PaymentStatus;
 import jakarta.validation.constraints.Positive;
 
 public record UpdatePaymentRequest(
-    @Positive(message = "Amount must be positive") Optional<BigDecimal> amount,
+    Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,
     Optional<String> currency,
     Optional<LocalDate> dueDate,
     Optional<PaymentStatus> status,

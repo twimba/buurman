@@ -60,8 +60,8 @@ public class PaymentInstructionRepository {
     if (pi.getId() == null) {
       UUID id = UUID.randomUUID();
       String identifier = newPaymentInstructionId().value();
-      LocalDateTime createdAt = LocalDateTime.ofInstant(pi.getCreatedAt(), UTC);
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC);
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(TABLE)
           .set(ID, id)
@@ -90,7 +90,7 @@ public class PaymentInstructionRepository {
       pi.setCreatedAt(createdAt.toInstant(UTC));
       pi.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(pi.getUpdatedAt(), UTC);
+      LocalDateTime updatedAt = now;
 
       dsl.update(TABLE)
           .set(NAME, pi.getName())

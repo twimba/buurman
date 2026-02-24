@@ -75,7 +75,7 @@ public class TenantAddressService {
     address.setUpdatedBy(principal.getUserId());
     address.setCreatedAt(clock.instant());
     address.setUpdatedAt(clock.instant());
-    address.setStatus(AddressStatus.ACTIVE);
+    address.setStatus(request.status().orElse(AddressStatus.ACTIVE));
 
     if (address.getLatitude().isEmpty() || address.getLongitude().isEmpty()) {
       geocodingService

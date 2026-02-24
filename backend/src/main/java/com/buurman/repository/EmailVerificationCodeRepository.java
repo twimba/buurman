@@ -26,7 +26,7 @@ public class EmailVerificationCodeRepository {
   public void save(EmailVerificationCode code) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = LocalDateTime.ofInstant(code.getCreatedAt(), UTC);
+    LocalDateTime createdAt = now;
 
     dsl.insertInto(EMAIL_VERIFICATION_CODES)
         .set(EMAIL_VERIFICATION_CODES.ID, id)

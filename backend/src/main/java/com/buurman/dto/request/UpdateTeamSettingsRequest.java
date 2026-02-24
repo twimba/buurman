@@ -16,11 +16,15 @@ public record UpdateTeamSettingsRequest(
       @NotNull(message = "Auto generation enabled flag is required") Boolean autoGenerationEnabled) {}
 
   public record RegionalSettings(
-      @Size(min = 3, max = 3, message = "Currency code must be 3 characters") Optional<String> defaultCurrency,
-      @Size(max = 100, message = "Country name must not exceed 100 characters") Optional<String> defaultCountry,
-      @Size(max = 50, message = "Timezone must not exceed 50 characters") Optional<String> timezone,
-      @Size(max = 20, message = "Date format must not exceed 20 characters") Optional<String> dateFormat,
-      @Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits") Optional<String> fiscalYearStartMonth) {
+      Optional<@Size(min = 3, max = 3, message = "Currency code must be 3 characters") String>
+          defaultCurrency,
+      Optional<@Size(max = 100, message = "Country name must not exceed 100 characters") String>
+          defaultCountry,
+      Optional<@Size(max = 50, message = "Timezone must not exceed 50 characters") String> timezone,
+      Optional<@Size(max = 20, message = "Date format must not exceed 20 characters") String>
+          dateFormat,
+      Optional<@Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits") String>
+          fiscalYearStartMonth) {
     public RegionalSettings {}
   }
 }

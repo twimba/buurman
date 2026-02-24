@@ -11,8 +11,10 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateExpenseRequest(
     Optional<ExpenseCategory> category,
-    @Positive(message = "Amount must be positive") Optional<BigDecimal> amount,
+    Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,
     Optional<String> currency,
     Optional<LocalDate> expenseDate,
-    @Size(min = 1, max = 500, message = "Description must be between 1 and 500 characters") Optional<String> description,
+    Optional<
+            @Size(min = 1, max = 500, message = "Description must be between 1 and 500 characters") String>
+        description,
     Optional<String> notes) {}

@@ -10,4 +10,10 @@ public record TwilioProperties(
     String authToken,
     String fromNumber,
     Optional<String> messagingServiceSid,
-    Optional<String> statusCallbackUrl) {}
+    Optional<String> statusCallbackUrl) {
+
+  public TwilioProperties {
+    messagingServiceSid = Optional.ofNullable(messagingServiceSid).flatMap(o -> o);
+    statusCallbackUrl = Optional.ofNullable(statusCallbackUrl).flatMap(o -> o);
+  }
+}

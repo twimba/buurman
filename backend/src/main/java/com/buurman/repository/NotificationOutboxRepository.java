@@ -30,7 +30,7 @@ public class NotificationOutboxRepository {
   public void save(NotificationOutbox outbox) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = LocalDateTime.ofInstant(outbox.getCreatedAt(), UTC);
+    LocalDateTime createdAt = now;
 
     dsl.insertInto(NOTIFICATION_OUTBOX)
         .set(NOTIFICATION_OUTBOX.ID, id)

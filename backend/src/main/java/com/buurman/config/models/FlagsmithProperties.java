@@ -14,4 +14,12 @@ public record FlagsmithProperties(
     Optional<String> adminPassword,
     Optional<String> apiToken,
     String projectName,
-    String environmentName) {}
+    String environmentName) {
+
+  public FlagsmithProperties {
+    serverSideKey = Optional.ofNullable(serverSideKey).flatMap(o -> o);
+    adminEmail = Optional.ofNullable(adminEmail).flatMap(o -> o);
+    adminPassword = Optional.ofNullable(adminPassword).flatMap(o -> o);
+    apiToken = Optional.ofNullable(apiToken).flatMap(o -> o);
+  }
+}

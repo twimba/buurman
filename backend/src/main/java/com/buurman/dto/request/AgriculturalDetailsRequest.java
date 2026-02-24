@@ -6,9 +6,9 @@ import java.util.Optional;
 import jakarta.validation.constraints.Positive;
 
 public record AgriculturalDetailsRequest(
-    @Positive(message = "Total land area must be positive") Optional<BigDecimal> totalLandAreaValue,
+    Optional<@Positive(message = "Total land area must be positive") BigDecimal> totalLandAreaValue,
     Optional<String> totalLandAreaUnit,
-    @Positive(message = "Arable area must be positive") Optional<BigDecimal> arableAreaValue,
+    Optional<@Positive(message = "Arable area must be positive") BigDecimal> arableAreaValue,
     Optional<String> arableAreaUnit,
     Optional<String> soilType,
     Optional<Boolean> hasWaterRights,

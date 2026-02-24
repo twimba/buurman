@@ -12,4 +12,10 @@ public record AwsS3Properties(
     String secretKey,
     String bucketName,
     Optional<String> publicEndpoint,
-    boolean usePresignedUrls) {}
+    boolean usePresignedUrls) {
+
+  public AwsS3Properties {
+    endpoint = Optional.ofNullable(endpoint).flatMap(o -> o);
+    publicEndpoint = Optional.ofNullable(publicEndpoint).flatMap(o -> o);
+  }
+}

@@ -36,8 +36,8 @@ public class TenantAddressRepository {
       // Insert
       UUID id = UUID.randomUUID();
       String identifier = newTenantAddressId().value();
-      LocalDateTime createdAt = LocalDateTime.ofInstant(address.getCreatedAt(), UTC);
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(address.getUpdatedAt(), UTC);
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(TENANT_ADDRESSES)
           .set(TENANT_ADDRESSES.ID, id)
@@ -66,7 +66,7 @@ public class TenantAddressRepository {
       address.setIdentifier(identifier);
     } else {
       // Update
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(address.getUpdatedAt(), UTC);
+      LocalDateTime updatedAt = now;
 
       dsl.update(TENANT_ADDRESSES)
           .set(TENANT_ADDRESSES.STREET, address.getStreet())

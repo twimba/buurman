@@ -23,7 +23,7 @@ public record CreatePropertyRequest(
     Optional<BigDecimal> latitude,
     Optional<BigDecimal> longitude,
     Optional<String> geocodeAccuracy,
-    @Positive(message = "Area value must be positive") Optional<BigDecimal> areaValue,
+    Optional<@Positive(message = "Area value must be positive") BigDecimal> areaValue,
     Optional<String> areaUnit,
 
     // Construction & Structure

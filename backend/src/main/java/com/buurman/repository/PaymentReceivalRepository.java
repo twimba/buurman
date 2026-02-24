@@ -116,8 +116,8 @@ public class PaymentReceivalRepository {
     String currency = receival.getCurrency();
 
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = LocalDateTime.ofInstant(receival.getCreatedAt(), UTC);
-    LocalDateTime updatedAt = LocalDateTime.ofInstant(receival.getUpdatedAt(), UTC);
+    LocalDateTime createdAt = now;
+    LocalDateTime updatedAt = now;
 
     dsl.insertInto(TABLE)
         .set(ID, id)

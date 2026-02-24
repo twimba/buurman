@@ -60,8 +60,8 @@ public class PropertyOutdoorAreaRepository {
 
     if (area.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt = LocalDateTime.ofInstant(area.getCreatedAt(), UTC);
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(area.getUpdatedAt(), UTC);
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.ID, newId)
@@ -81,7 +81,7 @@ public class PropertyOutdoorAreaRepository {
       area.setCreatedAt(createdAt.toInstant(UTC));
       area.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(area.getUpdatedAt(), UTC);
+      LocalDateTime updatedAt = now;
 
       dsl.update(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())

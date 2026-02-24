@@ -5,8 +5,8 @@ import java.util.Optional;
 import jakarta.validation.constraints.Pattern;
 
 public record UpdateUserPreferencesRequest(
-    @Pattern(regexp = "light|dark|system") Optional<String> theme,
-    @Pattern(regexp = "[a-z]{2}") Optional<String> language,
+    Optional<@Pattern(regexp = "light|dark|system") String> theme,
+    Optional<@Pattern(regexp = "[a-z]{2}") String> language,
     Optional<String> timezone,
     Optional<String> dateFormat,
     Optional<String> currencyFormat,

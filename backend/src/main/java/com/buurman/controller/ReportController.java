@@ -76,12 +76,14 @@ public class ReportController {
   public FinancialOverviewResponse getFinancialOverview(
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam List<String> propertyIdentifiers,
+      @RequestParam Optional<List<String>> propertyIdentifiers,
       @RequestParam Optional<String> currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId()).orElse(null);
+        propertyIdentifiers
+            .flatMap(ids -> resolvePropertyIdentifiers(ids, principal.requireTeamId()))
+            .orElse(null);
     return reportService.getFinancialOverview(
         startDate, endDate, propertyIds, currency.orElse(null), principal);
   }

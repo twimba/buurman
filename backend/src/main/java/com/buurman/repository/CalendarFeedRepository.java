@@ -111,8 +111,8 @@ public class CalendarFeedRepository {
 
     if (feed.getId() == null) {
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt = LocalDateTime.ofInstant(feed.getCreatedAt(), UTC);
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC);
+      LocalDateTime createdAt = now;
+      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.ID, id)
@@ -135,7 +135,7 @@ public class CalendarFeedRepository {
       feed.setCreatedAt(createdAt.toInstant(UTC));
       feed.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = LocalDateTime.ofInstant(feed.getUpdatedAt(), UTC);
+      LocalDateTime updatedAt = now;
 
       dsl.update(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())
