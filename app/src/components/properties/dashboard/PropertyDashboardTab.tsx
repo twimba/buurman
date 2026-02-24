@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   Legend,
   Brush,
+  ReferenceArea,
 } from 'recharts';
 import type { BarShapeProps } from 'recharts';
 import {
@@ -130,6 +131,76 @@ function formatAxisValue(value: number, currencyCode: string): string {
     return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
   }
   return `${sign}${symbol}${abs.toFixed(0)}`;
+}
+
+// --- Chart zoom hook (click-and-drag to zoom) ---
+
+function useChartZoom<T extends { month: string }>(chartData: T[]) {
+  const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
+  const [refAreaRight, setRefAreaRight] = useState<string | null>(null);
+  const [zoomStart, setZoomStart] = useState<number | null>(null);
+  const [zoomEnd, setZoomEnd] = useState<number | null>(null);
+
+  const handleMouseDown = useCallback(
+    (e: { activeLabel?: string | number } | null) => {
+      if (e?.activeLabel != null) {
+        setRefAreaLeft(String(e.activeLabel));
+        setRefAreaRight(null);
+      }
+    },
+    []
+  );
+
+  const handleMouseMove = useCallback(
+    (e: { activeLabel?: string | number } | null) => {
+      if (refAreaLeft && e?.activeLabel != null) {
+        setRefAreaRight(String(e.activeLabel));
+      }
+    },
+    [refAreaLeft]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    if (refAreaLeft && refAreaRight) {
+      const leftIdx = chartData.findIndex((d) => d.month === refAreaLeft);
+      const rightIdx = chartData.findIndex((d) => d.month === refAreaRight);
+      if (leftIdx >= 0 && rightIdx >= 0) {
+        const startIdx = Math.min(leftIdx, rightIdx);
+        const endIdx = Math.max(leftIdx, rightIdx);
+        if (endIdx - startIdx >= 1) {
+          setZoomStart(startIdx);
+          setZoomEnd(endIdx);
+        }
+      }
+    }
+    setRefAreaLeft(null);
+    setRefAreaRight(null);
+  }, [refAreaLeft, refAreaRight, chartData]);
+
+  const resetZoom = useCallback(() => {
+    setZoomStart(null);
+    setZoomEnd(null);
+  }, []);
+
+  const visibleData = useMemo(() => {
+    if (zoomStart !== null && zoomEnd !== null) {
+      return chartData.slice(zoomStart, zoomEnd + 1);
+    }
+    return chartData;
+  }, [chartData, zoomStart, zoomEnd]);
+
+  const isZoomed = zoomStart !== null;
+
+  return {
+    visibleData,
+    refAreaLeft,
+    refAreaRight,
+    isZoomed,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    resetZoom,
+  };
 }
 
 type PeriodType = 'ytd' | '3' | '6' | '12' | '24' | '36' | 'all' | 'custom';
@@ -702,6 +773,15 @@ function CashFlowTooltip({
   );
 }
 
+const CASHFLOW_SERIES = ['income', 'expenses', 'mortgage', 'net'] as const;
+type CashFlowSeriesKey = (typeof CASHFLOW_SERIES)[number];
+const CASHFLOW_LABELS: Record<CashFlowSeriesKey, string> = {
+  income: 'Income',
+  expenses: 'Expenses',
+  mortgage: 'Mortgage',
+  net: 'Net',
+};
+
 function CashFlowChart({
   data,
   isDark,
@@ -724,82 +804,192 @@ function CashFlowChart({
     [data.months]
   );
 
+  // Clickable legend: net hidden by default
+  const [enabled, setEnabled] = useState<Set<CashFlowSeriesKey>>(
+    () => new Set<CashFlowSeriesKey>(['income', 'expenses', 'mortgage'])
+  );
+
+  const toggle = useCallback((key: CashFlowSeriesKey) => {
+    setEnabled((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        if (next.size > 1) {
+          next.delete(key);
+        }
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
+
+  const {
+    visibleData,
+    refAreaLeft,
+    refAreaRight,
+    isZoomed,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    resetZoom,
+  } = useChartZoom(chartData);
+
   if (!data.months.length) {
     return <EmptyChart message="No transaction data" />;
   }
 
   return (
-    <ResponsiveContainer width="100%" height={380}>
-      <ComposedChart
-        data={chartData}
-        margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-        barCategoryGap="20%"
-        barGap={2}
-      >
-        <CartesianGrid
-          strokeDasharray="3 3"
-          vertical={false}
-          stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-        />
-        <XAxis
-          dataKey="month"
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={formatMonthTick}
-        />
-        <YAxis
-          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-          tickFormatter={(v) => formatAxisValue(v, currency)}
-        />
-        <ReferenceLine
-          y={0}
-          stroke={isDark ? '#5c6180' : '#9ca0b8'}
-          strokeWidth={1.5}
-        />
-        <Tooltip
-          content={<CashFlowTooltip isDark={isDark} currency={currency} />}
-          cursor={{
-            fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-          }}
-        />
-        <Legend wrapperStyle={{ fontSize: '12px' }} />
-        <Bar
-          dataKey="income"
-          name="Income"
-          stackId="inflow"
-          fill={COLORS.income}
-          fillOpacity={0.85}
-          radius={[4, 4, 0, 0]}
-          isAnimationActive={false}
-        />
-        <Bar
-          dataKey="expenses"
-          name="Expenses"
-          stackId="outflow"
-          fill={COLORS.expenses}
-          fillOpacity={0.85}
-          shape={expensesBarShape}
-          isAnimationActive={false}
-        />
-        <Bar
-          dataKey="mortgage"
-          name="Mortgage"
-          stackId="outflow"
-          fill={COLORS.mortgage}
-          fillOpacity={0.85}
-          shape={mortgageBarShape}
-          isAnimationActive={false}
-        />
-        {chartData.length > 6 && (
-          <Brush
+    <div>
+      {isZoomed && (
+        <div className="flex justify-end mb-1">
+          <button
+            onClick={resetZoom}
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded transition-colors"
+            style={{
+              color: isDark ? '#8b90a8' : '#6b7194',
+            }}
+          >
+            <RefreshCw className="h-3 w-3" />
+            Reset zoom
+          </button>
+        </div>
+      )}
+      <ResponsiveContainer width="100%" height={380}>
+        <ComposedChart
+          data={visibleData}
+          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+          stackOffset="sign"
+          barCategoryGap="0%"
+          barGap={0}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
+          />
+          <XAxis
             dataKey="month"
-            height={20}
-            stroke={isDark ? '#3a3f54' : '#c9cfd9'}
-            fill={isDark ? '#14161f' : '#f8f9fc'}
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
             tickFormatter={formatMonthTick}
           />
-        )}
-      </ComposedChart>
-    </ResponsiveContainer>
+          <YAxis
+            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+            tickFormatter={(v) => formatAxisValue(v, currency)}
+          />
+          <ReferenceLine
+            y={0}
+            stroke={isDark ? '#5c6180' : '#9ca0b8'}
+            strokeWidth={1.5}
+          />
+          <Tooltip
+            content={<CashFlowTooltip isDark={isDark} currency={currency} />}
+            cursor={{
+              fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+            }}
+          />
+          {enabled.has('income') && (
+            <Bar
+              dataKey="income"
+              name="Income"
+              stackId="cashflow"
+              fill={COLORS.income}
+              fillOpacity={0.85}
+              radius={[4, 4, 0, 0]}
+              isAnimationActive={false}
+            />
+          )}
+          {enabled.has('expenses') && (
+            <Bar
+              dataKey="expenses"
+              name="Expenses"
+              stackId="cashflow"
+              fill={COLORS.expenses}
+              fillOpacity={0.85}
+              shape={expensesBarShape}
+              isAnimationActive={false}
+            />
+          )}
+          {enabled.has('mortgage') && (
+            <Bar
+              dataKey="mortgage"
+              name="Mortgage"
+              stackId="cashflow"
+              fill={COLORS.mortgage}
+              fillOpacity={0.85}
+              shape={mortgageBarShape}
+              isAnimationActive={false}
+            />
+          )}
+          {enabled.has('net') && (
+            <Line
+              type="monotone"
+              dataKey="net"
+              name="Net"
+              stroke={COLORS.net}
+              strokeWidth={2}
+              dot={{ fill: COLORS.net, r: 3 }}
+              activeDot={{ r: 5 }}
+              isAnimationActive={false}
+            />
+          )}
+          {refAreaLeft && refAreaRight && (
+            <ReferenceArea
+              x1={refAreaLeft}
+              x2={refAreaRight}
+              strokeOpacity={0.3}
+              fill={isDark ? 'rgba(92,124,250,0.15)' : 'rgba(92,124,250,0.1)'}
+            />
+          )}
+          {chartData.length > 6 && (
+            <Brush
+              key={isZoomed ? 'zoomed' : 'full'}
+              dataKey="month"
+              height={20}
+              stroke={isDark ? '#3a3f54' : '#c9cfd9'}
+              fill={isDark ? '#14161f' : '#f8f9fc'}
+              tickFormatter={formatMonthTick}
+            />
+          )}
+        </ComposedChart>
+      </ResponsiveContainer>
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+        {CASHFLOW_SERIES.map((key) => {
+          const color = COLORS[key];
+          const active = enabled.has(key);
+          return (
+            <button
+              key={key}
+              onClick={() => toggle(key)}
+              className="inline-flex items-center gap-1.5 text-xs cursor-pointer"
+              style={{
+                color: active
+                  ? isDark
+                    ? '#eef0f6'
+                    : '#1a1d2e'
+                  : isDark
+                    ? '#5c6180'
+                    : '#9ca0b8',
+              }}
+            >
+              <span
+                className="inline-block w-3 h-3 rounded-sm shrink-0"
+                style={{
+                  backgroundColor: active
+                    ? color
+                    : isDark
+                      ? '#2a2e3f'
+                      : '#e2e6f0',
+                }}
+              />
+              {CASHFLOW_LABELS[key]}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -1009,6 +1199,19 @@ function ExpenseTimelineChart({
     [data.timeline, allCategories, enabled]
   );
 
+  const {
+    visibleData,
+    refAreaLeft,
+    refAreaRight,
+    isZoomed,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    resetZoom,
+  } = useChartZoom(
+    chartData as Array<{ month: string } & Record<string, string | number>>
+  );
+
   if (!data.categories.length) {
     return <EmptyChart message="No expense data" />;
   }
@@ -1021,13 +1224,30 @@ function ExpenseTimelineChart({
     <div>
       {/* Stacked bar chart */}
       <div style={{ overflowX: 'auto' }}>
+        {isZoomed && (
+          <div className="flex justify-end mb-1">
+            <button
+              onClick={resetZoom}
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded transition-colors"
+              style={{
+                color: isDark ? '#8b90a8' : '#6b7194',
+              }}
+            >
+              <RefreshCw className="h-3 w-3" />
+              Reset zoom
+            </button>
+          </div>
+        )}
         <ResponsiveContainer width="100%" height={320}>
           <BarChart
-            data={chartData}
+            data={visibleData}
             margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
             barCategoryGap={
               barCount > 18 ? '8%' : barCount > 12 ? '12%' : '20%'
             }
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
           >
             <CartesianGrid
               strokeDasharray="3 3"
@@ -1067,8 +1287,17 @@ function ExpenseTimelineChart({
                 />
               );
             })}
+            {refAreaLeft && refAreaRight && (
+              <ReferenceArea
+                x1={refAreaLeft}
+                x2={refAreaRight}
+                strokeOpacity={0.3}
+                fill={isDark ? 'rgba(92,124,250,0.15)' : 'rgba(92,124,250,0.1)'}
+              />
+            )}
             {chartData.length > 6 && (
               <Brush
+                key={isZoomed ? 'zoomed' : 'full'}
                 dataKey="month"
                 height={20}
                 stroke={isDark ? '#3a3f54' : '#c9cfd9'}
