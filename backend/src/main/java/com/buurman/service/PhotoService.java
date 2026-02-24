@@ -39,7 +39,6 @@ public class PhotoService {
 
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
-  private final ThumbnailService thumbnailService;
   private final PhotoMapper photoMapper;
   private final AuditService auditService;
   private final MetricsService metricsService;
@@ -49,14 +48,12 @@ public class PhotoService {
   public PhotoService(
       PhotoRepository photoRepository,
       S3StorageService s3StorageService,
-      ThumbnailService thumbnailService,
       PhotoMapper photoMapper,
       AuditService auditService,
       MetricsService metricsService,
       AppProperties appProperties) {
     this.photoRepository = photoRepository;
     this.s3StorageService = s3StorageService;
-    this.thumbnailService = thumbnailService;
     this.photoMapper = photoMapper;
     this.auditService = auditService;
     this.metricsService = metricsService;
@@ -109,20 +106,6 @@ public class PhotoService {
         s3StorageService.uploadFile(
             file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
 
-    // Generate and upload thumbnail
-    @Nullable String thumbnailFileKey = null;
-    try (InputStream thumbInput = file.getInputStream()) {
-      var thumbnailData = thumbnailService.generateThumbnail(thumbInput);
-      if (thumbnailData.isPresent()) {
-        thumbnailFileKey =
-            s3StorageService.uploadFile(
-                thumbnailData.get(), "image/jpeg", S3StorageService.deriveThumbnailKey(fileKey));
-      }
-    } catch (IOException e) {
-      log.warn(
-          "Failed to generate thumbnail for {}: {}", file.getOriginalFilename(), e.getMessage());
-    }
-
     // Save photo metadata
     Photo photo = new Photo();
     photo.setTeamId(principal.requireTeamId());
@@ -137,8 +120,8 @@ public class PhotoService {
     photo.setNotes(Optional.ofNullable(notes));
     photo.setIsMainPhoto(false);
     photo.setUploadedBy(principal.getUserId());
-    photo.setThumbnailFileKey(Optional.ofNullable(thumbnailFileKey));
 
+    // Thumbnail will be generated asynchronously by ThumbnailBackfillJob
     Photo savedPhoto = photoRepository.save(photo);
 
     metricsService.incrementCounter("photo.upload.total", "entity_type", entityType);

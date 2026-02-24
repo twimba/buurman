@@ -116,12 +116,14 @@ public class S3StorageService {
       String entityType,
       String entityIdentifier,
       String filename) {
-    return uploadFile(
-        data, contentType, generateFileKey(teamIdentifier, entityType, entityIdentifier, filename));
+    String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, filename);
+    uploadFile(data, contentType, fileKey);
+
+    return fileKey;
   }
 
   /** Upload raw bytes to S3 using an explicit (pre-computed) file key. */
-  public String uploadFile(byte[] data, String contentType, String fileKey) {
+  public void uploadFile(byte[] data, String contentType, String fileKey) {
     Instant start = clock.instant();
 
     PutObjectRequest putObjectRequest =
@@ -140,7 +142,6 @@ public class S3StorageService {
         "s3.operation.total", "operation", "upload", "result", "success");
 
     log.info("File uploaded to S3: {}", fileKey);
-    return fileKey;
   }
 
   /**

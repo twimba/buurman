@@ -18,6 +18,7 @@ import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.PaymentReminderCheckJob;
+import com.buurman.job.ThumbnailBackfillJob;
 import com.buurman.job.VerificationCodeCleanupJob;
 
 @Configuration
@@ -147,6 +148,27 @@ public class QuartzJobsConfig {
         .forJob(demoDataRegenerationJobDetail)
         .withIdentity("demoDataRegenerationTrigger", "demo")
         .withSchedule(CronScheduleBuilder.cronSchedule(demoDataProperties.cron()))
+        .build();
+  }
+
+  // ── Thumbnail Backfill ──────────────────────────────────────────────────
+
+  @Bean
+  public JobDetail thumbnailBackfillJobDetail() {
+    return JobBuilder.newJob(ThumbnailBackfillJob.class)
+        .withIdentity("thumbnailBackfillJob", "media")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger thumbnailBackfillTrigger(
+      JobDetail thumbnailBackfillJobDetail,
+      @Value("${scheduling.thumbnail-backfill.cron}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(thumbnailBackfillJobDetail)
+        .withIdentity("thumbnailBackfillTrigger", "media")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }
 

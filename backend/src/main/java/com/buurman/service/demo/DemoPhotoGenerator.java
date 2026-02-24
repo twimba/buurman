@@ -1,6 +1,5 @@
 package com.buurman.service.demo;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.buurman.domain.Photo;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.service.S3StorageService;
-import com.buurman.service.ThumbnailService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,19 +42,14 @@ public class DemoPhotoGenerator {
 
   private final PhotoRepository photoRepository;
   private final S3StorageService s3StorageService;
-  private final ThumbnailService thumbnailService;
   private final Random random = new Random(42);
 
   /** Photo pool loaded once from classpath, keyed by room category. */
   private final Map<String, List<byte[]>> photoPool;
 
-  public DemoPhotoGenerator(
-      PhotoRepository photoRepository,
-      S3StorageService s3StorageService,
-      ThumbnailService thumbnailService) {
+  public DemoPhotoGenerator(PhotoRepository photoRepository, S3StorageService s3StorageService) {
     this.photoRepository = photoRepository;
     this.s3StorageService = s3StorageService;
-    this.thumbnailService = thumbnailService;
     this.photoPool = loadPhotoPool();
   }
 
@@ -153,21 +146,12 @@ public class DemoPhotoGenerator {
             s3StorageService.uploadFile(
                 imageData, "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier, fileName);
 
-        // Generate thumbnail
-        String thumbnailFileKey = null;
-        var thumbData = thumbnailService.generateThumbnail(new ByteArrayInputStream(imageData));
-        if (thumbData.isPresent()) {
-          thumbnailFileKey =
-              s3StorageService.uploadFile(
-                  thumbData.get(), "image/jpeg", S3StorageService.deriveThumbnailKey(fileKey));
-        }
-
         Photo photo = new Photo();
         photo.setTeamId(teamId);
         photo.setEntityType("PROPERTY");
         photo.setEntityId(propertyId);
         photo.setFileKey(fileKey);
-        photo.setThumbnailFileKey(Optional.ofNullable(thumbnailFileKey));
+
         photo.setFileName(fileName);
         photo.setFileSize((long) imageData.length);
         photo.setMimeType("image/jpeg");
@@ -175,6 +159,7 @@ public class DemoPhotoGenerator {
         photo.setIsMainPhoto(slot.isMain);
         photo.setUploadedBy(uploadedBy);
 
+        // Thumbnail will be generated asynchronously by ThumbnailBackfillJob
         photoRepository.save(photo);
         count++;
       } catch (Exception e) {

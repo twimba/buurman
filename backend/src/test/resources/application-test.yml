@@ -84,6 +84,8 @@ scheduling:
     payment-reminder-cron: "0 0 0 * * ?"
   metrics:
     metrics-push-cron: "0 */15 * * * ?"
+  thumbnail-backfill:
+    cron: "0 */5 * * * ?"
 
 buurman:
   demo:

@@ -1,5 +1,7 @@
 package com.buurman.job;
 
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
@@ -44,11 +46,9 @@ public class ThumbnailBackfillJob implements Job {
       try (InputStream is = s3StorageService.downloadFile(photo.getFileKey())) {
         var thumbData = thumbnailService.generateThumbnail(is);
         if (thumbData.isPresent()) {
-          String thumbnailFileKey =
-              s3StorageService.uploadFile(
-                  thumbData.get(),
-                  "image/jpeg",
-                  S3StorageService.deriveThumbnailKey(photo.getFileKey()));
+          String thumbnailFileKey = S3StorageService.deriveThumbnailKey(photo.getFileKey());
+
+          s3StorageService.uploadFile(thumbData.get(), IMAGE_JPEG_VALUE, thumbnailFileKey);
 
           photo.setThumbnailFileKey(Optional.of(thumbnailFileKey));
           photoRepository.save(photo);
