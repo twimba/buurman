@@ -845,7 +845,7 @@ public class ContractService {
         contract.getTermsAndConditions(),
         contract.getNotes(),
         contract.getCreatedAt(),
-        Optional.ofNullable(contract.getUpdatedAt()));
+        Optional.of(contract.getUpdatedAt()));
   }
 
   /** Batch build responses for a list of contracts (avoids N+1 for parties and tenants). */
@@ -929,7 +929,7 @@ public class ContractService {
                   contract.getTermsAndConditions(),
                   contract.getNotes(),
                   contract.getCreatedAt(),
-                  Optional.ofNullable(contract.getUpdatedAt()));
+                  Optional.of(contract.getUpdatedAt()));
             })
         .toList();
   }

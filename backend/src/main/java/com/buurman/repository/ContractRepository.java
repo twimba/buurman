@@ -329,7 +329,10 @@ public class ContractRepository {
         sortableFields,
         CONTRACTS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map contract record")));
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {

@@ -90,6 +90,10 @@ public class NotificationRepository {
     return notification;
   }
 
+  /**
+   * Find notification by identifier. When teamId is null, searches across all teams (admin/system
+   * use only). For tenant-scoped lookups, always pass a non-null teamId.
+   */
   public Optional<Notification> findByIdentifierAndTeamId(
       String identifier, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);
@@ -104,6 +108,7 @@ public class NotificationRepository {
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
 
+  /** See {@link #findByIdentifierAndTeamId} — same null-teamId semantics. */
   public Optional<Notification> findByIdAndTeamId(UUID id, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.ID.eq(id);
     if (teamId != null) {
@@ -166,7 +171,10 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
   public void updateStatus(
@@ -300,7 +308,10 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
   public Optional<Notification> findByIdentifierUnscoped(String identifier) {

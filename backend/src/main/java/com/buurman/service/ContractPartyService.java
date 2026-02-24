@@ -343,17 +343,12 @@ public class ContractPartyService {
     Map<UUID, Tenant> tenantMap = tenants.stream().collect(Collectors.toMap(Tenant::getId, t -> t));
 
     return parties.stream()
-        .flatMap(
-            party ->
-                party
-                    .getTenantId()
-                    .map(tenantMap::get)
-                    .map(
-                        tenant -> {
-                          TenantSummary summary = tenantMapper.toSummary(tenant);
-                          return contractPartyMapper.toResponse(party, summary);
-                        })
-                    .stream())
+        .map(
+            party -> {
+              TenantSummary summary =
+                  party.getTenantId().map(tenantMap::get).map(tenantMapper::toSummary).orElse(null);
+              return contractPartyMapper.toResponse(party, summary);
+            })
         .toList();
   }
 

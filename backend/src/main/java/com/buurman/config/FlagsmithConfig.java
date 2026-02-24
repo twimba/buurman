@@ -98,12 +98,24 @@ public class FlagsmithConfig {
 
       String token;
       if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
-        token = properties.apiToken().orElseThrow();
+        token =
+            properties
+                .apiToken()
+                .orElseThrow(
+                    () -> new IllegalStateException("API token verified present but missing"));
       } else {
         // Null-safety: these are guaranteed present here because resolveAdminTokenForDiscovery()
         // already verified that both are present (non-blank) before reaching this code path
-        String adminEmail = properties.adminEmail().orElseThrow();
-        String adminPassword = properties.adminPassword().orElseThrow();
+        String adminEmail =
+            properties
+                .adminEmail()
+                .orElseThrow(
+                    () -> new IllegalStateException("Admin email verified present but missing"));
+        String adminPassword =
+            properties
+                .adminPassword()
+                .orElseThrow(
+                    () -> new IllegalStateException("Admin password verified present but missing"));
         token = api.login(adminEmail, adminPassword);
       }
 
@@ -124,7 +136,9 @@ public class FlagsmithConfig {
 
   private @Nullable String resolveAdminTokenForDiscovery() {
     if (properties.apiToken().filter(s -> !s.isBlank()).isPresent()) {
-      return properties.apiToken().orElseThrow();
+      return properties
+          .apiToken()
+          .orElseThrow(() -> new IllegalStateException("API token verified present but missing"));
     }
 
     if (properties.adminEmail().filter(s -> !s.isBlank()).isPresent()

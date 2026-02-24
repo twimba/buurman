@@ -53,7 +53,13 @@ public class TwilioSmsSender implements NotificationChannelSender {
       Optional<String> sid = messagingServiceSid.filter(s -> !s.isBlank());
       if (sid.isPresent()) {
         creator =
-            Message.creator(new PhoneNumber(recipientPhone), sid.orElseThrow(), request.body());
+            Message.creator(
+                new PhoneNumber(recipientPhone),
+                sid.orElseThrow(
+                    () ->
+                        new IllegalStateException(
+                            "Twilio messaging service SID verified present but missing")),
+                request.body());
       } else {
         creator =
             Message.creator(

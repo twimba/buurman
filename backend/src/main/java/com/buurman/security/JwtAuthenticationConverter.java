@@ -46,8 +46,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
     String keycloakId = jwt.getSubject();
-    String email = jwt.getClaimAsString("email");
-    String name = jwt.getClaimAsString("name");
+    String email = Objects.toString(jwt.getClaimAsString("email"), "");
+    String name = Objects.toString(jwt.getClaimAsString("name"), "");
 
     // Find or create user
     User user =
@@ -72,10 +72,12 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     String userIdentifier = Objects.requireNonNull(user.getIdentifier(), "User identifier is null");
 
-    if (membershipOpt.isPresent()) {
+    // Resolve team for active membership (team may have been deleted after token was issued)
+    Optional<Team> teamOpt = membershipOpt.flatMap(m -> teamRepository.findById(m.getTeamId()));
+
+    if (membershipOpt.isPresent() && teamOpt.isPresent()) {
       TeamMember membership = membershipOpt.get();
-      String teamIdentifier =
-          teamRepository.findById(membership.getTeamId()).map(Team::getIdentifier).orElseThrow();
+      String teamIdentifier = teamOpt.get().getIdentifier();
       principal =
           new UserPrincipal(
               user.getId(),

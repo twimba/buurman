@@ -27,9 +27,7 @@ public interface TeamInvitationRecordMapper {
   @Mapping(
       target = "resentAt",
       expression = "java(java.util.Optional.ofNullable(toInstant(record.getResentAt())))")
-  @Mapping(
-      target = "role",
-      expression = "java(com.buurman.domain.TeamRole.valueOf(record.getRole()))")
+  @Mapping(target = "role", expression = "java(parseRole(record.getRole()))")
   TeamInvitation toDomain(TeamInvitationsRecord record);
 
   @Mapping(target = "expiresAt", expression = "java(toLocalDateTime(invitation.getExpiresAt()))")
@@ -48,6 +46,14 @@ public interface TeamInvitationRecordMapper {
   TeamInvitationsRecord toRecord(TeamInvitation invitation);
 
   List<TeamInvitation> toDomainList(List<TeamInvitationsRecord> records);
+
+  default com.buurman.domain.TeamRole parseRole(String role) {
+    try {
+      return com.buurman.domain.TeamRole.valueOf(role);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalStateException("Unknown team role: " + role, e);
+    }
+  }
 
   default @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {
     return localDateTime == null ? null : localDateTime.toInstant(UTC);

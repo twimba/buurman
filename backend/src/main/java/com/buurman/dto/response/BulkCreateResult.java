@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record BulkCreateResult<T>(int index, Optional<T> result, Optional<String> error) {
 
   public boolean isSuccess() {

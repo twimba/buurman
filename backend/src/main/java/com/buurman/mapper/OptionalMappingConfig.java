@@ -76,6 +76,14 @@ public class OptionalMappingConfig {
     return value.orElse(null);
   }
 
+  public @Nullable Long unwrapLong(Optional<Long> value) {
+    return value.orElse(null);
+  }
+
+  public @Nullable Instant unwrapInstant(Optional<Instant> value) {
+    return value.orElse(null);
+  }
+
   public <T> @Nullable T unwrapObject(Optional<T> value) {
     return value.orElse(null);
   }

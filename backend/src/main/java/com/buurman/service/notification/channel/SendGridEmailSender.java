@@ -158,6 +158,12 @@ public class SendGridEmailSender implements NotificationChannelSender {
       return defaultValue;
     }
     Object val = variables.get(key);
-    return val != null ? val.toString() : defaultValue;
+    if (val == null) {
+      return defaultValue;
+    }
+    if (val instanceof Optional<?> opt) {
+      return opt.map(Object::toString).orElse(defaultValue);
+    }
+    return val.toString();
   }
 }

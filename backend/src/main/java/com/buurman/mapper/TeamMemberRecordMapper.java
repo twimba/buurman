@@ -19,9 +19,7 @@ public interface TeamMemberRecordMapper {
   @Mapping(target = "invitedAt", expression = "java(toInstant(record.getInvitedAt()))")
   @Mapping(target = "joinedAt", expression = "java(toInstant(record.getJoinedAt()))")
   @Mapping(target = "isOwner", source = "isOwner")
-  @Mapping(
-      target = "role",
-      expression = "java(com.buurman.domain.TeamRole.valueOf(record.getRole()))")
+  @Mapping(target = "role", expression = "java(parseRole(record.getRole()))")
   TeamMember toDomain(TeamMembersRecord record);
 
   @Mapping(target = "invitedAt", expression = "java(toLocalDateTime(teamMember.getInvitedAt()))")
@@ -32,6 +30,14 @@ public interface TeamMemberRecordMapper {
   TeamMembersRecord toRecord(TeamMember teamMember);
 
   List<TeamMember> toDomainList(List<TeamMembersRecord> records);
+
+  default com.buurman.domain.TeamRole parseRole(String role) {
+    try {
+      return com.buurman.domain.TeamRole.valueOf(role);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalStateException("Unknown team role: " + role, e);
+    }
+  }
 
   default @Nullable Instant toInstant(@Nullable LocalDateTime localDateTime) {
     return localDateTime == null ? null : localDateTime.toInstant(UTC);

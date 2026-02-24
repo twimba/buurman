@@ -32,7 +32,7 @@ public class BackofficePrincipal implements Principal {
   }
 
   @Override
-  public @Nullable String getName() {
-    return name.orElse(null);
+  public String getName() {
+    return name.orElse(keycloakId);
   }
 }

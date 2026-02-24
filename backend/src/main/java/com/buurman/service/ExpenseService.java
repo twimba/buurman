@@ -358,7 +358,7 @@ public class ExpenseService {
     String propertyName = formatPropertyName(response.property());
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId().orElse(null))
+            .teamId(principal.requireTeamId())
             .notificationType(NotificationType.EXPENSE_CREATED)
             .templateName("expense-created")
             .templateVariables(
@@ -397,7 +397,7 @@ public class ExpenseService {
 
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.getTeamId().orElse(null))
+            .teamId(principal.requireTeamId())
             .notificationType(NotificationType.EXPENSE_CREATED)
             .templateName("expenses-bulk-created")
             .templateVariables(vars)

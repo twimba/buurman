@@ -148,7 +148,12 @@ public class PropertyService {
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
     Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
     if (monthlyMortgagePayment.isEmpty()
-        || VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment.orElseThrow()) != 0) {
+        || VARIABLE_PAYMENT_SENTINEL.compareTo(
+                monthlyMortgagePayment.orElseThrow(
+                    () ->
+                        new IllegalStateException(
+                            "Monthly mortgage payment verified present but missing")))
+            != 0) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -268,8 +273,7 @@ public class PropertyService {
     validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
     validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
     Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
-    if (monthlyMortgagePayment.isEmpty()
-        || VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment.orElse(null)) != 0) {
+    if (monthlyMortgagePayment.filter(v -> VARIABLE_PAYMENT_SENTINEL.compareTo(v) == 0).isEmpty()) {
       validateCurrencyRequired(
           request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
@@ -422,9 +426,14 @@ public class PropertyService {
   @SafeVarargs
   private void validateCurrencyRequired(
       Optional<String> currency, Optional<BigDecimal>... monetaryFields) {
-    if (currency.isPresent() && !currency.orElseThrow().isBlank()) {
+    if (currency.isPresent()
+        && !currency
+            .orElseThrow(() -> new IllegalStateException("Currency verified present but missing"))
+            .isBlank()) {
       try {
-        Currency.getInstance(currency.orElseThrow());
+        Currency.getInstance(
+            currency.orElseThrow(
+                () -> new IllegalStateException("Currency verified present but missing")));
       } catch (IllegalArgumentException e) {
         throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
       }

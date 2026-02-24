@@ -351,11 +351,11 @@ public class ContractPaymentInstructionService {
           template.getRoutingNumber(),
           template.getPaymentReference(),
           template.getAdditionalDetails(),
-          Optional.ofNullable(cpi.getEffectiveFrom()),
+          Optional.of(cpi.getEffectiveFrom()),
           cpi.getEffectiveTo(),
           cpi.getNotes(),
           cpi.getCreatedAt(),
-          Optional.ofNullable(cpi.getUpdatedAt()));
+          Optional.of(cpi.getUpdatedAt()));
     }
 
     // Custom or template not found
@@ -374,10 +374,10 @@ public class ContractPaymentInstructionService {
         cpi.getCustomRoutingNumber(),
         cpi.getCustomPaymentReference(),
         cpi.getCustomAdditionalDetails(),
-        Optional.ofNullable(cpi.getEffectiveFrom()),
+        Optional.of(cpi.getEffectiveFrom()),
         cpi.getEffectiveTo(),
         cpi.getNotes(),
         cpi.getCreatedAt(),
-        Optional.ofNullable(cpi.getUpdatedAt()));
+        Optional.of(cpi.getUpdatedAt()));
   }
 }

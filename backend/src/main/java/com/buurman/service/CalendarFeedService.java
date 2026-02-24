@@ -324,10 +324,17 @@ public class CalendarFeedService {
     return switch (feed.getFeedType()) {
       case ALL_PAYMENTS -> paymentRepository.findAllByTeamId(teamId);
       case CONTRACT ->
-          paymentRepository.findByContractId(feed.getContractId().orElseThrow(), teamId);
+          paymentRepository.findByContractId(
+              feed.getContractId()
+                  .orElseThrow(() -> new IllegalStateException("CONTRACT feed missing contractId")),
+              teamId);
       case PROPERTY_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByPropertyId(feed.getPropertyId().orElseThrow(), teamId);
+            contractRepository.findByPropertyId(
+                feed.getPropertyId()
+                    .orElseThrow(
+                        () -> new IllegalStateException("PROPERTY feed missing propertyId")),
+                teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -336,7 +343,10 @@ public class CalendarFeedService {
       }
       case TENANT_PAYMENTS -> {
         List<Contract> contracts =
-            contractRepository.findByTenantIdViaParties(feed.getTenantId().orElseThrow(), teamId);
+            contractRepository.findByTenantIdViaParties(
+                feed.getTenantId()
+                    .orElseThrow(() -> new IllegalStateException("TENANT feed missing tenantId")),
+                teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
           result.addAll(paymentRepository.findByContractId(c.getId(), teamId));
@@ -355,7 +365,9 @@ public class CalendarFeedService {
       case ALL_PAYMENTS -> "Buurman - All Payment Due Dates";
       case CONTRACT -> "Buurman - Contract Calendar";
       case PROPERTY_PAYMENTS -> {
-        UUID pId = feed.getPropertyId().orElseThrow();
+        UUID pId =
+            feed.getPropertyId()
+                .orElseThrow(() -> new IllegalStateException("PROPERTY feed missing propertyId"));
         Property p =
             propertyMap.values().stream()
                 .filter(prop -> prop.getId().equals(pId))
@@ -368,7 +380,9 @@ public class CalendarFeedService {
         yield "Buurman - " + name + " Payments";
       }
       case TENANT_PAYMENTS -> {
-        UUID tId = feed.getTenantId().orElseThrow();
+        UUID tId =
+            feed.getTenantId()
+                .orElseThrow(() -> new IllegalStateException("TENANT feed missing tenantId"));
         Tenant tenant =
             tenantMap.values().stream()
                 .filter(tn -> tn.getId().equals(tId))

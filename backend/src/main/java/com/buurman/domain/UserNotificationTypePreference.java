@@ -1,7 +1,6 @@
 package com.buurman.domain;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -16,11 +15,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserNotificationTypePreference {
 
-  @Builder.Default private Optional<UUID> id = Optional.empty();
+  private UUID id;
   private UUID userId;
   private NotificationType notificationType;
   @Builder.Default private boolean emailEnabled = true;
   @Builder.Default private boolean smsEnabled = false;
-  @Builder.Default private Optional<Instant> createdAt = Optional.empty();
-  @Builder.Default private Optional<Instant> updatedAt = Optional.empty();
+  private Instant createdAt;
+  private Instant updatedAt;
 }

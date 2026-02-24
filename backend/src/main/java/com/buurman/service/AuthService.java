@@ -102,7 +102,12 @@ public class AuthService {
       if (registrationCode.isEmpty()) {
         throw new BadRequestException("Invitation code is required");
       }
-      if (!registrationInvitationService.validateCode(registrationCode.orElseThrow()).valid()) {
+      if (!registrationInvitationService
+          .validateCode(
+              registrationCode.orElseThrow(
+                  () ->
+                      new IllegalStateException("Registration code is empty after isEmpty check")))
+          .valid()) {
         throw new BadRequestException("Invalid or expired invitation code");
       }
     }

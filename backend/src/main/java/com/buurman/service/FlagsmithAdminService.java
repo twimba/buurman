@@ -101,7 +101,10 @@ public class FlagsmithAdminService {
     Map<Long, String> featureNames = loadFeatureNames();
     JsonNode resp =
         get(
-            "/environments/" + environmentClientKey.orElseThrow() + "/featurestates/",
+            "/environments/"
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
+                + "/featurestates/",
             adminToken.orElse(null));
     List<FeatureStateInfo> result = new ArrayList<>();
     for (JsonNode fs : asArray(resp)) {
@@ -128,7 +131,8 @@ public class FlagsmithAdminService {
     // PATCH returns a sparse response, so re-fetch the full state afterwards
     patch(
         "/environments/"
-            + environmentClientKey.orElseThrow()
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
             + "/featurestates/"
             + featureStateId
             + "/",
@@ -137,7 +141,8 @@ public class FlagsmithAdminService {
     JsonNode full =
         get(
             "/environments/"
-                + environmentClientKey.orElseThrow()
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/featurestates/"
                 + featureStateId
                 + "/",
@@ -168,7 +173,10 @@ public class FlagsmithAdminService {
     ObjectNode body = mapper.createObjectNode();
     body.put("id", featureStateId);
     body.put("feature", currentFs.get("feature").get("id").asLong());
-    body.put("environment", environmentId.orElseThrow());
+    body.put(
+        "environment",
+        environmentId.orElseThrow(
+            () -> new IllegalStateException("Flagsmith environment ID not discovered")));
     body.put("enabled", enabled != null ? enabled : currentFs.get("enabled").asBoolean());
 
     // Resolve feature_segment link ID
@@ -288,7 +296,12 @@ public class FlagsmithAdminService {
   /** Loads feature ID → name mapping from the project features endpoint. */
   private Map<Long, String> loadFeatureNames() {
     JsonNode resp =
-        get("/projects/" + projectId.orElseThrow() + "/features/", adminToken.orElse(null));
+        get(
+            "/projects/"
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered"))
+                + "/features/",
+            adminToken.orElse(null));
     Map<Long, String> names = new HashMap<>();
     for (JsonNode f : asArray(resp)) {
       String name = text(f, "name");
@@ -310,7 +323,8 @@ public class FlagsmithAdminService {
     JsonNode resp =
         get(
             "/environments/"
-                + environmentClientKey.orElseThrow()
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/?identifier="
                 + encode(identityString),
             adminToken.orElse(null));
@@ -328,7 +342,8 @@ public class FlagsmithAdminService {
     JsonNode resp =
         get(
             "/environments/"
-                + environmentClientKey.orElseThrow()
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/",
@@ -354,7 +369,8 @@ public class FlagsmithAdminService {
     JsonNode resp =
         post(
             "/environments/"
-                + environmentClientKey.orElseThrow()
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/",
@@ -376,7 +392,8 @@ public class FlagsmithAdminService {
     JsonNode resp =
         patch(
             "/environments/"
-                + environmentClientKey.orElseThrow()
+                + environmentClientKey.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment key not discovered"))
                 + "/identities/"
                 + identityId
                 + "/featurestates/"
@@ -391,7 +408,8 @@ public class FlagsmithAdminService {
     ensureDiscovered();
     delete(
         "/environments/"
-            + environmentClientKey.orElseThrow()
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
             + "/identities/"
             + identityId
             + "/featurestates/"
@@ -406,7 +424,12 @@ public class FlagsmithAdminService {
   public List<SegmentInfo> listSegments() {
     ensureDiscovered();
     JsonNode resp =
-        get("/projects/" + projectId.orElseThrow() + "/segments/", adminToken.orElse(null));
+        get(
+            "/projects/"
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered"))
+                + "/segments/",
+            adminToken.orElse(null));
     List<SegmentInfo> result = new ArrayList<>();
     for (JsonNode s : asArray(resp)) {
       result.add(new SegmentInfo(s.get("id").asLong(), text(s, "name"), text(s, "description")));
@@ -482,7 +505,10 @@ public class FlagsmithAdminService {
     ObjectNode body = mapper.createObjectNode();
     body.put("feature", featureId);
     body.put("segment", segmentId);
-    body.put("environment", environmentId.orElseThrow());
+    body.put(
+        "environment",
+        environmentId.orElseThrow(
+            () -> new IllegalStateException("Flagsmith environment ID not discovered")));
     JsonNode resp = post("/features/feature-segments/", body, adminToken.orElse(null));
     resp.get("id").asLong();
   }
@@ -495,7 +521,8 @@ public class FlagsmithAdminService {
             "/features/feature-segments/?feature="
                 + featureId
                 + "&environment="
-                + environmentId.orElseThrow(),
+                + environmentId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith environment ID not discovered")),
             adminToken.orElse(null));
     for (JsonNode fs : asArray(resp)) {
       if (fs.get("segment").asLong() == segmentId) {
@@ -559,7 +586,10 @@ public class FlagsmithAdminService {
       var req =
           HttpRequest.newBuilder()
               .uri(URI.create(baseUrl + "/environment-document/"))
-              .header("X-Environment-Key", serverSideKey.orElseThrow())
+              .header(
+                  "X-Environment-Key",
+                  serverSideKey.orElseThrow(
+                      () -> new IllegalStateException("Flagsmith server-side key not available")))
               .GET()
               .timeout(REQUEST_TIMEOUT)
               .build();
@@ -616,8 +646,19 @@ public class FlagsmithAdminService {
     ObjectNode body =
         mapper
             .createObjectNode()
-            .put("email", properties.adminEmail().orElseThrow())
-            .put("password", properties.adminPassword().orElseThrow());
+            .put(
+                "email",
+                properties
+                    .adminEmail()
+                    .orElseThrow(
+                        () -> new IllegalStateException("Flagsmith admin email not configured")))
+            .put(
+                "password",
+                properties
+                    .adminPassword()
+                    .orElseThrow(
+                        () ->
+                            new IllegalStateException("Flagsmith admin password not configured")));
     JsonNode resp = post("/auth/login/", body, null);
     if (!resp.has("key")) {
       throw new ExternalServiceException("Flagsmith admin login failed");
@@ -659,7 +700,11 @@ public class FlagsmithAdminService {
 
     // Find environment client key and ID
     JsonNode envs =
-        get("/environments/?project=" + projectId.orElseThrow(), adminToken.orElse(null));
+        get(
+            "/environments/?project="
+                + projectId.orElseThrow(
+                    () -> new IllegalStateException("Flagsmith project ID not discovered")),
+            adminToken.orElse(null));
     for (JsonNode env : asArray(envs)) {
       if (properties.environmentName().equals(text(env, "name"))) {
         this.environmentClientKey = Optional.of(env.get("api_key").asText());
@@ -673,7 +718,11 @@ public class FlagsmithAdminService {
     }
 
     // Find or create server-side key (needed for environment-document endpoint)
-    String apiKeysPath = "/environments/" + environmentClientKey.orElseThrow() + "/api-keys/";
+    String apiKeysPath =
+        "/environments/"
+            + environmentClientKey.orElseThrow(
+                () -> new IllegalStateException("Flagsmith environment key not discovered"))
+            + "/api-keys/";
     JsonNode keys = get(apiKeysPath, adminToken.orElse(null));
     for (JsonNode k : asArray(keys)) {
       if (SERVER_KEY_NAME.equals(text(k, "name"))) {

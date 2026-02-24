@@ -89,7 +89,8 @@ public class PhoneVerificationService {
       throw new VerificationCodeException("Phone is already verified");
     }
 
-    String phone = user.getPhone().orElseThrow();
+    String phone =
+        user.getPhone().orElseThrow(() -> new IllegalStateException("User has no phone number"));
     PhoneVerificationCode validCode =
         verificationCodeRepository
             .findValidCode(userId, code, phone)
@@ -141,7 +142,8 @@ public class PhoneVerificationService {
 
     PhoneVerificationCode verificationCode = new PhoneVerificationCode();
     verificationCode.setUserId(user.getId());
-    verificationCode.setPhone(user.getPhone().orElseThrow());
+    verificationCode.setPhone(
+        user.getPhone().orElseThrow(() -> new IllegalStateException("User has no phone number")));
     verificationCode.setCode(code);
     verificationCode.setExpiresAt(clock.instant().plus(expiryMinutes, MINUTES));
     verificationCodeRepository.save(verificationCode);

@@ -225,7 +225,10 @@ public class ExpenseRepository {
         sortableFields,
         EXPENSES.EXPENSE_DATE,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map expense record")));
   }
 
   public Optional<AmountStats> getTotalStats(UUID teamId) {

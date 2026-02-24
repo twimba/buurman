@@ -164,7 +164,13 @@ public class FeatureFlagService {
 
   private String buildIdentity(UserPrincipal principal) {
     return buildIdentity(
-        principal.getTeamIdentifier().orElseThrow(), principal.getUserIdentifier());
+        principal
+            .getTeamIdentifier()
+            .orElseThrow(
+                () ->
+                    new IllegalStateException(
+                        "Team identifier required for feature flag evaluation")),
+        principal.getUserIdentifier());
   }
 
   public static String buildIdentity(String teamIdentifier, String userIdentifier) {

@@ -513,7 +513,10 @@ public class TenantService {
       return;
     }
 
-    UUID propertyId = tenant.getCurrentPropertyId().orElseThrow();
+    UUID propertyId =
+        tenant
+            .getCurrentPropertyId()
+            .orElseThrow(() -> new IllegalStateException("Tenant missing currentPropertyId"));
 
     tenant.setCurrentPropertyId(Optional.empty());
     tenant.setUpdatedBy(principal.getUserId());

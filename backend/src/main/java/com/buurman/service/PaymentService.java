@@ -27,8 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -44,6 +42,8 @@ import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
+import com.buurman.domain.Property;
+import com.buurman.domain.Tenant;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;

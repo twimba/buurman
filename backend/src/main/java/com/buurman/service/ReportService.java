@@ -134,7 +134,11 @@ public class ReportService {
             .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
+                    p ->
+                        getPropertyIdFromContract(p.getContractId(), contractsById)
+                            .orElseThrow(
+                                () ->
+                                    new IllegalStateException("Property ID missing after filter")),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     // Calculate total expenses
@@ -412,7 +416,11 @@ public class ReportService {
             .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
+                    p ->
+                        getPropertyIdFromContract(p.getContractId(), contractsById)
+                            .orElseThrow(
+                                () ->
+                                    new IllegalStateException("Property ID missing after filter")),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
@@ -584,7 +592,11 @@ public class ReportService {
             .filter(p -> getPropertyIdFromContract(p.getContractId(), contractsById).isPresent())
             .collect(
                 groupingBy(
-                    p -> getPropertyIdFromContract(p.getContractId(), contractsById).orElseThrow(),
+                    p ->
+                        getPropertyIdFromContract(p.getContractId(), contractsById)
+                            .orElseThrow(
+                                () ->
+                                    new IllegalStateException("Property ID missing after filter")),
                     reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =

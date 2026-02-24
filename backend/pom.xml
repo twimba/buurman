@@ -111,6 +111,17 @@
             <artifactId>jooq-codegen</artifactId>
             <version>${jooq.version}</version>
         </dependency>
+
+        <!-- Jackson (transitive via spring-boot-starter-web, declared explicitly for safety) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>

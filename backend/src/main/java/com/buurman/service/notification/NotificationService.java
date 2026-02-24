@@ -169,6 +169,7 @@ public class NotificationService {
                         .templateVariables(request.templateVariables())
                         .createdBy(request.createdBy())
                         .build();
+                send(perUser);
               });
     }
   }

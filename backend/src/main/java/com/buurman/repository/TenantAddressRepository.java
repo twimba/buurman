@@ -12,9 +12,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.TenantAddress.AddressStatus;
+import com.buurman.domain.TenantAddress.AddressType;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -93,14 +96,18 @@ public class TenantAddressRepository {
 
   public List<TenantAddress> findByTenantId(UUID tenantId, UUID teamId) {
     return List.copyOf(
-        dsl.selectFrom(TENANT_ADDRESSES)
+        dsl
+            .selectFrom(TENANT_ADDRESSES)
             .where(
                 TENANT_ADDRESSES
                     .TENANT_ID
                     .eq(tenantId)
                     .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
                     .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
-            .fetchInto(TenantAddress.class));
+            .fetch()
+            .stream()
+            .map(this::toDomain)
+            .toList());
   }
 
   public Optional<TenantAddress> findByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -111,7 +118,8 @@ public class TenantAddressRepository {
                 .eq(identifier)
                 .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
                 .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
-        .fetchOptionalInto(TenantAddress.class);
+        .fetchOptional()
+        .map(this::toDomain);
   }
 
   public Optional<TenantAddress> findByIdAndTeamId(UUID id, UUID teamId) {
@@ -122,7 +130,8 @@ public class TenantAddressRepository {
                 .eq(id)
                 .and(TENANT_ADDRESSES.TEAM_ID.eq(teamId))
                 .and(TENANT_ADDRESSES.DELETED_AT.isNull()))
-        .fetchOptionalInto(TenantAddress.class);
+        .fetchOptional()
+        .map(this::toDomain);
   }
 
   public TenantAddress getByIdentifierAndTeamId(String identifier, UUID teamId) {
@@ -141,5 +150,33 @@ public class TenantAddressRepository {
         .set(TENANT_ADDRESSES.DELETED_AT, now)
         .where(TENANT_ADDRESSES.ID.eq(id).and(TENANT_ADDRESSES.TEAM_ID.eq(teamId)))
         .execute();
+  }
+
+  private TenantAddress toDomain(Record record) {
+    return TenantAddress.builder()
+        .id(record.get(TENANT_ADDRESSES.ID))
+        .identifier(record.get(TENANT_ADDRESSES.IDENTIFIER))
+        .tenantId(record.get(TENANT_ADDRESSES.TENANT_ID))
+        .teamId(record.get(TENANT_ADDRESSES.TEAM_ID))
+        .street(record.get(TENANT_ADDRESSES.STREET))
+        .city(record.get(TENANT_ADDRESSES.CITY))
+        .postalCode(record.get(TENANT_ADDRESSES.POSTAL_CODE))
+        .country(record.get(TENANT_ADDRESSES.COUNTRY))
+        .addressType(AddressType.valueOf(record.get(TENANT_ADDRESSES.ADDRESS_TYPE)))
+        .status(AddressStatus.valueOf(record.get(TENANT_ADDRESSES.STATUS)))
+        .latitude(
+            Optional.ofNullable(record.get(TENANT_ADDRESSES.LATITUDE)).map(BigDecimal::doubleValue))
+        .longitude(
+            Optional.ofNullable(record.get(TENANT_ADDRESSES.LONGITUDE))
+                .map(BigDecimal::doubleValue))
+        .geocodeAccuracy(Optional.ofNullable(record.get(TENANT_ADDRESSES.GEOCODE_ACCURACY)))
+        .createdAt(record.get(TENANT_ADDRESSES.CREATED_AT).toInstant(UTC))
+        .updatedAt(record.get(TENANT_ADDRESSES.UPDATED_AT).toInstant(UTC))
+        .createdBy(record.get(TENANT_ADDRESSES.CREATED_BY))
+        .updatedBy(record.get(TENANT_ADDRESSES.UPDATED_BY))
+        .deletedAt(
+            Optional.ofNullable(record.get(TENANT_ADDRESSES.DELETED_AT))
+                .map(ldt -> ldt.toInstant(UTC)))
+        .build();
   }
 }

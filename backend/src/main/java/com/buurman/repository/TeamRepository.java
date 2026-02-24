@@ -120,7 +120,10 @@ public class TeamRepository {
         sortableFields,
         TEAMS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map team record")));
   }
 
   /** Find by identifier including soft-deleted teams. For backoffice use. */

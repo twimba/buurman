@@ -67,15 +67,15 @@ public class ContractRentPeriodService {
     validateNoConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
 
     // Close the previous period
-    BigDecimal previousRentAmount = null;
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(
             contract.getId(), teamId, request.effectiveFrom().plusDays(1));
-    if (previousPeriod.isPresent()) {
-      previousRentAmount = previousPeriod.get().getRentAmount();
-      rentPeriodRepository.setEffectiveTo(
-          previousPeriod.get().getId(), teamId, request.effectiveFrom().minusDays(1));
-    }
+    BigDecimal previousRentAmount =
+        previousPeriod.map(ContractRentPeriod::getRentAmount).orElse(null);
+    previousPeriod.ifPresent(
+        prev ->
+            rentPeriodRepository.setEffectiveTo(
+                prev.getId(), teamId, request.effectiveFrom().minusDays(1)));
 
     // Create new period
     ContractRentPeriod period = new ContractRentPeriod();
@@ -307,7 +307,7 @@ public class ContractRentPeriodService {
     if (effectiveFrom.isBefore(contract.getStartDate())) {
       throw new BusinessRuleException("Effective date cannot be before the contract start date");
     }
-    if (contract.getEndDate().isPresent() && effectiveFrom.isAfter(contract.getEndDate().get())) {
+    if (contract.getEndDate().filter(effectiveFrom::isAfter).isPresent()) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
     }
   }
@@ -336,16 +336,18 @@ public class ContractRentPeriodService {
   private void syncContractRentAmount(Contract contract, UUID teamId, UUID userId) {
     var currentPeriod =
         rentPeriodRepository.findCurrentByContractIdAndTeamId(contract.getId(), teamId);
-    if (currentPeriod.isPresent()) {
-      BigDecimal currentRent = currentPeriod.get().getRentAmount();
-      if (contract.getRentAmount().compareTo(currentRent) != 0) {
-        contract.setRentAmount(currentRent);
-        contract.setUpdatedBy(userId);
-        contract.setUpdatedAt(clock.instant());
-        contractRepository.save(contract);
-        log.debug("Synced contract {} rent_amount to {}", contract.getIdentifier(), currentRent);
-      }
-    }
+    currentPeriod.ifPresent(
+        period -> {
+          BigDecimal currentRent = period.getRentAmount();
+          if (contract.getRentAmount().compareTo(currentRent) != 0) {
+            contract.setRentAmount(currentRent);
+            contract.setUpdatedBy(userId);
+            contract.setUpdatedAt(clock.instant());
+            contractRepository.save(contract);
+            log.debug(
+                "Synced contract {} rent_amount to {}", contract.getIdentifier(), currentRent);
+          }
+        });
   }
 
   private void updatePendingPayments(

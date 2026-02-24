@@ -102,7 +102,11 @@ public class WebhookController {
     }
     try {
       EventWebhook eventWebhook = new EventWebhook();
-      ECPublicKey publicKey = eventWebhook.ConvertPublicKeyToECDSA(verificationKey.orElseThrow());
+      ECPublicKey publicKey =
+          eventWebhook.ConvertPublicKeyToECDSA(
+              verificationKey.orElseThrow(
+                  () ->
+                      new IllegalStateException("Verification key verified present but missing")));
       return eventWebhook.VerifySignature(publicKey, payload, signature, timestamp);
     } catch (Exception e) {
       log.error("SendGrid signature verification error: {}", e.getMessage());

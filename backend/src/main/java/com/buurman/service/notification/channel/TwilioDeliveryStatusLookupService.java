@@ -60,7 +60,15 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
 
   private Notification refreshTwilioStatus(Notification notification) {
     try {
-      Message message = Message.fetcher(notification.getProviderMessageId().orElseThrow()).fetch();
+      Message message =
+          Message.fetcher(
+                  notification
+                      .getProviderMessageId()
+                      .orElseThrow(
+                          () ->
+                              new IllegalStateException(
+                                  "Twilio notification missing provider message ID")))
+              .fetch();
 
       NotificationStatus newStatus = mapTwilioStatus(message.getStatus());
       String providerStatus = message.getStatus() != null ? message.getStatus().toString() : null;

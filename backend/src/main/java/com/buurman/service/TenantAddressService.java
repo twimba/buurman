@@ -47,7 +47,12 @@ public class TenantAddressService {
 
     // Check for unique ACTIVE CURRENT address constraint
     if (request.addressType() == AddressType.CURRENT
-        && (request.status().isEmpty() || request.status().orElseThrow() == AddressStatus.ACTIVE)) {
+        && (request.status().isEmpty()
+            || request
+                    .status()
+                    .orElseThrow(
+                        () -> new IllegalStateException("Status is empty after isEmpty check"))
+                == AddressStatus.ACTIVE)) {
       List<TenantAddress> existingAddresses =
           addressRepository.findByTenantId(tenantId, principal.requireTeamId());
       boolean hasActiveCurrent =

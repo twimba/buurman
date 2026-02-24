@@ -328,7 +328,10 @@ public class PaymentRepository {
         sortableFields,
         PAYMENTS.DUE_DATE,
         pageRequest,
-        r -> mapper.toDomain(r).orElseThrow());
+        r ->
+            mapper
+                .toDomain(r)
+                .orElseThrow(() -> new IllegalStateException("Failed to map payment record")));
   }
 
   public Optional<AmountStats> getPendingStats(UUID teamId) {

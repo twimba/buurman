@@ -306,13 +306,11 @@ public class S3StorageService {
   }
 
   private static String extractExtension(String filename) {
-
     int lastDot = filename.lastIndexOf('.');
     if (lastDot >= 0 && lastDot < filename.length() - 1) {
-      return filename
-          .substring(lastDot + 1)
-          .toLowerCase(Locale.ROOT)
-          .replaceAll("[^a-z0-9]", "dat");
+      String ext =
+          filename.substring(lastDot + 1).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+      return ext.isEmpty() ? "dat" : ext;
     }
     return "dat";
   }
