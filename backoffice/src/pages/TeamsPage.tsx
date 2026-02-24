@@ -127,9 +127,16 @@ export const TeamsPage = () => {
                     className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                        {team.teamName}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          {team.teamName}
+                        </span>
+                        {team.demo && (
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+                            Demo
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">

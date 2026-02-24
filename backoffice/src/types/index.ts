@@ -1,6 +1,7 @@
 export interface BackofficeTeam {
   identifier: string;
   teamName: string;
+  demo: boolean;
   memberCount: number;
   ownerEmail: string;
   createdAt: string;
@@ -78,6 +79,7 @@ export interface BackofficeUser {
   disabled: boolean;
   online: boolean;
   teamCount: number;
+  demoTeamCount: number;
   createdAt: string;
   updatedAt: string;
 }

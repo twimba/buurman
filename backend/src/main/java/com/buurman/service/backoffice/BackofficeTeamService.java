@@ -168,6 +168,7 @@ public class BackofficeTeamService {
     return new BackofficeTeamResponse(
         team.getIdentifier(),
         team.getName(),
+        team.isDemo(),
         memberCount,
         Optional.ofNullable(ownerEmail),
         team.getCreatedAt(),

@@ -13,5 +13,6 @@ public record BackofficeUserResponse(
     boolean disabled,
     boolean online,
     long teamCount,
+    long demoTeamCount,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

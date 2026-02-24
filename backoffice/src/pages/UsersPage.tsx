@@ -210,6 +210,11 @@ export const UsersPage = () => {
                     <td className="px-4 py-3">
                       <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
                         {user.teamCount}
+                        {user.demoTeamCount > 0 && (
+                          <span className="ml-1.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+                            {user.demoTeamCount} demo
+                          </span>
+                        )}
                       </span>
                     </td>
                     <td className="px-4 py-3">

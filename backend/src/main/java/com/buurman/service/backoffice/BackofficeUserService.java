@@ -1,8 +1,5 @@
 package com.buurman.service.backoffice;
 
-import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static org.jooq.impl.DSL.count;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jooq.DSLContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +17,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
 import com.buurman.repository.UserRepository;
+import com.buurman.repository.backoffice.BackofficeUserStatsRepository;
 import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.KeycloakService;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -34,8 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 public class BackofficeUserService {
 
   private final UserRepository userRepository;
+  private final BackofficeUserStatsRepository statsRepository;
   private final KeycloakService keycloakService;
-  private final DSLContext dsl;
   private final Clock clock;
 
   @Transactional(readOnly = true)
@@ -43,12 +40,8 @@ public class BackofficeUserService {
       PageRequest pageRequest, @Nullable String search) {
     PaginatedResult<User> result = userRepository.findAllPaginated(pageRequest, search);
 
-    Map<UUID, Integer> teamCountMap =
-        dsl.select(TEAM_MEMBERS.USER_ID, count())
-            .from(TEAM_MEMBERS)
-            .where(TEAM_MEMBERS.DELETED_AT.isNull())
-            .groupBy(TEAM_MEMBERS.USER_ID)
-            .fetchMap(TEAM_MEMBERS.USER_ID, count());
+    Map<UUID, Integer> teamCountMap = statsRepository.countTeamsPerUser();
+    Map<UUID, Integer> demoTeamCountMap = statsRepository.countDemoTeamsPerUser();
 
     Set<String> activeKeycloakUserIds;
     try {
@@ -66,6 +59,7 @@ public class BackofficeUserService {
                     toResponse(
                         user,
                         teamCountMap.getOrDefault(user.getId(), 0),
+                        demoTeamCountMap.getOrDefault(user.getId(), 0),
                         finalActiveIds.contains(user.getKeycloakId())))
             .toList();
 
@@ -77,12 +71,8 @@ public class BackofficeUserService {
   public BackofficeUserResponse getUser(String identifier) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
-    Long teamCountResult =
-        dsl.selectCount()
-            .from(TEAM_MEMBERS)
-            .where(TEAM_MEMBERS.USER_ID.eq(user.getId()).and(TEAM_MEMBERS.DELETED_AT.isNull()))
-            .fetchOne(0, long.class);
-    long teamCount = teamCountResult != null ? teamCountResult : 0L;
+    long teamCount = statsRepository.countTeamsForUser(user.getId());
+    long demoTeamCount = statsRepository.countDemoTeamsForUser(user.getId());
 
     boolean online = false;
     try {
@@ -91,7 +81,7 @@ public class BackofficeUserService {
       log.warn("Failed to check user session status: {}", e.getMessage());
     }
 
-    return toResponse(user, teamCount, online);
+    return toResponse(user, teamCount, demoTeamCount, online);
   }
 
   @Transactional
@@ -136,7 +126,8 @@ public class BackofficeUserService {
         user.getEmail());
   }
 
-  private BackofficeUserResponse toResponse(User user, long teamCount, boolean online) {
+  private BackofficeUserResponse toResponse(
+      User user, long teamCount, long demoTeamCount, boolean online) {
     return new BackofficeUserResponse(
         java.util.Objects.requireNonNull(user.getIdentifier()),
         user.getEmail(),
@@ -147,6 +138,7 @@ public class BackofficeUserService {
         user.getDisabledAt().isPresent(),
         online,
         teamCount,
+        demoTeamCount,
         user.getCreatedAt(),
         Optional.ofNullable(user.getUpdatedAt()));
   }
