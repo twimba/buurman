@@ -1,9 +1,8 @@
 package com.buurman.domain;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 /** Projection of an audit log record joined with user info. */
 public record AuditLogEntry(
@@ -12,8 +11,8 @@ public record AuditLogEntry(
     UUID entityId,
     String action,
     LocalDateTime timestamp,
-    @Nullable String changedFieldsJson,
-    @Nullable String oldValuesJson,
-    @Nullable String newValuesJson,
-    @Nullable String firstName,
-    @Nullable String lastName) {}
+    Optional<String> changedFieldsJson,
+    Optional<String> oldValuesJson,
+    Optional<String> newValuesJson,
+    Optional<String> firstName,
+    Optional<String> lastName) {}

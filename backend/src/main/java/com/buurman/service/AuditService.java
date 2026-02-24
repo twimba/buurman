@@ -191,15 +191,16 @@ public class AuditService {
   private RecentActivityResponse mapRecordToRecentActivity(
       AuditLogEntry record, String entityType, UUID teamId) {
     String action = record.action();
-    @Nullable String firstName = record.firstName();
-    @Nullable String lastName = record.lastName();
     String userName =
-        (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
+        record
+            .firstName()
+            .flatMap(fn -> record.lastName().map(ln -> fn + " " + ln))
+            .orElse("Unknown");
 
     // Parse JSON fields first
-    Map<String, Object> changedFields = parseJsonField(record.changedFieldsJson());
-    Map<String, Object> oldValues = parseJsonField(record.oldValuesJson());
-    Map<String, Object> newValues = parseJsonField(record.newValuesJson());
+    Map<String, Object> changedFields = parseJsonField(record.changedFieldsJson().orElse(null));
+    Map<String, Object> oldValues = parseJsonField(record.oldValuesJson().orElse(null));
+    Map<String, Object> newValues = parseJsonField(record.newValuesJson().orElse(null));
 
     // Build description based on action and changed fields
     String description = buildActivityDescription(action, entityType, userName, changedFields);

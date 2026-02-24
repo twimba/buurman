@@ -80,10 +80,9 @@ public class NotificationService {
   }
 
   @Transactional
-  public List<Notification> send(SendNotificationRequest request) {
+  public void send(SendNotificationRequest request) {
     request = resolveRecipientPhone(request);
     List<NotificationChannel> channels = resolveChannels(request);
-    List<Notification> notifications = new ArrayList<>();
 
     for (NotificationChannel channel : channels) {
       if (!canSendViaChannel(channel, request)) {
@@ -141,10 +140,8 @@ public class NotificationService {
       }
 
       outboxRepository.save(outbox);
-      notifications.add(notification);
     }
 
-    return notifications;
   }
 
   @Transactional

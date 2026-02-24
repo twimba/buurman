@@ -304,14 +304,15 @@ public class PaymentService {
             .map(
                 r ->
                     new PaymentStatsResponse.MonthlyTrend(
-                        r.month(), CurrencyUtils.sumToMajorUnits(r.amount(), currency)))
+                        r.month(),
+                        CurrencyUtils.sumToMajorUnits(r.amount().orElse(null), currency)))
             .toList();
 
     return new PaymentStatsResponse(
         pending.map(AmountStats::count).orElse(0),
-        CurrencyUtils.sumToMajorUnits(pending.map(AmountStats::total).orElse(null), currency),
+        CurrencyUtils.sumToMajorUnits(pending.flatMap(AmountStats::total).orElse(null), currency),
         overdue.map(AmountStats::count).orElse(0),
-        CurrencyUtils.sumToMajorUnits(overdue.map(AmountStats::total).orElse(null), currency),
+        CurrencyUtils.sumToMajorUnits(overdue.flatMap(AmountStats::total).orElse(null), currency),
         Optional.ofNullable(currency),
         monthlyTrend);
   }

@@ -233,7 +233,10 @@ public class ExpenseRepository {
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
+        .map(
+            r ->
+                new AmountStats(
+                    r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
   public List<CategoryStats> getCategoryBreakdown(UUID teamId) {
@@ -243,7 +246,12 @@ public class ExpenseRepository {
         .groupBy(EXPENSES.CATEGORY)
         .orderBy(sum(EXPENSES.AMOUNT).desc())
         .fetch()
-        .map(r -> new CategoryStats(r.value1(), r.value2() != null ? r.value2() : 0, r.value3()));
+        .map(
+            r ->
+                new CategoryStats(
+                    r.value1(),
+                    r.value2() != null ? r.value2() : 0,
+                    Optional.ofNullable(r.value3())));
   }
 
   public List<MonthlyAmount> getMonthlyExpenseTrend(UUID teamId, int months) {
@@ -261,7 +269,7 @@ public class ExpenseRepository {
         .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
         .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
         .fetch()
-        .map(r -> new MonthlyAmount(r.value1(), r.value2()));
+        .map(r -> new MonthlyAmount(r.value1(), Optional.ofNullable(r.value2())));
   }
 
   public Optional<String> findCurrencyByTeamId(UUID teamId) {

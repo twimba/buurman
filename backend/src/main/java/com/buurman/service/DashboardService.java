@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.ContractIncomeEntry;
@@ -76,10 +75,11 @@ public class DashboardService {
               String entityType = record.entityType();
               UUID entityId = record.entityId();
               String action = record.action();
-              @Nullable String firstName = record.firstName();
-              @Nullable String lastName = record.lastName();
               String userName =
-                  (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
+                  record
+                      .firstName()
+                      .flatMap(fn -> record.lastName().map(ln -> fn + " " + ln))
+                      .orElse("Unknown");
 
               // Get entity name and identifier based on type
               String entityName =

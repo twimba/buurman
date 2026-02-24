@@ -342,7 +342,10 @@ public class PaymentRepository {
                 .and(PAYMENTS.DUE_DATE.ge(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
+        .map(
+            r ->
+                new AmountStats(
+                    r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
   public Optional<AmountStats> getOverdueStats(UUID teamId) {
@@ -356,7 +359,10 @@ public class PaymentRepository {
                 .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
-        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
+        .map(
+            r ->
+                new AmountStats(
+                    r.value1() != null ? r.value1() : 0, Optional.ofNullable(r.value2())));
   }
 
   public List<MonthlyAmount> getMonthlyPaidTrend(UUID teamId, int months) {
@@ -376,7 +382,7 @@ public class PaymentRepository {
         .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
         .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
         .fetch()
-        .map(r -> new MonthlyAmount(r.value1(), r.value2()));
+        .map(r -> new MonthlyAmount(r.value1(), Optional.ofNullable(r.value2())));
   }
 
   public Optional<String> findCurrencyByTeamId(UUID teamId) {

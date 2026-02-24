@@ -94,13 +94,11 @@ public class AuditLogRepository {
                     r.get(AUDIT_LOG.ENTITY_ID),
                     r.get(AUDIT_LOG.ACTION),
                     r.get(AUDIT_LOG.TIMESTAMP),
-                    r.get(AUDIT_LOG.CHANGED_FIELDS) != null
-                        ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
-                        : null,
-                    r.get(AUDIT_LOG.OLD_VALUES) != null ? r.get(AUDIT_LOG.OLD_VALUES).data() : null,
-                    r.get(AUDIT_LOG.NEW_VALUES) != null ? r.get(AUDIT_LOG.NEW_VALUES).data() : null,
-                    r.get(USERS.FIRST_NAME),
-                    r.get(USERS.LAST_NAME)));
+                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(USERS.FIRST_NAME)),
+                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
 
   public List<AuditLogEntry> findAllByTeamId(
@@ -181,13 +179,11 @@ public class AuditLogRepository {
                     r.get(AUDIT_LOG.ENTITY_ID),
                     r.get(AUDIT_LOG.ACTION),
                     r.get(AUDIT_LOG.TIMESTAMP),
-                    r.get(AUDIT_LOG.CHANGED_FIELDS) != null
-                        ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
-                        : null,
-                    r.get(AUDIT_LOG.OLD_VALUES) != null ? r.get(AUDIT_LOG.OLD_VALUES).data() : null,
-                    r.get(AUDIT_LOG.NEW_VALUES) != null ? r.get(AUDIT_LOG.NEW_VALUES).data() : null,
-                    r.get(USERS.FIRST_NAME),
-                    r.get(USERS.LAST_NAME)));
+                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(USERS.FIRST_NAME)),
+                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
 
   public PaginatedResult<AuditLogEntry> findAllByTeamIdPaginated(
@@ -301,17 +297,11 @@ public class AuditLogRepository {
                         r.get(AUDIT_LOG.ENTITY_ID),
                         r.get(AUDIT_LOG.ACTION),
                         r.get(AUDIT_LOG.TIMESTAMP),
-                        r.get(AUDIT_LOG.CHANGED_FIELDS) != null
-                            ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
-                            : null,
-                        r.get(AUDIT_LOG.OLD_VALUES) != null
-                            ? r.get(AUDIT_LOG.OLD_VALUES).data()
-                            : null,
-                        r.get(AUDIT_LOG.NEW_VALUES) != null
-                            ? r.get(AUDIT_LOG.NEW_VALUES).data()
-                            : null,
-                        r.get(USERS.FIRST_NAME),
-                        r.get(USERS.LAST_NAME)));
+                        Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
+                        Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
+                        Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                        Optional.ofNullable(r.get(USERS.FIRST_NAME)),
+                        Optional.ofNullable(r.get(USERS.LAST_NAME))));
 
     return new PaginatedResult<>(items, totalElements);
   }
@@ -340,11 +330,11 @@ public class AuditLogRepository {
                     r.get(AUDIT_LOG.ENTITY_ID),
                     r.get(AUDIT_LOG.ACTION),
                     r.get(AUDIT_LOG.TIMESTAMP),
-                    null,
-                    null,
-                    null,
-                    r.get(USERS.FIRST_NAME),
-                    r.get(USERS.LAST_NAME)));
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.ofNullable(r.get(USERS.FIRST_NAME)),
+                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
 
   public Optional<String> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {

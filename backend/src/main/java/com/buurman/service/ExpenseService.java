@@ -218,7 +218,7 @@ public class ExpenseService {
                 r ->
                     new ExpenseStatsResponse.CategoryTotal(
                         r.category(),
-                        CurrencyUtils.sumToMajorUnits(r.total(), currency),
+                        CurrencyUtils.sumToMajorUnits(r.total().orElse(null), currency),
                         r.count()))
             .toList();
 
@@ -227,13 +227,14 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.MonthlyTrend(
-                        r.month(), CurrencyUtils.sumToMajorUnits(r.amount(), currency)))
+                        r.month(),
+                        CurrencyUtils.sumToMajorUnits(r.amount().orElse(null), currency)))
             .toList();
 
     String effectiveCurrency = java.util.Objects.requireNonNullElse(currency, "EUR");
     return new ExpenseStatsResponse(
         totalStats
-            .map(s -> CurrencyUtils.sumToMajorUnits(s.total(), effectiveCurrency))
+            .map(s -> CurrencyUtils.sumToMajorUnits(s.total().orElse(null), effectiveCurrency))
             .orElse(BigDecimal.ZERO),
         effectiveCurrency,
         topCategories,
