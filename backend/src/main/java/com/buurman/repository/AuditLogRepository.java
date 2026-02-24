@@ -21,11 +21,11 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
-import org.jooq.Record;
 import org.jooq.SortField;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.AuditLogEntry;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -62,38 +62,48 @@ public class AuditLogRepository {
         .execute();
   }
 
-  public List<Record> findByTeamIdAndEntityTypeAndEntityId(
+  public List<AuditLogEntry> findByTeamIdAndEntityTypeAndEntityId(
       UUID teamId, String entityType, UUID entityId) {
-    return List.copyOf(
-        dsl
-            .select(
-                AUDIT_LOG.ID,
-                AUDIT_LOG.ENTITY_TYPE,
-                AUDIT_LOG.ENTITY_ID,
-                AUDIT_LOG.ACTION,
-                AUDIT_LOG.TIMESTAMP,
-                AUDIT_LOG.CHANGED_FIELDS,
-                AUDIT_LOG.OLD_VALUES,
-                AUDIT_LOG.NEW_VALUES,
-                USERS.FIRST_NAME,
-                USERS.LAST_NAME)
-            .from(AUDIT_LOG)
-            .leftJoin(USERS)
-            .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
-            .where(
-                AUDIT_LOG
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(AUDIT_LOG.ENTITY_TYPE.eq(entityType))
-                    .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
-            .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-            .fetch()
-            .stream()
-            .map(r -> (Record) r)
-            .toList());
+    return dsl.select(
+            AUDIT_LOG.ID,
+            AUDIT_LOG.ENTITY_TYPE,
+            AUDIT_LOG.ENTITY_ID,
+            AUDIT_LOG.ACTION,
+            AUDIT_LOG.TIMESTAMP,
+            AUDIT_LOG.CHANGED_FIELDS,
+            AUDIT_LOG.OLD_VALUES,
+            AUDIT_LOG.NEW_VALUES,
+            USERS.FIRST_NAME,
+            USERS.LAST_NAME)
+        .from(AUDIT_LOG)
+        .leftJoin(USERS)
+        .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
+        .where(
+            AUDIT_LOG
+                .TEAM_ID
+                .eq(teamId)
+                .and(AUDIT_LOG.ENTITY_TYPE.eq(entityType))
+                .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
+        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
+        .fetch()
+        .map(
+            r ->
+                new AuditLogEntry(
+                    r.get(AUDIT_LOG.ID),
+                    r.get(AUDIT_LOG.ENTITY_TYPE),
+                    r.get(AUDIT_LOG.ENTITY_ID),
+                    r.get(AUDIT_LOG.ACTION),
+                    r.get(AUDIT_LOG.TIMESTAMP),
+                    r.get(AUDIT_LOG.CHANGED_FIELDS) != null
+                        ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
+                        : null,
+                    r.get(AUDIT_LOG.OLD_VALUES) != null ? r.get(AUDIT_LOG.OLD_VALUES).data() : null,
+                    r.get(AUDIT_LOG.NEW_VALUES) != null ? r.get(AUDIT_LOG.NEW_VALUES).data() : null,
+                    r.get(USERS.FIRST_NAME),
+                    r.get(USERS.LAST_NAME)));
   }
 
-  public List<Record> findAllByTeamId(
+  public List<AuditLogEntry> findAllByTeamId(
       UUID teamId, @Nullable String entityType, @Nullable String action, @Nullable String search) {
     var query =
         dsl.select(
@@ -160,11 +170,27 @@ public class AuditLogRepository {
                   .or(lower(EXPENSES.DESCRIPTION).like(searchPattern)));
     }
 
-    return List.copyOf(
-        query.orderBy(AUDIT_LOG.TIMESTAMP.desc()).fetch().stream().map(r -> (Record) r).toList());
+    return query
+        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
+        .fetch()
+        .map(
+            r ->
+                new AuditLogEntry(
+                    r.get(AUDIT_LOG.ID),
+                    r.get(AUDIT_LOG.ENTITY_TYPE),
+                    r.get(AUDIT_LOG.ENTITY_ID),
+                    r.get(AUDIT_LOG.ACTION),
+                    r.get(AUDIT_LOG.TIMESTAMP),
+                    r.get(AUDIT_LOG.CHANGED_FIELDS) != null
+                        ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
+                        : null,
+                    r.get(AUDIT_LOG.OLD_VALUES) != null ? r.get(AUDIT_LOG.OLD_VALUES).data() : null,
+                    r.get(AUDIT_LOG.NEW_VALUES) != null ? r.get(AUDIT_LOG.NEW_VALUES).data() : null,
+                    r.get(USERS.FIRST_NAME),
+                    r.get(USERS.LAST_NAME)));
   }
 
-  public PaginatedResult<Record> findAllByTeamIdPaginated(
+  public PaginatedResult<AuditLogEntry> findAllByTeamIdPaginated(
       UUID teamId,
       @Nullable String entityType,
       @Nullable String action,
@@ -237,9 +263,8 @@ public class AuditLogRepository {
             .fetchOne(0, Long.class);
     long totalElements = totalCount != null ? totalCount : 0L;
 
-    List<Record> items =
-        dsl
-            .select(
+    List<AuditLogEntry> items =
+        dsl.select(
                 AUDIT_LOG.ID,
                 AUDIT_LOG.ENTITY_TYPE,
                 AUDIT_LOG.ENTITY_ID,
@@ -268,34 +293,58 @@ public class AuditLogRepository {
             .limit(pageRequest.size())
             .offset(pageRequest.offset())
             .fetch()
-            .stream()
-            .map(r -> (Record) r)
-            .toList();
+            .map(
+                r ->
+                    new AuditLogEntry(
+                        r.get(AUDIT_LOG.ID),
+                        r.get(AUDIT_LOG.ENTITY_TYPE),
+                        r.get(AUDIT_LOG.ENTITY_ID),
+                        r.get(AUDIT_LOG.ACTION),
+                        r.get(AUDIT_LOG.TIMESTAMP),
+                        r.get(AUDIT_LOG.CHANGED_FIELDS) != null
+                            ? r.get(AUDIT_LOG.CHANGED_FIELDS).data()
+                            : null,
+                        r.get(AUDIT_LOG.OLD_VALUES) != null
+                            ? r.get(AUDIT_LOG.OLD_VALUES).data()
+                            : null,
+                        r.get(AUDIT_LOG.NEW_VALUES) != null
+                            ? r.get(AUDIT_LOG.NEW_VALUES).data()
+                            : null,
+                        r.get(USERS.FIRST_NAME),
+                        r.get(USERS.LAST_NAME)));
 
     return new PaginatedResult<>(items, totalElements);
   }
 
-  public List<Record> findRecentByTeamId(UUID teamId, int limit) {
-    return List.copyOf(
-        dsl
-            .select(
-                AUDIT_LOG.ID,
-                AUDIT_LOG.ENTITY_TYPE,
-                AUDIT_LOG.ENTITY_ID,
-                AUDIT_LOG.ACTION,
-                AUDIT_LOG.TIMESTAMP,
-                USERS.FIRST_NAME,
-                USERS.LAST_NAME)
-            .from(AUDIT_LOG)
-            .leftJoin(USERS)
-            .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
-            .where(AUDIT_LOG.TEAM_ID.eq(teamId))
-            .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-            .limit(limit)
-            .fetch()
-            .stream()
-            .map(r -> (Record) r)
-            .toList());
+  public List<AuditLogEntry> findRecentByTeamId(UUID teamId, int limit) {
+    return dsl.select(
+            AUDIT_LOG.ID,
+            AUDIT_LOG.ENTITY_TYPE,
+            AUDIT_LOG.ENTITY_ID,
+            AUDIT_LOG.ACTION,
+            AUDIT_LOG.TIMESTAMP,
+            USERS.FIRST_NAME,
+            USERS.LAST_NAME)
+        .from(AUDIT_LOG)
+        .leftJoin(USERS)
+        .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
+        .where(AUDIT_LOG.TEAM_ID.eq(teamId))
+        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
+        .limit(limit)
+        .fetch()
+        .map(
+            r ->
+                new AuditLogEntry(
+                    r.get(AUDIT_LOG.ID),
+                    r.get(AUDIT_LOG.ENTITY_TYPE),
+                    r.get(AUDIT_LOG.ENTITY_ID),
+                    r.get(AUDIT_LOG.ACTION),
+                    r.get(AUDIT_LOG.TIMESTAMP),
+                    null,
+                    null,
+                    null,
+                    r.get(USERS.FIRST_NAME),
+                    r.get(USERS.LAST_NAME)));
   }
 
   public Optional<String> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {

@@ -11,7 +11,6 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +23,11 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.AmountStats;
+import com.buurman.domain.MonthlyAmount;
 import com.buurman.domain.Payment;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -331,7 +331,7 @@ public class PaymentRepository {
         r -> mapper.toDomain(r).orElseThrow());
   }
 
-  public Optional<Record2<Integer, BigDecimal>> getPendingStats(UUID teamId) {
+  public Optional<AmountStats> getPendingStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -341,10 +341,11 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name()))
                 .and(PAYMENTS.DUE_DATE.ge(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOptional();
+        .fetchOptional()
+        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
   }
 
-  public Optional<Record2<Integer, BigDecimal>> getOverdueStats(UUID teamId) {
+  public Optional<AmountStats> getOverdueStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(PAYMENTS.AMOUNT).as("total"))
         .from(PAYMENTS)
         .where(
@@ -354,27 +355,28 @@ public class PaymentRepository {
                 .and(PAYMENTS.STATUS.eq(PENDING.name()))
                 .and(PAYMENTS.DUE_DATE.lt(LocalDate.now(clock)))
                 .and(PAYMENTS.DELETED_AT.isNull()))
-        .fetchOptional();
+        .fetchOptional()
+        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
   }
 
-  public List<Record2<String, BigDecimal>> getMonthlyPaidTrend(UUID teamId, int months) {
+  public List<MonthlyAmount> getMonthlyPaidTrend(UUID teamId, int months) {
     LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
-    return List.copyOf(
-        dsl.select(
-                field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
-                sum(PAYMENTS.AMOUNT).as("total"))
-            .from(PAYMENTS)
-            .where(
-                PAYMENTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(PAYMENTS.STATUS.eq(PAID.name()))
-                    .and(PAYMENTS.PAYMENT_DATE.isNotNull())
-                    .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
-                    .and(PAYMENTS.DELETED_AT.isNull()))
-            .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
-            .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
-            .fetch());
+    return dsl.select(
+            field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).as("month"),
+            sum(PAYMENTS.AMOUNT).as("total"))
+        .from(PAYMENTS)
+        .where(
+            PAYMENTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(PAYMENTS.STATUS.eq(PAID.name()))
+                .and(PAYMENTS.PAYMENT_DATE.isNotNull())
+                .and(PAYMENTS.PAYMENT_DATE.ge(startDate))
+                .and(PAYMENTS.DELETED_AT.isNull()))
+        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE))
+        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, PAYMENTS.PAYMENT_DATE).asc())
+        .fetch()
+        .map(r -> new MonthlyAmount(r.value1(), r.value2()));
   }
 
   public Optional<String> findCurrencyByTeamId(UUID teamId) {

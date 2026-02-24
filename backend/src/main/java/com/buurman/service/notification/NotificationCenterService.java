@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
@@ -72,16 +72,16 @@ public class NotificationCenterService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationStatsResponse getStats(UserPrincipal principal) {
-    List<Record2<String, Integer>> statusCounts =
+    List<LabelCount> statusCounts =
         notificationRepository.countByTeamIdGroupedByStatus(principal.requireTeamId());
-    List<Record2<String, Integer>> channelCounts =
+    List<LabelCount> channelCounts =
         notificationRepository.countByTeamIdGroupedByChannel(principal.requireTeamId());
     long totalCount = notificationRepository.countByTeamId(principal.requireTeamId());
 
     long pendingCount = 0, sentCount = 0, deliveredCount = 0, failedCount = 0;
-    for (Record2<String, Integer> record : statusCounts) {
-      String s = record.value1();
-      int count = record.value2();
+    for (LabelCount record : statusCounts) {
+      String s = record.label();
+      int count = record.count();
       switch (s) {
         case "PENDING", "QUEUED" -> pendingCount += count;
         case "SENT" -> sentCount = count;
@@ -91,8 +91,8 @@ public class NotificationCenterService {
     }
 
     Map<String, Long> byChannel = new HashMap<>();
-    for (Record2<String, Integer> record : channelCounts) {
-      byChannel.put(record.value1(), (long) record.value2());
+    for (LabelCount record : channelCounts) {
+      byChannel.put(record.label(), (long) record.count());
     }
 
     return new NotificationStatsResponse(

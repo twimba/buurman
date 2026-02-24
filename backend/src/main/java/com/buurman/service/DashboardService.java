@@ -4,23 +4,19 @@ import static com.buurman.domain.Property.PropertyStatus.MAINTENANCE;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
-import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
-import static com.buurman.jooq.generated.Tables.CONTRACTS;
-import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jooq.Record;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.domain.Property;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -77,46 +73,30 @@ public class DashboardService {
     return auditLogRepository.findRecentByTeamId(teamId, limit).stream()
         .map(
             record -> {
-              @Nullable String entityType = record.get(AUDIT_LOG.ENTITY_TYPE);
-              @Nullable UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
-              @Nullable String action = record.get(AUDIT_LOG.ACTION);
-              @Nullable String firstName = record.get(USERS.FIRST_NAME);
-              @Nullable String lastName = record.get(USERS.LAST_NAME);
+              String entityType = record.entityType();
+              UUID entityId = record.entityId();
+              String action = record.action();
+              @Nullable String firstName = record.firstName();
+              @Nullable String lastName = record.lastName();
               String userName =
                   (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
 
-              String safeEntityType = entityType != null ? entityType : "UNKNOWN";
-              String safeAction = action != null ? action : "UNKNOWN";
-
               // Get entity name and identifier based on type
-              String entityName = "Unknown";
-              String entityIdentifier = "unknown";
-              if (entityId != null) {
-                entityName =
-                    auditLogRepository
-                        .findEntityName(safeEntityType, entityId, teamId)
-                        .orElse("Unknown");
-                entityIdentifier =
-                    auditLogRepository
-                        .findEntityIdentifier(safeEntityType, entityId, teamId)
-                        .orElse(entityId.toString());
-              }
+              String entityName =
+                  auditLogRepository.findEntityName(entityType, entityId, teamId).orElse("Unknown");
+              String entityIdentifier =
+                  auditLogRepository
+                      .findEntityIdentifier(entityType, entityId, teamId)
+                      .orElse(entityId.toString());
 
               // Build description
               String description =
-                  buildActivityDescription(safeAction, safeEntityType, entityName, userName);
+                  buildActivityDescription(action, entityType, entityName, userName);
 
-              @Nullable LocalDateTime timestamp = record.get(AUDIT_LOG.TIMESTAMP);
-              Instant instant = timestamp != null ? timestamp.toInstant(UTC) : Instant.EPOCH;
+              Instant instant = record.timestamp().toInstant(UTC);
 
               return new RecentActivityResponse(
-                  safeEntityType,
-                  entityIdentifier,
-                  entityName,
-                  safeAction,
-                  userName,
-                  instant,
-                  description);
+                  entityType, entityIdentifier, entityName, action, userName, instant, description);
             })
         .toList();
   }
@@ -136,7 +116,8 @@ public class DashboardService {
   }
 
   private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {
-    List<Record> activeContracts = contractRepository.findActiveContractIncomeByTeamId(teamId);
+    List<ContractIncomeEntry> activeContracts =
+        contractRepository.findActiveContractIncomeByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
       return new DashboardStatsResponse.MonthlyIncome(
@@ -147,14 +128,10 @@ public class DashboardService {
     Map<String, BigDecimal> incomePerCurrency = new java.util.HashMap<>();
 
     for (var contract : activeContracts) {
-      @Nullable String currency = contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY);
-      @Nullable BigDecimal rentAmount =
-          CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
-      @Nullable String paymentFrequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
-
-      if (currency == null || rentAmount == null || paymentFrequency == null) {
-        continue;
-      }
+      String currency = contract.rentAmountCurrency();
+      BigDecimal rentAmount =
+          CurrencyUtils.toMajorUnits(contract.rentAmount().longValueExact(), currency);
+      String paymentFrequency = contract.paymentFrequency();
 
       // Convert to monthly amount based on payment frequency
       BigDecimal monthlyAmount =

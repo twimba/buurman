@@ -17,10 +17,10 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
-import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.dto.request.PageRequest;
@@ -223,22 +223,22 @@ public class NotificationRepository {
         .execute();
   }
 
-  public List<Record2<String, Integer>> countByTeamIdGroupedByStatus(UUID teamId) {
-    return List.copyOf(
-        dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
-            .from(NOTIFICATIONS)
-            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-            .groupBy(NOTIFICATIONS.STATUS)
-            .fetch());
+  public List<LabelCount> countByTeamIdGroupedByStatus(UUID teamId) {
+    return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
+        .from(NOTIFICATIONS)
+        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+        .groupBy(NOTIFICATIONS.STATUS)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
-  public List<Record2<String, Integer>> countByTeamIdGroupedByChannel(UUID teamId) {
-    return List.copyOf(
-        dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
-            .from(NOTIFICATIONS)
-            .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
-            .groupBy(NOTIFICATIONS.CHANNEL)
-            .fetch());
+  public List<LabelCount> countByTeamIdGroupedByChannel(UUID teamId) {
+    return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
+        .from(NOTIFICATIONS)
+        .where(NOTIFICATIONS.TEAM_ID.eq(teamId))
+        .groupBy(NOTIFICATIONS.CHANNEL)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
   public long countByTeamId(UUID teamId) {
@@ -320,19 +320,19 @@ public class NotificationRepository {
     return result != null ? result : 0L;
   }
 
-  public List<Record2<String, Integer>> countGroupedByStatus() {
-    return List.copyOf(
-        dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
-            .from(NOTIFICATIONS)
-            .groupBy(NOTIFICATIONS.STATUS)
-            .fetch());
+  public List<LabelCount> countGroupedByStatus() {
+    return dsl.select(NOTIFICATIONS.STATUS, count().as("count"))
+        .from(NOTIFICATIONS)
+        .groupBy(NOTIFICATIONS.STATUS)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 
-  public List<Record2<String, Integer>> countGroupedByChannel() {
-    return List.copyOf(
-        dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
-            .from(NOTIFICATIONS)
-            .groupBy(NOTIFICATIONS.CHANNEL)
-            .fetch());
+  public List<LabelCount> countGroupedByChannel() {
+    return dsl.select(NOTIFICATIONS.CHANNEL, count().as("count"))
+        .from(NOTIFICATIONS)
+        .groupBy(NOTIFICATIONS.CHANNEL)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
   }
 }

@@ -3,8 +3,6 @@ package com.buurman.service;
 import static com.buurman.domain.AuditLog.Action.CREATE;
 import static com.buurman.domain.AuditLog.Action.DELETE;
 import static com.buurman.domain.AuditLog.Action.UPDATE;
-import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
-import static com.buurman.jooq.generated.Tables.USERS;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
@@ -18,10 +16,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.JSONB;
-import org.jooq.Record;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.AuditLogEntry;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
@@ -179,41 +177,39 @@ public class AuditService {
       @Nullable String action,
       @Nullable String search,
       PageRequest pageRequest) {
-    PaginatedResult<Record> result =
+    PaginatedResult<AuditLogEntry> result =
         auditLogRepository.findAllByTeamIdPaginated(
             teamId, entityType, action, search, pageRequest);
     List<RecentActivityResponse> responses =
         result.items().stream()
-            .map(
-                record ->
-                    mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
+            .map(record -> mapRecordToRecentActivity(record, record.entityType(), teamId))
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   private RecentActivityResponse mapRecordToRecentActivity(
-      Record record, String entityType, UUID teamId) {
-    String action = record.get(AUDIT_LOG.ACTION);
-    String firstName = record.get(USERS.FIRST_NAME);
-    String lastName = record.get(USERS.LAST_NAME);
+      AuditLogEntry record, String entityType, UUID teamId) {
+    String action = record.action();
+    @Nullable String firstName = record.firstName();
+    @Nullable String lastName = record.lastName();
     String userName =
         (firstName != null && lastName != null) ? firstName + " " + lastName : "Unknown";
 
     // Parse JSON fields first
-    Map<String, Object> changedFields = parseJsonbField(record.get(AUDIT_LOG.CHANGED_FIELDS));
-    Map<String, Object> oldValues = parseJsonbField(record.get(AUDIT_LOG.OLD_VALUES));
-    Map<String, Object> newValues = parseJsonbField(record.get(AUDIT_LOG.NEW_VALUES));
+    Map<String, Object> changedFields = parseJsonField(record.changedFieldsJson());
+    Map<String, Object> oldValues = parseJsonField(record.oldValuesJson());
+    Map<String, Object> newValues = parseJsonField(record.newValuesJson());
 
     // Build description based on action and changed fields
     String description = buildActivityDescription(action, entityType, userName, changedFields);
 
     // Resolve entity identifier from entity UUID
-    UUID entityId = record.get(AUDIT_LOG.ENTITY_ID);
+    UUID entityId = record.entityId();
     String entityIdentifier =
         auditLogRepository
             .findEntityIdentifier(entityType, entityId, teamId)
-            .orElse(entityId != null ? entityId.toString() : "unknown");
+            .orElse(entityId.toString());
 
     return new RecentActivityResponse(
         entityType,
@@ -221,7 +217,7 @@ public class AuditService {
         entityType, // entityName - can be enhanced later
         action,
         Optional.ofNullable(userName),
-        record.get(AUDIT_LOG.TIMESTAMP).toInstant(UTC),
+        record.timestamp().toInstant(UTC),
         Optional.ofNullable(description),
         changedFields,
         oldValues,
@@ -237,6 +233,19 @@ public class AuditService {
       return objectMapper.readValue(jsonb.data(), Map.class);
     } catch (JsonProcessingException e) {
       log.error("Failed to parse JSONB field", e);
+      return Map.of();
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> parseJsonField(@Nullable String json) {
+    if (json == null || json.isBlank()) {
+      return Map.of();
+    }
+    try {
+      return objectMapper.readValue(json, Map.class);
+    } catch (JsonProcessingException e) {
+      log.error("Failed to parse JSON field", e);
       return Map.of();
     }
   }

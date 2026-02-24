@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
@@ -295,8 +295,8 @@ public class PaymentService {
   public PaymentStatsResponse getPaymentStats(UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    Optional<Record2<Integer, BigDecimal>> pending = paymentRepository.getPendingStats(teamId);
-    Optional<Record2<Integer, BigDecimal>> overdue = paymentRepository.getOverdueStats(teamId);
+    Optional<AmountStats> pending = paymentRepository.getPendingStats(teamId);
+    Optional<AmountStats> overdue = paymentRepository.getOverdueStats(teamId);
     @Nullable String currency = paymentRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<PaymentStatsResponse.MonthlyTrend> monthlyTrend =
@@ -304,14 +304,14 @@ public class PaymentService {
             .map(
                 r ->
                     new PaymentStatsResponse.MonthlyTrend(
-                        r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
+                        r.month(), CurrencyUtils.sumToMajorUnits(r.amount(), currency)))
             .toList();
 
     return new PaymentStatsResponse(
-        pending.map(Record2::value1).orElse(0),
-        CurrencyUtils.sumToMajorUnits(pending.map(Record2::value2).orElse(null), currency),
-        overdue.map(Record2::value1).orElse(0),
-        CurrencyUtils.sumToMajorUnits(overdue.map(Record2::value2).orElse(null), currency),
+        pending.map(AmountStats::count).orElse(0),
+        CurrencyUtils.sumToMajorUnits(pending.map(AmountStats::total).orElse(null), currency),
+        overdue.map(AmountStats::count).orElse(0),
+        CurrencyUtils.sumToMajorUnits(overdue.map(AmountStats::total).orElse(null), currency),
         Optional.ofNullable(currency),
         monthlyTrend);
   }

@@ -7,7 +7,6 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,12 +18,13 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record2;
-import org.jooq.Record3;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.AmountStats;
+import com.buurman.domain.CategoryStats;
 import com.buurman.domain.Expense;
+import com.buurman.domain.MonthlyAmount;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ExpenseRecordMapper;
@@ -228,39 +228,40 @@ public class ExpenseRepository {
         r -> mapper.toDomain(r).orElseThrow());
   }
 
-  public Optional<Record2<Integer, BigDecimal>> getTotalStats(UUID teamId) {
+  public Optional<AmountStats> getTotalStats(UUID teamId) {
     return dsl.select(count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
         .from(EXPENSES)
         .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-        .fetchOptional();
+        .fetchOptional()
+        .map(r -> new AmountStats(r.value1() != null ? r.value1() : 0, r.value2()));
   }
 
-  public List<Record3<String, Integer, BigDecimal>> getCategoryBreakdown(UUID teamId) {
-    return List.copyOf(
-        dsl.select(EXPENSES.CATEGORY, count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
-            .from(EXPENSES)
-            .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
-            .groupBy(EXPENSES.CATEGORY)
-            .orderBy(sum(EXPENSES.AMOUNT).desc())
-            .fetch());
+  public List<CategoryStats> getCategoryBreakdown(UUID teamId) {
+    return dsl.select(EXPENSES.CATEGORY, count().as("count"), sum(EXPENSES.AMOUNT).as("total"))
+        .from(EXPENSES)
+        .where(EXPENSES.TEAM_ID.eq(teamId).and(EXPENSES.DELETED_AT.isNull()))
+        .groupBy(EXPENSES.CATEGORY)
+        .orderBy(sum(EXPENSES.AMOUNT).desc())
+        .fetch()
+        .map(r -> new CategoryStats(r.value1(), r.value2() != null ? r.value2() : 0, r.value3()));
   }
 
-  public List<Record2<String, BigDecimal>> getMonthlyExpenseTrend(UUID teamId, int months) {
+  public List<MonthlyAmount> getMonthlyExpenseTrend(UUID teamId, int months) {
     LocalDate startDate = LocalDate.now(clock).minusMonths(months).withDayOfMonth(1);
-    return List.copyOf(
-        dsl.select(
-                field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
-                sum(EXPENSES.AMOUNT).as("total"))
-            .from(EXPENSES)
-            .where(
-                EXPENSES
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(EXPENSES.EXPENSE_DATE.ge(startDate))
-                    .and(EXPENSES.DELETED_AT.isNull()))
-            .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
-            .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
-            .fetch());
+    return dsl.select(
+            field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).as("month"),
+            sum(EXPENSES.AMOUNT).as("total"))
+        .from(EXPENSES)
+        .where(
+            EXPENSES
+                .TEAM_ID
+                .eq(teamId)
+                .and(EXPENSES.EXPENSE_DATE.ge(startDate))
+                .and(EXPENSES.DELETED_AT.isNull()))
+        .groupBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE))
+        .orderBy(field("to_char({0}, 'YYYY-MM')", String.class, EXPENSES.EXPENSE_DATE).asc())
+        .fetch()
+        .map(r -> new MonthlyAmount(r.value1(), r.value2()));
   }
 
   public Optional<String> findCurrencyByTeamId(UUID teamId) {

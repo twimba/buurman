@@ -5,6 +5,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.min;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,11 +18,11 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContractRecordMapper;
@@ -347,22 +348,23 @@ public class ContractRepository {
         .toList();
   }
 
-  public List<Record> findActiveContractIncomeByTeamId(UUID teamId) {
-    return List.copyOf(
-        dsl
-            .select(
-                CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
-            .from(CONTRACTS)
-            .where(
-                CONTRACTS
-                    .TEAM_ID
-                    .eq(teamId)
-                    .and(CONTRACTS.STATUS.eq("ACTIVE"))
-                    .and(CONTRACTS.DELETED_AT.isNull()))
-            .fetch()
-            .stream()
-            .map(r -> (Record) r)
-            .toList());
+  public List<ContractIncomeEntry> findActiveContractIncomeByTeamId(UUID teamId) {
+    return dsl.select(
+            CONTRACTS.RENT_AMOUNT, CONTRACTS.RENT_AMOUNT_CURRENCY, CONTRACTS.PAYMENT_FREQUENCY)
+        .from(CONTRACTS)
+        .where(
+            CONTRACTS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACTS.STATUS.eq("ACTIVE"))
+                .and(CONTRACTS.DELETED_AT.isNull()))
+        .fetch()
+        .map(
+            r ->
+                new ContractIncomeEntry(
+                    BigDecimal.valueOf(r.get(CONTRACTS.RENT_AMOUNT)),
+                    r.get(CONTRACTS.RENT_AMOUNT_CURRENCY),
+                    r.get(CONTRACTS.PAYMENT_FREQUENCY)));
   }
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {

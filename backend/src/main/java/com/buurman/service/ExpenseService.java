@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jooq.Record2;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.AmountStats;
 import com.buurman.domain.Expense;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
@@ -209,7 +209,7 @@ public class ExpenseService {
   public ExpenseStatsResponse getExpenseStats(UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    Optional<Record2<Integer, BigDecimal>> totalStats = expenseRepository.getTotalStats(teamId);
+    Optional<AmountStats> totalStats = expenseRepository.getTotalStats(teamId);
     @Nullable String currency = expenseRepository.findCurrencyByTeamId(teamId).orElse(null);
 
     List<ExpenseStatsResponse.CategoryTotal> topCategories =
@@ -217,9 +217,9 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.CategoryTotal(
-                        r.value1(),
-                        CurrencyUtils.sumToMajorUnits(r.value3(), currency),
-                        r.value2()))
+                        r.category(),
+                        CurrencyUtils.sumToMajorUnits(r.total(), currency),
+                        r.count()))
             .toList();
 
     List<ExpenseStatsResponse.MonthlyTrend> monthlyTrend =
@@ -227,13 +227,13 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.MonthlyTrend(
-                        r.value1(), CurrencyUtils.sumToMajorUnits(r.value2(), currency)))
+                        r.month(), CurrencyUtils.sumToMajorUnits(r.amount(), currency)))
             .toList();
 
     String effectiveCurrency = java.util.Objects.requireNonNullElse(currency, "EUR");
     return new ExpenseStatsResponse(
         totalStats
-            .map(s -> CurrencyUtils.sumToMajorUnits(s.value2(), effectiveCurrency))
+            .map(s -> CurrencyUtils.sumToMajorUnits(s.total(), effectiveCurrency))
             .orElse(BigDecimal.ZERO),
         effectiveCurrency,
         topCategories,

@@ -1,21 +1,10 @@
 package com.buurman.service;
 
-import static com.buurman.jooq.generated.Tables.CONTRACTS;
-import static com.buurman.jooq.generated.Tables.EXPENSES;
-import static com.buurman.jooq.generated.Tables.PAYMENTS;
-import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.jooq.generated.Tables.TEAMS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
-import static org.jooq.impl.DSL.count;
-import static org.jooq.impl.DSL.select;
-
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Result;
 import org.springframework.stereotype.Service;
+
+import com.buurman.repository.DatabaseMetricsRepository;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -29,9 +18,7 @@ public class DatabaseMetricsService {
 
   private static final String PREFIX = "buurman.";
 
-  private final DSLContext dsl;
-
-  private static final Condition NOT_DEMO_TEAM = TEAMS.DEMO.isFalse();
+  private final DatabaseMetricsRepository metricsRepository;
 
   private final AtomicLong propertiesCount = new AtomicLong();
   private final AtomicLong contractsCount = new AtomicLong();
@@ -43,8 +30,9 @@ public class DatabaseMetricsService {
   private final MultiGauge contractsByStatus;
   private final MultiGauge paymentsByStatus;
 
-  public DatabaseMetricsService(DSLContext dsl, MeterRegistry registry) {
-    this.dsl = dsl;
+  public DatabaseMetricsService(
+      DatabaseMetricsRepository metricsRepository, MeterRegistry registry) {
+    this.metricsRepository = metricsRepository;
 
     Gauge.builder(PREFIX + "properties.count", propertiesCount, AtomicLong::doubleValue)
         .description("Total active properties")
@@ -79,25 +67,12 @@ public class DatabaseMetricsService {
 
   public void refreshCounts() {
     try {
-      var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
-
-      propertiesCount.set(
-          dsl.fetchCount(
-              PROPERTIES,
-              PROPERTIES.DELETED_AT.isNull().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds))));
-      contractsCount.set(
-          dsl.fetchCount(
-              CONTRACTS, CONTRACTS.DELETED_AT.isNull().and(CONTRACTS.TEAM_ID.in(nonDemoTeamIds))));
-      tenantsCount.set(
-          dsl.fetchCount(
-              TENANTS, TENANTS.DELETED_AT.isNull().and(TENANTS.TEAM_ID.in(nonDemoTeamIds))));
-      paymentsCount.set(
-          dsl.fetchCount(
-              PAYMENTS, PAYMENTS.DELETED_AT.isNull().and(PAYMENTS.TEAM_ID.in(nonDemoTeamIds))));
-      teamsCount.set(dsl.fetchCount(TEAMS, NOT_DEMO_TEAM));
-      expensesCount.set(
-          dsl.fetchCount(
-              EXPENSES, EXPENSES.DELETED_AT.isNull().and(EXPENSES.TEAM_ID.in(nonDemoTeamIds))));
+      propertiesCount.set(metricsRepository.countProperties());
+      contractsCount.set(metricsRepository.countContracts());
+      tenantsCount.set(metricsRepository.countTenants());
+      paymentsCount.set(metricsRepository.countPayments());
+      teamsCount.set(metricsRepository.countTeams());
+      expensesCount.set(metricsRepository.countExpenses());
 
       refreshContractsByStatus();
       refreshPaymentsByStatus();
@@ -107,37 +82,19 @@ public class DatabaseMetricsService {
   }
 
   private void refreshContractsByStatus() {
-    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
-    Result<Record2<String, Integer>> result =
-        dsl.select(CONTRACTS.STATUS, count())
-            .from(CONTRACTS)
-            .where(CONTRACTS.DELETED_AT.isNull())
-            .and(CONTRACTS.TEAM_ID.in(nonDemoTeamIds))
-            .groupBy(CONTRACTS.STATUS)
-            .fetch();
-
     var rows =
-        result.stream()
+        metricsRepository.countContractsByStatus().stream()
             .<MultiGauge.Row<?>>map(
-                r -> MultiGauge.Row.of(Tags.of("status", r.value1()), r.value2()))
+                lc -> MultiGauge.Row.of(Tags.of("status", lc.label()), lc.count()))
             .toList();
     contractsByStatus.register(rows, true);
   }
 
   private void refreshPaymentsByStatus() {
-    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
-    Result<Record2<String, Integer>> result =
-        dsl.select(PAYMENTS.STATUS, count())
-            .from(PAYMENTS)
-            .where(PAYMENTS.DELETED_AT.isNull())
-            .and(PAYMENTS.TEAM_ID.in(nonDemoTeamIds))
-            .groupBy(PAYMENTS.STATUS)
-            .fetch();
-
     var rows =
-        result.stream()
+        metricsRepository.countPaymentsByStatus().stream()
             .<MultiGauge.Row<?>>map(
-                r -> MultiGauge.Row.of(Tags.of("status", r.value1()), r.value2()))
+                lc -> MultiGauge.Row.of(Tags.of("status", lc.label()), lc.count()))
             .toList();
     paymentsByStatus.register(rows, true);
   }
