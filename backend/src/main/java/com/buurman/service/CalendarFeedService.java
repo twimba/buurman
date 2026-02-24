@@ -369,16 +369,18 @@ public class CalendarFeedService {
       }
       case TENANT_PAYMENTS -> {
         UUID tId = feed.getTenantId().orElseThrow();
-        Tenant t =
+        Tenant tenant =
             tenantMap.values().stream()
                 .filter(tn -> tn.getId().equals(tId))
                 .findFirst()
                 .orElse(null);
-        if (t == null) {
-          t = tenantRepository.findByIdAndTeamId(tId, teamId).orElse(null);
+        if (tenant == null) {
+          tenant = tenantRepository.findByIdAndTeamId(tId, teamId).orElse(null);
         }
         String name =
-            t != null ? t.getFirstName() + t.getLastName().map(n -> " " + n).orElse("") : "Tenant";
+            tenant != null
+                ? tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("")
+                : "Tenant";
         yield "Buurman - " + name + " Payments";
       }
     };

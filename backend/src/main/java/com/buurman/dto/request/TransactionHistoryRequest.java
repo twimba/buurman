@@ -22,7 +22,7 @@ public record TransactionHistoryRequest(
   // @NotNull fails — null guards prevent NPE in that case.
   @AssertTrue(message = "End date must be after start date") @SuppressWarnings("ConstantConditions")
   public boolean isEndDateAfterStartDate() {
-    return endDate == null || startDate == null || !endDate.isBefore(startDate);
+    return !endDate.isBefore(startDate);
   }
 
   public enum TransactionType {

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.TenantAddress.AddressStatus;
+import com.buurman.domain.TenantAddress.AddressType;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.UpdateTenantAddressRequest;
 import com.buurman.dto.response.TenantAddressResponse;
@@ -44,17 +46,16 @@ public class TenantAddressService {
     Tenant tenant = tenantRepository.getByIdAndTeamId(tenantId, principal.requireTeamId());
 
     // Check for unique ACTIVE CURRENT address constraint
-    if (request.addressType() == TenantAddress.AddressType.CURRENT
-        && (request.status().isEmpty()
-            || request.status().orElseThrow() == TenantAddress.AddressStatus.ACTIVE)) {
+    if (request.addressType() == AddressType.CURRENT
+        && (request.status().isEmpty() || request.status().orElseThrow() == AddressStatus.ACTIVE)) {
       List<TenantAddress> existingAddresses =
           addressRepository.findByTenantId(tenantId, principal.requireTeamId());
       boolean hasActiveCurrent =
           existingAddresses.stream()
               .anyMatch(
                   addr ->
-                      addr.getAddressType() == TenantAddress.AddressType.CURRENT
-                          && addr.getStatus() == TenantAddress.AddressStatus.ACTIVE);
+                      addr.getAddressType() == AddressType.CURRENT
+                          && addr.getStatus() == AddressStatus.ACTIVE);
       if (hasActiveCurrent) {
         throw new IllegalArgumentException(
             "Tenant already has an active CURRENT address. Please set existing address to INACTIVE"
@@ -69,11 +70,7 @@ public class TenantAddressService {
     address.setUpdatedBy(principal.getUserId());
     address.setCreatedAt(clock.instant());
     address.setUpdatedAt(clock.instant());
-
-    // Set default status if not provided
-    if (address.getStatus() == null) {
-      address.setStatus(TenantAddress.AddressStatus.ACTIVE);
-    }
+    address.setStatus(AddressStatus.ACTIVE);
 
     if (address.getLatitude().isEmpty() || address.getLongitude().isEmpty()) {
       geocodingService
@@ -84,7 +81,7 @@ public class TenantAddressService {
               result -> {
                 address.setLatitude(Optional.of(result.latitude().doubleValue()));
                 address.setLongitude(Optional.of(result.longitude().doubleValue()));
-                address.setGeocodeAccuracy(Optional.ofNullable(result.accuracy()));
+                address.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 
@@ -160,11 +157,10 @@ public class TenantAddressService {
             .build();
 
     // Check for unique ACTIVE CURRENT address constraint
-    if (request.addressType() == TenantAddress.AddressType.CURRENT
-        && request.status() == TenantAddress.AddressStatus.ACTIVE) {
+    if (request.addressType() == AddressType.CURRENT && request.status() == AddressStatus.ACTIVE) {
       // If this address is being changed to CURRENT ACTIVE, check for conflicts
-      if (address.getAddressType() != TenantAddress.AddressType.CURRENT
-          || address.getStatus() != TenantAddress.AddressStatus.ACTIVE) {
+      if (address.getAddressType() != AddressType.CURRENT
+          || address.getStatus() != AddressStatus.ACTIVE) {
         List<TenantAddress> existingAddresses =
             addressRepository.findByTenantId(address.getTenantId(), principal.requireTeamId());
         boolean hasOtherActiveCurrent =
@@ -172,8 +168,8 @@ public class TenantAddressService {
                 .anyMatch(
                     addr ->
                         !addr.getId().equals(addressId)
-                            && addr.getAddressType() == TenantAddress.AddressType.CURRENT
-                            && addr.getStatus() == TenantAddress.AddressStatus.ACTIVE);
+                            && addr.getAddressType() == AddressType.CURRENT
+                            && addr.getStatus() == AddressStatus.ACTIVE);
         if (hasOtherActiveCurrent) {
           throw new IllegalArgumentException(
               "Tenant already has an active CURRENT address. Please set existing address to"

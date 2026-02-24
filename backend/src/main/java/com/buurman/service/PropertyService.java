@@ -1,9 +1,11 @@
 package com.buurman.service;
 
+import static com.buurman.domain.Property.VARIABLE_PAYMENT_SENTINEL;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Currency;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -141,34 +143,22 @@ public class PropertyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
-    validateCurrencyRequired(
-        request.purchasePriceCurrency().orElse(null), request.purchasePrice().orElse(null));
-    validateCurrencyRequired(
-        request.currentMarketValueCurrency().orElse(null),
-        request.currentMarketValue().orElse(null));
-    validateCurrencyRequired(
-        request.mortgageAmountCurrency().orElse(null), request.mortgageAmount().orElse(null));
-    BigDecimal monthlyMortgagePayment = request.monthlyMortgagePayment().orElse(null);
-    if (monthlyMortgagePayment == null
-        || Property.VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment) != 0) {
+    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
+    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
+    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
+    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
+    if (monthlyMortgagePayment.isEmpty()
+        || VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment.orElseThrow()) != 0) {
       validateCurrencyRequired(
-          request.monthlyMortgagePaymentCurrency().orElse(null),
-          request.monthlyMortgagePayment().orElse(null));
+          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
+    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
+    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
+    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
+    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
     validateCurrencyRequired(
-        request.annualPropertyTaxCurrency().orElse(null), request.annualPropertyTax().orElse(null));
-    validateCurrencyRequired(
-        request.annualInsuranceCurrency().orElse(null), request.annualInsurance().orElse(null));
-    validateCurrencyRequired(
-        request.annualHoaFeeCurrency().orElse(null), request.annualHoaFee().orElse(null));
-    validateCurrencyRequired(
-        request.annualManagementFeeCurrency().orElse(null),
-        request.annualManagementFee().orElse(null));
-    validateCurrencyRequired(
-        request.annualMaintenanceReserveCurrency().orElse(null),
-        request.annualMaintenanceReserve().orElse(null));
-    validateCurrencyRequired(
-        request.landValueCurrency().orElse(null), request.landValue().orElse(null));
+        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
+    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
@@ -229,9 +219,7 @@ public class PropertyService {
                     "propertyAddress",
                     propertyName,
                     "propertyType",
-                    savedProperty.getPropertyType() != null
-                        ? savedProperty.getPropertyType().name()
-                        : "N/A",
+                    savedProperty.getPropertyType().name(),
                     "baseUrl",
                     appProperties.email().baseUrl()))
             .createdBy(principal.getUserId())
@@ -276,34 +264,22 @@ public class PropertyService {
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
-    validateCurrencyRequired(
-        request.purchasePriceCurrency().orElse(null), request.purchasePrice().orElse(null));
-    validateCurrencyRequired(
-        request.currentMarketValueCurrency().orElse(null),
-        request.currentMarketValue().orElse(null));
-    validateCurrencyRequired(
-        request.mortgageAmountCurrency().orElse(null), request.mortgageAmount().orElse(null));
-    BigDecimal monthlyMortgagePayment = request.monthlyMortgagePayment().orElse(null);
-    if (monthlyMortgagePayment == null
-        || Property.VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment) != 0) {
+    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
+    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
+    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
+    Optional<BigDecimal> monthlyMortgagePayment = request.monthlyMortgagePayment();
+    if (monthlyMortgagePayment.isEmpty()
+        || VARIABLE_PAYMENT_SENTINEL.compareTo(monthlyMortgagePayment.orElse(null)) != 0) {
       validateCurrencyRequired(
-          request.monthlyMortgagePaymentCurrency().orElse(null),
-          request.monthlyMortgagePayment().orElse(null));
+          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
     }
+    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
+    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
+    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
+    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
     validateCurrencyRequired(
-        request.annualPropertyTaxCurrency().orElse(null), request.annualPropertyTax().orElse(null));
-    validateCurrencyRequired(
-        request.annualInsuranceCurrency().orElse(null), request.annualInsurance().orElse(null));
-    validateCurrencyRequired(
-        request.annualHoaFeeCurrency().orElse(null), request.annualHoaFee().orElse(null));
-    validateCurrencyRequired(
-        request.annualManagementFeeCurrency().orElse(null),
-        request.annualManagementFee().orElse(null));
-    validateCurrencyRequired(
-        request.annualMaintenanceReserveCurrency().orElse(null),
-        request.annualMaintenanceReserve().orElse(null));
-    validateCurrencyRequired(
-        request.landValueCurrency().orElse(null), request.landValue().orElse(null));
+        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
+    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
@@ -435,7 +411,6 @@ public class PropertyService {
   }
 
   // --- Private helpers ---
-
   private void validateCategoryTypeMatch(PropertyCategory category, PropertyType type) {
     Set<PropertyType> validTypes = VALID_TYPES_BY_CATEGORY.get(category);
     if (validTypes == null || !validTypes.contains(type)) {
@@ -444,18 +419,19 @@ public class PropertyService {
     }
   }
 
+  @SafeVarargs
   private void validateCurrencyRequired(
-      @Nullable String currency, java.math.@Nullable BigDecimal... monetaryFields) {
-    if (currency != null && !currency.isBlank()) {
+      Optional<String> currency, Optional<BigDecimal>... monetaryFields) {
+    if (currency.isPresent() && !currency.orElseThrow().isBlank()) {
       try {
-        java.util.Currency.getInstance(currency);
+        Currency.getInstance(currency.orElseThrow());
       } catch (IllegalArgumentException e) {
         throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
       }
       return;
     }
-    for (java.math.BigDecimal field : monetaryFields) {
-      if (field != null) {
+    for (Optional<BigDecimal> field : monetaryFields) {
+      if (field.isPresent()) {
         throw new BadRequestException("Currency is required when monetary fields are provided");
       }
     }
@@ -785,9 +761,9 @@ public class PropertyService {
                                 a.getIdentifier(),
                                 a.getType(),
                                 a.getAreaValue(),
-                                Optional.ofNullable(a.getAreaUnit()),
+                                Optional.of(a.getAreaUnit()),
                                 a.getCreatedAt(),
-                                Optional.ofNullable(a.getUpdatedAt())))
+                                Optional.of(a.getUpdatedAt())))
                     .toList())
             : Optional.empty();
 
@@ -803,16 +779,14 @@ public class PropertyService {
     Optional<IndustrialDetailsResponse> industrialDetails = Optional.empty();
     Optional<AgriculturalDetailsResponse> agriculturalDetails = Optional.empty();
 
-    if (property.getPropertyCategory() != null) {
-      switch (property.getPropertyCategory()) {
-        case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
-        case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
-        case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
-        case AGRICULTURAL ->
-            agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
-        case MIXED_USE -> {
-          // No detail table
-        }
+    switch (property.getPropertyCategory()) {
+      case RESIDENTIAL -> residentialDetails = buildResidentialResponse(property.getId(), teamId);
+      case COMMERCIAL -> commercialDetails = buildCommercialResponse(property.getId(), teamId);
+      case INDUSTRIAL -> industrialDetails = buildIndustrialResponse(property.getId(), teamId);
+      case AGRICULTURAL ->
+          agriculturalDetails = buildAgriculturalResponse(property.getId(), teamId);
+      case MIXED_USE -> {
+        // No detail table
       }
     }
 

@@ -131,7 +131,7 @@ public class RegistrationInvitationService {
   }
 
   public ValidateInvitationCodeResponse validateCode(String code) {
-    if (code == null || code.isBlank()) {
+    if (code.isBlank()) {
       return new ValidateInvitationCodeResponse(false);
     }
 
