@@ -56,12 +56,8 @@ public class ContractRecordMapper {
     contract.setStatus(Contract.ContractStatus.valueOf(record.getStatus()));
     contract.setTermsAndConditions(Optional.ofNullable(record.getTermsAndConditions()));
     contract.setNotes(Optional.ofNullable(record.getNotes()));
-    if (record.getCreatedAt() != null) {
-      contract.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
-    if (record.getUpdatedAt() != null) {
-      contract.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
-    }
+    contract.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    contract.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     contract.setCreatedBy(record.getCreatedBy());
     contract.setUpdatedBy(record.getUpdatedBy());
     contract.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));

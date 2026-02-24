@@ -31,7 +31,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Payment;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.PaymentsRecord;
 import com.buurman.mapper.PaymentRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -368,7 +367,7 @@ public class PaymentRepository {
         sortableFields,
         PAYMENTS.DUE_DATE,
         pageRequest,
-        r -> mapper.toDomain((PaymentsRecord) r).orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   public Optional<Record2<Integer, BigDecimal>> getPendingStats(UUID teamId) {

@@ -789,7 +789,7 @@ public class PaymentService {
       auditService.logCreate(
           teamId,
           "BULK_PAYMENT_GENERATION",
-          generatedPayments.get(0).getId(),
+          generatedPayments.getFirst().getId(),
           principal.getUserId(),
           "Generated " + generatedPayments.size() + " payments for " + month);
     }

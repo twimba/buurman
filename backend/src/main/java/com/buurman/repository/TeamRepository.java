@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.TeamsRecord;
 import com.buurman.mapper.TeamRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -121,7 +120,7 @@ public class TeamRepository {
         sortableFields,
         TEAMS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((TeamsRecord) r).orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   /** Find by identifier including soft-deleted teams. For backoffice use. */

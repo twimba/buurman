@@ -23,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Property;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.PropertiesRecord;
 import com.buurman.mapper.PropertyRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -532,7 +531,7 @@ public class PropertyRepository {
         sortableFields,
         PROPERTIES.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((PropertiesRecord) r));
+        r -> mapper.toDomain(r));
   }
 
   public List<Property> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

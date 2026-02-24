@@ -30,12 +30,8 @@ public class ExpenseRecordMapper {
     expense.setExpenseDate(record.getExpenseDate());
     expense.setDescription(record.getDescription());
     expense.setNotes(Optional.ofNullable(record.getNotes()));
-    if (record.getCreatedAt() != null) {
-      expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
-    if (record.getUpdatedAt() != null) {
-      expense.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
-    }
+    expense.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    expense.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     expense.setCreatedBy(record.getCreatedBy());
     expense.setUpdatedBy(record.getUpdatedBy());
     expense.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));

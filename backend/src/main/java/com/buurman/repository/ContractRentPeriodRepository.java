@@ -51,14 +51,8 @@ public class ContractRentPeriodRepository {
   public ContractRentPeriod save(ContractRentPeriod period) {
     LocalDateTime now = LocalDateTime.now(clock);
     String currency = period.getCurrency();
-    Timestamp createdAt =
-        period.getCreatedAt() != null
-            ? Timestamp.from(period.getCreatedAt())
-            : Timestamp.valueOf(now);
-    Timestamp updatedAt =
-        period.getUpdatedAt() != null
-            ? Timestamp.from(period.getUpdatedAt())
-            : Timestamp.valueOf(now);
+    Timestamp createdAt = Timestamp.from(period.getCreatedAt());
+    Timestamp updatedAt = Timestamp.from(period.getUpdatedAt());
 
     if (period.getId() == null) {
       UUID id = UUID.randomUUID();

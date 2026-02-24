@@ -23,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Document;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.DocumentsRecord;
 import com.buurman.mapper.DocumentRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -235,7 +234,7 @@ public class DocumentRepository {
         sortableFields,
         DOCUMENTS.UPLOADED_AT,
         pageRequest,
-        r -> mapper.toDomain((DocumentsRecord) r));
+        r -> mapper.toDomain(r));
   }
 
   public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {

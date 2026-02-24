@@ -178,8 +178,8 @@ public class TenantBookletExporter {
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendCoverCell(html, "Email", tenant.getEmail().map(e -> escapeHtml(e)).orElse("—"));
-    appendCoverCell(html, "Phone", tenant.getPhone().map(p -> escapeHtml(p)).orElse("—"));
+    appendCoverCell(html, "Email", tenant.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, "Phone", tenant.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
     appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));

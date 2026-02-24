@@ -23,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Photo;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.PhotosRecord;
 import com.buurman.mapper.PhotoRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -193,7 +192,7 @@ public class PhotoRepository {
         sortableFields,
         PHOTOS.UPLOADED_AT,
         pageRequest,
-        r -> mapper.toDomain((PhotosRecord) r));
+        r -> mapper.toDomain(r));
   }
 
   public List<Photo> findWithoutThumbnail(int limit) {

@@ -166,10 +166,7 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r ->
-            mapper
-                .toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r)
-                .orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   public void updateStatus(
@@ -303,19 +300,14 @@ public class NotificationRepository {
         sortableFields,
         NOTIFICATIONS.CREATED_AT,
         pageRequest,
-        r ->
-            mapper
-                .toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r)
-                .orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   public Optional<Notification> findByIdentifierUnscoped(String identifier) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .flatMap(
-            r ->
-                mapper.toDomain((com.buurman.jooq.generated.tables.records.NotificationsRecord) r));
+        .flatMap(r -> mapper.toDomain(r));
   }
 
   public Notification getByIdentifierUnscoped(String identifier) {

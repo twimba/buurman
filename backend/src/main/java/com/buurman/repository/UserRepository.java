@@ -21,7 +21,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.UsersRecord;
 import com.buurman.mapper.UserRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -220,7 +219,7 @@ public class UserRepository {
         sortableFields,
         USERS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((UsersRecord) r));
+        r -> mapper.toDomain(r));
   }
 
   public Optional<User> findByIdentifierUnscoped(String identifier) {

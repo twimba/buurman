@@ -23,12 +23,8 @@ public class TeamRecordMapper {
     team.setIdentifier(record.getIdentifier());
     team.setName(record.getName());
     team.setDemo(record.getDemo());
-    if (record.getCreatedAt() != null) {
-      team.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
-    if (record.getUpdatedAt() != null) {
-      team.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
-    }
+    team.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    team.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     team.setCreatedBy(record.getCreatedBy());
     team.setUpdatedBy(record.getUpdatedBy());
     team.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));

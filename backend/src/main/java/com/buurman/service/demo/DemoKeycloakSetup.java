@@ -122,7 +122,7 @@ public class DemoKeycloakSetup {
     try {
       List<UserRepresentation> users = keycloak.realm(realm).users().searchByEmail(email, true);
       if (users != null && !users.isEmpty()) {
-        return Optional.of(users.get(0).getId());
+        return Optional.of(users.getFirst().getId());
       }
     } catch (Exception e) {
       log.debug("Could not search for Keycloak user: {}", email, e);

@@ -373,13 +373,13 @@ public class BackofficeFeatureFlagController {
     Optional<UUID> activeTeamIdOpt = user.getActiveTeamId();
     if (activeTeamIdOpt.isPresent()
         && memberships.stream().anyMatch(m -> m.getTeamId().equals(activeTeamIdOpt.get()))) {
-      return Optional.of(activeTeamIdOpt.get());
+      return activeTeamIdOpt;
     }
 
     Optional<UUID> defaultTeamIdOpt = user.getDefaultTeamId();
     if (defaultTeamIdOpt.isPresent()
         && memberships.stream().anyMatch(m -> m.getTeamId().equals(defaultTeamIdOpt.get()))) {
-      return Optional.of(defaultTeamIdOpt.get());
+      return defaultTeamIdOpt;
     }
 
     return Optional.of(memberships.getFirst().getTeamId());

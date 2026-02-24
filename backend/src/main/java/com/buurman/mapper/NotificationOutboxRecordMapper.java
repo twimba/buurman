@@ -34,9 +34,7 @@ public class NotificationOutboxRecordMapper {
       outbox.setNextRetryAt(record.getNextRetryAt().toInstant(UTC));
     }
     outbox.setLastError(Optional.ofNullable(record.getLastError()));
-    if (record.getCreatedAt() != null) {
-      outbox.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
+    outbox.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     outbox.setProcessedAt(
         Optional.ofNullable(record.getProcessedAt()).map(dt -> dt.toInstant(UTC)));
 

@@ -26,8 +26,7 @@ public class PhoneVerificationCodeRepository {
   public void save(PhoneVerificationCode code) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt =
-        code.getCreatedAt() != null ? LocalDateTime.ofInstant(code.getCreatedAt(), UTC) : now;
+    LocalDateTime createdAt = LocalDateTime.ofInstant(code.getCreatedAt(), UTC);
 
     dsl.insertInto(PHONE_VERIFICATION_CODES)
         .set(PHONE_VERIFICATION_CODES.ID, id)

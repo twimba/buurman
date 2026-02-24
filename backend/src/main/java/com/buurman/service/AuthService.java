@@ -234,7 +234,7 @@ public class AuthService {
       return defaultMatch;
     }
 
-    return Optional.of(memberships.get(0));
+    return Optional.of(memberships.getFirst());
   }
 
   @Transactional

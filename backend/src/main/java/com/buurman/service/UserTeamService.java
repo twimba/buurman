@@ -181,13 +181,13 @@ public class UserTeamService {
 
     if (user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       @Nullable UUID newActiveTeamId =
-          remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
+          remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateActiveTeamId(principal.getUserId(), newActiveTeamId);
     }
 
     if (user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false)) {
       @Nullable UUID newDefaultTeamId =
-          remainingMemberships.isEmpty() ? null : remainingMemberships.get(0).getTeamId();
+          remainingMemberships.isEmpty() ? null : remainingMemberships.getFirst().getTeamId();
       userRepository.updateDefaultTeamId(principal.getUserId(), newDefaultTeamId);
     }
   }

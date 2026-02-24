@@ -63,10 +63,8 @@ public class PropertyAmenityRepository {
 
     if (pa.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          pa.getCreatedAt() != null ? LocalDateTime.ofInstant(pa.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          pa.getUpdatedAt() != null ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = LocalDateTime.ofInstant(pa.getCreatedAt(), UTC);
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC);
 
       dsl.insertInto(PROPERTY_AMENITIES)
           .set(PROPERTY_AMENITIES.ID, newId)
@@ -84,8 +82,7 @@ public class PropertyAmenityRepository {
       pa.setCreatedAt(createdAt.toInstant(UTC));
       pa.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          pa.getUpdatedAt() != null ? LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(pa.getUpdatedAt(), UTC);
 
       dsl.update(PROPERTY_AMENITIES)
           .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))

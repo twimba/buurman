@@ -71,10 +71,8 @@ public class ContractPaymentInstructionRepository {
 
     UUID id = UUID.randomUUID();
     String identifier = newContractPaymentInstructionId().value();
-    LocalDateTime createdAt =
-        cpi.getCreatedAt() != null ? LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC) : now;
-    LocalDateTime updatedAt =
-        cpi.getUpdatedAt() != null ? LocalDateTime.ofInstant(cpi.getUpdatedAt(), UTC) : now;
+    LocalDateTime createdAt = LocalDateTime.ofInstant(cpi.getCreatedAt(), UTC);
+    LocalDateTime updatedAt = LocalDateTime.ofInstant(cpi.getUpdatedAt(), UTC);
 
     dsl.insertInto(TABLE)
         .set(ID, id)

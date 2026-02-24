@@ -47,14 +47,8 @@ public class ContractPartyRepository {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
 
-    Timestamp createdAt =
-        party.getCreatedAt() != null
-            ? Timestamp.from(party.getCreatedAt())
-            : Timestamp.valueOf(now);
-    Timestamp updatedAt =
-        party.getUpdatedAt() != null
-            ? Timestamp.from(party.getUpdatedAt())
-            : Timestamp.valueOf(now);
+    Timestamp createdAt = Timestamp.from(party.getCreatedAt());
+    Timestamp updatedAt = Timestamp.from(party.getUpdatedAt());
 
     dsl.insertInto(CONTRACT_PARTIES)
         .set(ID, id)

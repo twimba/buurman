@@ -389,9 +389,11 @@ public class PropertyBookletExporter {
             details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendCoverCell(
-        html, "Soil Type", details.getSoilType().map(v -> formatEnumValue(v)).orElse("—"));
+        html, "Soil Type", details.getSoilType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendCoverCell(
-        html, "Current Use", details.getCurrentUse().map(v -> formatEnumValue(v)).orElse("—"));
+        html,
+        "Current Use",
+        details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("<td></td>");
@@ -469,7 +471,7 @@ public class PropertyBookletExporter {
     appendField(
         html, "Furnished", details.getFurnished().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     appendField(
-        html, "Pet Policy", details.getPetPolicy().map(v -> formatEnumValue(v)).orElse("—"));
+        html, "Pet Policy", details.getPetPolicy().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -515,7 +517,9 @@ public class PropertyBookletExporter {
         details.getAccessibilityCompliant().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
+        html,
+        "Zoning",
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("<td></td>");
     html.append("</tr>");
     html.append("</table>");
@@ -578,7 +582,9 @@ public class PropertyBookletExporter {
         buildAreaDisplay(
             details.getYardAreaValue().orElse(null), details.getYardAreaUnit().orElse(null)));
     appendField(
-        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
+        html,
+        "Zoning",
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -600,18 +606,24 @@ public class PropertyBookletExporter {
         buildAreaDisplay(
             details.getArableAreaValue().orElse(null), details.getArableAreaUnit().orElse(null)));
     html.append("</tr><tr>");
-    appendField(html, "Soil Type", details.getSoilType().map(v -> formatEnumValue(v)).orElse("—"));
+    appendField(
+        html, "Soil Type", details.getSoilType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Water Rights",
         details.getHasWaterRights().map(v -> isTrue(v) ? "Yes" : "No").orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, "Water Source", details.getWaterSource().map(v -> formatEnumValue(v)).orElse("—"));
+        html,
+        "Water Source",
+        details.getWaterSource().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
-        html, "Irrigation", details.getIrrigationType().map(v -> formatEnumValue(v)).orElse("—"));
+        html,
+        "Irrigation",
+        details.getIrrigationType().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
-    appendField(html, "Fencing", details.getFencingType().map(v -> formatEnumValue(v)).orElse("—"));
+    appendField(
+        html, "Fencing", details.getFencingType().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
         html,
         "Outbuildings",
@@ -629,9 +641,13 @@ public class PropertyBookletExporter {
             .orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, "Current Use", details.getCurrentUse().map(v -> formatEnumValue(v)).orElse("—"));
+        html,
+        "Current Use",
+        details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     appendField(
-        html, "Zoning", details.getZoningClassification().map(v -> escapeHtml(v)).orElse("—"));
+        html,
+        "Zoning",
+        details.getZoningClassification().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr>");
     html.append("</table>");
   }
@@ -1007,9 +1023,7 @@ public class PropertyBookletExporter {
 
       if (i % 3 == 2 || i == photoEntries.size() - 1) {
         if (i == photoEntries.size() - 1) {
-          for (int pad = (i % 3) + 1; pad < 3; pad++) {
-            html.append("<td style='width:33%;'></td>");
-          }
+          html.append("<td style='width:33%;'></td>".repeat(3 - ((i % 3) + 1)));
         }
         html.append("</tr>");
       }

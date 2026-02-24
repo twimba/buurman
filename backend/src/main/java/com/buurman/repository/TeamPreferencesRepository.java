@@ -41,8 +41,7 @@ public class TeamPreferencesRepository {
 
     if (prefs.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          prefs.getCreatedAt() != null ? LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC) : now;
+      LocalDateTime createdAt = LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC);
 
       dsl.insertInto(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.ID, newId)

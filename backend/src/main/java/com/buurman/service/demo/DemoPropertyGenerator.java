@@ -393,9 +393,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, i < 4 ? currency : null)
             .set(PROPERTIES.MARKET_VALUE_DATE, i < 4 ? LocalDate.of(2025, 12, 1) : null)
             .set(PROPERTIES.MORTGAGE_TYPE, i == 0 ? "NONE" : i < 4 ? "FIXED_RATE" : null)
-            .set(
-                PROPERTIES.MORTGAGE_AMOUNT,
-                i > 0 && i < 4 ? Long.valueOf((150_000 + i * 50_000) * 100L) : null)
+            .set(PROPERTIES.MORTGAGE_AMOUNT, i > 0 && i < 4 ? (150_000 + i * 50_000) * 100L : null)
             .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, i > 0 && i < 4 ? currency : null)
             .set(
                 PROPERTIES.MORTGAGE_INTEREST_RATE,
@@ -406,22 +404,17 @@ public class DemoPropertyGenerator {
             .set(
                 PROPERTIES.MORTGAGE_END_DATE, i > 0 && i < 4 ? LocalDate.of(2050 + i, 3, 31) : null)
             .set(
-                PROPERTIES.MONTHLY_MORTGAGE_PAYMENT,
-                i > 0 && i < 4 ? Long.valueOf((600 + i * 150) * 100L) : null)
+                PROPERTIES.MONTHLY_MORTGAGE_PAYMENT, i > 0 && i < 4 ? (600 + i * 150) * 100L : null)
             .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY, i > 0 && i < 4 ? currency : null)
-            .set(
-                PROPERTIES.ANNUAL_PROPERTY_TAX,
-                i < 4 ? Long.valueOf((1200 + i * 300) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_PROPERTY_TAX, i < 4 ? (1200 + i * 300) * 100L : null)
             .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? Long.valueOf((400 + i * 100) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? (400 + i * 100) * 100L : null)
             .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? Long.valueOf((600 + i * 200) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? (600 + i * 200) * 100L : null)
             .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, i < 3 ? currency : null)
-            .set(
-                PROPERTIES.ANNUAL_MANAGEMENT_FEE,
-                i < 2 ? Long.valueOf((1800 + i * 600) * 100L) : null)
+            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE, i < 2 ? (1800 + i * 600) * 100L : null)
             .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? currency : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? Long.valueOf(500_00L) : null)
+            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? 500_00L : null)
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? currency : null)
             .set(
                 PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
@@ -432,7 +425,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH, i < 4 ? "9" : null)
             .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
             .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
-            .set(PROPERTIES.LAND_VALUE, i < 3 ? Long.valueOf((80_000 + i * 20_000) * 100L) : null)
+            .set(PROPERTIES.LAND_VALUE, i < 3 ? (80_000 + i * 20_000) * 100L : null)
             .set(PROPERTIES.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
             .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(PROPERTIES.UPDATED_AT, now)
@@ -691,39 +684,39 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_COMMERCIAL_DETAILS.UPDATED_BY, createdBy)
             .execute();
       }
-      case "INDUSTRIAL" -> {
-        dsl.insertInto(PROPERTY_INDUSTRIAL_DETAILS)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.ID, UUID.randomUUID())
-            .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, propertyId)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M,
-                BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-                BigDecimal.valueOf(1000 + random.nextInt(4000)))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
-                random.nextInt(3) == 0 ? BigDecimal.valueOf(5 + random.nextInt(20)) : null)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION, random.nextInt(4) == 0)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, true)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, random.nextBoolean())
-            .set(
-                PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE,
-                BigDecimal.valueOf(random.nextInt(500, 5000)))
-            .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, "sqm")
-            .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, "INDUSTRIAL")
-            .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_AT, now)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY, createdBy)
-            .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY, createdBy)
-            .execute();
-      }
+      case "INDUSTRIAL" ->
+          dsl.insertInto(PROPERTY_INDUSTRIAL_DETAILS)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.ID, UUID.randomUUID())
+              .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, propertyId)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M,
+                  BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
+                  BigDecimal.valueOf(1000 + random.nextInt(4000)))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
+                  random.nextInt(3) == 0 ? BigDecimal.valueOf(5 + random.nextInt(20)) : null)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION, random.nextInt(4) == 0)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, true)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, random.nextBoolean())
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_VALUE,
+                  BigDecimal.valueOf(random.nextInt(500, 5000)))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.YARD_AREA_UNIT, "sqm")
+              .set(PROPERTY_INDUSTRIAL_DETAILS.ZONING_CLASSIFICATION, "INDUSTRIAL")
+              .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_AT, now)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_AT, now)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY, createdBy)
+              .set(PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY, createdBy)
+              .execute();
+
       case "AGRICULTURAL" -> {
         BigDecimal totalLand = area;
         BigDecimal arableLand =

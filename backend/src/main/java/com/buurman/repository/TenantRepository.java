@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Tenant;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.TenantsRecord;
 import com.buurman.mapper.TenantRecordMapper;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
@@ -203,7 +202,7 @@ public class TenantRepository {
         sortableFields,
         TENANTS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((TenantsRecord) r));
+        r -> mapper.toDomain(r));
   }
 
   public List<Tenant> findByIdsAndTeamId(Collection<UUID> ids, UUID teamId) {

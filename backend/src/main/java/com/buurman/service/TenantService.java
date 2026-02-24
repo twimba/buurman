@@ -150,7 +150,7 @@ public class TenantService {
 
     request
         .email()
-        .filter(e -> !e.isBlank() && !tenant.getEmail().filter(e::equals).isPresent())
+        .filter(e -> !e.isBlank() && tenant.getEmail().filter(e::equals).isEmpty())
         .ifPresent(
             email ->
                 tenantRepository

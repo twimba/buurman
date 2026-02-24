@@ -27,7 +27,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Expense;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.ExpensesRecord;
 import com.buurman.mapper.ExpenseRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -226,7 +225,7 @@ public class ExpenseRepository {
         sortableFields,
         EXPENSES.EXPENSE_DATE,
         pageRequest,
-        r -> mapper.toDomain((ExpensesRecord) r).orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   public Optional<Record2<Integer, BigDecimal>> getTotalStats(UUID teamId) {

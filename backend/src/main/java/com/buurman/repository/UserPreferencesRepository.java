@@ -34,10 +34,8 @@ public class UserPreferencesRepository {
 
     if (prefs.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt =
-          prefs.getCreatedAt() != null ? LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC) : now;
-      LocalDateTime updatedAt =
-          prefs.getUpdatedAt() != null ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC) : now;
+      LocalDateTime createdAt = LocalDateTime.ofInstant(prefs.getCreatedAt(), UTC);
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC);
 
       dsl.insertInto(USER_PREFERENCES)
           .set(USER_PREFERENCES.ID, newId)
@@ -57,8 +55,7 @@ public class UserPreferencesRepository {
       prefs.setCreatedAt(createdAt.toInstant(UTC));
       prefs.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt =
-          prefs.getUpdatedAt() != null ? LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC) : now;
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(prefs.getUpdatedAt(), UTC);
 
       dsl.update(USER_PREFERENCES)
           .set(USER_PREFERENCES.THEME, prefs.getTheme())

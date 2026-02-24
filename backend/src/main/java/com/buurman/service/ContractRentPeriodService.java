@@ -292,7 +292,7 @@ public class ContractRentPeriodService {
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), contract.getTeamId());
     if (periods.size() == 1) {
-      ContractRentPeriod initial = periods.get(0);
+      ContractRentPeriod initial = periods.getFirst();
       initial.setRentAmount(contract.getRentAmount());
       initial.setEffectiveFrom(contract.getStartDate());
       initial.setUpdatedBy(principal.getUserId());

@@ -57,14 +57,10 @@ public record CreateContractRequest(
   }
 
   @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
-    return endDate.isEmpty() || startDate == null || !endDate.get().isBefore(startDate);
+    return endDate.isEmpty() || !endDate.get().isBefore(startDate);
   }
 
   @AssertTrue(message = "Exactly one PRIMARY_TENANT party is required") public boolean isExactlyOnePrimaryTenant() {
-    if (parties == null) {
-      return false;
-    }
-
     long count = parties.stream().filter(p -> p.role() == PRIMARY_TENANT).count();
 
     return count == 1;

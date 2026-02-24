@@ -131,7 +131,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     }
 
     // Priority 3: First membership (oldest by invited_at)
-    return Optional.of(memberships.get(0));
+    return Optional.of(memberships.getFirst());
   }
 
   @SuppressWarnings("unchecked")

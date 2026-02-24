@@ -35,10 +35,8 @@ public class RegistrationInvitation {
     if (expiresAt.isPresent() && expiresAt.get().isBefore(Instant.now())) {
       return false;
     }
-    if (maxUsages.isPresent() && usageCount >= maxUsages.get()) {
-      return false;
-    }
-    return true;
+
+    return maxUsages.isEmpty() || usageCount < maxUsages.get();
   }
 
   public String getStatus() {

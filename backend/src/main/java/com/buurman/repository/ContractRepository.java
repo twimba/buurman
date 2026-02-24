@@ -24,7 +24,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.Contract;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
-import com.buurman.jooq.generated.tables.records.ContractsRecord;
 import com.buurman.mapper.ContractRecordMapper;
 import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
@@ -186,14 +185,8 @@ public class ContractRepository {
     if (contract.getId() == null) {
       // Insert
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt =
-          contract.getCreatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getCreatedAt(), UTC)
-              : now;
-      LocalDateTime updatedAt =
-          contract.getUpdatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
-              : now;
+      LocalDateTime createdAt = LocalDateTime.ofInstant(contract.getCreatedAt(), UTC);
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC);
 
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
@@ -243,10 +236,7 @@ public class ContractRepository {
       contract.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
       // Update
-      LocalDateTime updatedAt =
-          contract.getUpdatedAt() != null
-              ? LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC)
-              : now;
+      LocalDateTime updatedAt = LocalDateTime.ofInstant(contract.getUpdatedAt(), UTC);
 
       dsl.update(CONTRACTS)
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
@@ -338,7 +328,7 @@ public class ContractRepository {
         sortableFields,
         CONTRACTS.CREATED_AT,
         pageRequest,
-        r -> mapper.toDomain((ContractsRecord) r).orElseThrow());
+        r -> mapper.toDomain(r).orElseThrow());
   }
 
   public List<Contract> findActiveByTeamId(UUID teamId) {

@@ -60,17 +60,15 @@ public class NotificationRecordMapper {
     notification.setProviderError(Optional.ofNullable(record.getProviderError()));
     notification.setStatusUpdatedAt(
         Optional.ofNullable(record.getStatusUpdatedAt()).map(dt -> dt.toInstant(UTC)));
-    notification.setOpenCount(record.getOpenCount() != null ? record.getOpenCount() : 0);
-    notification.setClickCount(record.getClickCount() != null ? record.getClickCount() : 0);
+    notification.setOpenCount(record.getOpenCount());
+    notification.setClickCount(record.getClickCount());
     notification.setFirstOpenedAt(
         Optional.ofNullable(record.getFirstOpenedAt()).map(dt -> dt.toInstant(UTC)));
     notification.setFirstClickedAt(
         Optional.ofNullable(record.getFirstClickedAt()).map(dt -> dt.toInstant(UTC)));
     notification.setResentFromId(Optional.ofNullable(record.getResentFromId()));
     notification.setResendReason(Optional.ofNullable(record.getResendReason()));
-    if (record.getCreatedAt() != null) {
-      notification.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-    }
+    notification.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     notification.setCreatedBy(Optional.ofNullable(record.getCreatedBy()));
 
     return Optional.of(notification);
