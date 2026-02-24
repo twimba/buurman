@@ -337,6 +337,8 @@ body {
     gap: 1rem;
 }
 .footer-copy { font-size: 0.875rem; color: #6b7194; }
+.footer-status { display: flex; align-items: center; opacity: 0.85; transition: opacity 0.2s; }
+.footer-status:hover { opacity: 1; }
 .footer-contact a {
     font-size: 0.875rem;
     color: #6b7194;
@@ -353,6 +355,7 @@ body {
     .footer-brand { max-width: 100%; }
     .footer-bottom { flex-direction: column; text-align: center; }
 }
+
 
 /* ── Scroll Reveal ───────────────────────────────── */
 .reveal {
