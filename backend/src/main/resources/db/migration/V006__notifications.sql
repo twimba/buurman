@@ -1,4 +1,6 @@
--- Notifications: the "golden registry" of all notifications ever sent
+-- =============================================================================
+-- notifications
+-- =============================================================================
 CREATE TABLE notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
@@ -6,6 +8,7 @@ CREATE TABLE notifications (
     -- What was sent
     notification_type VARCHAR(50) NOT NULL,
     subject VARCHAR(500),
+    body TEXT,
     recipient_email VARCHAR(255),
     recipient_phone VARCHAR(20),
     recipient_user_id UUID REFERENCES users (id),
@@ -20,25 +23,18 @@ CREATE TABLE notifications (
     provider_status VARCHAR(50),
     provider_error TEXT,
     status_updated_at TIMESTAMP,
+    -- Open/click tracking
+    open_count INTEGER NOT NULL DEFAULT 0,
+    click_count INTEGER NOT NULL DEFAULT 0,
+    first_opened_at TIMESTAMP,
+    first_clicked_at TIMESTAMP,
     -- Resend tracking
     resent_from_id UUID REFERENCES notifications (id),
     resend_reason VARCHAR(255),
     -- Audit
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     created_by UUID REFERENCES users (id),
-    CONSTRAINT uq_notifications_team_identifier UNIQUE (team_id, identifier),
-    CONSTRAINT chk_notifications_channel CHECK (channel IN ('EMAIL', 'SMS')),
-    CONSTRAINT chk_notifications_status CHECK (
-        status IN (
-            'PENDING',
-            'QUEUED',
-            'SENT',
-            'DELIVERED',
-            'FAILED',
-            'BOUNCED',
-            'REJECTED'
-        )
-    )
+    CONSTRAINT uq_notifications_team_identifier UNIQUE (team_id, identifier)
 );
 
 CREATE INDEX idx_notifications_team ON notifications (team_id);
@@ -67,7 +63,9 @@ CREATE INDEX idx_notifications_resent_from ON notifications (resent_from_id)
 WHERE
     resent_from_id IS NOT NULL;
 
--- Outbox table: transactional outbox for reliable delivery
+-- =============================================================================
+-- notification_outbox
+-- =============================================================================
 CREATE TABLE notification_outbox (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     notification_id UUID NOT NULL REFERENCES notifications (id),
@@ -79,10 +77,7 @@ CREATE TABLE notification_outbox (
     next_retry_at TIMESTAMP,
     last_error TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
-    processed_at TIMESTAMP,
-    CONSTRAINT chk_outbox_status CHECK (
-        status IN ('PENDING', 'PROCESSING', 'SENT', 'FAILED')
-    )
+    processed_at TIMESTAMP
 );
 
 CREATE INDEX idx_outbox_pending ON notification_outbox (status, next_retry_at)

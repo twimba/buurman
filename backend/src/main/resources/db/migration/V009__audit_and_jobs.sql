@@ -1,5 +1,29 @@
+-- =============================================================================
+-- audit_log
+-- =============================================================================
+CREATE TABLE audit_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    team_id UUID NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id UUID NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    changed_fields JSONB,
+    old_values JSONB,
+    new_values JSONB,
+    user_id UUID NOT NULL REFERENCES users (id),
+    TIMESTAMP TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_audit_log_team ON audit_log (team_id);
+
+CREATE INDEX idx_audit_log_entity ON audit_log (entity_type, entity_id);
+
+CREATE INDEX idx_audit_log_timestamp ON audit_log (TIMESTAMP DESC);
+
+-- =============================================================================
 -- Quartz Scheduler tables for PostgreSQL
 -- Source: https://github.com/quartz-scheduler/quartz/blob/master/quartz/src/main/resources/org/quartz/impl/jdbcjobstore/tables_postgres.sql
+-- =============================================================================
 CREATE TABLE QRTZ_JOB_DETAILS (
     SCHED_NAME VARCHAR(120) NOT NULL,
     JOB_NAME VARCHAR(200) NOT NULL,
@@ -183,3 +207,26 @@ CREATE INDEX IDX_QRTZ_FT_JG ON QRTZ_FIRED_TRIGGERS (SCHED_NAME, JOB_GROUP);
 CREATE INDEX IDX_QRTZ_FT_T_G ON QRTZ_FIRED_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP);
 
 CREATE INDEX IDX_QRTZ_FT_TG ON QRTZ_FIRED_TRIGGERS (SCHED_NAME, TRIGGER_GROUP);
+
+-- =============================================================================
+-- job_execution_history
+-- =============================================================================
+CREATE TABLE job_execution_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    job_name VARCHAR(200) NOT NULL,
+    job_group VARCHAR(200) NOT NULL,
+    trigger_name VARCHAR(200),
+    trigger_group VARCHAR(200),
+    started_at TIMESTAMP NOT NULL,
+    ended_at TIMESTAMP,
+    duration_ms BIGINT,
+    status VARCHAR(20) NOT NULL DEFAULT 'RUNNING',
+    error_message TEXT,
+    node_id VARCHAR(200)
+);
+
+CREATE INDEX idx_job_exec_job_name ON job_execution_history (job_name);
+
+CREATE INDEX idx_job_exec_started_at ON job_execution_history (started_at DESC);
+
+CREATE INDEX idx_job_exec_status ON job_execution_history (status);

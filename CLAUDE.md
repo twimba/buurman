@@ -73,7 +73,7 @@ Commands (via Makefile):
 
 ### Database Migrations (Flyway)
 - Location: `src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V030)
+- Convention: `V<version>__<description>.sql` (currently at V010)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts

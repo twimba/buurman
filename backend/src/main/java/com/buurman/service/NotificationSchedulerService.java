@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.domain.TeamRole.TEAM_EDITOR;
+import static com.buurman.util.Constants.SYSTEM_USER_ID;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigDecimal;
@@ -103,6 +104,7 @@ public class NotificationSchedulerService {
                                       "daysUntilExpiry", daysUntilExpiry,
                                       "expiryDate", formatDate(endDate),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .createdBy(SYSTEM_USER_ID)
                               .build()));
             }
 
@@ -166,6 +168,7 @@ public class NotificationSchedulerService {
                                       "amount", formatCurrency(payment.getAmount()),
                                       "dueDate", formatDate(payment.getDueDate()),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .createdBy(SYSTEM_USER_ID)
                               .build()));
             }
 
