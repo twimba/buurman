@@ -18,7 +18,7 @@ public class TeamMember {
   private UUID id;
   private UUID teamId;
   private UUID userId;
-  private String role;
+  private TeamRole role;
   private boolean isOwner;
   private Instant invitedAt;
   private UUID invitedBy;
@@ -28,7 +28,7 @@ public class TeamMember {
       UUID id,
       UUID teamId,
       UUID userId,
-      String role,
+      TeamRole role,
       Instant invitedAt,
       UUID invitedBy,
       Instant joinedAt) {

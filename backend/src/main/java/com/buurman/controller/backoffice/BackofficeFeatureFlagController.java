@@ -133,7 +133,7 @@ public class BackofficeFeatureFlagController {
           new TeamFlagEvaluation(
               team.getIdentifier(),
               team.getName(),
-              membership.getRole(),
+              membership.getRole().name(),
               membership.isOwner(),
               activeTeamId.map(membership.getTeamId()::equals).orElse(false),
               flags));

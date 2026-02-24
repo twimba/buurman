@@ -43,29 +43,30 @@ public class UserTeamService {
       UpdateUserProfileRequest request, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
-    @Nullable String oldPhone = user.getPhone().orElse(null);
-    @Nullable String newPhone = request.phone().orElse(null);
+    Optional<String> oldPhone = user.getPhone();
+    Optional<String> newPhone = request.phone();
 
     // Validate phone against policy before saving
-    if (newPhone != null && !newPhone.isBlank()) {
-      phoneNumberPolicyService.validate(newPhone);
-    }
+    newPhone.filter(p -> !p.isBlank()).ifPresent(phoneNumberPolicyService::validate);
 
     user.setFirstName(request.firstName());
     user.setLastName(request.lastName());
     user.setPhone(request.phone());
 
     // If phone changed or removed, clear verification
-    boolean phoneChanged = !java.util.Objects.equals(oldPhone, newPhone);
+    boolean phoneChanged = !oldPhone.equals(newPhone);
     if (phoneChanged) {
       user.setPhoneVerifiedAt(Optional.empty());
     }
 
     user = userRepository.save(user);
+    UUID savedUserId = user.getId();
 
-    // If phone changed to a new (non-null) value, trigger verification
-    if (phoneChanged && newPhone != null && !newPhone.isBlank()) {
-      phoneVerificationService.sendVerificationCode(user.getId());
+    // If phone changed to a new (non-blank) value, trigger verification
+    if (phoneChanged) {
+      newPhone
+          .filter(p -> !p.isBlank())
+          .ifPresent(p -> phoneVerificationService.sendVerificationCode(savedUserId));
     }
 
     return toProfileResponse(user);
@@ -95,7 +96,7 @@ public class UserTeamService {
               return new UserTeamResponse(
                   team.getIdentifier(),
                   team.getName(),
-                  membership.getRole(),
+                  membership.getRole().name(),
                   membership.isOwner(),
                   user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
                   user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),
@@ -123,7 +124,7 @@ public class UserTeamService {
     return new UserTeamResponse(
         team.getIdentifier(),
         team.getName(),
-        membership.getRole(),
+        membership.getRole().name(),
         membership.isOwner(),
         user.getDefaultTeamId().map(id -> id.equals(team.getId())).orElse(false),
         true, // now active
@@ -149,7 +150,7 @@ public class UserTeamService {
     return new UserTeamResponse(
         team.getIdentifier(),
         team.getName(),
-        membership.getRole(),
+        membership.getRole().name(),
         membership.isOwner(),
         true, // now default
         user.getActiveTeamId().map(id -> id.equals(team.getId())).orElse(false),

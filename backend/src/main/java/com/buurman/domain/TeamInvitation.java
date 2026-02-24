@@ -19,7 +19,7 @@ public class TeamInvitation {
   private UUID id;
   private UUID teamId;
   private String email;
-  private String role;
+  private TeamRole role;
   private String token;
   private Instant expiresAt;
   private UUID invitedBy;
@@ -37,7 +37,7 @@ public class TeamInvitation {
       UUID id,
       UUID teamId,
       String email,
-      String role,
+      TeamRole role,
       String token,
       Instant expiresAt,
       UUID invitedBy,

@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
+import com.buurman.domain.TeamRole;
+
 public class UserPrincipal implements Principal {
   private final UUID userId;
   private final String userIdentifier; // ULID
@@ -14,7 +16,7 @@ public class UserPrincipal implements Principal {
   private final String name;
   private final Optional<UUID> teamId; // empty for users without team membership
   private final Optional<String> teamIdentifier; // ULID, empty if no team
-  private final Optional<String> role; // empty for users without team membership
+  private final Optional<TeamRole> role; // empty for users without team membership
   private final boolean isOwner;
   private final boolean emailVerified;
 
@@ -26,7 +28,7 @@ public class UserPrincipal implements Principal {
       String name,
       @Nullable UUID teamId,
       @Nullable String teamIdentifier,
-      @Nullable String role,
+      @Nullable TeamRole role,
       boolean isOwner,
       boolean emailVerified) {
     this.userId = userId;
@@ -49,7 +51,7 @@ public class UserPrincipal implements Principal {
       String name,
       @Nullable UUID teamId,
       @Nullable String teamIdentifier,
-      @Nullable String role,
+      @Nullable TeamRole role,
       boolean isOwner) {
     this(
         userId,
@@ -72,7 +74,7 @@ public class UserPrincipal implements Principal {
       String name,
       @Nullable UUID teamId,
       @Nullable String teamIdentifier,
-      @Nullable String role) {
+      @Nullable TeamRole role) {
     this(
         userId, userIdentifier, keycloakId, email, name, teamId, teamIdentifier, role, false, true);
   }
@@ -106,7 +108,7 @@ public class UserPrincipal implements Principal {
     return teamIdentifier;
   }
 
-  public Optional<String> getRole() {
+  public Optional<TeamRole> getRole() {
     return role;
   }
 

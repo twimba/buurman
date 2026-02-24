@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.stereotype.Component;
 
 /** Provides type-specific conversion methods for MapStruct to map nullable values to Optional. */
+@Component
 public class OptionalMappingConfig {
 
   public Optional<String> mapString(@Nullable String value) {

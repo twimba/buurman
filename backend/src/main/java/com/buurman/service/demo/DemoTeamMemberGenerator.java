@@ -28,14 +28,14 @@ public class DemoTeamMemberGenerator {
 
       for (var entry : user.teamRoles().entrySet()) {
         String teamKey = entry.getKey();
-        DemoUsers.TeamRole teamRole = entry.getValue();
+        DemoUsers.MemberRole teamRole = entry.getValue();
         UUID teamId = ctx.getTeamIds().get(teamKey);
 
         dsl.insertInto(TEAM_MEMBERS)
             .set(TEAM_MEMBERS.ID, UUID.randomUUID())
             .set(TEAM_MEMBERS.TEAM_ID, teamId)
             .set(TEAM_MEMBERS.USER_ID, userId)
-            .set(TEAM_MEMBERS.ROLE, teamRole.role())
+            .set(TEAM_MEMBERS.ROLE, teamRole.role().name())
             .set(TEAM_MEMBERS.IS_OWNER, teamRole.isOwner())
             .set(TEAM_MEMBERS.INVITED_AT, now)
             .set(TEAM_MEMBERS.JOINED_AT, now)

@@ -1,5 +1,8 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.VERIFICATION_CODE;
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
+import static com.buurman.util.FeatureFlags.INVITATION_REQUIRED;
 import static com.buurman.util.UlidGenerator.newTeamId;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -33,7 +36,6 @@ import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.FeatureFlags;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -92,7 +94,7 @@ public class AuthService {
   @Transactional
   public UserResponse register(RegisterRequest request) {
     // Check if invitation code is required
-    boolean invitationRequired = featureFlagService.isEnabled(FeatureFlags.INVITATION_REQUIRED);
+    boolean invitationRequired = featureFlagService.isEnabled(INVITATION_REQUIRED);
     String registrationCode =
         request.registrationInvitationCode().filter(s -> !s.isBlank()).orElse(null);
 
@@ -145,7 +147,7 @@ public class AuthService {
       TeamMember member = new TeamMember();
       member.setTeamId(team.getId());
       member.setUserId(user.getId());
-      member.setRole("TEAM_ADMIN");
+      member.setRole(TEAM_ADMIN);
       member.setOwner(true);
       member.setInvitedAt(clock.instant());
       member.setJoinedAt(clock.instant());
@@ -170,7 +172,7 @@ public class AuthService {
       metricsService.incrementCounter("team.registered.total");
       metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
 
-      return userMapper.toResponse(user, team.getIdentifier(), "TEAM_ADMIN");
+      return userMapper.toResponse(user, team.getIdentifier(), TEAM_ADMIN.name());
     } catch (Exception e) {
       // Compensate: remove orphaned Keycloak user if DB operations fail
       log.error("Registration failed after Keycloak user creation, compensating", e);
@@ -191,7 +193,7 @@ public class AuthService {
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
 
     return userMapper.toResponse(
-        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
+        user, teamIdentifier, member.map(m -> m.getRole().name()).orElse(null));
   }
 
   @Transactional
@@ -206,7 +208,7 @@ public class AuthService {
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
 
     return userMapper.toResponse(
-        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
+        user, teamIdentifier, member.map(m -> m.getRole().name()).orElse(null));
   }
 
   private Optional<String> resolveTeamIdentifier(Optional<TeamMember> member) {
@@ -274,7 +276,7 @@ public class AuthService {
     Optional<TeamMember> member = getActiveMembership(user);
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
     return userMapper.toResponse(
-        user, teamIdentifier, member.map(TeamMember::getRole).orElse(null));
+        user, teamIdentifier, member.map(m -> m.getRole().name()).orElse(null));
   }
 
   @Transactional
@@ -310,7 +312,7 @@ public class AuthService {
                 notificationService.send(
                     SendNotificationRequest.builder()
                         .teamId(verificationTeamId)
-                        .notificationType(NotificationType.VERIFICATION_CODE)
+                        .notificationType(VERIFICATION_CODE)
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
                         .recipientPhone(user.getPhone().orElse(null))

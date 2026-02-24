@@ -1,5 +1,9 @@
 package com.buurman.security;
 
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
+import static com.buurman.domain.TeamRole.TEAM_EDITOR;
+import static com.buurman.domain.TeamRole.TEAM_VIEWER;
+
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +14,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +31,11 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings("StringConcatToTextBlock") // Error Prone 2.47.0 bug crashes on this file
+@SuppressWarnings({
+  "StringConcatToTextBlock",
+  "ParameterName",
+  "DuplicateBranches"
+}) // Error Prone 2.47.0 bug crashes on this file
 public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
   private final UserRepository userRepository;
@@ -67,8 +74,8 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     if (membershipOpt.isPresent()) {
       TeamMember membership = membershipOpt.get();
-      @Nullable String teamIdentifier =
-          teamRepository.findById(membership.getTeamId()).map(Team::getIdentifier).orElse(null);
+      String teamIdentifier =
+          teamRepository.findById(membership.getTeamId()).map(Team::getIdentifier).orElseThrow();
       principal =
           new UserPrincipal(
               user.getId(),
@@ -82,7 +89,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
               membership.isOwner(),
               emailVerified);
       List<SimpleGrantedAuthority> allAuthorities = new ArrayList<>();
-      allAuthorities.add(new SimpleGrantedAuthority("ROLE_" + membership.getRole()));
+      allAuthorities.add(new SimpleGrantedAuthority(membership.getRole().toSpringRole()));
       allAuthorities.addAll(realmAuthorities);
       authorities = Collections.unmodifiableList(allAuthorities);
     } else {
@@ -144,10 +151,10 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
       return Collections.emptyList();
     }
     // Only include non-team roles (team roles are handled via membership)
-    Set<String> teamRoles = Set.of("TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER");
+    Set<String> teamRoleNames = Set.of(TEAM_ADMIN.name(), TEAM_EDITOR.name(), TEAM_VIEWER.name());
     return roles.stream()
         .map(Object::toString)
-        .filter(role -> !teamRoles.contains(role))
+        .filter(role -> !teamRoleNames.contains(role))
         .filter(role -> !role.startsWith("default-roles-"))
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
         .toList();
@@ -159,7 +166,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
     user.setEmail(email);
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
 
-    String[] nameParts = name != null ? name.split(" ", 2) : new String[] {"", ""};
+    String[] nameParts = name.split(" ", 2);
     user.setFirstName(nameParts.length > 0 ? nameParts[0] : "");
     user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
 

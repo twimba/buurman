@@ -76,7 +76,7 @@ public class BackofficeTeamService {
                       Optional.ofNullable(u).map(User::getEmail),
                       Optional.ofNullable(u).map(User::getFirstName),
                       Optional.ofNullable(u).map(User::getLastName),
-                      m.getRole(),
+                      m.getRole().name(),
                       m.isOwner(),
                       m.getJoinedAt(),
                       u != null && u.getDisabledAt().isPresent());

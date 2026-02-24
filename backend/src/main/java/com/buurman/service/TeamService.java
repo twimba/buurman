@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toMap;
@@ -100,7 +101,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -137,7 +138,7 @@ public class TeamService {
                 Map.of(
                     "inviterName", inviterName,
                     "teamName", team.getName(),
-                    "role", formatRole(invitation.getRole()),
+                    "role", invitation.getRole().getDisplayName(),
                     "inviteUrl",
                         appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                     "expiresAt", formatInstantDate(invitation.getExpiresAt())))
@@ -274,7 +275,7 @@ public class TeamService {
                 Map.of(
                     "inviterName", inviterName,
                     "teamName", team.getName(),
-                    "role", formatRole(invitation.getRole()),
+                    "role", invitation.getRole().getDisplayName(),
                     "inviteUrl",
                         appProperties.email().baseUrl() + "/invitation/" + invitation.getToken(),
                     "expiresAt", formatInstantDate(invitation.getExpiresAt())))
@@ -372,7 +373,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -400,7 +401,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -428,7 +429,7 @@ public class TeamService {
 
     // Verify user is admin of this team
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -447,7 +448,7 @@ public class TeamService {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())
-        || !"TEAM_ADMIN".equals(principal.getRole().orElse(null))) {
+        || principal.getRole().map(r -> r != TEAM_ADMIN).orElse(true)) {
       throw new ForbiddenException("Access denied");
     }
 
@@ -501,10 +502,10 @@ public class TeamService {
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
             prefs.getDefaultCurrency(),
-            Optional.ofNullable(prefs.getDefaultCountry()),
-            Optional.ofNullable(prefs.getTimezone()),
-            Optional.ofNullable(prefs.getDateFormat()),
-            Optional.ofNullable(prefs.getFiscalYearStartMonth())));
+            Optional.of(prefs.getDefaultCountry()),
+            Optional.of(prefs.getTimezone()),
+            Optional.of(prefs.getDateFormat()),
+            Optional.of(prefs.getFiscalYearStartMonth())));
   }
 
   @Transactional
@@ -538,7 +539,7 @@ public class TeamService {
     teamMemberRepository.save(currentOwnerMember);
 
     newOwnerMember.setOwner(true);
-    newOwnerMember.setRole("TEAM_ADMIN"); // Owner must be admin
+    newOwnerMember.setRole(TEAM_ADMIN); // Owner must be admin
     newOwnerMember = teamMemberRepository.save(newOwnerMember);
 
     // Update team's created_by to new owner
@@ -551,15 +552,6 @@ public class TeamService {
 
   private Team resolveTeam(String teamIdentifier) {
     return teamRepository.getByIdentifier(teamIdentifier);
-  }
-
-  private String formatRole(String role) {
-    return switch (role) {
-      case "TEAM_ADMIN" -> "Administrator";
-      case "TEAM_EDITOR" -> "Editor";
-      case "TEAM_VIEWER" -> "Viewer";
-      default -> role;
-    };
   }
 
   private String formatInstantDate(Instant instant) {

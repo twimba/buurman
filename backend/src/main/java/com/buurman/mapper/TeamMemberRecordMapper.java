@@ -19,12 +19,16 @@ public interface TeamMemberRecordMapper {
   @Mapping(target = "invitedAt", expression = "java(toInstant(record.getInvitedAt()))")
   @Mapping(target = "joinedAt", expression = "java(toInstant(record.getJoinedAt()))")
   @Mapping(target = "isOwner", source = "isOwner")
+  @Mapping(
+      target = "role",
+      expression = "java(com.buurman.domain.TeamRole.valueOf(record.getRole()))")
   TeamMember toDomain(TeamMembersRecord record);
 
   @Mapping(target = "invitedAt", expression = "java(toLocalDateTime(teamMember.getInvitedAt()))")
   @Mapping(target = "joinedAt", expression = "java(toLocalDateTime(teamMember.getJoinedAt()))")
   @Mapping(target = "isOwner", source = "owner")
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "role", expression = "java(teamMember.getRole().name())")
   TeamMembersRecord toRecord(TeamMember teamMember);
 
   List<TeamMember> toDomainList(List<TeamMembersRecord> records);

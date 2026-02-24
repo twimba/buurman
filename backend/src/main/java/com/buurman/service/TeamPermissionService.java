@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.TeamMember;
+import com.buurman.domain.TeamRole;
 import com.buurman.exception.CrossTeamAccessException;
 import com.buurman.exception.InsufficientPermissionsException;
 import com.buurman.exception.TeamMembershipNotFoundException;
@@ -21,7 +22,7 @@ public class TeamPermissionService {
   private final TeamMemberRepository teamMemberRepository;
 
   /** Check if user has at least one of the specified roles in the given team. */
-  public boolean hasRole(UUID userId, UUID teamId, String... roles) {
+  public boolean hasRole(UUID userId, UUID teamId, TeamRole... roles) {
     return teamMemberRepository
         .findByUserIdAndTeamId(userId, teamId)
         .map(member -> Arrays.asList(roles).contains(member.getRole()))
@@ -57,7 +58,7 @@ public class TeamPermissionService {
    * Validate that the user has at least one of the required roles. Throws
    * InsufficientPermissionsException if not.
    */
-  public void validateRole(UserPrincipal principal, String... requiredRoles) {
+  public void validateRole(UserPrincipal principal, TeamRole... requiredRoles) {
     if (principal.getRole().isEmpty()) {
       throw new InsufficientPermissionsException("Access denied: no role assigned");
     }
@@ -79,14 +80,14 @@ public class TeamPermissionService {
   }
 
   /** Validate both team access and role in one call. */
-  public void validateTeamAndRole(UserPrincipal principal, UUID teamId, String... requiredRoles) {
+  public void validateTeamAndRole(UserPrincipal principal, UUID teamId, TeamRole... requiredRoles) {
     validateTeamAccess(principal, teamId);
     validateRole(principal, requiredRoles);
   }
 
   /** Validate team access, role, and ownership in one call. */
   public void validateTeamRoleAndOwnership(
-      UserPrincipal principal, UUID teamId, String... requiredRoles) {
+      UserPrincipal principal, UUID teamId, TeamRole... requiredRoles) {
     validateTeamAccess(principal, teamId);
     validateRole(principal, requiredRoles);
     validateOwnership(principal);

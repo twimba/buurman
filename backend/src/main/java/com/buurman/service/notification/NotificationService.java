@@ -3,6 +3,8 @@ package com.buurman.service.notification;
 import static com.buurman.domain.NotificationChannel.EMAIL;
 import static com.buurman.domain.NotificationChannel.SMS;
 import static com.buurman.domain.NotificationStatus.PENDING;
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
+import static com.buurman.domain.TeamRole.TEAM_EDITOR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,10 +152,9 @@ public class NotificationService {
     if (request.teamId().isEmpty()) {
       return;
     }
-    List<Notification> allNotifications = new ArrayList<>();
     List<TeamMember> members = teamMemberRepository.findByTeamId(request.teamId().get());
     for (TeamMember member : members) {
-      if (!"TEAM_ADMIN".equals(member.getRole()) && !"TEAM_EDITOR".equals(member.getRole())) {
+      if (member.getRole() != TEAM_ADMIN && member.getRole() != TEAM_EDITOR) {
         continue;
       }
       userRepository
@@ -172,7 +173,6 @@ public class NotificationService {
                         .templateVariables(request.templateVariables())
                         .createdBy(request.createdBy())
                         .build();
-                allNotifications.addAll(send(perUser));
               });
     }
   }

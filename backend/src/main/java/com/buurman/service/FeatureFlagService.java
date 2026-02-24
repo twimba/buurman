@@ -176,7 +176,7 @@ public class FeatureFlagService {
     traits.put("email", principal.getEmail());
     traits.put("is_owner", principal.isOwner());
     principal.getTeamIdentifier().ifPresent(team -> traits.put("team", team));
-    principal.getRole().ifPresent(r -> traits.put("role", r));
+    principal.getRole().ifPresent(r -> traits.put("role", r.name()));
     return traits;
   }
 }

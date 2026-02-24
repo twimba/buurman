@@ -28,6 +28,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.TeamRole;
 import com.buurman.security.BackofficeJwtAuthenticationConverter;
 import com.buurman.security.EmailVerificationFilter;
 import com.buurman.security.JwtAuthenticationConverter;
@@ -180,6 +181,6 @@ public class SecurityConfig {
 
   @Bean
   public RoleHierarchy roleHierarchy() {
-    return RoleHierarchyImpl.fromHierarchy("ROLE_TEAM_ADMIN > ROLE_TEAM_EDITOR > ROLE_TEAM_VIEWER");
+    return RoleHierarchyImpl.fromHierarchy(TeamRole.hierarchy());
   }
 }

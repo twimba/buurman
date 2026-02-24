@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.util.UlidGenerator.newCalendarFeedId;
 import static com.buurman.util.UlidGenerator.newToken;
 import static java.util.function.Function.identity;
@@ -491,7 +492,7 @@ public class CalendarFeedService {
 
   private void verifyOwnership(CalendarFeed feed, UserPrincipal principal) {
     boolean isOwner = feed.getUserId().equals(principal.getUserId());
-    boolean isAdmin = "TEAM_ADMIN".equals(principal.getRole().orElse(null));
+    boolean isAdmin = principal.getRole().map(r -> r == TEAM_ADMIN).orElse(false);
     if (!isOwner && !isAdmin) {
       throw new IllegalArgumentException("You do not have permission to modify this calendar feed");
     }

@@ -35,7 +35,11 @@ public class TeamMembershipAspect {
     // Check required roles
     String[] requiredRoles = requiresTeamRole.value();
     if (requiredRoles.length > 0) {
-      boolean hasRole = Arrays.asList(requiredRoles).contains(principal.getRole().orElse(null));
+      boolean hasRole =
+          principal
+              .getRole()
+              .map(r -> Arrays.asList(requiredRoles).contains(r.name()))
+              .orElse(false);
       if (!hasRole) {
         throw new InsufficientPermissionsException(
             "Access denied: requires one of " + Arrays.toString(requiredRoles));

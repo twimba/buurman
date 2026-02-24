@@ -42,8 +42,6 @@ import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
-import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
@@ -838,22 +836,18 @@ public class PaymentService {
   }
 
   private void sendPaymentPaidNotification(Payment payment, UUID teamId, UserPrincipal principal) {
-    @Nullable Contract contract =
-        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
-    String propertyName = "N/A";
-    String tenantName = "N/A";
-    if (contract != null) {
-      @Nullable Property property =
-          propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      @Nullable Tenant tenant =
-          contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
-      if (property != null) {
-        propertyName = property.getStreet() + ", " + property.getCity();
-      }
-      if (tenant != null) {
-        tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
-      }
-    }
+    Optional<Contract> contractOpt =
+        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId);
+    String propertyName =
+        contractOpt
+            .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
+            .map(p -> p.getStreet() + ", " + p.getCity())
+            .orElse("N/A");
+    String tenantName =
+        contractOpt
+            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .orElse("N/A");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
@@ -877,22 +871,18 @@ public class PaymentService {
 
   private void sendReceivalNotification(
       Payment payment, BigDecimal receivalAmount, UUID teamId, UserPrincipal principal) {
-    @Nullable Contract contract =
-        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId).orElse(null);
-    String propertyName = "N/A";
-    String tenantName = "N/A";
-    if (contract != null) {
-      @Nullable Property property =
-          propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      @Nullable Tenant tenant =
-          contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
-      if (property != null) {
-        propertyName = property.getStreet() + ", " + property.getCity();
-      }
-      if (tenant != null) {
-        tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
-      }
-    }
+    Optional<Contract> contractOpt =
+        contractRepository.findByIdAndTeamId(payment.getContractId(), teamId);
+    String propertyName =
+        contractOpt
+            .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
+            .map(p -> p.getStreet() + ", " + p.getCity())
+            .orElse("N/A");
+    String tenantName =
+        contractOpt
+            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
+            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .orElse("N/A");
     String currency = payment.getCurrency();
     BigDecimal totalReceived =
         receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);

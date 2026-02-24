@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.TeamRole.TEAM_EDITOR;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
+import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -195,7 +197,7 @@ public class NotificationSchedulerService {
   private void notifyTeamMembers(UUID teamId, java.util.function.Consumer<User> notifier) {
     List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
     for (TeamMember member : members) {
-      if ("TEAM_ADMIN".equals(member.getRole()) || "TEAM_EDITOR".equals(member.getRole())) {
+      if (member.getRole() == TeamRole.TEAM_ADMIN || member.getRole() == TEAM_EDITOR) {
         userRepository.findById(member.getUserId()).ifPresent(notifier);
       }
     }

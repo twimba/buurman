@@ -27,6 +27,9 @@ public interface TeamInvitationRecordMapper {
   @Mapping(
       target = "resentAt",
       expression = "java(java.util.Optional.ofNullable(toInstant(record.getResentAt())))")
+  @Mapping(
+      target = "role",
+      expression = "java(com.buurman.domain.TeamRole.valueOf(record.getRole()))")
   TeamInvitation toDomain(TeamInvitationsRecord record);
 
   @Mapping(target = "expiresAt", expression = "java(toLocalDateTime(invitation.getExpiresAt()))")
@@ -41,6 +44,7 @@ public interface TeamInvitationRecordMapper {
       target = "resentAt",
       expression = "java(toLocalDateTime(invitation.getResentAt().orElse(null)))")
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "role", expression = "java(invitation.getRole().name())")
   TeamInvitationsRecord toRecord(TeamInvitation invitation);
 
   List<TeamInvitation> toDomainList(List<TeamInvitationsRecord> records);
