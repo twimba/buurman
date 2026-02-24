@@ -71,11 +71,6 @@ public class PaymentRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Payment getByIdAndTeamId(UUID id, UUID teamId) {
-    return findByIdAndTeamId(id, teamId)
-        .orElseThrow(() -> new NotFoundException("Payment not found"));
-  }
-
   public List<Payment> findAllByTeamId(UUID teamId) {
     return dsl
         .selectFrom(PAYMENTS)
@@ -129,23 +124,6 @@ public class PaymentRepository {
         .toList();
   }
 
-  public List<Payment> findByStatus(Payment.PaymentStatus status, UUID teamId) {
-    return dsl
-        .selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .STATUS
-                .eq(status.name())
-                .and(PAYMENTS.TEAM_ID.eq(teamId))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.desc())
-        .fetch()
-        .stream()
-        .map(mapper::toDomain)
-        .flatMap(Optional::stream)
-        .toList();
-  }
-
   public List<Payment> findOverduePayments(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     return dsl
@@ -156,23 +134,6 @@ public class PaymentRepository {
                 .eq(teamId)
                 .and(PAYMENTS.STATUS.eq(PENDING.name()))
                 .and(PAYMENTS.DUE_DATE.lt(today))
-                .and(PAYMENTS.DELETED_AT.isNull()))
-        .orderBy(PAYMENTS.DUE_DATE.asc())
-        .fetch()
-        .stream()
-        .map(mapper::toDomain)
-        .flatMap(Optional::stream)
-        .toList();
-  }
-
-  public List<Payment> findByDueDateRange(LocalDate startDate, LocalDate endDate, UUID teamId) {
-    return dsl
-        .selectFrom(PAYMENTS)
-        .where(
-            PAYMENTS
-                .TEAM_ID
-                .eq(teamId)
-                .and(PAYMENTS.DUE_DATE.between(startDate, endDate))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.asc())
         .fetch()

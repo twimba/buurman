@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,7 +66,7 @@ public class S3StorageService {
     Instant start = clock.instant();
     try {
       String originalFilename = file.getOriginalFilename();
-      if (originalFilename == null ){
+      if (originalFilename == null) {
         throw new RuntimeException("Unable to upload file. No filename provided");
       }
       String fileKey =

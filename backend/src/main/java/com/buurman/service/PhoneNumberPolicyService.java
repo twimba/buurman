@@ -54,7 +54,7 @@ public class PhoneNumberPolicyService {
   }
 
   public void validate(String phone) {
-    if (phone == null || phone.isBlank()) {
+    if (phone.isBlank()) {
       return;
     }
 

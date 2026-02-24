@@ -42,15 +42,6 @@ public class AmenityRepository {
         .orElseThrow(() -> new NotFoundException("Amenity not found"));
   }
 
-  public List<Amenity> findByCategory(String category) {
-    return List.copyOf(
-        dsl.selectFrom(AMENITIES)
-            .where(AMENITIES.CATEGORY.eq(category))
-            .orderBy(AMENITIES.NAME)
-            .fetch()
-            .map(this::toDomain));
-  }
-
   public List<Amenity> findByApplicableCategory(String propertyCategory) {
     Condition condition =
         DSL.condition("{0} = ANY({1})", DSL.val(propertyCategory), AMENITIES.APPLICABLE_CATEGORIES);

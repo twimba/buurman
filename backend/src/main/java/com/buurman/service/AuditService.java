@@ -192,13 +192,6 @@ public class AuditService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public List<RecentActivityResponse> getAllAuditLogs(
-      UUID teamId, @Nullable String entityType, @Nullable String action, @Nullable String search) {
-    return auditLogRepository.findAllByTeamId(teamId, entityType, action, search).stream()
-        .map(record -> mapRecordToRecentActivity(record, record.get(AUDIT_LOG.ENTITY_TYPE), teamId))
-        .toList();
-  }
-
   private RecentActivityResponse mapRecordToRecentActivity(
       Record record, String entityType, UUID teamId) {
     String action = record.get(AUDIT_LOG.ACTION);

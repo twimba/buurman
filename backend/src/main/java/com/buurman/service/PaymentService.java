@@ -126,7 +126,6 @@ public class PaymentService {
     List<BulkCreateResult<PaymentResponse>> results = new ArrayList<>();
 
     for (int i = 0; i < requests.size(); i++) {
-      final int index = i;
       CreatePaymentRequest request = requests.get(i);
 
       Set<ConstraintViolation<CreatePaymentRequest>> violations = validator.validate(request);
@@ -135,17 +134,17 @@ public class PaymentService {
             violations.stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(joining(", "));
-        results.add(BulkCreateResult.error(index, errorMsg));
+        results.add(BulkCreateResult.error(i, errorMsg));
         continue;
       }
 
       try {
         PaymentResponse response =
             txTemplate.execute(status -> performCreatePayment(request, principal));
-        results.add(BulkCreateResult.success(index, response));
+        results.add(BulkCreateResult.success(i, response));
       } catch (Exception e) {
-        log.warn("Bulk payment creation failed for item {}: {}", index, e.getMessage());
-        results.add(BulkCreateResult.error(index, extractPaymentErrorMessage(e)));
+        log.warn("Bulk payment creation failed for item {}: {}", i, e.getMessage());
+        results.add(BulkCreateResult.error(i, extractPaymentErrorMessage(e)));
       }
     }
 
@@ -317,21 +316,6 @@ public class PaymentService {
         CurrencyUtils.sumToMajorUnits(overdue.map(Record2::value2).orElse(null), currency),
         Optional.ofNullable(currency),
         monthlyTrend);
-  }
-
-  @Transactional(readOnly = true)
-  public List<PaymentResponse> getPaymentsByContract(
-      String contractIdentifier, UserPrincipal principal) {
-    UUID teamId = principal.requireTeamId();
-
-    Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
-
-    List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
-
-    LocalDate today = LocalDate.now(clock);
-    payments.forEach(payment -> updatePaymentStatus(payment, today));
-
-    return enrichPaymentResponses(payments, teamId);
   }
 
   @Transactional(readOnly = true)
@@ -864,10 +848,7 @@ public class PaymentService {
       @Nullable Tenant tenant =
           contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
       if (property != null) {
-        propertyName =
-            property.getStreet() != null
-                ? property.getStreet() + ", " + property.getCity()
-                : property.getIdentifier();
+        propertyName = property.getStreet() + ", " + property.getCity();
       }
       if (tenant != null) {
         tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
@@ -906,10 +887,7 @@ public class PaymentService {
       @Nullable Tenant tenant =
           contractPartyService.findPrimaryTenantForContract(contract.getId(), teamId).orElse(null);
       if (property != null) {
-        propertyName =
-            property.getStreet() != null
-                ? property.getStreet() + ", " + property.getCity()
-                : property.getIdentifier();
+        propertyName = property.getStreet() + ", " + property.getCity();
       }
       if (tenant != null) {
         tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
@@ -1001,7 +979,7 @@ public class PaymentService {
 
       if (contract != null) {
         com.buurman.domain.@Nullable Property property =
-            contract.getPropertyId() != null ? propertiesById.get(contract.getPropertyId()) : null;
+            propertiesById.get(contract.getPropertyId());
         com.buurman.domain.@Nullable Tenant tenant = primaryTenantByContract.get(contract.getId());
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
