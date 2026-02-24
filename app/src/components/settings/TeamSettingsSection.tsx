@@ -124,7 +124,7 @@ export const TeamSettingsSection = () => {
   };
 
   const handleTransferOwnership = () => {
-    if (!selectedMemberId){
+    if (!selectedMemberId) {
       return;
     }
     transferOwnershipMutation.mutate(selectedMemberId, {

@@ -44,9 +44,7 @@ public class PhoneNumberPolicyService {
 
   @Transactional
   public PhoneNumberPolicy updatePolicy(PhoneNumberPolicy policy) {
-    if (policy.getPolicyMatrix().isPresent()) {
-      CountryGroups.validateMatrix(policy.getPolicyMatrix().get());
-    }
+    policy.getPolicyMatrix().ifPresent(CountryGroups::validateMatrix);
     PhoneNumberPolicy saved = policyRepository.save(policy);
     cachedPolicy = saved;
     log.info("Phone number policy updated by {}", policy.getUpdatedBy().orElse("unknown"));
