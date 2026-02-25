@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -9,6 +9,8 @@ import {
   MoreHorizontal,
   Ticket,
   StickyNote,
+  Save,
+  Loader2,
 } from "lucide-react";
 import { RefreshButton, Pagination, ConfirmDialog } from "@buurman/ui";
 import { format } from "date-fns";
@@ -16,6 +18,10 @@ import {
   useRegistrationInvitations,
   useRevokeRegistrationInvitation,
 } from "../hooks/useRegistrationInvitations";
+import {
+  useRateLimitConfig,
+  useUpdateRateLimitConfig,
+} from "../hooks/useSettings";
 import { usePagination } from "../hooks/usePagination";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { SortableHeader } from "../components/SortableHeader";
@@ -47,6 +53,44 @@ export function RegistrationInvitationsPage() {
     top: number;
     right: number;
   } | null>(null);
+
+  // Rate limit settings
+  const { data: rlConfig, isLoading: rlLoading } =
+    useRateLimitConfig("registration-validation");
+  const updateRateLimit = useUpdateRateLimitConfig();
+  const [rlMaxRequests, setRlMaxRequests] = useState(10);
+  const [rlPeriodSeconds, setRlPeriodSeconds] = useState(60);
+  const [rlEnabled, setRlEnabled] = useState(true);
+  const [rlSynced, setRlSynced] = useState(false);
+
+  useEffect(() => {
+    if (rlConfig && !rlSynced) {
+      setRlMaxRequests(rlConfig.maxRequests);
+      setRlPeriodSeconds(rlConfig.periodSeconds);
+      setRlEnabled(rlConfig.enabled);
+      setRlSynced(true);
+    }
+  }, [rlConfig, rlSynced]);
+
+  const handleSaveRateLimit = () => {
+    updateRateLimit.mutate(
+      {
+        key: "registration-validation",
+        data: {
+          maxRequests: rlMaxRequests,
+          periodSeconds: rlPeriodSeconds,
+          enabled: rlEnabled,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          setRlMaxRequests(data.maxRequests);
+          setRlPeriodSeconds(data.periodSeconds);
+          setRlEnabled(data.enabled);
+        },
+      },
+    );
+  };
 
   const handleToggleMenu = (identifier: string) => {
     if (openMenu !== identifier) {
@@ -128,6 +172,117 @@ export function RegistrationInvitationsPage() {
           </button>
         </div>
       </div>
+
+      {/* Rate Limit Settings */}
+      {rlLoading ? (
+        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+          <div className="animate-pulse flex space-x-4">
+            <div className="flex-1 space-y-3 py-1">
+              <div className="h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-1/4" />
+              <div className="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-1/2" />
+            </div>
+          </div>
+        </div>
+      ) : rlConfig ? (
+        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              Rate Limit Settings
+            </h2>
+            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              {rlConfig.description || "Configure rate limiting for code validation requests."}
+            </p>
+          </div>
+          <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                Max requests per period
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={10000}
+                value={rlMaxRequests}
+                onChange={(e) =>
+                  setRlMaxRequests(
+                    Math.max(1, Math.min(10000, Number(e.target.value) || 1)),
+                  )
+                }
+                className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              />
+              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                Maximum validation attempts per IP per period (1–10,000).
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                Period (seconds)
+              </label>
+              <input
+                type="number"
+                min={10}
+                max={86400}
+                value={rlPeriodSeconds}
+                onChange={(e) =>
+                  setRlPeriodSeconds(
+                    Math.max(10, Math.min(86400, Number(e.target.value) || 10)),
+                  )
+                }
+                className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              />
+              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                Time window in seconds (10–86,400).
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                Enabled
+              </label>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={rlEnabled}
+                onClick={() => setRlEnabled(!rlEnabled)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#5c7cfa] focus:ring-offset-2 ${
+                  rlEnabled ? "bg-[#5c7cfa]" : "bg-[#c9cfd9] dark:bg-[#3a3f54]"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    rlEnabled ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                {rlEnabled ? "Rate limiting is active." : "Rate limiting is disabled — all requests pass through."}
+              </p>
+            </div>
+          </div>
+          <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
+            <div>
+              {rlConfig.updatedAt && (
+                <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                  Last updated{" "}
+                  {format(new Date(rlConfig.updatedAt), "dd MMM yyyy HH:mm")}
+                  {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ""}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={handleSaveRateLimit}
+              disabled={updateRateLimit.isPending}
+              className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
+            >
+              {updateRateLimit.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              Save Settings
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Search */}
       <div className="relative max-w-sm">
