@@ -33,6 +33,8 @@ const statusColors: Record<string, string> = {
   FALLOW: 'bg-stone-100 text-stone-800 dark:bg-stone-900 dark:text-stone-200',
   LISTED:
     'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+  SELF_OCCUPIED:
+    'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
 };
 
 const categoryIcons: Record<string, typeof Home> = {

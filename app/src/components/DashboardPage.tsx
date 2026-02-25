@@ -120,8 +120,11 @@ export const DashboardPage = () => {
             {stats?.occupiedUnits || 0}
           </div>
           <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
+            {stats?.selfOccupiedUnits
+              ? `${stats.selfOccupiedUnits} self-occupied, `
+              : ''}
             {stats?.vacantUnits || 0} vacant, {stats?.maintenanceUnits || 0} in
-            maintenance, {stats?.unavailableUnits || 0} unavailable
+            maintenance
           </div>
         </div>
 
@@ -198,6 +201,25 @@ export const DashboardPage = () => {
                   %
                 </div>
               </div>
+              {stats.selfOccupiedUnits > 0 && (
+                <div className="flex items-center justify-between p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                  <div>
+                    <div className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                      Self-Occupied
+                    </div>
+                    <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                      {stats.selfOccupiedUnits}
+                    </div>
+                  </div>
+                  <div className="text-sm text-indigo-700 dark:text-indigo-300">
+                    {(
+                      (stats.selfOccupiedUnits / stats.totalProperties) *
+                      100
+                    ).toFixed(0)}
+                    %
+                  </div>
+                </div>
+              )}
               <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
                 <div>
                   <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
@@ -258,6 +280,7 @@ export const DashboardPage = () => {
             </h2>
             <PropertyStatusChart
               occupied={stats.occupiedUnits}
+              selfOccupied={stats.selfOccupiedUnits}
               vacant={stats.vacantUnits}
               maintenance={stats.maintenanceUnits}
               unavailable={stats.unavailableUnits}

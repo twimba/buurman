@@ -18,6 +18,11 @@ import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedType } from '@/types/calendarFeed';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
+import { useOccupancyPeriods } from '@/hooks/useOccupancyPeriodHooks';
+import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
+import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
+import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
+import { PropertyTimeline } from '@/components/properties/PropertyTimeline';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import {
   PropertyStatus,
@@ -57,6 +62,8 @@ import {
   Download,
   BarChart3,
   Wallet,
+  Home,
+  Clock as ClockIcon,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -77,6 +84,8 @@ const statusColors: Record<string, string> = {
     'bg-stone-100 dark:bg-stone-900/30 text-stone-800 dark:text-stone-300',
   LISTED:
     'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
+  SELF_OCCUPIED:
+    'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300',
 };
 
 export const PropertyDetailPage = () => {
@@ -93,8 +102,11 @@ export const PropertyDetailPage = () => {
     'expenses',
     'audit',
     'dashboard',
+    'timeline',
   ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSelfOccupancyModal, setShowSelfOccupancyModal] = useState(false);
+  const [showEndOccupancyModal, setShowEndOccupancyModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -154,6 +166,10 @@ export const PropertyDetailPage = () => {
     isLoading: expensesLoading,
     error: expensesError,
   } = useExpensesByProperty(id);
+  const { data: occupancyPeriods = [] } = useOccupancyPeriods(id);
+  const activeOccupancyPeriod = occupancyPeriods.find(
+    (p) => !p.endDate || new Date(p.endDate) >= new Date()
+  );
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const uploadPhotoMutation = useUploadPropertyPhoto(id!);
@@ -507,6 +523,18 @@ export const PropertyDetailPage = () => {
               >
                 Edit
               </Button>
+              {canEditData &&
+                property.status !== 'OCCUPIED' &&
+                property.status !== 'SELF_OCCUPIED' &&
+                !activeOccupancyPeriod && (
+                  <Button
+                    variant="secondary"
+                    leftIcon={<Home />}
+                    onClick={() => setShowSelfOccupancyModal(true)}
+                  >
+                    Self-Occupy
+                  </Button>
+                )}
               <Button
                 variant="danger"
                 leftIcon={<Trash2 />}
@@ -600,6 +628,17 @@ export const PropertyDetailPage = () => {
               Expenses {expenses.length > 0 && `(${expenses.length})`}
             </button>
             <button
+              onClick={() => setActiveTab('timeline')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'timeline'
+                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
+                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+              }`}
+            >
+              <ClockIcon className="h-4 w-4" />
+              Timeline
+            </button>
+            <button
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'audit'
@@ -616,6 +655,13 @@ export const PropertyDetailPage = () => {
         {/* Tab Content */}
         {activeTab === 'info' && (
           <div className="space-y-6">
+            {activeOccupancyPeriod && (
+              <SelfOccupancyCard
+                period={activeOccupancyPeriod}
+                canEdit={canEditData}
+                onEnd={() => setShowEndOccupancyModal(true)}
+              />
+            )}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
               {/* Status & Category Badges */}
               <div className="flex gap-2 flex-wrap">
@@ -1345,6 +1391,15 @@ export const PropertyDetailPage = () => {
 
         {activeTab === 'financials' && (
           <PropertyFinancialsTab propertyId={id!} />
+        )}
+
+        {activeTab === 'timeline' && (
+          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db] mb-4">
+              Property Timeline
+            </h2>
+            <PropertyTimeline propertyIdentifier={id!} />
+          </div>
         )}
 
         {activeTab === 'photos' && (
@@ -2079,6 +2134,21 @@ export const PropertyDetailPage = () => {
       </div>
 
       {/* Delete Confirmation Modal */}
+      {showSelfOccupancyModal && id && (
+        <SelfOccupancyModal
+          propertyIdentifier={id}
+          onClose={() => setShowSelfOccupancyModal(false)}
+        />
+      )}
+
+      {showEndOccupancyModal && id && activeOccupancyPeriod && (
+        <EndSelfOccupancyModal
+          propertyIdentifier={id}
+          periodIdentifier={activeOccupancyPeriod.identifier}
+          onClose={() => setShowEndOccupancyModal(false)}
+        />
+      )}
+
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">

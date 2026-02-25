@@ -82,6 +82,10 @@ public class UlidGenerator {
     return generate(EntityPrefix.PRO);
   }
 
+  public static Ulid newOccupancyPeriodId() {
+    return generate(EntityPrefix.OCP);
+  }
+
   public static Ulid newPropertyOutdoorAreaId() {
     return generate(EntityPrefix.POA);
   }

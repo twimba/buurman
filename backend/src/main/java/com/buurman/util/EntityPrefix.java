@@ -16,6 +16,7 @@ public enum EntityPrefix {
   PHO("PHO", "Photos"),
   PRO("PRO", "Properties"),
   RIN("RIN", "Registration Invitations"),
+  OCP("OCP", "Property Occupancy Periods"),
   POA("POA", "Property Outdoor Areas"),
   TEA("TEA", "Teams"),
   TAD("TAD", "Tenant Addresses"),

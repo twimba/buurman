@@ -1,8 +1,12 @@
 package com.buurman.service;
 
+import static com.buurman.domain.Property.PropertyStatus.FALLOW;
+import static com.buurman.domain.Property.PropertyStatus.LISTED;
 import static com.buurman.domain.Property.PropertyStatus.MAINTENANCE;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
+import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
+import static com.buurman.domain.Property.PropertyStatus.UNDER_RENOVATION;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static java.time.ZoneOffset.UTC;
 
@@ -40,18 +44,34 @@ public class DashboardService {
 
     int totalProperties = allProperties.size();
     int occupiedUnits = (int) allProperties.stream().filter(p -> p.getStatus() == OCCUPIED).count();
+    int selfOccupiedUnits =
+        (int) allProperties.stream().filter(p -> p.getStatus() == SELF_OCCUPIED).count();
     int vacantUnits = (int) allProperties.stream().filter(p -> p.getStatus() == VACANT).count();
     int maintenanceUnits =
         (int) allProperties.stream().filter(p -> p.getStatus() == MAINTENANCE).count();
     int unavailableUnits =
         (int) allProperties.stream().filter(p -> p.getStatus() == UNAVAILABLE).count();
+    int underRenovationUnits =
+        (int) allProperties.stream().filter(p -> p.getStatus() == UNDER_RENOVATION).count();
+    int fallowUnits = (int) allProperties.stream().filter(p -> p.getStatus() == FALLOW).count();
+    int listedUnits = (int) allProperties.stream().filter(p -> p.getStatus() == LISTED).count();
 
-    // Calculate occupancy rate (excluding unavailable units)
+    // Occupancy rate: occupied + self-occupied vs available (excluding unavailable)
     int availableUnits = totalProperties - unavailableUnits;
     BigDecimal occupancyRate =
         availableUnits > 0
-            ? BigDecimal.valueOf(occupiedUnits)
+            ? BigDecimal.valueOf(occupiedUnits + selfOccupiedUnits)
                 .divide(BigDecimal.valueOf(availableUnits), 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+            : BigDecimal.ZERO;
+
+    // Rental occupancy rate: only rented units vs rental-eligible units
+    // Excludes self-occupied from both numerator and denominator
+    int rentalEligibleUnits = totalProperties - unavailableUnits - selfOccupiedUnits;
+    BigDecimal rentalOccupancyRate =
+        rentalEligibleUnits > 0
+            ? BigDecimal.valueOf(occupiedUnits)
+                .divide(BigDecimal.valueOf(rentalEligibleUnits), 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
             : BigDecimal.ZERO;
 
@@ -61,11 +81,16 @@ public class DashboardService {
     return new DashboardStatsResponse(
         totalProperties,
         occupiedUnits,
+        selfOccupiedUnits,
         vacantUnits,
         maintenanceUnits,
         unavailableUnits,
+        underRenovationUnits,
+        fallowUnits,
+        listedUnits,
         monthlyIncome,
-        occupancyRate);
+        occupancyRate,
+        rentalOccupancyRate);
   }
 
   public List<RecentActivityResponse> getRecentActivities(UUID teamId, int limit) {

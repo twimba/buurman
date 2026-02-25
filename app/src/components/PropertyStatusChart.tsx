@@ -14,6 +14,7 @@ type LegendProps = {
 
 interface PropertyStatusChartProps {
   occupied: number;
+  selfOccupied: number;
   vacant: number;
   maintenance: number;
   unavailable: number;
@@ -47,6 +48,7 @@ const CustomTooltip = ({
 
 export const PropertyStatusChart = ({
   occupied,
+  selfOccupied,
   vacant,
   maintenance,
   unavailable,
@@ -55,14 +57,15 @@ export const PropertyStatusChart = ({
     () =>
       [
         { name: 'Occupied', value: occupied, color: '#10b981' },
+        { name: 'Self-Occupied', value: selfOccupied, color: '#6366f1' },
         { name: 'Vacant', value: vacant, color: '#fcc419' },
         { name: 'Maintenance', value: maintenance, color: '#f59f00' },
         { name: 'Unavailable', value: unavailable, color: '#6b7194' },
       ].filter((item) => item.value > 0),
-    [occupied, vacant, maintenance, unavailable]
+    [occupied, selfOccupied, vacant, maintenance, unavailable]
   );
 
-  const total = occupied + vacant + maintenance + unavailable;
+  const total = occupied + selfOccupied + vacant + maintenance + unavailable;
 
   const renderLegend = (props: LegendProps) => {
     const { payload } = props;

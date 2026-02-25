@@ -52,6 +52,7 @@ export enum PropertyType {
 export enum PropertyStatus {
   VACANT = 'VACANT',
   OCCUPIED = 'OCCUPIED',
+  SELF_OCCUPIED = 'SELF_OCCUPIED',
   MAINTENANCE = 'MAINTENANCE',
   UNAVAILABLE = 'UNAVAILABLE',
   UNDER_RENOVATION = 'UNDER_RENOVATION',
@@ -163,6 +164,7 @@ export const PROPERTY_TYPE_LABELS: Record<string, string> = {
 export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
   [PropertyStatus.VACANT]: 'Vacant',
   [PropertyStatus.OCCUPIED]: 'Occupied',
+  [PropertyStatus.SELF_OCCUPIED]: 'Self-Occupied',
   [PropertyStatus.MAINTENANCE]: 'Maintenance',
   [PropertyStatus.UNAVAILABLE]: 'Unavailable',
   [PropertyStatus.UNDER_RENOVATION]: 'Under Renovation',

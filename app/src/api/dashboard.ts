@@ -3,14 +3,19 @@ import client from './client';
 export interface DashboardStats {
   totalProperties: number;
   occupiedUnits: number;
+  selfOccupiedUnits: number;
   vacantUnits: number;
   maintenanceUnits: number;
   unavailableUnits: number;
+  underRenovationUnits: number;
+  fallowUnits: number;
+  listedUnits: number;
   monthlyIncome: {
     amount: number;
     currency: string;
   };
   occupancyRate: number;
+  rentalOccupancyRate: number;
 }
 
 export interface RecentActivity {

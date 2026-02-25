@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -59,28 +59,22 @@ export function RegistrationInvitationsPage() {
     "registration-validation",
   );
   const updateRateLimit = useUpdateRateLimitConfig();
-  const [rlMaxRequests, setRlMaxRequests] = useState(10);
-  const [rlPeriodSeconds, setRlPeriodSeconds] = useState(60);
-  const [rlEnabled, setRlEnabled] = useState(true);
-  const [rlSynced, setRlSynced] = useState(false);
+  const [rlMaxRequests, setRlMaxRequests] = useState<number | null>(null);
+  const [rlPeriodSeconds, setRlPeriodSeconds] = useState<number | null>(null);
+  const [rlEnabled, setRlEnabled] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    if (rlConfig && !rlSynced) {
-      setRlMaxRequests(rlConfig.maxRequests);
-      setRlPeriodSeconds(rlConfig.periodSeconds);
-      setRlEnabled(rlConfig.enabled);
-      setRlSynced(true);
-    }
-  }, [rlConfig, rlSynced]);
+  const displayMaxRequests = rlMaxRequests ?? rlConfig?.maxRequests ?? 10;
+  const displayPeriodSeconds = rlPeriodSeconds ?? rlConfig?.periodSeconds ?? 60;
+  const displayEnabled = rlEnabled ?? rlConfig?.enabled ?? true;
 
   const handleSaveRateLimit = () => {
     updateRateLimit.mutate(
       {
         key: "registration-validation",
         data: {
-          maxRequests: rlMaxRequests,
-          periodSeconds: rlPeriodSeconds,
-          enabled: rlEnabled,
+          maxRequests: displayMaxRequests,
+          periodSeconds: displayPeriodSeconds,
+          enabled: displayEnabled,
         },
       },
       {
@@ -204,7 +198,7 @@ export function RegistrationInvitationsPage() {
                 type="number"
                 min={1}
                 max={10000}
-                value={rlMaxRequests}
+                value={displayMaxRequests}
                 onChange={(e) =>
                   setRlMaxRequests(
                     Math.max(1, Math.min(10000, Number(e.target.value) || 1)),
@@ -224,7 +218,7 @@ export function RegistrationInvitationsPage() {
                 type="number"
                 min={10}
                 max={86400}
-                value={rlPeriodSeconds}
+                value={displayPeriodSeconds}
                 onChange={(e) =>
                   setRlPeriodSeconds(
                     Math.max(10, Math.min(86400, Number(e.target.value) || 10)),
@@ -243,20 +237,22 @@ export function RegistrationInvitationsPage() {
               <button
                 type="button"
                 role="switch"
-                aria-checked={rlEnabled}
-                onClick={() => setRlEnabled(!rlEnabled)}
+                aria-checked={displayEnabled}
+                onClick={() => setRlEnabled(!displayEnabled)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#5c7cfa] focus:ring-offset-2 ${
-                  rlEnabled ? "bg-[#5c7cfa]" : "bg-[#c9cfd9] dark:bg-[#3a3f54]"
+                  displayEnabled
+                    ? "bg-[#5c7cfa]"
+                    : "bg-[#c9cfd9] dark:bg-[#3a3f54]"
                 }`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    rlEnabled ? "translate-x-5" : "translate-x-0"
+                    displayEnabled ? "translate-x-5" : "translate-x-0"
                   }`}
                 />
               </button>
               <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
-                {rlEnabled
+                {displayEnabled
                   ? "Rate limiting is active."
                   : "Rate limiting is disabled — all requests pass through."}
               </p>

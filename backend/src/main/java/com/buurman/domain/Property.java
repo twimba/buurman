@@ -146,6 +146,7 @@ public class Property {
   public enum PropertyStatus {
     VACANT,
     OCCUPIED,
+    SELF_OCCUPIED,
     MAINTENANCE,
     UNAVAILABLE,
     UNDER_RENOVATION,
