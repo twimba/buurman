@@ -17,8 +17,10 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jooq.JSONB;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.metadata.*;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DemoContractGenerator {
 
   private final DSLContext dsl;
+  private final CountryMetadataSerializer countryMetadataSerializer;
   private final Clock clock;
   private final Random random = new Random(42);
 
@@ -145,6 +148,16 @@ public class DemoContractGenerator {
         String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
         int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
 
+        // Resolve country from property
+        String propertyCountry =
+            dsl.select(PROPERTIES.COUNTRY)
+                .from(PROPERTIES)
+                .where(PROPERTIES.ID.eq(propertyId))
+                .fetchOneInto(String.class);
+        String countryCode = CountryMetadataRegistry.normalizeCountryCode(propertyCountry);
+        ContractCountryMetadata metadata =
+            countryCode != null ? buildDemoMetadata(countryCode) : null;
+
         String contractIdentifier = newContractId().value();
         dsl.insertInto(CONTRACTS)
             .set(CONTRACTS.ID, contractId)
@@ -169,6 +182,12 @@ public class DemoContractGenerator {
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
             .set(CONTRACTS.STATUS, status)
             .set(CONTRACTS.NOTES, "Demo contract for testing purposes")
+            .set(field("country_code", String.class), countryCode)
+            .set(
+                field("country_metadata", JSONB.class),
+                metadata != null
+                    ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata))
+                    : null)
             .set(CONTRACTS.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(CONTRACTS.UPDATED_AT, now)
             .set(CONTRACTS.CREATED_BY, createdBy)
@@ -239,6 +258,93 @@ public class DemoContractGenerator {
       case "COMMERCIAL", "INDUSTRIAL" -> 90;
       case "AGRICULTURAL" -> 60;
       default -> 30;
+    };
+  }
+
+  private ContractCountryMetadata buildDemoMetadata(String countryCode) {
+    return switch (countryCode) {
+      case "NL" ->
+          new NlContractMetadata(
+              random.nextBoolean() ? "VRIJE_SECTOR" : "GEREGULEERD",
+              random.nextInt(100, 250),
+              true,
+              false,
+              true,
+              true,
+              false,
+              false,
+              false,
+              BigDecimal.valueOf(150),
+              false,
+              BigDecimal.valueOf(879),
+              "C");
+      case "DE" ->
+          new DeContractMetadata(
+              "Mietspiegel Berlin 2024",
+              true,
+              "STANDARD",
+              false,
+              BigDecimal.valueOf(200),
+              BigDecimal.valueOf(2100),
+              3,
+              "VERBRAUCH",
+              "C",
+              BigDecimal.valueOf(125));
+      case "FR" ->
+          new FrContractMetadata(
+              BigDecimal.valueOf(25, 1),
+              BigDecimal.valueOf(30),
+              true,
+              true,
+              "C",
+              false,
+              false,
+              true,
+              true,
+              true,
+              true,
+              BigDecimal.valueOf(900),
+              1);
+      case "BE" ->
+          new BeContractMetadata(
+              "BRUSSELS",
+              BigDecimal.valueOf(110, 1),
+              "B",
+              "EPC-2024-12345",
+              "REG-FOD-67890",
+              2,
+              "BLOCKED_ACCOUNT",
+              "2024-01");
+      case "GB" -> new UkContractMetadata("AST", "DPS", "C", true, true, true, BigDecimal.valueOf(1500));
+      case "US" ->
+          new UsContractMetadata(
+              "NY", true, "New York City", false, true, BigDecimal.valueOf(5000), 2);
+      case "ES" ->
+          new EsContractMetadata(
+              true, false, BigDecimal.valueOf(1200), BigDecimal.valueOf(800), 1, "D",
+              BigDecimal.valueOf(1600), 2);
+      case "PT" ->
+          new PtContractMetadata("NRAU", false, BigDecimal.valueOf(1.0154), "IMI-2024-98765", "B");
+      case "IT" ->
+          new ItContractMetadata(
+              "LIBERO", true, BigDecimal.valueOf(21), "REG-2024-MI-12345", "B",
+              BigDecimal.valueOf(2400), 3);
+      case "AT" -> new AtContractMetadata("MRG", "B", BigDecimal.valueOf(180), 3, BigDecimal.valueOf(2400), true, BigDecimal.valueOf(6.5), "EA-2024-AT-001");
+      case "CH" -> new ChContractMetadata("ZH", "Zurich", BigDecimal.valueOf(250), 3, BigDecimal.valueOf(4500), true, BigDecimal.valueOf(1.5));
+      case "DK" -> new DkContractMetadata("PRIVATE", "C", BigDecimal.valueOf(30000), 3, BigDecimal.valueOf(30000), 3, true);
+      case "SE" -> new SeContractMetadata("PRIVATE", true, "C", BigDecimal.valueOf(25000), 3, true);
+      case "FI" -> new FiContractMetadata("INDEFINITE", "C", BigDecimal.valueOf(1500), 2, false);
+      case "NO" -> new NoContractMetadata("RESIDENTIAL", "C", BigDecimal.valueOf(30000), 3, true, false);
+      case "IE" -> new IeContractMetadata("PART4", "B2", BigDecimal.valueOf(2000), 1, true, true, BigDecimal.valueOf(1800), "BER-2024-IE-001");
+      case "PL" -> new PlContractMetadata("ZWYKLY", "C", BigDecimal.valueOf(4000), 2, true, "EC-2024-PL-001", true);
+      case "CZ" -> new CzContractMetadata("INDEFINITE", "C", BigDecimal.valueOf(30000), 3, BigDecimal.valueOf(5000), false);
+      case "HU" -> new HuContractMetadata("DEFINITE", "CC", BigDecimal.valueOf(300000), 2, BigDecimal.valueOf(25000), false);
+      case "RO" -> new RoContractMetadata("DEFINITE", "C", BigDecimal.valueOf(3000), 2, true, BigDecimal.valueOf(500));
+      case "GR" -> new GrContractMetadata("RESIDENTIAL", "C", BigDecimal.valueOf(1500), 2, false, BigDecimal.valueOf(80), "TAX-2024-GR-001");
+      case "BR" -> new BrContractMetadata("RESIDENCIAL", BigDecimal.valueOf(5000), 3, false, BigDecimal.valueOf(800), "MAT-2024-BR-001", false);
+      case "CA" -> new CaContractMetadata("ON", true, BigDecimal.valueOf(2000), 2, true, null);
+      case "MX" -> new MxContractMetadata("CDMX", "DEFINITE", BigDecimal.valueOf(15000), 1, false, BigDecimal.valueOf(2000));
+      default -> new GenericContractMetadata(null, null, null, null, null, "Demo generic metadata");
     };
   }
 }

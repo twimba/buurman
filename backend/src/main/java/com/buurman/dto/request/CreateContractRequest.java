@@ -5,7 +5,10 @@ import static com.buurman.domain.ContractPartyRole.PRIMARY_TENANT;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
 
@@ -39,7 +42,8 @@ public record CreateContractRequest(
     Optional<@PositiveOrZero(message = "Late fee percentage must be zero or positive") BigDecimal>
         lateFeePercentage,
     Optional<String> termsAndConditions,
-    Optional<String> notes) {
+    Optional<String> notes,
+    @Nullable Map<String, Object> countryMetadata) {
 
   @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
     return endDate.isEmpty() || !endDate.get().isBefore(startDate);

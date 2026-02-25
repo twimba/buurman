@@ -32,6 +32,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
+import com.buurman.dto.response.CountryMetadataSchemaResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -39,6 +40,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuditService;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.ContractService;
+import com.buurman.service.CountryMetadataSchemaService;
 import com.buurman.service.DocumentService;
 import com.buurman.service.PaymentSchedulingService;
 
@@ -57,6 +59,7 @@ public class ContractController {
 
   private final ContractService contractService;
   private final ContractPartyService contractPartyService;
+  private final CountryMetadataSchemaService countryMetadataSchemaService;
   private final DocumentService documentService;
   private final AuditService auditService;
   private final PaymentSchedulingService paymentSchedulingService;
@@ -159,6 +162,23 @@ public class ContractController {
   public ContractResponse duplicateContract(
       @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.duplicateContract(identifier, principal);
+  }
+
+  @Operation(
+      summary = "Get metadata schema",
+      description = "Get country-specific metadata field definitions for dynamic form rendering")
+  @GetMapping("/metadata-schema/{countryCode}")
+  public CountryMetadataSchemaResponse getMetadataSchema(
+      @PathVariable String countryCode, @AuthenticationPrincipal UserPrincipal principal) {
+    String normalized =
+        com.buurman.domain.metadata.CountryMetadataRegistry.normalizeCountryCode(countryCode);
+    if (normalized == null
+        || !com.buurman.domain.metadata.CountryMetadataRegistry.getSupportedCountries()
+            .contains(normalized)) {
+      throw new com.buurman.exception.BadRequestException(
+          "Unsupported country code: " + countryCode);
+    }
+    return countryMetadataSchemaService.getSchema(normalized);
   }
 
   // --- Contract Party endpoints ---

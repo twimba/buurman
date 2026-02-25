@@ -7,6 +7,7 @@ import {
   ChangeContractStatusRequest,
   AddContractPartyRequest,
   ChangePrimaryTenantRequest,
+  CountryMetadataSchema,
 } from '../types/contract';
 import { DocumentResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
@@ -116,6 +117,17 @@ export const deleteContractDocument = async (
   documentId: string
 ): Promise<void> => {
   await client.delete(`/contracts/documents/${documentId}`);
+};
+
+// --- Country Metadata Schema ---
+
+export const getContractMetadataSchema = async (
+  countryCode: string
+): Promise<CountryMetadataSchema> => {
+  const response = await client.get<CountryMetadataSchema>(
+    `/contracts/metadata-schema/${countryCode}`
+  );
+  return response.data;
 };
 
 // --- Contract Party endpoints ---

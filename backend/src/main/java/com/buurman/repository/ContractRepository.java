@@ -18,11 +18,13 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.JSONB;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractIncomeEntry;
+import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContractRecordMapper;
@@ -38,7 +40,14 @@ public class ContractRepository {
 
   private final DSLContext dsl;
   private final ContractRecordMapper mapper;
+  private final CountryMetadataSerializer countryMetadataSerializer;
   private final Clock clock;
+
+  // Fields for columns added in V012 (not yet in JOOQ generated code)
+  private static final Field<String> COUNTRY_CODE =
+      org.jooq.impl.DSL.field("country_code", String.class);
+  private static final Field<JSONB> COUNTRY_METADATA =
+      org.jooq.impl.DSL.field("country_metadata", JSONB.class);
 
   public Optional<Contract> findByIdentifierAndTeamId(String identifier, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
@@ -226,6 +235,13 @@ public class ContractRepository {
           .set(CONTRACTS.STATUS, contract.getStatus().name())
           .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
           .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
+          .set(COUNTRY_CODE, contract.getCountryCode().orElse(null))
+          .set(
+              COUNTRY_METADATA,
+              contract
+                  .getCountryMetadata()
+                  .map(m -> JSONB.jsonb(countryMetadataSerializer.serialize(m)))
+                  .orElse(null))
           .set(CONTRACTS.CREATED_AT, createdAt)
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -239,40 +255,59 @@ public class ContractRepository {
       // Update
       LocalDateTime updatedAt = now;
 
-      dsl.update(CONTRACTS)
-          .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
-          .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
-          .set(CONTRACTS.START_DATE, contract.getStartDate())
-          .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
-          .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
-          .set(
-              CONTRACTS.RENT_AMOUNT,
-              CurrencyUtils.toMinorUnits(
-                  contract.getRentAmount(), contract.getRentAmountCurrency()))
-          .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
-          .set(
-              CONTRACTS.DEPOSIT_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount().orElse(null),
-                  contract.getDepositAmountCurrency().orElse(null)))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
-          .set(
-              CONTRACTS.SECURITY_DEPOSIT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit().orElse(null),
-                  contract.getSecurityDepositCurrency().orElse(null)))
-          .set(
-              CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
-              contract.getSecurityDepositCurrency().orElse(null))
-          .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
-          .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
-          .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
-          .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
-          .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
-          .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
-          .set(CONTRACTS.STATUS, contract.getStatus().name())
-          .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
-          .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
+      var query =
+          dsl.update(CONTRACTS)
+              .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
+              .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())
+              .set(CONTRACTS.START_DATE, contract.getStartDate())
+              .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
+              .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
+              .set(
+                  CONTRACTS.RENT_AMOUNT,
+                  CurrencyUtils.toMinorUnits(
+                      contract.getRentAmount(), contract.getRentAmountCurrency()))
+              .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
+              .set(
+                  CONTRACTS.DEPOSIT_AMOUNT,
+                  CurrencyUtils.toMinorUnitsOrNull(
+                      contract.getDepositAmount().orElse(null),
+                      contract.getDepositAmountCurrency().orElse(null)))
+              .set(
+                  CONTRACTS.DEPOSIT_AMOUNT_CURRENCY,
+                  contract.getDepositAmountCurrency().orElse(null))
+              .set(
+                  CONTRACTS.SECURITY_DEPOSIT,
+                  CurrencyUtils.toMinorUnitsOrNull(
+                      contract.getSecurityDeposit().orElse(null),
+                      contract.getSecurityDepositCurrency().orElse(null)))
+              .set(
+                  CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
+                  contract.getSecurityDepositCurrency().orElse(null))
+              .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
+              .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
+              .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
+              .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
+              .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
+              .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
+              .set(CONTRACTS.STATUS, contract.getStatus().name())
+              .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
+              .set(CONTRACTS.NOTES, contract.getNotes().orElse(null));
+
+      // Only update country_code and country_metadata while contract is DRAFT (locked after
+      // activation)
+      if (contract.getStatus() == Contract.ContractStatus.DRAFT) {
+        query =
+            query
+                .set(COUNTRY_CODE, contract.getCountryCode().orElse(null))
+                .set(
+                    COUNTRY_METADATA,
+                    contract
+                        .getCountryMetadata()
+                        .map(m -> JSONB.jsonb(countryMetadataSerializer.serialize(m)))
+                        .orElse(null));
+      }
+
+      query
           .set(CONTRACTS.UPDATED_AT, updatedAt)
           .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
           .where(CONTRACTS.ID.eq(contract.getId()).and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))
