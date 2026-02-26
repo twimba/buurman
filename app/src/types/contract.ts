@@ -83,6 +83,8 @@ export interface ContractResponse {
   status: ContractStatus;
   termsAndConditions?: string;
   notes?: string;
+  countryCode?: string;
+  countryMetadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -118,6 +120,7 @@ export interface CreateContractRequest {
   lateFeePercentage?: number;
   termsAndConditions?: string;
   notes?: string;
+  countryMetadata?: Record<string, unknown>;
 }
 
 export interface UpdateContractRequest {
@@ -140,6 +143,7 @@ export interface UpdateContractRequest {
   lateFeePercentage?: number;
   termsAndConditions?: string;
   notes?: string;
+  countryMetadata?: Record<string, unknown>;
 }
 
 export interface ChangeContractStatusRequest {
@@ -169,4 +173,31 @@ export interface UpdateRentPeriodRequest {
   rentAmount: number;
   effectiveFrom: string;
   notes?: string;
+}
+
+// --- Country Metadata Schema ---
+
+export interface MetadataFieldSchema {
+  name: string;
+  label: string;
+  type: 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'ENUM';
+  required: boolean;
+  enumValues: { value: string; label: string }[];
+  validation: { min?: number; max?: number; pattern?: string };
+  group: string;
+  helpText?: string;
+  unit?: string;
+}
+
+export interface MetadataGroupSchema {
+  key: string;
+  label: string;
+}
+
+export interface CountryMetadataSchema {
+  countryCode: string;
+  countryName: string;
+  hasDedicatedSchema: boolean;
+  fields: MetadataFieldSchema[];
+  groups: MetadataGroupSchema[];
 }

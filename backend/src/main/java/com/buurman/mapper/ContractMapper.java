@@ -25,6 +25,8 @@ public interface ContractMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "countryCode", ignore = true)
+  @Mapping(target = "countryMetadata", ignore = true)
   @Mapping(target = "autoRenewal", defaultExpression = "java(false)")
   @Mapping(target = "renewalNoticeDays", defaultExpression = "java(30)")
   @Mapping(target = "terminationNoticeDays", defaultExpression = "java(30)")
@@ -33,6 +35,7 @@ public interface ContractMapper {
   @Mapping(target = "property", ignore = true)
   @Mapping(target = "parties", ignore = true)
   @Mapping(target = "primaryTenant", ignore = true)
+  @Mapping(target = "countryMetadata", ignore = true)
   ContractResponse toResponse(Contract contract);
 
   @Mapping(target = "property", ignore = true)
@@ -50,5 +53,7 @@ public interface ContractMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "countryCode", ignore = true)
+  @Mapping(target = "countryMetadata", ignore = true)
   void updateEntity(@MappingTarget Contract contract, UpdateContractRequest request);
 }

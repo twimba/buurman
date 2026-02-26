@@ -308,6 +308,17 @@ export const useGenerateContractPayments = (contractId: string) => {
   });
 };
 
+// --- Country Metadata Schema hook ---
+
+export const useContractMetadataSchema = (countryCode?: string) => {
+  return useQuery({
+    queryKey: ['contract-metadata-schema', countryCode],
+    queryFn: () => contractsApi.getContractMetadataSchema(countryCode!),
+    enabled: !!countryCode,
+    staleTime: Infinity, // Schemas don't change during a session
+  });
+};
+
 // --- Contract Party hooks ---
 
 export const useAddContractParty = (contractId: string) => {

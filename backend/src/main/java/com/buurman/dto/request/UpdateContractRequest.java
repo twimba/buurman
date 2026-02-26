@@ -2,7 +2,10 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
+
+import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
 
@@ -33,7 +36,8 @@ public record UpdateContractRequest(
     Optional<@PositiveOrZero(message = "Late fee percentage must be zero or positive") BigDecimal>
         lateFeePercentage,
     Optional<String> termsAndConditions,
-    Optional<String> notes) {
+    Optional<String> notes,
+    @Nullable Map<String, Object> countryMetadata) {
 
   // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
   // @NotNull fails — null guards prevent NPE in that case.

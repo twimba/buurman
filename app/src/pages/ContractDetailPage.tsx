@@ -60,6 +60,9 @@ import {
 } from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentStatus } from '@/types/payment';
+import CountryMetadataForm, {
+  useCountryName,
+} from '@/components/contracts/CountryMetadataForm';
 
 export const ContractDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -97,6 +100,7 @@ export const ContractDetailPage = () => {
   const paymentsPerPage = 10;
 
   const { data: contract, isLoading, error } = useContract(id);
+  const countryName = useCountryName(contract?.countryCode);
   const {
     data: auditLog = [],
     isLoading: auditLoading,
@@ -668,6 +672,25 @@ export const ContractDetailPage = () => {
                 <RichTextDisplay content={contract.notes} />
               </div>
             )}
+
+            {/* Country-Specific Details */}
+            {contract.countryCode &&
+              contract.countryMetadata &&
+              Object.keys(contract.countryMetadata).length > 0 && (
+                <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+                    {countryName
+                      ? `${countryName} Rental Details`
+                      : 'Country-Specific Details'}
+                  </h2>
+                  <CountryMetadataForm
+                    countryCode={contract.countryCode}
+                    value={contract.countryMetadata}
+                    onChange={() => {}}
+                    disabled={true}
+                  />
+                </div>
+              )}
 
             {/* Metadata */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">

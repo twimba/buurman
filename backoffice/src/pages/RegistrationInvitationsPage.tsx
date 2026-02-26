@@ -55,8 +55,9 @@ export function RegistrationInvitationsPage() {
   } | null>(null);
 
   // Rate limit settings
-  const { data: rlConfig, isLoading: rlLoading } =
-    useRateLimitConfig("registration-validation");
+  const { data: rlConfig, isLoading: rlLoading } = useRateLimitConfig(
+    "registration-validation",
+  );
   const updateRateLimit = useUpdateRateLimitConfig();
   const [rlMaxRequests, setRlMaxRequests] = useState(10);
   const [rlPeriodSeconds, setRlPeriodSeconds] = useState(60);
@@ -190,7 +191,8 @@ export function RegistrationInvitationsPage() {
               Rate Limit Settings
             </h2>
             <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-              {rlConfig.description || "Configure rate limiting for code validation requests."}
+              {rlConfig.description ||
+                "Configure rate limiting for code validation requests."}
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -254,7 +256,9 @@ export function RegistrationInvitationsPage() {
                 />
               </button>
               <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
-                {rlEnabled ? "Rate limiting is active." : "Rate limiting is disabled — all requests pass through."}
+                {rlEnabled
+                  ? "Rate limiting is active."
+                  : "Rate limiting is disabled — all requests pass through."}
               </p>
             </div>
           </div>

@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.domain.metadata.ContractCountryMetadata;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -62,6 +64,8 @@ public class Contract {
   private ContractStatus status;
   @Builder.Default private Optional<String> termsAndConditions = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
+  @Builder.Default private Optional<String> countryCode = Optional.empty();
+  @Builder.Default private Optional<ContractCountryMetadata> countryMetadata = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save, Plus, Trash2, UserPlus, ArrowLeft } from 'lucide-react';
 import {
@@ -16,7 +16,11 @@ import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { TenantSelector } from '@/components/common/TenantSelector';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
+import CountryMetadataForm, {
+  useCountryName,
+} from '@/components/contracts/CountryMetadataForm';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { useProperties } from '@/hooks/usePropertyHooks';
 import {
   useAddContractParty,
   useRemoveContractParty,
@@ -256,11 +260,26 @@ export const ContractForm = ({
     lateFeePercentage: contract?.lateFeePercentage || undefined,
     termsAndConditions: contract?.termsAndConditions || '',
     notes: contract?.notes || '',
+    countryMetadata: contract?.countryMetadata || undefined,
   });
 
   const [contractIdentifier, setContractIdentifier] = useState(
     contract?.identifier
   );
+
+  // Look up selected property's country for metadata form
+  const { data: propertiesPage } = useProperties();
+  const selectedProperty = useMemo(() => {
+    if (!propertiesPage?.content || !formData.propertyIdentifier) {
+      return undefined;
+    }
+    return propertiesPage.content.find(
+      (p) => p.identifier === formData.propertyIdentifier
+    );
+  }, [propertiesPage, formData.propertyIdentifier]);
+  const propertyCountryCode =
+    contract?.countryCode || selectedProperty?.country || undefined;
+  const countryName = useCountryName(propertyCountryCode);
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)
   useEffect(() => {
@@ -315,6 +334,7 @@ export const ContractForm = ({
         lateFeePercentage: contract.lateFeePercentage || undefined,
         termsAndConditions: contract.termsAndConditions || '',
         notes: contract.notes || '',
+        countryMetadata: contract.countryMetadata || undefined,
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -1104,6 +1124,37 @@ export const ContractForm = ({
           />
         </div>
       </div>
+
+      {/* Country-Specific Rental Details */}
+      {propertyCountryCode ? (
+        <div>
+          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+            {countryName
+              ? `${countryName} Rental Details`
+              : 'Country-Specific Details'}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Regulatory fields specific to {countryName || propertyCountryCode}
+          </p>
+          <CountryMetadataForm
+            countryCode={propertyCountryCode}
+            value={(formData.countryMetadata as Record<string, unknown>) || {}}
+            onChange={(metadata) =>
+              setFormData((prev) => ({
+                ...prev,
+                countryMetadata:
+                  Object.keys(metadata).length > 0 ? metadata : undefined,
+              }))
+            }
+            disabled={isEditing && contract?.status !== 'DRAFT'}
+          />
+        </div>
+      ) : formData.propertyIdentifier ? (
+        <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+          Set a country on the selected property to see country-specific
+          regulatory fields.
+        </p>
+      ) : null}
 
       {/* Actions */}
       <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.metadata.ContractCountryMetadata;
 
 public record ContractResponse(
     String identifier,
@@ -32,5 +33,7 @@ public record ContractResponse(
     Contract.ContractStatus status,
     Optional<String> termsAndConditions,
     Optional<String> notes,
+    Optional<String> countryCode,
+    Optional<ContractCountryMetadata> countryMetadata,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

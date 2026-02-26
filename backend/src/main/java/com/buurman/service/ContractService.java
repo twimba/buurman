@@ -35,6 +35,9 @@ import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.metadata.ContractCountryMetadata;
+import com.buurman.domain.metadata.CountryMetadataRegistry;
+import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
@@ -82,6 +85,8 @@ public class ContractService {
   private final NotificationService notificationService;
   private final ContractPartyService contractPartyService;
   private final ContractRentPeriodService contractRentPeriodService;
+  private final CountryMetadataSerializer countryMetadataSerializer;
+  private final CountryMetadataValidator countryMetadataValidator;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -123,6 +128,20 @@ public class ContractService {
     contract.setUpdatedBy(principal.getUserId());
     contract.setCreatedAt(clock.instant());
     contract.setUpdatedAt(clock.instant());
+
+    // Resolve country code from property
+    String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountry());
+    contract.setCountryCode(Optional.ofNullable(countryCode));
+
+    // Deserialize and validate country metadata from request
+    if (request.countryMetadata() != null && countryCode != null) {
+      ContractCountryMetadata metadata =
+          countryMetadataSerializer.deserializeFromMap(request.countryMetadata(), countryCode);
+      if (metadata != null) {
+        countryMetadataValidator.validate(countryCode, metadata);
+        contract.setCountryMetadata(Optional.of(metadata));
+      }
+    }
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
@@ -287,6 +306,8 @@ public class ContractService {
             contract.getStatus(),
             contract.getTermsAndConditions(),
             contract.getNotes(),
+            contract.getCountryCode(),
+            contract.getCountryMetadata(),
             contract.getCreatedAt(),
             contract.getUpdatedAt(),
             contract.getCreatedBy(),
@@ -302,6 +323,26 @@ public class ContractService {
     contract.setPropertyId(property.getId());
     contract.setUpdatedBy(principal.getUserId());
     contract.setUpdatedAt(clock.instant());
+
+    // Update country code and metadata (only while DRAFT — locked after activation)
+    if (contract.getStatus() == DRAFT) {
+      String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountry());
+      contract.setCountryCode(Optional.ofNullable(countryCode));
+
+      if (request.countryMetadata() != null && countryCode != null) {
+        ContractCountryMetadata metadata =
+            countryMetadataSerializer.deserializeFromMap(request.countryMetadata(), countryCode);
+        if (metadata != null) {
+          countryMetadataValidator.validate(countryCode, metadata);
+          contract.setCountryMetadata(Optional.of(metadata));
+        } else {
+          contract.setCountryMetadata(Optional.empty());
+        }
+      }
+    } else if (request.countryMetadata() != null) {
+      throw new BadRequestException(
+          "Country metadata can only be modified while the contract is in DRAFT status");
+    }
 
     // Validate currencies
     validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
@@ -482,6 +523,8 @@ public class ContractService {
             contract.getStatus(),
             contract.getTermsAndConditions(),
             contract.getNotes(),
+            contract.getCountryCode(),
+            contract.getCountryMetadata(),
             contract.getCreatedAt(),
             contract.getUpdatedAt(),
             contract.getCreatedBy(),
@@ -600,6 +643,8 @@ public class ContractService {
             contract.getStatus(),
             contract.getTermsAndConditions(),
             contract.getNotes(),
+            contract.getCountryCode(),
+            contract.getCountryMetadata(),
             contract.getCreatedAt(),
             contract.getUpdatedAt(),
             contract.getCreatedBy(),
@@ -695,6 +740,8 @@ public class ContractService {
             DRAFT, // Always start as DRAFT
             sourceContract.getTermsAndConditions(),
             sourceContract.getNotes(),
+            sourceContract.getCountryCode(),
+            sourceContract.getCountryMetadata(),
             clock.instant(),
             clock.instant(),
             principal.getUserId(),
@@ -848,6 +895,8 @@ public class ContractService {
         contract.getStatus(),
         contract.getTermsAndConditions(),
         contract.getNotes(),
+        contract.getCountryCode(),
+        contract.getCountryMetadata(),
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -932,6 +981,8 @@ public class ContractService {
                   contract.getStatus(),
                   contract.getTermsAndConditions(),
                   contract.getNotes(),
+                  contract.getCountryCode(),
+                  contract.getCountryMetadata(),
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })
