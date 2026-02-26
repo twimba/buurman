@@ -36,6 +36,7 @@ public class Document {
     TENANT,
     CONTRACT,
     PAYMENT,
-    EXPENSE
+    EXPENSE,
+    FINANCING_PAYMENT
   }
 }

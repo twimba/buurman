@@ -105,4 +105,32 @@ public class UlidGenerator {
   public static Ulid newUserId() {
     return generate(EntityPrefix.USR);
   }
+
+  public static Ulid newAcquisitionId() {
+    return generate(EntityPrefix.ACQ);
+  }
+
+  public static Ulid newValuationId() {
+    return generate(EntityPrefix.VAL);
+  }
+
+  public static Ulid newFinancingId() {
+    return generate(EntityPrefix.FIN);
+  }
+
+  public static Ulid newFinancingPaymentId() {
+    return generate(EntityPrefix.FPY);
+  }
+
+  public static Ulid newInsuranceId() {
+    return generate(EntityPrefix.INS);
+  }
+
+  public static Ulid newPropertyTaxId() {
+    return generate(EntityPrefix.PTX);
+  }
+
+  public static Ulid newPropertyFeeId() {
+    return generate(EntityPrefix.FEE);
+  }
 }

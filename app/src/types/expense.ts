@@ -13,7 +13,6 @@ export enum ExpenseCategory {
   PROPERTY_MANAGEMENT = 'PROPERTY_MANAGEMENT',
   FEES = 'FEES',
   PROPERTY_TAX = 'PROPERTY_TAX',
-  MORTGAGE_PAYMENT = 'MORTGAGE_PAYMENT',
   OTHER = 'OTHER',
 }
 
@@ -84,7 +83,6 @@ export const formatExpenseCategory = (category: ExpenseCategory): string => {
     [ExpenseCategory.PROPERTY_MANAGEMENT]: 'Property Management',
     [ExpenseCategory.FEES]: 'Fees',
     [ExpenseCategory.PROPERTY_TAX]: 'Property Taxes',
-    [ExpenseCategory.MORTGAGE_PAYMENT]: 'Mortgage Payment',
     [ExpenseCategory.OTHER]: 'Other',
   };
   return categoryLabels[category];

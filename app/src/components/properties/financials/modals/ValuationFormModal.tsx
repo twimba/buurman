@@ -1,0 +1,216 @@
+import { useState, useEffect, useCallback } from 'react';
+import { X } from 'lucide-react';
+import { MoneyInput } from '@/components/common/MoneyInput';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import {
+  useCreateValuation,
+  useUpdateValuation,
+} from '@/hooks/usePropertyFinancialsHooks';
+import {
+  PropertyValuationResponse,
+  CreateValuationRequest,
+  UpdateValuationRequest,
+  ValuationType,
+  formatValuationType,
+} from '@/types/propertyFinancials';
+
+interface ValuationFormModalProps {
+  propertyId: string;
+  existing?: PropertyValuationResponse;
+  onClose: () => void;
+}
+
+export const ValuationFormModal = ({
+  propertyId,
+  existing,
+  onClose,
+}: ValuationFormModalProps) => {
+  const { defaultCurrency } = useTeamDefaults();
+  const currency = defaultCurrency || 'EUR';
+  const createMutation = useCreateValuation(propertyId);
+  const updateMutation = useUpdateValuation(propertyId);
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
+  const [formData, setFormData] = useState<CreateValuationRequest>({
+    valuationType: existing?.valuationType ?? ValuationType.MARKET,
+    valuationDate: existing?.valuationDate ?? '',
+    amount: existing?.amount ?? 0,
+    currency: existing?.currency ?? currency,
+    source: existing?.source ?? '',
+    notes: existing?.notes ?? '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.valuationDate || !formData.amount) {
+      return;
+    }
+    if (existing) {
+      const data: UpdateValuationRequest = {
+        valuationType: formData.valuationType,
+        valuationDate: formData.valuationDate,
+        amount: formData.amount,
+        currency: formData.currency,
+        source: formData.source || undefined,
+        notes: formData.notes || undefined,
+      };
+      updateMutation.mutate(
+        { valuationId: existing.identifier, data },
+        { onSuccess: onClose }
+      );
+    } else {
+      const data: CreateValuationRequest = {
+        ...formData,
+        source: formData.source || undefined,
+        notes: formData.notes || undefined,
+      };
+      createMutation.mutate(data, { onSuccess: onClose });
+    }
+  };
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        const form = document.getElementById(
+          'valuation-form'
+        ) as HTMLFormElement;
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-[#c9cfd9] dark:border-[#3a3f54]">
+          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            {existing ? 'Edit Valuation' : 'Add Valuation'}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[#6b7194] hover:text-[#3d4463] dark:text-[#8b90a8] dark:hover:text-[#c4c8db]"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form
+          id="valuation-form"
+          onSubmit={handleSubmit}
+          className="p-4 space-y-4"
+        >
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Valuation Type
+            </label>
+            <select
+              value={formData.valuationType}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  valuationType: e.target.value as ValuationType,
+                })
+              }
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+            >
+              {Object.values(ValuationType).map((type) => (
+                <option key={type} value={type}>
+                  {formatValuationType(type)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Valuation Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              required
+              value={formData.valuationDate}
+              onChange={(e) =>
+                setFormData({ ...formData, valuationDate: e.target.value })
+              }
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Amount <span className="text-red-500">*</span>
+            </label>
+            <MoneyInput
+              value={formData.amount || undefined}
+              onChange={(v) => setFormData({ ...formData, amount: v ?? 0 })}
+              currency={formData.currency}
+              onCurrencyChange={(c) =>
+                setFormData({ ...formData, currency: c })
+              }
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Source
+            </label>
+            <input
+              type="text"
+              value={formData.source ?? ''}
+              onChange={(e) =>
+                setFormData({ ...formData, source: e.target.value })
+              }
+              placeholder="e.g. Real estate agent, Online tool"
+              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              Notes
+            </label>
+            <RichTextEditor
+              value={formData.notes || ''}
+              onChange={(value) =>
+                setFormData({ ...formData, notes: value || undefined })
+              }
+              placeholder="Add notes..."
+            />
+          </div>
+        </form>
+
+        <div className="flex justify-end gap-3 p-4 border-t border-[#c9cfd9] dark:border-[#3a3f54]">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="valuation-form"
+            disabled={isPending}
+            className="bg-[#5c7cfa] text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-[#4c6ef5] disabled:opacity-50"
+          >
+            {isPending ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

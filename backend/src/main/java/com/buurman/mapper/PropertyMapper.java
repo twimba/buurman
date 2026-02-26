@@ -35,9 +35,6 @@ public interface PropertyMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
-  @Mapping(
-      target = "mortgagePaymentVariable",
-      expression = "java(request.mortgagePaymentVariable().orElse(false))")
   Property toEntity(CreatePropertyRequest request);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -50,9 +47,5 @@ public interface PropertyMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
-  @Mapping(
-      target = "mortgagePaymentVariable",
-      expression =
-          "java(request.mortgagePaymentVariable().orElse(property.isMortgagePaymentVariable()))")
   void updateEntity(@MappingTarget Property property, UpdatePropertyRequest request);
 }

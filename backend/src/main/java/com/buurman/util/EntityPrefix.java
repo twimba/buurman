@@ -21,7 +21,14 @@ public enum EntityPrefix {
   TAD("TAD", "Tenant Addresses"),
   TEN("TEN", "Tenants"),
   CRP("CRP", "Contract Rent Periods"),
-  USR("USR", "Users");
+  USR("USR", "Users"),
+  ACQ("ACQ", "Property Acquisitions"),
+  VAL("VAL", "Property Valuations"),
+  FIN("FIN", "Property Financings"),
+  FPY("FPY", "Financing Payments"),
+  INS("INS", "Property Insurances"),
+  PTX("PTX", "Property Taxes"),
+  FEE("FEE", "Property Fees");
 
   private final String code;
   private final String entityName;

@@ -2,9 +2,7 @@ package com.buurman.service;
 
 import static com.buurman.util.UlidGenerator.newPropertyId;
 
-import java.math.BigDecimal;
 import java.net.URL;
-import java.util.Currency;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -142,20 +140,6 @@ public class PropertyService {
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse createProperty(CreatePropertyRequest request, UserPrincipal principal) {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
-    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
-    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
-    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    if (!request.mortgagePaymentVariable().orElse(false)) {
-      validateCurrencyRequired(
-          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
-    }
-    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
-    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
-    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
-    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
-    validateCurrencyRequired(
-        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
-    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     Property property = propertyMapper.toEntity(request);
     property.setIdentifier(newPropertyId().value());
@@ -261,20 +245,6 @@ public class PropertyService {
 
     // Category is immutable — validate type still matches
     validateCategoryTypeMatch(property.getPropertyCategory(), request.propertyType());
-    validateCurrencyRequired(request.purchasePriceCurrency(), request.purchasePrice());
-    validateCurrencyRequired(request.currentMarketValueCurrency(), request.currentMarketValue());
-    validateCurrencyRequired(request.mortgageAmountCurrency(), request.mortgageAmount());
-    if (!request.mortgagePaymentVariable().orElse(false)) {
-      validateCurrencyRequired(
-          request.monthlyMortgagePaymentCurrency(), request.monthlyMortgagePayment());
-    }
-    validateCurrencyRequired(request.annualPropertyTaxCurrency(), request.annualPropertyTax());
-    validateCurrencyRequired(request.annualInsuranceCurrency(), request.annualInsurance());
-    validateCurrencyRequired(request.annualHoaFeeCurrency(), request.annualHoaFee());
-    validateCurrencyRequired(request.annualManagementFeeCurrency(), request.annualManagementFee());
-    validateCurrencyRequired(
-        request.annualMaintenanceReserveCurrency(), request.annualMaintenanceReserve());
-    validateCurrencyRequired(request.landValueCurrency(), request.landValue());
 
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
@@ -411,29 +381,6 @@ public class PropertyService {
     if (validTypes == null || !validTypes.contains(type)) {
       throw new BadRequestException(
           "Property type " + type + " is not valid for category " + category);
-    }
-  }
-
-  @SafeVarargs
-  private void validateCurrencyRequired(
-      Optional<String> currency, Optional<BigDecimal>... monetaryFields) {
-    if (currency.isPresent()
-        && !currency
-            .orElseThrow(() -> new IllegalStateException("Currency verified present but missing"))
-            .isBlank()) {
-      try {
-        Currency.getInstance(
-            currency.orElseThrow(
-                () -> new IllegalStateException("Currency verified present but missing")));
-      } catch (IllegalArgumentException e) {
-        throw new BadRequestException("Invalid ISO 4217 currency code: " + currency);
-      }
-      return;
-    }
-    for (Optional<BigDecimal> field : monetaryFields) {
-      if (field.isPresent()) {
-        throw new BadRequestException("Currency is required when monetary fields are provided");
-      }
     }
   }
 
@@ -851,41 +798,6 @@ public class PropertyService {
         response.hasStepFreeEntrance(),
         response.hasAdaptedBathroom(),
         response.accessibilityNotes(),
-        // Investment & Financial
-        response.purchasePrice(),
-        response.purchasePriceCurrency(),
-        response.purchaseDate(),
-        response.currentMarketValue(),
-        response.currentMarketValueCurrency(),
-        response.marketValueDate(),
-        response.mortgageType(),
-        response.mortgageAmount(),
-        response.mortgageAmountCurrency(),
-        response.mortgageInterestRate(),
-        response.mortgageStartDate(),
-        response.mortgageEndDate(),
-        response.mortgagePaymentVariable(),
-        response.monthlyMortgagePayment(),
-        response.monthlyMortgagePaymentCurrency(),
-        response.annualPropertyTax(),
-        response.annualPropertyTaxCurrency(),
-        response.annualInsurance(),
-        response.annualInsuranceCurrency(),
-        response.annualHoaFee(),
-        response.annualHoaFeeCurrency(),
-        response.annualManagementFee(),
-        response.annualManagementFeeCurrency(),
-        response.annualMaintenanceReserve(),
-        response.annualMaintenanceReserveCurrency(),
-        response.annualPropertyTaxDueMonth(),
-        response.annualInsuranceDueMonth(),
-        response.annualHoaFeeDueMonth(),
-        response.annualManagementFeeDueMonth(),
-        response.annualMaintenanceReserveDueMonth(),
-        response.depreciationMethod(),
-        response.depreciationYears(),
-        response.landValue(),
-        response.landValueCurrency(),
         // Category-specific details
         residentialDetails,
         commercialDetails,
