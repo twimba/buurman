@@ -66,17 +66,56 @@ public final class CountryMetadataRegistry {
   private static final Set<String> SUPPORTED_COUNTRIES =
       Set.of(
           // Tier 1 — Western Europe + UK + US
-          "NL", "DE", "FR", "BE", "PT", "ES", "IT", "GB", "US",
+          "NL",
+          "DE",
+          "FR",
+          "BE",
+          "PT",
+          "ES",
+          "IT",
+          "GB",
+          "US",
           // DACH + Nordics + Ireland
-          "AT", "CH", "DK", "SE", "FI", "NO", "IE",
+          "AT",
+          "CH",
+          "DK",
+          "SE",
+          "FI",
+          "NO",
+          "IE",
           // Central & Eastern Europe
-          "PL", "CZ", "HU", "RO", "BG", "SK", "SI", "HR", "LT", "LV", "EE",
+          "PL",
+          "CZ",
+          "HU",
+          "RO",
+          "BG",
+          "SK",
+          "SI",
+          "HR",
+          "LT",
+          "LV",
+          "EE",
           // Mediterranean & Benelux
-          "GR", "MT", "CY", "LU",
+          "GR",
+          "MT",
+          "CY",
+          "LU",
           // Balkans
-          "RS", "BA", "AL", "ME", "MK", "XK",
+          "RS",
+          "BA",
+          "AL",
+          "ME",
+          "MK",
+          "XK",
           // Americas
-          "CA", "MX", "BR", "AR", "CL", "CO", "PE", "UY");
+          "CA",
+          "MX",
+          "BR",
+          "AR",
+          "CL",
+          "CO",
+          "PE",
+          "UY");
 
   private static final Map<String, String> COUNTRY_NAMES =
       Map.ofEntries(
@@ -223,7 +262,8 @@ public final class CountryMetadataRegistry {
   private CountryMetadataRegistry() {}
 
   public static Class<? extends ContractCountryMetadata> getSchemaClass(String countryCode) {
-    return SCHEMAS.getOrDefault(countryCode.toUpperCase(Locale.ROOT), GenericContractMetadata.class);
+    return SCHEMAS.getOrDefault(
+        countryCode.toUpperCase(Locale.ROOT), GenericContractMetadata.class);
   }
 
   public static Map<String, Class<? extends ContractCountryMetadata>> getSchemaClasses() {

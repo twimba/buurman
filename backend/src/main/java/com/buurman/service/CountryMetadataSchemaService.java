@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
-
 import com.buurman.domain.metadata.CountryMetadataRegistry;
 import com.buurman.dto.response.CountryMetadataSchemaResponse;
 import com.buurman.dto.response.CountryMetadataSchemaResponse.EnumValue;
@@ -28,6 +26,8 @@ import com.buurman.dto.response.CountryMetadataSchemaResponse.FieldSchema;
 import com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType;
 import com.buurman.dto.response.CountryMetadataSchemaResponse.GroupSchema;
 import com.buurman.dto.response.CountryMetadataSchemaResponse.ValidationSchema;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class CountryMetadataSchemaService {
@@ -55,9 +55,7 @@ public class CountryMetadataSchemaService {
       validateParity(entry.getKey(), entry.getValue());
     }
     // Also validate the Generic fallback schema
-    validateParity(
-        "GENERIC",
-        com.buurman.domain.metadata.GenericContractMetadata.class);
+    validateParity("GENERIC", com.buurman.domain.metadata.GenericContractMetadata.class);
   }
 
   private void validateParity(
@@ -67,18 +65,12 @@ public class CountryMetadataSchemaService {
             .map(RecordComponent::getName)
             .collect(Collectors.toSet());
     Set<String> schemaFields =
-        getSchema(code).fields().stream()
-            .map(FieldSchema::name)
-            .collect(Collectors.toSet());
+        getSchema(code).fields().stream().map(FieldSchema::name).collect(Collectors.toSet());
     if (!recordFields.equals(schemaFields)) {
       Set<String> missingInSchema =
-          recordFields.stream()
-              .filter(f -> !schemaFields.contains(f))
-              .collect(Collectors.toSet());
+          recordFields.stream().filter(f -> !schemaFields.contains(f)).collect(Collectors.toSet());
       Set<String> missingInRecord =
-          schemaFields.stream()
-              .filter(f -> !recordFields.contains(f))
-              .collect(Collectors.toSet());
+          schemaFields.stream().filter(f -> !recordFields.contains(f)).collect(Collectors.toSet());
       throw new IllegalStateException(
           "Schema/record field mismatch for "
               + code
@@ -220,9 +212,7 @@ public class CountryMetadataSchemaService {
               group("deposit", "Deposit"),
               group("energy", "Energy Certificate"));
       case "CH" ->
-          List.of(
-              group("location", "Location & Regulation"),
-              group("costs", "Costs & Deposit"));
+          List.of(group("location", "Location & Regulation"), group("costs", "Costs & Deposit"));
       case "DK" ->
           List.of(
               group("regulation", "Lease Regulation"),
@@ -235,9 +225,7 @@ public class CountryMetadataSchemaService {
               group("energy", "Energy"));
       case "FI" ->
           List.of(
-              group("general", "General"),
-              group("deposit", "Deposit"),
-              group("energy", "Energy"));
+              group("general", "General"), group("deposit", "Deposit"), group("energy", "Energy"));
       case "NO" ->
           List.of(
               group("regulation", "Lease Regulation"),
@@ -250,9 +238,7 @@ public class CountryMetadataSchemaService {
               group("energy", "Energy"));
       case "PL" ->
           List.of(
-              group("general", "General"),
-              group("deposit", "Deposit"),
-              group("energy", "Energy"));
+              group("general", "General"), group("deposit", "Deposit"), group("energy", "Energy"));
       case "CZ" ->
           List.of(
               group("general", "General"),
@@ -265,14 +251,10 @@ public class CountryMetadataSchemaService {
               group("energy", "Energy"));
       case "RO" ->
           List.of(
-              group("general", "General"),
-              group("deposit", "Deposit"),
-              group("energy", "Energy"));
+              group("general", "General"), group("deposit", "Deposit"), group("energy", "Energy"));
       case "BG" ->
           List.of(
-              group("general", "General"),
-              group("deposit", "Deposit"),
-              group("energy", "Energy"));
+              group("general", "General"), group("deposit", "Deposit"), group("energy", "Energy"));
       case "SK" ->
           List.of(
               group("general", "General"),
@@ -328,10 +310,7 @@ public class CountryMetadataSchemaService {
               group("general", "General"),
               group("costs", "Costs & Deposit"),
               group("energy", "Energy"));
-      case "BA" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
+      case "BA" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
       case "AL" ->
           List.of(
               group("general", "General"),
@@ -347,43 +326,19 @@ public class CountryMetadataSchemaService {
               group("general", "General"),
               group("costs", "Costs & Deposit"),
               group("energy", "Energy"));
-      case "XK" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
+      case "XK" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
       case "CA" ->
           List.of(
               group("location", "Location & Regulation"),
               group("deposit", "Security Deposit"),
               group("energy", "Energy"));
-      case "MX" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "BR" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "AR" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "CL" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "CO" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "PE" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
-      case "UY" ->
-          List.of(
-              group("general", "General"),
-              group("costs", "Costs & Deposit"));
+      case "MX" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "BR" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "AR" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "CL" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "CO" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "PE" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
+      case "UY" -> List.of(group("general", "General"), group("costs", "Costs & Deposit"));
       default -> buildGenericGroups();
     };
   }
@@ -618,9 +573,7 @@ public class CountryMetadataSchemaService {
             "Energy Certificate Type",
             ENUM,
             false,
-            List.of(
-                enumVal("VERBRAUCH", "Verbrauchsausweis"),
-                enumVal("BEDARF", "Bedarfsausweis")),
+            List.of(enumVal("VERBRAUCH", "Verbrauchsausweis"), enumVal("BEDARF", "Bedarfsausweis")),
             null,
             "energy",
             "Energieausweis type \u2014 required for all rentals since GEG 2020",
@@ -771,8 +724,8 @@ public class CountryMetadataSchemaService {
             null,
             null,
             "general",
-            "Meubl\u00e9 (furnished) \u2014 affects contract duration (1yr vs 3yr), deposit cap, and notice"
-                + " periods (Loi ALUR)",
+            "Meubl\u00e9 (furnished) \u2014 affects contract duration (1yr vs 3yr), deposit cap,"
+                + " and notice periods (Loi ALUR)",
             null),
         field(
             "cautionAmount",
@@ -782,8 +735,8 @@ public class CountryMetadataSchemaService {
             null,
             validation(0, null, null),
             "deposit",
-            "Security deposit (caution) \u2014 capped at 1 month unfurnished, 2 months furnished (Art."
-                + " 22 Loi ALUR)",
+            "Security deposit (caution) \u2014 capped at 1 month unfurnished, 2 months furnished"
+                + " (Art. 22 Loi ALUR)",
             "EUR"),
         field(
             "cautionMonths",
@@ -869,8 +822,8 @@ public class CountryMetadataSchemaService {
             null,
             validation(0, 3, null),
             "deposit",
-            "Deposit in months of rent \u2014 max 2 (Wallonia) or 3 (Brussels/Flanders), must be held"
-                + " in blocked account",
+            "Deposit in months of rent \u2014 max 2 (Wallonia) or 3 (Brussels/Flanders), must be"
+                + " held in blocked account",
             null),
         field(
             "depositType",
@@ -1220,7 +1173,8 @@ public class CountryMetadataSchemaService {
             null,
             validation(0, null, null),
             "deposit",
-            "Deposit amount \u2014 capped at 5 weeks\u2019 rent (\u226450k/yr) or 6 weeks\u2019 rent (>50k/yr)",
+            "Deposit amount \u2014 capped at 5 weeks\u2019 rent (\u226450k/yr) or 6 weeks\u2019"
+                + " rent (>50k/yr)",
             "GBP"));
   }
 
@@ -1354,508 +1308,2660 @@ public class CountryMetadataSchemaService {
   // --- AT (Austria) ---
   private List<FieldSchema> buildAtFields() {
     return List.of(
-        field("mietrechtsgesetzCategory", "Rent Law Category", ENUM, false,
-            List.of(enumVal("MRG", "MRG (Mietrechtsgesetz)"), enumVal("WGG", "WGG (Wohnungsgemeinn\u00fctzigkeitsgesetz)"), enumVal("ABGB", "ABGB (Allgemeines B\u00fcrgerliches Gesetzbuch)")),
-            null, "regulation", "Applicable rent law regime", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A++", "A++"), enumVal("A+", "A+"), enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Energieausweis rating per OIB Richtlinie 6", null),
-        field("betriebskostenAmount", "Betriebskosten Amount", DECIMAL, false, null, validation(0, null, null), "regulation", "Monthly operating costs (Betriebskosten)", "EUR"),
-        field("kautionMonths", "Kaution Months", INTEGER, false, null, validation(0, 6, null), "deposit", "Deposit in months of rent (typically 3\u20136)", "months"),
-        field("kautionAmount", "Kaution Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "EUR"),
-        field("befristung", "Fixed-Term (Befristung)", BOOLEAN, false, null, null, "regulation", "Whether the lease is fixed-term (min 3 years per MRG \u00a729)", null),
-        field("richtwertmiete", "Richtwertmiete", DECIMAL, false, null, validation(0, null, null), "regulation", "Reference rent per m\u00b2 under MRG \u00a716", "EUR/m\u00b2"),
-        field("energyCertificateNumber", "Energy Certificate Number", STRING, false, null, null, "energy", "Official Energieausweis reference number", null));
+        field(
+            "mietrechtsgesetzCategory",
+            "Rent Law Category",
+            ENUM,
+            false,
+            List.of(
+                enumVal("MRG", "MRG (Mietrechtsgesetz)"),
+                enumVal("WGG", "WGG (Wohnungsgemeinn\u00fctzigkeitsgesetz)"),
+                enumVal("ABGB", "ABGB (Allgemeines B\u00fcrgerliches Gesetzbuch)")),
+            null,
+            "regulation",
+            "Applicable rent law regime",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A++", "A++"),
+                enumVal("A+", "A+"),
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Energieausweis rating per OIB Richtlinie 6",
+            null),
+        field(
+            "betriebskostenAmount",
+            "Betriebskosten Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "regulation",
+            "Monthly operating costs (Betriebskosten)",
+            "EUR"),
+        field(
+            "kautionMonths",
+            "Kaution Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 6, null),
+            "deposit",
+            "Deposit in months of rent (typically 3\u20136)",
+            "months"),
+        field(
+            "kautionAmount",
+            "Kaution Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "befristung",
+            "Fixed-Term (Befristung)",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether the lease is fixed-term (min 3 years per MRG \u00a729)",
+            null),
+        field(
+            "richtwertmiete",
+            "Richtwertmiete",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "regulation",
+            "Reference rent per m\u00b2 under MRG \u00a716",
+            "EUR/m\u00b2"),
+        field(
+            "energyCertificateNumber",
+            "Energy Certificate Number",
+            STRING,
+            false,
+            null,
+            null,
+            "energy",
+            "Official Energieausweis reference number",
+            null));
   }
 
   // --- CH (Switzerland) ---
   private List<FieldSchema> buildChFields() {
     return List.of(
-        field("canton", "Canton", STRING, false, null, null, "location", "Two-letter cantonal code (e.g. ZH, BE, GE)", null),
-        field("mietrechtRegion", "Mietrecht Region", STRING, false, null, null, "location", "Rental law region for reference interest rate applicability", null),
-        field("nebenkostenAmount", "Nebenkosten Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly ancillary costs", "CHF"),
-        field("kautionMonths", "Kaution Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (max 3 per OR Art. 257e)", "months"),
-        field("kautionAmount", "Kaution Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "CHF"),
-        field("referenzzinssatzApplicable", "Referenzzinssatz Applicable", BOOLEAN, false, null, null, "location", "Whether the reference interest rate (Referenzzinssatz) applies for rent adjustments", null),
-        field("referenzzinssatz", "Referenzzinssatz", DECIMAL, false, null, validation(0, null, null), "location", "Current reference interest rate (%)", "%"));
+        field(
+            "canton",
+            "Canton",
+            STRING,
+            false,
+            null,
+            null,
+            "location",
+            "Two-letter cantonal code (e.g. ZH, BE, GE)",
+            null),
+        field(
+            "mietrechtRegion",
+            "Mietrecht Region",
+            STRING,
+            false,
+            null,
+            null,
+            "location",
+            "Rental law region for reference interest rate applicability",
+            null),
+        field(
+            "nebenkostenAmount",
+            "Nebenkosten Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly ancillary costs",
+            "CHF"),
+        field(
+            "kautionMonths",
+            "Kaution Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (max 3 per OR Art. 257e)",
+            "months"),
+        field(
+            "kautionAmount",
+            "Kaution Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "CHF"),
+        field(
+            "referenzzinssatzApplicable",
+            "Referenzzinssatz Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "location",
+            "Whether the reference interest rate (Referenzzinssatz) applies for rent adjustments",
+            null),
+        field(
+            "referenzzinssatz",
+            "Referenzzinssatz",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "location",
+            "Current reference interest rate (%)",
+            "%"));
   }
 
   // --- DK (Denmark) ---
   private List<FieldSchema> buildDkFields() {
     return List.of(
-        field("lejelovType", "Lejelov Type", ENUM, false,
-            List.of(enumVal("PRIVATE", "Private Rental"), enumVal("ALMEN", "Almen (Social Housing)")),
-            null, "regulation", "Type of rental law (Lejeloven vs Almenlejeloven)", null),
-        field("energyLabel", "Energy Label", ENUM, false,
-            List.of(enumVal("A2015", "A2015"), enumVal("A2010", "A2010"), enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Official energy label (Energim\u00e6rke)", null),
-        field("depositumAmount", "Depositum Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "DKK"),
-        field("depositumMonths", "Depositum Months", INTEGER, false, null, validation(0, 3, null), "deposit", "Deposit in months of rent (max 3 per Lejeloven \u00a734)", "months"),
-        field("forudbetalingAmount", "Forudbetaling Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Prepaid rent amount", "DKK"),
-        field("forudbetalingMonths", "Forudbetaling Months", INTEGER, false, null, validation(0, 3, null), "deposit", "Prepaid rent in months (max 3)", "months"),
-        field("huslejenaevnEligible", "Huslejen\u00e6vn Eligible", BOOLEAN, false, null, null, "regulation", "Whether tenants can appeal to the Rent Tribunal (Huslejen\u00e6vn)", null));
+        field(
+            "lejelovType",
+            "Lejelov Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("PRIVATE", "Private Rental"), enumVal("ALMEN", "Almen (Social Housing)")),
+            null,
+            "regulation",
+            "Type of rental law (Lejeloven vs Almenlejeloven)",
+            null),
+        field(
+            "energyLabel",
+            "Energy Label",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A2015", "A2015"),
+                enumVal("A2010", "A2010"),
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Official energy label (Energim\u00e6rke)",
+            null),
+        field(
+            "depositumAmount",
+            "Depositum Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "DKK"),
+        field(
+            "depositumMonths",
+            "Depositum Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "deposit",
+            "Deposit in months of rent (max 3 per Lejeloven \u00a734)",
+            "months"),
+        field(
+            "forudbetalingAmount",
+            "Forudbetaling Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Prepaid rent amount",
+            "DKK"),
+        field(
+            "forudbetalingMonths",
+            "Forudbetaling Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "deposit",
+            "Prepaid rent in months (max 3)",
+            "months"),
+        field(
+            "huslejenaevnEligible",
+            "Huslejen\u00e6vn Eligible",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether tenants can appeal to the Rent Tribunal (Huslejen\u00e6vn)",
+            null));
   }
 
   // --- SE (Sweden) ---
   private List<FieldSchema> buildSeFields() {
     return List.of(
-        field("hyrestyp", "Hyrestyp", ENUM, false,
+        field(
+            "hyrestyp",
+            "Hyrestyp",
+            ENUM,
+            false,
             List.of(enumVal("PRIVATE", "Private Rental"), enumVal("KOMMUNAL", "Municipal Housing")),
-            null, "regulation", "Type of rental (private vs municipal)", null),
-        field("bruksvardessystemApplicable", "Bruksv\u00e4rdessystem Applicable", BOOLEAN, false, null, null, "regulation", "Whether the utility value system applies for rent setting", null),
-        field("energyDeclarationRating", "Energy Declaration Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energideklaration rating", null),
-        field("depositAmount", "Deposit Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "SEK"),
-        field("depositMonths", "Deposit Months", INTEGER, false, null, validation(0, 6, null), "deposit", "Deposit in months of rent", "months"),
-        field("hyresnamndenEligible", "Hyresn\u00e4mnden Eligible", BOOLEAN, false, null, null, "regulation", "Whether the Rent Tribunal (Hyresn\u00e4mnden) has jurisdiction", null));
+            null,
+            "regulation",
+            "Type of rental (private vs municipal)",
+            null),
+        field(
+            "bruksvardessystemApplicable",
+            "Bruksv\u00e4rdessystem Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether the utility value system applies for rent setting",
+            null),
+        field(
+            "energyDeclarationRating",
+            "Energy Declaration Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energideklaration rating",
+            null),
+        field(
+            "depositAmount",
+            "Deposit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "SEK"),
+        field(
+            "depositMonths",
+            "Deposit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 6, null),
+            "deposit",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "hyresnamndenEligible",
+            "Hyresn\u00e4mnden Eligible",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether the Rent Tribunal (Hyresn\u00e4mnden) has jurisdiction",
+            null));
   }
 
   // --- FI (Finland) ---
   private List<FieldSchema> buildFiFields() {
     return List.of(
-        field("vuokrasopimustyyppi", "Vuokrasopimustyyppi", ENUM, false,
-            List.of(enumVal("FIXED", "Fixed-term (M\u00e4\u00e4r\u00e4aikainen)"), enumVal("INDEFINITE", "Indefinite (Toistaiseksi voimassa)")),
-            null, "general", "Lease type under Finnish Tenancy Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energiatodistus rating", null),
-        field("vakuusAmount", "Vakuus Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit (vakuus) amount", "EUR"),
-        field("vakuusMonths", "Vakuus Months", INTEGER, false, null, validation(0, 3, null), "deposit", "Deposit in months of rent (typically 1\u20133)", "months"),
-        field("araRestricted", "ARA Restricted", BOOLEAN, false, null, null, "general", "Whether the property is under ARA (Housing Finance and Development Centre) restrictions", null));
+        field(
+            "vuokrasopimustyyppi",
+            "Vuokrasopimustyyppi",
+            ENUM,
+            false,
+            List.of(
+                enumVal("FIXED", "Fixed-term (M\u00e4\u00e4r\u00e4aikainen)"),
+                enumVal("INDEFINITE", "Indefinite (Toistaiseksi voimassa)")),
+            null,
+            "general",
+            "Lease type under Finnish Tenancy Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energiatodistus rating",
+            null),
+        field(
+            "vakuusAmount",
+            "Vakuus Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit (vakuus) amount",
+            "EUR"),
+        field(
+            "vakuusMonths",
+            "Vakuus Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "deposit",
+            "Deposit in months of rent (typically 1\u20133)",
+            "months"),
+        field(
+            "araRestricted",
+            "ARA Restricted",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the property is under ARA (Housing Finance and Development Centre)"
+                + " restrictions",
+            null));
   }
 
   // --- NO (Norway) ---
   private List<FieldSchema> buildNoFields() {
     return List.of(
-        field("husleielovType", "Husleielov Type", ENUM, false,
+        field(
+            "husleielovType",
+            "Husleielov Type",
+            ENUM,
+            false,
             List.of(enumVal("RESIDENTIAL", "Residential"), enumVal("COMMERCIAL", "Commercial")),
-            null, "regulation", "Lease type under the Husleieloven (Tenancy Act)", null),
-        field("energyLabel", "Energy Label", ENUM, false, ENERGY_RATINGS, null, "energy", "Official energy label (Energimerke)", null),
-        field("depositumskontoAmount", "Depositumskonto Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "NOK"),
-        field("depositumskontoMonths", "Depositumskonto Months", INTEGER, false, null, validation(0, 6, null), "deposit", "Deposit in months of rent (max 6 per Husleieloven \u00a73-5)", "months"),
-        field("husleietvistnemnda", "Husleietvistnemnda", BOOLEAN, false, null, null, "regulation", "Whether the Rent Dispute Tribunal has jurisdiction", null),
-        field("kommunalBolig", "Kommunal Bolig", BOOLEAN, false, null, null, "regulation", "Whether this is municipal housing", null));
+            null,
+            "regulation",
+            "Lease type under the Husleieloven (Tenancy Act)",
+            null),
+        field(
+            "energyLabel",
+            "Energy Label",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Official energy label (Energimerke)",
+            null),
+        field(
+            "depositumskontoAmount",
+            "Depositumskonto Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "NOK"),
+        field(
+            "depositumskontoMonths",
+            "Depositumskonto Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 6, null),
+            "deposit",
+            "Deposit in months of rent (max 6 per Husleieloven \u00a73-5)",
+            "months"),
+        field(
+            "husleietvistnemnda",
+            "Husleietvistnemnda",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether the Rent Dispute Tribunal has jurisdiction",
+            null),
+        field(
+            "kommunalBolig",
+            "Kommunal Bolig",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "regulation",
+            "Whether this is municipal housing",
+            null));
   }
 
   // --- IE (Ireland) ---
   private List<FieldSchema> buildIeFields() {
     return List.of(
-        field("tenancyType", "Tenancy Type", ENUM, false,
-            List.of(enumVal("PART4", "Part 4 Tenancy"), enumVal("FIXED", "Fixed-Term"), enumVal("PERIODIC", "Periodic")),
-            null, "tenancy", "Type of tenancy under Residential Tenancies Act", null),
-        field("berRating", "BER Rating", ENUM, false,
-            List.of(enumVal("A1", "A1"), enumVal("A2", "A2"), enumVal("A3", "A3"), enumVal("B1", "B1"), enumVal("B2", "B2"), enumVal("B3", "B3"), enumVal("C1", "C1"), enumVal("C2", "C2"), enumVal("C3", "C3"), enumVal("D1", "D1"), enumVal("D2", "D2"), enumVal("E1", "E1"), enumVal("E2", "E2"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Building Energy Rating (BER) \u2014 mandatory for all rental properties", null),
-        field("depositAmount", "Deposit Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "EUR"),
-        field("depositMonths", "Deposit Months", INTEGER, false, null, validation(0, 2, null), "deposit", "Deposit in months of rent (typically 1\u20132)", "months"),
-        field("rtbRegistered", "RTB Registered", BOOLEAN, false, null, null, "tenancy", "Whether the tenancy is registered with the Residential Tenancies Board", null),
-        field("rentPressureZone", "Rent Pressure Zone", BOOLEAN, false, null, null, "tenancy", "Whether the property is in a Rent Pressure Zone (RPZ)", null),
-        field("marketRentAmount", "Market Rent Amount", DECIMAL, false, null, validation(0, null, null), "tenancy", "Current market rent for comparison with RPZ limits", "EUR"),
-        field("berCertificateNumber", "BER Certificate Number", STRING, false, null, null, "energy", "Official BER certificate reference number", null));
+        field(
+            "tenancyType",
+            "Tenancy Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("PART4", "Part 4 Tenancy"),
+                enumVal("FIXED", "Fixed-Term"),
+                enumVal("PERIODIC", "Periodic")),
+            null,
+            "tenancy",
+            "Type of tenancy under Residential Tenancies Act",
+            null),
+        field(
+            "berRating",
+            "BER Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A1", "A1"),
+                enumVal("A2", "A2"),
+                enumVal("A3", "A3"),
+                enumVal("B1", "B1"),
+                enumVal("B2", "B2"),
+                enumVal("B3", "B3"),
+                enumVal("C1", "C1"),
+                enumVal("C2", "C2"),
+                enumVal("C3", "C3"),
+                enumVal("D1", "D1"),
+                enumVal("D2", "D2"),
+                enumVal("E1", "E1"),
+                enumVal("E2", "E2"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Building Energy Rating (BER) \u2014 mandatory for all rental properties",
+            null),
+        field(
+            "depositAmount",
+            "Deposit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "depositMonths",
+            "Deposit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 2, null),
+            "deposit",
+            "Deposit in months of rent (typically 1\u20132)",
+            "months"),
+        field(
+            "rtbRegistered",
+            "RTB Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Whether the tenancy is registered with the Residential Tenancies Board",
+            null),
+        field(
+            "rentPressureZone",
+            "Rent Pressure Zone",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Whether the property is in a Rent Pressure Zone (RPZ)",
+            null),
+        field(
+            "marketRentAmount",
+            "Market Rent Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "tenancy",
+            "Current market rent for comparison with RPZ limits",
+            "EUR"),
+        field(
+            "berCertificateNumber",
+            "BER Certificate Number",
+            STRING,
+            false,
+            null,
+            null,
+            "energy",
+            "Official BER certificate reference number",
+            null));
   }
 
   // --- PL (Poland) ---
   private List<FieldSchema> buildPlFields() {
     return List.of(
-        field("rodzajNajmu", "Rodzaj Najmu", ENUM, false,
-            List.of(enumVal("OKAZJONALNY", "Najem Okazjonalny"), enumVal("INSTYTUCJONALNY", "Najem Instytucjonalny"), enumVal("ZWYKLY", "Najem Zwyk\u0142y")),
-            null, "general", "Type of rental agreement under Polish Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "\u015awiadectwo charakterystyki energetycznej rating", null),
-        field("kaucjaAmount", "Kaucja Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit (kaucja) amount", "PLN"),
-        field("kaucjaMonths", "Kaucja Months", INTEGER, false, null, validation(0, 12, null), "deposit", "Deposit in months of rent (max 12 for najem okazjonalny)", "months"),
-        field("indexationApplicable", "Indexation Applicable", BOOLEAN, false, null, null, "general", "Whether rent indexation clause applies", null),
-        field("energyCertificateNumber", "Energy Certificate Number", STRING, false, null, null, "energy", "Official energy certificate reference number", null),
-        field("czynszdodatkowy", "Czynsz Dodatkowy", BOOLEAN, false, null, null, "general", "Whether additional charges (czynsz administracyjny) apply on top of rent", null));
+        field(
+            "rodzajNajmu",
+            "Rodzaj Najmu",
+            ENUM,
+            false,
+            List.of(
+                enumVal("OKAZJONALNY", "Najem Okazjonalny"),
+                enumVal("INSTYTUCJONALNY", "Najem Instytucjonalny"),
+                enumVal("ZWYKLY", "Najem Zwyk\u0142y")),
+            null,
+            "general",
+            "Type of rental agreement under Polish Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "\u015awiadectwo charakterystyki energetycznej rating",
+            null),
+        field(
+            "kaucjaAmount",
+            "Kaucja Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit (kaucja) amount",
+            "PLN"),
+        field(
+            "kaucjaMonths",
+            "Kaucja Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 12, null),
+            "deposit",
+            "Deposit in months of rent (max 12 for najem okazjonalny)",
+            "months"),
+        field(
+            "indexationApplicable",
+            "Indexation Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether rent indexation clause applies",
+            null),
+        field(
+            "energyCertificateNumber",
+            "Energy Certificate Number",
+            STRING,
+            false,
+            null,
+            null,
+            "energy",
+            "Official energy certificate reference number",
+            null),
+        field(
+            "czynszdodatkowy",
+            "Czynsz Dodatkowy",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether additional charges (czynsz administracyjny) apply on top of rent",
+            null));
   }
 
   // --- CZ (Czech Republic) ---
   private List<FieldSchema> buildCzFields() {
     return List.of(
-        field("najemniSmlouvaType", "N\u00e1jemn\u00ed Smlouva Type", ENUM, false,
+        field(
+            "najemniSmlouvaType",
+            "N\u00e1jemn\u00ed Smlouva Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Czech Civil Code (\u00a72201\u2013\u00a72331)", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Pr\u016fkaz energetick\u00e9 n\u00e1ro\u010dnosti budovy rating", null),
-        field("kauceAmount", "Kauce Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (kauce) amount", "CZK"),
-        field("kauceMonths", "Kauce Months", INTEGER, false, null, validation(0, 6, null), "costs", "Deposit in months of rent (typically 1\u20133, max varies)", "months"),
-        field("sluzbyAmount", "Slu\u017eby Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly service charges (slu\u017eby)", "CZK"),
-        field("regulatedRent", "Regulated Rent", BOOLEAN, false, null, null, "general", "Whether the rent is subject to municipal regulation", null));
+            null,
+            "general",
+            "Lease type under Czech Civil Code (\u00a72201\u2013\u00a72331)",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Pr\u016fkaz energetick\u00e9 n\u00e1ro\u010dnosti budovy rating",
+            null),
+        field(
+            "kauceAmount",
+            "Kauce Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (kauce) amount",
+            "CZK"),
+        field(
+            "kauceMonths",
+            "Kauce Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 6, null),
+            "costs",
+            "Deposit in months of rent (typically 1\u20133, max varies)",
+            "months"),
+        field(
+            "sluzbyAmount",
+            "Slu\u017eby Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly service charges (slu\u017eby)",
+            "CZK"),
+        field(
+            "regulatedRent",
+            "Regulated Rent",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the rent is subject to municipal regulation",
+            null));
   }
 
   // --- HU (Hungary) ---
   private List<FieldSchema> buildHuFields() {
     return List.of(
-        field("berletiszerzodesType", "B\u00e9rleti Szerz\u0151d\u00e9s Type", ENUM, false,
+        field(
+            "berletiszerzodesType",
+            "B\u00e9rleti Szerz\u0151d\u00e9s Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Hungarian Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("AA++", "AA++"), enumVal("AA+", "AA+"), enumVal("AA", "AA"), enumVal("BB", "BB"), enumVal("CC", "CC"), enumVal("DD", "DD"), enumVal("EE", "EE"), enumVal("FF", "FF"), enumVal("GG", "GG"), enumVal("HH", "HH"), enumVal("II", "II"), enumVal("JJ", "JJ")),
-            null, "energy", "Hungarian energy performance certificate rating (7/2006 TNM)", null),
-        field("kaucioAmount", "Kauci\u00f3 Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (kauci\u00f3) amount", "HUF"),
-        field("kaucioMonths", "Kauci\u00f3 Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (typically 1\u20133)", "months"),
-        field("kozosKoltsegAmount", "K\u00f6z\u00f6s K\u00f6lts\u00e9g Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common costs (k\u00f6z\u00f6s k\u00f6lts\u00e9g)", "HUF"),
-        field("lakberApplicable", "Lakb\u00e9r Applicable", BOOLEAN, false, null, null, "general", "Whether municipal rent (lakb\u00e9r) regulation applies", null));
+            null,
+            "general",
+            "Lease type under Hungarian Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("AA++", "AA++"),
+                enumVal("AA+", "AA+"),
+                enumVal("AA", "AA"),
+                enumVal("BB", "BB"),
+                enumVal("CC", "CC"),
+                enumVal("DD", "DD"),
+                enumVal("EE", "EE"),
+                enumVal("FF", "FF"),
+                enumVal("GG", "GG"),
+                enumVal("HH", "HH"),
+                enumVal("II", "II"),
+                enumVal("JJ", "JJ")),
+            null,
+            "energy",
+            "Hungarian energy performance certificate rating (7/2006 TNM)",
+            null),
+        field(
+            "kaucioAmount",
+            "Kauci\u00f3 Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (kauci\u00f3) amount",
+            "HUF"),
+        field(
+            "kaucioMonths",
+            "Kauci\u00f3 Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (typically 1\u20133)",
+            "months"),
+        field(
+            "kozosKoltsegAmount",
+            "K\u00f6z\u00f6s K\u00f6lts\u00e9g Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common costs (k\u00f6z\u00f6s k\u00f6lts\u00e9g)",
+            "HUF"),
+        field(
+            "lakberApplicable",
+            "Lakb\u00e9r Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether municipal rent (lakb\u00e9r) regulation applies",
+            null));
   }
 
   // --- RO (Romania) ---
   private List<FieldSchema> buildRoFields() {
     return List.of(
-        field("contractType", "Contract Type", ENUM, false,
+        field(
+            "contractType",
+            "Contract Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Romanian Civil Code (Art. 1777\u20131835)", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Certificat de performan\u021b\u0103 energetic\u0103 rating", null),
-        field("garantieAmount", "Garan\u021bie Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit (garan\u021bie) amount", "RON"),
-        field("garantieMonths", "Garan\u021bie Months", INTEGER, false, null, validation(0, 3, null), "deposit", "Deposit in months of rent", "months"),
-        field("anafRegistered", "ANAF Registered", BOOLEAN, false, null, null, "general", "Whether the contract is registered with ANAF (fiscal authority)", null),
-        field("intretinereAmount", "\u00centre\u021binere Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Monthly maintenance/utility charges", "RON"));
+            null,
+            "general",
+            "Lease type under Romanian Civil Code (Art. 1777\u20131835)",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Certificat de performan\u021b\u0103 energetic\u0103 rating",
+            null),
+        field(
+            "garantieAmount",
+            "Garan\u021bie Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit (garan\u021bie) amount",
+            "RON"),
+        field(
+            "garantieMonths",
+            "Garan\u021bie Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "deposit",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "anafRegistered",
+            "ANAF Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the contract is registered with ANAF (fiscal authority)",
+            null),
+        field(
+            "intretinereAmount",
+            "\u00centre\u021binere Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Monthly maintenance/utility charges",
+            "RON"));
   }
 
   // --- BG (Bulgaria) ---
   private List<FieldSchema> buildBgFields() {
     return List.of(
-        field("contractType", "Contract Type", ENUM, false,
+        field(
+            "contractType",
+            "Contract Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Bulgarian Obligations and Contracts Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "\u0421\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442 \u0437\u0430 \u0435\u043d\u0435\u0440\u0433\u0438\u0439\u043d\u0438 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a\u0438 rating", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "BGN"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "deposit", "Deposit in months of rent", "months"),
-        field("notarizedContract", "Notarized Contract", BOOLEAN, false, null, null, "general", "Whether the contract is notarized (required for registration)", null),
-        field("obshtiRazhodiAmount", "\u041e\u0431\u0449\u0438 \u0420\u0430\u0437\u0445\u043e\u0434\u0438 Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Monthly common charges", "BGN"));
+            null,
+            "general",
+            "Lease type under Bulgarian Obligations and Contracts Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "\u0421\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442 \u0437\u0430"
+                + " \u0435\u043d\u0435\u0440\u0433\u0438\u0439\u043d\u0438"
+                + " \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0441\u0442\u0438\u043a\u0438"
+                + " rating",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "BGN"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "deposit",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "notarizedContract",
+            "Notarized Contract",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the contract is notarized (required for registration)",
+            null),
+        field(
+            "obshtiRazhodiAmount",
+            "\u041e\u0431\u0449\u0438 \u0420\u0430\u0437\u0445\u043e\u0434\u0438 Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Monthly common charges",
+            "BGN"));
   }
 
   // --- SK (Slovakia) ---
   private List<FieldSchema> buildSkFields() {
     return List.of(
-        field("najomnaZmluvaType", "N\u00e1jomn\u00e1 Zmluva Type", ENUM, false,
+        field(
+            "najomnaZmluvaType",
+            "N\u00e1jomn\u00e1 Zmluva Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Slovak Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A0", "A0"), enumVal("A1", "A1"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Energetick\u00fd certifik\u00e1t rating", null),
-        field("kauciaAmount", "Kaucia Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (kaucia) amount", "EUR"),
-        field("kauciaMonths", "Kaucia Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (typically 1\u20133)", "months"),
-        field("poplatkyAmount", "Poplatky Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly service charges (poplatky)", "EUR"),
-        field("regulatedRent", "Regulated Rent", BOOLEAN, false, null, null, "general", "Whether the rent is subject to regulation", null));
+            null,
+            "general",
+            "Lease type under Slovak Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A0", "A0"),
+                enumVal("A1", "A1"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Energetick\u00fd certifik\u00e1t rating",
+            null),
+        field(
+            "kauciaAmount",
+            "Kaucia Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (kaucia) amount",
+            "EUR"),
+        field(
+            "kauciaMonths",
+            "Kaucia Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (typically 1\u20133)",
+            "months"),
+        field(
+            "poplatkyAmount",
+            "Poplatky Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly service charges (poplatky)",
+            "EUR"),
+        field(
+            "regulatedRent",
+            "Regulated Rent",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the rent is subject to regulation",
+            null));
   }
 
   // --- SI (Slovenia) ---
   private List<FieldSchema> buildSiFields() {
     return List.of(
-        field("najemnaPogodbaTip", "Najemna Pogodba Tip", ENUM, false,
-            List.of(enumVal("TRZNO", "Tr\u017eno (Market)"), enumVal("NEPROFITNO", "Neprofitno (Non-profit)"), enumVal("SLUZBENO", "Slu\u017ebeno (Service)")),
-            null, "general", "Lease type under Slovenian Housing Act (SZ-1)", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A1", "A1"), enumVal("A2", "A2"), enumVal("B1", "B1"), enumVal("B2", "B2"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Energetska izkaznica rating", null),
-        field("varscinsAmount", "Var\u0161\u010dina Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (var\u0161\u010dina) amount", "EUR"),
-        field("varscinsMonths", "Var\u0161\u010dina Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("neprofitnoStanovanje", "Neprofitno Stanovanje", BOOLEAN, false, null, null, "general", "Whether this is non-profit housing", null),
-        field("rezervniFondAmount", "Rezervni Fond Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly reserve fund contribution", "EUR"));
+        field(
+            "najemnaPogodbaTip",
+            "Najemna Pogodba Tip",
+            ENUM,
+            false,
+            List.of(
+                enumVal("TRZNO", "Tr\u017eno (Market)"),
+                enumVal("NEPROFITNO", "Neprofitno (Non-profit)"),
+                enumVal("SLUZBENO", "Slu\u017ebeno (Service)")),
+            null,
+            "general",
+            "Lease type under Slovenian Housing Act (SZ-1)",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A1", "A1"),
+                enumVal("A2", "A2"),
+                enumVal("B1", "B1"),
+                enumVal("B2", "B2"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Energetska izkaznica rating",
+            null),
+        field(
+            "varscinsAmount",
+            "Var\u0161\u010dina Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (var\u0161\u010dina) amount",
+            "EUR"),
+        field(
+            "varscinsMonths",
+            "Var\u0161\u010dina Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "neprofitnoStanovanje",
+            "Neprofitno Stanovanje",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether this is non-profit housing",
+            null),
+        field(
+            "rezervniFondAmount",
+            "Rezervni Fond Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly reserve fund contribution",
+            "EUR"));
   }
 
   // --- HR (Croatia) ---
   private List<FieldSchema> buildHrFields() {
     return List.of(
-        field("ugovorType", "Ugovor Type", ENUM, false,
+        field(
+            "ugovorType",
+            "Ugovor Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Croatian Obligations Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A+", "A+"), enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Energetski certifikat rating", null),
-        field("jamcevinaAmount", "Jam\u010devina Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (jam\u010devina) amount", "EUR"),
-        field("jamcevinaMonths", "Jam\u010devina Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("poreznaUprava", "Porezna Uprava", BOOLEAN, false, null, null, "general", "Whether the contract is registered with the Tax Administration", null),
-        field("pricuvaAmount", "Pri\u010duva Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly reserve fund (pri\u010duva) contribution", "EUR"));
+            null,
+            "general",
+            "Lease type under Croatian Obligations Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A+", "A+"),
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Energetski certifikat rating",
+            null),
+        field(
+            "jamcevinaAmount",
+            "Jam\u010devina Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (jam\u010devina) amount",
+            "EUR"),
+        field(
+            "jamcevinaMonths",
+            "Jam\u010devina Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "poreznaUprava",
+            "Porezna Uprava",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the contract is registered with the Tax Administration",
+            null),
+        field(
+            "pricuvaAmount",
+            "Pri\u010duva Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly reserve fund (pri\u010duva) contribution",
+            "EUR"));
   }
 
   // --- LT (Lithuania) ---
   private List<FieldSchema> buildLtFields() {
     return List.of(
-        field("nuomosSutartisType", "Nuomos Sutartis Type", ENUM, false,
+        field(
+            "nuomosSutartisType",
+            "Nuomos Sutartis Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Lithuanian Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A++", "A++"), enumVal("A+", "A+"), enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G")),
-            null, "energy", "Energinio naudingumo sertifikatas rating", null),
-        field("uzstatasAmount", "U\u017estatas Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (u\u017estatas) amount", "EUR"),
-        field("uzstatasMonths", "U\u017estatas Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("registruCentras", "Registr\u0173 Centras", BOOLEAN, false, null, null, "general", "Whether the lease is registered with the Centre of Registers", null),
-        field("komunaliniaiAmount", "Komunaliniai Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly utility charges (komunaliniai mok\u0117\u0161\u010diai)", "EUR"));
+            null,
+            "general",
+            "Lease type under Lithuanian Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A++", "A++"),
+                enumVal("A+", "A+"),
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G")),
+            null,
+            "energy",
+            "Energinio naudingumo sertifikatas rating",
+            null),
+        field(
+            "uzstatasAmount",
+            "U\u017estatas Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (u\u017estatas) amount",
+            "EUR"),
+        field(
+            "uzstatasMonths",
+            "U\u017estatas Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "registruCentras",
+            "Registr\u0173 Centras",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the lease is registered with the Centre of Registers",
+            null),
+        field(
+            "komunaliniaiAmount",
+            "Komunaliniai Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly utility charges (komunaliniai mok\u0117\u0161\u010diai)",
+            "EUR"));
   }
 
   // --- LV (Latvia) ---
   private List<FieldSchema> buildLvFields() {
     return List.of(
-        field("iresLigumsType", "\u012ares L\u012bgums Type", ENUM, false,
+        field(
+            "iresLigumsType",
+            "\u012ares L\u012bgums Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Latvian Civil Law", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "\u0112kas energoefektivit\u0101tes sertifik\u0101ts rating", null),
-        field("drosibaNaudaAmount", "Dro\u0161\u012bbas Nauda Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (dro\u0161\u012bbas nauda) amount", "EUR"),
-        field("drosibaNaudaMonths", "Dro\u0161\u012bbas Nauda Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("zemesgramataRegistered", "Zemesgr\u0101mata Registered", BOOLEAN, false, null, null, "general", "Whether the lease is registered in the Land Register (Zemesgr\u0101mata)", null),
-        field("komunalieAmount", "Komun\u0101lie Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly communal charges", "EUR"));
+            null,
+            "general",
+            "Lease type under Latvian Civil Law",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "\u0112kas energoefektivit\u0101tes sertifik\u0101ts rating",
+            null),
+        field(
+            "drosibaNaudaAmount",
+            "Dro\u0161\u012bbas Nauda Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (dro\u0161\u012bbas nauda) amount",
+            "EUR"),
+        field(
+            "drosibaNaudaMonths",
+            "Dro\u0161\u012bbas Nauda Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "zemesgramataRegistered",
+            "Zemesgr\u0101mata Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the lease is registered in the Land Register (Zemesgr\u0101mata)",
+            null),
+        field(
+            "komunalieAmount",
+            "Komun\u0101lie Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly communal charges",
+            "EUR"));
   }
 
   // --- EE (Estonia) ---
   private List<FieldSchema> buildEeFields() {
     return List.of(
-        field("uuerilepinguType", "\u00dc\u00fcrileping Type", ENUM, false,
+        field(
+            "uuerilepinguType",
+            "\u00dc\u00fcrileping Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Estonian Law of Obligations Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G"), enumVal("H", "H")),
-            null, "energy", "Energiam\u00e4rgis rating", null),
-        field("tagatisrahaAmount", "Tagatisraha Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (tagatisraha) amount", "EUR"),
-        field("tagatisrahaMonths", "Tagatisraha Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (max 3 per V\u00d5S \u00a7308)", "months"),
-        field("kinnistusraamatRegistered", "Kinnistusraamat Registered", BOOLEAN, false, null, null, "general", "Whether the lease is registered in the Land Register (Kinnistusraamat)", null),
-        field("kommunaalkuludAmount", "Kommunaalkulud Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly utility charges (kommunaalkulud)", "EUR"));
+            null,
+            "general",
+            "Lease type under Estonian Law of Obligations Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G"),
+                enumVal("H", "H")),
+            null,
+            "energy",
+            "Energiam\u00e4rgis rating",
+            null),
+        field(
+            "tagatisrahaAmount",
+            "Tagatisraha Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (tagatisraha) amount",
+            "EUR"),
+        field(
+            "tagatisrahaMonths",
+            "Tagatisraha Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (max 3 per V\u00d5S \u00a7308)",
+            "months"),
+        field(
+            "kinnistusraamatRegistered",
+            "Kinnistusraamat Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the lease is registered in the Land Register (Kinnistusraamat)",
+            null),
+        field(
+            "kommunaalkuludAmount",
+            "Kommunaalkulud Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly utility charges (kommunaalkulud)",
+            "EUR"));
   }
 
   // --- GR (Greece) ---
   private List<FieldSchema> buildGrFields() {
     return List.of(
-        field("misthosisType", "M\u00edsthosis Type", ENUM, false,
-            List.of(enumVal("RESIDENTIAL", "Residential"), enumVal("COMMERCIAL", "Commercial"), enumVal("PROFESSIONAL", "Professional")),
-            null, "general", "Lease type under Greek Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A+", "A+"), enumVal("A", "A"), enumVal("B+", "B+"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G"), enumVal("H", "H")),
-            null, "energy", "\u03a0\u03b9\u03c3\u03c4\u03bf\u03c0\u03bf\u03b9\u03b7\u03c4\u03b9\u03ba\u03cc \u0395\u03bd\u03b5\u03c1\u03b3\u03b5\u03b9\u03b1\u03ba\u03ae\u03c2 \u0391\u03c0\u03cc\u03b4\u03bf\u03c3\u03b7\u03c2 (PEA) rating", null),
-        field("eggysisAmount", "\u0395\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7 Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (\u03b5\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7) amount", "EUR"),
-        field("eggysisMonths", "\u0395\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7 Months", INTEGER, false, null, validation(0, 2, null), "costs", "Deposit in months of rent (typically 2)", "months"),
-        field("enoikiostasiProtected", "Enoikiostasio Protected", BOOLEAN, false, null, null, "general", "Whether the lease is under rent control protection (\u03b5\u03bd\u03bf\u03b9\u03ba\u03b9\u03bf\u03c3\u03c4\u03ac\u03c3\u03b9\u03bf)", null),
-        field("koinochristaAmount", "\u039a\u03bf\u03b9\u03bd\u03cc\u03c7\u03c1\u03b7\u03c3\u03c4\u03b1 Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common charges (\u03ba\u03bf\u03b9\u03bd\u03cc\u03c7\u03c1\u03b7\u03c3\u03c4\u03b1)", "EUR"),
-        field("taxisRegistrationNumber", "TAXIS Registration Number", STRING, false, null, null, "general", "Lease registration number with TAXIS (tax authority)", null));
+        field(
+            "misthosisType",
+            "M\u00edsthosis Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("RESIDENTIAL", "Residential"),
+                enumVal("COMMERCIAL", "Commercial"),
+                enumVal("PROFESSIONAL", "Professional")),
+            null,
+            "general",
+            "Lease type under Greek Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A+", "A+"),
+                enumVal("A", "A"),
+                enumVal("B+", "B+"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G"),
+                enumVal("H", "H")),
+            null,
+            "energy",
+            "\u03a0\u03b9\u03c3\u03c4\u03bf\u03c0\u03bf\u03b9\u03b7\u03c4\u03b9\u03ba\u03cc"
+                + " \u0395\u03bd\u03b5\u03c1\u03b3\u03b5\u03b9\u03b1\u03ba\u03ae\u03c2"
+                + " \u0391\u03c0\u03cc\u03b4\u03bf\u03c3\u03b7\u03c2 (PEA) rating",
+            null),
+        field(
+            "eggysisAmount",
+            "\u0395\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7 Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (\u03b5\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7) amount",
+            "EUR"),
+        field(
+            "eggysisMonths",
+            "\u0395\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7 Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 2, null),
+            "costs",
+            "Deposit in months of rent (typically 2)",
+            "months"),
+        field(
+            "enoikiostasiProtected",
+            "Enoikiostasio Protected",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the lease is under rent control protection"
+                + " (\u03b5\u03bd\u03bf\u03b9\u03ba\u03b9\u03bf\u03c3\u03c4\u03ac\u03c3\u03b9\u03bf)",
+            null),
+        field(
+            "koinochristaAmount",
+            "\u039a\u03bf\u03b9\u03bd\u03cc\u03c7\u03c1\u03b7\u03c3\u03c4\u03b1 Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common charges"
+                + " (\u03ba\u03bf\u03b9\u03bd\u03cc\u03c7\u03c1\u03b7\u03c3\u03c4\u03b1)",
+            "EUR"),
+        field(
+            "taxisRegistrationNumber",
+            "TAXIS Registration Number",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Lease registration number with TAXIS (tax authority)",
+            null));
   }
 
   // --- MT (Malta) ---
   private List<FieldSchema> buildMtFields() {
     return List.of(
-        field("tenancyType", "Tenancy Type", ENUM, false,
-            List.of(enumVal("PRIVATE", "Private Market"), enumVal("CONTROLLED", "Controlled (pre-1995)"), enumVal("SHORT_LET", "Short Let")),
-            null, "tenancy", "Type of tenancy under Maltese rent laws", null),
-        field("epcRating", "EPC Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy Performance Certificate rating", null),
-        field("depositAmount", "Deposit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "EUR"),
-        field("depositMonths", "Deposit Months", INTEGER, false, null, validation(0, 2, null), "costs", "Deposit in months of rent", "months"),
-        field("housingAuthorityRegistered", "Housing Authority Registered", BOOLEAN, false, null, null, "tenancy", "Whether the lease is registered with the Housing Authority", null),
-        field("groundRent", "Ground Rent", DECIMAL, false, null, validation(0, null, null), "costs", "Annual ground rent payable", "EUR"),
-        field("rentalAgreementNumber", "Rental Agreement Number", STRING, false, null, null, "tenancy", "Official rental agreement registration number", null));
+        field(
+            "tenancyType",
+            "Tenancy Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("PRIVATE", "Private Market"),
+                enumVal("CONTROLLED", "Controlled (pre-1995)"),
+                enumVal("SHORT_LET", "Short Let")),
+            null,
+            "tenancy",
+            "Type of tenancy under Maltese rent laws",
+            null),
+        field(
+            "epcRating",
+            "EPC Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy Performance Certificate rating",
+            null),
+        field(
+            "depositAmount",
+            "Deposit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "depositMonths",
+            "Deposit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 2, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "housingAuthorityRegistered",
+            "Housing Authority Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Whether the lease is registered with the Housing Authority",
+            null),
+        field(
+            "groundRent",
+            "Ground Rent",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Annual ground rent payable",
+            "EUR"),
+        field(
+            "rentalAgreementNumber",
+            "Rental Agreement Number",
+            STRING,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Official rental agreement registration number",
+            null));
   }
 
   // --- CY (Cyprus) ---
   private List<FieldSchema> buildCyFields() {
     return List.of(
-        field("tenancyType", "Tenancy Type", ENUM, false,
-            List.of(enumVal("STATUTORY", "Statutory Tenancy"), enumVal("CONTRACTUAL", "Contractual")),
-            null, "tenancy", "Type of tenancy (statutory tenancies are rent-controlled)", null),
-        field("epcRating", "EPC Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy Performance Certificate rating", null),
-        field("depositAmount", "Deposit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "EUR"),
-        field("depositMonths", "Deposit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("rentTribunalEligible", "Rent Tribunal Eligible", BOOLEAN, false, null, null, "tenancy", "Whether the Rent Control Tribunal has jurisdiction", null),
-        field("commonExpensesAmount", "Common Expenses Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common area expenses", "EUR"),
-        field("municipalityRegistration", "Municipality Registration", STRING, false, null, null, "tenancy", "Municipal registration reference", null));
+        field(
+            "tenancyType",
+            "Tenancy Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("STATUTORY", "Statutory Tenancy"), enumVal("CONTRACTUAL", "Contractual")),
+            null,
+            "tenancy",
+            "Type of tenancy (statutory tenancies are rent-controlled)",
+            null),
+        field(
+            "epcRating",
+            "EPC Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy Performance Certificate rating",
+            null),
+        field(
+            "depositAmount",
+            "Deposit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "depositMonths",
+            "Deposit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "rentTribunalEligible",
+            "Rent Tribunal Eligible",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Whether the Rent Control Tribunal has jurisdiction",
+            null),
+        field(
+            "commonExpensesAmount",
+            "Common Expenses Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common area expenses",
+            "EUR"),
+        field(
+            "municipalityRegistration",
+            "Municipality Registration",
+            STRING,
+            false,
+            null,
+            null,
+            "tenancy",
+            "Municipal registration reference",
+            null));
   }
 
   // --- LU (Luxembourg) ---
   private List<FieldSchema> buildLuFields() {
     return List.of(
-        field("bailType", "Bail Type", ENUM, false,
-            List.of(enumVal("HABITATION", "Bail d'Habitation"), enumVal("COMMERCIAL", "Bail Commercial"), enumVal("MEUBLE", "Bail Meubl\u00e9")),
-            null, "general", "Lease type under Luxembourg rental law", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false,
-            List.of(enumVal("A", "A"), enumVal("B", "B"), enumVal("C", "C"), enumVal("D", "D"), enumVal("E", "E"), enumVal("F", "F"), enumVal("G", "G"), enumVal("H", "H"), enumVal("I", "I")),
-            null, "energy", "Certificat de performance \u00e9nerg\u00e9tique rating", null),
-        field("cautionAmount", "Caution Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (caution) amount", "EUR"),
-        field("cautionMonths", "Caution Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (max 3)", "months"),
-        field("loyerMaxApplicable", "Loyer Max Applicable", BOOLEAN, false, null, null, "general", "Whether rent cap regulation applies", null),
-        field("chargesAmount", "Charges Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly charges (charges locatives)", "EUR"),
-        field("registrationNumber", "Registration Number", STRING, false, null, null, "general", "Lease registration number", null));
+        field(
+            "bailType",
+            "Bail Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("HABITATION", "Bail d'Habitation"),
+                enumVal("COMMERCIAL", "Bail Commercial"),
+                enumVal("MEUBLE", "Bail Meubl\u00e9")),
+            null,
+            "general",
+            "Lease type under Luxembourg rental law",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            List.of(
+                enumVal("A", "A"),
+                enumVal("B", "B"),
+                enumVal("C", "C"),
+                enumVal("D", "D"),
+                enumVal("E", "E"),
+                enumVal("F", "F"),
+                enumVal("G", "G"),
+                enumVal("H", "H"),
+                enumVal("I", "I")),
+            null,
+            "energy",
+            "Certificat de performance \u00e9nerg\u00e9tique rating",
+            null),
+        field(
+            "cautionAmount",
+            "Caution Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (caution) amount",
+            "EUR"),
+        field(
+            "cautionMonths",
+            "Caution Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (max 3)",
+            "months"),
+        field(
+            "loyerMaxApplicable",
+            "Loyer Max Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether rent cap regulation applies",
+            null),
+        field(
+            "chargesAmount",
+            "Charges Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly charges (charges locatives)",
+            "EUR"),
+        field(
+            "registrationNumber",
+            "Registration Number",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Lease registration number",
+            null));
   }
 
   // --- RS (Serbia) ---
   private List<FieldSchema> buildRsFields() {
     return List.of(
-        field("ugovorType", "Ugovor Type", ENUM, false,
+        field(
+            "ugovorType",
+            "Ugovor Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Serbian Law on Housing", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy certificate rating", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "RSD"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("poreskaUpravaRegistered", "Poreska Uprava Registered", BOOLEAN, false, null, null, "general", "Whether the contract is registered with the Tax Administration", null),
-        field("komunalniTroskoviAmount", "Komunalni Tro\u0161kovi Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly utility charges", "RSD"));
+            null,
+            "general",
+            "Lease type under Serbian Law on Housing",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy certificate rating",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "RSD"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "poreskaUpravaRegistered",
+            "Poreska Uprava Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether the contract is registered with the Tax Administration",
+            null),
+        field(
+            "komunalniTroskoviAmount",
+            "Komunalni Tro\u0161kovi Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly utility charges",
+            "RSD"));
   }
 
   // --- BA (Bosnia and Herzegovina) ---
   private List<FieldSchema> buildBaFields() {
     return List.of(
-        field("ugovorType", "Ugovor Type", ENUM, false,
+        field(
+            "ugovorType",
+            "Ugovor Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type", null),
-        field("entityRegion", "Entity/Region", ENUM, false,
-            List.of(enumVal("FBH", "Federation of BiH"), enumVal("RS", "Republika Srpska"), enumVal("BD", "Br\u010dko District")),
-            null, "general", "Entity or district where the property is located (different legal frameworks)", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "BAM"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("poreskaUpravaRegistered", "Poreska Uprava Registered", BOOLEAN, false, null, null, "general", "Whether registered with Tax Administration", null),
-        field("rezijeAmount", "Re\u017eije Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly utility charges (re\u017eije)", "BAM"));
+            null,
+            "general",
+            "Lease type",
+            null),
+        field(
+            "entityRegion",
+            "Entity/Region",
+            ENUM,
+            false,
+            List.of(
+                enumVal("FBH", "Federation of BiH"),
+                enumVal("RS", "Republika Srpska"),
+                enumVal("BD", "Br\u010dko District")),
+            null,
+            "general",
+            "Entity or district where the property is located (different legal frameworks)",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "BAM"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "poreskaUpravaRegistered",
+            "Poreska Uprava Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with Tax Administration",
+            null),
+        field(
+            "rezijeAmount",
+            "Re\u017eije Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly utility charges (re\u017eije)",
+            "BAM"));
   }
 
   // --- AL (Albania) ---
   private List<FieldSchema> buildAlFields() {
     return List.of(
-        field("kontrataTip", "Kontrata Tip", ENUM, false,
+        field(
+            "kontrataTip",
+            "Kontrata Tip",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Albanian Civil Code", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy certificate rating", null),
-        field("garanciaAmount", "Garancia Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (garanci) amount", "ALL"),
-        field("garanciaMonths", "Garancia Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("tatimoreRegistered", "Tatimore Registered", BOOLEAN, false, null, null, "general", "Whether registered with Tax Authority (Drejtoria e Tatimeve)", null),
-        field("shpenzimet", "Shpenzimet", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common charges", "ALL"));
+            null,
+            "general",
+            "Lease type under Albanian Civil Code",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy certificate rating",
+            null),
+        field(
+            "garanciaAmount",
+            "Garancia Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (garanci) amount",
+            "ALL"),
+        field(
+            "garanciaMonths",
+            "Garancia Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "tatimoreRegistered",
+            "Tatimore Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with Tax Authority (Drejtoria e Tatimeve)",
+            null),
+        field(
+            "shpenzimet",
+            "Shpenzimet",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common charges",
+            "ALL"));
   }
 
   // --- ME (Montenegro) ---
   private List<FieldSchema> buildMeFields() {
     return List.of(
-        field("ugovorType", "Ugovor Type", ENUM, false,
+        field(
+            "ugovorType",
+            "Ugovor Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Montenegrin Obligations Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy certificate rating", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "EUR"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("poreskaUpravaRegistered", "Poreska Uprava Registered", BOOLEAN, false, null, null, "general", "Whether registered with Tax Administration", null),
-        field("komunalijeAmount", "Komunalije Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly utility charges", "EUR"));
+            null,
+            "general",
+            "Lease type under Montenegrin Obligations Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy certificate rating",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "poreskaUpravaRegistered",
+            "Poreska Uprava Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with Tax Administration",
+            null),
+        field(
+            "komunalijeAmount",
+            "Komunalije Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly utility charges",
+            "EUR"));
   }
 
   // --- MK (North Macedonia) ---
   private List<FieldSchema> buildMkFields() {
     return List.of(
-        field("dogovorType", "Dogovor Type", ENUM, false,
+        field(
+            "dogovorType",
+            "Dogovor Type",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type under Macedonian Obligations Act", null),
-        field("energyCertificateRating", "Energy Certificate Rating", ENUM, false, ENERGY_RATINGS, null, "energy", "Energy certificate rating", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "MKD"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("ujpRegistered", "UJP Registered", BOOLEAN, false, null, null, "general", "Whether registered with the Public Revenue Office (UJP)", null),
-        field("rezhiskiTroskoviAmount", "Re\u017eiski Tro\u0161kovi Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly overhead charges", "MKD"));
+            null,
+            "general",
+            "Lease type under Macedonian Obligations Act",
+            null),
+        field(
+            "energyCertificateRating",
+            "Energy Certificate Rating",
+            ENUM,
+            false,
+            ENERGY_RATINGS,
+            null,
+            "energy",
+            "Energy certificate rating",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "MKD"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "ujpRegistered",
+            "UJP Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with the Public Revenue Office (UJP)",
+            null),
+        field(
+            "rezhiskiTroskoviAmount",
+            "Re\u017eiski Tro\u0161kovi Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly overhead charges",
+            "MKD"));
   }
 
   // --- XK (Kosovo) ---
   private List<FieldSchema> buildXkFields() {
     return List.of(
-        field("kontrataTip", "Kontrata Tip", ENUM, false,
+        field(
+            "kontrataTip",
+            "Kontrata Tip",
+            ENUM,
+            false,
             List.of(enumVal("DEFINITE", "Definite Term"), enumVal("INDEFINITE", "Indefinite")),
-            null, "general", "Lease type", null),
-        field("depozitAmount", "Depozit Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "EUR"),
-        field("depozitMonths", "Depozit Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("tatRegistered", "TAK Registered", BOOLEAN, false, null, null, "general", "Whether registered with Kosovo Tax Administration (TAK)", null),
-        field("shpenzimetKomunale", "Shpenzimet Komunale", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly communal charges", "EUR"),
-        field("komunaRegistration", "Komuna Registration", STRING, false, null, null, "general", "Municipal registration reference", null));
+            null,
+            "general",
+            "Lease type",
+            null),
+        field(
+            "depozitAmount",
+            "Depozit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "EUR"),
+        field(
+            "depozitMonths",
+            "Depozit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "tatRegistered",
+            "TAK Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with Kosovo Tax Administration (TAK)",
+            null),
+        field(
+            "shpenzimetKomunale",
+            "Shpenzimet Komunale",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly communal charges",
+            "EUR"),
+        field(
+            "komunaRegistration",
+            "Komuna Registration",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Municipal registration reference",
+            null));
   }
 
   // --- CA (Canada) ---
   private List<FieldSchema> buildCaFields() {
     return List.of(
-        field("province", "Province/Territory", ENUM, false,
-            List.of(enumVal("AB", "Alberta"), enumVal("BC", "British Columbia"), enumVal("MB", "Manitoba"), enumVal("NB", "New Brunswick"), enumVal("NL", "Newfoundland and Labrador"), enumVal("NS", "Nova Scotia"), enumVal("NT", "Northwest Territories"), enumVal("NU", "Nunavut"), enumVal("ON", "Ontario"), enumVal("PE", "Prince Edward Island"), enumVal("QC", "Quebec"), enumVal("SK", "Saskatchewan"), enumVal("YT", "Yukon")),
-            null, "location", "Province or territory where the property is located", null),
-        field("rentControlled", "Rent Controlled", BOOLEAN, false, null, null, "location", "Whether the property is subject to provincial rent control", null),
-        field("securityDepositAmount", "Security Deposit Amount", DECIMAL, false, null, validation(0, null, null), "deposit", "Security deposit amount", "CAD"),
-        field("securityDepositMonths", "Security Deposit Months", INTEGER, false, null, validation(0, 12, null), "deposit", "Deposit in months of rent", "months"),
-        field("tenancyBoardRegistered", "Tenancy Board Registered", BOOLEAN, false, null, null, "location", "Whether registered with provincial tenancy board (e.g. LTB Ontario)", null),
-        field("energyRating", "Energy Rating", STRING, false, null, null, "energy", "EnerGuide or provincial energy rating", null));
+        field(
+            "province",
+            "Province/Territory",
+            ENUM,
+            false,
+            List.of(
+                enumVal("AB", "Alberta"),
+                enumVal("BC", "British Columbia"),
+                enumVal("MB", "Manitoba"),
+                enumVal("NB", "New Brunswick"),
+                enumVal("NL", "Newfoundland and Labrador"),
+                enumVal("NS", "Nova Scotia"),
+                enumVal("NT", "Northwest Territories"),
+                enumVal("NU", "Nunavut"),
+                enumVal("ON", "Ontario"),
+                enumVal("PE", "Prince Edward Island"),
+                enumVal("QC", "Quebec"),
+                enumVal("SK", "Saskatchewan"),
+                enumVal("YT", "Yukon")),
+            null,
+            "location",
+            "Province or territory where the property is located",
+            null),
+        field(
+            "rentControlled",
+            "Rent Controlled",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "location",
+            "Whether the property is subject to provincial rent control",
+            null),
+        field(
+            "securityDepositAmount",
+            "Security Deposit Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "deposit",
+            "Security deposit amount",
+            "CAD"),
+        field(
+            "securityDepositMonths",
+            "Security Deposit Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 12, null),
+            "deposit",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "tenancyBoardRegistered",
+            "Tenancy Board Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "location",
+            "Whether registered with provincial tenancy board (e.g. LTB Ontario)",
+            null),
+        field(
+            "energyRating",
+            "Energy Rating",
+            STRING,
+            false,
+            null,
+            null,
+            "energy",
+            "EnerGuide or provincial energy rating",
+            null));
   }
 
   // --- MX (Mexico) ---
   private List<FieldSchema> buildMxFields() {
     return List.of(
-        field("estadoCode", "Estado", STRING, false, null, null, "general", "State code where the property is located", null),
-        field("contratoType", "Contrato Type", ENUM, false,
-            List.of(enumVal("DEFINITE", "Tiempo Determinado"), enumVal("INDEFINITE", "Tiempo Indeterminado")),
-            null, "general", "Lease type under Mexican Civil Code", null),
-        field("depositoAmount", "Dep\u00f3sito Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "MXN"),
-        field("depositoMonths", "Dep\u00f3sito Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("profecoRegistered", "PROFECO Registered", BOOLEAN, false, null, null, "general", "Whether registered with consumer protection agency (PROFECO)", null),
-        field("mantenimientoAmount", "Mantenimiento Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly maintenance charges", "MXN"));
+        field(
+            "estadoCode",
+            "Estado",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "State code where the property is located",
+            null),
+        field(
+            "contratoType",
+            "Contrato Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("DEFINITE", "Tiempo Determinado"),
+                enumVal("INDEFINITE", "Tiempo Indeterminado")),
+            null,
+            "general",
+            "Lease type under Mexican Civil Code",
+            null),
+        field(
+            "depositoAmount",
+            "Dep\u00f3sito Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "MXN"),
+        field(
+            "depositoMonths",
+            "Dep\u00f3sito Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "profecoRegistered",
+            "PROFECO Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with consumer protection agency (PROFECO)",
+            null),
+        field(
+            "mantenimientoAmount",
+            "Mantenimiento Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly maintenance charges",
+            "MXN"));
   }
 
   // --- BR (Brazil) ---
   private List<FieldSchema> buildBrFields() {
     return List.of(
-        field("tipoLocacao", "Tipo de Loca\u00e7\u00e3o", ENUM, false,
-            List.of(enumVal("RESIDENCIAL", "Residencial"), enumVal("COMERCIAL", "Comercial"), enumVal("TEMPORADA", "Temporada")),
-            null, "general", "Lease type under Lei do Inquilinato (Law 8.245/91)", null),
-        field("caucaoAmount", "Cau\u00e7\u00e3o Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit (cau\u00e7\u00e3o) amount", "BRL"),
-        field("caucaoMonths", "Cau\u00e7\u00e3o Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent (max 3 per Art. 38 Law 8.245/91)", "months"),
-        field("iptuIncluded", "IPTU Included", BOOLEAN, false, null, null, "general", "Whether property tax (IPTU) is included in rent", null),
-        field("condominioAmount", "Condom\u00ednio Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly condominium fees", "BRL"),
-        field("registroImobiliario", "Registro Imobili\u00e1rio", STRING, false, null, null, "general", "Real estate registry number (matr\u00edcula do im\u00f3vel)", null),
-        field("seguroFianca", "Seguro Fian\u00e7a", BOOLEAN, false, null, null, "costs", "Whether a rental guarantee insurance (seguro fian\u00e7a) is used instead of cash deposit", null));
+        field(
+            "tipoLocacao",
+            "Tipo de Loca\u00e7\u00e3o",
+            ENUM,
+            false,
+            List.of(
+                enumVal("RESIDENCIAL", "Residencial"),
+                enumVal("COMERCIAL", "Comercial"),
+                enumVal("TEMPORADA", "Temporada")),
+            null,
+            "general",
+            "Lease type under Lei do Inquilinato (Law 8.245/91)",
+            null),
+        field(
+            "caucaoAmount",
+            "Cau\u00e7\u00e3o Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit (cau\u00e7\u00e3o) amount",
+            "BRL"),
+        field(
+            "caucaoMonths",
+            "Cau\u00e7\u00e3o Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent (max 3 per Art. 38 Law 8.245/91)",
+            "months"),
+        field(
+            "iptuIncluded",
+            "IPTU Included",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether property tax (IPTU) is included in rent",
+            null),
+        field(
+            "condominioAmount",
+            "Condom\u00ednio Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly condominium fees",
+            "BRL"),
+        field(
+            "registroImobiliario",
+            "Registro Imobili\u00e1rio",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Real estate registry number (matr\u00edcula do im\u00f3vel)",
+            null),
+        field(
+            "seguroFianca",
+            "Seguro Fian\u00e7a",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "costs",
+            "Whether a rental guarantee insurance (seguro fian\u00e7a) is used instead of cash"
+                + " deposit",
+            null));
   }
 
   // --- AR (Argentina) ---
   private List<FieldSchema> buildArFields() {
     return List.of(
-        field("tipoContrato", "Tipo de Contrato", ENUM, false,
+        field(
+            "tipoContrato",
+            "Tipo de Contrato",
+            ENUM,
+            false,
             List.of(enumVal("HABITUAL", "Habitual"), enumVal("TEMPORARIO", "Temporario")),
-            null, "general", "Lease type under Ley de Alquileres (27.551)", null),
-        field("depositoAmount", "Dep\u00f3sito Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "ARS"),
-        field("depositoMonths", "Dep\u00f3sito Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("registroPropiedad", "Registro Propiedad", BOOLEAN, false, null, null, "general", "Whether registered with the Property Registry", null),
-        field("expensasAmount", "Expensas Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common expenses (expensas)", "ARS"),
-        field("contratoInscripcion", "Contrato Inscripci\u00f3n", STRING, false, null, null, "general", "AFIP lease registration number", null),
-        field("actualizacionIpcApplicable", "Actualizaci\u00f3n IPC Applicable", BOOLEAN, false, null, null, "general", "Whether annual IPC-based rent adjustment applies", null));
+            null,
+            "general",
+            "Lease type under Ley de Alquileres (27.551)",
+            null),
+        field(
+            "depositoAmount",
+            "Dep\u00f3sito Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "ARS"),
+        field(
+            "depositoMonths",
+            "Dep\u00f3sito Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "registroPropiedad",
+            "Registro Propiedad",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with the Property Registry",
+            null),
+        field(
+            "expensasAmount",
+            "Expensas Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common expenses (expensas)",
+            "ARS"),
+        field(
+            "contratoInscripcion",
+            "Contrato Inscripci\u00f3n",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "AFIP lease registration number",
+            null),
+        field(
+            "actualizacionIpcApplicable",
+            "Actualizaci\u00f3n IPC Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether annual IPC-based rent adjustment applies",
+            null));
   }
 
   // --- CL (Chile) ---
   private List<FieldSchema> buildClFields() {
     return List.of(
-        field("tipoArriendo", "Tipo de Arriendo", ENUM, false,
+        field(
+            "tipoArriendo",
+            "Tipo de Arriendo",
+            ENUM,
+            false,
             List.of(enumVal("HABITUAL", "Habitual"), enumVal("TEMPORAL", "Temporal")),
-            null, "general", "Lease type under Chilean Civil Code", null),
-        field("garantiaAmount", "Garant\u00eda Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "CLP"),
-        field("garantiaMonths", "Garant\u00eda Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("siiRegistered", "SII Registered", BOOLEAN, false, null, null, "general", "Whether registered with the Internal Revenue Service (SII)", null),
-        field("gastosComunes", "Gastos Comunes", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common expenses", "CLP"),
-        field("rolPropiedad", "Rol Propiedad", STRING, false, null, null, "general", "Property ROL number (tax identifier)", null),
-        field("reajusteIpcApplicable", "Reajuste IPC Applicable", BOOLEAN, false, null, null, "general", "Whether IPC-based rent adjustment applies", null));
+            null,
+            "general",
+            "Lease type under Chilean Civil Code",
+            null),
+        field(
+            "garantiaAmount",
+            "Garant\u00eda Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "CLP"),
+        field(
+            "garantiaMonths",
+            "Garant\u00eda Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "siiRegistered",
+            "SII Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with the Internal Revenue Service (SII)",
+            null),
+        field(
+            "gastosComunes",
+            "Gastos Comunes",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common expenses",
+            "CLP"),
+        field(
+            "rolPropiedad",
+            "Rol Propiedad",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Property ROL number (tax identifier)",
+            null),
+        field(
+            "reajusteIpcApplicable",
+            "Reajuste IPC Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether IPC-based rent adjustment applies",
+            null));
   }
 
   // --- CO (Colombia) ---
   private List<FieldSchema> buildCoFields() {
     return List.of(
-        field("tipoContrato", "Tipo de Contrato", ENUM, false,
-            List.of(enumVal("VIVIENDA_URBANA", "Vivienda Urbana"), enumVal("COMERCIAL", "Comercial")),
-            null, "general", "Lease type under Ley 820 de 2003", null),
-        field("depositoAmount", "Dep\u00f3sito Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "COP"),
-        field("depositoMonths", "Dep\u00f3sito Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("registraduriaInscribed", "Registradur\u00eda Inscribed", BOOLEAN, false, null, null, "general", "Whether registered with the Superintendencia de Notariado y Registro", null),
-        field("administracionAmount", "Administraci\u00f3n Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly administration fee", "COP"),
-        field("matriculaInmobiliaria", "Matr\u00edcula Inmobiliaria", STRING, false, null, null, "general", "Real estate registration number (matr\u00edcula inmobiliaria)", null),
-        field("estratoApplicable", "Estrato Applicable", BOOLEAN, false, null, null, "general", "Whether socioeconomic stratification (estrato) applies to utility rates", null));
+        field(
+            "tipoContrato",
+            "Tipo de Contrato",
+            ENUM,
+            false,
+            List.of(
+                enumVal("VIVIENDA_URBANA", "Vivienda Urbana"), enumVal("COMERCIAL", "Comercial")),
+            null,
+            "general",
+            "Lease type under Ley 820 de 2003",
+            null),
+        field(
+            "depositoAmount",
+            "Dep\u00f3sito Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "COP"),
+        field(
+            "depositoMonths",
+            "Dep\u00f3sito Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "registraduriaInscribed",
+            "Registradur\u00eda Inscribed",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with the Superintendencia de Notariado y Registro",
+            null),
+        field(
+            "administracionAmount",
+            "Administraci\u00f3n Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly administration fee",
+            "COP"),
+        field(
+            "matriculaInmobiliaria",
+            "Matr\u00edcula Inmobiliaria",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Real estate registration number (matr\u00edcula inmobiliaria)",
+            null),
+        field(
+            "estratoApplicable",
+            "Estrato Applicable",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether socioeconomic stratification (estrato) applies to utility rates",
+            null));
   }
 
   // --- PE (Peru) ---
   private List<FieldSchema> buildPeFields() {
     return List.of(
-        field("tipoContrato", "Tipo de Contrato", ENUM, false,
-            List.of(enumVal("DEFINIDO", "Plazo Determinado"), enumVal("INDEFINIDO", "Plazo Indeterminado")),
-            null, "general", "Lease type under Peruvian Civil Code (Art. 1666\u20131712)", null),
-        field("garantiaAmount", "Garant\u00eda Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "PEN"),
-        field("garantiaMonths", "Garant\u00eda Months", INTEGER, false, null, validation(0, 3, null), "costs", "Deposit in months of rent", "months"),
-        field("sunarpRegistered", "SUNARP Registered", BOOLEAN, false, null, null, "general", "Whether registered with SUNARP (public records)", null),
-        field("mantenimientoAmount", "Mantenimiento Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly maintenance charges", "PEN"),
-        field("partidaRegistral", "Partida Registral", STRING, false, null, null, "general", "Property registration number in SUNARP", null));
+        field(
+            "tipoContrato",
+            "Tipo de Contrato",
+            ENUM,
+            false,
+            List.of(
+                enumVal("DEFINIDO", "Plazo Determinado"),
+                enumVal("INDEFINIDO", "Plazo Indeterminado")),
+            null,
+            "general",
+            "Lease type under Peruvian Civil Code (Art. 1666\u20131712)",
+            null),
+        field(
+            "garantiaAmount",
+            "Garant\u00eda Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "PEN"),
+        field(
+            "garantiaMonths",
+            "Garant\u00eda Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 3, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "sunarpRegistered",
+            "SUNARP Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with SUNARP (public records)",
+            null),
+        field(
+            "mantenimientoAmount",
+            "Mantenimiento Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly maintenance charges",
+            "PEN"),
+        field(
+            "partidaRegistral",
+            "Partida Registral",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Property registration number in SUNARP",
+            null));
   }
 
   // --- UY (Uruguay) ---
   private List<FieldSchema> buildUyFields() {
     return List.of(
-        field("garantiaType", "Garant\u00eda Type", ENUM, false,
-            List.of(enumVal("DEPOSITO", "Dep\u00f3sito"), enumVal("BHU", "BHU (Banco Hipotecario)"), enumVal("PORTO", "Porto Seguro"), enumVal("ANDA", "ANDA"), enumVal("CONTADURIA", "Contadur\u00eda General de la Naci\u00f3n")),
-            null, "general", "Type of rental guarantee required by Ley 18.795", null),
-        field("tipoContrato", "Tipo de Contrato", ENUM, false,
+        field(
+            "garantiaType",
+            "Garant\u00eda Type",
+            ENUM,
+            false,
+            List.of(
+                enumVal("DEPOSITO", "Dep\u00f3sito"),
+                enumVal("BHU", "BHU (Banco Hipotecario)"),
+                enumVal("PORTO", "Porto Seguro"),
+                enumVal("ANDA", "ANDA"),
+                enumVal("CONTADURIA", "Contadur\u00eda General de la Naci\u00f3n")),
+            null,
+            "general",
+            "Type of rental guarantee required by Ley 18.795",
+            null),
+        field(
+            "tipoContrato",
+            "Tipo de Contrato",
+            ENUM,
+            false,
             List.of(enumVal("HABITUAL", "Habitual"), enumVal("TEMPORARIO", "Temporario")),
-            null, "general", "Lease type", null),
-        field("depositoAmount", "Dep\u00f3sito Amount", DECIMAL, false, null, validation(0, null, null), "costs", "Security deposit amount", "UYU"),
-        field("depositoMonths", "Dep\u00f3sito Months", INTEGER, false, null, validation(0, 5, null), "costs", "Deposit in months of rent", "months"),
-        field("dgiRegistered", "DGI Registered", BOOLEAN, false, null, null, "general", "Whether registered with the Tax Authority (DGI)", null),
-        field("gastosComunes", "Gastos Comunes", DECIMAL, false, null, validation(0, null, null), "costs", "Monthly common expenses", "UYU"),
-        field("padronNumero", "Padr\u00f3n N\u00famero", STRING, false, null, null, "general", "Property cadastral number (padr\u00f3n)", null));
+            null,
+            "general",
+            "Lease type",
+            null),
+        field(
+            "depositoAmount",
+            "Dep\u00f3sito Amount",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Security deposit amount",
+            "UYU"),
+        field(
+            "depositoMonths",
+            "Dep\u00f3sito Months",
+            INTEGER,
+            false,
+            null,
+            validation(0, 5, null),
+            "costs",
+            "Deposit in months of rent",
+            "months"),
+        field(
+            "dgiRegistered",
+            "DGI Registered",
+            BOOLEAN,
+            false,
+            null,
+            null,
+            "general",
+            "Whether registered with the Tax Authority (DGI)",
+            null),
+        field(
+            "gastosComunes",
+            "Gastos Comunes",
+            DECIMAL,
+            false,
+            null,
+            validation(0, null, null),
+            "costs",
+            "Monthly common expenses",
+            "UYU"),
+        field(
+            "padronNumero",
+            "Padr\u00f3n N\u00famero",
+            STRING,
+            false,
+            null,
+            null,
+            "general",
+            "Property cadastral number (padr\u00f3n)",
+            null));
   }
 
   // --- Generic ---

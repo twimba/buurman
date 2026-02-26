@@ -131,7 +131,11 @@ export const FinancingFormModal = ({
       }
 
       // Adjust currentBalance by the same delta when originalAmount changes
-      if (field === 'originalAmount' && existing && next.currentBalance != null) {
+      if (
+        field === 'originalAmount' &&
+        existing &&
+        next.currentBalance != null
+      ) {
         const oldOriginal = prev.originalAmount as number;
         const newOriginal = value as number;
         if (oldOriginal && newOriginal) {

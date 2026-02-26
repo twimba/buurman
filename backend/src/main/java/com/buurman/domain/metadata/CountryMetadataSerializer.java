@@ -1,9 +1,9 @@
 package com.buurman.domain.metadata;
 
+import java.nio.charset.StandardCharsets;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
-
-import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
