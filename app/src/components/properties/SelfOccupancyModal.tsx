@@ -22,14 +22,16 @@ export const SelfOccupancyModal = ({
 }: SelfOccupancyModalProps) => {
   const createMutation = useCreateOccupancyPeriod(propertyIdentifier);
   const { formatDate } = useFormatDate();
-  const { data: existingPeriods = [] } = useOccupancyPeriods(propertyIdentifier);
+  const { data: existingPeriods = [] } =
+    useOccupancyPeriods(propertyIdentifier);
   const { data: contractsData } = useContracts({ propertyIdentifier });
   const takenContracts = (contractsData?.content ?? []).filter(
     (c) =>
       c.status !== ContractStatus.DRAFT &&
       c.status !== ContractStatus.PENDING_SIGNATURE
   );
-  const hasTakenPeriods = existingPeriods.length > 0 || takenContracts.length > 0;
+  const hasTakenPeriods =
+    existingPeriods.length > 0 || takenContracts.length > 0;
 
   const [startDate, setStartDate] = useState(
     new Date().toISOString().split('T')[0]
@@ -114,8 +116,7 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
                     <span>
-                      Self-use:{' '}
-                      {formatDate(p.startDate)} —{' '}
+                      Self-use: {formatDate(p.startDate)} —{' '}
                       {p.endDate ? formatDate(p.endDate) : 'Ongoing'}
                       {p.occupantName && ` (${p.occupantName})`}
                     </span>
@@ -128,8 +129,7 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
                     <span>
-                      Contract {c.identifier}:{' '}
-                      {formatDate(c.startDate)} —{' '}
+                      Contract {c.identifier}: {formatDate(c.startDate)} —{' '}
                       {c.endDate ? formatDate(c.endDate) : 'Ongoing'}
                     </span>
                   </div>

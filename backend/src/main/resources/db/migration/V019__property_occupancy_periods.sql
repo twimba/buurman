@@ -12,22 +12,13 @@ CREATE TABLE property_occupancy_periods (
     occupant_name VARCHAR(255),
     monthly_imputed_rent NUMERIC(12, 2),
     end_reason VARCHAR(30),
-    notes VARCHAR(500),
+    notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by UUID NOT NULL REFERENCES users (id),
     updated_by UUID NOT NULL REFERENCES users (id),
     deleted_at TIMESTAMP,
     CONSTRAINT uq_occupancy_periods_team_identifier UNIQUE (team_id, identifier),
-    CONSTRAINT chk_occupancy_periods_type CHECK (type IN ('PERSONAL', 'FAMILY', 'BUSINESS')),
-    CONSTRAINT chk_occupancy_periods_end_reason CHECK (
-        end_reason IN (
-            'CONVERTING_TO_RENTAL',
-            'SELLING',
-            'RENOVATION',
-            'OTHER'
-        )
-    ),
     CONSTRAINT chk_occupancy_periods_dates CHECK (
         end_date IS NULL
         OR end_date >= start_date

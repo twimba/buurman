@@ -2322,18 +2322,20 @@ export const PropertyDetailPage = () => {
         />
       )}
 
-      {editOccupancyPeriodId && id && (() => {
-        const editPeriod = occupancyPeriods.find(
-          (p) => p.identifier === editOccupancyPeriodId
-        );
-        return editPeriod ? (
-          <EditSelfOccupancyModal
-            propertyIdentifier={id}
-            period={editPeriod}
-            onClose={() => setEditOccupancyPeriodId(null)}
-          />
-        ) : null;
-      })()}
+      {editOccupancyPeriodId &&
+        id &&
+        (() => {
+          const editPeriod = occupancyPeriods.find(
+            (p) => p.identifier === editOccupancyPeriodId
+          );
+          return editPeriod ? (
+            <EditSelfOccupancyModal
+              propertyIdentifier={id}
+              period={editPeriod}
+              onClose={() => setEditOccupancyPeriodId(null)}
+            />
+          ) : null;
+        })()}
 
       {deleteOccupancyPeriodId && id && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">

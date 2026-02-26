@@ -284,8 +284,7 @@ public class OccupancyPeriodService {
       LocalDate contractEnd = c.getEndDate().orElse(LocalDate.of(9999, 12, 31));
       boolean overlaps = !startDate.isAfter(contractEnd) && !endDate.isBefore(c.getStartDate());
       if (overlaps) {
-        String endStr =
-            c.getEndDate().map(LocalDate::toString).orElse("ongoing");
+        String endStr = c.getEndDate().map(LocalDate::toString).orElse("ongoing");
         throw new BusinessRuleException(
             "Cannot create self-occupancy period: overlaps with contract "
                 + c.getIdentifier()

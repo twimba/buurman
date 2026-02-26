@@ -128,7 +128,7 @@ const BarTooltip = ({
   // For CONTRACT: description = status, metadata = contract type
   const typeLabel = isSelfOccupancy
     ? (OCCUPANCY_TYPE_LABELS[entry.description as OccupancyType] ??
-        entry.description)
+      entry.description)
     : null;
 
   const occupantName = isSelfOccupancy ? entry.metadata : null;
@@ -179,10 +179,7 @@ const BarTooltip = ({
         }}
       >
         {/* Title row */}
-        <div
-          className="flex items-center gap-1.5"
-          style={{ marginBottom: 5 }}
-        >
+        <div className="flex items-center gap-1.5" style={{ marginBottom: 5 }}>
           <div
             style={{
               width: 6,
@@ -202,7 +199,11 @@ const BarTooltip = ({
               textTransform: 'uppercase',
             }}
           >
-            {isContract ? 'Contract' : isSelfOccupancy ? 'Self-Occupied' : 'Vacancy'}
+            {isContract
+              ? 'Contract'
+              : isSelfOccupancy
+                ? 'Self-Occupied'
+                : 'Vacancy'}
           </span>
           {typeLabel && (
             <span
@@ -705,9 +706,7 @@ export const PropertyLifecycleTimeline = ({
                 width: 1,
                 height: 5,
                 background:
-                  tick.key === 'today'
-                    ? '#5c7cfa'
-                    : 'rgba(107,113,148,0.4)',
+                  tick.key === 'today' ? '#5c7cfa' : 'rgba(107,113,148,0.4)',
                 borderRadius: 1,
               }}
             />
