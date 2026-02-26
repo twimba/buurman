@@ -24,4 +24,5 @@ public record CreateFinancingPaymentRequest(
         extraPayment,
     @NotBlank(message = "Currency is required") String currency,
     Optional<FinancingPayment.PaymentStatus> status,
-    Optional<String> notes) {}
+    Optional<String> notes,
+    Optional<Boolean> deductFromBalance) {}

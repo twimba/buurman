@@ -4,4 +4,6 @@ export { FinancingFormModal } from './FinancingFormModal';
 export { InsuranceFormModal } from './InsuranceFormModal';
 export { TaxFormModal } from './TaxFormModal';
 export { FeeFormModal } from './FeeFormModal';
+export { FinancingPaymentFormModal } from './FinancingPaymentFormModal';
+export { BulkFinancingPaymentModal } from './BulkFinancingPaymentModal';
 export { DeleteFinancialConfirmDialog } from './DeleteFinancialConfirmDialog';

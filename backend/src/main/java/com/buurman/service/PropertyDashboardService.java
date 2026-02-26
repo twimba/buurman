@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
 import com.buurman.domain.Expense;
+import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
@@ -43,6 +44,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
+import com.buurman.repository.FinancingPaymentRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyRepository;
@@ -63,6 +65,7 @@ public class PropertyDashboardService {
   private final ContractRepository contractRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
+  private final FinancingPaymentRepository financingPaymentRepository;
   private final PropertyFinancialsService financialsService;
   private final PropertyAcquisitionRepository acquisitionRepository;
 
@@ -136,12 +139,19 @@ public class PropertyDashboardService {
       }
       startDate = earliest;
 
+      List<FinancingPayment> unfilteredFinancingPayments =
+          financingPaymentRepository.findByPropertyIdAndTeamId(propertyId, teamId).stream()
+              .filter(fp -> !fp.getPaymentDate().isAfter(now))
+              .filter(fp -> currency == null || currency.equals(fp.getCurrency()))
+              .toList();
+
       return buildDashboardFromData(
           property,
           financialData,
           contracts,
           unfilteredPayments,
           unfilteredExpenses,
+          unfilteredFinancingPayments,
           startDate,
           now);
     } else {
@@ -165,8 +175,22 @@ public class PropertyDashboardService {
             .filter(e -> currency == null || currency.equals(e.getCurrency()))
             .toList();
 
+    List<FinancingPayment> allFinancingPayments =
+        financingPaymentRepository.findByPropertyIdAndTeamId(propertyId, teamId).stream()
+            .filter(
+                fp -> !fp.getPaymentDate().isBefore(startDate) && !fp.getPaymentDate().isAfter(now))
+            .filter(fp -> currency == null || currency.equals(fp.getCurrency()))
+            .toList();
+
     return buildDashboardFromData(
-        property, financialData, contracts, allPayments, allExpenses, startDate, now);
+        property,
+        financialData,
+        contracts,
+        allPayments,
+        allExpenses,
+        allFinancingPayments,
+        startDate,
+        now);
   }
 
   private FinancialData loadFinancialData(UUID propertyId, UUID teamId) {
@@ -216,6 +240,7 @@ public class PropertyDashboardService {
       List<Contract> contracts,
       List<Payment> payments,
       List<Expense> expenses,
+      List<FinancingPayment> financingPayments,
       LocalDate startDate,
       LocalDate now) {
 
@@ -224,10 +249,11 @@ public class PropertyDashboardService {
     SummaryMetrics summary =
         buildSummaryMetrics(financialData, contracts, payments, expenses, effectiveMonths);
     CashFlowChartData cashFlow =
-        buildCashFlowChart(payments, expenses, financialData, now, effectiveMonths);
+        buildCashFlowChart(
+            payments, expenses, financingPayments, financialData, now, effectiveMonths);
     EquityChartData equity = buildEquityChart(financialData);
     ExpenseBreakdownChartData expenseBreakdown =
-        buildExpenseBreakdown(expenses, financialData, now, effectiveMonths);
+        buildExpenseBreakdown(expenses, financingPayments, financialData, now, effectiveMonths);
     OccupancyChartData occupancy = buildOccupancyChart(contracts, now, effectiveMonths);
     DataCompleteness completeness =
         buildDataCompleteness(financialData, contracts, property.getId(), property.getTeamId());
@@ -364,7 +390,12 @@ public class PropertyDashboardService {
   }
 
   private CashFlowChartData buildCashFlowChart(
-      List<Payment> payments, List<Expense> expenses, FinancialData fd, LocalDate now, int months) {
+      List<Payment> payments,
+      List<Expense> expenses,
+      List<FinancingPayment> financingPayments,
+      FinancialData fd,
+      LocalDate now,
+      int months) {
     BigDecimal monthlyMortgage =
         fd.hasVariablePayment() ? null : fd.monthlyFinancingPayment().orElse(null);
 
@@ -378,7 +409,6 @@ public class PropertyDashboardService {
                     p -> YearMonth.from(p.getPaymentDate().get()),
                     Collectors.reducing(ZERO, Payment::getAmount, BigDecimal::add)));
 
-    // All expenses are regular expenses (MORTGAGE_PAYMENT has been migrated to financing_payments)
     Map<YearMonth, BigDecimal> expensesByMonth =
         expenses.stream()
             .filter(e -> e.getExpenseDate() != null)
@@ -387,9 +417,13 @@ public class PropertyDashboardService {
                     e -> YearMonth.from(e.getExpenseDate()),
                     Collectors.reducing(ZERO, Expense::getAmount, BigDecimal::add)));
 
-    // Financing payments from new table serve as historical mortgage data
-    // For past months: financing_payments are tracked separately via the financing module
-    // For future months: use the monthly financing payment from active financings
+    // Actual financing payments grouped by month (for past months)
+    Map<YearMonth, BigDecimal> financingPaymentsByMonth =
+        financingPayments.stream()
+            .collect(
+                Collectors.groupingBy(
+                    fp -> YearMonth.from(fp.getPaymentDate()),
+                    Collectors.reducing(ZERO, FinancingPayment::getTotalAmount, BigDecimal::add)));
 
     YearMonth currentYm = YearMonth.from(now);
     List<MonthlyDataPoint> dataPoints = new ArrayList<>();
@@ -404,10 +438,10 @@ public class PropertyDashboardService {
               : ZERO;
       BigDecimal exp = expensesByMonth.getOrDefault(ym, ZERO).add(opCosts);
 
-      // Financing payment: future months use active financing monthly payment
+      // Past months: actual financing payments; future months: registered monthly payment
       BigDecimal mort;
       if (ym.isBefore(currentYm)) {
-        mort = ZERO; // Past mortgage payments are now in financing_payments, not expenses
+        mort = financingPaymentsByMonth.getOrDefault(ym, ZERO);
       } else {
         mort = monthlyMortgage != null ? monthlyMortgage : ZERO;
       }
@@ -423,7 +457,11 @@ public class PropertyDashboardService {
   }
 
   private ExpenseBreakdownChartData buildExpenseBreakdown(
-      List<Expense> expenses, FinancialData fd, LocalDate now, int months) {
+      List<Expense> expenses,
+      List<FinancingPayment> financingPayments,
+      FinancialData fd,
+      LocalDate now,
+      int months) {
     YearMonth startMonth = YearMonth.from(now.minusMonths(months - 1));
     YearMonth endMonth = YearMonth.from(now);
     YearMonth cutoff = YearMonth.from(now);
@@ -442,13 +480,26 @@ public class PropertyDashboardService {
       }
     }
 
-    // 2. Add operating costs from new tables to timeline (FUTURE MONTHS ONLY)
+    // 2. Add actual financing payments to past months as FINANCING_PAYMENT category
+    for (FinancingPayment fp : financingPayments) {
+      YearMonth ym = YearMonth.from(fp.getPaymentDate());
+      Map<String, BigDecimal> monthMap = monthlyMap.get(ym);
+      if (monthMap != null && ym.isBefore(cutoff)) {
+        monthMap.merge("FINANCING_PAYMENT", fp.getTotalAmount(), BigDecimal::add);
+      }
+    }
+
+    // 3. Add operating costs from new tables to timeline (FUTURE MONTHS ONLY)
     Map<Integer, BigDecimal> opCosts = fd.operatingCostsByMonth();
+    BigDecimal monthlyFinancing = fd.monthlyFinancingPayment().orElse(ZERO);
     for (Map.Entry<YearMonth, Map<String, BigDecimal>> entry : monthlyMap.entrySet()) {
       if (!entry.getKey().isBefore(cutoff)) {
         BigDecimal cost = opCosts.getOrDefault(entry.getKey().getMonthValue(), ZERO);
         if (cost.compareTo(ZERO) > 0) {
           entry.getValue().merge("OPERATING_COSTS", cost, BigDecimal::add);
+        }
+        if (monthlyFinancing.compareTo(ZERO) > 0) {
+          entry.getValue().merge("FINANCING_PAYMENT", monthlyFinancing, BigDecimal::add);
         }
       }
     }

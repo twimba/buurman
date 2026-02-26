@@ -1,3 +1,5 @@
+import { BulkCreateResult } from '../types/common';
+import { DocumentResponse } from '../types/property';
 import client from './client';
 import {
   PropertyFinancialSummaryResponse,
@@ -189,6 +191,18 @@ export const createFinancingPayment = async (
   return response.data;
 };
 
+export const bulkCreateFinancingPayments = async (
+  propertyId: string,
+  financingId: string,
+  items: CreateFinancingPaymentRequest[]
+): Promise<BulkCreateResult<FinancingPaymentResponse>[]> => {
+  const response = await client.post(
+    `/properties/${propertyId}/financials/financings/${financingId}/payments/bulk`,
+    { items }
+  );
+  return response.data;
+};
+
 export const updateFinancingPayment = async (
   propertyId: string,
   financingId: string,
@@ -210,6 +224,66 @@ export const deleteFinancingPayment = async (
   await client.delete(
     `/properties/${propertyId}/financials/financings/${financingId}/payments/${paymentId}`
   );
+};
+
+// ============================================================
+// Financing Payment Documents
+// ============================================================
+
+export const getFinancingPaymentDocuments = async (
+  propertyId: string,
+  financingId: string,
+  paymentId: string
+): Promise<DocumentResponse[]> => {
+  const response = await client.get(
+    `/properties/${propertyId}/financials/financings/${financingId}/payments/${paymentId}/documents`
+  );
+  return response.data;
+};
+
+export const uploadFinancingPaymentDocument = async (
+  propertyId: string,
+  financingId: string,
+  paymentId: string,
+  file: File,
+  title?: string,
+  notes?: string
+): Promise<DocumentResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (title) {
+    formData.append('title', title);
+  }
+  if (notes) {
+    formData.append('notes', notes);
+  }
+  const response = await client.post(
+    `/properties/${propertyId}/financials/financings/${financingId}/payments/${paymentId}/documents`,
+    formData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return response.data;
+};
+
+export const deleteFinancingPaymentDocument = async (
+  propertyId: string,
+  financingId: string,
+  documentId: string
+): Promise<void> => {
+  await client.delete(
+    `/properties/${propertyId}/financials/financings/${financingId}/payments/documents/${documentId}`
+  );
+};
+
+export const getFinancingPaymentDocumentDownloadUrl = async (
+  propertyId: string,
+  financingId: string,
+  documentId: string
+): Promise<{ url: string }> => {
+  const response = await client.get(
+    `/properties/${propertyId}/financials/financings/${financingId}/payments/documents/${documentId}/download`
+  );
+  return response.data;
 };
 
 // ============================================================

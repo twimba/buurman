@@ -13,14 +13,18 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useFinancialSummary,
+  useFinancingPayments,
   useDeleteValuation,
   useDeleteFinancing,
   useDeleteInsurance,
   useDeleteTax,
   useDeleteFee,
 } from '@/hooks/usePropertyFinancialsHooks';
+import { deleteFinancingPayment as deleteFinancingPaymentApi } from '@/api/propertyFinancials';
+import { useToast } from '@/context/ToastContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
@@ -29,6 +33,7 @@ import type {
   PropertyAcquisitionResponse,
   PropertyValuationResponse,
   PropertyFinancingResponse,
+  FinancingPaymentResponse,
   PropertyInsuranceResponse,
   PropertyTaxResponse,
   PropertyFeeResponse,
@@ -51,11 +56,15 @@ import {
   formatFeeType,
   formatFeeStatus,
   formatPaymentFrequency,
+  formatPaymentStatus,
+  PaymentStatus,
 } from '@/types/propertyFinancials';
 import {
   AcquisitionFormModal,
   ValuationFormModal,
   FinancingFormModal,
+  FinancingPaymentFormModal,
+  BulkFinancingPaymentModal,
   InsuranceFormModal,
   TaxFormModal,
   FeeFormModal,
@@ -78,14 +87,31 @@ type ModalState =
   | { type: 'acquisition'; data?: PropertyAcquisitionResponse }
   | { type: 'valuation'; data?: PropertyValuationResponse }
   | { type: 'financing'; data?: PropertyFinancingResponse }
+  | {
+      type: 'financingPayment';
+      financingId: string;
+      data?: FinancingPaymentResponse;
+    }
+  | {
+      type: 'bulkFinancingPayment';
+      financingId: string;
+      financingCurrency: string;
+    }
   | { type: 'insurance'; data?: PropertyInsuranceResponse }
   | { type: 'tax'; data?: PropertyTaxResponse }
   | { type: 'fee'; data?: PropertyFeeResponse }
   | null;
 
 type DeleteState = {
-  entity: 'valuation' | 'financing' | 'insurance' | 'tax' | 'fee';
+  entity:
+    | 'valuation'
+    | 'financing'
+    | 'financingPayment'
+    | 'insurance'
+    | 'tax'
+    | 'fee';
   identifier: string;
+  financingId?: string;
   label: string;
 } | null;
 
@@ -138,6 +164,19 @@ const financingStatusVariant = (status: FinancingStatus): StatusVariant => {
     case FinancingStatus.REFINANCED:
       return 'yellow';
     case FinancingStatus.DEFAULTED:
+      return 'red';
+  }
+};
+
+const paymentStatusVariant = (status: PaymentStatus): StatusVariant => {
+  switch (status) {
+    case PaymentStatus.COMPLETED:
+      return 'green';
+    case PaymentStatus.SCHEDULED:
+      return 'gray';
+    case PaymentStatus.LATE:
+      return 'yellow';
+    case PaymentStatus.MISSED:
       return 'red';
   }
 };
@@ -654,111 +693,249 @@ const ValuationSection = ({
 
 const FinancingCard = ({
   financing,
+  propertyId,
   formatDate,
   onEdit,
   onDelete,
+  onAddPayment,
+  onBulkAddPayment,
+  onEditPayment,
+  onDeletePayment,
 }: {
   financing: PropertyFinancingResponse;
+  propertyId: string;
   formatDate: (d: string | Date) => string;
   onEdit: () => void;
   onDelete: () => void;
-}) => (
-  <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-3">
-        <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          {formatFinancingType(financing.financingType)}
-        </h4>
-        {financing.lenderName && (
-          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-            &middot; {financing.lenderName}
-          </span>
-        )}
-      </div>
-      <div className="flex items-center gap-2">
-        <StatusBadge
-          label={formatFinancingStatus(financing.status)}
-          variant={financingStatusVariant(financing.status)}
-        />
-        <div className="flex items-center gap-1">
-          <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
-          <ActionButton
-            icon={Trash2}
-            label="Delete"
-            onClick={onDelete}
-            variant="danger"
+  onAddPayment: () => void;
+  onBulkAddPayment: () => void;
+  onEditPayment: (p: FinancingPaymentResponse) => void;
+  onDeletePayment: (p: FinancingPaymentResponse) => void;
+}) => {
+  const { data: payments = [] } = useFinancingPayments(
+    propertyId,
+    financing.identifier
+  );
+  const [showPayments, setShowPayments] = useState(false);
+
+  return (
+    <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            {formatFinancingType(financing.financingType)}
+          </h4>
+          {financing.lenderName && (
+            <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+              &middot; {financing.lenderName}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <StatusBadge
+            label={formatFinancingStatus(financing.status)}
+            variant={financingStatusVariant(financing.status)}
           />
+          <div className="flex items-center gap-1">
+            <ActionButton icon={Pencil} label="Edit" onClick={onEdit} />
+            <ActionButton
+              icon={Trash2}
+              label="Delete"
+              onClick={onDelete}
+              variant="danger"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-      <div>
-        <DetailRow
-          label="Rate Type"
-          value={formatRateType(financing.rateType)}
-        />
-        <DetailRow
-          label="Original Amount"
-          value={formatMoney(
-            financing.originalAmount,
-            financing.originalAmountCurrency
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+        <div>
+          <DetailRow
+            label="Rate Type"
+            value={formatRateType(financing.rateType)}
+          />
+          <DetailRow
+            label="Original Amount"
+            value={formatMoney(
+              financing.originalAmount,
+              financing.originalAmountCurrency
+            )}
+          />
+          <DetailRow
+            label="Current Balance"
+            value={formatMoney(
+              financing.currentBalance,
+              financing.currentBalanceCurrency
+            )}
+          />
+          <DetailRow
+            label="Interest Rate"
+            value={formatPercent(financing.interestRate)}
+          />
+        </div>
+        <div>
+          <DetailRow
+            label="Monthly Payment"
+            value={formatMoney(
+              financing.monthlyPayment,
+              financing.monthlyPaymentCurrency
+            )}
+          />
+          <DetailRow
+            label="Start Date"
+            value={formatDate(financing.startDate)}
+          />
+          {financing.endDate && (
+            <DetailRow label="End Date" value={formatDate(financing.endDate)} />
           )}
-        />
-        <DetailRow
-          label="Current Balance"
-          value={formatMoney(
-            financing.currentBalance,
-            financing.currentBalanceCurrency
+          {financing.termMonths != null && (
+            <DetailRow label="Term" value={`${financing.termMonths} months`} />
           )}
-        />
-        <DetailRow
-          label="Interest Rate"
-          value={formatPercent(financing.interestRate)}
-        />
+        </div>
       </div>
-      <div>
-        <DetailRow
-          label="Monthly Payment"
-          value={formatMoney(
-            financing.monthlyPayment,
-            financing.monthlyPaymentCurrency
-          )}
-        />
-        <DetailRow label="Start Date" value={formatDate(financing.startDate)} />
-        {financing.endDate && (
-          <DetailRow label="End Date" value={formatDate(financing.endDate)} />
-        )}
-        {financing.termMonths != null && (
-          <DetailRow label="Term" value={`${financing.termMonths} months`} />
-        )}
-      </div>
-    </div>
-    {financing.notes && (
+      {financing.notes && (
+        <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+            Notes
+          </p>
+          <RichTextDisplay
+            content={financing.notes}
+            className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+          />
+        </div>
+      )}
+
+      {/* Payments Section */}
       <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-          Notes
-        </p>
-        <RichTextDisplay
-          content={financing.notes}
-          className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
-        />
+        <div className="flex items-center justify-between mb-3">
+          <button
+            type="button"
+            onClick={() => setShowPayments(!showPayments)}
+            className="flex items-center gap-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]"
+          >
+            <Wallet className="w-4 h-4" />
+            Payments
+            {payments.length > 0 && (
+              <span className="bg-[#5c7cfa]/10 text-[#5c7cfa] text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                {payments.length}
+              </span>
+            )}
+            <span className="text-xs text-[#8a8fa8]">
+              {showPayments ? '▾' : '▸'}
+            </span>
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onBulkAddPayment}
+              className="flex items-center gap-1 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5]"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Bulk Add
+            </button>
+            <button
+              type="button"
+              onClick={onAddPayment}
+              className="flex items-center gap-1 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5]"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Record Payment
+            </button>
+          </div>
+        </div>
+        {showPayments && payments.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-[#6b7194] dark:text-[#8b90a8] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                  <th className="pb-2 font-medium">Date</th>
+                  <th className="pb-2 font-medium">Total</th>
+                  <th className="pb-2 font-medium">Principal</th>
+                  <th className="pb-2 font-medium">Interest</th>
+                  <th className="pb-2 font-medium">Status</th>
+                  <th className="pb-2 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((p) => (
+                  <tr
+                    key={p.identifier}
+                    className="border-b border-[#e2e6f0]/50 dark:border-[#2a2e3f]/50 last:border-0"
+                  >
+                    <td className="py-2 text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatDate(p.paymentDate)}
+                    </td>
+                    <td className="py-2 text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {formatMoney(p.totalAmount, p.currency)}
+                    </td>
+                    <td className="py-2 text-[#3d4463] dark:text-[#c4c8db]">
+                      {p.principalAmount != null
+                        ? formatMoney(p.principalAmount, p.currency)
+                        : '—'}
+                    </td>
+                    <td className="py-2 text-[#3d4463] dark:text-[#c4c8db]">
+                      {p.interestAmount != null
+                        ? formatMoney(p.interestAmount, p.currency)
+                        : '—'}
+                    </td>
+                    <td className="py-2">
+                      <StatusBadge
+                        label={formatPaymentStatus(p.status)}
+                        variant={paymentStatusVariant(p.status)}
+                      />
+                    </td>
+                    <td className="py-2 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <ActionButton
+                          icon={Pencil}
+                          label="Edit"
+                          onClick={() => onEditPayment(p)}
+                        />
+                        <ActionButton
+                          icon={Trash2}
+                          label="Delete"
+                          onClick={() => onDeletePayment(p)}
+                          variant="danger"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {showPayments && payments.length === 0 && (
+          <p className="text-xs text-[#8a8fa8] dark:text-[#6b7194]">
+            No payments recorded yet.
+          </p>
+        )}
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 const FinancingsSection = ({
   financings,
+  propertyId,
   formatDate,
   onAdd,
   onEdit,
   onDelete,
+  onAddPayment,
+  onBulkAddPayment,
+  onEditPayment,
+  onDeletePayment,
 }: {
   financings: PropertyFinancingResponse[];
+  propertyId: string;
   formatDate: (d: string | Date) => string;
   onAdd: () => void;
   onEdit: (f: PropertyFinancingResponse) => void;
   onDelete: (f: PropertyFinancingResponse) => void;
+  onAddPayment: (financingId: string) => void;
+  onBulkAddPayment: (financingId: string, currency: string) => void;
+  onEditPayment: (financingId: string, p: FinancingPaymentResponse) => void;
+  onDeletePayment: (financingId: string, p: FinancingPaymentResponse) => void;
 }) => (
   <div>
     <SectionHeader
@@ -772,9 +949,16 @@ const FinancingsSection = ({
           <FinancingCard
             key={f.identifier}
             financing={f}
+            propertyId={propertyId}
             formatDate={formatDate}
             onEdit={() => onEdit(f)}
             onDelete={() => onDelete(f)}
+            onAddPayment={() => onAddPayment(f.identifier)}
+            onBulkAddPayment={() =>
+              onBulkAddPayment(f.identifier, f.originalAmountCurrency)
+            }
+            onEditPayment={(p) => onEditPayment(f.identifier, p)}
+            onDeletePayment={(p) => onDeletePayment(f.identifier, p)}
           />
         ))}
       </div>
@@ -1142,11 +1326,35 @@ export const PropertyFinancialsTab = ({
   const [deleteState, setDeleteState] = useState<DeleteState>(null);
 
   // Delete mutations
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const deleteValuation = useDeleteValuation(propertyId);
   const deleteFinancing = useDeleteFinancing(propertyId);
   const deleteInsurance = useDeleteInsurance(propertyId);
   const deleteTax = useDeleteTax(propertyId);
   const deleteFee = useDeleteFee(propertyId);
+  const deleteFinancingPayment = useMutation({
+    mutationFn: ({
+      financingId,
+      paymentId,
+    }: {
+      financingId: string;
+      paymentId: string;
+    }) => deleteFinancingPaymentApi(propertyId, financingId, paymentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['financingPayments', propertyId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyFinancials', propertyId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      showToast('Payment deleted successfully', 'success');
+    },
+    onError: () => {
+      showToast('Failed to delete payment', 'error');
+    },
+  });
 
   const handleDelete = () => {
     if (!deleteState) {
@@ -1159,6 +1367,17 @@ export const PropertyFinancialsTab = ({
         break;
       case 'financing':
         deleteFinancing.mutate(deleteState.identifier, { onSuccess });
+        break;
+      case 'financingPayment':
+        if (deleteState.financingId) {
+          deleteFinancingPayment.mutate(
+            {
+              financingId: deleteState.financingId,
+              paymentId: deleteState.identifier,
+            },
+            { onSuccess }
+          );
+        }
         break;
       case 'insurance':
         deleteInsurance.mutate(deleteState.identifier, { onSuccess });
@@ -1175,6 +1394,7 @@ export const PropertyFinancialsTab = ({
   const isDeleting =
     deleteValuation.isPending ||
     deleteFinancing.isPending ||
+    deleteFinancingPayment.isPending ||
     deleteInsurance.isPending ||
     deleteTax.isPending ||
     deleteFee.isPending;
@@ -1235,6 +1455,7 @@ export const PropertyFinancialsTab = ({
       {/* Section D: Financings */}
       <FinancingsSection
         financings={summary.financings}
+        propertyId={propertyId}
         formatDate={formatDate}
         onAdd={() => setModal({ type: 'financing' })}
         onEdit={(f) => setModal({ type: 'financing', data: f })}
@@ -1243,6 +1464,27 @@ export const PropertyFinancialsTab = ({
             entity: 'financing',
             identifier: f.identifier,
             label: `${formatFinancingType(f.financingType)}${f.lenderName ? ` (${f.lenderName})` : ''}`,
+          })
+        }
+        onAddPayment={(financingId) =>
+          setModal({ type: 'financingPayment', financingId })
+        }
+        onBulkAddPayment={(financingId, financingCurrency) =>
+          setModal({
+            type: 'bulkFinancingPayment',
+            financingId,
+            financingCurrency,
+          })
+        }
+        onEditPayment={(financingId, p) =>
+          setModal({ type: 'financingPayment', financingId, data: p })
+        }
+        onDeletePayment={(financingId, p) =>
+          setDeleteState({
+            entity: 'financingPayment',
+            identifier: p.identifier,
+            financingId,
+            label: `payment (${formatDate(p.paymentDate)})`,
           })
         }
       />
@@ -1302,6 +1544,22 @@ export const PropertyFinancialsTab = ({
         <FinancingFormModal
           propertyId={propertyId}
           existing={modal.data}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'financingPayment' && (
+        <FinancingPaymentFormModal
+          propertyId={propertyId}
+          financingId={modal.financingId}
+          existing={modal.data}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'bulkFinancingPayment' && (
+        <BulkFinancingPaymentModal
+          propertyId={propertyId}
+          financingId={modal.financingId}
+          financingCurrency={modal.financingCurrency}
           onClose={() => setModal(null)}
         />
       )}

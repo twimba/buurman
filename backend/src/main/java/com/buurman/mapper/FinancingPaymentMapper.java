@@ -23,6 +23,7 @@ public interface FinancingPaymentMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "balanceDeducted", ignore = true)
   @Mapping(
       target = "status",
       expression =
@@ -42,5 +43,6 @@ public interface FinancingPaymentMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(target = "balanceDeducted", ignore = true)
   void updateEntity(@MappingTarget FinancingPayment payment, UpdateFinancingPaymentRequest request);
 }

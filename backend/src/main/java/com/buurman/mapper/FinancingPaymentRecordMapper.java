@@ -41,6 +41,7 @@ public class FinancingPaymentRecordMapper {
     payment.setCurrency(currency);
     payment.setStatus(FinancingPayment.PaymentStatus.valueOf(record.getStatus()));
     payment.setNotes(Optional.ofNullable(record.getNotes()));
+    payment.setBalanceDeducted(record.getBalanceDeducted());
     payment.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     payment.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     payment.setCreatedBy(record.getCreatedBy());

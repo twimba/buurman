@@ -6,9 +6,12 @@
 --   financing_payments, property_insurances, property_taxes, property_fees
 -- Data was migrated in V013, columns marked deprecated in V014.
 -- =============================================================================
-
 -- Fix invalid tax_type values inserted by demo generator before bug fix
-UPDATE property_taxes SET tax_type = 'PROPERTY' WHERE tax_type = 'PROPERTY_TAX';
+UPDATE property_taxes
+SET
+    tax_type = 'PROPERTY'
+WHERE
+    tax_type = 'PROPERTY_TAX';
 
 ALTER TABLE properties
 DROP COLUMN IF EXISTS purchase_price,

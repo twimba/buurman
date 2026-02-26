@@ -38,6 +38,7 @@ public class FinancingPayment {
   private String currency;
   private PaymentStatus status;
   @Builder.Default private Optional<String> notes = Optional.empty();
+  private boolean balanceDeducted;
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

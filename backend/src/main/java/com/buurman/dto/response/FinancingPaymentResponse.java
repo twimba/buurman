@@ -19,5 +19,6 @@ public record FinancingPaymentResponse(
     String currency,
     FinancingPayment.PaymentStatus status,
     Optional<String> notes,
+    boolean balanceDeducted,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

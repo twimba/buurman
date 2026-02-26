@@ -130,6 +130,17 @@ export const FinancingFormModal = ({
         }
       }
 
+      // Adjust currentBalance by the same delta when originalAmount changes
+      if (field === 'originalAmount' && existing && next.currentBalance != null) {
+        const oldOriginal = prev.originalAmount as number;
+        const newOriginal = value as number;
+        if (oldOriginal && newOriginal) {
+          const delta = newOriginal - oldOriginal;
+          const adjusted = (next.currentBalance as number) + delta;
+          next.currentBalance = Math.max(0, adjusted);
+        }
+      }
+
       // Variable payment clears monthly payment
       if (field === 'paymentVariable' && value === true) {
         next.monthlyPayment = undefined;

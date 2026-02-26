@@ -1,6 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.FINANCING_PAYMENTS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
@@ -54,6 +55,29 @@ public class FinancingPaymentRepository {
                 .and(FINANCING_PAYMENTS.DELETED_AT.isNull()))
         .fetchOptional()
         .flatMap(mapper::toDomain);
+  }
+
+  public List<FinancingPayment> findByPropertyIdAndTeamId(UUID propertyId, UUID teamId) {
+    return dsl
+        .selectFrom(FINANCING_PAYMENTS)
+        .where(
+            FINANCING_PAYMENTS.FINANCING_ID.in(
+                dsl.select(PROPERTY_FINANCINGS.ID)
+                    .from(PROPERTY_FINANCINGS)
+                    .where(
+                        PROPERTY_FINANCINGS
+                            .PROPERTY_ID
+                            .eq(propertyId)
+                            .and(PROPERTY_FINANCINGS.TEAM_ID.eq(teamId))
+                            .and(PROPERTY_FINANCINGS.DELETED_AT.isNull()))))
+        .and(FINANCING_PAYMENTS.TEAM_ID.eq(teamId))
+        .and(FINANCING_PAYMENTS.DELETED_AT.isNull())
+        .orderBy(FINANCING_PAYMENTS.PAYMENT_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   public List<FinancingPayment> findByFinancingIdAndTeamId(UUID financingId, UUID teamId) {
@@ -113,6 +137,7 @@ public class FinancingPaymentRepository {
           .set(FINANCING_PAYMENTS.CURRENCY, currency)
           .set(FINANCING_PAYMENTS.STATUS, payment.getStatus().name())
           .set(FINANCING_PAYMENTS.NOTES, payment.getNotes().orElse(null))
+          .set(FINANCING_PAYMENTS.BALANCE_DEDUCTED, payment.isBalanceDeducted())
           .set(FINANCING_PAYMENTS.CREATED_AT, createdAt)
           .set(FINANCING_PAYMENTS.UPDATED_AT, updatedAt)
           .set(FINANCING_PAYMENTS.CREATED_BY, payment.getCreatedBy())
@@ -150,6 +175,7 @@ public class FinancingPaymentRepository {
           .set(FINANCING_PAYMENTS.CURRENCY, currency)
           .set(FINANCING_PAYMENTS.STATUS, payment.getStatus().name())
           .set(FINANCING_PAYMENTS.NOTES, payment.getNotes().orElse(null))
+          .set(FINANCING_PAYMENTS.BALANCE_DEDUCTED, payment.isBalanceDeducted())
           .set(FINANCING_PAYMENTS.UPDATED_AT, updatedAt)
           .set(FINANCING_PAYMENTS.UPDATED_BY, payment.getUpdatedBy())
           .where(

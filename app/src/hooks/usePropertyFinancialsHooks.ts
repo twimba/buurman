@@ -374,6 +374,100 @@ export const useDeleteFinancingPayment = (
 };
 
 // ---------------------------------------------------------------------------
+// Financing Payment Documents
+// ---------------------------------------------------------------------------
+
+export const useFinancingPaymentDocuments = (
+  propertyId: string | undefined,
+  financingId: string | undefined,
+  paymentId: string | undefined
+) => {
+  return useQuery({
+    queryKey: ['financingPaymentDocuments', propertyId, financingId, paymentId],
+    queryFn: () =>
+      financialsApi.getFinancingPaymentDocuments(
+        propertyId!,
+        financingId!,
+        paymentId!
+      ),
+    enabled: !!propertyId && !!financingId && !!paymentId,
+  });
+};
+
+export const useUploadFinancingPaymentDocument = (
+  propertyId: string,
+  financingId: string,
+  paymentId: string
+) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      file,
+      title,
+      notes,
+    }: {
+      file: File;
+      title?: string;
+      notes?: string;
+    }) =>
+      financialsApi.uploadFinancingPaymentDocument(
+        propertyId,
+        financingId,
+        paymentId,
+        file,
+        title,
+        notes
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'financingPaymentDocuments',
+          propertyId,
+          financingId,
+          paymentId,
+        ],
+      });
+      showToast('Document uploaded successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteFinancingPaymentDocument = (
+  propertyId: string,
+  financingId: string,
+  paymentId: string
+) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      financialsApi.deleteFinancingPaymentDocument(
+        propertyId,
+        financingId,
+        documentId
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'financingPaymentDocuments',
+          propertyId,
+          financingId,
+          paymentId,
+        ],
+      });
+      showToast('Document deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// ---------------------------------------------------------------------------
 // Mutation hooks — Insurances
 // ---------------------------------------------------------------------------
 

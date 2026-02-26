@@ -195,6 +195,7 @@ export interface FinancingPaymentResponse {
   currency: string;
   status: PaymentStatus;
   notes?: string;
+  balanceDeducted: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -358,6 +359,7 @@ export interface CreateFinancingPaymentRequest {
   currency: string;
   status?: PaymentStatus;
   notes?: string;
+  deductFromBalance?: boolean;
 }
 
 export interface UpdateFinancingPaymentRequest {
@@ -370,6 +372,7 @@ export interface UpdateFinancingPaymentRequest {
   currency?: string;
   status?: PaymentStatus;
   notes?: string;
+  deductFromBalance?: boolean;
 }
 
 export interface CreatePropertyInsuranceRequest {
