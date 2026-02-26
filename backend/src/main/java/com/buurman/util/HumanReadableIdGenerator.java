@@ -150,9 +150,11 @@ public final class HumanReadableIdGenerator {
   private HumanReadableIdGenerator() {}
 
   public static String generate() {
-    String adjective = ADJECTIVES.get(RANDOM.nextInt(ADJECTIVES.size()));
-    String noun = NOUNS.get(RANDOM.nextInt(NOUNS.size()));
-    return adjective + "-" + noun;
+    String adj1 = ADJECTIVES.get(RANDOM.nextInt(ADJECTIVES.size()));
+    String noun1 = NOUNS.get(RANDOM.nextInt(NOUNS.size()));
+    String adj2 = ADJECTIVES.get(RANDOM.nextInt(ADJECTIVES.size()));
+    String noun2 = NOUNS.get(RANDOM.nextInt(NOUNS.size()));
+    return adj1 + "-" + noun1 + "-" + adj2 + "-" + noun2;
   }
 
   /**
