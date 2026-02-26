@@ -78,6 +78,9 @@ export const useUpdateOccupancyPeriod = (propertyIdentifier: string) => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyIdentifier],
+      });
       showToast('Self-occupancy period updated', 'success');
     },
     onError: (error) => {
@@ -112,6 +115,9 @@ export const useEndOccupancyPeriod = (propertyIdentifier: string) => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyIdentifier],
+      });
       showToast('Self-occupancy period ended', 'success');
     },
     onError: (error) => {
@@ -136,6 +142,9 @@ export const useDeleteOccupancyPeriod = (propertyIdentifier: string) => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyIdentifier],
+      });
       showToast('Self-occupancy period deleted', 'success');
     },
     onError: (error) => {

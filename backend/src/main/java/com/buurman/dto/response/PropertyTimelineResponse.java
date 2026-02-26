@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public record PropertyTimelineResponse(List<TimelineEntry> entries) {
+public record PropertyTimelineResponse(
+    Optional<LocalDate> acquisitionDate, List<TimelineEntry> entries) {
 
   public record TimelineEntry(
       TimelineEntryType type,

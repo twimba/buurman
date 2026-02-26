@@ -18,11 +18,16 @@ import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedType } from '@/types/calendarFeed';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
-import { useOccupancyPeriods } from '@/hooks/useOccupancyPeriodHooks';
+import {
+  useOccupancyPeriods,
+  useDeleteOccupancyPeriod,
+} from '@/hooks/useOccupancyPeriodHooks';
+import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
+import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
-import { PropertyTimeline } from '@/components/properties/PropertyTimeline';
+import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifecycleTimeline';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import {
   PropertyStatus,
@@ -47,6 +52,7 @@ import client from '@/api/client';
 import {
   Edit,
   Trash2,
+  Square,
   Bed,
   Bath,
   Ruler,
@@ -63,7 +69,6 @@ import {
   BarChart3,
   Wallet,
   Home,
-  Clock as ClockIcon,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -91,7 +96,7 @@ const statusColors: Record<string, string> = {
 export const PropertyDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canEditData } = useTeam();
+  const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useTabState('info', [
     'info',
@@ -102,11 +107,19 @@ export const PropertyDetailPage = () => {
     'expenses',
     'audit',
     'dashboard',
-    'timeline',
   ] as const);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSelfOccupancyModal, setShowSelfOccupancyModal] = useState(false);
   const [showEndOccupancyModal, setShowEndOccupancyModal] = useState(false);
+  const [endOccupancyPeriodId, setEndOccupancyPeriodId] = useState<
+    string | null
+  >(null);
+  const [deleteOccupancyPeriodId, setDeleteOccupancyPeriodId] = useState<
+    string | null
+  >(null);
+  const [editOccupancyPeriodId, setEditOccupancyPeriodId] = useState<
+    string | null
+  >(null);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -170,6 +183,7 @@ export const PropertyDetailPage = () => {
   const activeOccupancyPeriod = occupancyPeriods.find(
     (p) => !p.endDate || new Date(p.endDate) >= new Date()
   );
+  const deleteOccupancyMutation = useDeleteOccupancyPeriod(id!);
   const deletePropertyMutation = useDeleteProperty();
   const uploadDocumentMutation = useUploadPropertyDocument(id!);
   const uploadPhotoMutation = useUploadPropertyPhoto(id!);
@@ -523,18 +537,6 @@ export const PropertyDetailPage = () => {
               >
                 Edit
               </Button>
-              {canEditData &&
-                property.status !== 'OCCUPIED' &&
-                property.status !== 'SELF_OCCUPIED' &&
-                !activeOccupancyPeriod && (
-                  <Button
-                    variant="secondary"
-                    leftIcon={<Home />}
-                    onClick={() => setShowSelfOccupancyModal(true)}
-                  >
-                    Self-Occupy
-                  </Button>
-                )}
               <Button
                 variant="danger"
                 leftIcon={<Trash2 />}
@@ -546,6 +548,16 @@ export const PropertyDetailPage = () => {
             </>
           }
         />
+
+        {/* Property Lifecycle Timeline */}
+        <div className="mb-2">
+          <PropertyLifecycleTimeline
+            propertyIdentifier={id!}
+            onSelfOccupancyClick={(identifier) =>
+              setEditOccupancyPeriodId(identifier)
+            }
+          />
+        </div>
 
         {/* Tabs */}
         <div className="border-b mb-6">
@@ -628,17 +640,6 @@ export const PropertyDetailPage = () => {
               Expenses {expenses.length > 0 && `(${expenses.length})`}
             </button>
             <button
-              onClick={() => setActiveTab('timeline')}
-              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
-                activeTab === 'timeline'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
-              }`}
-            >
-              <ClockIcon className="h-4 w-4" />
-              Timeline
-            </button>
-            <button
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'audit'
@@ -659,22 +660,50 @@ export const PropertyDetailPage = () => {
               <SelfOccupancyCard
                 period={activeOccupancyPeriod}
                 canEdit={canEditData}
-                onEnd={() => setShowEndOccupancyModal(true)}
+                canAdmin={canManageMembers}
+                onEnd={() => {
+                  setEndOccupancyPeriodId(activeOccupancyPeriod.identifier);
+                  setShowEndOccupancyModal(true);
+                }}
+                onDelete={() =>
+                  setDeleteOccupancyPeriodId(activeOccupancyPeriod.identifier)
+                }
               />
             )}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
-              {/* Status & Category Badges */}
-              <div className="flex gap-2 flex-wrap">
-                <span
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
-                >
-                  {PROPERTY_STATUS_LABELS[property.status as PropertyStatus] ??
-                    property.status}
-                </span>
-                <span className="px-4 py-2 rounded-full text-sm font-semibold bg-[#e8ecf4] dark:bg-[#1a1d28] text-[#3d4463] dark:text-[#c4c8db]">
+              {/* Status & Category — elegant inline display */}
+              <div className="flex items-center gap-4 text-sm pb-2 border-b border-[#f0f2f8] dark:border-[#1e2130]">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      {
+                        VACANT: 'bg-green-400',
+                        OCCUPIED: 'bg-blue-400',
+                        MAINTENANCE: 'bg-yellow-400',
+                        UNAVAILABLE: 'bg-gray-400',
+                        UNDER_RENOVATION: 'bg-orange-400',
+                        FALLOW: 'bg-stone-400',
+                        LISTED: 'bg-purple-400',
+                        SELF_OCCUPIED: 'bg-indigo-400',
+                      }[property.status] ?? 'bg-gray-400'
+                    }`}
+                  />
+                  <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {PROPERTY_STATUS_LABELS[
+                      property.status as PropertyStatus
+                    ] ?? property.status}
+                  </span>
+                </div>
+                <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
+                <span className="text-[#6b7194] dark:text-[#8b90a8]">
                   {PROPERTY_CATEGORY_LABELS[
                     property.propertyCategory as PropertyCategory
                   ] ?? property.propertyCategory}
+                </span>
+                <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
+                <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                  {PROPERTY_TYPE_LABELS[property.propertyType] ??
+                    property.propertyType}
                 </span>
               </div>
 
@@ -1393,15 +1422,6 @@ export const PropertyDetailPage = () => {
           <PropertyFinancialsTab propertyId={id!} />
         )}
 
-        {activeTab === 'timeline' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db] mb-4">
-              Property Timeline
-            </h2>
-            <PropertyTimeline propertyIdentifier={id!} />
-          </div>
-        )}
-
         {activeTab === 'photos' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <PhotoGallery
@@ -1681,6 +1701,156 @@ export const PropertyDetailPage = () => {
                 )}
               </>
             )}
+
+            {/* Self-Occupancy Periods Section */}
+            <div className="mt-8 pt-6 border-t border-[#edf0f7] dark:border-[#2a2e3f]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Home className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
+                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    Self-Occupancy Periods
+                  </h2>
+                  {occupancyPeriods.length > 0 && (
+                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      ({occupancyPeriods.length})
+                    </span>
+                  )}
+                </div>
+                {canEditData && (
+                  <button
+                    onClick={() => setShowSelfOccupancyModal(true)}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors flex items-center gap-2 text-sm"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Self-Occupancy
+                  </button>
+                )}
+              </div>
+
+              {occupancyPeriods.length === 0 ? (
+                <div className="text-center py-8 border border-dashed border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg">
+                  <Home className="h-10 w-10 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
+                  <p className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-3">
+                    No self-occupancy periods recorded
+                  </p>
+                  {canEditData && (
+                    <button
+                      onClick={() => setShowSelfOccupancyModal(true)}
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium inline-flex items-center gap-1"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Record a self-occupancy period
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Period
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Type
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Occupant
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                      {occupancyPeriods.map((period) => {
+                        const isPeriodActive =
+                          !period.endDate ||
+                          new Date(period.endDate) >= new Date();
+                        return (
+                          <tr
+                            key={period.identifier}
+                            className="hover:bg-[#f8f9fc] dark:hover:bg-[#1e2130] transition-colors"
+                          >
+                            <td className="px-4 py-3 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              {formatDate(period.startDate)} &mdash;{' '}
+                              {period.endDate
+                                ? formatDate(period.endDate)
+                                : 'Ongoing'}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                              {OCCUPANCY_TYPE_LABELS[period.type]}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                              {period.occupantName ?? (
+                                <span className="text-[#9ca0b8] dark:text-[#5c6180]">
+                                  —
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              {isPeriodActive ? (
+                                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                  Active
+                                </span>
+                              ) : (
+                                <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                                  Ended
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() =>
+                                    setEditOccupancyPeriodId(period.identifier)
+                                  }
+                                  title="Edit"
+                                  className="p-1.5 rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#5c7cfa] transition-colors"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                {isPeriodActive && canEditData && (
+                                  <button
+                                    onClick={() => {
+                                      setEndOccupancyPeriodId(
+                                        period.identifier
+                                      );
+                                      setShowEndOccupancyModal(true);
+                                    }}
+                                    title="End occupancy"
+                                    className="p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                                  >
+                                    <Square className="h-4 w-4" />
+                                  </button>
+                                )}
+                                {canManageMembers && (
+                                  <button
+                                    onClick={() =>
+                                      setDeleteOccupancyPeriodId(
+                                        period.identifier
+                                      )
+                                    }
+                                    title="Delete"
+                                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -2141,12 +2311,65 @@ export const PropertyDetailPage = () => {
         />
       )}
 
-      {showEndOccupancyModal && id && activeOccupancyPeriod && (
+      {showEndOccupancyModal && id && endOccupancyPeriodId && (
         <EndSelfOccupancyModal
           propertyIdentifier={id}
-          periodIdentifier={activeOccupancyPeriod.identifier}
-          onClose={() => setShowEndOccupancyModal(false)}
+          periodIdentifier={endOccupancyPeriodId}
+          onClose={() => {
+            setShowEndOccupancyModal(false);
+            setEndOccupancyPeriodId(null);
+          }}
         />
+      )}
+
+      {editOccupancyPeriodId && id && (() => {
+        const editPeriod = occupancyPeriods.find(
+          (p) => p.identifier === editOccupancyPeriodId
+        );
+        return editPeriod ? (
+          <EditSelfOccupancyModal
+            propertyIdentifier={id}
+            period={editPeriod}
+            onClose={() => setEditOccupancyPeriodId(null)}
+          />
+        ) : null;
+      })()}
+
+      {deleteOccupancyPeriodId && id && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              Delete Self-Occupancy Period
+            </h3>
+            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              Are you sure you want to delete this self-occupancy period?
+            </p>
+            <p className="text-sm text-red-600 mb-6">
+              This action cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="secondary"
+                onClick={() => setDeleteOccupancyPeriodId(null)}
+                disabled={deleteOccupancyMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                leftIcon={<Trash2 />}
+                onClick={() => {
+                  deleteOccupancyMutation.mutate(deleteOccupancyPeriodId, {
+                    onSuccess: () => setDeleteOccupancyPeriodId(null),
+                  });
+                }}
+                isLoading={deleteOccupancyMutation.isPending}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showDeleteModal && (

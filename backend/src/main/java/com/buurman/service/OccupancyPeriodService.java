@@ -30,6 +30,7 @@ import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntry;
 import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntryType;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
@@ -45,6 +46,7 @@ public class OccupancyPeriodService {
   private final PropertyOccupancyPeriodRepository repository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final PropertyAcquisitionRepository acquisitionRepository;
   private final Clock clock;
 
   @Transactional
@@ -53,15 +55,6 @@ public class OccupancyPeriodService {
       String propertyIdentifier, CreateOccupancyPeriodRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
-
-    // Validate no active contract on property
-    contractRepository
-        .findActiveContractByPropertyId(property.getId(), teamId)
-        .ifPresent(
-            c -> {
-              throw new BusinessRuleException(
-                  "Cannot create self-occupancy period: property has an active contract");
-            });
 
     // Validate no overlapping occupancy periods
     LocalDate endDate = request.endDate().orElse(LocalDate.of(9999, 12, 31));
@@ -229,6 +222,11 @@ public class OccupancyPeriodService {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
+    Optional<LocalDate> acquisitionDate =
+        acquisitionRepository
+            .findByPropertyIdAndTeamId(property.getId(), teamId)
+            .flatMap(a -> a.getAcquisitionDate());
+
     List<PropertyOccupancyPeriod> periods =
         repository.findByPropertyIdAndTeamId(property.getId(), teamId);
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
@@ -265,7 +263,7 @@ public class OccupancyPeriodService {
     // Sort by start date descending
     entries.sort(Comparator.comparing(TimelineEntry::startDate).reversed());
 
-    return new PropertyTimelineResponse(entries);
+    return new PropertyTimelineResponse(acquisitionDate, entries);
   }
 
   private void validateNoOverlappingContracts(
@@ -286,8 +284,16 @@ public class OccupancyPeriodService {
       LocalDate contractEnd = c.getEndDate().orElse(LocalDate.of(9999, 12, 31));
       boolean overlaps = !startDate.isAfter(contractEnd) && !endDate.isBefore(c.getStartDate());
       if (overlaps) {
+        String endStr =
+            c.getEndDate().map(LocalDate::toString).orElse("ongoing");
         throw new BusinessRuleException(
-            "Cannot create self-occupancy period: overlaps with contract " + c.getIdentifier());
+            "Cannot create self-occupancy period: overlaps with contract "
+                + c.getIdentifier()
+                + " ("
+                + c.getStartDate()
+                + " → "
+                + endStr
+                + ")");
       }
     }
   }

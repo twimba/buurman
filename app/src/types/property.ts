@@ -812,7 +812,8 @@ export interface OccupancyChartData {
 
 export interface OccupancyDataPoint {
   month: string;
-  occupancyPercent: number;
+  tenantOccupancyPercent: number;
+  selfOccupancyPercent: number;
 }
 
 export interface DashboardDataCompleteness {

@@ -142,6 +142,11 @@ public class PropertyDashboardService {
           earliest = e.getExpenseDate();
         }
       }
+      for (PropertyOccupancyPeriod p : occupancyPeriods) {
+        if (p.getStartDate().isBefore(earliest)) {
+          earliest = p.getStartDate();
+        }
+      }
       startDate = earliest;
 
       List<FinancingPayment> unfilteredFinancingPayments =
@@ -558,7 +563,7 @@ public class PropertyDashboardService {
       LocalDate monthEnd = ym.atEndOfMonth();
       int daysInMonth = ym.lengthOfMonth();
 
-      long occupiedDays = 0;
+      long tenantDays = 0;
       for (Contract c : occupiedContracts) {
         if (c.getStartDate() == null) {
           continue;
@@ -566,26 +571,32 @@ public class PropertyDashboardService {
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
         LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
         if (!cStart.isAfter(cEnd)) {
-          occupiedDays += DAYS.between(cStart, cEnd) + 1;
+          tenantDays += DAYS.between(cStart, cEnd) + 1;
         }
       }
 
-      // Also count self-occupancy days
+      long selfDays = 0;
       for (PropertyOccupancyPeriod p : occupancyPeriods) {
         LocalDate pStart = p.getStartDate().isBefore(monthStart) ? monthStart : p.getStartDate();
         LocalDate pEnd = p.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
         if (!pStart.isAfter(pEnd)) {
-          occupiedDays += DAYS.between(pStart, pEnd) + 1;
+          selfDays += DAYS.between(pStart, pEnd) + 1;
         }
       }
 
-      // Cap at days in month (overlapping shouldn't exceed 100%)
-      occupiedDays = Math.min(occupiedDays, daysInMonth);
-      BigDecimal pct =
-          BigDecimal.valueOf(occupiedDays)
+      // Cap individually at days in month
+      tenantDays = Math.min(tenantDays, daysInMonth);
+      selfDays = Math.min(selfDays, daysInMonth - tenantDays);
+
+      BigDecimal tenantPct =
+          BigDecimal.valueOf(tenantDays)
               .multiply(ONE_HUNDRED)
               .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
-      dataPoints.add(new OccupancyDataPoint(ym.toString(), pct));
+      BigDecimal selfPct =
+          BigDecimal.valueOf(selfDays)
+              .multiply(ONE_HUNDRED)
+              .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
+      dataPoints.add(new OccupancyDataPoint(ym.toString(), tenantPct, selfPct));
     }
     return new OccupancyChartData(dataPoints);
   }

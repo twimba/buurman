@@ -46,7 +46,8 @@ public record PropertyDashboardResponse(
 
   public record OccupancyChartData(List<OccupancyDataPoint> months) {}
 
-  public record OccupancyDataPoint(String month, BigDecimal occupancyPercent) {}
+  public record OccupancyDataPoint(
+      String month, BigDecimal tenantOccupancyPercent, BigDecimal selfOccupancyPercent) {}
 
   public record DataCompleteness(
       boolean hasPurchasePrice,

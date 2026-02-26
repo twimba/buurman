@@ -72,5 +72,6 @@ export interface TimelineEntry {
 }
 
 export interface PropertyTimelineResponse {
+  acquisitionDate?: string | null;
   entries: TimelineEntry[];
 }

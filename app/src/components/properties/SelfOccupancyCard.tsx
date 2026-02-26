@@ -1,23 +1,35 @@
 import { Button } from '@/components/ui';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   OccupancyPeriodResponse,
   OCCUPANCY_TYPE_LABELS,
   OCCUPANCY_END_REASON_LABELS,
   OccupancyEndReason,
 } from '@/types/occupancyPeriod';
-import { Home, Calendar, User, FileText, DollarSign } from 'lucide-react';
+import {
+  Home,
+  Calendar,
+  User,
+  FileText,
+  DollarSign,
+  Trash2,
+} from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface SelfOccupancyCardProps {
   period: OccupancyPeriodResponse;
   canEdit: boolean;
+  canAdmin: boolean;
   onEnd: () => void;
+  onDelete: () => void;
 }
 
 export const SelfOccupancyCard = ({
   period,
   canEdit,
+  canAdmin,
   onEnd,
+  onDelete,
 }: SelfOccupancyCardProps) => {
   const { formatDate } = useFormatDate();
   const isActive = !period.endDate || new Date(period.endDate) >= new Date();
@@ -36,11 +48,23 @@ export const SelfOccupancyCard = ({
             </span>
           )}
         </div>
-        {isActive && canEdit && (
-          <Button variant="secondary" size="sm" onClick={onEnd}>
-            End Occupancy
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {isActive && canEdit && (
+            <Button variant="secondary" size="sm" onClick={onEnd}>
+              End Occupancy
+            </Button>
+          )}
+          {canAdmin && (
+            <Button
+              variant="danger"
+              size="sm"
+              leftIcon={<Trash2 />}
+              onClick={onDelete}
+            >
+              Delete
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -124,9 +148,10 @@ export const SelfOccupancyCard = ({
           <div className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1">
             Notes
           </div>
-          <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-            {period.notes}
-          </div>
+          <RichTextDisplay
+            content={period.notes}
+            className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+          />
         </div>
       )}
     </div>

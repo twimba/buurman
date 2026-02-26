@@ -1,57 +1,51 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { useUpdateOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
-  useCreateOccupancyPeriod,
-  useOccupancyPeriods,
-} from '@/hooks/useOccupancyPeriodHooks';
-import { useContracts } from '@/hooks/useContractHooks';
-import { OccupancyType, OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
-import { ContractStatus } from '@/types/contract';
-import { useFormatDate } from '@/hooks/useFormatDate';
-import { X, Info } from 'lucide-react';
+  OccupancyType,
+  OCCUPANCY_TYPE_LABELS,
+  OccupancyPeriodResponse,
+} from '@/types/occupancyPeriod';
+import { X } from 'lucide-react';
 
-interface SelfOccupancyModalProps {
+interface EditSelfOccupancyModalProps {
   propertyIdentifier: string;
+  period: OccupancyPeriodResponse;
   onClose: () => void;
 }
 
-export const SelfOccupancyModal = ({
+export const EditSelfOccupancyModal = ({
   propertyIdentifier,
+  period,
   onClose,
-}: SelfOccupancyModalProps) => {
-  const createMutation = useCreateOccupancyPeriod(propertyIdentifier);
-  const { formatDate } = useFormatDate();
-  const { data: existingPeriods = [] } = useOccupancyPeriods(propertyIdentifier);
-  const { data: contractsData } = useContracts({ propertyIdentifier });
-  const takenContracts = (contractsData?.content ?? []).filter(
-    (c) =>
-      c.status !== ContractStatus.DRAFT &&
-      c.status !== ContractStatus.PENDING_SIGNATURE
-  );
-  const hasTakenPeriods = existingPeriods.length > 0 || takenContracts.length > 0;
+}: EditSelfOccupancyModalProps) => {
+  const updateMutation = useUpdateOccupancyPeriod(propertyIdentifier);
 
-  const [startDate, setStartDate] = useState(
-    new Date().toISOString().split('T')[0]
+  const [startDate, setStartDate] = useState(period.startDate);
+  const [endDate, setEndDate] = useState(period.endDate ?? '');
+  const [type, setType] = useState<OccupancyType>(period.type);
+  const [occupantName, setOccupantName] = useState(period.occupantName ?? '');
+  const [monthlyImputedRent, setMonthlyImputedRent] = useState(
+    period.monthlyImputedRent != null ? String(period.monthlyImputedRent) : ''
   );
-  const [endDate, setEndDate] = useState('');
-  const [type, setType] = useState<OccupancyType>(OccupancyType.PERSONAL);
-  const [occupantName, setOccupantName] = useState('');
-  const [monthlyImputedRent, setMonthlyImputedRent] = useState('');
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(period.notes ?? '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(
+    updateMutation.mutate(
       {
-        startDate,
-        type,
-        ...(endDate ? { endDate } : {}),
-        ...(occupantName ? { occupantName } : {}),
-        ...(monthlyImputedRent
-          ? { monthlyImputedRent: parseFloat(monthlyImputedRent) }
-          : {}),
-        ...(notes ? { notes } : {}),
+        periodIdentifier: period.identifier,
+        data: {
+          startDate,
+          type,
+          ...(endDate ? { endDate } : {}),
+          ...(occupantName ? { occupantName } : {}),
+          ...(monthlyImputedRent
+            ? { monthlyImputedRent: parseFloat(monthlyImputedRent) }
+            : {}),
+          ...(notes ? { notes } : {}),
+        },
       },
       { onSuccess: onClose }
     );
@@ -59,10 +53,10 @@ export const SelfOccupancyModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-lg w-full mx-4">
+      <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Mark as Self-Occupied
+            Edit Self-Occupancy
           </h3>
           <button
             onClick={onClose}
@@ -99,44 +93,6 @@ export const SelfOccupancyModal = ({
               />
             </div>
           </div>
-
-          {hasTakenPeriods && (
-            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-lg p-3">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 mb-2">
-                <Info className="h-3.5 w-3.5 flex-shrink-0" />
-                Already taken periods
-              </div>
-              <div className="space-y-1">
-                {existingPeriods.map((p) => (
-                  <div
-                    key={p.identifier}
-                    className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-500"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
-                    <span>
-                      Self-use:{' '}
-                      {formatDate(p.startDate)} —{' '}
-                      {p.endDate ? formatDate(p.endDate) : 'Ongoing'}
-                      {p.occupantName && ` (${p.occupantName})`}
-                    </span>
-                  </div>
-                ))}
-                {takenContracts.map((c) => (
-                  <div
-                    key={c.identifier}
-                    className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-500"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                    <span>
-                      Contract {c.identifier}:{' '}
-                      {formatDate(c.startDate)} —{' '}
-                      {c.endDate ? formatDate(c.endDate) : 'Ongoing'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div>
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
@@ -200,16 +156,16 @@ export const SelfOccupancyModal = ({
             <Button
               variant="secondary"
               onClick={onClose}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               type="submit"
-              isLoading={createMutation.isPending}
+              isLoading={updateMutation.isPending}
             >
-              Confirm
+              Save Changes
             </Button>
           </div>
         </form>

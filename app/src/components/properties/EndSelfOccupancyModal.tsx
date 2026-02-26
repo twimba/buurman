@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useEndOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
   OccupancyEndReason,
@@ -93,13 +94,10 @@ export const EndSelfOccupancyModal = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Notes
             </label>
-            <textarea
+            <RichTextEditor
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={setNotes}
               placeholder="Additional notes..."
-              maxLength={500}
-              rows={3}
-              className="w-full px-3 py-2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa] resize-none"
             />
           </div>
 
