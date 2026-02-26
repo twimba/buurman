@@ -1,12 +1,26 @@
 package com.buurman.security;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.time.Duration;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.buurman.domain.RateLimitConfig;
+import com.buurman.service.MetricsService;
+import com.buurman.service.RateLimitConfigService;
+
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.Refill;
+import io.github.bucket4j.distributed.BucketProxy;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,43 +29,86 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
-  private static final int MAX_REQUESTS = 10;
-  private static final long WINDOW_MS = 60_000; // 1 minute
-  private static final String RATE_LIMITED_PATH = "/registration-invitations/validate";
+  private static final Logger log = LoggerFactory.getLogger(RateLimitFilter.class);
 
-  private final ConcurrentHashMap<String, ConcurrentLinkedDeque<Long>> requestLog =
-      new ConcurrentHashMap<>();
+  /** Map of "METHOD:path" → rate limit config key. Add new entries to rate-limit more endpoints. */
+  private static final Map<String, String> RATE_LIMITED_ENDPOINTS =
+      Map.of("POST:/registration-invitations/validate", "registration-validation");
+
+  private final ProxyManager<String> proxyManager;
+  private final RateLimitConfigService rateLimitConfigService;
+  private final MetricsService metricsService;
+
+  public RateLimitFilter(
+      ProxyManager<String> rateLimitProxyManager,
+      RateLimitConfigService rateLimitConfigService,
+      MetricsService metricsService) {
+    this.proxyManager = rateLimitProxyManager;
+    this.rateLimitConfigService = rateLimitConfigService;
+    this.metricsService = metricsService;
+  }
 
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    if (!RATE_LIMITED_PATH.equals(request.getRequestURI())
-        || !"POST".equalsIgnoreCase(request.getMethod())) {
+    String lookupKey = request.getMethod().toUpperCase(Locale.ROOT) + ":" + request.getRequestURI();
+    String configKey = RATE_LIMITED_ENDPOINTS.get(lookupKey);
+
+    if (configKey == null) {
       filterChain.doFilter(request, response);
       return;
     }
 
     String clientIp = getClientIp(request);
-    long now = System.currentTimeMillis();
 
-    ConcurrentLinkedDeque<Long> timestamps =
-        requestLog.computeIfAbsent(clientIp, k -> new ConcurrentLinkedDeque<>());
+    try {
+      RateLimitConfig config = rateLimitConfigService.getConfig(configKey).orElse(null);
 
-    // Remove expired entries
-    while (!timestamps.isEmpty() && timestamps.peekFirst() < now - WINDOW_MS) {
-      timestamps.pollFirst();
-    }
+      if (config == null || !config.isEnabled()) {
+        filterChain.doFilter(request, response);
+        return;
+      }
 
-    if (timestamps.size() >= MAX_REQUESTS) {
+      String bucketKey = configKey + ":" + clientIp;
+      BucketProxy bucket = proxyManager.getProxy(bucketKey, () -> buildBucketConfiguration(config));
+      ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+
+      if (probe.isConsumed()) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+
+      long retryAfterSeconds = TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()) + 1;
+
+      log.warn(
+          "Rate limit exceeded for IP {} on endpoint {} [{}] — retry after {}s",
+          clientIp,
+          request.getRequestURI(),
+          configKey,
+          retryAfterSeconds);
+      metricsService.incrementCounter("ratelimit.rejected.total", "endpoint", configKey);
+
       response.setStatus(429);
       response.setContentType("application/json");
+      response.setHeader("Retry-After", String.valueOf(retryAfterSeconds));
       response.getWriter().write("{\"error\":\"Too many requests. Please try again later.\"}");
-      return;
+    } catch (Exception e) {
+      // Fail-open: if the database is unreachable, allow the request through
+      log.error("Rate limit check failed for IP {} — allowing request through", clientIp, e);
+      metricsService.incrementCounter("ratelimit.error.total", "endpoint", configKey);
+      filterChain.doFilter(request, response);
     }
+  }
 
-    timestamps.addLast(now);
-    filterChain.doFilter(request, response);
+  private BucketConfiguration buildBucketConfiguration(RateLimitConfig config) {
+    return BucketConfiguration.builder()
+        .addLimit(
+            Bandwidth.classic(
+                config.getMaxRequests(),
+                Refill.intervally(
+                    config.getMaxRequests(), Duration.ofSeconds(config.getPeriodSeconds()))))
+        .build();
   }
 
   private String getClientIp(HttpServletRequest request) {

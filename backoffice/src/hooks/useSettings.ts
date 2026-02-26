@@ -25,3 +25,23 @@ export const useUpdatePhonePolicy = () => {
     },
   });
 };
+
+// ── Rate Limit Config ────────────────────────────────────────────────
+
+export const useRateLimitConfig = (key: string) => {
+  return useQuery({
+    queryKey: ["rate-limit-config", key],
+    queryFn: () => settingsApi.getRateLimitConfig(key),
+  });
+};
+
+export const useUpdateRateLimitConfig = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ key, data }: { key: string; data: settingsApi.UpdateRateLimitConfigRequest }) =>
+      settingsApi.updateRateLimitConfig(key, data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["rate-limit-config", variables.key] });
+    },
+  });
+};

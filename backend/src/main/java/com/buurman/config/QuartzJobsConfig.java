@@ -18,6 +18,7 @@ import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.PaymentReminderCheckJob;
+import com.buurman.job.RateLimitCleanupJob;
 import com.buurman.job.ThumbnailBackfillJob;
 import com.buurman.job.VerificationCodeCleanupJob;
 
@@ -188,6 +189,25 @@ public class QuartzJobsConfig {
         .forJob(verificationCodeCleanupJobDetail)
         .withIdentity("verificationCodeCleanupTrigger", "system")
         .withSchedule(CronScheduleBuilder.cronSchedule("0 0 3 * * ?"))
+        .build();
+  }
+
+  // ── Rate Limit Bucket Cleanup ──────────────────────────────────────────
+
+  @Bean
+  public JobDetail rateLimitCleanupJobDetail() {
+    return JobBuilder.newJob(RateLimitCleanupJob.class)
+        .withIdentity("rateLimitCleanupJob", "system")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger rateLimitCleanupTrigger(JobDetail rateLimitCleanupJobDetail) {
+    return TriggerBuilder.newTrigger()
+        .forJob(rateLimitCleanupJobDetail)
+        .withIdentity("rateLimitCleanupTrigger", "system")
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */6 * * ?"))
         .build();
   }
 
