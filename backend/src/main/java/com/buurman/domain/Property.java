@@ -85,50 +85,6 @@ public class Property {
   @Builder.Default private Optional<Boolean> hasAdaptedBathroom = Optional.empty();
   @Builder.Default private Optional<String> accessibilityNotes = Optional.empty();
 
-  // Investment & Financial
-  @Builder.Default private Optional<BigDecimal> purchasePrice = Optional.empty();
-  @Builder.Default private Optional<String> purchasePriceCurrency = Optional.empty();
-  @Builder.Default private Optional<LocalDate> purchaseDate = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> currentMarketValue = Optional.empty();
-  @Builder.Default private Optional<String> currentMarketValueCurrency = Optional.empty();
-  @Builder.Default private Optional<LocalDate> marketValueDate = Optional.empty();
-
-  // Mortgage
-  @Builder.Default private Optional<MortgageType> mortgageType = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> mortgageAmount = Optional.empty();
-  @Builder.Default private Optional<String> mortgageAmountCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> mortgageInterestRate = Optional.empty();
-  @Builder.Default private Optional<LocalDate> mortgageStartDate = Optional.empty();
-  @Builder.Default private Optional<LocalDate> mortgageEndDate = Optional.empty();
-  private boolean mortgagePaymentVariable;
-  @Builder.Default private Optional<BigDecimal> monthlyMortgagePayment = Optional.empty();
-  @Builder.Default private Optional<String> monthlyMortgagePaymentCurrency = Optional.empty();
-
-  // Operating Costs (annual)
-  @Builder.Default private Optional<BigDecimal> annualPropertyTax = Optional.empty();
-  @Builder.Default private Optional<String> annualPropertyTaxCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> annualInsurance = Optional.empty();
-  @Builder.Default private Optional<String> annualInsuranceCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> annualHoaFee = Optional.empty();
-  @Builder.Default private Optional<String> annualHoaFeeCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> annualManagementFee = Optional.empty();
-  @Builder.Default private Optional<String> annualManagementFeeCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> annualMaintenanceReserve = Optional.empty();
-  @Builder.Default private Optional<String> annualMaintenanceReserveCurrency = Optional.empty();
-
-  // Operating Cost Due Months — comma-separated month numbers (e.g. "1,3,7"), empty = all months
-  @Builder.Default private Optional<String> annualPropertyTaxDueMonth = Optional.empty();
-  @Builder.Default private Optional<String> annualInsuranceDueMonth = Optional.empty();
-  @Builder.Default private Optional<String> annualHoaFeeDueMonth = Optional.empty();
-  @Builder.Default private Optional<String> annualManagementFeeDueMonth = Optional.empty();
-  @Builder.Default private Optional<String> annualMaintenanceReserveDueMonth = Optional.empty();
-
-  // Depreciation
-  @Builder.Default private Optional<DepreciationMethod> depreciationMethod = Optional.empty();
-  @Builder.Default private Optional<Integer> depreciationYears = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> landValue = Optional.empty();
-  @Builder.Default private Optional<String> landValueCurrency = Optional.empty();
-
   // Audit
   private Instant createdAt;
   private Instant updatedAt;
@@ -195,18 +151,5 @@ public class Property {
     UNDER_RENOVATION,
     FALLOW,
     LISTED
-  }
-
-  public enum MortgageType {
-    FIXED_RATE,
-    VARIABLE_RATE,
-    INTEREST_ONLY,
-    NONE
-  }
-
-  public enum DepreciationMethod {
-    STRAIGHT_LINE,
-    DECLINING_BALANCE,
-    NONE
   }
 }

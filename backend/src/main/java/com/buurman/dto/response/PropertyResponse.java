@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Property;
-import com.buurman.domain.Property.DepreciationMethod;
-import com.buurman.domain.Property.MortgageType;
 
 public record PropertyResponse(
     String identifier,
@@ -77,42 +75,6 @@ public record PropertyResponse(
     Optional<Boolean> hasStepFreeEntrance,
     Optional<Boolean> hasAdaptedBathroom,
     Optional<String> accessibilityNotes,
-
-    // Investment & Financial
-    Optional<BigDecimal> purchasePrice,
-    Optional<String> purchasePriceCurrency,
-    Optional<LocalDate> purchaseDate,
-    Optional<BigDecimal> currentMarketValue,
-    Optional<String> currentMarketValueCurrency,
-    Optional<LocalDate> marketValueDate,
-    Optional<MortgageType> mortgageType,
-    Optional<BigDecimal> mortgageAmount,
-    Optional<String> mortgageAmountCurrency,
-    Optional<BigDecimal> mortgageInterestRate,
-    Optional<LocalDate> mortgageStartDate,
-    Optional<LocalDate> mortgageEndDate,
-    boolean mortgagePaymentVariable,
-    Optional<BigDecimal> monthlyMortgagePayment,
-    Optional<String> monthlyMortgagePaymentCurrency,
-    Optional<BigDecimal> annualPropertyTax,
-    Optional<String> annualPropertyTaxCurrency,
-    Optional<BigDecimal> annualInsurance,
-    Optional<String> annualInsuranceCurrency,
-    Optional<BigDecimal> annualHoaFee,
-    Optional<String> annualHoaFeeCurrency,
-    Optional<BigDecimal> annualManagementFee,
-    Optional<String> annualManagementFeeCurrency,
-    Optional<BigDecimal> annualMaintenanceReserve,
-    Optional<String> annualMaintenanceReserveCurrency,
-    Optional<String> annualPropertyTaxDueMonth,
-    Optional<String> annualInsuranceDueMonth,
-    Optional<String> annualHoaFeeDueMonth,
-    Optional<String> annualManagementFeeDueMonth,
-    Optional<String> annualMaintenanceReserveDueMonth,
-    Optional<DepreciationMethod> depreciationMethod,
-    Optional<Integer> depreciationYears,
-    Optional<BigDecimal> landValue,
-    Optional<String> landValueCurrency,
 
     // Category-specific details (only one is non-null)
     Optional<ResidentialDetailsResponse> residentialDetails,

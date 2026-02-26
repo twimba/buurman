@@ -17,7 +17,6 @@ import {
 } from '@/types/property';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
-import { PropertyFinancialForm } from './PropertyFinancialForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
@@ -59,7 +58,7 @@ export const PropertyForm = ({
   onRemoveAmenity,
 }: PropertyFormProps) => {
   const navigate = useNavigate();
-  const { defaultCountry, defaultCurrency } = useTeamDefaults();
+  const { defaultCountry } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [addressDirty, setAddressDirty] = useState(false);
@@ -135,92 +134,11 @@ export const PropertyForm = ({
     commercialDetails: property?.commercialDetails ?? null,
     industrialDetails: property?.industrialDetails ?? null,
     agriculturalDetails: property?.agriculturalDetails ?? null,
-    // Financial — values
-    purchasePrice: property?.purchasePrice ?? null,
-    purchaseDate: property?.purchaseDate ?? null,
-    currentMarketValue: property?.currentMarketValue ?? null,
-    marketValueDate: property?.marketValueDate ?? null,
-    mortgageType: property?.mortgageType ?? null,
-    mortgageAmount: property?.mortgageAmount ?? null,
-    mortgageInterestRate: property?.mortgageInterestRate ?? null,
-    mortgagePaymentVariable: property?.mortgagePaymentVariable ?? false,
-    monthlyMortgagePayment: property?.monthlyMortgagePayment ?? null,
-    mortgageStartDate: property?.mortgageStartDate ?? null,
-    mortgageEndDate: property?.mortgageEndDate ?? null,
-    annualPropertyTax: property?.annualPropertyTax ?? null,
-    annualPropertyTaxDueMonth: property?.annualPropertyTaxDueMonth ?? null,
-    annualInsurance: property?.annualInsurance ?? null,
-    annualInsuranceDueMonth: property?.annualInsuranceDueMonth ?? null,
-    annualHoaFee: property?.annualHoaFee ?? null,
-    annualHoaFeeDueMonth: property?.annualHoaFeeDueMonth ?? null,
-    annualManagementFee: property?.annualManagementFee ?? null,
-    annualManagementFeeDueMonth: property?.annualManagementFeeDueMonth ?? null,
-    annualMaintenanceReserve: property?.annualMaintenanceReserve ?? null,
-    annualMaintenanceReserveDueMonth:
-      property?.annualMaintenanceReserveDueMonth ?? null,
-    depreciationMethod: property?.depreciationMethod ?? null,
-    depreciationYears: property?.depreciationYears ?? null,
-    landValue: property?.landValue ?? null,
-    // Financial — per-field currencies
-    purchasePriceCurrency:
-      property?.purchasePriceCurrency || defaultCurrency || undefined,
-    currentMarketValueCurrency:
-      property?.currentMarketValueCurrency || defaultCurrency || undefined,
-    mortgageAmountCurrency:
-      property?.mortgageAmountCurrency || defaultCurrency || undefined,
-    monthlyMortgagePaymentCurrency:
-      property?.monthlyMortgagePaymentCurrency || defaultCurrency || undefined,
-    annualPropertyTaxCurrency:
-      property?.annualPropertyTaxCurrency || defaultCurrency || undefined,
-    annualInsuranceCurrency:
-      property?.annualInsuranceCurrency || defaultCurrency || undefined,
-    annualHoaFeeCurrency:
-      property?.annualHoaFeeCurrency || defaultCurrency || undefined,
-    annualManagementFeeCurrency:
-      property?.annualManagementFeeCurrency || defaultCurrency || undefined,
-    annualMaintenanceReserveCurrency:
-      property?.annualMaintenanceReserveCurrency ||
-      defaultCurrency ||
-      undefined,
-    landValueCurrency:
-      property?.landValueCurrency || defaultCurrency || undefined,
   });
 
   const [propertyIdentifier, setPropertyIdentifier] = useState(
     property?.identifier
   );
-
-  // When defaultCurrency loads asynchronously, fill in any unset currency fields
-  useEffect(() => {
-    if (!defaultCurrency) {
-      return;
-    }
-    const currencyFields = [
-      'purchasePriceCurrency',
-      'currentMarketValueCurrency',
-      'mortgageAmountCurrency',
-      'monthlyMortgagePaymentCurrency',
-      'annualPropertyTaxCurrency',
-      'annualInsuranceCurrency',
-      'annualHoaFeeCurrency',
-      'annualManagementFeeCurrency',
-      'annualMaintenanceReserveCurrency',
-      'landValueCurrency',
-    ] as const;
-    setFormData((prev) => {
-      const needsUpdate = currencyFields.some((f) => !prev[f]);
-      if (!needsUpdate) {
-        return prev;
-      }
-      const updated = { ...prev };
-      for (const f of currencyFields) {
-        if (!updated[f]) {
-          updated[f] = defaultCurrency;
-        }
-      }
-      return updated;
-    });
-  }, [defaultCurrency]);
 
   // Available sub-types based on selected category
   const availableTypes = useMemo(
@@ -294,61 +212,9 @@ export const PropertyForm = ({
         commercialDetails: property.commercialDetails ?? null,
         industrialDetails: property.industrialDetails ?? null,
         agriculturalDetails: property.agriculturalDetails ?? null,
-        // Financial — values
-        purchasePrice: property.purchasePrice ?? null,
-        purchaseDate: property.purchaseDate ?? null,
-        currentMarketValue: property.currentMarketValue ?? null,
-        marketValueDate: property.marketValueDate ?? null,
-        mortgageType: property.mortgageType ?? null,
-        mortgageAmount: property.mortgageAmount ?? null,
-        mortgageInterestRate: property.mortgageInterestRate ?? null,
-        mortgagePaymentVariable: property.mortgagePaymentVariable ?? false,
-        monthlyMortgagePayment: property.monthlyMortgagePayment ?? null,
-        mortgageStartDate: property.mortgageStartDate ?? null,
-        mortgageEndDate: property.mortgageEndDate ?? null,
-        annualPropertyTax: property.annualPropertyTax ?? null,
-        annualPropertyTaxDueMonth: property.annualPropertyTaxDueMonth ?? null,
-        annualInsurance: property.annualInsurance ?? null,
-        annualInsuranceDueMonth: property.annualInsuranceDueMonth ?? null,
-        annualHoaFee: property.annualHoaFee ?? null,
-        annualHoaFeeDueMonth: property.annualHoaFeeDueMonth ?? null,
-        annualManagementFee: property.annualManagementFee ?? null,
-        annualManagementFeeDueMonth:
-          property.annualManagementFeeDueMonth ?? null,
-        annualMaintenanceReserve: property.annualMaintenanceReserve ?? null,
-        annualMaintenanceReserveDueMonth:
-          property.annualMaintenanceReserveDueMonth ?? null,
-        depreciationMethod: property.depreciationMethod ?? null,
-        depreciationYears: property.depreciationYears ?? null,
-        landValue: property.landValue ?? null,
-        // Financial — per-field currencies
-        purchasePriceCurrency:
-          property.purchasePriceCurrency || defaultCurrency || undefined,
-        currentMarketValueCurrency:
-          property.currentMarketValueCurrency || defaultCurrency || undefined,
-        mortgageAmountCurrency:
-          property.mortgageAmountCurrency || defaultCurrency || undefined,
-        monthlyMortgagePaymentCurrency:
-          property.monthlyMortgagePaymentCurrency ||
-          defaultCurrency ||
-          undefined,
-        annualPropertyTaxCurrency:
-          property.annualPropertyTaxCurrency || defaultCurrency || undefined,
-        annualInsuranceCurrency:
-          property.annualInsuranceCurrency || defaultCurrency || undefined,
-        annualHoaFeeCurrency:
-          property.annualHoaFeeCurrency || defaultCurrency || undefined,
-        annualManagementFeeCurrency:
-          property.annualManagementFeeCurrency || defaultCurrency || undefined,
-        annualMaintenanceReserveCurrency:
-          property.annualMaintenanceReserveCurrency ||
-          defaultCurrency ||
-          undefined,
-        landValueCurrency:
-          property.landValueCurrency || defaultCurrency || undefined,
       });
     }
-  }, [property, propertyIdentifier, defaultCurrency]);
+  }, [property, propertyIdentifier]);
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
@@ -434,18 +300,6 @@ export const PropertyForm = ({
     }));
   };
 
-  const validateMonetaryCurrency = (
-    errors: Record<string, string>,
-    amount: number | null | undefined,
-    currencyField: string,
-    currencyValue: string | null | undefined,
-    label: string
-  ) => {
-    if (amount != null && amount > 0 && !(currencyValue || '').trim()) {
-      errors[currencyField] = `${label} currency is required`;
-    }
-  };
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -468,89 +322,6 @@ export const PropertyForm = ({
       formData.areaValue <= 0
     ) {
       newErrors.areaValue = 'Area must be greater than 0';
-    }
-
-    // Validate currency is set when monetary field has a value
-    validateMonetaryCurrency(
-      newErrors,
-      formData.purchasePrice,
-      'purchasePriceCurrency',
-      formData.purchasePriceCurrency,
-      'Purchase price'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.currentMarketValue,
-      'currentMarketValueCurrency',
-      formData.currentMarketValueCurrency,
-      'Market value'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.mortgageAmount,
-      'mortgageAmountCurrency',
-      formData.mortgageAmountCurrency,
-      'Mortgage'
-    );
-    if (!formData.mortgagePaymentVariable) {
-      validateMonetaryCurrency(
-        newErrors,
-        formData.monthlyMortgagePayment,
-        'monthlyMortgagePaymentCurrency',
-        formData.monthlyMortgagePaymentCurrency,
-        'Monthly payment'
-      );
-    }
-    validateMonetaryCurrency(
-      newErrors,
-      formData.annualPropertyTax,
-      'annualPropertyTaxCurrency',
-      formData.annualPropertyTaxCurrency,
-      'Property tax'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.annualInsurance,
-      'annualInsuranceCurrency',
-      formData.annualInsuranceCurrency,
-      'Insurance'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.annualHoaFee,
-      'annualHoaFeeCurrency',
-      formData.annualHoaFeeCurrency,
-      'HOA fee'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.annualManagementFee,
-      'annualManagementFeeCurrency',
-      formData.annualManagementFeeCurrency,
-      'Management fee'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.annualMaintenanceReserve,
-      'annualMaintenanceReserveCurrency',
-      formData.annualMaintenanceReserveCurrency,
-      'Maintenance reserve'
-    );
-    validateMonetaryCurrency(
-      newErrors,
-      formData.landValue,
-      'landValueCurrency',
-      formData.landValueCurrency,
-      'Land value'
-    );
-
-    // Validate mortgage date ordering
-    if (
-      formData.mortgageStartDate &&
-      formData.mortgageEndDate &&
-      formData.mortgageEndDate <= formData.mortgageStartDate
-    ) {
-      newErrors.mortgageEndDate = 'End date must be after start date';
     }
 
     setErrors(newErrors);
@@ -818,13 +589,6 @@ export const PropertyForm = ({
         propertyAmenities={propertyAmenities}
         onAddAmenity={onAddAmenity}
         onRemoveAmenity={onRemoveAmenity}
-      />
-
-      {/* Investment & Financial */}
-      <PropertyFinancialForm
-        formData={formData}
-        onChange={handleChange}
-        errors={errors}
       />
 
       {/* Actions */}

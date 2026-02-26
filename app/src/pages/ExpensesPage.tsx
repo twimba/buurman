@@ -56,7 +56,6 @@ const categoryFilters = [
   { value: ExpenseCategory.PROPERTY_MANAGEMENT, label: 'Property Management' },
   { value: ExpenseCategory.FEES, label: 'Fees' },
   { value: ExpenseCategory.PROPERTY_TAX, label: 'Property Taxes' },
-  { value: ExpenseCategory.MORTGAGE_PAYMENT, label: 'Mortgage Payment' },
   { value: ExpenseCategory.OTHER, label: 'Other' },
 ];
 

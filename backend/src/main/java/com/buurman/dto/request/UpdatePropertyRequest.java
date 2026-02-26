@@ -76,44 +76,8 @@ public record UpdatePropertyRequest(
     Optional<Boolean> hasAdaptedBathroom,
     Optional<String> accessibilityNotes,
 
-    // Investment & Financial
-    Optional<BigDecimal> purchasePrice,
-    Optional<String> purchasePriceCurrency,
-    Optional<LocalDate> purchaseDate,
-    Optional<BigDecimal> currentMarketValue,
-    Optional<String> currentMarketValueCurrency,
-    Optional<LocalDate> marketValueDate,
-    Optional<Property.MortgageType> mortgageType,
-    Optional<BigDecimal> mortgageAmount,
-    Optional<String> mortgageAmountCurrency,
-    Optional<BigDecimal> mortgageInterestRate,
-    Optional<LocalDate> mortgageStartDate,
-    Optional<LocalDate> mortgageEndDate,
-    Optional<Boolean> mortgagePaymentVariable,
-    Optional<BigDecimal> monthlyMortgagePayment,
-    Optional<String> monthlyMortgagePaymentCurrency,
-    Optional<BigDecimal> annualPropertyTax,
-    Optional<String> annualPropertyTaxCurrency,
-    Optional<BigDecimal> annualInsurance,
-    Optional<String> annualInsuranceCurrency,
-    Optional<BigDecimal> annualHoaFee,
-    Optional<String> annualHoaFeeCurrency,
-    Optional<BigDecimal> annualManagementFee,
-    Optional<String> annualManagementFeeCurrency,
-    Optional<BigDecimal> annualMaintenanceReserve,
-    Optional<String> annualMaintenanceReserveCurrency,
-    Optional<String> annualPropertyTaxDueMonth,
-    Optional<String> annualInsuranceDueMonth,
-    Optional<String> annualHoaFeeDueMonth,
-    Optional<String> annualManagementFeeDueMonth,
-    Optional<String> annualMaintenanceReserveDueMonth,
-    Optional<Property.DepreciationMethod> depreciationMethod,
-    Optional<Integer> depreciationYears,
-    Optional<BigDecimal> landValue,
-    Optional<String> landValueCurrency,
-
     // Category-specific details (only matching category should be provided)
-    // Note: propertyCategory is NOT here — it's immutable
+    // Note: propertyCategory is NOT here — it's immutable after creation
     @Valid Optional<ResidentialDetailsRequest> residentialDetails,
     @Valid Optional<CommercialDetailsRequest> commercialDetails,
     @Valid Optional<IndustrialDetailsRequest> industrialDetails,
@@ -124,24 +88,5 @@ public record UpdatePropertyRequest(
         Objects.requireNonNullElse(energyCertificateExpiryDate, Optional.empty());
     electricityConnectionType =
         Objects.requireNonNullElse(electricityConnectionType, Optional.empty());
-    currentMarketValueCurrency =
-        Objects.requireNonNullElse(currentMarketValueCurrency, Optional.empty());
-    mortgagePaymentVariable = Objects.requireNonNullElse(mortgagePaymentVariable, Optional.empty());
-    monthlyMortgagePaymentCurrency =
-        Objects.requireNonNullElse(monthlyMortgagePaymentCurrency, Optional.empty());
-    annualPropertyTaxCurrency =
-        Objects.requireNonNullElse(annualPropertyTaxCurrency, Optional.empty());
-    annualManagementFeeCurrency =
-        Objects.requireNonNullElse(annualManagementFeeCurrency, Optional.empty());
-    annualMaintenanceReserve =
-        Objects.requireNonNullElse(annualMaintenanceReserve, Optional.empty());
-    annualMaintenanceReserveCurrency =
-        Objects.requireNonNullElse(annualMaintenanceReserveCurrency, Optional.empty());
-    annualPropertyTaxDueMonth =
-        Objects.requireNonNullElse(annualPropertyTaxDueMonth, Optional.empty());
-    annualManagementFeeDueMonth =
-        Objects.requireNonNullElse(annualManagementFeeDueMonth, Optional.empty());
-    annualMaintenanceReserveDueMonth =
-        Objects.requireNonNullElse(annualMaintenanceReserveDueMonth, Optional.empty());
   }
 }

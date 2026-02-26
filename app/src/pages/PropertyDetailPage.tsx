@@ -22,14 +22,13 @@ import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge
 import {
   PropertyStatus,
   PropertyCategory,
-  MortgageType,
-  DepreciationMethod,
   PROPERTY_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PropertyDashboardTab } from '@/components/properties/dashboard/PropertyDashboardTab';
+import { PropertyFinancialsTab } from '@/components/properties/financials/PropertyFinancialsTab';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -57,6 +56,7 @@ import {
   ChevronDown,
   Download,
   BarChart3,
+  Wallet,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -86,6 +86,7 @@ export const PropertyDetailPage = () => {
   const { formatDate } = useFormatDate();
   const [activeTab, setActiveTab] = useTabState('info', [
     'info',
+    'financials',
     'photos',
     'documents',
     'contracts',
@@ -427,25 +428,6 @@ export const PropertyDetailPage = () => {
       .replace(/\bDsl\b/g, 'DSL');
   };
 
-  const formatMoney = (
-    amount: number | null,
-    currency: string | null
-  ): string => {
-    if (amount == null) {
-      return 'N/A';
-    }
-    try {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: currency || 'EUR',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(amount);
-    } catch {
-      return `${currency || 'EUR'} ${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -563,6 +545,17 @@ export const PropertyDetailPage = () => {
                 Dashboard
               </button>
             </FeatureGate>
+            <button
+              onClick={() => setActiveTab('financials')}
+              className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
+                activeTab === 'financials'
+                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
+                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+              }`}
+            >
+              <Wallet className="h-4 w-4" />
+              Financials
+            </button>
             <button
               onClick={() => setActiveTab('photos')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
@@ -1299,304 +1292,7 @@ export const PropertyDetailPage = () => {
               </div>
             )}
 
-            {/* Investment & Financial */}
-            {(property.purchasePrice != null ||
-              property.currentMarketValue != null ||
-              (property.mortgageType &&
-                property.mortgageType !== MortgageType.NONE) ||
-              property.annualPropertyTax != null ||
-              property.annualInsurance != null ||
-              property.annualHoaFee != null ||
-              property.annualManagementFee != null ||
-              property.annualMaintenanceReserve != null ||
-              (property.depreciationMethod &&
-                property.depreciationMethod !== DepreciationMethod.NONE)) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide">
-                  Investment &amp; Financial
-                </h3>
-
-                {/* Purchase & Valuation */}
-                {(property.purchasePrice != null ||
-                  property.currentMarketValue != null) && (
-                  <div>
-                    <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                      Purchase &amp; Valuation
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {property.purchasePrice != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Purchase Price
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.purchasePrice,
-                              property.purchasePriceCurrency
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      {property.purchaseDate && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Purchase Date
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatDate(property.purchaseDate)}
-                          </div>
-                        </div>
-                      )}
-                      {property.currentMarketValue != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Market Value
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.currentMarketValue,
-                              property.currentMarketValueCurrency
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      {property.marketValueDate && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Valuation Date
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatDate(property.marketValueDate)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Mortgage */}
-                {property.mortgageType &&
-                  property.mortgageType !== MortgageType.NONE && (
-                    <div>
-                      <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                        Mortgage
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Type
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatEnumValue(property.mortgageType)}
-                          </div>
-                        </div>
-                        {property.mortgageAmount != null && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Amount
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {formatMoney(
-                                property.mortgageAmount,
-                                property.mortgageAmountCurrency
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {property.mortgageInterestRate != null && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Interest Rate
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {property.mortgageInterestRate}%
-                            </div>
-                          </div>
-                        )}
-                        {(property.mortgagePaymentVariable ||
-                          property.monthlyMortgagePayment != null) && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Monthly Payment
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {property.mortgagePaymentVariable
-                                ? 'Variable'
-                                : formatMoney(
-                                    property.monthlyMortgagePayment,
-                                    property.monthlyMortgagePaymentCurrency
-                                  )}
-                            </div>
-                          </div>
-                        )}
-                        {property.mortgageStartDate && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Start Date
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {formatDate(property.mortgageStartDate)}
-                            </div>
-                          </div>
-                        )}
-                        {property.mortgageEndDate && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              End Date
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {formatDate(property.mortgageEndDate)}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                {/* Annual Operating Costs */}
-                {(property.annualPropertyTax != null ||
-                  property.annualInsurance != null ||
-                  property.annualHoaFee != null ||
-                  property.annualManagementFee != null ||
-                  property.annualMaintenanceReserve != null) && (
-                  <div>
-                    <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                      Annual Operating Costs
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {property.annualPropertyTax != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Property Tax
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.annualPropertyTax,
-                              property.annualPropertyTaxCurrency
-                            )}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                              {' '}
-                              /yr
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {property.annualInsurance != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Insurance
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.annualInsurance,
-                              property.annualInsuranceCurrency
-                            )}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                              {' '}
-                              /yr
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {property.annualHoaFee != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            HOA Fee
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.annualHoaFee,
-                              property.annualHoaFeeCurrency
-                            )}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                              {' '}
-                              /yr
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {property.annualManagementFee != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Management Fee
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.annualManagementFee,
-                              property.annualManagementFeeCurrency
-                            )}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                              {' '}
-                              /yr
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {property.annualMaintenanceReserve != null && (
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Maintenance Reserve
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatMoney(
-                              property.annualMaintenanceReserve,
-                              property.annualMaintenanceReserveCurrency
-                            )}
-                            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                              {' '}
-                              /yr
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Depreciation */}
-                {property.depreciationMethod &&
-                  property.depreciationMethod !== DepreciationMethod.NONE && (
-                    <div>
-                      <div className="text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] uppercase tracking-wide mb-3">
-                        Depreciation
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                            Method
-                          </div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                            {formatEnumValue(property.depreciationMethod)}
-                          </div>
-                        </div>
-                        {property.depreciationYears != null && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Useful Life
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {property.depreciationYears} years
-                            </div>
-                          </div>
-                        )}
-                        {property.landValue != null && (
-                          <div>
-                            <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                              Land Value
-                            </div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                              {formatMoney(
-                                property.landValue,
-                                property.landValueCurrency
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-              </div>
-            )}
+            {/* Investment & Financial panel removed — data now in Financials tab */}
 
             {/* Metadata */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
@@ -1640,6 +1336,10 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id!} />}
+
+        {activeTab === 'financials' && (
+          <PropertyFinancialsTab propertyId={id!} />
+        )}
 
         {activeTab === 'photos' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">

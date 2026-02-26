@@ -1,13 +1,25 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_COMMERCIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_FEES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
+import static com.buurman.util.UlidGenerator.newAcquisitionId;
+import static com.buurman.util.UlidGenerator.newFinancingId;
+import static com.buurman.util.UlidGenerator.newInsuranceId;
+import static com.buurman.util.UlidGenerator.newPropertyFeeId;
 import static com.buurman.util.UlidGenerator.newPropertyId;
 import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
+import static com.buurman.util.UlidGenerator.newPropertyTaxId;
+import static com.buurman.util.UlidGenerator.newValuationId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -381,52 +393,6 @@ public class DemoPropertyGenerator {
                 PROPERTIES.HAS_STEP_FREE_ENTRANCE,
                 "COMMERCIAL".equals(propertyCategory) || random.nextInt(3) == 0)
             .set(PROPERTIES.HAS_ADAPTED_BATHROOM, false)
-            // Financial data — varied scenarios for first 4 properties
-            .set(
-                PROPERTIES.PURCHASE_PRICE,
-                i < 4 ? purchasePriceForCategory(propertyCategory, i) : null)
-            .set(PROPERTIES.PURCHASE_PRICE_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.PURCHASE_DATE, i < 4 ? LocalDate.of(2020 + i, 3, 15) : null)
-            .set(
-                PROPERTIES.CURRENT_MARKET_VALUE,
-                i < 4 ? marketValueForCategory(propertyCategory, i) : null)
-            .set(PROPERTIES.CURRENT_MARKET_VALUE_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.MARKET_VALUE_DATE, i < 4 ? LocalDate.of(2025, 12, 1) : null)
-            .set(PROPERTIES.MORTGAGE_TYPE, i == 0 ? "NONE" : i < 4 ? "FIXED_RATE" : null)
-            .set(PROPERTIES.MORTGAGE_AMOUNT, i > 0 && i < 4 ? (150_000 + i * 50_000) * 100L : null)
-            .set(PROPERTIES.MORTGAGE_AMOUNT_CURRENCY, i > 0 && i < 4 ? currency : null)
-            .set(
-                PROPERTIES.MORTGAGE_INTEREST_RATE,
-                i > 0 && i < 4 ? new BigDecimal("3." + (i * 2) + "50") : null)
-            .set(
-                PROPERTIES.MORTGAGE_START_DATE,
-                i > 0 && i < 4 ? LocalDate.of(2020 + i, 4, 1) : null)
-            .set(
-                PROPERTIES.MORTGAGE_END_DATE, i > 0 && i < 4 ? LocalDate.of(2050 + i, 3, 31) : null)
-            .set(
-                PROPERTIES.MONTHLY_MORTGAGE_PAYMENT, i > 0 && i < 4 ? (600 + i * 150) * 100L : null)
-            .set(PROPERTIES.MONTHLY_MORTGAGE_PAYMENT_CURRENCY, i > 0 && i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_PROPERTY_TAX, i < 4 ? (1200 + i * 300) * 100L : null)
-            .set(PROPERTIES.ANNUAL_PROPERTY_TAX_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE, i < 4 ? (400 + i * 100) * 100L : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE_CURRENCY, i < 4 ? currency : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE, i < 3 ? (600 + i * 200) * 100L : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE_CURRENCY, i < 3 ? currency : null)
-            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE, i < 2 ? (1800 + i * 600) * 100L : null)
-            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_CURRENCY, i < 2 ? currency : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE, i < 4 ? 500_00L : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_CURRENCY, i < 4 ? currency : null)
-            .set(
-                PROPERTIES.ANNUAL_PROPERTY_TAX_DUE_MONTH,
-                i < 4 ? String.valueOf(new int[] {1, 4, 7, 10}[i % 4]) : null)
-            .set(PROPERTIES.ANNUAL_INSURANCE_DUE_MONTH, i < 4 ? "1" : null)
-            .set(PROPERTIES.ANNUAL_HOA_FEE_DUE_MONTH, i < 3 ? "6" : null)
-            .set(PROPERTIES.ANNUAL_MANAGEMENT_FEE_DUE_MONTH, i < 2 ? "3" : null)
-            .set(PROPERTIES.ANNUAL_MAINTENANCE_RESERVE_DUE_MONTH, i < 4 ? "9" : null)
-            .set(PROPERTIES.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
-            .set(PROPERTIES.DEPRECIATION_YEARS, i < 3 ? 30 : null)
-            .set(PROPERTIES.LAND_VALUE, i < 3 ? (80_000 + i * 20_000) * 100L : null)
-            .set(PROPERTIES.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
             .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
             .set(PROPERTIES.UPDATED_AT, now)
             .set(PROPERTIES.CREATED_BY, createdBy)
@@ -444,6 +410,9 @@ public class DemoPropertyGenerator {
             bathrooms,
             createdBy,
             now);
+
+        // Insert financial data into new dedicated tables (first 4 properties)
+        insertFinancialData(propertyId, teamId, createdBy, currency, propertyCategory, i, now);
 
         propertyIds.add(propertyId);
         ctx.putIdentifier(propertyId, propertyIdentifier);
@@ -757,6 +726,193 @@ public class DemoPropertyGenerator {
       default -> {
         // MIXED_USE — no specific detail table
       }
+    }
+  }
+
+  // --- Financial data insertion ---
+
+  private void insertFinancialData(
+      UUID propertyId,
+      UUID teamId,
+      @Nullable UUID createdBy,
+      String currency,
+      String propertyCategory,
+      int i,
+      LocalDateTime now) {
+
+    // Acquisition (first 4 properties)
+    if (i < 4) {
+      long purchasePrice = purchasePriceForCategory(propertyCategory, i);
+      dsl.insertInto(PROPERTY_ACQUISITIONS)
+          .set(PROPERTY_ACQUISITIONS.ID, UUID.randomUUID())
+          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, newAcquisitionId().value())
+          .set(PROPERTY_ACQUISITIONS.PROPERTY_ID, propertyId)
+          .set(PROPERTY_ACQUISITIONS.TEAM_ID, teamId)
+          .set(PROPERTY_ACQUISITIONS.ACQUISITION_TYPE, "PURCHASE")
+          .set(PROPERTY_ACQUISITIONS.ACQUISITION_DATE, LocalDate.of(2020 + i, 3, 15))
+          .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE, purchasePrice)
+          .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY, currency)
+          .set(PROPERTY_ACQUISITIONS.CLOSING_COSTS, (long) (purchasePrice * 0.03))
+          .set(PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY, currency)
+          .set(PROPERTY_ACQUISITIONS.LAND_VALUE, i < 3 ? (80_000L + i * 20_000L) * 100L : null)
+          .set(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
+          .set(PROPERTY_ACQUISITIONS.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
+          .set(PROPERTY_ACQUISITIONS.DEPRECIATION_YEARS, i < 3 ? 30 : null)
+          .set(PROPERTY_ACQUISITIONS.CREATED_AT, now)
+          .set(PROPERTY_ACQUISITIONS.UPDATED_AT, now)
+          .set(PROPERTY_ACQUISITIONS.CREATED_BY, createdBy)
+          .set(PROPERTY_ACQUISITIONS.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Valuation (first 4 properties)
+    if (i < 4) {
+      dsl.insertInto(PROPERTY_VALUATIONS)
+          .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
+          .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId().value())
+          .set(PROPERTY_VALUATIONS.PROPERTY_ID, propertyId)
+          .set(PROPERTY_VALUATIONS.TEAM_ID, teamId)
+          .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "MARKET")
+          .set(PROPERTY_VALUATIONS.VALUATION_DATE, LocalDate.of(2025, 12, 1))
+          .set(PROPERTY_VALUATIONS.AMOUNT, marketValueForCategory(propertyCategory, i))
+          .set(PROPERTY_VALUATIONS.CURRENCY, currency)
+          .set(PROPERTY_VALUATIONS.SOURCE, "Appraiser")
+          .set(PROPERTY_VALUATIONS.CREATED_AT, now)
+          .set(PROPERTY_VALUATIONS.UPDATED_AT, now)
+          .set(PROPERTY_VALUATIONS.CREATED_BY, createdBy)
+          .set(PROPERTY_VALUATIONS.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Financing / Mortgage (properties 1-3, not property 0 which has NONE)
+    if (i > 0 && i < 4) {
+      dsl.insertInto(PROPERTY_FINANCINGS)
+          .set(PROPERTY_FINANCINGS.ID, UUID.randomUUID())
+          .set(PROPERTY_FINANCINGS.IDENTIFIER, newFinancingId().value())
+          .set(PROPERTY_FINANCINGS.PROPERTY_ID, propertyId)
+          .set(PROPERTY_FINANCINGS.TEAM_ID, teamId)
+          .set(PROPERTY_FINANCINGS.FINANCING_TYPE, "MORTGAGE")
+          .set(PROPERTY_FINANCINGS.RATE_TYPE, "FIXED")
+          .set(PROPERTY_FINANCINGS.LENDER_NAME, "Demo Bank " + i)
+          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT, (150_000L + i * 50_000L) * 100L)
+          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, currency)
+          .set(PROPERTY_FINANCINGS.INTEREST_RATE, new BigDecimal("3." + (i * 2) + "50"))
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, (600L + i * 150L) * 100L)
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY, currency)
+          .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, false)
+          .set(PROPERTY_FINANCINGS.START_DATE, LocalDate.of(2020 + i, 4, 1))
+          .set(PROPERTY_FINANCINGS.END_DATE, LocalDate.of(2050 + i, 3, 31))
+          .set(PROPERTY_FINANCINGS.TERM_MONTHS, 360)
+          .set(PROPERTY_FINANCINGS.STATUS, "ACTIVE")
+          .set(PROPERTY_FINANCINGS.CREATED_AT, now)
+          .set(PROPERTY_FINANCINGS.UPDATED_AT, now)
+          .set(PROPERTY_FINANCINGS.CREATED_BY, createdBy)
+          .set(PROPERTY_FINANCINGS.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Insurance (first 4 properties)
+    if (i < 4) {
+      dsl.insertInto(PROPERTY_INSURANCES)
+          .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
+          .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId().value())
+          .set(PROPERTY_INSURANCES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_INSURANCES.TEAM_ID, teamId)
+          .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "BUILDING")
+          .set(PROPERTY_INSURANCES.PROVIDER, "Demo Insurance Co.")
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, (400L + i * 100L) * 100L)
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
+          .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
+          .set(PROPERTY_INSURANCES.START_DATE, LocalDate.of(2020 + i, 1, 1))
+          .set(PROPERTY_INSURANCES.END_DATE, LocalDate.of(2026 + i, 12, 31))
+          .set(PROPERTY_INSURANCES.STATUS, "ACTIVE")
+          .set(PROPERTY_INSURANCES.CREATED_AT, now)
+          .set(PROPERTY_INSURANCES.UPDATED_AT, now)
+          .set(PROPERTY_INSURANCES.CREATED_BY, createdBy)
+          .set(PROPERTY_INSURANCES.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Property Tax (first 4 properties)
+    if (i < 4) {
+      String taxDueMonth = String.valueOf(new int[] {1, 4, 7, 10}[i % 4]);
+      dsl.insertInto(PROPERTY_TAXES)
+          .set(PROPERTY_TAXES.ID, UUID.randomUUID())
+          .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId().value())
+          .set(PROPERTY_TAXES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_TAXES.TEAM_ID, teamId)
+          .set(PROPERTY_TAXES.TAX_TYPE, "PROPERTY")
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, (1200L + i * 300L) * 100L)
+          .set(PROPERTY_TAXES.CURRENCY, currency)
+          .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
+          .set(PROPERTY_TAXES.DUE_MONTHS, taxDueMonth)
+          .set(PROPERTY_TAXES.STATUS, "ACTIVE")
+          .set(PROPERTY_TAXES.CREATED_AT, now)
+          .set(PROPERTY_TAXES.UPDATED_AT, now)
+          .set(PROPERTY_TAXES.CREATED_BY, createdBy)
+          .set(PROPERTY_TAXES.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // HOA Fee (first 3 properties)
+    if (i < 3) {
+      dsl.insertInto(PROPERTY_FEES)
+          .set(PROPERTY_FEES.ID, UUID.randomUUID())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_FEES.TEAM_ID, teamId)
+          .set(PROPERTY_FEES.FEE_TYPE, "HOA")
+          .set(PROPERTY_FEES.ANNUAL_AMOUNT, (600L + i * 200L) * 100L)
+          .set(PROPERTY_FEES.CURRENCY, currency)
+          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "MONTHLY")
+          .set(PROPERTY_FEES.STATUS, "ACTIVE")
+          .set(PROPERTY_FEES.CREATED_AT, now)
+          .set(PROPERTY_FEES.UPDATED_AT, now)
+          .set(PROPERTY_FEES.CREATED_BY, createdBy)
+          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Management Fee (first 2 properties)
+    if (i < 2) {
+      dsl.insertInto(PROPERTY_FEES)
+          .set(PROPERTY_FEES.ID, UUID.randomUUID())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_FEES.TEAM_ID, teamId)
+          .set(PROPERTY_FEES.FEE_TYPE, "MANAGEMENT")
+          .set(PROPERTY_FEES.NAME, "Property Management")
+          .set(PROPERTY_FEES.ANNUAL_AMOUNT, (1800L + i * 600L) * 100L)
+          .set(PROPERTY_FEES.CURRENCY, currency)
+          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "QUARTERLY")
+          .set(PROPERTY_FEES.DUE_MONTHS, "3,6,9,12")
+          .set(PROPERTY_FEES.STATUS, "ACTIVE")
+          .set(PROPERTY_FEES.CREATED_AT, now)
+          .set(PROPERTY_FEES.UPDATED_AT, now)
+          .set(PROPERTY_FEES.CREATED_BY, createdBy)
+          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // Maintenance Reserve Fee (first 4 properties)
+    if (i < 4) {
+      dsl.insertInto(PROPERTY_FEES)
+          .set(PROPERTY_FEES.ID, UUID.randomUUID())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_FEES.TEAM_ID, teamId)
+          .set(PROPERTY_FEES.FEE_TYPE, "MAINTENANCE_RESERVE")
+          .set(PROPERTY_FEES.NAME, "Maintenance Reserve")
+          .set(PROPERTY_FEES.ANNUAL_AMOUNT, 500_00L)
+          .set(PROPERTY_FEES.CURRENCY, currency)
+          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "ANNUALLY")
+          .set(PROPERTY_FEES.DUE_MONTHS, "9")
+          .set(PROPERTY_FEES.STATUS, "ACTIVE")
+          .set(PROPERTY_FEES.CREATED_AT, now)
+          .set(PROPERTY_FEES.UPDATED_AT, now)
+          .set(PROPERTY_FEES.CREATED_BY, createdBy)
+          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
+          .execute();
     }
   }
 

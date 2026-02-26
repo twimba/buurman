@@ -7,6 +7,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
+import static com.buurman.jooq.generated.Tables.FINANCING_PAYMENTS;
 import static com.buurman.jooq.generated.Tables.GENERATED_REPORTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATION_OUTBOX;
@@ -16,12 +17,18 @@ import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.jooq.generated.Tables.PHONE_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.PHOTOS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_COMMERCIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_FEES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
+import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
@@ -321,6 +328,44 @@ public class DemoDataService {
             .where(PROPERTY_AGRICULTURAL_DETAILS.TEAM_ID.in(demoTeamIds))
             .execute();
     log.debug("Deleted {} property agricultural details", deleted);
+
+    // 13c. Property financials (FK -> properties)
+    deleted =
+        dsl.deleteFrom(FINANCING_PAYMENTS)
+            .where(FINANCING_PAYMENTS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} financing payments", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_FINANCINGS)
+            .where(PROPERTY_FINANCINGS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property financings", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_ACQUISITIONS)
+            .where(PROPERTY_ACQUISITIONS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property acquisitions", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_VALUATIONS)
+            .where(PROPERTY_VALUATIONS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property valuations", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_INSURANCES)
+            .where(PROPERTY_INSURANCES.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property insurances", deleted);
+
+    deleted =
+        dsl.deleteFrom(PROPERTY_TAXES).where(PROPERTY_TAXES.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} property taxes", deleted);
+
+    deleted = dsl.deleteFrom(PROPERTY_FEES).where(PROPERTY_FEES.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} property fees", deleted);
 
     // 14. Properties
     deleted = dsl.deleteFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(demoTeamIds)).execute();

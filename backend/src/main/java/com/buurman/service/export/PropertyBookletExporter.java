@@ -254,7 +254,7 @@ public class PropertyBookletExporter {
     }
 
     appendPhotoGalleryPage(html, photos);
-    String currency = property.getPurchasePriceCurrency().orElse(null);
+    String currency = dashboard != null ? dashboard.summary().currency().orElse(null) : null;
     appendFinancialOverviewPage(html, yearSummaries, currency);
 
     if (dashboard != null) {
