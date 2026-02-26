@@ -1090,12 +1090,15 @@ export const PropertyDetailPage = () => {
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
                   Outdoor Areas
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.outdoorAreas.map((area) => (
                     <span
                       key={area.identifier}
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
+                      className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
                     >
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                        {'\u2713'}
+                      </span>
                       {formatEnumValue(area.type)}
                       {area.areaValue !== null
                         ? ` - ${area.areaValue} m\u00B2`
@@ -1129,12 +1132,15 @@ export const PropertyDetailPage = () => {
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide mb-2">
                         {formatEnumValue(category)}
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-x-6 gap-y-2">
                         {items!.map((amenity) => (
                           <span
                             key={amenity.amenityIdentifier}
-                            className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]"
+                            className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
                           >
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                              {'\u2713'}
+                            </span>
                             {amenity.amenityName}
                           </span>
                         ))}
