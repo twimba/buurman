@@ -217,7 +217,7 @@ services:
   prometheus:
     build:
       context: ./prometheus
-    image: prom/prometheus:v3.9.1
+    image: prom/prometheus:v3.10.0
     container_name: buurman-prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
