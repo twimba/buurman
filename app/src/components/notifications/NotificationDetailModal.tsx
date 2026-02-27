@@ -9,6 +9,7 @@ import {
   Loader2,
   Eye,
   MousePointerClick,
+  Info,
 } from 'lucide-react';
 import {
   NotificationResponse,
@@ -163,6 +164,17 @@ export const NotificationDetailModal = ({
                 {notification.channel}
               </span>
             </div>
+
+            {notification.demoBlocked && (
+              <div className="flex items-start gap-2 rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 p-3 text-sm text-violet-700 dark:text-violet-300">
+                <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>
+                  This notification was not delivered because this is a demo
+                  account. In a real account, it would be sent via{' '}
+                  {notification.channel.toLowerCase()}.
+                </span>
+              </div>
+            )}
 
             <dl className="space-y-3 text-sm">
               <div>
@@ -343,14 +355,16 @@ export const NotificationDetailModal = ({
             >
               Close
             </button>
-            <button
-              onClick={() => onResend(notification.identifier)}
-              disabled={isResending}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Resend
-            </button>
+            {!notification.demoBlocked && (
+              <button
+                onClick={() => onResend(notification.identifier)}
+                disabled={isResending}
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Resend
+              </button>
+            )}
           </div>
         </div>
       </div>

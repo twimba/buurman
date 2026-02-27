@@ -8,4 +8,5 @@ public record NotificationStatsResponse(
     long sentCount,
     long deliveredCount,
     long failedCount,
+    long demoBlockedCount,
     Map<String, Long> byChannel) {}

@@ -7,5 +7,6 @@ public enum NotificationStatus {
   DELIVERED,
   FAILED,
   BOUNCED,
-  REJECTED
+  REJECTED,
+  DEMO_BLOCKED
 }

@@ -28,6 +28,7 @@ export enum NotificationStatus {
   FAILED = 'FAILED',
   BOUNCED = 'BOUNCED',
   REJECTED = 'REJECTED',
+  DEMO_BLOCKED = 'DEMO_BLOCKED',
 }
 
 export interface NotificationResponse {
@@ -47,6 +48,7 @@ export interface NotificationResponse {
   firstClickedAt: string | null;
   resentFromIdentifier: string | null;
   resendReason: string | null;
+  demoBlocked: boolean;
   createdAt: string;
   statusUpdatedAt: string | null;
 }
@@ -57,6 +59,7 @@ export interface NotificationStatsResponse {
   sentCount: number;
   deliveredCount: number;
   failedCount: number;
+  demoBlockedCount: number;
   byChannel: Record<string, number>;
 }
 

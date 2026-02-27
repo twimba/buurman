@@ -39,6 +39,11 @@ const statusConfig: Record<
     className:
       'bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700',
   },
+  [NotificationStatus.DEMO_BLOCKED]: {
+    label: 'Demo',
+    className:
+      'bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-700',
+  },
 };
 
 interface NotificationStatusBadgeProps {

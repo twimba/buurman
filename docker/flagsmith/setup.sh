@@ -23,7 +23,7 @@ PROJECT_NAME = "Buurman"
 FEATURE_FLAGS_FILE = "/FeatureFlags.java"
 _FLAG_PATTERN = re.compile(r'public static final String \w+\s*=\s*"([^"]+)"')
 # Flags that should be disabled by default (opt-in features)
-DISABLED_BY_DEFAULT = {"sms_notifications"}
+DISABLED_BY_DEFAULT = {"sms_notifications", "block_email_notifications", "block_sms_notifications"}
 
 
 def parse_flags():
@@ -193,6 +193,13 @@ SEGMENTS = [
     {"name": "Team Admins", "description": "Users with TEAM_ADMIN role", "trait": "role", "value": "TEAM_ADMIN"},
     {"name": "Team Editors", "description": "Users with TEAM_EDITOR role", "trait": "role", "value": "TEAM_EDITOR"},
     {"name": "Team Viewers", "description": "Users with TEAM_VIEWER role", "trait": "role", "value": "TEAM_VIEWER"},
+    {"name": "Demo Accounts", "description": "Demo team accounts", "trait": "demo", "value": "true"},
+]
+
+# Segment overrides: flags to enable for specific segments
+SEGMENT_OVERRIDES = [
+    {"segment": "Demo Accounts", "flag": "block_email_notifications"},
+    {"segment": "Demo Accounts", "flag": "block_sms_notifications"},
 ]
 
 log("Syncing segments...")
@@ -225,5 +232,81 @@ for seg in SEGMENTS:
             log(f"  Created segment '{seg['name']}'.")
         else:
             log(f"  WARNING: Failed to create segment '{seg['name']}': {resp}")
+
+# --- 8. Create segment overrides (enable specific flags for segments) ---
+log("Syncing segment overrides...")
+
+# Refresh feature and segment lists to get IDs
+existing_features = api_call("GET", f"/api/v1/projects/{project_id}/features/", token=token)
+feature_list = existing_features.get("results", existing_features) if isinstance(existing_features, dict) else existing_features
+feature_by_name = {f["name"]: f["id"] for f in feature_list}
+
+existing_segments = api_call("GET", f"/api/v1/projects/{project_id}/segments/", token=token)
+seg_list = existing_segments.get("results", existing_segments) if isinstance(existing_segments, dict) else existing_segments
+segment_by_name = {s["name"]: s["id"] for s in seg_list} if isinstance(seg_list, list) else {}
+
+# Get environment numeric ID
+env_id = None
+for env in env_list:
+    if env.get("name") == ENV_NAME:
+        env_id = env.get("id")
+        break
+
+if env_id:
+    for override in SEGMENT_OVERRIDES:
+        seg_name = override["segment"]
+        flag_name = override["flag"]
+        seg_id = segment_by_name.get(seg_name)
+        feat_id = feature_by_name.get(flag_name)
+
+        if not seg_id or not feat_id:
+            log(f"  WARNING: Missing segment '{seg_name}' or flag '{flag_name}', skipping override.")
+            continue
+
+        # Check if override already exists
+        existing_fs = api_call("GET", f"/api/v1/features/feature-segments/?feature={feat_id}&segment={seg_id}&environment={env_id}", token=token)
+        fs_list = existing_fs.get("results", existing_fs) if isinstance(existing_fs, dict) else existing_fs
+        if isinstance(fs_list, list) and fs_list:
+            log(f"  Override '{flag_name}' -> '{seg_name}' already exists, skipping.")
+            continue
+
+        # Create segment override link
+        fs_resp = api_call("POST", "/api/v1/features/feature-segments/", {
+            "feature": feat_id,
+            "segment": seg_id,
+            "environment": env_id,
+            "priority": 0,
+        }, token=token)
+
+        link_id = fs_resp.get("id")
+        if not link_id:
+            log(f"  WARNING: Failed to create override '{flag_name}' -> '{seg_name}': {fs_resp}")
+            continue
+
+        # Fetch the link detail to get the auto-created feature state
+        link_detail = api_call("GET", f"/api/v1/features/feature-segments/{link_id}/", token=token)
+        fs_value = link_detail.get("feature_segment_value") if isinstance(link_detail, dict) else None
+
+        if fs_value and isinstance(fs_value, dict) and fs_value.get("id"):
+            fs_id = fs_value["id"]
+            # Enable via PUT with full body (Flagsmith requires it for segment override states)
+            api_call("PUT", f"/api/v1/features/featurestates/{fs_id}/", {
+                "id": fs_id,
+                "feature": feat_id,
+                "environment": env_id,
+                "enabled": True,
+                "feature_segment": link_id,
+                "feature_state_value": {
+                    "type": "unicode",
+                    "string_value": None,
+                    "boolean_value": None,
+                    "integer_value": None,
+                },
+            }, token=token)
+            log(f"  Enabled '{flag_name}' for segment '{seg_name}'.")
+        else:
+            log(f"  WARNING: Created link for '{flag_name}' -> '{seg_name}' but could not find feature state to enable. Enable manually in Flagsmith UI.")
+else:
+    log("  WARNING: Could not find environment ID, skipping segment overrides.")
 
 log("Done.")

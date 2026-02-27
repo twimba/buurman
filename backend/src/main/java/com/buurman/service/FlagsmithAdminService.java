@@ -438,62 +438,90 @@ public class FlagsmithAdminService {
   }
 
   /**
-   * Fetches all segments and their feature flag overrides using the environment document (same data
-   * the SDK uses for local evaluation). Segment descriptions are enriched from the admin segments
-   * endpoint.
+   * Fetches all segments and their feature flag overrides using the admin API. The feature-segments
+   * list endpoint returns {@code feature_segment_value} with the associated feature state for each
+   * override link. Falls back to the detail endpoint when the list response omits it.
    */
   public List<SegmentWithOverrides> getSegmentOverrides() {
     ensureDiscovered();
 
-    JsonNode doc = getEnvironmentDocument();
-    JsonNode project = doc.get("project");
-    if (project == null) {
-      return List.of();
-    }
-    JsonNode segments = project.get("segments");
-    if (segments == null || !segments.isArray()) {
-      return List.of();
-    }
+    List<SegmentInfo> segments = listSegments();
+    Map<Long, String> featureNames = loadFeatureNames();
 
-    // Fetch segment descriptions (env doc doesn't include them)
-    Map<Long, String> segmentDescriptions = new HashMap<>();
-    try {
-      for (SegmentInfo info : listSegments()) {
-        segmentDescriptions.put(info.id(), info.description());
-      }
-    } catch (Exception e) {
-      log.warn("Failed to fetch segment descriptions: {}", e.getMessage());
+    long envId =
+        environmentId.orElseThrow(
+            () -> new IllegalStateException("Flagsmith environment ID not discovered"));
+
+    // Fetch all feature-segment links — the list response includes feature_segment_value
+    JsonNode allLinks =
+        get("/features/feature-segments/?environment=" + envId, adminToken.orElse(null));
+
+    // Group links by segment ID
+    Map<Long, List<JsonNode>> linksBySegment = new HashMap<>();
+    for (JsonNode link : asArray(allLinks)) {
+      long segId = link.get("segment").asLong();
+      linksBySegment.computeIfAbsent(segId, k -> new ArrayList<>()).add(link);
     }
 
     List<SegmentWithOverrides> result = new ArrayList<>();
-    for (JsonNode segment : segments) {
-      long segmentId = segment.get("id").asLong();
-      String segmentName = text(segment, "name");
-
+    for (SegmentInfo seg : segments) {
+      List<JsonNode> links = linksBySegment.getOrDefault(seg.id(), List.of());
       List<SegmentOverrideState> overrides = new ArrayList<>();
-      JsonNode featureStates = segment.get("feature_states");
-      if (featureStates != null && featureStates.isArray()) {
-        for (JsonNode fs : featureStates) {
-          long featureStateId =
-              fs.has("django_id") && !fs.get("django_id").isNull()
-                  ? fs.get("django_id").asLong()
-                  : fs.get("id").asLong();
-          JsonNode feature = fs.get("feature");
-          long featureId = feature.get("id").asLong();
-          String featureName = text(feature, "name");
-          boolean enabled = fs.get("enabled").asBoolean();
-          Object value = extractValue(fs);
 
-          overrides.add(
-              new SegmentOverrideState(featureStateId, featureId, featureName, enabled, value));
+      for (JsonNode link : links) {
+        long featureSegmentId = link.get("id").asLong();
+        long featureId = link.get("feature").asLong();
+        String featureName = featureNames.getOrDefault(featureId, "unknown");
+
+        // Read feature state from the nested feature_segment_value in the list response
+        SegmentOverrideState override = parseSegmentOverrideFromLink(link, featureId, featureName);
+        if (override != null) {
+          overrides.add(override);
+          continue;
         }
+
+        // Fallback: fetch the link detail to get feature_segment_value
+        try {
+          JsonNode detail =
+              get("/features/feature-segments/" + featureSegmentId + "/", adminToken.orElse(null));
+          override = parseSegmentOverrideFromLink(detail, featureId, featureName);
+          if (override != null) {
+            overrides.add(override);
+            continue;
+          }
+        } catch (Exception e) {
+          log.warn(
+              "Failed to fetch feature-segment detail for link {}: {}",
+              featureSegmentId,
+              e.getMessage());
+        }
+
+        // Last resort: add with link ID and defaults
+        overrides.add(
+            new SegmentOverrideState(featureSegmentId, featureId, featureName, false, null));
       }
 
-      result.add(
-          new SegmentWithOverrides(
-              segmentId, segmentName, segmentDescriptions.get(segmentId), overrides));
+      result.add(new SegmentWithOverrides(seg.id(), seg.name(), seg.description(), overrides));
     }
     return result;
+  }
+
+  /**
+   * Extracts a {@link SegmentOverrideState} from a feature-segment link node that contains a nested
+   * {@code feature_segment_value} object. Returns null if the nested value is absent.
+   */
+  private @Nullable SegmentOverrideState parseSegmentOverrideFromLink(
+      JsonNode link, long featureId, String featureName) {
+    JsonNode fsValue = link.get("feature_segment_value");
+    if (fsValue == null || fsValue.isNull() || !fsValue.has("id")) {
+      return null;
+    }
+    return new SegmentOverrideState(
+        fsValue.get("id").asLong(),
+        featureId,
+        featureName,
+        fsValue.has("enabled") && fsValue.get("enabled").asBoolean(),
+        extractValue(fsValue));
   }
 
   /**
