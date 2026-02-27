@@ -367,7 +367,14 @@ public class DemoDataService {
     deleted = dsl.deleteFrom(PROPERTY_FEES).where(PROPERTY_FEES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} property fees", deleted);
 
-    // 14. Properties
+    // 14a. Property occupancy periods (FK -> properties)
+    deleted =
+        dsl.deleteFrom(DSL.table("property_occupancy_periods"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property occupancy periods", deleted);
+
+    // 14b. Properties
     deleted = dsl.deleteFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} properties", deleted);
 
