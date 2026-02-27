@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
+import com.buurman.domain.NotificationStatus;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
 import com.buurman.dto.response.NotificationStatsResponse;
@@ -78,7 +79,7 @@ public class NotificationCenterService {
         notificationRepository.countByTeamIdGroupedByChannel(principal.requireTeamId());
     long totalCount = notificationRepository.countByTeamId(principal.requireTeamId());
 
-    long pendingCount = 0, sentCount = 0, deliveredCount = 0, failedCount = 0;
+    long pendingCount = 0, sentCount = 0, deliveredCount = 0, failedCount = 0, demoBlockedCount = 0;
     for (LabelCount record : statusCounts) {
       String s = record.label();
       int count = record.count();
@@ -87,6 +88,7 @@ public class NotificationCenterService {
         case "SENT" -> sentCount = count;
         case "DELIVERED" -> deliveredCount = count;
         case "FAILED", "BOUNCED", "REJECTED" -> failedCount += count;
+        case "DEMO_BLOCKED" -> demoBlockedCount = count;
       }
     }
 
@@ -96,7 +98,13 @@ public class NotificationCenterService {
     }
 
     return new NotificationStatsResponse(
-        totalCount, pendingCount, sentCount, deliveredCount, failedCount, byChannel);
+        totalCount,
+        pendingCount,
+        sentCount,
+        deliveredCount,
+        failedCount,
+        demoBlockedCount,
+        byChannel);
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
@@ -145,6 +153,7 @@ public class NotificationCenterService {
         notification.getFirstClickedAt(),
         Optional.ofNullable(resentFromIdentifier),
         notification.getResendReason(),
+        notification.getStatus() == NotificationStatus.DEMO_BLOCKED,
         notification.getCreatedAt(),
         notification.getStatusUpdatedAt());
   }

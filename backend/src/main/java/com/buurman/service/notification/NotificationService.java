@@ -2,6 +2,7 @@ package com.buurman.service.notification;
 
 import static com.buurman.domain.NotificationChannel.EMAIL;
 import static com.buurman.domain.NotificationChannel.SMS;
+import static com.buurman.domain.NotificationStatus.DEMO_BLOCKED;
 import static com.buurman.domain.NotificationStatus.PENDING;
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.domain.TeamRole.TEAM_EDITOR;
@@ -99,6 +100,9 @@ public class NotificationService {
         continue;
       }
 
+      boolean deliveryBlocked =
+          request.teamId().map(teamId -> isDeliveryBlocked(channel, teamId)).orElse(false);
+
       RenderedContent content = sender.render(request.templateName(), request.templateVariables());
 
       Notification notification = new Notification();
@@ -113,9 +117,20 @@ public class NotificationService {
       notification.setChannel(channel);
       notification.setContentTemplate(Optional.of(request.templateName()));
       notification.setContentVariables(Optional.of(request.templateVariables()));
-      notification.setStatus(PENDING);
       notification.setCreatedBy(Optional.of(request.createdBy()));
 
+      if (deliveryBlocked) {
+        notification.setStatus(DEMO_BLOCKED);
+        notificationRepository.save(notification);
+        log.info(
+            "Demo-blocked {} notification type {} for team {}",
+            channel,
+            request.notificationType(),
+            request.teamId().orElse(null));
+        continue;
+      }
+
+      notification.setStatus(PENDING);
       notification = notificationRepository.save(notification);
 
       NotificationOutbox outbox = new NotificationOutbox();
@@ -206,11 +221,25 @@ public class NotificationService {
     resent.setChannel(original.getChannel());
     resent.setContentTemplate(original.getContentTemplate());
     resent.setContentVariables(original.getContentVariables());
-    resent.setStatus(NotificationStatus.PENDING);
     resent.setResentFromId(Optional.of(original.getId()));
     resent.setResendReason(Optional.of("Resent by user"));
     resent.setCreatedBy(Optional.ofNullable(userId));
 
+    NotificationChannel resentChannel = resent.getChannel();
+    boolean deliveryBlocked =
+        resent.getTeamId().map(tid -> isDeliveryBlocked(resentChannel, tid)).orElse(false);
+
+    if (deliveryBlocked) {
+      resent.setStatus(DEMO_BLOCKED);
+      resent = notificationRepository.save(resent);
+      log.info(
+          "Demo-blocked resend of {} notification for team {}",
+          resent.getChannel(),
+          resent.getTeamId().orElse(null));
+      return resent;
+    }
+
+    resent.setStatus(NotificationStatus.PENDING);
     resent = notificationRepository.save(resent);
 
     NotificationOutbox outbox = new NotificationOutbox();
@@ -317,6 +346,13 @@ public class NotificationService {
                     .createdBy(request.createdBy())
                     .build())
         .orElse(request);
+  }
+
+  private boolean isDeliveryBlocked(NotificationChannel channel, UUID teamId) {
+    return switch (channel) {
+      case EMAIL -> featureFlagService.isEnabled(FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS, teamId);
+      case SMS -> featureFlagService.isEnabled(FeatureFlags.BLOCK_SMS_NOTIFICATIONS, teamId);
+    };
   }
 
   private boolean canSendViaChannel(NotificationChannel channel, SendNotificationRequest request) {

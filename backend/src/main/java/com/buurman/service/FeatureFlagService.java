@@ -3,9 +3,11 @@ package com.buurman.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.repository.TeamRepository;
 import com.buurman.security.UserPrincipal;
 import com.flagsmith.FlagsmithClient;
 import com.flagsmith.models.Flags;
@@ -17,9 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 public class FeatureFlagService {
 
   private final Optional<FlagsmithClient> flagsmithClient;
+  private final TeamRepository teamRepository;
 
-  public FeatureFlagService(Optional<FlagsmithClient> flagsmithClient) {
+  public FeatureFlagService(
+      Optional<FlagsmithClient> flagsmithClient, TeamRepository teamRepository) {
     this.flagsmithClient = flagsmithClient;
+    this.teamRepository = teamRepository;
     if (flagsmithClient.isEmpty()) {
       log.warn("Flagsmith client not configured — all feature flags will default to OFF");
     }
@@ -42,6 +47,38 @@ public class FeatureFlagService {
 
   public boolean isDisabled(String flagKey) {
     return !isEnabled(flagKey);
+  }
+
+  /**
+   * Team-level flag evaluation. Builds a team-only identity with the team's demo trait so Flagsmith
+   * can target flags by segment (e.g. "Demo accounts" segment where demo=true).
+   */
+  public boolean isEnabled(String flagKey, UUID teamId) {
+    return teamRepository
+        .findById(teamId)
+        .map(
+            team -> {
+              String identity = "team:" + team.getIdentifier();
+              Map<String, Object> traits = Map.of("demo", team.isDemo());
+              return flagsmithClient
+                  .map(
+                      client -> {
+                        try {
+                          return client
+                              .getIdentityFlags(identity, traits)
+                              .isFeatureEnabled(flagKey);
+                        } catch (Exception e) {
+                          log.warn(
+                              "Failed to evaluate flag '{}' for team {}, defaulting to false",
+                              flagKey,
+                              teamId,
+                              e);
+                          return false;
+                        }
+                      })
+                  .orElse(false);
+            })
+        .orElse(false);
   }
 
   /** Identity-aware flag evaluation with user/team traits. */

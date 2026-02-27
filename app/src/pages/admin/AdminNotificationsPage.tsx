@@ -9,8 +9,12 @@ import {
   CheckCircle,
   AlertTriangle,
   Clock,
+  Info,
+  ShieldOff,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 import {
   useNotifications,
   useNotificationStats,
@@ -50,6 +54,11 @@ const typeLabels: Record<string, string> = {
 export const AdminNotificationsPage = () => {
   const { canEditTeamSettings, isLoading: teamLoading } = useTeam();
   const navigate = useNavigate();
+  const { isEnabled } = useFeatureFlags();
+
+  const emailBlocked = isEnabled(FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS);
+  const smsBlocked = isEnabled(FeatureFlags.BLOCK_SMS_NOTIFICATIONS);
+  const isDeliveryBlocked = emailBlocked || smsBlocked;
 
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(25);
@@ -152,6 +161,25 @@ export const AdminNotificationsPage = () => {
           />
         </div>
 
+        {/* Demo Banner */}
+        {isDeliveryBlocked && (
+          <div className="flex items-start gap-3 rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 p-4 mb-6">
+            <Info className="h-5 w-5 text-violet-500 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-violet-800 dark:text-violet-200">
+                Demo account — notifications are simulated
+              </p>
+              <p className="text-sm text-violet-600 dark:text-violet-400 mt-0.5">
+                {emailBlocked && smsBlocked
+                  ? 'Email and SMS notifications are recorded but not actually delivered.'
+                  : emailBlocked
+                    ? 'Email notifications are recorded but not actually delivered.'
+                    : 'SMS notifications are recorded but not actually delivered.'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -204,6 +232,17 @@ export const AdminNotificationsPage = () => {
                 ))}
               </div>
             </div>
+            {stats.demoBlockedCount > 0 && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
+                  <ShieldOff className="h-4 w-4 text-violet-500" />
+                  Demo Blocked
+                </div>
+                <div className="text-2xl font-bold text-violet-600 dark:text-violet-400">
+                  {stats.demoBlockedCount}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -22,5 +22,6 @@ public record BackofficeNotificationResponse(
     Optional<Instant> firstClickedAt,
     Optional<String> resentFromIdentifier,
     Optional<String> resendReason,
+    boolean demoBlocked,
     Instant createdAt,
     Optional<Instant> statusUpdatedAt) {}

@@ -12,4 +12,6 @@ public final class FeatureFlags {
   public static final String INVITATION_REQUIRED = "invitation_required";
   public static final String SMS_NOTIFICATIONS = "sms_notifications";
   public static final String EMAIL_NOTIFICATIONS = "email_notifications";
+  public static final String BLOCK_EMAIL_NOTIFICATIONS = "block_email_notifications";
+  public static final String BLOCK_SMS_NOTIFICATIONS = "block_sms_notifications";
 }

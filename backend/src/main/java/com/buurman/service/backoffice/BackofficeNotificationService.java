@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
+import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
@@ -158,6 +159,7 @@ public class BackofficeNotificationService {
         notification.getFirstClickedAt(),
         resentFromIdentifier,
         notification.getResendReason(),
+        notification.getStatus() == NotificationStatus.DEMO_BLOCKED,
         notification.getCreatedAt(),
         notification.getStatusUpdatedAt());
   }
