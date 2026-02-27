@@ -685,7 +685,9 @@ export const PropertyDetailPage = () => {
                 onSelfOccupancyClick={(identifier) =>
                   setEditOccupancyPeriodId(identifier)
                 }
-                onFinancingClick={(identifier) => setEditFinancingId(identifier)}
+                onFinancingClick={(identifier) =>
+                  setEditFinancingId(identifier)
+                }
               />
             </div>
 

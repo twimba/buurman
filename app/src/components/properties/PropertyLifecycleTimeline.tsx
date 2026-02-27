@@ -54,7 +54,8 @@ const buildLabelTicks = (
   totalDays: number,
   formatDate: (d: string | Date) => string,
   acquisitionDate: Date | null,
-  entries: TimelineEntry[]
+  entries: TimelineEntry[],
+  timelineEnd: Date
 ): LabelTick[] => {
   const ticks: LabelTick[] = [];
   const seen = new Set<number>();
@@ -91,14 +92,69 @@ const buildLabelTicks = (
 
   const today = new Date();
   add(today, 'Today', 'today');
+  add(timelineEnd, formatDate(timelineEnd), 'end');
 
   ticks.sort((a, b) => a.pct - b.pct);
 
+  // Normal left-to-right pruning — no force-pins yet
   const pruned: LabelTick[] = [];
   for (const tick of ticks) {
     const last = pruned[pruned.length - 1];
     if (!last || tick.pct - last.pct >= 6) {
       pruned.push(tick);
+    }
+  }
+
+  // Pin 'today': if pruned, replace the nearest non-anchor conflicting tick
+  if (!pruned.find((t) => t.key === 'today')) {
+    const todayTick = ticks.find((t) => t.key === 'today');
+    if (todayTick) {
+      const conflictIdx = pruned.findIndex(
+        (t) =>
+          t.key !== 'acquired' &&
+          t.key !== 'start' &&
+          t.key !== 'end' &&
+          Math.abs(t.pct - todayTick.pct) < 6
+      );
+      if (conflictIdx !== -1) {
+        pruned.splice(conflictIdx, 1, todayTick);
+      } else {
+        pruned.push(todayTick);
+        pruned.sort((a, b) => a.pct - b.pct);
+      }
+    }
+  }
+
+  // Pin 'end': if pruned, replace the nearest non-anchor conflicting tick
+  // (skip if today is already occupying that spot)
+  if (!pruned.find((t) => t.key === 'end')) {
+    const endTick = ticks.find((t) => t.key === 'end');
+    if (endTick) {
+      const todayInPruned = pruned.find((t) => t.key === 'today');
+      const todayConflicts =
+        todayInPruned && Math.abs(todayInPruned.pct - endTick.pct) < 6;
+      if (!todayConflicts) {
+        // Find rightmost conflicting non-anchor tick to replace
+        let conflictIdx = -1;
+        for (let i = pruned.length - 1; i >= 0; i--) {
+          const t = pruned[i];
+          if (
+            t.key !== 'today' &&
+            t.key !== 'acquired' &&
+            t.key !== 'start' &&
+            Math.abs(t.pct - endTick.pct) < 6
+          ) {
+            conflictIdx = i;
+            break;
+          }
+        }
+        if (conflictIdx !== -1) {
+          pruned.splice(conflictIdx, 1, endTick);
+        } else {
+          pruned.push(endTick);
+          pruned.sort((a, b) => a.pct - b.pct);
+        }
+      }
     }
   }
 
@@ -121,7 +177,8 @@ const assignFinancingLanes = (
   totalDays: number
 ): FinancingBarInfo[] => {
   const sorted = [...financings].sort(
-    (a, b) => parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime()
+    (a, b) =>
+      parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime()
   );
   const laneRightPcts: number[] = [];
 
@@ -373,7 +430,11 @@ interface FinancingTooltipProps {
   formatDate: (d: string | Date) => string;
 }
 
-const FinancingTooltip = ({ financing, x, formatDate }: FinancingTooltipProps) => {
+const FinancingTooltip = ({
+  financing,
+  x,
+  formatDate,
+}: FinancingTooltipProps) => {
   const accentColor = '#f59e0b';
   const glowColor = 'rgba(245,158,11,0.2)';
   const clampedX = Math.min(Math.max(x, 8), 92);
@@ -447,7 +508,10 @@ const FinancingTooltip = ({ financing, x, formatDate }: FinancingTooltipProps) =
 
         {/* Amount + rate */}
         <div style={{ color: '#c4c8db', fontSize: 11, marginBottom: 3 }}>
-          {formatCurrency(financing.originalAmount, financing.originalAmountCurrency)}
+          {formatCurrency(
+            financing.originalAmount,
+            financing.originalAmountCurrency
+          )}
           {financing.interestRate != null && (
             <span style={{ color: 'rgba(139,144,168,0.75)', marginLeft: 6 }}>
               @ {financing.interestRate}%
@@ -510,7 +574,11 @@ interface FinancingBarComponentProps {
   onClick: () => void;
 }
 
-const FinancingBarComponent = ({ info, onHover, onClick }: FinancingBarComponentProps) => {
+const FinancingBarComponent = ({
+  info,
+  onHover,
+  onClick,
+}: FinancingBarComponentProps) => {
   const [hovered, setHovered] = useState(false);
   const { financing, lane, leftPct, widthPct } = info;
   const top = FINANCING_BAR_TOP + lane * FINANCING_LANE_HEIGHT;
@@ -885,7 +953,8 @@ export const PropertyLifecycleTimeline = ({
     totalDays,
     formatDate,
     acquisitionDate,
-    entries
+    entries,
+    timelineEnd
   );
 
   return (
@@ -996,59 +1065,70 @@ export const PropertyLifecycleTimeline = ({
       )}
 
       {/* ── Today marker ──────────────────────────────────────────────────────── */}
+      {/* Soft glow blur layer behind the beam */}
       <div
         style={{
           position: 'absolute',
           left: `${todayPct}%`,
-          top: AXIS_TOP,
+          top: 0,
+          bottom: 0,
+          width: 6,
           transform: 'translateX(-50%)',
-          zIndex: 20,
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(92,124,250,0.12) 20%, rgba(92,124,250,0.22) 48%, rgba(92,124,250,0.18) 62%, transparent 100%)',
+          filter: 'blur(3px)',
           pointerEvents: 'none',
+          zIndex: 4,
         }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 16,
-            height: 16,
-            borderRadius: '50%',
-            background: 'rgba(92,124,250,0.15)',
-            animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%) rotate(45deg)',
-            width: 8,
-            height: 8,
-            background: 'linear-gradient(135deg, #5c7cfa 0%, #818cf8 100%)',
-            boxShadow: '0 0 10px rgba(92,124,250,0.8)',
-            borderRadius: 2,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: -16,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: '#5c7cfa',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Today
-        </div>
-      </div>
+      />
+      {/* Sharp gradient beam */}
+      <div
+        style={{
+          position: 'absolute',
+          left: `${todayPct}%`,
+          top: 0,
+          bottom: 0,
+          width: 1.5,
+          transform: 'translateX(-50%)',
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(92,124,250,0.25) 18%, rgba(92,124,250,0.7) 44%, rgba(92,124,250,0.75) 54%, rgba(92,124,250,0.4) 72%, transparent 100%)',
+          pointerEvents: 'none',
+          zIndex: 5,
+        }}
+      />
+      {/* Pulsing halo ring on axis */}
+      <div
+        className="animate-ping"
+        style={{
+          position: 'absolute',
+          left: `${todayPct}%`,
+          top: AXIS_TOP + 1,
+          transform: 'translate(-50%, -50%)',
+          width: 18,
+          height: 18,
+          borderRadius: '50%',
+          background: 'rgba(92,124,250,0.18)',
+          pointerEvents: 'none',
+          zIndex: 8,
+          animationDuration: '2.5s',
+        }}
+      />
+      {/* Solid dot with white ring + glow */}
+      <div
+        style={{
+          position: 'absolute',
+          left: `${todayPct}%`,
+          top: AXIS_TOP + 1,
+          transform: 'translate(-50%, -50%)',
+          width: 9,
+          height: 9,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #5c7cfa 0%, #818cf8 100%)',
+          boxShadow: '0 0 0 2.5px white, 0 0 10px rgba(92,124,250,0.65)',
+          pointerEvents: 'none',
+          zIndex: 20,
+        }}
+      />
 
       {/* ── Financing bars — below axis ───────────────────────────────────────── */}
       {financingBars.map((info) => (
@@ -1097,31 +1177,54 @@ export const PropertyLifecycleTimeline = ({
               gap: 3,
             }}
           >
-            <div
-              style={{
-                width: 1,
-                height: 5,
-                background:
-                  tick.key === 'today' ? '#5c7cfa' : 'rgba(107,113,148,0.4)',
-                borderRadius: 1,
-              }}
-            />
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: tick.key === 'today' ? 600 : 400,
-                color:
-                  tick.key === 'today'
-                    ? '#5c7cfa'
-                    : tick.key === 'acquired' || tick.key === 'start'
-                      ? 'rgba(107,113,148,0.9)'
-                      : 'rgba(107,113,148,0.65)',
-                whiteSpace: 'nowrap',
-                letterSpacing: '0.01em',
-              }}
-            >
-              {tick.label}
-            </span>
+            {tick.key === 'today' ? (
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  letterSpacing: '0.07em',
+                  textTransform: 'uppercase',
+                  color: 'white',
+                  background:
+                    'linear-gradient(135deg, #5c7cfa 0%, #818cf8 100%)',
+                  padding: '2px 7px',
+                  borderRadius: 999,
+                  boxShadow:
+                    '0 2px 8px rgba(92,124,250,0.45), 0 0 0 1px rgba(92,124,250,0.2)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Today
+              </span>
+            ) : (
+              <>
+                <div
+                  style={{
+                    width: 1,
+                    height: 5,
+                    background: 'rgba(107,113,148,0.4)',
+                    borderRadius: 1,
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight:
+                      tick.key === 'acquired' || tick.key === 'start'
+                        ? 500
+                        : 400,
+                    color:
+                      tick.key === 'acquired' || tick.key === 'start'
+                        ? 'rgba(107,113,148,0.9)'
+                        : 'rgba(107,113,148,0.65)',
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  {tick.label}
+                </span>
+              </>
+            )}
           </div>
         ))}
       </div>
