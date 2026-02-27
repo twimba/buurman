@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
+import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.dto.request.CreateOccupancyPeriodRequest;
 import com.buurman.dto.request.EndOccupancyPeriodRequest;
@@ -31,6 +32,7 @@ import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntryType;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
+import com.buurman.repository.PropertyFinancingRepository;
 import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
@@ -47,6 +49,7 @@ public class OccupancyPeriodService {
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
   private final PropertyAcquisitionRepository acquisitionRepository;
+  private final PropertyFinancingRepository financingRepository;
   private final Clock clock;
 
   @Transactional
@@ -230,6 +233,8 @@ public class OccupancyPeriodService {
     List<PropertyOccupancyPeriod> periods =
         repository.findByPropertyIdAndTeamId(property.getId(), teamId);
     List<Contract> contracts = contractRepository.findByPropertyId(property.getId(), teamId);
+    List<PropertyFinancing> financings =
+        financingRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
 
     List<TimelineEntry> entries = new ArrayList<>();
 
@@ -263,7 +268,24 @@ public class OccupancyPeriodService {
     // Sort by start date descending
     entries.sort(Comparator.comparing(TimelineEntry::startDate).reversed());
 
-    return new PropertyTimelineResponse(acquisitionDate, entries);
+    // Map financing entries
+    List<PropertyTimelineResponse.FinancingEntry> financingEntries =
+        financings.stream()
+            .map(
+                f ->
+                    new PropertyTimelineResponse.FinancingEntry(
+                        f.getIdentifier(),
+                        f.getStartDate(),
+                        f.getEndDate(),
+                        f.getFinancingType().name(),
+                        f.getStatus().name(),
+                        f.getLenderName(),
+                        f.getOriginalAmount(),
+                        f.getOriginalAmountCurrency(),
+                        f.getInterestRate()))
+            .toList();
+
+    return new PropertyTimelineResponse(acquisitionDate, entries, financingEntries);
   }
 
   private void validateNoOverlappingContracts(

@@ -7,19 +7,23 @@ import {
   OccupancyType,
   OCCUPANCY_TYPE_LABELS,
   type TimelineEntry,
+  type FinancingTimelineEntry,
 } from '@/types/occupancyPeriod';
 
 interface PropertyLifecycleTimelineProps {
   propertyIdentifier: string;
   onSelfOccupancyClick?: (identifier: string) => void;
+  onFinancingClick?: (identifier: string) => void;
 }
 
 // ─── Layout constants ──────────────────────────────────────────────────────────
 
 const BAR_TOP = 36;
 const AXIS_TOP = 52;
-const LABEL_TOP = 68;
-const TOTAL_HEIGHT = 100;
+const LABEL_TOP_BASE = 68;
+const FINANCING_BAR_TOP = AXIS_TOP + 5;
+const FINANCING_LANE_HEIGHT = 6;
+const FINANCING_BAR_HEIGHT = 3;
 
 // ─── Date Utilities ────────────────────────────────────────────────────────────
 
@@ -99,6 +103,63 @@ const buildLabelTicks = (
   }
 
   return pruned;
+};
+
+// ─── Financing lane assignment ─────────────────────────────────────────────────
+
+interface FinancingBarInfo {
+  financing: FinancingTimelineEntry;
+  lane: number;
+  leftPct: number;
+  widthPct: number;
+}
+
+const assignFinancingLanes = (
+  financings: FinancingTimelineEntry[],
+  timelineStart: Date,
+  timelineEnd: Date,
+  totalDays: number
+): FinancingBarInfo[] => {
+  const sorted = [...financings].sort(
+    (a, b) => parseDate(a.startDate).getTime() - parseDate(b.startDate).getTime()
+  );
+  const laneRightPcts: number[] = [];
+
+  return sorted.map((f) => {
+    const startDate = parseDate(f.startDate);
+    const endDate = f.endDate ? parseDate(f.endDate) : timelineEnd;
+    const leftPct = toPct(timelineStart, startDate, totalDays);
+    const rightPct = toPct(timelineStart, endDate, totalDays);
+    const widthPct = rightPct - leftPct;
+
+    let lane = laneRightPcts.findIndex((rp) => rp <= leftPct);
+    if (lane === -1) {
+      lane = laneRightPcts.length;
+      laneRightPcts.push(rightPct);
+    } else {
+      laneRightPcts[lane] = rightPct;
+    }
+
+    return { financing: f, lane, leftPct, widthPct };
+  });
+};
+
+// ─── Formatting helpers ─────────────────────────────────────────────────────────
+
+const formatEnumLabel = (s: string): string =>
+  s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+const formatCurrency = (amount: number, currency: string): string => {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount} ${currency}`;
+  }
 };
 
 // ─── Tooltip ───────────────────────────────────────────────────────────────────
@@ -304,6 +365,196 @@ const BarTooltip = ({
   );
 };
 
+// ─── Financing Tooltip ─────────────────────────────────────────────────────────
+
+interface FinancingTooltipProps {
+  financing: FinancingTimelineEntry;
+  x: number;
+  formatDate: (d: string | Date) => string;
+}
+
+const FinancingTooltip = ({ financing, x, formatDate }: FinancingTooltipProps) => {
+  const accentColor = '#f59e0b';
+  const glowColor = 'rgba(245,158,11,0.2)';
+  const clampedX = Math.min(Math.max(x, 8), 92);
+
+  const dateRange = `${formatDate(financing.startDate)} — ${
+    financing.endDate ? formatDate(financing.endDate) : 'Ongoing'
+  }`;
+
+  return (
+    <div
+      className="absolute z-50 pointer-events-none"
+      style={{
+        left: `${clampedX}%`,
+        top: BAR_TOP,
+        transform: 'translateX(-50%) translateY(calc(-100% - 6px))',
+      }}
+    >
+      <div
+        style={{
+          background: 'rgba(10, 11, 20, 0.95)',
+          border: `1px solid ${glowColor}`,
+          borderRadius: 10,
+          padding: '9px 13px',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          boxShadow: `0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04), 0 0 20px ${glowColor}`,
+          minWidth: 150,
+          maxWidth: 260,
+        }}
+      >
+        {/* Title row */}
+        <div className="flex items-center gap-1.5" style={{ marginBottom: 5 }}>
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: accentColor,
+              flexShrink: 0,
+              boxShadow: `0 0 6px ${accentColor}`,
+            }}
+          />
+          <span
+            style={{
+              color: accentColor,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {formatEnumLabel(financing.financingType)}
+          </span>
+          <span
+            style={{
+              color: 'rgba(139,144,168,0.75)',
+              fontSize: 10,
+              fontWeight: 400,
+            }}
+          >
+            · {formatEnumLabel(financing.status)}
+          </span>
+        </div>
+
+        {/* Lender */}
+        {financing.lenderName && (
+          <div style={{ color: '#c4c8db', fontSize: 11, marginBottom: 3 }}>
+            {financing.lenderName}
+          </div>
+        )}
+
+        {/* Amount + rate */}
+        <div style={{ color: '#c4c8db', fontSize: 11, marginBottom: 3 }}>
+          {formatCurrency(financing.originalAmount, financing.originalAmountCurrency)}
+          {financing.interestRate != null && (
+            <span style={{ color: 'rgba(139,144,168,0.75)', marginLeft: 6 }}>
+              @ {financing.interestRate}%
+            </span>
+          )}
+        </div>
+
+        {/* Date range */}
+        <div
+          style={{
+            color: 'rgba(107,113,148,0.85)',
+            fontSize: 10,
+            fontVariantNumeric: 'tabular-nums',
+            letterSpacing: '0.01em',
+          }}
+        >
+          {dateRange}
+        </div>
+
+        {/* Click hint */}
+        <div
+          style={{
+            marginTop: 7,
+            paddingTop: 6,
+            borderTop: `1px solid ${glowColor}`,
+            color: accentColor,
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            opacity: 0.9,
+          }}
+        >
+          ✎ Click to edit
+        </div>
+      </div>
+
+      {/* Arrow */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          bottom: -5,
+          transform: 'translateX(-50%)',
+          width: 0,
+          height: 0,
+          borderLeft: '5px solid transparent',
+          borderRight: '5px solid transparent',
+          borderTop: `5px solid ${glowColor}`,
+        }}
+      />
+    </div>
+  );
+};
+
+// ─── Financing Bar ─────────────────────────────────────────────────────────────
+
+interface FinancingBarComponentProps {
+  info: FinancingBarInfo;
+  onHover: (f: FinancingTimelineEntry | null) => void;
+  onClick: () => void;
+}
+
+const FinancingBarComponent = ({ info, onHover, onClick }: FinancingBarComponentProps) => {
+  const [hovered, setHovered] = useState(false);
+  const { financing, lane, leftPct, widthPct } = info;
+  const top = FINANCING_BAR_TOP + lane * FINANCING_LANE_HEIGHT;
+
+  const handleMouseEnter = useCallback(() => {
+    setHovered(true);
+    onHover(financing);
+  }, [financing, onHover]);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+    onHover(null);
+  }, [onHover]);
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Financing ${financing.identifier}, click to edit`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClick();
+        }
+      }}
+      style={{
+        position: 'absolute',
+        left: `${leftPct}%`,
+        width: `${Math.max(widthPct, 0.8)}%`,
+        top,
+        height: FINANCING_BAR_HEIGHT,
+        borderRadius: 999,
+        background: hovered ? 'rgba(245,158,11,0.55)' : 'rgba(245,158,11,0.2)',
+        boxShadow: hovered ? '0 0 5px rgba(245,158,11,0.3)' : 'none',
+        cursor: 'pointer',
+        transition: 'background 150ms ease, box-shadow 150ms ease',
+        zIndex: hovered ? 10 : 1,
+      }}
+    />
+  );
+};
+
 // ─── Period Bar ────────────────────────────────────────────────────────────────
 
 interface PeriodBarProps {
@@ -403,11 +654,13 @@ const PeriodBar = ({
 
 // ─── Skeleton ──────────────────────────────────────────────────────────────────
 
+const SKELETON_HEIGHT = 100;
+
 const TimelineSkeleton = () => (
   <div
     className="w-full rounded-2xl overflow-hidden"
     style={{
-      height: TOTAL_HEIGHT,
+      height: SKELETON_HEIGHT,
       background: 'rgba(30,33,48,0.4)',
       padding: '16px 20px',
     }}
@@ -444,12 +697,17 @@ const TimelineSkeleton = () => (
 export const PropertyLifecycleTimeline = ({
   propertyIdentifier,
   onSelfOccupancyClick,
+  onFinancingClick,
 }: PropertyLifecycleTimelineProps) => {
   const { data: timeline, isLoading } = usePropertyTimeline(propertyIdentifier);
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
 
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [financingTooltip, setFinancingTooltip] = useState<{
+    financing: FinancingTimelineEntry;
+    x: number;
+  } | null>(null);
 
   const handleHover = useCallback(
     (entry: TimelineEntry | null, midPct: number) => {
@@ -462,15 +720,101 @@ export const PropertyLifecycleTimeline = ({
     []
   );
 
+  const handleFinancingHover = useCallback(
+    (f: FinancingTimelineEntry | null, midPct?: number) => {
+      if (f === null) {
+        setFinancingTooltip(null);
+      } else {
+        setFinancingTooltip({ financing: f, x: midPct ?? 50 });
+      }
+    },
+    []
+  );
+
   if (isLoading) {
     return <TimelineSkeleton />;
   }
 
   const acquisitionDateStr = timeline?.acquisitionDate ?? null;
   const entries = timeline?.entries ?? [];
+  const financings = timeline?.financings ?? [];
 
-  if (!entries.length && !acquisitionDateStr) {
-    return null;
+  if (!entries.length && !acquisitionDateStr && !financings.length) {
+    return (
+      <div
+        className="w-full select-none"
+        style={{ height: 100, position: 'relative' }}
+      >
+        {/* "No activity yet" — above the axis */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 8,
+            textAlign: 'center',
+            fontSize: 12,
+            fontWeight: 600,
+            color: 'rgba(107,113,148,0.7)',
+            letterSpacing: '0.01em',
+          }}
+        >
+          No activity yet
+        </div>
+
+        {/* Ghost dots — just above the axis */}
+        {[
+          { pct: 22, color: 'rgba(59,130,246,0.25)', width: 32 },
+          { pct: 50, color: 'rgba(99,102,241,0.25)', width: 24 },
+          { pct: 78, color: 'rgba(245,158,11,0.2)', width: 20 },
+        ].map(({ pct, color, width }) => (
+          <div
+            key={pct}
+            style={{
+              position: 'absolute',
+              left: `${pct}%`,
+              top: 30,
+              transform: 'translateX(-50%)',
+              width,
+              height: 10,
+              borderRadius: 999,
+              background: color,
+            }}
+          />
+        ))}
+
+        {/* Ghost axis */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 46,
+            height: 2,
+            borderRadius: 999,
+            background:
+              'repeating-linear-gradient(90deg, rgba(107,113,148,0.18) 0px, rgba(107,113,148,0.18) 6px, transparent 6px, transparent 12px)',
+          }}
+        />
+
+        {/* Subtitle — below the axis */}
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 60,
+            textAlign: 'center',
+            fontSize: 11,
+            color: 'rgba(107,113,148,0.5)',
+            lineHeight: 1.5,
+          }}
+        >
+          Contracts, self-occupancy periods and financings will appear here once
+          added.
+        </div>
+      </div>
+    );
   }
 
   // ── Compute timeline bounds ─────────────────────────────────────────────────
@@ -485,6 +829,14 @@ export const PropertyLifecycleTimeline = ({
     }
     return dates;
   });
+
+  // Include financing dates in bounds
+  for (const f of financings) {
+    allDates.push(parseDate(f.startDate));
+    if (f.endDate) {
+      allDates.push(parseDate(f.endDate));
+    }
+  }
 
   const acquisitionDate = acquisitionDateStr
     ? parseDate(acquisitionDateStr)
@@ -509,6 +861,25 @@ export const PropertyLifecycleTimeline = ({
   const totalDays = daysBetween(timelineStart, timelineEnd);
   const todayPct = toPct(timelineStart, today, totalDays);
 
+  // ── Financing bar layout ────────────────────────────────────────────────────
+
+  const financingBars = assignFinancingLanes(
+    financings,
+    timelineStart,
+    timelineEnd,
+    totalDays
+  );
+  const numFinancingLanes =
+    financingBars.length > 0
+      ? Math.max(...financingBars.map((b) => b.lane)) + 1
+      : 0;
+
+  const labelTop = Math.max(
+    LABEL_TOP_BASE,
+    FINANCING_BAR_TOP + numFinancingLanes * FINANCING_LANE_HEIGHT + 4
+  );
+  const totalHeight = labelTop + 28;
+
   const labelTicks = buildLabelTicks(
     timelineStart,
     totalDays,
@@ -521,7 +892,7 @@ export const PropertyLifecycleTimeline = ({
     <div
       className="w-full select-none"
       style={{
-        height: TOTAL_HEIGHT,
+        height: totalHeight,
         position: 'relative',
         fontFamily: 'inherit',
       }}
@@ -679,13 +1050,28 @@ export const PropertyLifecycleTimeline = ({
         </div>
       </div>
 
+      {/* ── Financing bars — below axis ───────────────────────────────────────── */}
+      {financingBars.map((info) => (
+        <FinancingBarComponent
+          key={info.financing.identifier}
+          info={info}
+          onHover={(f) =>
+            handleFinancingHover(
+              f,
+              f !== null ? info.leftPct + info.widthPct / 2 : undefined
+            )
+          }
+          onClick={() => onFinancingClick?.(info.financing.identifier)}
+        />
+      ))}
+
       {/* ── Date label ticks ──────────────────────────────────────────────────── */}
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
-          top: LABEL_TOP,
+          top: labelTop,
         }}
       >
         {labelTicks.map((tick) => (
@@ -694,10 +1080,20 @@ export const PropertyLifecycleTimeline = ({
             style={{
               position: 'absolute',
               left: `${tick.pct}%`,
-              transform: 'translateX(-50%)',
+              transform:
+                tick.pct < 4
+                  ? 'translateX(0)'
+                  : tick.pct > 96
+                    ? 'translateX(-100%)'
+                    : 'translateX(-50%)',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems:
+                tick.pct < 4
+                  ? 'flex-start'
+                  : tick.pct > 96
+                    ? 'flex-end'
+                    : 'center',
               gap: 3,
             }}
           >
@@ -731,11 +1127,18 @@ export const PropertyLifecycleTimeline = ({
       </div>
 
       {/* ── Tooltip ───────────────────────────────────────────────────────────── */}
-      {tooltip && (
+      {tooltip && !financingTooltip && (
         <BarTooltip
           tooltip={tooltip}
           formatDate={formatDate}
           isSelfOccupancyClickable={!!onSelfOccupancyClick}
+        />
+      )}
+      {financingTooltip && (
+        <FinancingTooltip
+          financing={financingTooltip.financing}
+          x={financingTooltip.x}
+          formatDate={formatDate}
         />
       )}
     </div>

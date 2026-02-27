@@ -71,7 +71,20 @@ export interface TimelineEntry {
   metadata?: string | null;
 }
 
+export interface FinancingTimelineEntry {
+  identifier: string;
+  startDate: string;
+  endDate?: string | null;
+  financingType: string;
+  status: string;
+  lenderName?: string | null;
+  originalAmount: number;
+  originalAmountCurrency: string;
+  interestRate?: number | null;
+}
+
 export interface PropertyTimelineResponse {
   acquisitionDate?: string | null;
   entries: TimelineEntry[];
+  financings: FinancingTimelineEntry[];
 }

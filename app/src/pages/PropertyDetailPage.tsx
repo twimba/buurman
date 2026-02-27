@@ -22,6 +22,8 @@ import {
   useOccupancyPeriods,
   useDeleteOccupancyPeriod,
 } from '@/hooks/useOccupancyPeriodHooks';
+import { useFinancings } from '@/hooks/usePropertyFinancialsHooks';
+import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
@@ -120,6 +122,7 @@ export const PropertyDetailPage = () => {
   const [editOccupancyPeriodId, setEditOccupancyPeriodId] = useState<
     string | null
   >(null);
+  const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -180,6 +183,7 @@ export const PropertyDetailPage = () => {
     error: expensesError,
   } = useExpensesByProperty(id);
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(id);
+  const { data: financings = [] } = useFinancings(id);
   const activeOccupancyPeriod = occupancyPeriods.find(
     (p) => !p.endDate || new Date(p.endDate) >= new Date()
   );
@@ -549,16 +553,6 @@ export const PropertyDetailPage = () => {
           }
         />
 
-        {/* Property Lifecycle Timeline */}
-        <div className="mb-2">
-          <PropertyLifecycleTimeline
-            propertyIdentifier={id!}
-            onSelfOccupancyClick={(identifier) =>
-              setEditOccupancyPeriodId(identifier)
-            }
-          />
-        </div>
-
         {/* Tabs */}
         <div className="border-b mb-6">
           <div className="flex gap-8">
@@ -656,6 +650,45 @@ export const PropertyDetailPage = () => {
         {/* Tab Content */}
         {activeTab === 'info' && (
           <div className="space-y-6">
+            {/* Property Lifecycle Timeline */}
+            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  Property Timeline
+                </span>
+                <div className="flex items-center gap-4 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block w-3 h-2.5 rounded-full"
+                      style={{ background: 'rgba(59,130,246,1)' }}
+                    />
+                    Rental contract
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block w-3 h-2.5 rounded-full"
+                      style={{ background: 'rgba(99,102,241,1)' }}
+                    />
+                    Self-occupied
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="inline-block w-3 h-1.5 rounded-full"
+                      style={{ background: 'rgba(245,158,11,0.5)' }}
+                    />
+                    Financing
+                  </span>
+                </div>
+              </div>
+              <PropertyLifecycleTimeline
+                propertyIdentifier={id!}
+                onSelfOccupancyClick={(identifier) =>
+                  setEditOccupancyPeriodId(identifier)
+                }
+                onFinancingClick={(identifier) => setEditFinancingId(identifier)}
+              />
+            </div>
+
             {activeOccupancyPeriod && (
               <SelfOccupancyCard
                 period={activeOccupancyPeriod}
@@ -2333,6 +2366,21 @@ export const PropertyDetailPage = () => {
               propertyIdentifier={id}
               period={editPeriod}
               onClose={() => setEditOccupancyPeriodId(null)}
+            />
+          ) : null;
+        })()}
+
+      {editFinancingId &&
+        id &&
+        (() => {
+          const editFinancing = financings.find(
+            (f) => f.identifier === editFinancingId
+          );
+          return editFinancing ? (
+            <FinancingFormModal
+              propertyId={id}
+              existing={editFinancing}
+              onClose={() => setEditFinancingId(null)}
             />
           ) : null;
         })()}
