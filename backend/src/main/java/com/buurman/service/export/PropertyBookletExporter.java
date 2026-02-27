@@ -17,6 +17,7 @@ import static com.buurman.service.export.BookletHelper.appendTextBlock;
 import static com.buurman.service.export.BookletHelper.escapeHtml;
 import static com.buurman.service.export.BookletHelper.formatEnumValue;
 import static com.buurman.service.export.BookletHelper.isTrue;
+import static com.buurman.service.export.BookletHelper.propertyTypeIconHtml;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -311,7 +312,11 @@ public class PropertyBookletExporter {
       String location,
       String area) {
     html.append("<tr>");
-    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendCoverCell(
+        html,
+        "Property Type",
+        propertyTypeIconHtml(property.getPropertyType().name())
+            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String bedBath =
@@ -329,7 +334,11 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryCommercial(
       StringBuilder html, Property property, PropertyCommercialDetails details, String location) {
     html.append("<tr>");
-    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendCoverCell(
+        html,
+        "Property Type",
+        propertyTypeIconHtml(property.getPropertyType().name())
+            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     String usable =
@@ -354,7 +363,11 @@ public class PropertyBookletExporter {
       String location,
       String area) {
     html.append("<tr>");
-    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendCoverCell(
+        html,
+        "Property Type",
+        propertyTypeIconHtml(property.getPropertyType().name())
+            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);
@@ -373,7 +386,11 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryAgricultural(
       StringBuilder html, Property property, PropertyAgriculturalDetails details, String location) {
     html.append("<tr>");
-    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendCoverCell(
+        html,
+        "Property Type",
+        propertyTypeIconHtml(property.getPropertyType().name())
+            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(
@@ -403,7 +420,11 @@ public class PropertyBookletExporter {
   private void appendCoverSummaryMixedUse(
       StringBuilder html, Property property, String location, String area) {
     html.append("<tr>");
-    appendCoverCell(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
+    appendCoverCell(
+        html,
+        "Property Type",
+        propertyTypeIconHtml(property.getPropertyType().name())
+            + escapeHtml(formatEnumValue(property.getPropertyType().name())));
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);

@@ -1,21 +1,17 @@
 import {
   PropertyResponse,
   PropertyStatus,
-  PropertyCategory,
   PROPERTY_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
-import {
-  Bed,
-  Bath,
-  Ruler,
-  Home,
-  Building2,
-  Factory,
-  Tractor,
-} from 'lucide-react';
+import { Bed, Bath, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
+import {
+  PROPERTY_CATEGORY_ICONS,
+  PROPERTY_TYPE_ICONS,
+} from '@/utils/propertyIcons';
 
 interface PropertyCardProps {
   property: PropertyResponse;
@@ -37,17 +33,12 @@ const statusColors: Record<string, string> = {
     'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
 };
 
-const categoryIcons: Record<string, typeof Home> = {
-  [PropertyCategory.RESIDENTIAL]: Home,
-  [PropertyCategory.COMMERCIAL]: Building2,
-  [PropertyCategory.INDUSTRIAL]: Factory,
-  [PropertyCategory.AGRICULTURAL]: Tractor,
-  [PropertyCategory.MIXED_USE]: Building2,
-};
-
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const navigate = useNavigate();
-  const PlaceholderIcon = categoryIcons[property.propertyCategory] ?? Home;
+  const PlaceholderIcon =
+    PROPERTY_TYPE_ICONS[property.propertyType] ??
+    PROPERTY_CATEGORY_ICONS[property.propertyCategory] ??
+    PROPERTY_CATEGORY_ICONS.RESIDENTIAL;
   const bedrooms = property.residentialDetails?.bedrooms;
   const bathrooms = property.residentialDetails?.bathrooms;
 
@@ -119,11 +110,21 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
 
         {/* Category & Type badges */}
         <div className="flex gap-1.5 flex-wrap">
-          <span className="text-xs bg-[#e8ecf4] dark:bg-[#1a1d28] text-[#6b7194] dark:text-[#8b90a8] px-2 py-1 rounded">
+          <span className="inline-flex items-center gap-1 text-xs bg-[#e8ecf4] dark:bg-[#1a1d28] text-[#6b7194] dark:text-[#8b90a8] px-2 py-1 rounded">
+            <PropertyTypeIcon
+              category={property.propertyCategory}
+              size={11}
+              className="flex-shrink-0"
+            />
             {PROPERTY_CATEGORY_LABELS[property.propertyCategory] ??
               property.propertyCategory}
           </span>
-          <span className="text-xs bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] px-2 py-1 rounded">
+          <span className="inline-flex items-center gap-1 text-xs bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] px-2 py-1 rounded">
+            <PropertyTypeIcon
+              type={property.propertyType}
+              size={11}
+              className="flex-shrink-0"
+            />
             {PROPERTY_TYPE_LABELS[property.propertyType] ??
               property.propertyType}
           </span>

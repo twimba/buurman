@@ -30,6 +30,7 @@ import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyM
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
 import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifecycleTimeline';
+import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import {
   PropertyStatus,
@@ -730,13 +731,18 @@ export const PropertyDetailPage = () => {
                   </span>
                 </div>
                 <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
-                <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="inline-flex items-center gap-1 text-[#6b7194] dark:text-[#8b90a8]">
+                  <PropertyTypeIcon
+                    category={property.propertyCategory}
+                    size={13}
+                  />
                   {PROPERTY_CATEGORY_LABELS[
                     property.propertyCategory as PropertyCategory
                   ] ?? property.propertyCategory}
                 </span>
                 <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
-                <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="inline-flex items-center gap-1 text-[#6b7194] dark:text-[#8b90a8]">
+                  <PropertyTypeIcon type={property.propertyType} size={13} />
                   {PROPERTY_TYPE_LABELS[property.propertyType] ??
                     property.propertyType}
                 </span>
@@ -783,7 +789,7 @@ export const PropertyDetailPage = () => {
 
                 <div>
                   <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                    <MapPin className="h-5 w-5" />
+                    <PropertyTypeIcon type={property.propertyType} size={20} />
                     <span className="text-sm font-medium">Type</span>
                   </div>
                   <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">

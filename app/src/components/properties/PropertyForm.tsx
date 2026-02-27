@@ -20,6 +20,12 @@ import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
+import { IconSelect } from '../common/IconSelect';
+import type { IconSelectOption } from '../common/IconSelect';
+import {
+  PROPERTY_CATEGORY_ICONS,
+  PROPERTY_TYPE_ICONS,
+} from '@/utils/propertyIcons';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -147,6 +153,26 @@ export const PropertyForm = ({
         formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
       ] ?? [],
     [formData.propertyCategory]
+  );
+
+  const categoryOptions = useMemo<IconSelectOption[]>(
+    () =>
+      Object.values(PropertyCategory).map((cat) => ({
+        value: cat,
+        label: PROPERTY_CATEGORY_LABELS[cat],
+        Icon: PROPERTY_CATEGORY_ICONS[cat],
+      })),
+    []
+  );
+
+  const typeOptions = useMemo<IconSelectOption[]>(
+    () =>
+      availableTypes.map((type) => ({
+        value: type,
+        label: PROPERTY_TYPE_LABELS[type] ?? type,
+        Icon: PROPERTY_TYPE_ICONS[type],
+      })),
+    [availableTypes]
   );
 
   useEffect(() => {
@@ -480,26 +506,25 @@ export const PropertyForm = ({
               Category <span className="text-red-500">*</span>
             </label>
             {isEditMode ? (
-              <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-[#3d4463] dark:text-[#c4c8db]">
+              <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded flex items-center gap-2 text-[#3d4463] dark:text-[#c4c8db]">
+                {(() => {
+                  const CatIcon =
+                    PROPERTY_CATEGORY_ICONS[formData.propertyCategory!];
+                  return CatIcon ? (
+                    <CatIcon size={14} className="text-[#9ca0b8]" />
+                  ) : null;
+                })()}
                 {PROPERTY_CATEGORY_LABELS[formData.propertyCategory!]}
-                <span className="text-xs text-[#9ca0b8] ml-2">
+                <span className="text-xs text-[#9ca0b8] ml-1">
                   (cannot be changed)
                 </span>
               </div>
             ) : (
-              <select
-                value={formData.propertyCategory}
-                onChange={(e) =>
-                  handleCategoryChange(e.target.value as PropertyCategory)
-                }
-                className={selectCls}
-              >
-                {Object.values(PropertyCategory).map((cat) => (
-                  <option key={cat} value={cat}>
-                    {PROPERTY_CATEGORY_LABELS[cat]}
-                  </option>
-                ))}
-              </select>
+              <IconSelect
+                value={formData.propertyCategory ?? ''}
+                options={categoryOptions}
+                onChange={(v) => handleCategoryChange(v as PropertyCategory)}
+              />
             )}
           </div>
 
@@ -508,19 +533,11 @@ export const PropertyForm = ({
             <label className={labelCls}>
               Type <span className="text-red-500">*</span>
             </label>
-            <select
-              value={formData.propertyType}
-              onChange={(e) =>
-                handleChange('propertyType', e.target.value as PropertyType)
-              }
-              className={selectCls}
-            >
-              {availableTypes.map((type) => (
-                <option key={type} value={type}>
-                  {PROPERTY_TYPE_LABELS[type] ?? type}
-                </option>
-              ))}
-            </select>
+            <IconSelect
+              value={formData.propertyType ?? ''}
+              options={typeOptions}
+              onChange={(v) => handleChange('propertyType', v as PropertyType)}
+            />
           </div>
 
           {/* Status */}

@@ -7,7 +7,11 @@ import {
   PROPERTY_TYPE_LABELS,
   PropertyResponse,
 } from '@/types/property';
-import { ChevronDown, Home, Building2, Factory, Tractor } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import {
+  PROPERTY_CATEGORY_ICONS,
+  PROPERTY_TYPE_ICONS,
+} from '@/utils/propertyIcons';
 
 interface PropertySelectorProps {
   value?: string;
@@ -18,14 +22,6 @@ interface PropertySelectorProps {
   /** Placeholder text when no property is selected. */
   placeholder?: string;
 }
-
-const categoryIcons: Record<string, typeof Home> = {
-  [PropertyCategory.RESIDENTIAL]: Home,
-  [PropertyCategory.COMMERCIAL]: Building2,
-  [PropertyCategory.INDUSTRIAL]: Factory,
-  [PropertyCategory.AGRICULTURAL]: Tractor,
-  [PropertyCategory.MIXED_USE]: Building2,
-};
 
 const categoryOrder: PropertyCategory[] = [
   PropertyCategory.RESIDENTIAL,
@@ -175,7 +171,10 @@ export const PropertySelector = ({
     property: PropertyResponse,
     flatIndex: number
   ) => {
-    const Icon = categoryIcons[property.propertyCategory] ?? Home;
+    const Icon =
+      PROPERTY_TYPE_ICONS[property.propertyType] ??
+      PROPERTY_CATEGORY_ICONS[property.propertyCategory as PropertyCategory] ??
+      PROPERTY_CATEGORY_ICONS.RESIDENTIAL;
     return (
       <button
         key={property.identifier}
@@ -292,11 +291,15 @@ export const PropertySelector = ({
                 </button>
               )}
               {grouped.map((group) => {
+                const CatIcon =
+                  PROPERTY_CATEGORY_ICONS[group.category as PropertyCategory] ??
+                  PROPERTY_CATEGORY_ICONS.RESIDENTIAL;
                 const header = showGroupHeaders ? (
                   <div
                     key={`header-${group.category}`}
-                    className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                    className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center gap-1.5"
                   >
+                    <CatIcon size={11} />
                     {PROPERTY_CATEGORY_LABELS[
                       group.category as PropertyCategory
                     ] ?? group.category}
