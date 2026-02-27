@@ -1024,16 +1024,43 @@ function OccupancyAndTrendChart({
           </p>
           <div className="flex h-6 rounded overflow-hidden">
             {occupancy.months.map((m) => {
-              const occupied = m.occupancyPercent > 0;
+              const tenantPct = Number(m.tenantOccupancyPercent);
+              const selfPct = Number(m.selfOccupancyPercent);
+              const totalPct = tenantPct + selfPct;
+              const tenantShare = totalPct > 0 ? tenantPct / totalPct : 0;
+              const selfShare = totalPct > 0 ? selfPct / totalPct : 0;
+              const tooltipLabel =
+                tenantPct > 0 && selfPct > 0
+                  ? `${formatMonthTick(m.month)}: Tenant ${tenantPct.toFixed(0)}% · Self ${selfPct.toFixed(0)}%`
+                  : tenantPct > 0
+                    ? `${formatMonthTick(m.month)}: Tenant occupied ${tenantPct.toFixed(0)}%`
+                    : selfPct > 0
+                      ? `${formatMonthTick(m.month)}: Self-occupied ${selfPct.toFixed(0)}%`
+                      : `${formatMonthTick(m.month)}: Vacant`;
               return (
                 <div
                   key={m.month}
-                  className="flex-1 min-w-0"
-                  style={{
-                    backgroundColor: occupied ? COLORS.income : vacantColor,
-                  }}
-                  title={`${formatMonthTick(m.month)}: ${occupied ? 'Occupied' : 'Vacant'}`}
-                />
+                  className="flex-1 min-w-0 flex"
+                  title={tooltipLabel}
+                  style={{ backgroundColor: vacantColor }}
+                >
+                  {tenantPct > 0 && (
+                    <div
+                      style={{
+                        width: `${tenantShare * 100}%`,
+                        backgroundColor: COLORS.income,
+                      }}
+                    />
+                  )}
+                  {selfPct > 0 && (
+                    <div
+                      style={{
+                        width: `${selfShare * 100}%`,
+                        backgroundColor: '#6366f1',
+                      }}
+                    />
+                  )}
+                </div>
               );
             })}
           </div>
@@ -1061,10 +1088,10 @@ function OccupancyAndTrendChart({
                 <div className="flex w-full justify-between">
                   {indices.map((idx) => (
                     <span
-                      key={months[idx].month}
+                      key={months[idx]!.month}
                       className="text-[10px] text-[#6b7194] dark:text-[#8b90a8]"
                     >
-                      {formatMonthTick(months[idx].month)}
+                      {formatMonthTick(months[idx]!.month)}
                     </span>
                   ))}
                 </div>
@@ -1077,7 +1104,14 @@ function OccupancyAndTrendChart({
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: COLORS.income }}
               />
-              Occupied
+              Tenant
+            </span>
+            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-sm"
+                style={{ backgroundColor: '#6366f1' }}
+              />
+              Self-occupied
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
               <span

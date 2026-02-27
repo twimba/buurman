@@ -71,7 +71,7 @@ export const FinancingPaymentFormModal = ({
     currency: existing?.currency ?? defaultCurrency ?? 'EUR',
     status: existing?.status ?? PaymentStatus.COMPLETED,
     notes: existing?.notes ?? '',
-    deductFromBalance: existing ? false : true,
+    deductFromBalance: existing ? existing.balanceDeducted : true,
   });
 
   const handleSubmit = (e?: React.FormEvent) => {

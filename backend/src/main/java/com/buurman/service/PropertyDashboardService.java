@@ -29,6 +29,7 @@ import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
+import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CashFlowChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
@@ -47,6 +48,7 @@ import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.FinancingPaymentRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
+import com.buurman.repository.PropertyOccupancyPeriodRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 
@@ -68,6 +70,7 @@ public class PropertyDashboardService {
   private final FinancingPaymentRepository financingPaymentRepository;
   private final PropertyFinancialsService financialsService;
   private final PropertyAcquisitionRepository acquisitionRepository;
+  private final PropertyOccupancyPeriodRepository occupancyPeriodRepository;
 
   /**
    * Pre-fetched financial data from new normalized tables. Loaded once per dashboard request and
@@ -104,6 +107,8 @@ public class PropertyDashboardService {
 
     List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<PropertyOccupancyPeriod> occupancyPeriods =
+        occupancyPeriodRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
 
     String currency = financialData.purchasePriceCurrency().orElse(null);
     LocalDate now = LocalDate.now(clock);
@@ -137,6 +142,11 @@ public class PropertyDashboardService {
           earliest = e.getExpenseDate();
         }
       }
+      for (PropertyOccupancyPeriod p : occupancyPeriods) {
+        if (p.getStartDate().isBefore(earliest)) {
+          earliest = p.getStartDate();
+        }
+      }
       startDate = earliest;
 
       List<FinancingPayment> unfilteredFinancingPayments =
@@ -149,6 +159,7 @@ public class PropertyDashboardService {
           property,
           financialData,
           contracts,
+          occupancyPeriods,
           unfilteredPayments,
           unfilteredExpenses,
           unfilteredFinancingPayments,
@@ -186,6 +197,7 @@ public class PropertyDashboardService {
         property,
         financialData,
         contracts,
+        occupancyPeriods,
         allPayments,
         allExpenses,
         allFinancingPayments,
@@ -238,6 +250,7 @@ public class PropertyDashboardService {
       Property property,
       FinancialData financialData,
       List<Contract> contracts,
+      List<PropertyOccupancyPeriod> occupancyPeriods,
       List<Payment> payments,
       List<Expense> expenses,
       List<FinancingPayment> financingPayments,
@@ -254,7 +267,8 @@ public class PropertyDashboardService {
     EquityChartData equity = buildEquityChart(financialData);
     ExpenseBreakdownChartData expenseBreakdown =
         buildExpenseBreakdown(expenses, financingPayments, financialData, now, effectiveMonths);
-    OccupancyChartData occupancy = buildOccupancyChart(contracts, now, effectiveMonths);
+    OccupancyChartData occupancy =
+        buildOccupancyChart(contracts, occupancyPeriods, now, effectiveMonths);
     DataCompleteness completeness =
         buildDataCompleteness(financialData, contracts, property.getId(), property.getTeamId());
     FutureTrendData futureTrend = buildFutureTrend(financialData, contracts, now);
@@ -527,7 +541,10 @@ public class PropertyDashboardService {
   }
 
   private OccupancyChartData buildOccupancyChart(
-      List<Contract> contracts, LocalDate now, int months) {
+      List<Contract> contracts,
+      List<PropertyOccupancyPeriod> occupancyPeriods,
+      LocalDate now,
+      int months) {
     // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
     // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
     List<Contract> occupiedContracts =
@@ -546,7 +563,7 @@ public class PropertyDashboardService {
       LocalDate monthEnd = ym.atEndOfMonth();
       int daysInMonth = ym.lengthOfMonth();
 
-      long occupiedDays = 0;
+      long tenantDays = 0;
       for (Contract c : occupiedContracts) {
         if (c.getStartDate() == null) {
           continue;
@@ -554,16 +571,32 @@ public class PropertyDashboardService {
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
         LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
         if (!cStart.isAfter(cEnd)) {
-          occupiedDays += DAYS.between(cStart, cEnd) + 1;
+          tenantDays += DAYS.between(cStart, cEnd) + 1;
         }
       }
-      // Cap at days in month (overlapping contracts shouldn't exceed 100%)
-      occupiedDays = Math.min(occupiedDays, daysInMonth);
-      BigDecimal pct =
-          BigDecimal.valueOf(occupiedDays)
+
+      long selfDays = 0;
+      for (PropertyOccupancyPeriod p : occupancyPeriods) {
+        LocalDate pStart = p.getStartDate().isBefore(monthStart) ? monthStart : p.getStartDate();
+        LocalDate pEnd = p.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
+        if (!pStart.isAfter(pEnd)) {
+          selfDays += DAYS.between(pStart, pEnd) + 1;
+        }
+      }
+
+      // Cap individually at days in month
+      tenantDays = Math.min(tenantDays, daysInMonth);
+      selfDays = Math.min(selfDays, daysInMonth - tenantDays);
+
+      BigDecimal tenantPct =
+          BigDecimal.valueOf(tenantDays)
               .multiply(ONE_HUNDRED)
               .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
-      dataPoints.add(new OccupancyDataPoint(ym.toString(), pct));
+      BigDecimal selfPct =
+          BigDecimal.valueOf(selfDays)
+              .multiply(ONE_HUNDRED)
+              .divide(BigDecimal.valueOf(daysInMonth), SCALE, HALF_UP);
+      dataPoints.add(new OccupancyDataPoint(ym.toString(), tenantPct, selfPct));
     }
     return new OccupancyChartData(dataPoints);
   }

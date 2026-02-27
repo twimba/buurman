@@ -223,6 +223,9 @@ export const useCreateFinancing = (propertyId: string) => {
         queryKey: ['propertyFinancings', propertyId],
       });
       queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -250,6 +253,9 @@ export const useUpdateFinancing = (propertyId: string) => {
         queryKey: ['propertyFinancings', propertyId],
       });
       queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -270,6 +276,9 @@ export const useDeleteFinancing = (propertyId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['propertyFinancings', propertyId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyTimeline', propertyId],
       });
       queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
@@ -299,6 +308,9 @@ export const useCreateFinancingPayment = (
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['financingPayments', propertyId, financingId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyFinancings', propertyId],
       });
       queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
@@ -337,6 +349,9 @@ export const useUpdateFinancingPayment = (
         queryKey: ['financingPayments', propertyId, financingId],
       });
       queryClient.invalidateQueries({
+        queryKey: ['propertyFinancings', propertyId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -360,6 +375,9 @@ export const useDeleteFinancingPayment = (
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['financingPayments', propertyId, financingId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['propertyFinancings', propertyId],
       });
       queryClient.invalidateQueries({
         queryKey: ['propertyFinancials', propertyId],
