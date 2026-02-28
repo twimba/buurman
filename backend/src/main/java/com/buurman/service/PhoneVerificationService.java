@@ -154,6 +154,7 @@ public class PhoneVerificationService {
             .notificationType(PHONE_VERIFICATION_CODE)
             .recipientUserId(user.getId())
             .recipientPhone(user.getPhone().orElse(null))
+            .createdBy(user.getId())
             .templateName("phone-verification-code")
             .templateVariables(
                 Map.of(

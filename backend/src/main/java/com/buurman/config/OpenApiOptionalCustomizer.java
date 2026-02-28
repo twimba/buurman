@@ -33,10 +33,10 @@ import jakarta.validation.constraints.Size;
  * Enriches {@link Optional}-typed DTO fields in the OpenAPI spec:
  *
  * <ol>
- *   <li>Marks as nullable via OAS 3.1 {@code type: ["...", "null"]} (SpringDoc unwraps
- *       {@code Optional<T>} but omits nullable).
- *   <li>Propagates Jakarta validation constraints declared as TYPE_USE annotations on the inner type
- *       (e.g. {@code Optional<@Positive BigDecimal>}), which SpringDoc does not traverse.
+ *   <li>Marks as nullable via OAS 3.1 {@code type: ["...", "null"]} (SpringDoc unwraps {@code
+ *       Optional<T>} but omits nullable).
+ *   <li>Propagates Jakarta validation constraints declared as TYPE_USE annotations on the inner
+ *       type (e.g. {@code Optional<@Positive BigDecimal>}), which SpringDoc does not traverse.
  * </ol>
  *
  * <p>Runs as a {@link GlobalOpenApiCustomizer} so it applies across all API groups (app +

@@ -273,6 +273,7 @@ public class AuthService {
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
                         .recipientPhone(user.getPhone().orElse(null))
+                        .createdBy(user.getId())
                         .templateName("welcome")
                         .templateVariables(
                             Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
@@ -321,6 +322,7 @@ public class AuthService {
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
                         .recipientPhone(user.getPhone().orElse(null))
+                        .createdBy(user.getId())
                         .templateName("verification-code")
                         .templateVariables(
                             Map.of(
