@@ -25,6 +25,10 @@ backend/.idea/
 backend/target/classes/
 **/.DS_Store
 
+# Generated API clients (Orval)
+app/src/generated/
+backoffice/src/generated/
+
 # Documentation (If you don't need Claude to read it every time)
 docs/
 site/

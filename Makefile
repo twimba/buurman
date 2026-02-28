@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc openapi-export
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc openapi-export generate-api openapi-refresh
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -46,6 +46,13 @@ backend-upgradable-dependencies:
 ## Export OpenAPI specs from running backend to openapi/ directory
 openapi-export:
 	bash scripts/export-openapi.sh
+
+## Generate TypeScript API clients from OpenAPI specs
+generate-api:
+	yarn generate:api
+
+## Export OpenAPI specs from backend + regenerate API clients
+openapi-refresh: openapi-export generate-api
 
 deploy-prod:
 	git fetch origin main
