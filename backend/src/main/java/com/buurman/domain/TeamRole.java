@@ -1,5 +1,8 @@
 package com.buurman.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Role assigned to a team member determining access level")
 public enum TeamRole {
   TEAM_ADMIN("Administrator"),
   TEAM_EDITOR("Editor"),

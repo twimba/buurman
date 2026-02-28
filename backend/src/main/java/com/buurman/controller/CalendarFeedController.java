@@ -22,6 +22,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.CalendarFeedService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,7 +40,8 @@ public class CalendarFeedController {
       summary = "Get iCalendar feed",
       description = "Public endpoint serving iCal feed content")
   @GetMapping(value = "/ical/{feedToken}", produces = "text/calendar; charset=utf-8")
-  public ResponseEntity<String> getCalendarFeed(@PathVariable String feedToken) {
+  public ResponseEntity<String> getCalendarFeed(
+      @Parameter(description = "Calendar feed access token") @PathVariable String feedToken) {
     return calendarFeedService
         .generateICalFeed(feedToken)
         .map(
@@ -78,7 +80,8 @@ public class CalendarFeedController {
   @SecurityRequirement(name = "bearer-jwt")
   @PostMapping("/feeds/{identifier}/rotate")
   public CalendarFeedResponse rotateFeedToken(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Calendar feed ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return calendarFeedService.rotateFeedToken(identifier, principal);
   }
 
@@ -87,7 +90,8 @@ public class CalendarFeedController {
   @DeleteMapping("/feeds/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteFeed(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Calendar feed ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     calendarFeedService.deleteFeed(identifier, principal);
   }
 }

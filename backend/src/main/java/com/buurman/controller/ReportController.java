@@ -36,6 +36,7 @@ import com.buurman.service.FeatureFlagService;
 import com.buurman.service.ReportService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -74,10 +75,18 @@ public class ReportController {
               + " period")
   @GetMapping("/financial-overview")
   public FinancialOverviewResponse getFinancialOverview(
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam Optional<List<String>> propertyIdentifiers,
-      @RequestParam Optional<String> currency,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate endDate,
+      @Parameter(description = "Property ULID identifiers to filter by") @RequestParam
+          Optional<List<String>> propertyIdentifiers,
+      @Parameter(description = "Currency code", example = "EUR") @RequestParam
+          Optional<String> currency,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
@@ -93,10 +102,19 @@ public class ReportController {
       description = "Get income, expenses, and net profit trend for a date range or last N months")
   @GetMapping("/charts/income-trend")
   public IncomeTrendResponse getIncomeTrend(
-      @RequestParam(defaultValue = "12") int months,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
-      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @Parameter(description = "Number of months to look back", example = "12")
+          @RequestParam(defaultValue = "12")
+          int months,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> endDate,
+      @Parameter(description = "Property ULID identifiers to filter by") @RequestParam
+          Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
@@ -115,9 +133,16 @@ public class ReportController {
       description = "Get expense breakdown by category with totals and percentages")
   @GetMapping("/charts/expense-breakdown")
   public ExpenseBreakdownResponse getExpenseBreakdown(
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate endDate,
+      @Parameter(description = "Property ULID identifiers to filter by") @RequestParam
+          Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
@@ -132,9 +157,16 @@ public class ReportController {
       description = "Compare financial performance across all properties")
   @GetMapping("/charts/property-comparison")
   public PropertyComparisonResponse getPropertyComparison(
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) LocalDate endDate,
-      @RequestParam Optional<List<String>> propertyIdentifiers,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          LocalDate endDate,
+      @Parameter(description = "Property ULID identifiers to filter by") @RequestParam
+          Optional<List<String>> propertyIdentifiers,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     List<UUID> propertyIds =
@@ -149,9 +181,17 @@ public class ReportController {
       description = "Get occupancy rate trend for a date range or last N months")
   @GetMapping("/charts/occupancy-trend")
   public OccupancyTrendResponse getOccupancyTrend(
-      @RequestParam(defaultValue = "12") int months,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
+      @Parameter(description = "Number of months to look back", example = "12")
+          @RequestParam(defaultValue = "12")
+          int months,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     if (startDate.isPresent() && endDate.isPresent()) {
@@ -165,7 +205,8 @@ public class ReportController {
       description = "Get annual tax summary with income, expenses, and breakdown by category")
   @GetMapping("/tax-summary")
   public TaxSummaryResponse getTaxSummary(
-      @RequestParam int year, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Fiscal year", example = "2026") @RequestParam int year,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     return reportService.getTaxSummary(year, principal);
   }
@@ -175,8 +216,14 @@ public class ReportController {
       description = "Download transaction history as CSV file")
   @GetMapping("/export/transactions/csv")
   public ResponseEntity<byte[]> exportTransactionHistoryCSV(
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] csv =
@@ -194,8 +241,14 @@ public class ReportController {
       description = "Download transaction history as PDF file")
   @GetMapping("/export/transactions/pdf")
   public ResponseEntity<byte[]> exportTransactionHistoryPDF(
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> startDate,
-      @RequestParam @DateTimeFormat(iso = DATE) Optional<LocalDate> endDate,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> startDate,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31")
+          @RequestParam
+          @DateTimeFormat(iso = DATE)
+          Optional<LocalDate> endDate,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =

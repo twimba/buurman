@@ -29,6 +29,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PhotoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,18 @@ public class PhotoController {
       summary = "Search and list all photos",
       description = "Search across all photos with optional filters and pagination")
   public ResponseEntity<PageResponse<PhotoResponse>> getAllPhotos(
-      @RequestParam Optional<String> search,
-      @RequestParam Optional<String> entityType,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Filter by entity type") @RequestParam Optional<String> entityType,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
@@ -66,7 +73,8 @@ public class PhotoController {
       summary = "Get photo metadata",
       description = "Get detailed metadata for a specific photo")
   public ResponseEntity<PhotoResponse> getPhoto(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Photo ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     PhotoResponse photo = photoService.getPhoto(identifier, principal);
     return ResponseEntity.ok(photo);
@@ -77,7 +85,8 @@ public class PhotoController {
       summary = "Get download URL",
       description = "Get presigned URL for downloading a photo")
   public ResponseEntity<String> getDownloadUrl(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Photo ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     URL downloadUrl = photoService.getDownloadUrl(identifier, principal);
     return ResponseEntity.ok(downloadUrl.toString());
@@ -86,7 +95,8 @@ public class PhotoController {
   @GetMapping("/{identifier}/preview")
   @Operation(summary = "Get preview URL", description = "Get presigned URL for previewing a photo")
   public ResponseEntity<String> getPreviewUrl(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Photo ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     // For now, preview URL is same as download URL
     // In the future, we could generate thumbnails or lower-res previews
@@ -96,7 +106,7 @@ public class PhotoController {
 
   @PutMapping("/{identifier}")
   public ResponseEntity<PhotoResponse> updatePhoto(
-      @PathVariable String identifier,
+      @Parameter(description = "Photo ULID identifier") @PathVariable String identifier,
       @RequestBody UpdatePhotoRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     PhotoResponse response = photoService.updatePhoto(identifier, request, principal);
@@ -107,7 +117,8 @@ public class PhotoController {
   @Operation(summary = "Delete photo", description = "Soft delete a photo")
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ResponseEntity<Void> deletePhoto(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Photo ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     photoService.deletePhoto(identifier, principal);
     return ResponseEntity.noContent().build();

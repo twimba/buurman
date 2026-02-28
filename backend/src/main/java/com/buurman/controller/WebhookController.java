@@ -24,6 +24,7 @@ import com.sendgrid.helpers.eventwebhook.EventWebhook;
 import com.twilio.security.RequestValidator;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +52,12 @@ public class WebhookController {
       description = "Receives delivery status events from SendGrid")
   @PostMapping("/sendgrid/events")
   public ResponseEntity<Void> handleSendGridEvents(
-      @RequestBody String rawPayload,
-      @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Signature", required = false)
+      @Parameter(description = "Raw JSON event payload") @RequestBody String rawPayload,
+      @Parameter(description = "SendGrid ECDSA signature")
+          @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Signature", required = false)
           @Nullable String signature,
-      @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Timestamp", required = false)
+      @Parameter(description = "SendGrid event timestamp")
+          @RequestHeader(value = "X-Twilio-Email-Event-Webhook-Timestamp", required = false)
           @Nullable String timestamp) {
     try {
       if (!verifySendGridSignature(rawPayload, signature, timestamp)) {
@@ -74,8 +77,10 @@ public class WebhookController {
       description = "Receives SMS delivery status from Twilio")
   @PostMapping("/twilio/status")
   public ResponseEntity<String> handleTwilioStatus(
-      @RequestParam Map<String, String> params,
-      @RequestHeader(value = "X-Twilio-Signature", required = false)
+      @Parameter(description = "Twilio status callback form parameters") @RequestParam
+          Map<String, String> params,
+      @Parameter(description = "Twilio request signature")
+          @RequestHeader(value = "X-Twilio-Signature", required = false)
           @Nullable String twilioSignature,
       HttpServletRequest request) {
     try {

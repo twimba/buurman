@@ -45,6 +45,7 @@ import com.buurman.service.DocumentService;
 import com.buurman.service.PaymentSchedulingService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -80,13 +81,21 @@ public class ContractController {
       description = "Get all contracts with optional filters and pagination")
   @GetMapping
   public PageResponse<ContractResponse> getContracts(
-      @RequestParam Optional<ContractStatus> status,
-      @RequestParam Optional<String> propertyIdentifier,
-      @RequestParam Optional<String> tenantIdentifier,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Filter by status") @RequestParam Optional<ContractStatus> status,
+      @Parameter(description = "Property ULID identifier") @RequestParam
+          Optional<String> propertyIdentifier,
+      @Parameter(description = "Tenant ULID identifier") @RequestParam
+          Optional<String> tenantIdentifier,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     // When filtering by property or tenant identifier, use the existing non-paginated methods
@@ -111,7 +120,8 @@ public class ContractController {
   @Operation(summary = "Get contract details", description = "Get details of a specific contract")
   @GetMapping("/{identifier}")
   public ContractResponse getContract(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.getContract(identifier, principal);
   }
 
@@ -120,7 +130,7 @@ public class ContractController {
       description = "Update contract information (Admin/Editor)")
   @PutMapping("/{identifier}")
   public ContractResponse updateContract(
-      @PathVariable String identifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdateContractRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.updateContract(identifier, request, principal);
@@ -130,7 +140,8 @@ public class ContractController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteContract(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     contractService.deleteContract(identifier, principal);
   }
 
@@ -139,7 +150,7 @@ public class ContractController {
       description = "Change the status of a contract (Admin/Editor)")
   @PostMapping("/{identifier}/change-status")
   public ContractResponse changeContractStatus(
-      @PathVariable String identifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody ChangeContractStatusRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.changeContractStatus(identifier, request, principal);
@@ -150,7 +161,8 @@ public class ContractController {
       description = "Reopen a terminated or expired contract back to draft status (Admin/Editor)")
   @PostMapping("/{identifier}/reopen")
   public ContractResponse reopenContract(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.reopenContract(identifier, principal);
   }
 
@@ -160,7 +172,8 @@ public class ContractController {
   @PostMapping("/{identifier}/duplicate")
   @ResponseStatus(CREATED)
   public ContractResponse duplicateContract(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.duplicateContract(identifier, principal);
   }
 
@@ -169,7 +182,8 @@ public class ContractController {
       description = "Get country-specific metadata field definitions for dynamic form rendering")
   @GetMapping("/metadata-schema/{countryCode}")
   public CountryMetadataSchemaResponse getMetadataSchema(
-      @PathVariable String countryCode, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "ISO country code", example = "NL") @PathVariable String countryCode,
+      @AuthenticationPrincipal UserPrincipal principal) {
     String normalized =
         com.buurman.domain.metadata.CountryMetadataRegistry.normalizeCountryCode(countryCode);
     if (normalized == null
@@ -189,7 +203,7 @@ public class ContractController {
   @PostMapping("/{identifier}/parties")
   @ResponseStatus(CREATED)
   public ContractPartyResponse addParty(
-      @PathVariable String identifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody AddContractPartyRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractPartyService.addParty(identifier, request, principal);
@@ -201,8 +215,9 @@ public class ContractController {
   @DeleteMapping("/{identifier}/parties/{partyIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void removeParty(
-      @PathVariable String identifier,
-      @PathVariable String partyIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Contract party ULID identifier") @PathVariable
+          String partyIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     contractPartyService.removeParty(identifier, partyIdentifier, principal);
   }
@@ -212,7 +227,7 @@ public class ContractController {
       description = "Change the primary tenant of a contract (Admin/Editor)")
   @PostMapping("/{identifier}/parties/change-primary")
   public ContractPartyResponse changePrimaryTenant(
-      @PathVariable String identifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody ChangePrimaryTenantRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractPartyService.changePrimaryTenant(identifier, request, principal);
@@ -226,10 +241,10 @@ public class ContractController {
   @PostMapping("/{identifier}/documents")
   @ResponseStatus(CREATED)
   public DocumentResponse uploadDocument(
-      @PathVariable String identifier,
-      @RequestParam("file") MultipartFile file,
-      @RequestParam Optional<String> title,
-      @RequestParam Optional<String> notes,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
+      @Parameter(description = "Document title") @RequestParam Optional<String> title,
+      @Parameter(description = "Additional notes") @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.uploadDocument(
         identifier, file, title.orElse(null), notes.orElse(null), principal);
@@ -238,7 +253,8 @@ public class ContractController {
   @Operation(summary = "List documents", description = "Get all documents for a contract")
   @GetMapping("/{identifier}/documents")
   public List<DocumentResponse> getDocuments(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.getDocuments(identifier, principal);
   }
 
@@ -247,7 +263,8 @@ public class ContractController {
       description = "Get presigned download URL for a document")
   @GetMapping("/documents/{documentIdentifier}/download")
   public Map<String, String> getDownloadUrl(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     URL url = contractService.getDocumentDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
@@ -256,14 +273,16 @@ public class ContractController {
   @DeleteMapping("/documents/{documentIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteDocument(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     contractService.deleteDocument(documentIdentifier, principal);
   }
 
   @Operation(summary = "Get audit log", description = "Get audit history for a contract")
   @GetMapping("/{identifier}/audit-log")
   public List<RecentActivityResponse> getContractAuditLog(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.getAuditLog(identifier, principal);
   }
 
@@ -272,7 +291,7 @@ public class ContractController {
       description = "Manually generate N future payments for a contract (Admin/Editor)")
   @PostMapping("/{identifier}/generate-payments")
   public Map<String, Object> generatePayments(
-      @PathVariable String identifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody GeneratePaymentsRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return contractService.generatePayments(identifier, request, principal);

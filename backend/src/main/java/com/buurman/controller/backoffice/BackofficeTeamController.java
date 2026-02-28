@@ -25,6 +25,7 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeTeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -44,25 +45,32 @@ public class BackofficeTeamController {
       description = "Get all teams with optional name search and pagination")
   @GetMapping
   public PageResponse<BackofficeTeamResponse> listTeams(
-      @RequestParam Optional<String> search,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction) {
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return backofficeTeamService.listTeams(pageRequest, search.orElse(null));
   }
 
   @Operation(summary = "Get team", description = "Get detailed team overview by identifier")
   @GetMapping("/{identifier}")
-  public BackofficeTeamDetailResponse getTeam(@PathVariable String identifier) {
+  public BackofficeTeamDetailResponse getTeam(
+      @Parameter(description = "Team ULID identifier") @PathVariable String identifier) {
     return backofficeTeamService.getTeam(identifier);
   }
 
   @Operation(summary = "Update team name", description = "Update the name of a team")
   @PutMapping("/{identifier}")
   public BackofficeTeamResponse updateTeamName(
-      @PathVariable String identifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdateTeamNameRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     return backofficeTeamService.updateTeamName(identifier, request, principal);
@@ -72,7 +80,8 @@ public class BackofficeTeamController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteTeam(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Team ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     backofficeTeamService.deleteTeam(identifier, principal);
   }
 }

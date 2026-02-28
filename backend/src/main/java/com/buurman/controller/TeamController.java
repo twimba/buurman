@@ -29,6 +29,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.TeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,7 +53,8 @@ public class TeamController {
   @Operation(summary = "List team members", description = "Get all members of the team")
   @GetMapping("/{teamIdentifier}/members")
   public List<TeamMemberResponse> getTeamMembers(
-      @PathVariable String teamIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.getTeamMembers(teamIdentifier, principal);
   }
 
@@ -60,7 +62,7 @@ public class TeamController {
   @PostMapping("/{teamIdentifier}/invitations")
   @ResponseStatus(CREATED)
   public InvitationResponse createInvitation(
-      @PathVariable String teamIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
       @Valid @RequestBody CreateInvitationRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.createInvitation(teamIdentifier, request, principal);
@@ -71,7 +73,8 @@ public class TeamController {
       description = "Get all pending invitations for the team (Admin only)")
   @GetMapping("/{teamIdentifier}/invitations/pending")
   public List<InvitationResponse> getTeamPendingInvitations(
-      @PathVariable String teamIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.getTeamPendingInvitations(teamIdentifier, principal);
   }
 
@@ -80,8 +83,8 @@ public class TeamController {
       description = "Resend an invitation email with a new token (Admin only)")
   @PostMapping("/{teamIdentifier}/invitations/{token}/resend")
   public InvitationResponse resendInvitation(
-      @PathVariable String teamIdentifier,
-      @PathVariable String token,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @Parameter(description = "Invitation token") @PathVariable String token,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.resendInvitation(teamIdentifier, token, principal);
   }
@@ -90,8 +93,8 @@ public class TeamController {
   @DeleteMapping("/{teamIdentifier}/members/{userIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void removeMember(
-      @PathVariable String teamIdentifier,
-      @PathVariable String userIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @Parameter(description = "User ULID identifier") @PathVariable String userIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     teamService.removeMember(teamIdentifier, userIdentifier, principal);
   }
@@ -99,8 +102,8 @@ public class TeamController {
   @Operation(summary = "Update member role", description = "Change member's role (Admin only)")
   @PutMapping("/{teamIdentifier}/members/{userIdentifier}/role")
   public TeamMemberResponse updateMemberRole(
-      @PathVariable String teamIdentifier,
-      @PathVariable String userIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @Parameter(description = "User ULID identifier") @PathVariable String userIdentifier,
       @Valid @RequestBody UpdateMemberRoleRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.updateMemberRole(teamIdentifier, userIdentifier, request, principal);
@@ -109,7 +112,7 @@ public class TeamController {
   @Operation(summary = "Update team", description = "Update team name (Admin only)")
   @PutMapping("/{teamIdentifier}")
   public TeamResponse updateTeam(
-      @PathVariable String teamIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
       @Valid @RequestBody UpdateTeamRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.updateTeam(teamIdentifier, request, principal);
@@ -120,7 +123,7 @@ public class TeamController {
       description = "Update team configuration settings (Admin only)")
   @PutMapping("/{teamIdentifier}/settings")
   public TeamPreferencesResponse updateTeamSettings(
-      @PathVariable String teamIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
       @Valid @RequestBody UpdateTeamSettingsRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.updateTeamPreferences(teamIdentifier, request, principal);
@@ -129,7 +132,8 @@ public class TeamController {
   @Operation(summary = "Get team settings", description = "Get team configuration settings")
   @GetMapping("/{teamIdentifier}/settings")
   public TeamPreferencesResponse getTeamSettings(
-      @PathVariable String teamIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.getTeamPreferences(teamIdentifier, principal);
   }
 
@@ -138,7 +142,7 @@ public class TeamController {
       description = "Transfer team ownership to another member (Owner only)")
   @PostMapping("/{teamIdentifier}/transfer-ownership")
   public TeamMemberResponse transferOwnership(
-      @PathVariable String teamIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
       @Valid @RequestBody TransferOwnershipRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return teamService.transferOwnership(teamIdentifier, request.newOwnerIdentifier(), principal);

@@ -24,6 +24,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPaymentInstructionService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,7 +46,8 @@ public class ContractPaymentInstructionController {
       description = "Get all payment instructions for a contract (full history)")
   @GetMapping
   public List<ContractPaymentInstructionResponse> getHistory(
-      @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return service.getHistory(contractIdentifier, principal);
   }
 
@@ -54,7 +56,8 @@ public class ContractPaymentInstructionController {
       description = "Get the currently active payment instruction for a contract")
   @GetMapping("/current")
   public @Nullable ContractPaymentInstructionResponse getCurrent(
-      @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return service.getCurrent(contractIdentifier, principal).orElse(null);
   }
 
@@ -64,7 +67,7 @@ public class ContractPaymentInstructionController {
   @PostMapping
   @ResponseStatus(CREATED)
   public ContractPaymentInstructionResponse create(
-      @PathVariable String contractIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
       @Valid @RequestBody CreateContractPaymentInstructionRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return service.create(contractIdentifier, request, principal);
@@ -75,8 +78,9 @@ public class ContractPaymentInstructionController {
       description = "Change payment instruction (closes current, creates new entry) (Admin/Editor)")
   @PutMapping("/{instructionIdentifier}")
   public ContractPaymentInstructionResponse update(
-      @PathVariable String contractIdentifier,
-      @PathVariable String instructionIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @Parameter(description = "Payment instruction ULID identifier") @PathVariable
+          String instructionIdentifier,
       @Valid @RequestBody UpdateContractPaymentInstructionRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return service.update(contractIdentifier, instructionIdentifier, request, principal);
@@ -88,8 +92,9 @@ public class ContractPaymentInstructionController {
   @DeleteMapping("/{instructionIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void delete(
-      @PathVariable String contractIdentifier,
-      @PathVariable String instructionIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @Parameter(description = "Payment instruction ULID identifier") @PathVariable
+          String instructionIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     service.delete(contractIdentifier, instructionIdentifier, principal);
   }

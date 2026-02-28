@@ -16,6 +16,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyAcquisitionService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,7 +34,8 @@ public class PropertyAcquisitionController {
   @Operation(summary = "Get acquisition", description = "Get acquisition data for a property")
   @GetMapping
   public Optional<PropertyAcquisitionResponse> getAcquisition(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return acquisitionService.getByProperty(propertyIdentifier, principal);
   }
 
@@ -42,7 +44,7 @@ public class PropertyAcquisitionController {
       description = "Create or update acquisition data for a property (Admin/Editor)")
   @PutMapping
   public PropertyAcquisitionResponse upsertAcquisition(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody UpsertPropertyAcquisitionRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return acquisitionService.upsert(propertyIdentifier, request, principal);

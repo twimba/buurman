@@ -9,8 +9,12 @@ import java.util.Optional;
 import com.buurman.domain.Contract;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Rental contract details including parties, payment terms, and status")
 public record ContractResponse(
-    String identifier,
+    @Schema(description = "Unique contract identifier", example = "ctr_01HZQX7V8B3K5M2N4P6R9T0W")
+        String identifier,
     Optional<PropertySummary> property,
     List<ContractPartyResponse> parties,
     Optional<TenantSummary> primaryTenant,

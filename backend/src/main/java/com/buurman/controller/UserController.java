@@ -29,6 +29,7 @@ import com.buurman.service.PhoneVerificationService;
 import com.buurman.service.UserTeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -129,7 +130,8 @@ public class UserController {
   @PostMapping("/teams/{teamIdentifier}/leave")
   @ResponseStatus(NO_CONTENT)
   public void leaveTeam(
-      @AuthenticationPrincipal UserPrincipal principal, @PathVariable String teamIdentifier) {
+      @AuthenticationPrincipal UserPrincipal principal,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier) {
     userTeamService.leaveTeam(teamIdentifier, principal);
   }
 }

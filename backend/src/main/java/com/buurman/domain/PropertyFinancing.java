@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyFinancing {
 
+  @Schema(description = "Type of financing instrument")
   public enum FinancingType {
     MORTGAGE,
     LEASING,
@@ -27,6 +29,7 @@ public class PropertyFinancing {
     OTHER
   }
 
+  @Schema(description = "Interest rate structure of the financing")
   public enum RateType {
     FIXED,
     VARIABLE,
@@ -34,6 +37,7 @@ public class PropertyFinancing {
     HYBRID
   }
 
+  @Schema(description = "Current status of the financing arrangement")
   public enum FinancingStatus {
     ACTIVE,
     PAID_OFF,

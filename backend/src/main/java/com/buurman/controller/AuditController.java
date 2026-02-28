@@ -45,10 +45,16 @@ public class AuditController {
           Optional<Action> action,
       @Parameter(description = "Search by user name, entity type, or action") @RequestParam
           Optional<String> search,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return auditService.getAllAuditLogsPaginated(

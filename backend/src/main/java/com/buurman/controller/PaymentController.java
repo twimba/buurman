@@ -43,6 +43,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PaymentService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -95,15 +96,27 @@ public class PaymentController {
       description = "Get all payments with optional filters and pagination")
   @GetMapping
   public PageResponse<PaymentResponse> getPayments(
-      @RequestParam Optional<Payment.PaymentStatus> status,
-      @RequestParam Optional<String> contractIdentifier,
-      @RequestParam Optional<String> propertyIdentifier,
-      @RequestParam Optional<LocalDate> dateFrom,
-      @RequestParam Optional<LocalDate> dateTo,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Filter by status") @RequestParam
+          Optional<Payment.PaymentStatus> status,
+      @Parameter(description = "Contract ULID identifier") @RequestParam
+          Optional<String> contractIdentifier,
+      @Parameter(description = "Property ULID identifier") @RequestParam
+          Optional<String> propertyIdentifier,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          Optional<LocalDate> dateFrom,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31") @RequestParam
+          Optional<LocalDate> dateTo,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
@@ -135,14 +148,15 @@ public class PaymentController {
   @Operation(summary = "Get payment details", description = "Get details of a specific payment")
   @GetMapping("/{identifier}")
   public PaymentResponse getPayment(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.getPayment(identifier, principal);
   }
 
   @Operation(summary = "Update payment", description = "Update payment information (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PaymentResponse updatePayment(
-      @PathVariable String identifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdatePaymentRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.updatePayment(identifier, request, principal);
@@ -153,7 +167,7 @@ public class PaymentController {
       description = "Mark a payment as paid with payment date (Admin/Editor)")
   @PutMapping("/{identifier}/mark-paid")
   public PaymentResponse markPaymentAsPaid(
-      @PathVariable String identifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody MarkPaidRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.markPaymentAsPaid(identifier, request, principal);
@@ -167,7 +181,7 @@ public class PaymentController {
   @PostMapping("/{identifier}/receivals")
   @ResponseStatus(CREATED)
   public PaymentResponse registerReceival(
-      @PathVariable String identifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody CreatePaymentReceivalRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.registerReceival(identifier, request, principal);
@@ -176,7 +190,8 @@ public class PaymentController {
   @Operation(summary = "List receivals", description = "Get all receivals for a payment")
   @GetMapping("/{identifier}/receivals")
   public List<PaymentReceivalResponse> getReceivals(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.getReceivalsForPayment(identifier, principal);
   }
 
@@ -185,8 +200,8 @@ public class PaymentController {
       description = "Update a receival's amount, date, or notes (Admin/Editor)")
   @PutMapping("/{identifier}/receivals/{receivalIdentifier}")
   public PaymentResponse updateReceival(
-      @PathVariable String identifier,
-      @PathVariable String receivalIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Receival ULID identifier") @PathVariable String receivalIdentifier,
       @Valid @RequestBody UpdatePaymentReceivalRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.updateReceival(identifier, receivalIdentifier, request, principal);
@@ -195,8 +210,8 @@ public class PaymentController {
   @Operation(summary = "Delete receival", description = "Soft delete a receival (Admin/Editor)")
   @DeleteMapping("/{identifier}/receivals/{receivalIdentifier}")
   public PaymentResponse deleteReceival(
-      @PathVariable String identifier,
-      @PathVariable String receivalIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Receival ULID identifier") @PathVariable String receivalIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.deleteReceival(identifier, receivalIdentifier, principal);
   }
@@ -209,7 +224,8 @@ public class PaymentController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deletePayment(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     paymentService.deletePayment(identifier, principal);
   }
 
@@ -219,10 +235,10 @@ public class PaymentController {
   @PostMapping("/{identifier}/documents")
   @ResponseStatus(CREATED)
   public DocumentResponse uploadDocument(
-      @PathVariable String identifier,
-      @RequestParam("file") MultipartFile file,
-      @RequestParam Optional<String> title,
-      @RequestParam Optional<String> notes,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
+      @Parameter(description = "Document title") @RequestParam Optional<String> title,
+      @Parameter(description = "Additional notes") @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.uploadDocument(
         identifier, file, title.orElse(null), notes.orElse(null), principal);
@@ -231,7 +247,8 @@ public class PaymentController {
   @Operation(summary = "List documents", description = "Get all documents for a payment")
   @GetMapping("/{identifier}/documents")
   public List<DocumentResponse> getDocuments(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.getDocuments(identifier, principal);
   }
 
@@ -240,7 +257,8 @@ public class PaymentController {
       description = "Get presigned download URL for a document")
   @GetMapping("/documents/{documentIdentifier}/download")
   public Map<String, String> getDownloadUrl(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     URL url = paymentService.getDocumentDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
@@ -249,14 +267,16 @@ public class PaymentController {
   @DeleteMapping("/documents/{documentIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteDocument(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     paymentService.deleteDocument(documentIdentifier, principal);
   }
 
   @Operation(summary = "Get audit log", description = "Get audit history for a payment")
   @GetMapping("/{identifier}/audit-log")
   public List<RecentActivityResponse> getPaymentAuditLog(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.getAuditLog(identifier, principal);
   }
 }

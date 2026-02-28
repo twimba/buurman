@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
+@Schema(description = "Request to create a new rental contract")
 public record CreateContractRequest(
     @NotNull(message = "Property identifier is required") String propertyIdentifier,
     @NotNull(message = "At least one party is required") @Size(min = 1, message = "At least one party is required") @Valid List<ContractPartyRequest> parties,

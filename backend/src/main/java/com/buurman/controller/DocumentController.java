@@ -30,6 +30,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +48,18 @@ public class DocumentController {
       summary = "Search and list all documents",
       description = "Search across all documents with optional filters and pagination")
   public ResponseEntity<PageResponse<DocumentResponse>> getAllDocuments(
-      @RequestParam Optional<String> search,
-      @RequestParam Optional<String> entityType,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Filter by entity type") @RequestParam Optional<String> entityType,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
@@ -67,7 +74,8 @@ public class DocumentController {
       summary = "Get document metadata",
       description = "Get detailed metadata for a specific document")
   public ResponseEntity<DocumentResponse> getDocument(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     DocumentResponse document = documentService.getDocument(identifier, principal);
     return ResponseEntity.ok(document);
@@ -78,7 +86,8 @@ public class DocumentController {
       summary = "Get download URL",
       description = "Get presigned URL for downloading a document")
   public ResponseEntity<String> getDownloadUrl(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     URL downloadUrl = documentService.getDownloadUrl(identifier, principal);
     return ResponseEntity.ok(downloadUrl.toString());
@@ -89,7 +98,8 @@ public class DocumentController {
       summary = "Get preview URL",
       description = "Get presigned URL for previewing a document (PDFs and images)")
   public ResponseEntity<String> getPreviewUrl(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     // For now, preview URL is same as download URL
     // In the future, we could generate thumbnails or lower-res previews
@@ -99,7 +109,7 @@ public class DocumentController {
 
   @PutMapping("/{identifier}")
   public ResponseEntity<DocumentResponse> updateDocument(
-      @PathVariable String identifier,
+      @Parameter(description = "Document ULID identifier") @PathVariable String identifier,
       @RequestBody UpdateDocumentRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     DocumentResponse response = documentService.updateDocument(identifier, request, principal);
@@ -110,7 +120,8 @@ public class DocumentController {
   @Operation(summary = "Delete document", description = "Soft delete a document")
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ResponseEntity<Void> deleteDocument(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     documentService.deleteDocument(identifier, principal);
     return ResponseEntity.noContent().build();

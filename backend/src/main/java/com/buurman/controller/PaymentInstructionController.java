@@ -23,6 +23,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PaymentInstructionService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,7 +51,9 @@ public class PaymentInstructionController {
       description = "Get a payment instruction template by identifier")
   @GetMapping("/{identifier}")
   public PaymentInstructionResponse getByIdentifier(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment instruction ULID identifier") @PathVariable
+          String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return paymentInstructionService.getByIdentifier(identifier, principal);
   }
 
@@ -70,7 +73,8 @@ public class PaymentInstructionController {
       description = "Update a payment instruction template (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PaymentInstructionResponse update(
-      @PathVariable String identifier,
+      @Parameter(description = "Payment instruction ULID identifier") @PathVariable
+          String identifier,
       @Valid @RequestBody UpdatePaymentInstructionRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentInstructionService.update(identifier, request, principal);
@@ -82,7 +86,9 @@ public class PaymentInstructionController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void delete(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Payment instruction ULID identifier") @PathVariable
+          String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     paymentInstructionService.delete(identifier, principal);
   }
 }

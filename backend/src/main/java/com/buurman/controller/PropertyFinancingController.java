@@ -36,6 +36,7 @@ import com.buurman.service.FinancingPaymentService;
 import com.buurman.service.PropertyFinancingService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -59,15 +60,17 @@ public class PropertyFinancingController {
   @Operation(summary = "List financings", description = "Get all financings for a property")
   @GetMapping
   public List<PropertyFinancingResponse> listFinancings(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return financingService.listByProperty(propertyIdentifier, principal);
   }
 
   @Operation(summary = "Get financing", description = "Get details of a specific financing")
   @GetMapping("/{financingIdentifier}")
   public PropertyFinancingResponse getFinancing(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return financingService.getFinancing(financingIdentifier, principal);
   }
@@ -78,7 +81,7 @@ public class PropertyFinancingController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyFinancingResponse createFinancing(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreatePropertyFinancingRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return financingService.create(propertyIdentifier, request, principal);
@@ -89,8 +92,9 @@ public class PropertyFinancingController {
       description = "Update a financing instrument (Admin/Editor)")
   @PutMapping("/{financingIdentifier}")
   public PropertyFinancingResponse updateFinancing(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @Valid @RequestBody UpdatePropertyFinancingRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return financingService.update(financingIdentifier, request, principal);
@@ -102,8 +106,9 @@ public class PropertyFinancingController {
   @DeleteMapping("/{financingIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteFinancing(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     financingService.delete(financingIdentifier, principal);
   }
@@ -113,8 +118,9 @@ public class PropertyFinancingController {
   @Operation(summary = "List payments", description = "Get all payments for a financing instrument")
   @GetMapping("/{financingIdentifier}/payments")
   public List<FinancingPaymentResponse> listPayments(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.listByFinancing(financingIdentifier, principal);
   }
@@ -125,8 +131,9 @@ public class PropertyFinancingController {
   @PostMapping("/{financingIdentifier}/payments")
   @ResponseStatus(CREATED)
   public FinancingPaymentResponse createPayment(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @Valid @RequestBody CreateFinancingPaymentRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.create(financingIdentifier, request, principal);
@@ -138,8 +145,9 @@ public class PropertyFinancingController {
   @PostMapping("/{financingIdentifier}/payments/bulk")
   @ResponseStatus(CREATED)
   public List<BulkCreateResult<FinancingPaymentResponse>> bulkCreatePayments(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
       @Valid @RequestBody BulkCreateFinancingPaymentsRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.bulkCreate(financingIdentifier, request.items(), principal);
@@ -148,9 +156,10 @@ public class PropertyFinancingController {
   @Operation(summary = "Update payment", description = "Update a payment record (Admin/Editor)")
   @PutMapping("/{financingIdentifier}/payments/{paymentIdentifier}")
   public FinancingPaymentResponse updatePayment(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String paymentIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String paymentIdentifier,
       @Valid @RequestBody UpdateFinancingPaymentRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.update(paymentIdentifier, request, principal);
@@ -160,9 +169,10 @@ public class PropertyFinancingController {
   @DeleteMapping("/{financingIdentifier}/payments/{paymentIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deletePayment(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String paymentIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String paymentIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     paymentService.delete(paymentIdentifier, principal);
   }
@@ -175,12 +185,13 @@ public class PropertyFinancingController {
   @PostMapping("/{financingIdentifier}/payments/{paymentIdentifier}/documents")
   @ResponseStatus(CREATED)
   public DocumentResponse uploadPaymentDocument(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String paymentIdentifier,
-      @RequestParam("file") MultipartFile file,
-      @RequestParam Optional<String> title,
-      @RequestParam Optional<String> notes,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String paymentIdentifier,
+      @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
+      @Parameter(description = "Document title") @RequestParam Optional<String> title,
+      @Parameter(description = "Additional notes") @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.uploadPaymentDocument(
         paymentIdentifier, file, title.orElse(null), notes.orElse(null), principal);
@@ -191,9 +202,10 @@ public class PropertyFinancingController {
       description = "Get all documents for a financing payment")
   @GetMapping("/{financingIdentifier}/payments/{paymentIdentifier}/documents")
   public List<DocumentResponse> getPaymentDocuments(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String paymentIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Payment ULID identifier") @PathVariable String paymentIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return paymentService.getPaymentDocuments(paymentIdentifier, principal);
   }
@@ -203,9 +215,10 @@ public class PropertyFinancingController {
       description = "Get presigned download URL for a payment document")
   @GetMapping("/{financingIdentifier}/payments/documents/{documentIdentifier}/download")
   public Map<String, String> getPaymentDocumentDownloadUrl(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String documentIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
@@ -217,9 +230,10 @@ public class PropertyFinancingController {
   @DeleteMapping("/{financingIdentifier}/payments/documents/{documentIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deletePaymentDocument(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String financingIdentifier,
-      @PathVariable String documentIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Financing ULID identifier") @PathVariable
+          String financingIdentifier,
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }

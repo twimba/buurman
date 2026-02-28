@@ -26,6 +26,7 @@ import com.buurman.service.RateLimitConfigService;
 import com.buurman.util.CountryGroups;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -97,7 +98,8 @@ public class BackofficeSettingsController {
 
   @Operation(summary = "Get rate limit config by key")
   @GetMapping("/rate-limits/{key}")
-  public RateLimitConfigResponse getRateLimit(@PathVariable String key) {
+  public RateLimitConfigResponse getRateLimit(
+      @Parameter(description = "Rate limit config key") @PathVariable String key) {
     RateLimitConfig config =
         rateLimitConfigService
             .getConfig(key)
@@ -111,7 +113,7 @@ public class BackofficeSettingsController {
   @Operation(summary = "Update rate limit config")
   @PutMapping("/rate-limits/{key}")
   public RateLimitConfigResponse updateRateLimit(
-      @PathVariable String key,
+      @Parameter(description = "Rate limit config key") @PathVariable String key,
       @Valid @RequestBody UpdateRateLimitConfigRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     RateLimitConfig updated =

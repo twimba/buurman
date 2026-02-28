@@ -34,6 +34,7 @@ import com.buurman.service.FlagsmithAdminService.SegmentOverrideState;
 import com.buurman.service.FlagsmithAdminService.SegmentWithOverrides;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +101,8 @@ public class BackofficeFeatureFlagController {
       summary = "Get feature flags for a specific user across all teams",
       description = "Evaluates all flags for each team membership the user has")
   @GetMapping("/users/{userIdentifier}")
-  public List<TeamFlagEvaluation> getUserFlags(@PathVariable String userIdentifier) {
+  public List<TeamFlagEvaluation> getUserFlags(
+      @Parameter(description = "User ULID identifier") @PathVariable String userIdentifier) {
     User user =
         userRepository
             .findByIdentifierUnscoped(userIdentifier)
@@ -149,7 +151,8 @@ public class BackofficeFeatureFlagController {
       description = "Toggles enabled state and/or updates the value of an environment-level flag")
   @PatchMapping("/{flagName}")
   public ResponseEntity<FeatureFlagUpdateResponse> updateGlobalFlag(
-      @PathVariable String flagName, @RequestBody UpdateFeatureFlagRequest request) {
+      @Parameter(description = "Feature flag name") @PathVariable String flagName,
+      @RequestBody UpdateFeatureFlagRequest request) {
 
     FeatureStateInfo current =
         flagsmithAdminService
@@ -172,9 +175,9 @@ public class BackofficeFeatureFlagController {
       description = "Sets a feature flag override for a specific user in a specific team")
   @PutMapping("/identities/{userIdentifier}/teams/{teamIdentifier}/{flagName}")
   public ResponseEntity<FeatureFlagUpdateResponse> upsertIdentityOverride(
-      @PathVariable String userIdentifier,
-      @PathVariable String teamIdentifier,
-      @PathVariable String flagName,
+      @Parameter(description = "User ULID identifier") @PathVariable String userIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @Parameter(description = "Feature flag name") @PathVariable String flagName,
       @RequestBody UpdateFeatureFlagRequest request) {
 
     String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
@@ -230,9 +233,9 @@ public class BackofficeFeatureFlagController {
       description = "Removes a feature flag override so the user falls back to the global default")
   @DeleteMapping("/identities/{userIdentifier}/teams/{teamIdentifier}/{flagName}")
   public ResponseEntity<Void> deleteIdentityOverride(
-      @PathVariable String userIdentifier,
-      @PathVariable String teamIdentifier,
-      @PathVariable String flagName) {
+      @Parameter(description = "User ULID identifier") @PathVariable String userIdentifier,
+      @Parameter(description = "Team ULID identifier") @PathVariable String teamIdentifier,
+      @Parameter(description = "Feature flag name") @PathVariable String flagName) {
 
     String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
 
@@ -296,8 +299,8 @@ public class BackofficeFeatureFlagController {
       description = "Sets a feature flag override for a specific segment")
   @PutMapping("/segments/{segmentId}/{flagName}")
   public ResponseEntity<FeatureFlagUpdateResponse> upsertSegmentOverride(
-      @PathVariable long segmentId,
-      @PathVariable String flagName,
+      @Parameter(description = "Flagsmith segment ID") @PathVariable long segmentId,
+      @Parameter(description = "Feature flag name") @PathVariable String flagName,
       @RequestBody UpdateFeatureFlagRequest request) {
 
     FeatureStateInfo globalState =
@@ -340,7 +343,8 @@ public class BackofficeFeatureFlagController {
           "Removes a feature flag override so the segment falls back to the global default")
   @DeleteMapping("/segments/{segmentId}/{flagName}")
   public ResponseEntity<Void> deleteSegmentOverride(
-      @PathVariable long segmentId, @PathVariable String flagName) {
+      @Parameter(description = "Flagsmith segment ID") @PathVariable long segmentId,
+      @Parameter(description = "Feature flag name") @PathVariable String flagName) {
 
     FeatureStateInfo globalState =
         flagsmithAdminService

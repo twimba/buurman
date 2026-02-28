@@ -23,6 +23,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyInsuranceService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,15 +41,16 @@ public class PropertyInsuranceController {
   @Operation(summary = "List insurances", description = "Get all insurances for a property")
   @GetMapping
   public List<PropertyInsuranceResponse> listInsurances(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return insuranceService.listByProperty(propertyIdentifier, principal);
   }
 
   @Operation(summary = "Get insurance", description = "Get details of a specific insurance")
   @GetMapping("/{identifier}")
   public PropertyInsuranceResponse getInsurance(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Insurance ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return insuranceService.get(identifier, principal);
   }
@@ -59,7 +61,7 @@ public class PropertyInsuranceController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyInsuranceResponse createInsurance(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreatePropertyInsuranceRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return insuranceService.create(propertyIdentifier, request, principal);
@@ -70,8 +72,8 @@ public class PropertyInsuranceController {
       description = "Update an insurance policy (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PropertyInsuranceResponse updateInsurance(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Insurance ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdatePropertyInsuranceRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return insuranceService.update(identifier, request, principal);
@@ -83,8 +85,8 @@ public class PropertyInsuranceController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteInsurance(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Insurance ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     insuranceService.delete(identifier, principal);
   }

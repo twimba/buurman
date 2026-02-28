@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc openapi-export
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -43,6 +43,10 @@ stats:
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
 	
+## Export OpenAPI specs from running backend to openapi/ directory
+openapi-export:
+	bash scripts/export-openapi.sh
+
 deploy-prod:
 	git fetch origin main
 	git tag -f prod origin/main

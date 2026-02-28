@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class AuditLog {
   private UUID userId;
   private Instant timestamp;
 
+  @Schema(description = "Type of audit action performed on an entity")
   public enum Action {
     CREATE,
     UPDATE,

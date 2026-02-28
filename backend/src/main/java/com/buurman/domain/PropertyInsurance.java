@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyInsurance {
 
+  @Schema(description = "Type of insurance coverage for the property")
   public enum InsuranceType {
     BUILDING,
     LIABILITY,
@@ -29,6 +31,7 @@ public class PropertyInsurance {
     OTHER
   }
 
+  @Schema(description = "Current status of the insurance policy")
   public enum InsuranceStatus {
     ACTIVE,
     EXPIRED,

@@ -23,6 +23,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractRentPeriodService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,7 +41,8 @@ public class ContractRentPeriodController {
   @Operation(summary = "Get rent timeline", description = "Get all rent periods for a contract")
   @GetMapping
   public List<RentPeriodResponse> getRentTimeline(
-      @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return rentPeriodService.getRentTimeline(contractIdentifier, principal);
   }
 
@@ -50,7 +52,7 @@ public class ContractRentPeriodController {
   @PostMapping
   @ResponseStatus(CREATED)
   public RentPeriodResponse addRentPeriod(
-      @PathVariable String contractIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
       @Valid @RequestBody CreateRentPeriodRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return rentPeriodService.addRentPeriod(contractIdentifier, request, principal);
@@ -61,8 +63,8 @@ public class ContractRentPeriodController {
       description = "Update a future rent period (Admin/Editor)")
   @PutMapping("/{periodIdentifier}")
   public RentPeriodResponse updateRentPeriod(
-      @PathVariable String contractIdentifier,
-      @PathVariable String periodIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @Parameter(description = "Rent period ULID identifier") @PathVariable String periodIdentifier,
       @Valid @RequestBody UpdateRentPeriodRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return rentPeriodService.updateRentPeriod(
@@ -75,8 +77,8 @@ public class ContractRentPeriodController {
   @DeleteMapping("/{periodIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteRentPeriod(
-      @PathVariable String contractIdentifier,
-      @PathVariable String periodIdentifier,
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @Parameter(description = "Rent period ULID identifier") @PathVariable String periodIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     rentPeriodService.deleteRentPeriod(contractIdentifier, periodIdentifier, principal);
   }

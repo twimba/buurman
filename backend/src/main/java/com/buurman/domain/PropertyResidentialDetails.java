@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class PropertyResidentialDetails {
   private UUID createdBy;
   private UUID updatedBy;
 
+  @Schema(description = "Pet policy for the residential property")
   public enum PetPolicy {
     ALLOWED,
     NOT_ALLOWED,

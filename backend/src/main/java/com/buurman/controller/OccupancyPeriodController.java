@@ -25,6 +25,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.OccupancyPeriodService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class OccupancyPeriodController {
   @PostMapping
   @ResponseStatus(CREATED)
   public OccupancyPeriodResponse create(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreateOccupancyPeriodRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.create(propertyIdentifier, request, principal);
@@ -56,7 +57,8 @@ public class OccupancyPeriodController {
       description = "Get all self-occupancy periods for a property")
   @GetMapping
   public List<OccupancyPeriodResponse> list(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.findByProperty(propertyIdentifier, principal);
   }
 
@@ -65,8 +67,8 @@ public class OccupancyPeriodController {
       description = "Get details of a specific self-occupancy period")
   @GetMapping("/{identifier}")
   public OccupancyPeriodResponse get(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Occupancy period ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.get(propertyIdentifier, identifier, principal);
   }
@@ -76,8 +78,8 @@ public class OccupancyPeriodController {
       description = "Update self-occupancy period details (Admin/Editor)")
   @PutMapping("/{identifier}")
   public OccupancyPeriodResponse update(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Occupancy period ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdateOccupancyPeriodRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.update(propertyIdentifier, identifier, request, principal);
@@ -88,8 +90,8 @@ public class OccupancyPeriodController {
       description = "End a self-occupancy period (Admin/Editor)")
   @PostMapping("/{identifier}/end")
   public OccupancyPeriodResponse end(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Occupancy period ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody EndOccupancyPeriodRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.end(propertyIdentifier, identifier, request, principal);
@@ -101,8 +103,8 @@ public class OccupancyPeriodController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void delete(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Occupancy period ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     occupancyPeriodService.delete(propertyIdentifier, identifier, principal);
   }
@@ -112,7 +114,8 @@ public class OccupancyPeriodController {
       description = "Get unified timeline of contracts and self-occupancy periods")
   @GetMapping("/timeline")
   public PropertyTimelineResponse getTimeline(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return occupancyPeriodService.getTimeline(propertyIdentifier, principal);
   }
 }
