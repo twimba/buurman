@@ -293,7 +293,9 @@ export const SchedulerPage = () => {
   const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
   const defaultSelectedJobs = uniqueJobNames.filter(
     (name) =>
-      name !== "notificationOutboxJob" && name !== "databaseMetricsRefreshJob",
+      name !== "notificationOutboxJob" &&
+      name !== "databaseMetricsRefreshJob" &&
+      name !== "thumbnailBackfillJob",
   );
 
   // Use default selection until user interacts
