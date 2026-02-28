@@ -1,46 +1,25 @@
-export enum OccupancyType {
-  PERSONAL = 'PERSONAL',
-  FAMILY = 'FAMILY',
-  BUSINESS = 'BUSINESS',
-}
+// Enums — re-exported from generated
+export {
+  OccupancyPeriodResponseType as OccupancyType,
+  type OccupancyPeriodResponseType,
+} from '../generated/models';
 
-export const OCCUPANCY_TYPE_LABELS: Record<OccupancyType, string> = {
-  [OccupancyType.PERSONAL]: 'Personal',
-  [OccupancyType.FAMILY]: 'Family',
-  [OccupancyType.BUSINESS]: 'Business',
-};
+// EndReason — generated type includes | null; re-export value and non-nullable type
+import { OccupancyPeriodResponseEndReason as _OccupancyEndReasonConst } from '../generated/models';
+export const OccupancyEndReason = _OccupancyEndReasonConst;
+export type OccupancyEndReason =
+  (typeof _OccupancyEndReasonConst)[keyof typeof _OccupancyEndReasonConst];
+export type OccupancyPeriodResponseEndReason = OccupancyEndReason;
 
-export enum OccupancyEndReason {
-  CONVERTING_TO_RENTAL = 'CONVERTING_TO_RENTAL',
-  SELLING = 'SELLING',
-  RENOVATION = 'RENOVATION',
-  OTHER = 'OTHER',
-}
+// Interfaces — kept manual (generated adds | null to optional fields)
 
-export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyEndReason, string> = {
-  [OccupancyEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
-  [OccupancyEndReason.SELLING]: 'Selling',
-  [OccupancyEndReason.RENOVATION]: 'Renovation',
-  [OccupancyEndReason.OTHER]: 'Other',
-};
+import { OccupancyPeriodResponseType } from '../generated/models';
 
-export interface OccupancyPeriodResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  startDate: string;
-  endDate?: string | null;
-  type: OccupancyType;
-  occupantName?: string | null;
-  monthlyImputedRent?: number | null;
-  endReason?: OccupancyEndReason | null;
-  notes?: string | null;
-  createdAt: string;
-  updatedAt?: string | null;
-}
+// Request interfaces — manual (generated adds | null to all optional fields)
 
 export interface CreateOccupancyPeriodRequest {
   startDate: string;
-  type: OccupancyType;
+  type: OccupancyPeriodResponseType;
   endDate?: string;
   occupantName?: string;
   monthlyImputedRent?: number;
@@ -49,7 +28,7 @@ export interface CreateOccupancyPeriodRequest {
 
 export interface UpdateOccupancyPeriodRequest {
   startDate?: string;
-  type?: OccupancyType;
+  type?: OccupancyPeriodResponseType;
   endDate?: string;
   occupantName?: string;
   monthlyImputedRent?: number;
@@ -60,6 +39,20 @@ export interface EndOccupancyPeriodRequest {
   endDate: string;
   endReason?: OccupancyEndReason;
   notes?: string;
+}
+
+export interface OccupancyPeriodResponse {
+  identifier: string;
+  propertyIdentifier: string;
+  startDate: string;
+  endDate?: string | null;
+  type: OccupancyPeriodResponseType;
+  occupantName?: string | null;
+  monthlyImputedRent?: number | null;
+  endReason?: OccupancyPeriodResponseEndReason | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt?: string | null;
 }
 
 export interface TimelineEntry {
@@ -88,3 +81,19 @@ export interface PropertyTimelineResponse {
   entries: TimelineEntry[];
   financings: FinancingTimelineEntry[];
 }
+
+export const OCCUPANCY_TYPE_LABELS: Record<
+  OccupancyPeriodResponseType,
+  string
+> = {
+  [OccupancyPeriodResponseType.PERSONAL]: 'Personal',
+  [OccupancyPeriodResponseType.FAMILY]: 'Family',
+  [OccupancyPeriodResponseType.BUSINESS]: 'Business',
+};
+
+export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyEndReason, string> = {
+  [OccupancyEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
+  [OccupancyEndReason.SELLING]: 'Selling',
+  [OccupancyEndReason.RENOVATION]: 'Renovation',
+  [OccupancyEndReason.OTHER]: 'Other',
+};

@@ -2,50 +2,17 @@ import { ContractSummary } from './contract';
 import { PropertySummary, DocumentResponse } from './property';
 import { TenantSummary } from './tenant';
 
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PARTIALLY_PAID = 'PARTIALLY_PAID',
-  PAID = 'PAID',
-  OVERDUE = 'OVERDUE',
-  CANCELLED = 'CANCELLED',
-}
+// Enum — re-exported from generated
+export {
+  PaymentResponseStatus as PaymentStatus,
+  type PaymentResponseStatus,
+} from '../generated/models';
 
-export interface PaymentReceivalResponse {
-  identifier: string;
-  amount: number;
-  receivalDate: string;
-  notes?: string;
-  createdAt: string;
-}
+// Interfaces — kept manual (generated adds | null to optional fields)
 
-export interface PaymentResponse {
-  identifier: string;
-  contract: ContractSummary;
-  tenant: TenantSummary;
-  property: PropertySummary;
-  amount: number;
-  currency: string;
-  receivedAmount: number;
-  balance: number;
-  paymentDate?: string;
-  dueDate: string;
-  status: PaymentStatus;
-  notes?: string;
-  proofOfPayment?: DocumentResponse;
-  receipt?: DocumentResponse;
-  receivals: PaymentReceivalResponse[];
-  createdAt: string;
-  updatedAt: string;
-}
+import type { PaymentResponseStatus } from '../generated/models';
 
-export interface PaymentSummary {
-  identifier: string;
-  amount: number;
-  currency: string;
-  dueDate: string;
-  paymentDate?: string;
-  status: PaymentStatus;
-}
+// Request interfaces — manual (generated adds | null to all optional fields)
 
 export interface CreatePaymentRequest {
   contractIdentifier: string;
@@ -61,7 +28,7 @@ export interface UpdatePaymentRequest {
   amount?: number;
   currency?: string;
   dueDate?: string;
-  status?: PaymentStatus;
+  status?: PaymentResponseStatus;
   notes?: string;
 }
 
@@ -83,11 +50,48 @@ export interface UpdatePaymentReceivalRequest {
 }
 
 export interface BulkGeneratePaymentsRequest {
-  forMonth: string; // YYYY-MM format
+  forMonth: string;
+}
+
+export interface PaymentReceivalResponse {
+  identifier: string;
+  amount: number;
+  receivalDate: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface PaymentResponse {
+  identifier: string;
+  contract: ContractSummary;
+  tenant: TenantSummary;
+  property: PropertySummary;
+  amount: number;
+  currency: string;
+  receivedAmount: number;
+  balance: number;
+  paymentDate?: string;
+  dueDate: string;
+  status: PaymentResponseStatus;
+  notes?: string;
+  proofOfPayment?: DocumentResponse;
+  receipt?: DocumentResponse;
+  receivals: PaymentReceivalResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentSummary {
+  identifier: string;
+  amount: number;
+  currency: string;
+  dueDate: string;
+  paymentDate?: string;
+  status: PaymentResponseStatus;
 }
 
 export interface GetPaymentsParams {
-  status?: PaymentStatus | 'OVERDUE';
+  status?: PaymentResponseStatus | 'OVERDUE';
   contractIdentifier?: string;
   propertyIdentifier?: string;
   dateFrom?: string;

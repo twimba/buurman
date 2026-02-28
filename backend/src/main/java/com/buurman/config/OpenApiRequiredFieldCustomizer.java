@@ -57,7 +57,9 @@ public class OpenApiRequiredFieldCustomizer implements GlobalOpenApiCustomizer {
       if (!requiredFields.isEmpty()) {
         // Merge with any existing required list (e.g., from @NotNull validation)
         List<String> existing =
-            schema.getRequired() != null ? new ArrayList<>(schema.getRequired()) : new ArrayList<>();
+            schema.getRequired() != null
+                ? new ArrayList<>(schema.getRequired())
+                : new ArrayList<>();
         for (String field : requiredFields) {
           if (!existing.contains(field)) {
             existing.add(field);
@@ -69,8 +71,8 @@ public class OpenApiRequiredFieldCustomizer implements GlobalOpenApiCustomizer {
   }
 
   /**
-   * Returns field names that are NOT {@code Optional<T>} and exist in the schema properties.
-   * Only includes fields that actually appear in the OpenAPI schema (SpringDoc may skip some).
+   * Returns field names that are NOT {@code Optional<T>} and exist in the schema properties. Only
+   * includes fields that actually appear in the OpenAPI schema (SpringDoc may skip some).
    */
   private List<String> getNonOptionalFieldNames(Class<?> clazz, Schema<?> schema) {
     List<String> required = new ArrayList<>();

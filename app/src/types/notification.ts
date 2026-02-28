@@ -1,3 +1,8 @@
+export type { NotificationStatsResponse } from '../generated/models';
+
+// Enums — generated NotificationResponse uses untyped `string` for these fields,
+// so we keep manual enums for stronger typing throughout the app.
+
 export enum NotificationType {
   WELCOME = 'WELCOME',
   VERIFICATION_CODE = 'VERIFICATION_CODE',
@@ -51,16 +56,6 @@ export interface NotificationResponse {
   demoBlocked: boolean;
   createdAt: string;
   statusUpdatedAt: string | null;
-}
-
-export interface NotificationStatsResponse {
-  totalCount: number;
-  pendingCount: number;
-  sentCount: number;
-  deliveredCount: number;
-  failedCount: number;
-  demoBlockedCount: number;
-  byChannel: Record<string, number>;
 }
 
 export interface NotificationFilterParams {

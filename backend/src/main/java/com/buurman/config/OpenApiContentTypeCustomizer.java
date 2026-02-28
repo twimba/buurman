@@ -18,8 +18,8 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
  * reference named schemas (DTOs). This fixes Orval codegen interpreting untyped responses as Blob.
  *
  * <p>Only converts responses where the schema has a {@code $ref} or is an array of {@code $ref}
- * items — i.e., clearly typed DTO responses. Binary endpoints (downloads, exports) with raw
- * {@code string}/{@code object} schemas are left untouched.
+ * items — i.e., clearly typed DTO responses. Binary endpoints (downloads, exports) with raw {@code
+ * string}/{@code object} schemas are left untouched.
  */
 @Component
 public class OpenApiContentTypeCustomizer implements GlobalOpenApiCustomizer {

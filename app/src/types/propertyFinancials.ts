@@ -1,121 +1,76 @@
 // ============================================================
-// Property Financials — Enums
+// Enums — re-exported from generated
 // ============================================================
 
-// Property Acquisition
-export enum AcquisitionType {
-  PURCHASE = 'PURCHASE',
-  INHERITANCE = 'INHERITANCE',
-  GIFT = 'GIFT',
-  FORECLOSURE = 'FORECLOSURE',
-  AUCTION = 'AUCTION',
-  OTHER = 'OTHER',
-}
+export {
+  PropertyAcquisitionResponseAcquisitionType as AcquisitionType,
+  type PropertyAcquisitionResponseAcquisitionType,
+} from '../generated/models';
 
-export enum DepreciationMethod {
-  STRAIGHT_LINE = 'STRAIGHT_LINE',
-  DECLINING_BALANCE = 'DECLINING_BALANCE',
-  NONE = 'NONE',
-}
+// DepreciationMethod — generated type includes | null; re-export value and non-nullable type
+import { PropertyAcquisitionResponseDepreciationMethod as _DepreciationMethodConst } from '../generated/models';
+export const DepreciationMethod = _DepreciationMethodConst;
+export type DepreciationMethod =
+  (typeof _DepreciationMethodConst)[keyof typeof _DepreciationMethodConst];
+export type PropertyAcquisitionResponseDepreciationMethod = DepreciationMethod;
 
-// Property Valuation
-export enum ValuationType {
-  MARKET = 'MARKET',
-  APPRAISAL = 'APPRAISAL',
-  TAX_ASSESSED = 'TAX_ASSESSED',
-  PURCHASE = 'PURCHASE',
-  INSURANCE = 'INSURANCE',
-  USER_ESTIMATE = 'USER_ESTIMATE',
-}
+export {
+  PropertyValuationResponseValuationType as ValuationType,
+  type PropertyValuationResponseValuationType,
+} from '../generated/models';
 
-// Property Financing
-export enum FinancingType {
-  MORTGAGE = 'MORTGAGE',
-  LEASING = 'LEASING',
-  LOAN = 'LOAN',
-  LINE_OF_CREDIT = 'LINE_OF_CREDIT',
-  PRIVATE_FINANCING = 'PRIVATE_FINANCING',
-  OTHER = 'OTHER',
-}
+export {
+  PropertyFinancingResponseFinancingType as FinancingType,
+  type PropertyFinancingResponseFinancingType,
+} from '../generated/models';
 
-export enum RateType {
-  FIXED = 'FIXED',
-  VARIABLE = 'VARIABLE',
-  INTEREST_ONLY = 'INTEREST_ONLY',
-  HYBRID = 'HYBRID',
-}
+export {
+  PropertyFinancingResponseRateType as RateType,
+  type PropertyFinancingResponseRateType,
+} from '../generated/models';
 
-export enum FinancingStatus {
-  ACTIVE = 'ACTIVE',
-  PAID_OFF = 'PAID_OFF',
-  REFINANCED = 'REFINANCED',
-  DEFAULTED = 'DEFAULTED',
-}
+export {
+  PropertyFinancingResponseStatus as FinancingStatus,
+  type PropertyFinancingResponseStatus,
+} from '../generated/models';
 
-// Financing Payment
-export enum PaymentStatus {
-  SCHEDULED = 'SCHEDULED',
-  COMPLETED = 'COMPLETED',
-  MISSED = 'MISSED',
-  LATE = 'LATE',
-}
+export {
+  FinancingPaymentResponseStatus as PaymentStatus,
+  type FinancingPaymentResponseStatus,
+} from '../generated/models';
 
-// Insurance
-export enum InsuranceType {
-  BUILDING = 'BUILDING',
-  LIABILITY = 'LIABILITY',
-  CONTENTS = 'CONTENTS',
-  FLOOD = 'FLOOD',
-  EARTHQUAKE = 'EARTHQUAKE',
-  UMBRELLA = 'UMBRELLA',
-  RENT_GUARANTEE = 'RENT_GUARANTEE',
-  OTHER = 'OTHER',
-}
+export {
+  PropertyInsuranceResponseInsuranceType as InsuranceType,
+  type PropertyInsuranceResponseInsuranceType,
+} from '../generated/models';
 
-export enum InsuranceStatus {
-  ACTIVE = 'ACTIVE',
-  EXPIRED = 'EXPIRED',
-  CANCELLED = 'CANCELLED',
-}
+export {
+  PropertyInsuranceResponseStatus as InsuranceStatus,
+  type PropertyInsuranceResponseStatus,
+} from '../generated/models';
 
-// Tax
-export enum TaxType {
-  PROPERTY = 'PROPERTY',
-  MUNICIPAL = 'MUNICIPAL',
-  STATE = 'STATE',
-  LOCAL = 'LOCAL',
-  LAND = 'LAND',
-  SPECIAL_ASSESSMENT = 'SPECIAL_ASSESSMENT',
-  OTHER = 'OTHER',
-}
+export {
+  PropertyTaxResponseTaxType as TaxType,
+  type PropertyTaxResponseTaxType,
+} from '../generated/models';
 
-export enum TaxStatus {
-  ACTIVE = 'ACTIVE',
-  EXPIRED = 'EXPIRED',
-  EXEMPT = 'EXEMPT',
-}
+export {
+  PropertyTaxResponseStatus as TaxStatus,
+  type PropertyTaxResponseStatus,
+} from '../generated/models';
 
-// Fee
-export enum FeeType {
-  HOA = 'HOA',
-  MANAGEMENT = 'MANAGEMENT',
-  MAINTENANCE_RESERVE = 'MAINTENANCE_RESERVE',
-  CLEANING = 'CLEANING',
-  GARDENING = 'GARDENING',
-  SECURITY = 'SECURITY',
-  WASTE_MANAGEMENT = 'WASTE_MANAGEMENT',
-  WATER = 'WATER',
-  UTILITIES = 'UTILITIES',
-  OTHER = 'OTHER',
-}
+export {
+  PropertyFeeResponseFeeType as FeeType,
+  type PropertyFeeResponseFeeType,
+} from '../generated/models';
 
-export enum FeeStatus {
-  ACTIVE = 'ACTIVE',
-  EXPIRED = 'EXPIRED',
-  CANCELLED = 'CANCELLED',
-}
+export {
+  PropertyFeeResponseStatus as FeeStatus,
+  type PropertyFeeResponseStatus,
+} from '../generated/models';
 
-// Payment Frequency (shared)
+// PaymentFrequency — generated uses `string` for this field,
+// keep manual enum for full type safety (includes SEMI_ANNUALLY, CUSTOM)
 export enum PaymentFrequency {
   MONTHLY = 'MONTHLY',
   QUARTERLY = 'QUARTERLY',
@@ -125,12 +80,29 @@ export enum PaymentFrequency {
 }
 
 // ============================================================
-// Response interfaces
+// Imports for manual interfaces and constants
+// ============================================================
+
+import { PropertyAcquisitionResponseAcquisitionType } from '../generated/models';
+import { PropertyValuationResponseValuationType } from '../generated/models';
+import { PropertyFinancingResponseFinancingType } from '../generated/models';
+import { PropertyFinancingResponseRateType } from '../generated/models';
+import { PropertyFinancingResponseStatus } from '../generated/models';
+import { FinancingPaymentResponseStatus } from '../generated/models';
+import { PropertyInsuranceResponseInsuranceType } from '../generated/models';
+import { PropertyInsuranceResponseStatus } from '../generated/models';
+import { PropertyTaxResponseTaxType } from '../generated/models';
+import { PropertyTaxResponseStatus } from '../generated/models';
+import { PropertyFeeResponseFeeType } from '../generated/models';
+import { PropertyFeeResponseStatus } from '../generated/models';
+
+// ============================================================
+// Response interfaces — kept manual (generated uses `string` for enum fields)
 // ============================================================
 
 export interface PropertyAcquisitionResponse {
   identifier: string;
-  acquisitionType: AcquisitionType;
+  acquisitionType: PropertyAcquisitionResponseAcquisitionType;
   acquisitionDate?: string;
   purchasePrice?: number;
   purchasePriceCurrency?: string;
@@ -140,7 +112,7 @@ export interface PropertyAcquisitionResponse {
   renovationCostsCurrency?: string;
   landValue?: number;
   landValueCurrency?: string;
-  depreciationMethod?: DepreciationMethod;
+  depreciationMethod?: PropertyAcquisitionResponseDepreciationMethod;
   depreciationYears?: number;
   notes?: string;
   createdAt: string;
@@ -149,7 +121,7 @@ export interface PropertyAcquisitionResponse {
 
 export interface PropertyValuationResponse {
   identifier: string;
-  valuationType: ValuationType;
+  valuationType: PropertyValuationResponseValuationType;
   valuationDate: string;
   amount: number;
   currency: string;
@@ -162,8 +134,8 @@ export interface PropertyValuationResponse {
 export interface PropertyFinancingResponse {
   identifier: string;
   propertyIdentifier: string;
-  financingType: FinancingType;
-  rateType: RateType;
+  financingType: PropertyFinancingResponseFinancingType;
+  rateType: PropertyFinancingResponseRateType;
   lenderName?: string;
   loanNumber?: string;
   originalAmount: number;
@@ -177,7 +149,7 @@ export interface PropertyFinancingResponse {
   startDate: string;
   endDate?: string;
   termMonths?: number;
-  status: FinancingStatus;
+  status: PropertyFinancingResponseStatus;
   notes?: string;
   createdAt: string;
   updatedAt?: string;
@@ -193,7 +165,7 @@ export interface FinancingPaymentResponse {
   escrowAmount?: number;
   extraPayment?: number;
   currency: string;
-  status: PaymentStatus;
+  status: FinancingPaymentResponseStatus;
   notes?: string;
   balanceDeducted: boolean;
   createdAt: string;
@@ -203,7 +175,7 @@ export interface FinancingPaymentResponse {
 export interface PropertyInsuranceResponse {
   identifier: string;
   propertyIdentifier: string;
-  insuranceType: InsuranceType;
+  insuranceType: PropertyInsuranceResponseInsuranceType;
   provider?: string;
   policyNumber?: string;
   coverageAmount?: number;
@@ -213,7 +185,7 @@ export interface PropertyInsuranceResponse {
   paymentFrequency: PaymentFrequency;
   startDate?: string;
   endDate?: string;
-  status: InsuranceStatus;
+  status: PropertyInsuranceResponseStatus;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -222,7 +194,7 @@ export interface PropertyInsuranceResponse {
 export interface PropertyTaxResponse {
   identifier: string;
   propertyIdentifier: string;
-  taxType: TaxType;
+  taxType: PropertyTaxResponseTaxType;
   authority?: string;
   annualAmount: number;
   currency: string;
@@ -231,7 +203,7 @@ export interface PropertyTaxResponse {
   taxYear?: number;
   startDate?: string;
   endDate?: string;
-  status: TaxStatus;
+  status: PropertyTaxResponseStatus;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -240,7 +212,7 @@ export interface PropertyTaxResponse {
 export interface PropertyFeeResponse {
   identifier: string;
   propertyIdentifier: string;
-  feeType: FeeType;
+  feeType: PropertyFeeResponseFeeType;
   name?: string;
   annualAmount: number;
   currency: string;
@@ -248,7 +220,7 @@ export interface PropertyFeeResponse {
   dueMonths?: string;
   startDate?: string;
   endDate?: string;
-  status: FeeStatus;
+  status: PropertyFeeResponseStatus;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -272,11 +244,11 @@ export interface PropertyFinancialSummaryResponse {
 }
 
 // ============================================================
-// Request interfaces
+// Request interfaces — manual (generated adds | null to all optional fields)
 // ============================================================
 
 export interface UpsertPropertyAcquisitionRequest {
-  acquisitionType: AcquisitionType;
+  acquisitionType: PropertyAcquisitionResponseAcquisitionType;
   acquisitionDate?: string;
   purchasePrice?: number;
   purchasePriceCurrency?: string;
@@ -286,13 +258,13 @@ export interface UpsertPropertyAcquisitionRequest {
   renovationCostsCurrency?: string;
   landValue?: number;
   landValueCurrency?: string;
-  depreciationMethod?: DepreciationMethod;
+  depreciationMethod?: PropertyAcquisitionResponseDepreciationMethod;
   depreciationYears?: number;
   notes?: string;
 }
 
 export interface CreatePropertyValuationRequest {
-  valuationType: ValuationType;
+  valuationType: PropertyValuationResponseValuationType;
   valuationDate: string;
   amount: number;
   currency: string;
@@ -301,7 +273,7 @@ export interface CreatePropertyValuationRequest {
 }
 
 export interface UpdatePropertyValuationRequest {
-  valuationType?: ValuationType;
+  valuationType?: PropertyValuationResponseValuationType;
   valuationDate?: string;
   amount?: number;
   currency?: string;
@@ -310,8 +282,8 @@ export interface UpdatePropertyValuationRequest {
 }
 
 export interface CreatePropertyFinancingRequest {
-  financingType: FinancingType;
-  rateType?: RateType;
+  financingType: PropertyFinancingResponseFinancingType;
+  rateType?: PropertyFinancingResponseRateType;
   lenderName?: string;
   loanNumber?: string;
   originalAmount: number;
@@ -325,13 +297,13 @@ export interface CreatePropertyFinancingRequest {
   startDate: string;
   endDate?: string;
   termMonths?: number;
-  status?: FinancingStatus;
+  status?: PropertyFinancingResponseStatus;
   notes?: string;
 }
 
 export interface UpdatePropertyFinancingRequest {
-  financingType?: FinancingType;
-  rateType?: RateType;
+  financingType?: PropertyFinancingResponseFinancingType;
+  rateType?: PropertyFinancingResponseRateType;
   lenderName?: string;
   loanNumber?: string;
   originalAmount?: number;
@@ -345,7 +317,7 @@ export interface UpdatePropertyFinancingRequest {
   startDate?: string;
   endDate?: string;
   termMonths?: number;
-  status?: FinancingStatus;
+  status?: PropertyFinancingResponseStatus;
   notes?: string;
 }
 
@@ -357,7 +329,7 @@ export interface CreateFinancingPaymentRequest {
   escrowAmount?: number;
   extraPayment?: number;
   currency: string;
-  status?: PaymentStatus;
+  status?: FinancingPaymentResponseStatus;
   notes?: string;
   deductFromBalance?: boolean;
 }
@@ -370,13 +342,13 @@ export interface UpdateFinancingPaymentRequest {
   escrowAmount?: number;
   extraPayment?: number;
   currency?: string;
-  status?: PaymentStatus;
+  status?: FinancingPaymentResponseStatus;
   notes?: string;
   deductFromBalance?: boolean;
 }
 
 export interface CreatePropertyInsuranceRequest {
-  insuranceType: InsuranceType;
+  insuranceType: PropertyInsuranceResponseInsuranceType;
   provider?: string;
   policyNumber?: string;
   coverageAmount?: number;
@@ -386,12 +358,12 @@ export interface CreatePropertyInsuranceRequest {
   paymentFrequency?: PaymentFrequency;
   startDate?: string;
   endDate?: string;
-  status?: InsuranceStatus;
+  status?: PropertyInsuranceResponseStatus;
   notes?: string;
 }
 
 export interface UpdatePropertyInsuranceRequest {
-  insuranceType?: InsuranceType;
+  insuranceType?: PropertyInsuranceResponseInsuranceType;
   provider?: string;
   policyNumber?: string;
   coverageAmount?: number;
@@ -401,12 +373,12 @@ export interface UpdatePropertyInsuranceRequest {
   paymentFrequency?: PaymentFrequency;
   startDate?: string;
   endDate?: string;
-  status?: InsuranceStatus;
+  status?: PropertyInsuranceResponseStatus;
   notes?: string;
 }
 
 export interface CreatePropertyTaxRequest {
-  taxType: TaxType;
+  taxType: PropertyTaxResponseTaxType;
   authority?: string;
   annualAmount: number;
   currency: string;
@@ -415,12 +387,12 @@ export interface CreatePropertyTaxRequest {
   taxYear?: number;
   startDate?: string;
   endDate?: string;
-  status?: TaxStatus;
+  status?: PropertyTaxResponseStatus;
   notes?: string;
 }
 
 export interface UpdatePropertyTaxRequest {
-  taxType?: TaxType;
+  taxType?: PropertyTaxResponseTaxType;
   authority?: string;
   annualAmount?: number;
   currency?: string;
@@ -429,12 +401,12 @@ export interface UpdatePropertyTaxRequest {
   taxYear?: number;
   startDate?: string;
   endDate?: string;
-  status?: TaxStatus;
+  status?: PropertyTaxResponseStatus;
   notes?: string;
 }
 
 export interface CreatePropertyFeeRequest {
-  feeType: FeeType;
+  feeType: PropertyFeeResponseFeeType;
   name?: string;
   annualAmount: number;
   currency: string;
@@ -442,12 +414,12 @@ export interface CreatePropertyFeeRequest {
   dueMonths?: string;
   startDate?: string;
   endDate?: string;
-  status?: FeeStatus;
+  status?: PropertyFeeResponseStatus;
   notes?: string;
 }
 
 export interface UpdatePropertyFeeRequest {
-  feeType?: FeeType;
+  feeType?: PropertyFeeResponseFeeType;
   name?: string;
   annualAmount?: number;
   currency?: string;
@@ -455,7 +427,7 @@ export interface UpdatePropertyFeeRequest {
   dueMonths?: string;
   startDate?: string;
   endDate?: string;
-  status?: FeeStatus;
+  status?: PropertyFeeResponseStatus;
   notes?: string;
 }
 
@@ -463,149 +435,167 @@ export interface UpdatePropertyFeeRequest {
 // Label formatters
 // ============================================================
 
-export const formatAcquisitionType = (type: AcquisitionType): string => {
-  const labels: Record<AcquisitionType, string> = {
-    [AcquisitionType.PURCHASE]: 'Purchase',
-    [AcquisitionType.INHERITANCE]: 'Inheritance',
-    [AcquisitionType.GIFT]: 'Gift',
-    [AcquisitionType.FORECLOSURE]: 'Foreclosure',
-    [AcquisitionType.AUCTION]: 'Auction',
-    [AcquisitionType.OTHER]: 'Other',
+export const formatAcquisitionType = (
+  type: PropertyAcquisitionResponseAcquisitionType
+): string => {
+  const labels: Record<PropertyAcquisitionResponseAcquisitionType, string> = {
+    [PropertyAcquisitionResponseAcquisitionType.PURCHASE]: 'Purchase',
+    [PropertyAcquisitionResponseAcquisitionType.INHERITANCE]: 'Inheritance',
+    [PropertyAcquisitionResponseAcquisitionType.GIFT]: 'Gift',
+    [PropertyAcquisitionResponseAcquisitionType.FORECLOSURE]: 'Foreclosure',
+    [PropertyAcquisitionResponseAcquisitionType.AUCTION]: 'Auction',
+    [PropertyAcquisitionResponseAcquisitionType.OTHER]: 'Other',
   };
   return labels[type];
 };
 
 export const formatDepreciationMethod = (
-  method: DepreciationMethod
+  method: PropertyAcquisitionResponseDepreciationMethod
 ): string => {
-  const labels: Record<DepreciationMethod, string> = {
-    [DepreciationMethod.STRAIGHT_LINE]: 'Straight Line',
-    [DepreciationMethod.DECLINING_BALANCE]: 'Declining Balance',
-    [DepreciationMethod.NONE]: 'None',
-  };
+  const labels: Record<PropertyAcquisitionResponseDepreciationMethod, string> =
+    {
+      [_DepreciationMethodConst.STRAIGHT_LINE]: 'Straight Line',
+      [_DepreciationMethodConst.DECLINING_BALANCE]: 'Declining Balance',
+      [_DepreciationMethodConst.NONE]: 'None',
+    };
   return labels[method];
 };
 
-export const formatValuationType = (type: ValuationType): string => {
-  const labels: Record<ValuationType, string> = {
-    [ValuationType.MARKET]: 'Market',
-    [ValuationType.APPRAISAL]: 'Appraisal',
-    [ValuationType.TAX_ASSESSED]: 'Tax Assessed',
-    [ValuationType.PURCHASE]: 'Purchase',
-    [ValuationType.INSURANCE]: 'Insurance',
-    [ValuationType.USER_ESTIMATE]: 'User Estimate',
+export const formatValuationType = (
+  type: PropertyValuationResponseValuationType
+): string => {
+  const labels: Record<PropertyValuationResponseValuationType, string> = {
+    [PropertyValuationResponseValuationType.MARKET]: 'Market',
+    [PropertyValuationResponseValuationType.APPRAISAL]: 'Appraisal',
+    [PropertyValuationResponseValuationType.TAX_ASSESSED]: 'Tax Assessed',
+    [PropertyValuationResponseValuationType.PURCHASE]: 'Purchase',
+    [PropertyValuationResponseValuationType.INSURANCE]: 'Insurance',
+    [PropertyValuationResponseValuationType.USER_ESTIMATE]: 'User Estimate',
   };
   return labels[type];
 };
 
-export const formatFinancingType = (type: FinancingType): string => {
-  const labels: Record<FinancingType, string> = {
-    [FinancingType.MORTGAGE]: 'Mortgage',
-    [FinancingType.LEASING]: 'Leasing',
-    [FinancingType.LOAN]: 'Loan',
-    [FinancingType.LINE_OF_CREDIT]: 'Line of Credit',
-    [FinancingType.PRIVATE_FINANCING]: 'Private Financing',
-    [FinancingType.OTHER]: 'Other',
+export const formatFinancingType = (
+  type: PropertyFinancingResponseFinancingType
+): string => {
+  const labels: Record<PropertyFinancingResponseFinancingType, string> = {
+    [PropertyFinancingResponseFinancingType.MORTGAGE]: 'Mortgage',
+    [PropertyFinancingResponseFinancingType.LEASING]: 'Leasing',
+    [PropertyFinancingResponseFinancingType.LOAN]: 'Loan',
+    [PropertyFinancingResponseFinancingType.LINE_OF_CREDIT]: 'Line of Credit',
+    [PropertyFinancingResponseFinancingType.PRIVATE_FINANCING]:
+      'Private Financing',
+    [PropertyFinancingResponseFinancingType.OTHER]: 'Other',
   };
   return labels[type];
 };
 
-export const formatRateType = (type: RateType): string => {
-  const labels: Record<RateType, string> = {
-    [RateType.FIXED]: 'Fixed',
-    [RateType.VARIABLE]: 'Variable',
-    [RateType.INTEREST_ONLY]: 'Interest Only',
-    [RateType.HYBRID]: 'Hybrid',
+export const formatRateType = (
+  type: PropertyFinancingResponseRateType
+): string => {
+  const labels: Record<PropertyFinancingResponseRateType, string> = {
+    [PropertyFinancingResponseRateType.FIXED]: 'Fixed',
+    [PropertyFinancingResponseRateType.VARIABLE]: 'Variable',
+    [PropertyFinancingResponseRateType.INTEREST_ONLY]: 'Interest Only',
+    [PropertyFinancingResponseRateType.HYBRID]: 'Hybrid',
   };
   return labels[type];
 };
 
-export const formatFinancingStatus = (status: FinancingStatus): string => {
-  const labels: Record<FinancingStatus, string> = {
-    [FinancingStatus.ACTIVE]: 'Active',
-    [FinancingStatus.PAID_OFF]: 'Paid Off',
-    [FinancingStatus.REFINANCED]: 'Refinanced',
-    [FinancingStatus.DEFAULTED]: 'Defaulted',
+export const formatFinancingStatus = (
+  status: PropertyFinancingResponseStatus
+): string => {
+  const labels: Record<PropertyFinancingResponseStatus, string> = {
+    [PropertyFinancingResponseStatus.ACTIVE]: 'Active',
+    [PropertyFinancingResponseStatus.PAID_OFF]: 'Paid Off',
+    [PropertyFinancingResponseStatus.REFINANCED]: 'Refinanced',
+    [PropertyFinancingResponseStatus.DEFAULTED]: 'Defaulted',
   };
   return labels[status];
 };
 
-export const formatPaymentStatus = (status: PaymentStatus): string => {
-  const labels: Record<PaymentStatus, string> = {
-    [PaymentStatus.SCHEDULED]: 'Scheduled',
-    [PaymentStatus.COMPLETED]: 'Completed',
-    [PaymentStatus.MISSED]: 'Missed',
-    [PaymentStatus.LATE]: 'Late',
+export const formatPaymentStatus = (
+  status: FinancingPaymentResponseStatus
+): string => {
+  const labels: Record<FinancingPaymentResponseStatus, string> = {
+    [FinancingPaymentResponseStatus.SCHEDULED]: 'Scheduled',
+    [FinancingPaymentResponseStatus.COMPLETED]: 'Completed',
+    [FinancingPaymentResponseStatus.MISSED]: 'Missed',
+    [FinancingPaymentResponseStatus.LATE]: 'Late',
   };
   return labels[status];
 };
 
-export const formatInsuranceType = (type: InsuranceType): string => {
-  const labels: Record<InsuranceType, string> = {
-    [InsuranceType.BUILDING]: 'Building',
-    [InsuranceType.LIABILITY]: 'Liability',
-    [InsuranceType.CONTENTS]: 'Contents',
-    [InsuranceType.FLOOD]: 'Flood',
-    [InsuranceType.EARTHQUAKE]: 'Earthquake',
-    [InsuranceType.UMBRELLA]: 'Umbrella',
-    [InsuranceType.RENT_GUARANTEE]: 'Rent Guarantee',
-    [InsuranceType.OTHER]: 'Other',
+export const formatInsuranceType = (
+  type: PropertyInsuranceResponseInsuranceType
+): string => {
+  const labels: Record<PropertyInsuranceResponseInsuranceType, string> = {
+    [PropertyInsuranceResponseInsuranceType.BUILDING]: 'Building',
+    [PropertyInsuranceResponseInsuranceType.LIABILITY]: 'Liability',
+    [PropertyInsuranceResponseInsuranceType.CONTENTS]: 'Contents',
+    [PropertyInsuranceResponseInsuranceType.FLOOD]: 'Flood',
+    [PropertyInsuranceResponseInsuranceType.EARTHQUAKE]: 'Earthquake',
+    [PropertyInsuranceResponseInsuranceType.UMBRELLA]: 'Umbrella',
+    [PropertyInsuranceResponseInsuranceType.RENT_GUARANTEE]: 'Rent Guarantee',
+    [PropertyInsuranceResponseInsuranceType.OTHER]: 'Other',
   };
   return labels[type];
 };
 
-export const formatInsuranceStatus = (status: InsuranceStatus): string => {
-  const labels: Record<InsuranceStatus, string> = {
-    [InsuranceStatus.ACTIVE]: 'Active',
-    [InsuranceStatus.EXPIRED]: 'Expired',
-    [InsuranceStatus.CANCELLED]: 'Cancelled',
+export const formatInsuranceStatus = (
+  status: PropertyInsuranceResponseStatus
+): string => {
+  const labels: Record<PropertyInsuranceResponseStatus, string> = {
+    [PropertyInsuranceResponseStatus.ACTIVE]: 'Active',
+    [PropertyInsuranceResponseStatus.EXPIRED]: 'Expired',
+    [PropertyInsuranceResponseStatus.CANCELLED]: 'Cancelled',
   };
   return labels[status];
 };
 
-export const formatTaxType = (type: TaxType): string => {
-  const labels: Record<TaxType, string> = {
-    [TaxType.PROPERTY]: 'Property',
-    [TaxType.MUNICIPAL]: 'Municipal',
-    [TaxType.STATE]: 'State',
-    [TaxType.LOCAL]: 'Local',
-    [TaxType.LAND]: 'Land',
-    [TaxType.SPECIAL_ASSESSMENT]: 'Special Assessment',
-    [TaxType.OTHER]: 'Other',
+export const formatTaxType = (type: PropertyTaxResponseTaxType): string => {
+  const labels: Record<PropertyTaxResponseTaxType, string> = {
+    [PropertyTaxResponseTaxType.PROPERTY]: 'Property',
+    [PropertyTaxResponseTaxType.MUNICIPAL]: 'Municipal',
+    [PropertyTaxResponseTaxType.STATE]: 'State',
+    [PropertyTaxResponseTaxType.LOCAL]: 'Local',
+    [PropertyTaxResponseTaxType.LAND]: 'Land',
+    [PropertyTaxResponseTaxType.SPECIAL_ASSESSMENT]: 'Special Assessment',
+    [PropertyTaxResponseTaxType.OTHER]: 'Other',
   };
   return labels[type];
 };
 
-export const formatTaxStatus = (status: TaxStatus): string => {
-  const labels: Record<TaxStatus, string> = {
-    [TaxStatus.ACTIVE]: 'Active',
-    [TaxStatus.EXPIRED]: 'Expired',
-    [TaxStatus.EXEMPT]: 'Exempt',
+export const formatTaxStatus = (status: PropertyTaxResponseStatus): string => {
+  const labels: Record<PropertyTaxResponseStatus, string> = {
+    [PropertyTaxResponseStatus.ACTIVE]: 'Active',
+    [PropertyTaxResponseStatus.EXPIRED]: 'Expired',
+    [PropertyTaxResponseStatus.EXEMPT]: 'Exempt',
   };
   return labels[status];
 };
 
-export const formatFeeType = (type: FeeType): string => {
-  const labels: Record<FeeType, string> = {
-    [FeeType.HOA]: 'HOA',
-    [FeeType.MANAGEMENT]: 'Management',
-    [FeeType.MAINTENANCE_RESERVE]: 'Maintenance Reserve',
-    [FeeType.CLEANING]: 'Cleaning',
-    [FeeType.GARDENING]: 'Gardening',
-    [FeeType.SECURITY]: 'Security',
-    [FeeType.WASTE_MANAGEMENT]: 'Waste Management',
-    [FeeType.WATER]: 'Water',
-    [FeeType.UTILITIES]: 'Utilities',
-    [FeeType.OTHER]: 'Other',
+export const formatFeeType = (type: PropertyFeeResponseFeeType): string => {
+  const labels: Record<PropertyFeeResponseFeeType, string> = {
+    [PropertyFeeResponseFeeType.HOA]: 'HOA',
+    [PropertyFeeResponseFeeType.MANAGEMENT]: 'Management',
+    [PropertyFeeResponseFeeType.MAINTENANCE_RESERVE]: 'Maintenance Reserve',
+    [PropertyFeeResponseFeeType.CLEANING]: 'Cleaning',
+    [PropertyFeeResponseFeeType.GARDENING]: 'Gardening',
+    [PropertyFeeResponseFeeType.SECURITY]: 'Security',
+    [PropertyFeeResponseFeeType.WASTE_MANAGEMENT]: 'Waste Management',
+    [PropertyFeeResponseFeeType.WATER]: 'Water',
+    [PropertyFeeResponseFeeType.UTILITIES]: 'Utilities',
+    [PropertyFeeResponseFeeType.OTHER]: 'Other',
   };
   return labels[type];
 };
 
-export const formatFeeStatus = (status: FeeStatus): string => {
-  const labels: Record<FeeStatus, string> = {
-    [FeeStatus.ACTIVE]: 'Active',
-    [FeeStatus.EXPIRED]: 'Expired',
-    [FeeStatus.CANCELLED]: 'Cancelled',
+export const formatFeeStatus = (status: PropertyFeeResponseStatus): string => {
+  const labels: Record<PropertyFeeResponseStatus, string> = {
+    [PropertyFeeResponseStatus.ACTIVE]: 'Active',
+    [PropertyFeeResponseStatus.EXPIRED]: 'Expired',
+    [PropertyFeeResponseStatus.CANCELLED]: 'Cancelled',
   };
   return labels[status];
 };

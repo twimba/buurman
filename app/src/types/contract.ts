@@ -1,62 +1,55 @@
 import { PropertySummary } from './property';
 import { TenantSummary, CreateTenantRequest } from './tenant';
 
-export enum ContractType {
-  FIXED_TERM = 'FIXED_TERM',
-  INDEFINITE = 'INDEFINITE',
-  FURNISHED = 'FURNISHED',
-  UNFURNISHED = 'UNFURNISHED',
-}
+// Enums — re-exported from generated
+export {
+  ContractResponseContractType as ContractType,
+  type ContractResponseContractType,
+} from '../generated/models';
 
-export enum PaymentFrequency {
-  MONTHLY = 'MONTHLY',
-  QUARTERLY = 'QUARTERLY',
-  ANNUALLY = 'ANNUALLY',
-}
+export {
+  ContractResponsePaymentFrequency as PaymentFrequency,
+  type ContractResponsePaymentFrequency,
+} from '../generated/models';
 
-export enum ContractStatus {
-  DRAFT = 'DRAFT',
-  PENDING_SIGNATURE = 'PENDING_SIGNATURE',
-  ACTIVE = 'ACTIVE',
-  EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED',
-}
+export {
+  ContractResponseStatus as ContractStatus,
+  type ContractResponseStatus,
+} from '../generated/models';
 
-export enum ContractPartyRole {
-  PRIMARY_TENANT = 'PRIMARY_TENANT',
-  GUARANTOR = 'GUARANTOR',
-  COSIGNER = 'COSIGNER',
-  EXTRA_TENANT = 'EXTRA_TENANT',
-}
+export {
+  ContractPartyResponseRole as ContractPartyRole,
+  type ContractPartyResponseRole,
+} from '../generated/models';
 
-export const PARTY_ROLE_LABELS: Record<ContractPartyRole, string> = {
-  [ContractPartyRole.PRIMARY_TENANT]: 'Primary Tenant',
-  [ContractPartyRole.GUARANTOR]: 'Guarantor',
-  [ContractPartyRole.COSIGNER]: 'Co-signer',
-  [ContractPartyRole.EXTRA_TENANT]: 'Additional Tenant',
+export type { EnumValue } from '../generated/models';
+export type { ValidationSchema } from '../generated/models';
+export type { CountryMetadataSchemaResponse } from '../generated/models';
+
+// Interfaces — kept manual (generated adds | null to optional fields)
+
+import type { ContractResponseContractType } from '../generated/models';
+import type { ContractResponsePaymentFrequency } from '../generated/models';
+import type { ContractResponseStatus } from '../generated/models';
+import { ContractPartyResponseRole } from '../generated/models';
+
+export const PARTY_ROLE_LABELS: Record<ContractPartyResponseRole, string> = {
+  [ContractPartyResponseRole.PRIMARY_TENANT]: 'Primary Tenant',
+  [ContractPartyResponseRole.GUARANTOR]: 'Guarantor',
+  [ContractPartyResponseRole.COSIGNER]: 'Co-signer',
+  [ContractPartyResponseRole.EXTRA_TENANT]: 'Additional Tenant',
 };
 
 export interface ContractPartyResponse {
   identifier: string;
   tenant: TenantSummary;
-  role: ContractPartyRole;
+  role: ContractPartyResponseRole;
 }
 
 export interface ContractPartyRequest {
   tenantIdentifier?: string;
   newTenant?: CreateTenantRequest;
-  role: ContractPartyRole;
-}
-
-export interface AddContractPartyRequest {
-  tenantIdentifier?: string;
-  newTenant?: CreateTenantRequest;
-  role: ContractPartyRole;
-}
-
-export interface ChangePrimaryTenantRequest {
-  tenantIdentifier?: string;
-  newTenant?: CreateTenantRequest;
+  role: ContractPartyResponseRole;
 }
 
 export interface ContractResponse {
@@ -64,7 +57,7 @@ export interface ContractResponse {
   property: PropertySummary;
   parties: ContractPartyResponse[];
   primaryTenant: TenantSummary;
-  contractType: ContractType;
+  contractType: ContractResponseContractType;
   startDate: string;
   endDate?: string;
   signedDate?: string;
@@ -74,13 +67,13 @@ export interface ContractResponse {
   rentAmountCurrency: string;
   depositAmountCurrency?: string;
   securityDepositCurrency?: string;
-  paymentFrequency: PaymentFrequency;
+  paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
   autoRenewal: boolean;
   renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
-  status: ContractStatus;
+  status: ContractResponseStatus;
   termsAndConditions?: string;
   notes?: string;
   countryCode?: string;
@@ -96,13 +89,13 @@ export interface ContractSummary {
   startDate: string;
   endDate?: string;
   rentAmount: number;
-  status: ContractStatus;
+  status: ContractResponseStatus;
 }
 
 export interface CreateContractRequest {
   propertyIdentifier: string;
   parties: ContractPartyRequest[];
-  contractType: ContractType;
+  contractType: ContractResponseContractType;
   startDate: string;
   endDate?: string;
   signedDate?: string;
@@ -112,7 +105,7 @@ export interface CreateContractRequest {
   rentAmountCurrency?: string;
   depositAmountCurrency?: string;
   securityDepositCurrency?: string;
-  paymentFrequency: PaymentFrequency;
+  paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
   autoRenewal?: boolean;
   renewalNoticeDays?: number;
@@ -125,7 +118,7 @@ export interface CreateContractRequest {
 
 export interface UpdateContractRequest {
   propertyIdentifier: string;
-  contractType: ContractType;
+  contractType: ContractResponseContractType;
   startDate: string;
   endDate?: string;
   signedDate?: string;
@@ -135,7 +128,7 @@ export interface UpdateContractRequest {
   rentAmountCurrency?: string;
   depositAmountCurrency?: string;
   securityDepositCurrency?: string;
-  paymentFrequency: PaymentFrequency;
+  paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
   autoRenewal?: boolean;
   renewalNoticeDays?: number;
@@ -146,13 +139,6 @@ export interface UpdateContractRequest {
   countryMetadata?: Record<string, unknown>;
 }
 
-export interface ChangeContractStatusRequest {
-  status: ContractStatus;
-  reason?: string;
-}
-
-// --- Rent Periods ---
-
 export interface RentPeriodResponse {
   identifier: string;
   rentAmount: number;
@@ -162,20 +148,6 @@ export interface RentPeriodResponse {
   percentageChange?: number;
   createdAt: string;
 }
-
-export interface CreateRentPeriodRequest {
-  rentAmount: number;
-  effectiveFrom: string;
-  notes?: string;
-}
-
-export interface UpdateRentPeriodRequest {
-  rentAmount: number;
-  effectiveFrom: string;
-  notes?: string;
-}
-
-// --- Country Metadata Schema ---
 
 export interface MetadataFieldSchema {
   name: string;
@@ -192,6 +164,36 @@ export interface MetadataFieldSchema {
 export interface MetadataGroupSchema {
   key: string;
   label: string;
+}
+
+// Request interfaces — manual (generated adds | null to all optional fields)
+
+export interface AddContractPartyRequest {
+  tenantIdentifier?: string;
+  newTenant?: CreateTenantRequest;
+  role: ContractPartyResponseRole;
+}
+
+export interface ChangePrimaryTenantRequest {
+  tenantIdentifier?: string;
+  newTenant?: CreateTenantRequest;
+}
+
+export interface ChangeContractStatusRequest {
+  status: ContractResponseStatus;
+  reason?: string;
+}
+
+export interface CreateRentPeriodRequest {
+  rentAmount: number;
+  effectiveFrom: string;
+  notes?: string;
+}
+
+export interface UpdateRentPeriodRequest {
+  rentAmount: number;
+  effectiveFrom: string;
+  notes?: string;
 }
 
 export interface CountryMetadataSchema {

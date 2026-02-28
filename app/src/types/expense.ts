@@ -1,25 +1,40 @@
 import { PropertySummary, DocumentResponse } from './property';
 
-export enum ExpenseCategory {
-  MAINTENANCE = 'MAINTENANCE',
-  REPAIR = 'REPAIR',
-  UTILITY = 'UTILITY',
-  TAX = 'TAX',
-  INSURANCE = 'INSURANCE',
-  LEGAL = 'LEGAL',
-  MARKETING = 'MARKETING',
-  CLEANING = 'CLEANING',
-  LANDSCAPING = 'LANDSCAPING',
-  PROPERTY_MANAGEMENT = 'PROPERTY_MANAGEMENT',
-  FEES = 'FEES',
-  PROPERTY_TAX = 'PROPERTY_TAX',
-  OTHER = 'OTHER',
+// Enum — re-exported from generated
+export {
+  ExpenseResponseCategory as ExpenseCategory,
+  type ExpenseResponseCategory,
+} from '../generated/models';
+
+// Interfaces — kept manual (generated adds | null to optional fields)
+
+import { ExpenseResponseCategory } from '../generated/models';
+
+// Request interfaces — manual (generated adds | null to all optional fields)
+
+export interface CreateExpenseRequest {
+  propertyIdentifier: string;
+  category: ExpenseResponseCategory;
+  amount: number;
+  currency?: string;
+  expenseDate: string;
+  description: string;
+  notes?: string;
+}
+
+export interface UpdateExpenseRequest {
+  category?: ExpenseResponseCategory;
+  amount?: number;
+  currency?: string;
+  expenseDate?: string;
+  description?: string;
+  notes?: string;
 }
 
 export interface ExpenseResponse {
   identifier: string;
   property: PropertySummary;
-  category: ExpenseCategory;
+  category: ExpenseResponseCategory;
   amount: number;
   currency: string;
   expenseDate: string;
@@ -30,25 +45,6 @@ export interface ExpenseResponse {
   updatedAt: string;
 }
 
-export interface CreateExpenseRequest {
-  propertyIdentifier: string;
-  category: ExpenseCategory;
-  amount: number;
-  currency?: string;
-  expenseDate: string;
-  description: string;
-  notes?: string;
-}
-
-export interface UpdateExpenseRequest {
-  category?: ExpenseCategory;
-  amount?: number;
-  currency?: string;
-  expenseDate?: string;
-  description?: string;
-  notes?: string;
-}
-
 export interface ExpenseSummaryResponse {
   period: string;
   byCategory: CategoryTotal[];
@@ -57,33 +53,35 @@ export interface ExpenseSummaryResponse {
 }
 
 export interface CategoryTotal {
-  category: ExpenseCategory;
+  category: ExpenseResponseCategory;
   total: number;
   count: number;
 }
 
 export interface GetExpensesParams {
-  category?: ExpenseCategory;
+  category?: ExpenseResponseCategory;
   propertyIdentifier?: string;
   dateFrom?: string;
   dateTo?: string;
 }
 
-export const formatExpenseCategory = (category: ExpenseCategory): string => {
-  const categoryLabels: Record<ExpenseCategory, string> = {
-    [ExpenseCategory.MAINTENANCE]: 'Maintenance',
-    [ExpenseCategory.REPAIR]: 'Repair',
-    [ExpenseCategory.UTILITY]: 'Utility',
-    [ExpenseCategory.TAX]: 'Tax',
-    [ExpenseCategory.INSURANCE]: 'Insurance',
-    [ExpenseCategory.LEGAL]: 'Legal',
-    [ExpenseCategory.MARKETING]: 'Marketing',
-    [ExpenseCategory.CLEANING]: 'Cleaning',
-    [ExpenseCategory.LANDSCAPING]: 'Landscaping',
-    [ExpenseCategory.PROPERTY_MANAGEMENT]: 'Property Management',
-    [ExpenseCategory.FEES]: 'Fees',
-    [ExpenseCategory.PROPERTY_TAX]: 'Property Taxes',
-    [ExpenseCategory.OTHER]: 'Other',
+export const formatExpenseCategory = (
+  category: ExpenseResponseCategory
+): string => {
+  const categoryLabels: Record<ExpenseResponseCategory, string> = {
+    [ExpenseResponseCategory.MAINTENANCE]: 'Maintenance',
+    [ExpenseResponseCategory.REPAIR]: 'Repair',
+    [ExpenseResponseCategory.UTILITY]: 'Utility',
+    [ExpenseResponseCategory.TAX]: 'Tax',
+    [ExpenseResponseCategory.INSURANCE]: 'Insurance',
+    [ExpenseResponseCategory.LEGAL]: 'Legal',
+    [ExpenseResponseCategory.MARKETING]: 'Marketing',
+    [ExpenseResponseCategory.CLEANING]: 'Cleaning',
+    [ExpenseResponseCategory.LANDSCAPING]: 'Landscaping',
+    [ExpenseResponseCategory.PROPERTY_MANAGEMENT]: 'Property Management',
+    [ExpenseResponseCategory.FEES]: 'Fees',
+    [ExpenseResponseCategory.PROPERTY_TAX]: 'Property Taxes',
+    [ExpenseResponseCategory.OTHER]: 'Other',
   };
   return categoryLabels[category];
 };
