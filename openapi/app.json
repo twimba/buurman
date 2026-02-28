@@ -24469,7 +24469,14 @@
               "$ref": "#/components/schemas/Entry"
             }
           }
-        }
+        },
+        "required": [
+          "emailAvailable",
+          "globalEmailEnabled",
+          "globalSmsEnabled",
+          "preferences",
+          "smsAvailable"
+        ]
       },
       "UpdateUserProfileRequest": {
         "type": "object",
@@ -24524,7 +24531,14 @@
           "phoneVerified": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "identifier",
+          "lastName",
+          "phoneVerified"
+        ]
       },
       "SetDefaultTeamRequest": {
         "type": "object",
@@ -24566,7 +24580,17 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "identifier",
+          "isActive",
+          "isDefault",
+          "isOwner",
+          "joinedAt",
+          "memberCount",
+          "role",
+          "teamName"
+        ]
       },
       "UpdateTenantAddressRequest": {
         "type": "object",
@@ -24705,7 +24729,17 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "addressType",
+          "city",
+          "country",
+          "createdAt",
+          "identifier",
+          "postalCode",
+          "status",
+          "street"
+        ]
       },
       "UpdateTenantRequest": {
         "type": "object",
@@ -24837,7 +24871,16 @@
               "LISTED"
             ]
           }
-        }
+        },
+        "required": [
+          "city",
+          "identifier",
+          "postalCode",
+          "propertyCategory",
+          "propertyType",
+          "status",
+          "street"
+        ]
       },
       "TenantPropertyAssignment": {
         "type": "object",
@@ -24851,7 +24894,10 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "property"
+        ]
       },
       "TenantResponse": {
         "type": "object",
@@ -24927,7 +24973,14 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "activeProperties",
+          "createdAt",
+          "firstName",
+          "identifier",
+          "lastName"
+        ]
       },
       "PhotoResponse": {
         "type": "object",
@@ -24985,7 +25038,18 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "entityIdentifier",
+          "entityType",
+          "fileKey",
+          "fileName",
+          "fileSize",
+          "identifier",
+          "isMainPhoto",
+          "mimeType",
+          "uploadedAt"
+        ]
       },
       "UpdateTeamRequest": {
         "type": "object",
@@ -25020,7 +25084,13 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "identifier",
+          "memberCount",
+          "teamName"
+        ]
       },
       "PaymentSettings": {
         "type": "object",
@@ -25102,7 +25172,11 @@
           "regional": {
             "$ref": "#/components/schemas/RegionalSettings"
           }
-        }
+        },
+        "required": [
+          "payments",
+          "regional"
+        ]
       },
       "UpdateMemberRoleRequest": {
         "type": "object",
@@ -25146,7 +25220,16 @@
           "isCurrentUser": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "email",
+          "isCurrentUser",
+          "isOwner",
+          "joinedAt",
+          "name",
+          "role",
+          "userIdentifier"
+        ]
       },
       "PropertyOutdoorAreaRequest": {
         "type": "object",
@@ -25204,7 +25287,12 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "identifier",
+          "type"
+        ]
       },
       "UpdateOccupancyPeriodRequest": {
         "type": "object",
@@ -25329,7 +25417,14 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "identifier",
+          "propertyIdentifier",
+          "startDate",
+          "type"
+        ]
       },
       "UpdatePropertyValuationRequest": {
         "type": "object",
@@ -25431,7 +25526,16 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "createdAt",
+          "currency",
+          "identifier",
+          "updatedAt",
+          "valuationDate",
+          "valuationType"
+        ]
       },
       "UpdatePropertyTaxRequest": {
         "type": "object",
@@ -25616,7 +25720,16 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "annualAmount",
+          "createdAt",
+          "currency",
+          "identifier",
+          "paymentFrequency",
+          "status",
+          "taxType"
+        ]
       },
       "UpdatePropertyInsuranceRequest": {
         "type": "object",
@@ -25812,7 +25925,16 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "annualPremium",
+          "annualPremiumCurrency",
+          "createdAt",
+          "identifier",
+          "insuranceType",
+          "paymentFrequency",
+          "status"
+        ]
       },
       "UpdatePropertyFinancingRequest": {
         "type": "object",
@@ -26079,7 +26201,19 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "financingType",
+          "identifier",
+          "originalAmount",
+          "originalAmountCurrency",
+          "paymentVariable",
+          "propertyIdentifier",
+          "rateType",
+          "startDate",
+          "status"
+        ]
       },
       "UpdateFinancingPaymentRequest": {
         "type": "object",
@@ -26232,7 +26366,17 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "balanceDeducted",
+          "createdAt",
+          "currency",
+          "financingIdentifier",
+          "identifier",
+          "paymentDate",
+          "status",
+          "totalAmount"
+        ]
       },
       "UpdatePropertyFeeRequest": {
         "type": "object",
@@ -26407,7 +26551,16 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "annualAmount",
+          "createdAt",
+          "currency",
+          "feeType",
+          "identifier",
+          "paymentFrequency",
+          "status"
+        ]
       },
       "UpsertPropertyAcquisitionRequest": {
         "type": "object",
@@ -26620,7 +26773,13 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "acquisitionType",
+          "createdAt",
+          "identifier",
+          "updatedAt"
+        ]
       },
       "AgriculturalDetailsRequest": {
         "type": "object",
@@ -27582,7 +27741,12 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "amenityCategory",
+          "amenityIdentifier",
+          "amenityName"
+        ]
       },
       "PropertyResponse": {
         "type": "object",
@@ -27994,7 +28158,18 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "city",
+          "country",
+          "createdAt",
+          "identifier",
+          "postalCode",
+          "propertyCategory",
+          "propertyType",
+          "status",
+          "street"
+        ]
       },
       "ResidentialDetailsResponse": {
         "type": "object",
@@ -28126,7 +28301,14 @@
               "PENDING_SIGNATURE"
             ]
           }
-        }
+        },
+        "required": [
+          "identifier",
+          "property",
+          "rentAmount",
+          "startDate",
+          "status"
+        ]
       },
       "DocumentResponse": {
         "type": "object",
@@ -28184,7 +28366,15 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "entityIdentifier",
+          "entityType",
+          "fileKey",
+          "fileName",
+          "identifier",
+          "uploadedAt"
+        ]
       },
       "PaymentReceivalResponse": {
         "type": "object",
@@ -28212,7 +28402,14 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "createdAt",
+          "currency",
+          "identifier",
+          "receivalDate"
+        ]
       },
       "PaymentResponse": {
         "type": "object",
@@ -28301,7 +28498,16 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "createdAt",
+          "currency",
+          "dueDate",
+          "identifier",
+          "receivals",
+          "status"
+        ]
       },
       "TenantSummary": {
         "type": "object",
@@ -28327,7 +28533,12 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "firstName",
+          "identifier",
+          "lastName"
+        ]
       },
       "UpdatePaymentReceivalRequest": {
         "type": "object",
@@ -28542,7 +28753,13 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "identifier",
+          "name",
+          "paymentMethod"
+        ]
       },
       "UpdateExpenseRequest": {
         "type": "object",
@@ -28675,7 +28892,16 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "category",
+          "createdAt",
+          "currency",
+          "documents",
+          "expenseDate",
+          "identifier"
+        ]
       },
       "UpdateDocumentRequest": {
         "type": "object",
@@ -28828,6 +29054,7 @@
         },
         "required": [
           "contractType",
+          "countryMetadata",
           "paymentFrequency",
           "propertyIdentifier",
           "rentAmount",
@@ -29222,7 +29449,11 @@
               "EXTRA_TENANT"
             ]
           }
-        }
+        },
+        "required": [
+          "identifier",
+          "role"
+        ]
       },
       "ContractResponse": {
         "type": "object",
@@ -29518,7 +29749,21 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "autoRenewal",
+          "contractType",
+          "createdAt",
+          "identifier",
+          "parties",
+          "paymentFrequency",
+          "renewalNoticeDays",
+          "rentAmount",
+          "rentAmountCurrency",
+          "startDate",
+          "status",
+          "terminationNoticeDays"
+        ]
       },
       "CyContractMetadata": {
         "allOf": [
@@ -30756,7 +31001,14 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "currency",
+          "effectiveFrom",
+          "identifier",
+          "rentAmount"
+        ]
       },
       "UpdateContractPaymentInstructionRequest": {
         "type": "object",
@@ -30971,7 +31223,11 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "identifier"
+        ]
       },
       "UpdateProfileRequest": {
         "type": "object",
@@ -31021,7 +31277,17 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "email",
+          "emailVerified",
+          "firstName",
+          "identifier",
+          "lastName",
+          "role",
+          "teamIdentifier"
+        ]
       },
       "SwitchTeamRequest": {
         "type": "object",
@@ -31265,7 +31531,18 @@
           "isAccepted": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "email",
+          "invitationUrl",
+          "invitedAt",
+          "isAccepted",
+          "isExpired",
+          "role",
+          "teamIdentifier",
+          "teamName",
+          "token"
+        ]
       },
       "ValidateInvitationCodeResponse": {
         "type": "object",
@@ -31273,7 +31550,10 @@
           "valid": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "valid"
+        ]
       },
       "CreatePropertyRequest": {
         "type": "object",
@@ -32622,7 +32902,17 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "channel",
+          "clickCount",
+          "createdAt",
+          "demoBlocked",
+          "identifier",
+          "notificationType",
+          "openCount",
+          "status"
+        ]
       },
       "GeocodeRequest": {
         "type": "object",
@@ -32943,6 +33233,7 @@
         },
         "required": [
           "contractType",
+          "countryMetadata",
           "parties",
           "paymentFrequency",
           "propertyIdentifier",
@@ -33263,7 +33554,14 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "enabled",
+          "feedType",
+          "feedUrl",
+          "identifier"
+        ]
       },
       "VerifyEmailRequest": {
         "type": "object",
@@ -33408,7 +33706,11 @@
           "smsNotifications": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "emailNotifications",
+          "smsNotifications"
+        ]
       },
       "PhoneNumberPolicyResponse": {
         "type": "object",
@@ -33422,7 +33724,10 @@
               }
             }
           }
-        }
+        },
+        "required": [
+          "policyMatrix"
+        ]
       },
       "PageResponseTenantResponse": {
         "type": "object",
@@ -33503,7 +33808,12 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "actionType",
+          "performedAt",
+          "property"
+        ]
       },
       "RecentActivityResponse": {
         "type": "object",
@@ -33548,7 +33858,17 @@
             "type": "object",
             "additionalProperties": {}
           }
-        }
+        },
+        "required": [
+          "action",
+          "changedFields",
+          "entityIdentifier",
+          "entityName",
+          "entityType",
+          "newValues",
+          "oldValues",
+          "timestamp"
+        ]
       },
       "CategoryExpenseSummary": {
         "type": "object",
@@ -33567,7 +33887,13 @@
             "type": "number",
             "format": "double"
           }
-        }
+        },
+        "required": [
+          "category",
+          "count",
+          "percentage",
+          "total"
+        ]
       },
       "PropertyFinancialSummary": {
         "type": "object",
@@ -33588,7 +33914,14 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "expenses",
+          "income",
+          "netProfit",
+          "occupancyDays",
+          "property"
+        ]
       },
       "TaxSummaryResponse": {
         "type": "object",
@@ -33621,7 +33954,16 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "currency",
+          "expensesByCategory",
+          "netIncome",
+          "properties",
+          "totalExpenses",
+          "totalIncome",
+          "year"
+        ]
       },
       "Expenses": {
         "type": "object",
@@ -33641,7 +33983,12 @@
               "$ref": "#/components/schemas/PropertyFinancialSummary"
             }
           }
-        }
+        },
+        "required": [
+          "byCategory",
+          "byProperty",
+          "total"
+        ]
       },
       "FinancialOverviewResponse": {
         "type": "object",
@@ -33661,7 +34008,14 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "currency",
+          "expenses",
+          "income",
+          "netProfit",
+          "period"
+        ]
       },
       "Income": {
         "type": "object",
@@ -33675,7 +34029,11 @@
               "$ref": "#/components/schemas/PropertyFinancialSummary"
             }
           }
-        }
+        },
+        "required": [
+          "byProperty",
+          "total"
+        ]
       },
       "Period": {
         "type": "object",
@@ -33688,7 +34046,11 @@
             "type": "string",
             "format": "date"
           }
-        }
+        },
+        "required": [
+          "endDate",
+          "startDate"
+        ]
       },
       "DataDateRangeResponse": {
         "type": "object",
@@ -33714,7 +34076,11 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "currency",
+          "properties"
+        ]
       },
       "PropertyData": {
         "type": "object",
@@ -33731,7 +34097,13 @@
           "netProfit": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "expenses",
+          "income",
+          "netProfit",
+          "property"
+        ]
       },
       "DataPoint": {
         "type": "object",
@@ -33751,7 +34123,13 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "occupancyRate",
+          "occupiedUnits",
+          "period",
+          "totalUnits"
+        ]
       },
       "OccupancyTrendResponse": {
         "type": "object",
@@ -33762,7 +34140,10 @@
               "$ref": "#/components/schemas/DataPoint"
             }
           }
-        }
+        },
+        "required": [
+          "dataPoints"
+        ]
       },
       "IncomeTrendResponse": {
         "type": "object",
@@ -33776,7 +34157,11 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "currency",
+          "dataPoints"
+        ]
       },
       "Category": {
         "type": "object",
@@ -33790,7 +34175,12 @@
           "color": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "color",
+          "name",
+          "value"
+        ]
       },
       "ExpenseBreakdownResponse": {
         "type": "object",
@@ -33807,7 +34197,12 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "categories",
+          "currency",
+          "total"
+        ]
       },
       "RegistrationConfigResponse": {
         "type": "object",
@@ -33815,7 +34210,10 @@
           "invitationRequired": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "invitationRequired"
+        ]
       },
       "EntityPrefixInfo": {
         "type": "object",
@@ -33928,7 +34326,15 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "financingType",
+          "identifier",
+          "originalAmount",
+          "originalAmountCurrency",
+          "startDate",
+          "status"
+        ]
       },
       "PropertyTimelineResponse": {
         "type": "object",
@@ -33952,7 +34358,11 @@
               "$ref": "#/components/schemas/FinancingEntry"
             }
           }
-        }
+        },
+        "required": [
+          "entries",
+          "financings"
+        ]
       },
       "TimelineEntry": {
         "type": "object",
@@ -33991,7 +34401,12 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "identifier",
+          "startDate",
+          "type"
+        ]
       },
       "PropertyFinancialSummaryResponse": {
         "type": "object",
@@ -34074,7 +34489,14 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "fees",
+          "financings",
+          "insurances",
+          "taxes",
+          "valuationHistory"
+        ]
       },
       "CashFlowChartData": {
         "type": "object",
@@ -34085,7 +34507,10 @@
               "$ref": "#/components/schemas/MonthlyDataPoint"
             }
           }
-        }
+        },
+        "required": [
+          "months"
+        ]
       },
       "CategorySlice": {
         "type": "object",
@@ -34096,7 +34521,11 @@
           "amount": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "category"
+        ]
       },
       "DataCompleteness": {
         "type": "object",
@@ -34126,7 +34555,17 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "completenessPercent",
+          "hasContracts",
+          "hasExpenses",
+          "hasMarketValue",
+          "hasMortgageInfo",
+          "hasOperatingCosts",
+          "hasPayments",
+          "hasPurchasePrice"
+        ]
       },
       "EquityChartData": {
         "type": "object",
@@ -34166,7 +34605,11 @@
               "$ref": "#/components/schemas/ExpenseTimelineMonth"
             }
           }
-        }
+        },
+        "required": [
+          "categories",
+          "timeline"
+        ]
       },
       "ExpenseTimelineMonth": {
         "type": "object",
@@ -34180,7 +34623,11 @@
               "type": "number"
             }
           }
-        }
+        },
+        "required": [
+          "categoryAmounts",
+          "month"
+        ]
       },
       "FutureMonthDataPoint": {
         "type": "object",
@@ -34197,7 +34644,13 @@
           "expectedNet": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "expectedExpenses",
+          "expectedIncome",
+          "expectedNet",
+          "month"
+        ]
       },
       "FutureTrendData": {
         "type": "object",
@@ -34208,7 +34661,10 @@
               "$ref": "#/components/schemas/FutureMonthDataPoint"
             }
           }
-        }
+        },
+        "required": [
+          "months"
+        ]
       },
       "MonthlyDataPoint": {
         "type": "object",
@@ -34228,7 +34684,14 @@
           "net": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "expenses",
+          "income",
+          "month",
+          "mortgage",
+          "net"
+        ]
       },
       "OccupancyChartData": {
         "type": "object",
@@ -34239,7 +34702,10 @@
               "$ref": "#/components/schemas/OccupancyDataPoint"
             }
           }
-        }
+        },
+        "required": [
+          "months"
+        ]
       },
       "OccupancyDataPoint": {
         "type": "object",
@@ -34253,7 +34719,12 @@
           "selfOccupancyPercent": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "month",
+          "selfOccupancyPercent",
+          "tenantOccupancyPercent"
+        ]
       },
       "PropertyDashboardResponse": {
         "type": "object",
@@ -34279,7 +34750,16 @@
           "futureTrend": {
             "$ref": "#/components/schemas/FutureTrendData"
           }
-        }
+        },
+        "required": [
+          "cashFlow",
+          "dataCompleteness",
+          "equity",
+          "expenseBreakdown",
+          "futureTrend",
+          "occupancy",
+          "summary"
+        ]
       },
       "SummaryMetrics": {
         "type": "object",
@@ -34443,7 +34923,11 @@
           "total": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "month",
+          "total"
+        ]
       },
       "PaymentStatsResponse": {
         "type": "object",
@@ -34474,7 +34958,14 @@
               "$ref": "#/components/schemas/MonthlyTrend"
             }
           }
-        }
+        },
+        "required": [
+          "monthlyTrend",
+          "overdueAmount",
+          "overdueCount",
+          "pendingAmount",
+          "pendingCount"
+        ]
       },
       "PageResponseNotificationResponse": {
         "type": "object",
@@ -34551,7 +35042,16 @@
               "format": "int64"
             }
           }
-        }
+        },
+        "required": [
+          "byChannel",
+          "deliveredCount",
+          "demoBlockedCount",
+          "failedCount",
+          "pendingCount",
+          "sentCount",
+          "totalCount"
+        ]
       },
       "InfoResponse": {
         "type": "object",
@@ -34562,7 +35062,11 @@
           "environment": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "environment",
+          "version"
+        ]
       },
       "HealthResponse": {
         "type": "object",
@@ -34574,7 +35078,11 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "status",
+          "timestamp"
+        ]
       },
       "PageResponseExpenseResponse": {
         "type": "object",
@@ -34630,7 +35138,12 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "category",
+          "count",
+          "total"
+        ]
       },
       "ExpenseStatsResponse": {
         "type": "object",
@@ -34653,7 +35166,13 @@
               "$ref": "#/components/schemas/MonthlyTrend"
             }
           }
-        }
+        },
+        "required": [
+          "currency",
+          "monthlyTrend",
+          "topCategories",
+          "totalAmount"
+        ]
       },
       "PageResponseDocumentResponse": {
         "type": "object",
@@ -34745,7 +35264,21 @@
           "rentalOccupancyRate": {
             "type": "number"
           }
-        }
+        },
+        "required": [
+          "fallowUnits",
+          "listedUnits",
+          "maintenanceUnits",
+          "monthlyIncome",
+          "occupancyRate",
+          "occupiedUnits",
+          "rentalOccupancyRate",
+          "selfOccupiedUnits",
+          "totalProperties",
+          "unavailableUnits",
+          "underRenovationUnits",
+          "vacantUnits"
+        ]
       },
       "MonthlyIncome": {
         "type": "object",
@@ -34756,7 +35289,11 @@
           "currency": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ]
       },
       "PageResponseContractResponse": {
         "type": "object",
@@ -34823,7 +35360,14 @@
               "$ref": "#/components/schemas/GroupSchema"
             }
           }
-        }
+        },
+        "required": [
+          "countryCode",
+          "countryName",
+          "fields",
+          "groups",
+          "hasDedicatedSchema"
+        ]
       },
       "EnumValue": {
         "type": "object",
@@ -34834,7 +35378,11 @@
           "label": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "label",
+          "value"
+        ]
       },
       "FieldSchema": {
         "type": "object",
@@ -34882,7 +35430,16 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "enumValues",
+          "group",
+          "label",
+          "name",
+          "required",
+          "type",
+          "validation"
+        ]
       },
       "GroupSchema": {
         "type": "object",
@@ -34893,7 +35450,11 @@
           "label": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "key",
+          "label"
+        ]
       },
       "ValidationSchema": {
         "type": "object",
@@ -34982,26 +35543,33 @@
               "type": "string"
             }
           }
-        }
+        },
+        "required": [
+          "applicableCategories",
+          "category",
+          "icon",
+          "identifier",
+          "name"
+        ]
       },
       "ProblemDetail": {
         "description": "RFC 7807 Problem Detail response",
         "properties": {
-          "instance": {
+          "detail": {
             "type": "string",
-            "description": "URI of the request that caused the error"
-          },
-          "type": {
-            "type": "string",
-            "description": "Problem type URI"
+            "description": "Human-readable explanation of the problem"
           },
           "status": {
             "description": "HTTP status code",
             "example": 400
           },
-          "detail": {
+          "type": {
             "type": "string",
-            "description": "Human-readable explanation of the problem"
+            "description": "Problem type URI"
+          },
+          "instance": {
+            "type": "string",
+            "description": "URI of the request that caused the error"
           },
           "title": {
             "type": "string",

@@ -10,8 +10,8 @@ import type { MigrationEntry } from "./migrationEntry";
 export interface MigrationInfo {
   /** @nullable */
   currentVersion?: string | null;
-  appliedCount?: number;
-  pendingCount?: number;
-  failedCount?: number;
-  entries?: MigrationEntry[];
+  appliedCount: number;
+  pendingCount: number;
+  failedCount: number;
+  entries: MigrationEntry[];
 }

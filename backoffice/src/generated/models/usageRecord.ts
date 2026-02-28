@@ -7,8 +7,8 @@
  */
 
 export interface UsageRecord {
-  userEmail?: string;
+  userEmail: string;
   /** @nullable */
   userName?: string | null;
-  usedAt?: string;
+  usedAt: string;
 }

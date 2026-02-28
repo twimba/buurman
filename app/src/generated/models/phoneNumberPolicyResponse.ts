@@ -8,5 +8,5 @@
 import type { PhoneNumberPolicyResponsePolicyMatrix } from './phoneNumberPolicyResponsePolicyMatrix';
 
 export interface PhoneNumberPolicyResponse {
-  policyMatrix?: PhoneNumberPolicyResponsePolicyMatrix;
+  policyMatrix: PhoneNumberPolicyResponsePolicyMatrix;
 }

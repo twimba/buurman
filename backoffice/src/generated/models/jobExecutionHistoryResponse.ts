@@ -7,15 +7,15 @@
  */
 
 export interface JobExecutionHistoryResponse {
-  id?: string;
-  jobName?: string;
-  jobGroup?: string;
-  startedAt?: string;
+  id: string;
+  jobName: string;
+  jobGroup: string;
+  startedAt: string;
   /** @nullable */
   endedAt?: string | null;
   /** @nullable */
   durationMs?: number | null;
-  status?: string;
+  status: string;
   /** @nullable */
   errorMessage?: string | null;
   /** @nullable */

@@ -7,16 +7,16 @@
  */
 
 export interface FinancingEntry {
-  identifier?: string;
-  startDate?: string;
+  identifier: string;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
-  financingType?: string;
-  status?: string;
+  financingType: string;
+  status: string;
   /** @nullable */
   lenderName?: string | null;
-  originalAmount?: number;
-  originalAmountCurrency?: string;
+  originalAmount: number;
+  originalAmountCurrency: string;
   /** @nullable */
   interestRate?: number | null;
 }

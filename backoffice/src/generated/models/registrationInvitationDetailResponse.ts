@@ -8,24 +8,24 @@
 import type { UsageRecord } from "./usageRecord";
 
 export interface RegistrationInvitationDetailResponse {
-  identifier?: string;
-  code?: string;
+  identifier: string;
+  code: string;
   /** @nullable */
   maxUsages?: number | null;
-  usageCount?: number;
+  usageCount: number;
   /** @nullable */
   expiresAt?: string | null;
-  revoked?: boolean;
+  revoked: boolean;
   /** @nullable */
   revokedBy?: string | null;
   /** @nullable */
   revokedAt?: string | null;
-  status?: string;
-  createdBy?: string;
-  createdAt?: string;
+  status: string;
+  createdBy: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
   /** @nullable */
   note?: string | null;
-  usages?: UsageRecord[];
+  usages: UsageRecord[];
 }

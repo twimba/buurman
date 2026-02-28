@@ -13,10 +13,10 @@ export interface UpdatePhoneNumberPolicyRequest {
    * @minimum 1
    * @maximum 20
    */
-  maxCodesPerHour?: number;
+  maxCodesPerHour: number;
   /**
    * @minimum 1
    * @maximum 60
    */
-  verificationCodeExpiryMinutes?: number;
+  verificationCodeExpiryMinutes: number;
 }

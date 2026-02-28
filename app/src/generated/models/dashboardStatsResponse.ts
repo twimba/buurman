@@ -11,16 +11,16 @@ import type { MonthlyIncome } from './monthlyIncome';
  * Dashboard statistics including property counts, occupancy rates, and monthly income
  */
 export interface DashboardStatsResponse {
-  totalProperties?: number;
-  occupiedUnits?: number;
-  selfOccupiedUnits?: number;
-  vacantUnits?: number;
-  maintenanceUnits?: number;
-  unavailableUnits?: number;
-  underRenovationUnits?: number;
-  fallowUnits?: number;
-  listedUnits?: number;
-  monthlyIncome?: MonthlyIncome;
-  occupancyRate?: number;
-  rentalOccupancyRate?: number;
+  totalProperties: number;
+  occupiedUnits: number;
+  selfOccupiedUnits: number;
+  vacantUnits: number;
+  maintenanceUnits: number;
+  unavailableUnits: number;
+  underRenovationUnits: number;
+  fallowUnits: number;
+  listedUnits: number;
+  monthlyIncome: MonthlyIncome;
+  occupancyRate: number;
+  rentalOccupancyRate: number;
 }

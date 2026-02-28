@@ -9,8 +9,8 @@ import type { HttpLatencyStats } from "./httpLatencyStats";
 import type { MetricEntry } from "./metricEntry";
 
 export interface MetricsSnapshot {
-  httpRequestCount?: number;
-  httpRequestTotalTimeSeconds?: number;
+  httpRequestCount: number;
+  httpRequestTotalTimeSeconds: number;
   httpLatency?: HttpLatencyStats;
-  custom?: MetricEntry[];
+  custom: MetricEntry[];
 }

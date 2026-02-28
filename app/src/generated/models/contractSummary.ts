@@ -10,13 +10,13 @@ import type { PropertySummary } from './propertySummary';
 import type { TenantSummary } from './tenantSummary';
 
 export interface ContractSummary {
-  identifier?: string;
-  property?: PropertySummary;
+  identifier: string;
+  property: PropertySummary;
   primaryTenant?: TenantSummary;
-  startDate?: string;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
-  rentAmount?: number;
+  rentAmount: number;
   /** Current lifecycle status of the contract */
-  status?: ContractSummaryStatus;
+  status: ContractSummaryStatus;
 }

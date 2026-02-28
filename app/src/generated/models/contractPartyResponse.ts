@@ -9,8 +9,8 @@ import type { ContractPartyResponseRole } from './contractPartyResponseRole';
 import type { TenantSummary } from './tenantSummary';
 
 export interface ContractPartyResponse {
-  identifier?: string;
+  identifier: string;
   tenant?: TenantSummary;
   /** Role of a party within a rental contract */
-  role?: ContractPartyResponseRole;
+  role: ContractPartyResponseRole;
 }

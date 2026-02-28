@@ -7,13 +7,13 @@
  */
 
 export interface BackofficeNotificationResponse {
-  identifier?: string;
+  identifier: string;
   /** @nullable */
   teamIdentifier?: string | null;
   /** @nullable */
   teamName?: string | null;
-  notificationType?: string;
-  channel?: string;
+  notificationType: string;
+  channel: string;
   /** @nullable */
   subject?: string | null;
   /** @nullable */
@@ -22,13 +22,13 @@ export interface BackofficeNotificationResponse {
   recipientEmail?: string | null;
   /** @nullable */
   recipientPhone?: string | null;
-  status?: string;
+  status: string;
   /** @nullable */
   providerStatus?: string | null;
   /** @nullable */
   providerError?: string | null;
-  openCount?: number;
-  clickCount?: number;
+  openCount: number;
+  clickCount: number;
   /** @nullable */
   firstOpenedAt?: string | null;
   /** @nullable */
@@ -37,8 +37,8 @@ export interface BackofficeNotificationResponse {
   resentFromIdentifier?: string | null;
   /** @nullable */
   resendReason?: string | null;
-  demoBlocked?: boolean;
-  createdAt?: string;
+  demoBlocked: boolean;
+  createdAt: string;
   /** @nullable */
   statusUpdatedAt?: string | null;
 }

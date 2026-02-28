@@ -10,13 +10,13 @@ import type { FieldSchemaType } from './fieldSchemaType';
 import type { ValidationSchema } from './validationSchema';
 
 export interface FieldSchema {
-  name?: string;
-  label?: string;
-  type?: FieldSchemaType;
-  required?: boolean;
-  enumValues?: EnumValue[];
-  validation?: ValidationSchema;
-  group?: string;
+  name: string;
+  label: string;
+  type: FieldSchemaType;
+  required: boolean;
+  enumValues: EnumValue[];
+  validation: ValidationSchema;
+  group: string;
   /** @nullable */
   helpText?: string | null;
   /** @nullable */

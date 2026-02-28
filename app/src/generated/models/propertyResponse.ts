@@ -20,17 +20,17 @@ import type { ResidentialDetailsResponse } from './residentialDetailsResponse';
  */
 export interface PropertyResponse {
   /** Unique property identifier */
-  identifier?: string;
+  identifier: string;
   /** High-level property classification */
-  propertyCategory?: PropertyResponsePropertyCategory;
+  propertyCategory: PropertyResponsePropertyCategory;
   /** Specific property type within a category */
-  propertyType?: PropertyResponsePropertyType;
+  propertyType: PropertyResponsePropertyType;
   /** Current occupancy or availability status of the property */
-  status?: PropertyResponseStatus;
-  street?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
+  status: PropertyResponseStatus;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
   /** @nullable */
   latitude?: number | null;
   /** @nullable */
@@ -131,7 +131,7 @@ export interface PropertyResponse {
   outdoorAreas?: PropertyOutdoorAreaResponse[] | null;
   /** @nullable */
   amenities?: PropertyAmenityResponse[] | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

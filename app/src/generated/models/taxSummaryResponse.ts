@@ -9,11 +9,11 @@ import type { CategoryExpenseSummary } from './categoryExpenseSummary';
 import type { PropertyFinancialSummary } from './propertyFinancialSummary';
 
 export interface TaxSummaryResponse {
-  year?: number;
-  totalIncome?: number;
-  totalExpenses?: number;
-  netIncome?: number;
-  expensesByCategory?: CategoryExpenseSummary[];
-  properties?: PropertyFinancialSummary[];
-  currency?: string;
+  year: number;
+  totalIncome: number;
+  totalExpenses: number;
+  netIncome: number;
+  expensesByCategory: CategoryExpenseSummary[];
+  properties: PropertyFinancialSummary[];
+  currency: string;
 }

@@ -8,9 +8,9 @@
 import type { BackofficePhoneNumberPolicyResponsePolicyMatrix } from "./backofficePhoneNumberPolicyResponsePolicyMatrix";
 
 export interface BackofficePhoneNumberPolicyResponse {
-  policyMatrix?: BackofficePhoneNumberPolicyResponsePolicyMatrix;
-  maxCodesPerHour?: number;
-  verificationCodeExpiryMinutes?: number;
+  policyMatrix: BackofficePhoneNumberPolicyResponsePolicyMatrix;
+  maxCodesPerHour: number;
+  verificationCodeExpiryMinutes: number;
   /** @nullable */
   updatedAt?: string | null;
   /** @nullable */

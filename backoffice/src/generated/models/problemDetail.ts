@@ -10,14 +10,14 @@
  * RFC 7807 Problem Detail response
  */
 export interface ProblemDetail {
-  /** URI of the request that caused the error */
-  instance?: string;
-  /** Problem type URI */
-  type?: string;
-  /** HTTP status code */
-  status?: unknown;
   /** Human-readable explanation of the problem */
   detail?: string;
+  /** HTTP status code */
+  status?: unknown;
+  /** Problem type URI */
+  type?: string;
+  /** URI of the request that caused the error */
+  instance?: string;
   /** Short human-readable summary */
   title?: string;
 }

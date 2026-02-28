@@ -7,8 +7,8 @@
  */
 
 export interface DataPoint {
-  period?: string;
-  occupancyRate?: number;
-  totalUnits?: number;
-  occupiedUnits?: number;
+  period: string;
+  occupancyRate: number;
+  totalUnits: number;
+  occupiedUnits: number;
 }

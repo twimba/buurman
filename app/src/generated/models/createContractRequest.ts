@@ -63,7 +63,7 @@ export interface CreateContractRequest {
   termsAndConditions?: string | null;
   /** @nullable */
   notes?: string | null;
-  countryMetadata?: CreateContractRequestCountryMetadata;
+  countryMetadata: CreateContractRequestCountryMetadata;
   endDateAfterStartDate?: boolean;
   exactlyOnePrimaryTenant?: boolean;
 }

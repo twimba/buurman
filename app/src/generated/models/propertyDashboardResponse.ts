@@ -14,11 +14,11 @@ import type { OccupancyChartData } from './occupancyChartData';
 import type { SummaryMetrics } from './summaryMetrics';
 
 export interface PropertyDashboardResponse {
-  summary?: SummaryMetrics;
-  cashFlow?: CashFlowChartData;
-  equity?: EquityChartData;
-  expenseBreakdown?: ExpenseBreakdownChartData;
-  occupancy?: OccupancyChartData;
-  dataCompleteness?: DataCompleteness;
-  futureTrend?: FutureTrendData;
+  summary: SummaryMetrics;
+  cashFlow: CashFlowChartData;
+  equity: EquityChartData;
+  expenseBreakdown: ExpenseBreakdownChartData;
+  occupancy: OccupancyChartData;
+  dataCompleteness: DataCompleteness;
+  futureTrend: FutureTrendData;
 }

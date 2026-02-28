@@ -8,9 +8,9 @@
 import type { TimelineEntryType } from './timelineEntryType';
 
 export interface TimelineEntry {
-  type?: TimelineEntryType;
-  identifier?: string;
-  startDate?: string;
+  type: TimelineEntryType;
+  identifier: string;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
   /** @nullable */

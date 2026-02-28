@@ -7,11 +7,11 @@
  */
 
 export interface TeamMemberResponse {
-  userIdentifier?: string;
-  email?: string;
-  name?: string;
-  role?: string;
-  isOwner?: boolean;
-  joinedAt?: string;
-  isCurrentUser?: boolean;
+  userIdentifier: string;
+  email: string;
+  name: string;
+  role: string;
+  isOwner: boolean;
+  joinedAt: string;
+  isCurrentUser: boolean;
 }

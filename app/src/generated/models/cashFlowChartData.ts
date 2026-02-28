@@ -8,5 +8,5 @@
 import type { MonthlyDataPoint } from './monthlyDataPoint';
 
 export interface CashFlowChartData {
-  months?: MonthlyDataPoint[];
+  months: MonthlyDataPoint[];
 }

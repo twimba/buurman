@@ -7,11 +7,11 @@
  */
 
 export interface PaymentReceivalResponse {
-  identifier?: string;
-  amount?: number;
-  currency?: string;
-  receivalDate?: string;
+  identifier: string;
+  amount: number;
+  currency: string;
+  receivalDate: string;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
 }

@@ -8,6 +8,6 @@
 import type { ExpenseTimelineMonthCategoryAmounts } from './expenseTimelineMonthCategoryAmounts';
 
 export interface ExpenseTimelineMonth {
-  month?: string;
-  categoryAmounts?: ExpenseTimelineMonthCategoryAmounts;
+  month: string;
+  categoryAmounts: ExpenseTimelineMonthCategoryAmounts;
 }

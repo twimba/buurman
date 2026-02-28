@@ -7,9 +7,9 @@
  */
 
 export interface ScheduledJobResponse {
-  jobName?: string;
-  jobGroup?: string;
-  jobClass?: string;
+  jobName: string;
+  jobGroup: string;
+  jobClass: string;
   /** @nullable */
   triggerName?: string | null;
   /** @nullable */
@@ -18,7 +18,7 @@ export interface ScheduledJobResponse {
   triggerType?: string | null;
   /** @nullable */
   scheduleExpression?: string | null;
-  triggerState?: string;
+  triggerState: string;
   /** @nullable */
   nextFireTime?: string | null;
   /** @nullable */

@@ -10,14 +10,14 @@ import type { PropertySummaryPropertyType } from './propertySummaryPropertyType'
 import type { PropertySummaryStatus } from './propertySummaryStatus';
 
 export interface PropertySummary {
-  identifier?: string;
-  street?: string;
-  city?: string;
-  postalCode?: string;
+  identifier: string;
+  street: string;
+  city: string;
+  postalCode: string;
   /** High-level property classification */
-  propertyCategory?: PropertySummaryPropertyCategory;
+  propertyCategory: PropertySummaryPropertyCategory;
   /** Specific property type within a category */
-  propertyType?: PropertySummaryPropertyType;
+  propertyType: PropertySummaryPropertyType;
   /** Current occupancy or availability status of the property */
-  status?: PropertySummaryStatus;
+  status: PropertySummaryStatus;
 }

@@ -30,5 +30,5 @@ export interface CreateBuurmyRequest {
    * @maxLength 128
    */
   password: string;
-  temporaryPassword?: boolean;
+  temporaryPassword: boolean;
 }

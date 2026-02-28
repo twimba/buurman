@@ -7,13 +7,13 @@
  */
 
 export interface RateLimitConfigResponse {
-  key?: string;
-  displayName?: string;
+  key: string;
+  displayName: string;
   /** @nullable */
   description?: string | null;
-  maxRequests?: number;
-  periodSeconds?: number;
-  enabled?: boolean;
+  maxRequests: number;
+  periodSeconds: number;
+  enabled: boolean;
   /** @nullable */
   updatedAt?: string | null;
   /** @nullable */

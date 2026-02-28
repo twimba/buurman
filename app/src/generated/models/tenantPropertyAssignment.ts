@@ -8,7 +8,7 @@
 import type { PropertySummary } from './propertySummary';
 
 export interface TenantPropertyAssignment {
-  property?: PropertySummary;
+  property: PropertySummary;
   /** @nullable */
   role?: string | null;
 }

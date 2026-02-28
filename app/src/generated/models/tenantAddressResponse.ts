@@ -9,22 +9,22 @@ import type { TenantAddressResponseAddressType } from './tenantAddressResponseAd
 import type { TenantAddressResponseStatus } from './tenantAddressResponseStatus';
 
 export interface TenantAddressResponse {
-  identifier?: string;
-  street?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
+  identifier: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
   /** Purpose or classification of the tenant address */
-  addressType?: TenantAddressResponseAddressType;
+  addressType: TenantAddressResponseAddressType;
   /** Whether the address is currently in use */
-  status?: TenantAddressResponseStatus;
+  status: TenantAddressResponseStatus;
   /** @nullable */
   latitude?: number | null;
   /** @nullable */
   longitude?: number | null;
   /** @nullable */
   geocodeAccuracy?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

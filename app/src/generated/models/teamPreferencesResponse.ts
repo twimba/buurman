@@ -9,6 +9,6 @@ import type { PaymentSettings } from './paymentSettings';
 import type { RegionalSettings } from './regionalSettings';
 
 export interface TeamPreferencesResponse {
-  payments?: PaymentSettings;
-  regional?: RegionalSettings;
+  payments: PaymentSettings;
+  regional: RegionalSettings;
 }

@@ -7,7 +7,7 @@
  */
 
 export interface CategoryTotal {
-  category?: string;
-  total?: number;
-  count?: number;
+  category: string;
+  total: number;
+  count: number;
 }

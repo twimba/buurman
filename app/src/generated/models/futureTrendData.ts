@@ -8,5 +8,5 @@
 import type { FutureMonthDataPoint } from './futureMonthDataPoint';
 
 export interface FutureTrendData {
-  months?: FutureMonthDataPoint[];
+  months: FutureMonthDataPoint[];
 }

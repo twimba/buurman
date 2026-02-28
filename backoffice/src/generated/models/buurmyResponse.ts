@@ -7,18 +7,18 @@
  */
 
 export interface BuurmyResponse {
-  id?: string;
-  username?: string;
-  email?: string;
+  id: string;
+  username: string;
+  email: string;
   /** @nullable */
   firstName?: string | null;
   /** @nullable */
   lastName?: string | null;
-  enabled?: boolean;
-  emailVerified?: boolean;
+  enabled: boolean;
+  emailVerified: boolean;
   /** @nullable */
   createdAt?: string | null;
   /** @nullable */
   lastLogin?: string | null;
-  requiredActions?: string[];
+  requiredActions: string[];
 }

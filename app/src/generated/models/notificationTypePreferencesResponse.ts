@@ -8,9 +8,9 @@
 import type { Entry } from './entry';
 
 export interface NotificationTypePreferencesResponse {
-  globalEmailEnabled?: boolean;
-  globalSmsEnabled?: boolean;
-  smsAvailable?: boolean;
-  emailAvailable?: boolean;
-  preferences?: Entry[];
+  globalEmailEnabled: boolean;
+  globalSmsEnabled: boolean;
+  smsAvailable: boolean;
+  emailAvailable: boolean;
+  preferences: Entry[];
 }

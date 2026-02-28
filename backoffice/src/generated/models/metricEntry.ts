@@ -8,8 +8,8 @@
 import type { MetricEntryTags } from "./metricEntryTags";
 
 export interface MetricEntry {
-  name?: string;
-  type?: string;
-  value?: number;
-  tags?: MetricEntryTags;
+  name: string;
+  type: string;
+  value: number;
+  tags: MetricEntryTags;
 }

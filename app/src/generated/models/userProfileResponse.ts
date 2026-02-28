@@ -11,11 +11,11 @@
  */
 export interface UserProfileResponse {
   /** Unique user identifier */
-  identifier?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
+  identifier: string;
+  email: string;
+  firstName: string;
+  lastName: string;
   /** @nullable */
   phone?: string | null;
-  phoneVerified?: boolean;
+  phoneVerified: boolean;
 }

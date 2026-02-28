@@ -8,12 +8,12 @@
 import type { BackofficeDashboardResponseNotificationsByChannel } from "./backofficeDashboardResponseNotificationsByChannel";
 
 export interface BackofficeDashboardResponse {
-  totalTeams?: number;
-  totalUsers?: number;
-  disabledUsers?: number;
-  totalNotifications?: number;
-  pendingNotifications?: number;
-  failedNotifications?: number;
-  deliveredNotifications?: number;
-  notificationsByChannel?: BackofficeDashboardResponseNotificationsByChannel;
+  totalTeams: number;
+  totalUsers: number;
+  disabledUsers: number;
+  totalNotifications: number;
+  pendingNotifications: number;
+  failedNotifications: number;
+  deliveredNotifications: number;
+  notificationsByChannel: BackofficeDashboardResponseNotificationsByChannel;
 }

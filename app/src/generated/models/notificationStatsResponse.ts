@@ -8,11 +8,11 @@
 import type { NotificationStatsResponseByChannel } from './notificationStatsResponseByChannel';
 
 export interface NotificationStatsResponse {
-  totalCount?: number;
-  pendingCount?: number;
-  sentCount?: number;
-  deliveredCount?: number;
-  failedCount?: number;
-  demoBlockedCount?: number;
-  byChannel?: NotificationStatsResponseByChannel;
+  totalCount: number;
+  pendingCount: number;
+  sentCount: number;
+  deliveredCount: number;
+  failedCount: number;
+  demoBlockedCount: number;
+  byChannel: NotificationStatsResponseByChannel;
 }

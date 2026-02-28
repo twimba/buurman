@@ -8,20 +8,20 @@
 import type { GcInfo } from "./gcInfo";
 
 export interface RuntimeInfo {
-  javaVersion?: string;
-  springBootVersion?: string;
-  activeProfiles?: string;
-  uptimeMs?: number;
-  heapUsedBytes?: number;
-  heapMaxBytes?: number;
-  nonHeapUsedBytes?: number;
-  nonHeapMaxBytes?: number;
-  cpuUsage?: number;
-  availableProcessors?: number;
-  threadCount?: number;
-  peakThreadCount?: number;
-  daemonThreadCount?: number;
-  garbageCollectors?: GcInfo[];
-  pid?: number;
-  serverTime?: string;
+  javaVersion: string;
+  springBootVersion: string;
+  activeProfiles: string;
+  uptimeMs: number;
+  heapUsedBytes: number;
+  heapMaxBytes: number;
+  nonHeapUsedBytes: number;
+  nonHeapMaxBytes: number;
+  cpuUsage: number;
+  availableProcessors: number;
+  threadCount: number;
+  peakThreadCount: number;
+  daemonThreadCount: number;
+  garbageCollectors: GcInfo[];
+  pid: number;
+  serverTime: string;
 }

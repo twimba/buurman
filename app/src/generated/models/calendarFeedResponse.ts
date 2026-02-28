@@ -8,9 +8,9 @@
 import type { CalendarFeedResponseFeedType } from './calendarFeedResponseFeedType';
 
 export interface CalendarFeedResponse {
-  identifier?: string;
+  identifier: string;
   /** Scope of events included in the calendar feed */
-  feedType?: CalendarFeedResponseFeedType;
+  feedType: CalendarFeedResponseFeedType;
   /** @nullable */
   contractIdentifier?: string | null;
   /** @nullable */
@@ -19,9 +19,9 @@ export interface CalendarFeedResponse {
   tenantIdentifier?: string | null;
   /** @nullable */
   entityLabel?: string | null;
-  enabled?: boolean;
-  feedUrl?: string;
-  createdAt?: string;
+  enabled: boolean;
+  feedUrl: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

@@ -10,15 +10,15 @@ import type { PropertyTaxResponseStatus } from './propertyTaxResponseStatus';
 import type { PropertyTaxResponseTaxType } from './propertyTaxResponseTaxType';
 
 export interface PropertyTaxResponse {
-  identifier?: string;
+  identifier: string;
   property?: PropertySummary;
   /** Classification of property tax */
-  taxType?: PropertyTaxResponseTaxType;
+  taxType: PropertyTaxResponseTaxType;
   /** @nullable */
   authority?: string | null;
-  annualAmount?: number;
-  currency?: string;
-  paymentFrequency?: string;
+  annualAmount: number;
+  currency: string;
+  paymentFrequency: string;
   /** @nullable */
   dueMonths?: string | null;
   /** @nullable */
@@ -28,10 +28,10 @@ export interface PropertyTaxResponse {
   /** @nullable */
   endDate?: string | null;
   /** Current status of the tax obligation */
-  status?: PropertyTaxResponseStatus;
+  status: PropertyTaxResponseStatus;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

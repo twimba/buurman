@@ -8,11 +8,11 @@
 import type { MonthlyTrend } from './monthlyTrend';
 
 export interface PaymentStatsResponse {
-  pendingCount?: number;
-  pendingAmount?: number;
-  overdueCount?: number;
-  overdueAmount?: number;
+  pendingCount: number;
+  pendingAmount: number;
+  overdueCount: number;
+  overdueAmount: number;
   /** @nullable */
   currency?: string | null;
-  monthlyTrend?: MonthlyTrend[];
+  monthlyTrend: MonthlyTrend[];
 }

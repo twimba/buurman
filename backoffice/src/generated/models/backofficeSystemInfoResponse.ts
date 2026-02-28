@@ -14,11 +14,11 @@ import type { ServiceHealth } from "./serviceHealth";
 import type { SessionInfo } from "./sessionInfo";
 
 export interface BackofficeSystemInfoResponse {
-  build?: BuildInfo;
-  runtime?: RuntimeInfo;
-  migrations?: MigrationInfo;
-  services?: ServiceHealth[];
-  configuration?: ConfigEntry[];
-  metrics?: MetricsSnapshot;
-  sessions?: SessionInfo;
+  build: BuildInfo;
+  runtime: RuntimeInfo;
+  migrations: MigrationInfo;
+  services: ServiceHealth[];
+  configuration: ConfigEntry[];
+  metrics: MetricsSnapshot;
+  sessions: SessionInfo;
 }

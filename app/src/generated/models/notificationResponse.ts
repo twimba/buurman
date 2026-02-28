@@ -11,9 +11,9 @@
  */
 export interface NotificationResponse {
   /** Unique notification identifier */
-  identifier?: string;
-  notificationType?: string;
-  channel?: string;
+  identifier: string;
+  notificationType: string;
+  channel: string;
   /** @nullable */
   subject?: string | null;
   /** @nullable */
@@ -22,13 +22,13 @@ export interface NotificationResponse {
   recipientEmail?: string | null;
   /** @nullable */
   recipientPhone?: string | null;
-  status?: string;
+  status: string;
   /** @nullable */
   providerStatus?: string | null;
   /** @nullable */
   providerError?: string | null;
-  openCount?: number;
-  clickCount?: number;
+  openCount: number;
+  clickCount: number;
   /** @nullable */
   firstOpenedAt?: string | null;
   /** @nullable */
@@ -37,8 +37,8 @@ export interface NotificationResponse {
   resentFromIdentifier?: string | null;
   /** @nullable */
   resendReason?: string | null;
-  demoBlocked?: boolean;
-  createdAt?: string;
+  demoBlocked: boolean;
+  createdAt: string;
   /** @nullable */
   statusUpdatedAt?: string | null;
 }

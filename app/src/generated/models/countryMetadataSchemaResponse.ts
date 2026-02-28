@@ -9,9 +9,9 @@ import type { FieldSchema } from './fieldSchema';
 import type { GroupSchema } from './groupSchema';
 
 export interface CountryMetadataSchemaResponse {
-  countryCode?: string;
-  countryName?: string;
-  hasDedicatedSchema?: boolean;
-  fields?: FieldSchema[];
-  groups?: GroupSchema[];
+  countryCode: string;
+  countryName: string;
+  hasDedicatedSchema: boolean;
+  fields: FieldSchema[];
+  groups: GroupSchema[];
 }

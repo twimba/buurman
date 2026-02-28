@@ -11,10 +11,10 @@ export interface MigrationEntry {
   version?: string | null;
   /** @nullable */
   description?: string | null;
-  state?: string;
+  state: string;
   /** @nullable */
   installedOn?: string | null;
   /** @nullable */
   executionTimeMs?: number | null;
-  script?: string;
+  script: string;
 }

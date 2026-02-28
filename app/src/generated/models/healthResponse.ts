@@ -7,6 +7,6 @@
  */
 
 export interface HealthResponse {
-  status?: string;
-  timestamp?: string;
+  status: string;
+  timestamp: string;
 }

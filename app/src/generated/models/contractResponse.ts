@@ -63,38 +63,38 @@ import type { XkContractMetadata } from './xkContractMetadata';
  */
 export interface ContractResponse {
   /** Unique contract identifier */
-  identifier?: string;
+  identifier: string;
   property?: PropertySummary;
-  parties?: ContractPartyResponse[];
+  parties: ContractPartyResponse[];
   primaryTenant?: TenantSummary;
   /** Type of rental contract */
-  contractType?: ContractResponseContractType;
-  startDate?: string;
+  contractType: ContractResponseContractType;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
   /** @nullable */
   signedDate?: string | null;
-  rentAmount?: number;
+  rentAmount: number;
   /** @nullable */
   depositAmount?: number | null;
   /** @nullable */
   securityDeposit?: number | null;
-  rentAmountCurrency?: string;
+  rentAmountCurrency: string;
   /** @nullable */
   depositAmountCurrency?: string | null;
   /** @nullable */
   securityDepositCurrency?: string | null;
   /** How often rent payments are due */
-  paymentFrequency?: ContractResponsePaymentFrequency;
+  paymentFrequency: ContractResponsePaymentFrequency;
   /** @nullable */
   paymentDueDay?: number | null;
-  autoRenewal?: boolean;
-  renewalNoticeDays?: number;
-  terminationNoticeDays?: number;
+  autoRenewal: boolean;
+  renewalNoticeDays: number;
+  terminationNoticeDays: number;
   /** @nullable */
   lateFeePercentage?: number | null;
   /** Current lifecycle status of the contract */
-  status?: ContractResponseStatus;
+  status: ContractResponseStatus;
   /** @nullable */
   termsAndConditions?: string | null;
   /** @nullable */
@@ -148,7 +148,7 @@ export interface ContractResponse {
     | UsContractMetadata
     | UyContractMetadata
     | XkContractMetadata;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

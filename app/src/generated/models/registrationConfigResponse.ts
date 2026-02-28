@@ -7,5 +7,5 @@
  */
 
 export interface RegistrationConfigResponse {
-  invitationRequired?: boolean;
+  invitationRequired: boolean;
 }

@@ -11,6 +11,6 @@ import type { TimelineEntry } from './timelineEntry';
 export interface PropertyTimelineResponse {
   /** @nullable */
   acquisitionDate?: string | null;
-  entries?: TimelineEntry[];
-  financings?: FinancingEntry[];
+  entries: TimelineEntry[];
+  financings: FinancingEntry[];
 }

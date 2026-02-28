@@ -10,18 +10,18 @@ import type { PropertyFinancingResponseRateType } from './propertyFinancingRespo
 import type { PropertyFinancingResponseStatus } from './propertyFinancingResponseStatus';
 
 export interface PropertyFinancingResponse {
-  identifier?: string;
-  propertyIdentifier?: string;
+  identifier: string;
+  propertyIdentifier: string;
   /** Type of financing instrument */
-  financingType?: PropertyFinancingResponseFinancingType;
+  financingType: PropertyFinancingResponseFinancingType;
   /** Interest rate structure of the financing */
-  rateType?: PropertyFinancingResponseRateType;
+  rateType: PropertyFinancingResponseRateType;
   /** @nullable */
   lenderName?: string | null;
   /** @nullable */
   loanNumber?: string | null;
-  originalAmount?: number;
-  originalAmountCurrency?: string;
+  originalAmount: number;
+  originalAmountCurrency: string;
   /** @nullable */
   currentBalance?: number | null;
   /** @nullable */
@@ -32,17 +32,17 @@ export interface PropertyFinancingResponse {
   monthlyPayment?: number | null;
   /** @nullable */
   monthlyPaymentCurrency?: string | null;
-  paymentVariable?: boolean;
-  startDate?: string;
+  paymentVariable: boolean;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
   /** @nullable */
   termMonths?: number | null;
   /** Current status of the financing arrangement */
-  status?: PropertyFinancingResponseStatus;
+  status: PropertyFinancingResponseStatus;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

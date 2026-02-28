@@ -11,11 +11,11 @@
  */
 export interface DocumentResponse {
   /** Unique document identifier */
-  identifier?: string;
-  entityType?: string;
-  entityIdentifier?: string;
-  fileKey?: string;
-  fileName?: string;
+  identifier: string;
+  entityType: string;
+  entityIdentifier: string;
+  fileKey: string;
+  fileName: string;
   /** @nullable */
   fileSize?: number | null;
   /** @nullable */
@@ -24,7 +24,7 @@ export interface DocumentResponse {
   title?: string | null;
   /** @nullable */
   notes?: string | null;
-  uploadedAt?: string;
+  uploadedAt: string;
   /** @nullable */
   downloadUrl?: string | null;
 }

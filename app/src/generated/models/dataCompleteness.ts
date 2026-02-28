@@ -7,12 +7,12 @@
  */
 
 export interface DataCompleteness {
-  hasPurchasePrice?: boolean;
-  hasMarketValue?: boolean;
-  hasMortgageInfo?: boolean;
-  hasOperatingCosts?: boolean;
-  hasContracts?: boolean;
-  hasPayments?: boolean;
-  hasExpenses?: boolean;
-  completenessPercent?: number;
+  hasPurchasePrice: boolean;
+  hasMarketValue: boolean;
+  hasMortgageInfo: boolean;
+  hasOperatingCosts: boolean;
+  hasContracts: boolean;
+  hasPayments: boolean;
+  hasExpenses: boolean;
+  completenessPercent: number;
 }

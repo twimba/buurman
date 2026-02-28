@@ -7,9 +7,9 @@
  */
 
 export interface MonthlyDataPoint {
-  month?: string;
-  income?: number;
-  expenses?: number;
-  mortgage?: number;
-  net?: number;
+  month: string;
+  income: number;
+  expenses: number;
+  mortgage: number;
+  net: number;
 }

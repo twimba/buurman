@@ -7,10 +7,10 @@
  */
 
 export interface DataCounts {
-  properties?: number;
-  tenants?: number;
-  contracts?: number;
-  expenses?: number;
-  payments?: number;
-  documents?: number;
+  properties: number;
+  tenants: number;
+  contracts: number;
+  expenses: number;
+  payments: number;
+  documents: number;
 }

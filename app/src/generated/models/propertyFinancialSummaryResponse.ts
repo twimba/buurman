@@ -15,11 +15,11 @@ import type { PropertyValuationResponse } from './propertyValuationResponse';
 export interface PropertyFinancialSummaryResponse {
   acquisition?: PropertyAcquisitionResponse;
   latestValuation?: PropertyValuationResponse;
-  valuationHistory?: PropertyValuationResponse[];
-  financings?: PropertyFinancingResponse[];
-  insurances?: PropertyInsuranceResponse[];
-  taxes?: PropertyTaxResponse[];
-  fees?: PropertyFeeResponse[];
+  valuationHistory: PropertyValuationResponse[];
+  financings: PropertyFinancingResponse[];
+  insurances: PropertyInsuranceResponse[];
+  taxes: PropertyTaxResponse[];
+  fees: PropertyFeeResponse[];
   /** @nullable */
   totalFinancingBalance?: number | null;
   /** @nullable */

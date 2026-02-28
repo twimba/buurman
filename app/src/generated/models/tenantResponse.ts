@@ -12,9 +12,9 @@ import type { TenantPropertyAssignment } from './tenantPropertyAssignment';
  */
 export interface TenantResponse {
   /** Unique tenant identifier */
-  identifier?: string;
-  firstName?: string;
-  lastName?: string;
+  identifier: string;
+  firstName: string;
+  lastName: string;
   /** @nullable */
   email?: string | null;
   /** @nullable */
@@ -29,8 +29,8 @@ export interface TenantResponse {
   mainPhotoUrl?: string | null;
   /** @nullable */
   mainPhotoThumbnailUrl?: string | null;
-  activeProperties?: TenantPropertyAssignment[];
-  createdAt?: string;
+  activeProperties: TenantPropertyAssignment[];
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

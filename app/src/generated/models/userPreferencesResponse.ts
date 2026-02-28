@@ -17,6 +17,6 @@ export interface UserPreferencesResponse {
   dateFormat?: string | null;
   /** @nullable */
   currencyFormat?: string | null;
-  emailNotifications?: boolean;
-  smsNotifications?: boolean;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
 }

@@ -11,8 +11,8 @@
  */
 export interface TeamResponse {
   /** Unique team identifier */
-  identifier?: string;
-  teamName?: string;
-  memberCount?: number;
-  createdAt?: string;
+  identifier: string;
+  teamName: string;
+  memberCount: number;
+  createdAt: string;
 }

@@ -17,27 +17,27 @@ import type { TenantSummary } from './tenantSummary';
  */
 export interface PaymentResponse {
   /** Unique payment identifier */
-  identifier?: string;
+  identifier: string;
   contract?: ContractSummary;
   tenant?: TenantSummary;
   property?: PropertySummary;
-  amount?: number;
-  currency?: string;
+  amount: number;
+  currency: string;
   /** @nullable */
   receivedAmount?: number | null;
   /** @nullable */
   balance?: number | null;
   /** @nullable */
   paymentDate?: string | null;
-  dueDate?: string;
+  dueDate: string;
   /** Current payment collection status */
-  status?: PaymentResponseStatus;
+  status: PaymentResponseStatus;
   /** @nullable */
   notes?: string | null;
   proofOfPayment?: DocumentResponse;
   receipt?: DocumentResponse;
-  receivals?: PaymentReceivalResponse[];
-  createdAt?: string;
+  receivals: PaymentReceivalResponse[];
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

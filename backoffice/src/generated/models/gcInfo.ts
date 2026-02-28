@@ -7,7 +7,7 @@
  */
 
 export interface GcInfo {
-  name?: string;
-  collectionCount?: number;
-  collectionTimeMs?: number;
+  name: string;
+  collectionCount: number;
+  collectionTimeMs: number;
 }

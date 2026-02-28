@@ -9,9 +9,9 @@ import type { PropertyAcquisitionResponseAcquisitionType } from './propertyAcqui
 import type { PropertyAcquisitionResponseDepreciationMethod } from './propertyAcquisitionResponseDepreciationMethod';
 
 export interface PropertyAcquisitionResponse {
-  identifier?: string;
+  identifier: string;
   /** How the property was acquired */
-  acquisitionType?: PropertyAcquisitionResponseAcquisitionType;
+  acquisitionType: PropertyAcquisitionResponseAcquisitionType;
   /** @nullable */
   acquisitionDate?: string | null;
   /** @nullable */
@@ -39,6 +39,6 @@ export interface PropertyAcquisitionResponse {
   depreciationYears?: number | null;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }

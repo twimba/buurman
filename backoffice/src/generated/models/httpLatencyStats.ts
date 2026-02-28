@@ -7,11 +7,11 @@
  */
 
 export interface HttpLatencyStats {
-  meanMs?: number;
-  minMs?: number;
-  maxMs?: number;
-  p50Ms?: number;
-  p75Ms?: number;
-  p95Ms?: number;
-  p99Ms?: number;
+  meanMs: number;
+  minMs: number;
+  maxMs: number;
+  p50Ms: number;
+  p75Ms: number;
+  p95Ms: number;
+  p99Ms: number;
 }

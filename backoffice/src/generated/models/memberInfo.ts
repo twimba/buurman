@@ -13,8 +13,8 @@ export interface MemberInfo {
   firstName?: string | null;
   /** @nullable */
   lastName?: string | null;
-  role?: string;
-  isOwner?: boolean;
-  joinedAt?: string;
-  disabled?: boolean;
+  role: string;
+  isOwner: boolean;
+  joinedAt: string;
+  disabled: boolean;
 }

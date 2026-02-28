@@ -9,13 +9,13 @@ import type { OccupancyPeriodResponseEndReason } from './occupancyPeriodResponse
 import type { OccupancyPeriodResponseType } from './occupancyPeriodResponseType';
 
 export interface OccupancyPeriodResponse {
-  identifier?: string;
-  propertyIdentifier?: string;
-  startDate?: string;
+  identifier: string;
+  propertyIdentifier: string;
+  startDate: string;
   /** @nullable */
   endDate?: string | null;
   /** Nature of the self-occupancy period */
-  type?: OccupancyPeriodResponseType;
+  type: OccupancyPeriodResponseType;
   /** @nullable */
   occupantName?: string | null;
   /** @nullable */
@@ -27,7 +27,7 @@ export interface OccupancyPeriodResponse {
   endReason?: OccupancyPeriodResponseEndReason;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

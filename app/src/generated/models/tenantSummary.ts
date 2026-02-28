@@ -7,9 +7,9 @@
  */
 
 export interface TenantSummary {
-  identifier?: string;
-  firstName?: string;
-  lastName?: string;
+  identifier: string;
+  firstName: string;
+  lastName: string;
   /** @nullable */
   email?: string | null;
   /** @nullable */

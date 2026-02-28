@@ -10,15 +10,15 @@ import type { PropertyFeeResponseStatus } from './propertyFeeResponseStatus';
 import type { PropertySummary } from './propertySummary';
 
 export interface PropertyFeeResponse {
-  identifier?: string;
+  identifier: string;
   property?: PropertySummary;
   /** Type of recurring property fee */
-  feeType?: PropertyFeeResponseFeeType;
+  feeType: PropertyFeeResponseFeeType;
   /** @nullable */
   name?: string | null;
-  annualAmount?: number;
-  currency?: string;
-  paymentFrequency?: string;
+  annualAmount: number;
+  currency: string;
+  paymentFrequency: string;
   /** @nullable */
   dueMonths?: string | null;
   /** @nullable */
@@ -26,10 +26,10 @@ export interface PropertyFeeResponse {
   /** @nullable */
   endDate?: string | null;
   /** Current status of the fee obligation */
-  status?: PropertyFeeResponseStatus;
+  status: PropertyFeeResponseStatus;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

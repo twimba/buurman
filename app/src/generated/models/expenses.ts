@@ -9,7 +9,7 @@ import type { CategoryExpenseSummary } from './categoryExpenseSummary';
 import type { PropertyFinancialSummary } from './propertyFinancialSummary';
 
 export interface Expenses {
-  total?: number;
-  byCategory?: CategoryExpenseSummary[];
-  byProperty?: PropertyFinancialSummary[];
+  total: number;
+  byCategory: CategoryExpenseSummary[];
+  byProperty: PropertyFinancialSummary[];
 }

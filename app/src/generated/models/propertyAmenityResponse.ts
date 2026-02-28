@@ -7,9 +7,9 @@
  */
 
 export interface PropertyAmenityResponse {
-  amenityIdentifier?: string;
-  amenityName?: string;
-  amenityCategory?: string;
+  amenityIdentifier: string;
+  amenityName: string;
+  amenityCategory: string;
   /** @nullable */
   amenityIcon?: string | null;
   /** @nullable */

@@ -11,12 +11,12 @@
  */
 export interface UserResponse {
   /** Unique user identifier */
-  identifier?: string;
-  teamIdentifier?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  role?: string;
-  emailVerified?: boolean;
-  createdAt?: string;
+  identifier: string;
+  teamIdentifier: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  emailVerified: boolean;
+  createdAt: string;
 }

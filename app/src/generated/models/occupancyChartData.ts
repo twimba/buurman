@@ -8,5 +8,5 @@
 import type { OccupancyDataPoint } from './occupancyDataPoint';
 
 export interface OccupancyChartData {
-  months?: OccupancyDataPoint[];
+  months: OccupancyDataPoint[];
 }

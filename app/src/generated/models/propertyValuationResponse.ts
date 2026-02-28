@@ -8,16 +8,16 @@
 import type { PropertyValuationResponseValuationType } from './propertyValuationResponseValuationType';
 
 export interface PropertyValuationResponse {
-  identifier?: string;
+  identifier: string;
   /** Method or source of the property valuation */
-  valuationType?: PropertyValuationResponseValuationType;
-  valuationDate?: string;
-  amount?: number;
-  currency?: string;
+  valuationType: PropertyValuationResponseValuationType;
+  valuationDate: string;
+  amount: number;
+  currency: string;
   /** @nullable */
   source?: string | null;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }

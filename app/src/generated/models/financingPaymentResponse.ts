@@ -8,10 +8,10 @@
 import type { FinancingPaymentResponseStatus } from './financingPaymentResponseStatus';
 
 export interface FinancingPaymentResponse {
-  identifier?: string;
-  financingIdentifier?: string;
-  paymentDate?: string;
-  totalAmount?: number;
+  identifier: string;
+  financingIdentifier: string;
+  paymentDate: string;
+  totalAmount: number;
   /** @nullable */
   principalAmount?: number | null;
   /** @nullable */
@@ -20,13 +20,13 @@ export interface FinancingPaymentResponse {
   escrowAmount?: number | null;
   /** @nullable */
   extraPayment?: number | null;
-  currency?: string;
+  currency: string;
   /** Status of a financing installment payment */
-  status?: FinancingPaymentResponseStatus;
+  status: FinancingPaymentResponseStatus;
   /** @nullable */
   notes?: string | null;
-  balanceDeducted?: boolean;
-  createdAt?: string;
+  balanceDeducted: boolean;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

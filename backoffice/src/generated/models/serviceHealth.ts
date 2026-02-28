@@ -8,8 +8,8 @@
 import type { ServiceHealthStatus } from "./serviceHealthStatus";
 
 export interface ServiceHealth {
-  name?: string;
-  status?: ServiceHealthStatus;
+  name: string;
+  status: ServiceHealthStatus;
   /** @nullable */
   latencyMs?: number | null;
   /** @nullable */

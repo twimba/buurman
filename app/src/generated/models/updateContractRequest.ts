@@ -54,6 +54,6 @@ export interface UpdateContractRequest {
   termsAndConditions?: string | null;
   /** @nullable */
   notes?: string | null;
-  countryMetadata?: UpdateContractRequestCountryMetadata;
+  countryMetadata: UpdateContractRequestCountryMetadata;
   endDateAfterStartDate?: boolean;
 }

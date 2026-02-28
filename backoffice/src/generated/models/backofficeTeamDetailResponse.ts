@@ -11,13 +11,13 @@ import type { MemberInfo } from "./memberInfo";
 import type { SettingsInfo } from "./settingsInfo";
 
 export interface BackofficeTeamDetailResponse {
-  identifier?: string;
-  teamName?: string;
-  createdAt?: string;
+  identifier: string;
+  teamName: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
-  members?: MemberInfo[];
-  dataCounts?: DataCounts;
-  financialSnapshot?: FinancialSnapshot;
+  members: MemberInfo[];
+  dataCounts: DataCounts;
+  financialSnapshot: FinancialSnapshot;
   settings?: SettingsInfo;
 }

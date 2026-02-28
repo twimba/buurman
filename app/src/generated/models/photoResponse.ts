@@ -7,19 +7,19 @@
  */
 
 export interface PhotoResponse {
-  identifier?: string;
-  entityType?: string;
-  entityIdentifier?: string;
-  fileKey?: string;
-  fileName?: string;
-  fileSize?: number;
-  mimeType?: string;
+  identifier: string;
+  entityType: string;
+  entityIdentifier: string;
+  fileKey: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
   /** @nullable */
   title?: string | null;
   /** @nullable */
   notes?: string | null;
-  isMainPhoto?: boolean;
-  uploadedAt?: string;
+  isMainPhoto: boolean;
+  uploadedAt: string;
   /** @nullable */
   downloadUrl?: string | null;
   /** @nullable */

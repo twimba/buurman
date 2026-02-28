@@ -7,7 +7,7 @@
  */
 
 export interface Category {
-  name?: string;
-  value?: number;
-  color?: string;
+  name: string;
+  value: number;
+  color: string;
 }

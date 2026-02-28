@@ -7,5 +7,5 @@
  */
 
 export interface UpdateRegistrationInvitationNoteRequest {
-  note?: string;
+  note: string;
 }

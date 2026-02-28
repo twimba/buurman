@@ -7,9 +7,9 @@
  */
 
 export interface AmenityResponse {
-  identifier?: string;
-  name?: string;
-  category?: string;
-  icon?: string;
-  applicableCategories?: string[];
+  identifier: string;
+  name: string;
+  category: string;
+  icon: string;
+  applicableCategories: string[];
 }

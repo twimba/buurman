@@ -7,13 +7,13 @@
  */
 
 export interface BackofficeTeamResponse {
-  identifier?: string;
-  teamName?: string;
-  demo?: boolean;
-  memberCount?: number;
+  identifier: string;
+  teamName: string;
+  demo: boolean;
+  memberCount: number;
   /** @nullable */
   ownerEmail?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

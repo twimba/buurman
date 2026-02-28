@@ -9,7 +9,7 @@
 export interface SettingsInfo {
   /** @nullable */
   paymentsAheadCount?: number | null;
-  autoGenerationEnabled?: boolean;
+  autoGenerationEnabled: boolean;
   /** @nullable */
   defaultCurrency?: string | null;
   /** @nullable */

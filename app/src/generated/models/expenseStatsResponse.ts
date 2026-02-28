@@ -9,8 +9,8 @@ import type { CategoryTotal } from './categoryTotal';
 import type { MonthlyTrend } from './monthlyTrend';
 
 export interface ExpenseStatsResponse {
-  totalAmount?: number;
-  currency?: string;
-  topCategories?: CategoryTotal[];
-  monthlyTrend?: MonthlyTrend[];
+  totalAmount: number;
+  currency: string;
+  topCategories: CategoryTotal[];
+  monthlyTrend: MonthlyTrend[];
 }

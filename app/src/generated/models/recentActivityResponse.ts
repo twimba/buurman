@@ -10,16 +10,16 @@ import type { RecentActivityResponseNewValues } from './recentActivityResponseNe
 import type { RecentActivityResponseOldValues } from './recentActivityResponseOldValues';
 
 export interface RecentActivityResponse {
-  entityType?: string;
-  entityIdentifier?: string;
-  entityName?: string;
-  action?: string;
+  entityType: string;
+  entityIdentifier: string;
+  entityName: string;
+  action: string;
   /** @nullable */
   userName?: string | null;
-  timestamp?: string;
+  timestamp: string;
   /** @nullable */
   description?: string | null;
-  changedFields?: RecentActivityResponseChangedFields;
-  oldValues?: RecentActivityResponseOldValues;
-  newValues?: RecentActivityResponseNewValues;
+  changedFields: RecentActivityResponseChangedFields;
+  oldValues: RecentActivityResponseOldValues;
+  newValues: RecentActivityResponseNewValues;
 }

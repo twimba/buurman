@@ -7,7 +7,7 @@
  */
 
 export interface ContractPaymentInstructionResponse {
-  identifier?: string;
+  identifier: string;
   /** @nullable */
   paymentInstructionIdentifier?: string | null;
   /** @nullable */
@@ -40,7 +40,7 @@ export interface ContractPaymentInstructionResponse {
   effectiveTo?: string | null;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

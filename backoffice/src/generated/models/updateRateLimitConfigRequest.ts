@@ -11,11 +11,11 @@ export interface UpdateRateLimitConfigRequest {
    * @minimum 1
    * @maximum 10000
    */
-  maxRequests?: number;
+  maxRequests: number;
   /**
    * @minimum 10
    * @maximum 86400
    */
-  periodSeconds?: number;
-  enabled?: boolean;
+  periodSeconds: number;
+  enabled: boolean;
 }

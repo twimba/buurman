@@ -7,8 +7,8 @@
  */
 
 export interface LoggerConfigurationResponse {
-  name?: string;
+  name: string;
   /** @nullable */
   configuredLevel?: string | null;
-  effectiveLevel?: string;
+  effectiveLevel: string;
 }

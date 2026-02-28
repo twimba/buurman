@@ -7,6 +7,6 @@
  */
 
 export interface MonthlyIncome {
-  amount?: number;
-  currency?: string;
+  amount: number;
+  currency: string;
 }

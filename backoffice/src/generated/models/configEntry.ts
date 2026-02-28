@@ -7,7 +7,7 @@
  */
 
 export interface ConfigEntry {
-  category?: string;
-  key?: string;
-  value?: string;
+  category: string;
+  key: string;
+  value: string;
 }

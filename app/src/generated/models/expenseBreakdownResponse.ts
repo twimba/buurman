@@ -8,7 +8,7 @@
 import type { Category } from './category';
 
 export interface ExpenseBreakdownResponse {
-  categories?: Category[];
-  total?: number;
-  currency?: string;
+  categories: Category[];
+  total: number;
+  currency: string;
 }

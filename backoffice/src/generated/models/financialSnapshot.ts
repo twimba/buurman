@@ -15,8 +15,8 @@ export interface FinancialSnapshot {
   totalActiveRent?: number | null;
   /** @nullable */
   currency?: string | null;
-  propertyStatusDistribution?: FinancialSnapshotPropertyStatusDistribution;
-  propertyCategoryDistribution?: FinancialSnapshotPropertyCategoryDistribution;
-  contractStatusDistribution?: FinancialSnapshotContractStatusDistribution;
-  paymentStatusDistribution?: FinancialSnapshotPaymentStatusDistribution;
+  propertyStatusDistribution: FinancialSnapshotPropertyStatusDistribution;
+  propertyCategoryDistribution: FinancialSnapshotPropertyCategoryDistribution;
+  contractStatusDistribution: FinancialSnapshotContractStatusDistribution;
+  paymentStatusDistribution: FinancialSnapshotPaymentStatusDistribution;
 }

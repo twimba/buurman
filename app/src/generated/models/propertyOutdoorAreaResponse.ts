@@ -7,13 +7,13 @@
  */
 
 export interface PropertyOutdoorAreaResponse {
-  identifier?: string;
-  type?: string;
+  identifier: string;
+  type: string;
   /** @nullable */
   areaValue?: number | null;
   /** @nullable */
   areaUnit?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

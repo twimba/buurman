@@ -8,8 +8,8 @@
 import type { PropertySummary } from './propertySummary';
 
 export interface PropertyData {
-  property?: PropertySummary;
-  income?: number;
-  expenses?: number;
-  netProfit?: number;
+  property: PropertySummary;
+  income: number;
+  expenses: number;
+  netProfit: number;
 }

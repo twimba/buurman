@@ -7,5 +7,5 @@
  */
 
 export interface ValidateInvitationCodeResponse {
-  valid?: boolean;
+  valid: boolean;
 }

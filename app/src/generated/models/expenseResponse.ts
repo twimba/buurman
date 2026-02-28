@@ -14,19 +14,19 @@ import type { PropertySummary } from './propertySummary';
  */
 export interface ExpenseResponse {
   /** Unique expense identifier */
-  identifier?: string;
+  identifier: string;
   property?: PropertySummary;
   /** Category of the property-related expense */
-  category?: ExpenseResponseCategory;
-  amount?: number;
-  currency?: string;
-  expenseDate?: string;
+  category: ExpenseResponseCategory;
+  amount: number;
+  currency: string;
+  expenseDate: string;
   /** @nullable */
   description?: string | null;
   /** @nullable */
   notes?: string | null;
-  documents?: DocumentResponse[];
-  createdAt?: string;
+  documents: DocumentResponse[];
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

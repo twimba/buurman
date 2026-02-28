@@ -7,16 +7,16 @@
  */
 
 export interface RegistrationInvitationResponse {
-  identifier?: string;
-  code?: string;
+  identifier: string;
+  code: string;
   /** @nullable */
   maxUsages?: number | null;
-  usageCount?: number;
+  usageCount: number;
   /** @nullable */
   expiresAt?: string | null;
-  revoked?: boolean;
-  status?: string;
-  createdBy?: string;
-  createdAt?: string;
-  hasNote?: boolean;
+  revoked: boolean;
+  status: string;
+  createdBy: string;
+  createdAt: string;
+  hasNote: boolean;
 }

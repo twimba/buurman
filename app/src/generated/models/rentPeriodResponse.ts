@@ -7,15 +7,15 @@
  */
 
 export interface RentPeriodResponse {
-  identifier?: string;
-  rentAmount?: number;
-  currency?: string;
-  effectiveFrom?: string;
+  identifier: string;
+  rentAmount: number;
+  currency: string;
+  effectiveFrom: string;
   /** @nullable */
   effectiveTo?: string | null;
   /** @nullable */
   notes?: string | null;
   /** @nullable */
   percentageChange?: number | null;
-  createdAt?: string;
+  createdAt: string;
 }

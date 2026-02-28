@@ -7,6 +7,6 @@
  */
 
 export interface SessionInfo {
-  appActiveUsers?: number;
-  backofficeActiveUsers?: number;
+  appActiveUsers: number;
+  backofficeActiveUsers: number;
 }

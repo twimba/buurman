@@ -7,6 +7,6 @@
  */
 
 export interface GroupSchema {
-  key?: string;
-  label?: string;
+  key: string;
+  label: string;
 }

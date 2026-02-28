@@ -9,6 +9,6 @@ import type { CategorySlice } from './categorySlice';
 import type { ExpenseTimelineMonth } from './expenseTimelineMonth';
 
 export interface ExpenseBreakdownChartData {
-  categories?: CategorySlice[];
-  timeline?: ExpenseTimelineMonth[];
+  categories: CategorySlice[];
+  timeline: ExpenseTimelineMonth[];
 }

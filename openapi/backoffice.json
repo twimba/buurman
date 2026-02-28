@@ -6061,7 +6061,14 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "demo",
+          "identifier",
+          "memberCount",
+          "teamName"
+        ]
       },
       "UpdateRateLimitConfigRequest": {
         "type": "object",
@@ -6081,7 +6088,12 @@
           "enabled": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "enabled",
+          "maxRequests",
+          "periodSeconds"
+        ]
       },
       "RateLimitConfigResponse": {
         "type": "object",
@@ -6122,7 +6134,14 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "displayName",
+          "enabled",
+          "key",
+          "maxRequests",
+          "periodSeconds"
+        ]
       },
       "UpdatePhoneNumberPolicyRequest": {
         "type": "object",
@@ -6150,7 +6169,9 @@
           }
         },
         "required": [
-          "policyMatrix"
+          "maxCodesPerHour",
+          "policyMatrix",
+          "verificationCodeExpiryMinutes"
         ]
       },
       "BackofficePhoneNumberPolicyResponse": {
@@ -6186,7 +6207,12 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "maxCodesPerHour",
+          "policyMatrix",
+          "verificationCodeExpiryMinutes"
+        ]
       },
       "UpdateRegistrationInvitationNoteRequest": {
         "type": "object",
@@ -6194,7 +6220,10 @@
           "note": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "note"
+        ]
       },
       "RegistrationInvitationDetailResponse": {
         "type": "object",
@@ -6268,7 +6297,17 @@
               "$ref": "#/components/schemas/UsageRecord"
             }
           }
-        }
+        },
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "identifier",
+          "revoked",
+          "status",
+          "usageCount",
+          "usages"
+        ]
       },
       "UsageRecord": {
         "type": "object",
@@ -6286,7 +6325,11 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "usedAt",
+          "userEmail"
+        ]
       },
       "UpdateFeatureFlagRequest": {
         "type": "object",
@@ -6393,7 +6436,17 @@
           "hasNote": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "hasNote",
+          "identifier",
+          "revoked",
+          "status",
+          "usageCount"
+        ]
       },
       "SendRegistrationInvitationRequest": {
         "type": "object",
@@ -6523,7 +6576,17 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "channel",
+          "clickCount",
+          "createdAt",
+          "demoBlocked",
+          "identifier",
+          "notificationType",
+          "openCount",
+          "status"
+        ]
       },
       "SetLogLevelRequest": {
         "type": "object",
@@ -6551,7 +6614,11 @@
           "effectiveLevel": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "effectiveLevel",
+          "name"
+        ]
       },
       "CreateBuurmyRequest": {
         "type": "object",
@@ -6592,7 +6659,8 @@
           "email",
           "firstName",
           "lastName",
-          "password"
+          "password",
+          "temporaryPassword"
         ]
       },
       "BuurmyResponse": {
@@ -6645,7 +6713,15 @@
               "type": "string"
             }
           }
-        }
+        },
+        "required": [
+          "email",
+          "emailVerified",
+          "enabled",
+          "id",
+          "requiredActions",
+          "username"
+        ]
       },
       "BackofficeUserResponse": {
         "type": "object",
@@ -6702,7 +6778,17 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "demoTeamCount",
+          "disabled",
+          "email",
+          "emailVerified",
+          "identifier",
+          "online",
+          "teamCount"
+        ]
       },
       "PageResponseBackofficeUserResponse": {
         "type": "object",
@@ -6821,7 +6907,15 @@
           "settings": {
             "$ref": "#/components/schemas/SettingsInfo"
           }
-        }
+        },
+        "required": [
+          "createdAt",
+          "dataCounts",
+          "financialSnapshot",
+          "identifier",
+          "members",
+          "teamName"
+        ]
       },
       "DataCounts": {
         "type": "object",
@@ -6850,7 +6944,15 @@
             "type": "integer",
             "format": "int64"
           }
-        }
+        },
+        "required": [
+          "contracts",
+          "documents",
+          "expenses",
+          "payments",
+          "properties",
+          "tenants"
+        ]
       },
       "FinancialSnapshot": {
         "type": "object",
@@ -6895,7 +6997,13 @@
               "format": "int64"
             }
           }
-        }
+        },
+        "required": [
+          "contractStatusDistribution",
+          "paymentStatusDistribution",
+          "propertyCategoryDistribution",
+          "propertyStatusDistribution"
+        ]
       },
       "MemberInfo": {
         "type": "object",
@@ -6931,7 +7039,13 @@
           "disabled": {
             "type": "boolean"
           }
-        }
+        },
+        "required": [
+          "disabled",
+          "isOwner",
+          "joinedAt",
+          "role"
+        ]
       },
       "SettingsInfo": {
         "type": "object",
@@ -6976,7 +7090,10 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "autoGenerationEnabled"
+        ]
       },
       "BackofficeSystemInfoResponse": {
         "type": "object",
@@ -7008,7 +7125,16 @@
           "sessions": {
             "$ref": "#/components/schemas/SessionInfo"
           }
-        }
+        },
+        "required": [
+          "build",
+          "configuration",
+          "metrics",
+          "migrations",
+          "runtime",
+          "services",
+          "sessions"
+        ]
       },
       "BuildInfo": {
         "type": "object",
@@ -7051,7 +7177,11 @@
             ],
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "gitDirty",
+          "version"
+        ]
       },
       "ConfigEntry": {
         "type": "object",
@@ -7065,7 +7195,12 @@
           "value": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "category",
+          "key",
+          "value"
+        ]
       },
       "GcInfo": {
         "type": "object",
@@ -7081,7 +7216,12 @@
             "type": "integer",
             "format": "int64"
           }
-        }
+        },
+        "required": [
+          "collectionCount",
+          "collectionTimeMs",
+          "name"
+        ]
       },
       "HttpLatencyStats": {
         "type": "object",
@@ -7114,7 +7254,16 @@
             "type": "number",
             "format": "double"
           }
-        }
+        },
+        "required": [
+          "maxMs",
+          "meanMs",
+          "minMs",
+          "p50Ms",
+          "p75Ms",
+          "p95Ms",
+          "p99Ms"
+        ]
       },
       "MetricEntry": {
         "type": "object",
@@ -7135,7 +7284,13 @@
               "type": "string"
             }
           }
-        }
+        },
+        "required": [
+          "name",
+          "tags",
+          "type",
+          "value"
+        ]
       },
       "MetricsSnapshot": {
         "type": "object",
@@ -7157,7 +7312,12 @@
               "$ref": "#/components/schemas/MetricEntry"
             }
           }
-        }
+        },
+        "required": [
+          "custom",
+          "httpRequestCount",
+          "httpRequestTotalTimeSeconds"
+        ]
       },
       "MigrationEntry": {
         "type": "object",
@@ -7194,7 +7354,11 @@
           "script": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "script",
+          "state"
+        ]
       },
       "MigrationInfo": {
         "type": "object",
@@ -7223,7 +7387,13 @@
               "$ref": "#/components/schemas/MigrationEntry"
             }
           }
-        }
+        },
+        "required": [
+          "appliedCount",
+          "entries",
+          "failedCount",
+          "pendingCount"
+        ]
       },
       "RuntimeInfo": {
         "type": "object",
@@ -7291,7 +7461,25 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "activeProfiles",
+          "availableProcessors",
+          "cpuUsage",
+          "daemonThreadCount",
+          "garbageCollectors",
+          "heapMaxBytes",
+          "heapUsedBytes",
+          "javaVersion",
+          "nonHeapMaxBytes",
+          "nonHeapUsedBytes",
+          "peakThreadCount",
+          "pid",
+          "serverTime",
+          "springBootVersion",
+          "threadCount",
+          "uptimeMs"
+        ]
       },
       "ServiceHealth": {
         "type": "object",
@@ -7327,7 +7515,11 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "name",
+          "status"
+        ]
       },
       "SessionInfo": {
         "type": "object",
@@ -7340,7 +7532,11 @@
             "type": "integer",
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "appActiveUsers",
+          "backofficeActiveUsers"
+        ]
       },
       "ScheduledJobResponse": {
         "type": "object",
@@ -7393,7 +7589,13 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "jobClass",
+          "jobGroup",
+          "jobName",
+          "triggerState"
+        ]
       },
       "JobExecutionHistoryResponse": {
         "type": "object",
@@ -7438,7 +7640,14 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "id",
+          "jobGroup",
+          "jobName",
+          "startedAt",
+          "status"
+        ]
       },
       "PageResponseJobExecutionHistoryResponse": {
         "type": "object",
@@ -7658,7 +7867,17 @@
               "format": "int64"
             }
           }
-        }
+        },
+        "required": [
+          "deliveredNotifications",
+          "disabledUsers",
+          "failedNotifications",
+          "notificationsByChannel",
+          "pendingNotifications",
+          "totalNotifications",
+          "totalTeams",
+          "totalUsers"
+        ]
       },
       "PageResponseBuurmyResponse": {
         "type": "object",
@@ -7704,21 +7923,21 @@
       "ProblemDetail": {
         "description": "RFC 7807 Problem Detail response",
         "properties": {
-          "instance": {
+          "detail": {
             "type": "string",
-            "description": "URI of the request that caused the error"
-          },
-          "type": {
-            "type": "string",
-            "description": "Problem type URI"
+            "description": "Human-readable explanation of the problem"
           },
           "status": {
             "description": "HTTP status code",
             "example": 400
           },
-          "detail": {
+          "type": {
             "type": "string",
-            "description": "Human-readable explanation of the problem"
+            "description": "Problem type URI"
+          },
+          "instance": {
+            "type": "string",
+            "description": "URI of the request that caused the error"
           },
           "title": {
             "type": "string",

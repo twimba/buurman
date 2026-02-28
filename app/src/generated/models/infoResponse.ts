@@ -7,6 +7,6 @@
  */
 
 export interface InfoResponse {
-  version?: string;
-  environment?: string;
+  version: string;
+  environment: string;
 }

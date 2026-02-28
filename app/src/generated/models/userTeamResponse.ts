@@ -7,12 +7,12 @@
  */
 
 export interface UserTeamResponse {
-  identifier?: string;
-  teamName?: string;
-  role?: string;
-  isOwner?: boolean;
-  isDefault?: boolean;
-  isActive?: boolean;
-  memberCount?: number;
-  joinedAt?: string;
+  identifier: string;
+  teamName: string;
+  role: string;
+  isOwner: boolean;
+  isDefault: boolean;
+  isActive: boolean;
+  memberCount: number;
+  joinedAt: string;
 }

@@ -8,9 +8,9 @@
 import type { PropertySummary } from './propertySummary';
 
 export interface PropertyFinancialSummary {
-  property?: PropertySummary;
-  income?: number;
-  expenses?: number;
-  netProfit?: number;
-  occupancyDays?: number;
+  property: PropertySummary;
+  income: number;
+  expenses: number;
+  netProfit: number;
+  occupancyDays: number;
 }

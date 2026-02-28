@@ -7,20 +7,20 @@
  */
 
 export interface BackofficeUserResponse {
-  identifier?: string;
-  email?: string;
+  identifier: string;
+  email: string;
   /** @nullable */
   firstName?: string | null;
   /** @nullable */
   lastName?: string | null;
   /** @nullable */
   phone?: string | null;
-  emailVerified?: boolean;
-  disabled?: boolean;
-  online?: boolean;
-  teamCount?: number;
-  demoTeamCount?: number;
-  createdAt?: string;
+  emailVerified: boolean;
+  disabled: boolean;
+  online: boolean;
+  teamCount: number;
+  demoTeamCount: number;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

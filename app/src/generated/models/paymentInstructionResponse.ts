@@ -7,11 +7,11 @@
  */
 
 export interface PaymentInstructionResponse {
-  identifier?: string;
-  name?: string;
+  identifier: string;
+  name: string;
   /** @nullable */
   description?: string | null;
-  paymentMethod?: string;
+  paymentMethod: string;
   /** @nullable */
   bankName?: string | null;
   /** @nullable */
@@ -30,7 +30,7 @@ export interface PaymentInstructionResponse {
   additionalDetails?: string | null;
   /** @nullable */
   isDefault?: boolean | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

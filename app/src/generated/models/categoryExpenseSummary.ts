@@ -7,8 +7,8 @@
  */
 
 export interface CategoryExpenseSummary {
-  category?: string;
-  total?: number;
-  count?: number;
-  percentage?: number;
+  category: string;
+  total: number;
+  count: number;
+  percentage: number;
 }

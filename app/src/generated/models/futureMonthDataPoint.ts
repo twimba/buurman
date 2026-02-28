@@ -7,8 +7,8 @@
  */
 
 export interface FutureMonthDataPoint {
-  month?: string;
-  expectedIncome?: number;
-  expectedExpenses?: number;
-  expectedNet?: number;
+  month: string;
+  expectedIncome: number;
+  expectedExpenses: number;
+  expectedNet: number;
 }

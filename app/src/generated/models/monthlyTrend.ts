@@ -7,6 +7,6 @@
  */
 
 export interface MonthlyTrend {
-  month?: string;
-  total?: number;
+  month: string;
+  total: number;
 }

@@ -7,7 +7,7 @@
  */
 
 export interface OccupancyDataPoint {
-  month?: string;
-  tenantOccupancyPercent?: number;
-  selfOccupancyPercent?: number;
+  month: string;
+  tenantOccupancyPercent: number;
+  selfOccupancyPercent: number;
 }

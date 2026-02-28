@@ -10,10 +10,10 @@ import type { PropertyInsuranceResponseStatus } from './propertyInsuranceRespons
 import type { PropertySummary } from './propertySummary';
 
 export interface PropertyInsuranceResponse {
-  identifier?: string;
+  identifier: string;
   property?: PropertySummary;
   /** Type of insurance coverage for the property */
-  insuranceType?: PropertyInsuranceResponseInsuranceType;
+  insuranceType: PropertyInsuranceResponseInsuranceType;
   /** @nullable */
   provider?: string | null;
   /** @nullable */
@@ -22,18 +22,18 @@ export interface PropertyInsuranceResponse {
   coverageAmount?: number | null;
   /** @nullable */
   coverageAmountCurrency?: string | null;
-  annualPremium?: number;
-  annualPremiumCurrency?: string;
-  paymentFrequency?: string;
+  annualPremium: number;
+  annualPremiumCurrency: string;
+  paymentFrequency: string;
   /** @nullable */
   startDate?: string | null;
   /** @nullable */
   endDate?: string | null;
   /** Current status of the insurance policy */
-  status?: PropertyInsuranceResponseStatus;
+  status: PropertyInsuranceResponseStatus;
   /** @nullable */
   notes?: string | null;
-  createdAt?: string;
+  createdAt: string;
   /** @nullable */
   updatedAt?: string | null;
 }

@@ -8,6 +8,6 @@
 import type { PropertyFinancialSummary } from './propertyFinancialSummary';
 
 export interface Income {
-  total?: number;
-  byProperty?: PropertyFinancialSummary[];
+  total: number;
+  byProperty: PropertyFinancialSummary[];
 }

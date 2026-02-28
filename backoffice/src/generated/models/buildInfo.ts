@@ -7,7 +7,7 @@
  */
 
 export interface BuildInfo {
-  version?: string;
+  version: string;
   /** @nullable */
   gitCommit?: string | null;
   /** @nullable */
@@ -16,7 +16,7 @@ export interface BuildInfo {
   gitBranch?: string | null;
   /** @nullable */
   gitCommitTime?: string | null;
-  gitDirty?: boolean;
+  gitDirty: boolean;
   /** @nullable */
   buildTime?: string | null;
 }

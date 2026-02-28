@@ -9,14 +9,14 @@ import type { PropertySummary } from './propertySummary';
 import type { PropertyTenantHistoryResponseActionType } from './propertyTenantHistoryResponseActionType';
 
 export interface PropertyTenantHistoryResponse {
-  property?: PropertySummary;
+  property: PropertySummary;
   /** @nullable */
   movedInAt?: string | null;
   /** @nullable */
   movedOutAt?: string | null;
   /** Type of tenant-property link action */
-  actionType?: PropertyTenantHistoryResponseActionType;
+  actionType: PropertyTenantHistoryResponseActionType;
   /** @nullable */
   performedBy?: string | null;
-  performedAt?: string;
+  performedAt: string;
 }

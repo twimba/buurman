@@ -10,9 +10,9 @@ import type { Income } from './income';
 import type { Period } from './period';
 
 export interface FinancialOverviewResponse {
-  period?: Period;
-  income?: Income;
-  expenses?: Expenses;
-  netProfit?: number;
-  currency?: string;
+  period: Period;
+  income: Income;
+  expenses: Expenses;
+  netProfit: number;
+  currency: string;
 }

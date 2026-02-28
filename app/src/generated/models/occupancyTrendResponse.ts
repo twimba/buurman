@@ -8,5 +8,5 @@
 import type { DataPoint } from './dataPoint';
 
 export interface OccupancyTrendResponse {
-  dataPoints?: DataPoint[];
+  dataPoints: DataPoint[];
 }

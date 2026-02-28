@@ -7,17 +7,17 @@
  */
 
 export interface InvitationResponse {
-  token?: string;
-  email?: string;
-  teamIdentifier?: string;
-  teamName?: string;
-  role?: string;
+  token: string;
+  email: string;
+  teamIdentifier: string;
+  teamName: string;
+  role: string;
   /** @nullable */
   inviterName?: string | null;
-  invitedAt?: string;
+  invitedAt: string;
   /** @nullable */
   expiresAt?: string | null;
-  invitationUrl?: string;
-  isExpired?: boolean;
-  isAccepted?: boolean;
+  invitationUrl: string;
+  isExpired: boolean;
+  isAccepted: boolean;
 }

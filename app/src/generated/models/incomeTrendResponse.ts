@@ -8,6 +8,6 @@
 import type { DataPoint } from './dataPoint';
 
 export interface IncomeTrendResponse {
-  dataPoints?: DataPoint[];
-  currency?: string;
+  dataPoints: DataPoint[];
+  currency: string;
 }

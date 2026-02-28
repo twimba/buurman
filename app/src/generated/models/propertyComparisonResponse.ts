@@ -8,6 +8,6 @@
 import type { PropertyData } from './propertyData';
 
 export interface PropertyComparisonResponse {
-  properties?: PropertyData[];
-  currency?: string;
+  properties: PropertyData[];
+  currency: string;
 }
