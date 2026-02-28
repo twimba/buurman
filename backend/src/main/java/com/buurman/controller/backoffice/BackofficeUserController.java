@@ -21,6 +21,7 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -39,18 +40,25 @@ public class BackofficeUserController {
       description = "Get all users with optional search and pagination")
   @GetMapping
   public PageResponse<BackofficeUserResponse> listUsers(
-      @RequestParam Optional<String> search,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction) {
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return backofficeUserService.listUsers(pageRequest, search.orElse(null));
   }
 
   @Operation(summary = "Get user", description = "Get user details by identifier")
   @GetMapping("/{identifier}")
-  public BackofficeUserResponse getUser(@PathVariable String identifier) {
+  public BackofficeUserResponse getUser(
+      @Parameter(description = "User ULID identifier") @PathVariable String identifier) {
     return backofficeUserService.getUser(identifier);
   }
 
@@ -60,7 +68,8 @@ public class BackofficeUserController {
   @PostMapping("/{identifier}/disable")
   @ResponseStatus(NO_CONTENT)
   public void disableUser(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     backofficeUserService.disableUser(identifier, principal);
   }
 
@@ -68,7 +77,8 @@ public class BackofficeUserController {
   @PostMapping("/{identifier}/enable")
   @ResponseStatus(NO_CONTENT)
   public void enableUser(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     backofficeUserService.enableUser(identifier, principal);
   }
 
@@ -78,7 +88,8 @@ public class BackofficeUserController {
   @PostMapping("/{identifier}/reset-password")
   @ResponseStatus(NO_CONTENT)
   public void resetPassword(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     backofficeUserService.resetPassword(identifier, principal);
   }
 }

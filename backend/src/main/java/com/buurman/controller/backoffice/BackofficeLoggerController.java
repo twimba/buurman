@@ -18,6 +18,7 @@ import com.buurman.dto.response.backoffice.LoggerConfigurationResponse;
 import com.buurman.service.backoffice.BackofficeLoggerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +34,17 @@ public class BackofficeLoggerController {
 
   @Operation(summary = "List all loggers")
   @GetMapping
-  public List<LoggerConfigurationResponse> listLoggers(@RequestParam Optional<String> search) {
+  public List<LoggerConfigurationResponse> listLoggers(
+      @Parameter(description = "Search term") @RequestParam Optional<String> search) {
     return loggerService.listLoggers(search.orElse(null));
   }
 
   @Operation(summary = "Set log level")
   @PostMapping("/{loggerName}/level")
   public LoggerConfigurationResponse setLogLevel(
-      @PathVariable String loggerName, @RequestBody SetLogLevelRequest request) {
+      @Parameter(description = "Logger name", example = "com.buurman") @PathVariable
+          String loggerName,
+      @RequestBody SetLogLevelRequest request) {
     return loggerService.setLogLevel(loggerName, request.level().orElse(null));
   }
 

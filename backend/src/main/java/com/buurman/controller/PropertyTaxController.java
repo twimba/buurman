@@ -23,6 +23,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyTaxService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,15 +41,16 @@ public class PropertyTaxController {
   @Operation(summary = "List taxes", description = "Get all tax records for a property")
   @GetMapping
   public List<PropertyTaxResponse> listTaxes(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return taxService.listByProperty(propertyIdentifier, principal);
   }
 
   @Operation(summary = "Get tax", description = "Get details of a specific tax record")
   @GetMapping("/{identifier}")
   public PropertyTaxResponse getTax(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Tax ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return taxService.get(identifier, principal);
   }
@@ -57,7 +59,7 @@ public class PropertyTaxController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyTaxResponse createTax(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreatePropertyTaxRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return taxService.create(propertyIdentifier, request, principal);
@@ -66,8 +68,8 @@ public class PropertyTaxController {
   @Operation(summary = "Update tax", description = "Update a tax record (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PropertyTaxResponse updateTax(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Tax ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdatePropertyTaxRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return taxService.update(identifier, request, principal);
@@ -77,8 +79,8 @@ public class PropertyTaxController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteTax(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Tax ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     taxService.delete(identifier, principal);
   }

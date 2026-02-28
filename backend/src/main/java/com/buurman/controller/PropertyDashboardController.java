@@ -25,6 +25,7 @@ import com.buurman.service.FeatureFlagService;
 import com.buurman.service.PropertyDashboardService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +55,9 @@ public class PropertyDashboardController {
           "Returns financial metrics, cash flow, equity, expense breakdown, and occupancy data")
   @GetMapping
   public PropertyDashboardResponse getDashboard(
-      @PathVariable String identifier,
-      @RequestParam Optional<Integer> months,
+      @Parameter(description = "Property ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Number of months to include", example = "12") @RequestParam
+          Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
     return dashboardService.getDashboard(identifier, months.orElse(null), principal);
   }
@@ -63,8 +65,9 @@ public class PropertyDashboardController {
   @Operation(summary = "Export dashboard as PDF")
   @GetMapping("/export/pdf")
   public ResponseEntity<byte[]> exportPdf(
-      @PathVariable String identifier,
-      @RequestParam Optional<Integer> months,
+      @Parameter(description = "Property ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Number of months to include", example = "12") @RequestParam
+          Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);
@@ -79,8 +82,9 @@ public class PropertyDashboardController {
   @Operation(summary = "Export dashboard as CSV")
   @GetMapping("/export/csv")
   public ResponseEntity<byte[]> exportCsv(
-      @PathVariable String identifier,
-      @RequestParam Optional<Integer> months,
+      @Parameter(description = "Property ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "Number of months to include", example = "12") @RequestParam
+          Optional<Integer> months,
       @AuthenticationPrincipal UserPrincipal principal) {
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);

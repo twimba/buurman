@@ -22,6 +22,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyOutdoorAreaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,7 +40,8 @@ public class PropertyOutdoorAreaController {
   @Operation(summary = "List outdoor areas", description = "Get all outdoor areas for a property")
   @GetMapping
   public List<PropertyOutdoorAreaResponse> getOutdoorAreas(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return outdoorAreaService.getOutdoorAreas(propertyIdentifier, principal);
   }
 
@@ -49,7 +51,7 @@ public class PropertyOutdoorAreaController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyOutdoorAreaResponse createOutdoorArea(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody PropertyOutdoorAreaRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return outdoorAreaService.createOutdoorArea(propertyIdentifier, request, principal);
@@ -58,8 +60,8 @@ public class PropertyOutdoorAreaController {
   @Operation(summary = "Update outdoor area", description = "Update an outdoor area (Admin/Editor)")
   @PutMapping("/{areaIdentifier}")
   public PropertyOutdoorAreaResponse updateOutdoorArea(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String areaIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Outdoor area ULID identifier") @PathVariable String areaIdentifier,
       @Valid @RequestBody PropertyOutdoorAreaRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return outdoorAreaService.updateOutdoorArea(
@@ -72,8 +74,8 @@ public class PropertyOutdoorAreaController {
   @DeleteMapping("/{areaIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteOutdoorArea(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String areaIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Outdoor area ULID identifier") @PathVariable String areaIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     outdoorAreaService.deleteOutdoorArea(propertyIdentifier, areaIdentifier, principal);
   }

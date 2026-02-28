@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,7 @@ public class Photo {
   private Instant uploadedAt;
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
+  @Schema(description = "Type of entity the photo is attached to")
   public enum EntityType {
     PROPERTY,
     TENANT,

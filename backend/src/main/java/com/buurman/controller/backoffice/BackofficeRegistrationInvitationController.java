@@ -27,6 +27,7 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.RegistrationInvitationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -46,11 +47,17 @@ public class BackofficeRegistrationInvitationController {
   @GetMapping
   @Operation(summary = "List registration invitations")
   public ResponseEntity<PageResponse<RegistrationInvitationResponse>> list(
-      @RequestParam Optional<String> search,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal BackofficePrincipal principal) {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
@@ -69,14 +76,18 @@ public class BackofficeRegistrationInvitationController {
   @GetMapping("/{identifier}")
   @Operation(summary = "Get registration invitation details")
   public ResponseEntity<RegistrationInvitationDetailResponse> get(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
+          String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     return ResponseEntity.ok(invitationService.getByIdentifier(identifier));
   }
 
   @PostMapping("/{identifier}/revoke")
   @Operation(summary = "Revoke a registration invitation")
   public ResponseEntity<Void> revoke(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
+          String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     invitationService.revoke(identifier, principal);
     return ResponseEntity.noContent().build();
   }
@@ -84,7 +95,8 @@ public class BackofficeRegistrationInvitationController {
   @PostMapping("/{identifier}/send")
   @Operation(summary = "Send registration invitation via email or SMS")
   public ResponseEntity<Void> send(
-      @PathVariable String identifier,
+      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
+          String identifier,
       @RequestBody @Valid SendRegistrationInvitationRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     invitationService.sendInvitation(identifier, request, principal);
@@ -94,7 +106,8 @@ public class BackofficeRegistrationInvitationController {
   @PutMapping("/{identifier}/note")
   @Operation(summary = "Update registration invitation note")
   public ResponseEntity<RegistrationInvitationDetailResponse> updateNote(
-      @PathVariable String identifier,
+      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
+          String identifier,
       @RequestBody UpdateRegistrationInvitationNoteRequest request,
       @AuthenticationPrincipal BackofficePrincipal principal) {
     return ResponseEntity.ok(invitationService.updateNote(identifier, request, principal));

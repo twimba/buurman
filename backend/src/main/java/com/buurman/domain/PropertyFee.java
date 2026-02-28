@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyFee {
 
+  @Schema(description = "Type of recurring property fee")
   public enum FeeType {
     HOA,
     MANAGEMENT,
@@ -31,6 +33,7 @@ public class PropertyFee {
     OTHER
   }
 
+  @Schema(description = "Current status of the fee obligation")
   public enum FeeStatus {
     ACTIVE,
     EXPIRED,

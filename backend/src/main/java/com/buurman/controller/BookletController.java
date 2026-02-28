@@ -14,6 +14,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,8 @@ public class BookletController {
       description = "Download detailed property booklet as PDF")
   @GetMapping("/property/{propertyIdentifier}")
   public ResponseEntity<byte[]> exportPropertyBooklet(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
         exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
@@ -48,7 +50,8 @@ public class BookletController {
       description = "Download detailed tenant booklet as PDF")
   @GetMapping("/tenant/{tenantIdentifier}")
   public ResponseEntity<byte[]> exportTenantBooklet(
-      @PathVariable String tenantIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Tenant ULID identifier") @PathVariable String tenantIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
 
@@ -63,7 +66,8 @@ public class BookletController {
       description = "Download detailed contract booklet as PDF")
   @GetMapping("/contract/{contractIdentifier}")
   public ResponseEntity<byte[]> exportContractBooklet(
-      @PathVariable String contractIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
 
     byte[] pdf =
         exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());

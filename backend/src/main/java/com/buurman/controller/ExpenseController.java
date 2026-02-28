@@ -41,6 +41,7 @@ import com.buurman.service.DocumentService;
 import com.buurman.service.ExpenseService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -86,14 +87,25 @@ public class ExpenseController {
       description = "Get all expenses with optional filters and pagination")
   @GetMapping
   public PageResponse<ExpenseResponse> getExpenses(
-      @RequestParam Optional<ExpenseCategory> category,
-      @RequestParam Optional<String> propertyIdentifier,
-      @RequestParam Optional<LocalDate> dateFrom,
-      @RequestParam Optional<LocalDate> dateTo,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction,
+      @Parameter(description = "Filter by category") @RequestParam
+          Optional<ExpenseCategory> category,
+      @Parameter(description = "Property ULID identifier") @RequestParam
+          Optional<String> propertyIdentifier,
+      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
+          @RequestParam
+          Optional<LocalDate> dateFrom,
+      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31") @RequestParam
+          Optional<LocalDate> dateTo,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction,
       @AuthenticationPrincipal UserPrincipal principal) {
 
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
@@ -119,14 +131,15 @@ public class ExpenseController {
   @Operation(summary = "Get expense details", description = "Get details of a specific expense")
   @GetMapping("/{identifier}")
   public ExpenseResponse getExpense(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.getExpense(identifier, principal);
   }
 
   @Operation(summary = "Update expense", description = "Update expense information (Admin/Editor)")
   @PutMapping("/{identifier}")
   public ExpenseResponse updateExpense(
-      @PathVariable String identifier,
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdateExpenseRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.updateExpense(identifier, request, principal);
@@ -136,7 +149,8 @@ public class ExpenseController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteExpense(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     expenseService.deleteExpense(identifier, principal);
   }
 
@@ -146,10 +160,10 @@ public class ExpenseController {
   @PostMapping("/{identifier}/documents")
   @ResponseStatus(CREATED)
   public DocumentResponse uploadDocument(
-      @PathVariable String identifier,
-      @RequestParam("file") MultipartFile file,
-      @RequestParam Optional<String> title,
-      @RequestParam Optional<String> notes,
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
+      @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
+      @Parameter(description = "Document title") @RequestParam Optional<String> title,
+      @Parameter(description = "Additional notes") @RequestParam Optional<String> notes,
       @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.uploadExpenseDocument(
         identifier, file, title.orElse(null), notes.orElse(null), principal);
@@ -158,7 +172,8 @@ public class ExpenseController {
   @Operation(summary = "List documents", description = "Get all documents for an expense")
   @GetMapping("/{identifier}/documents")
   public List<DocumentResponse> getDocuments(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.getExpenseDocuments(identifier, principal);
   }
 
@@ -167,7 +182,8 @@ public class ExpenseController {
       description = "Get presigned download URL for a document")
   @GetMapping("/documents/{documentIdentifier}/download")
   public Map<String, String> getDownloadUrl(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
@@ -176,14 +192,16 @@ public class ExpenseController {
   @DeleteMapping("/documents/{documentIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteDocument(
-      @PathVariable String documentIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
   @Operation(summary = "Get audit log", description = "Get audit history for an expense")
   @GetMapping("/{identifier}/audit-log")
   public List<RecentActivityResponse> getExpenseAuditLog(
-      @PathVariable String identifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Expense ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return expenseService.getExpenseAuditLog(identifier, principal);
   }
 }

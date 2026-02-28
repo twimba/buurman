@@ -22,6 +22,7 @@ import com.buurman.dto.response.backoffice.ScheduledJobResponse;
 import com.buurman.service.backoffice.BackofficeSchedulerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,10 @@ public class BackofficeSchedulerController {
   @PostMapping("/jobs/{jobName}/pause")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void pauseJob(
-      @PathVariable String jobName, @RequestParam(defaultValue = "scheduling") String group)
+      @Parameter(description = "Quartz job name") @PathVariable String jobName,
+      @Parameter(description = "Quartz job group", example = "scheduling")
+          @RequestParam(defaultValue = "scheduling")
+          String group)
       throws SchedulerException {
     schedulerService.pauseJob(jobName, group);
   }
@@ -56,7 +60,10 @@ public class BackofficeSchedulerController {
   @PostMapping("/jobs/{jobName}/resume")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void resumeJob(
-      @PathVariable String jobName, @RequestParam(defaultValue = "scheduling") String group)
+      @Parameter(description = "Quartz job name") @PathVariable String jobName,
+      @Parameter(description = "Quartz job group", example = "scheduling")
+          @RequestParam(defaultValue = "scheduling")
+          String group)
       throws SchedulerException {
     schedulerService.resumeJob(jobName, group);
   }
@@ -65,7 +72,10 @@ public class BackofficeSchedulerController {
   @PostMapping("/jobs/{jobName}/trigger")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void triggerJob(
-      @PathVariable String jobName, @RequestParam(defaultValue = "scheduling") String group)
+      @Parameter(description = "Quartz job name") @PathVariable String jobName,
+      @Parameter(description = "Quartz job group", example = "scheduling")
+          @RequestParam(defaultValue = "scheduling")
+          String group)
       throws SchedulerException {
     schedulerService.triggerJobNow(jobName, group);
   }
@@ -76,8 +86,10 @@ public class BackofficeSchedulerController {
   @PostMapping("/jobs/{jobName}/reschedule")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void rescheduleJob(
-      @PathVariable String jobName,
-      @RequestParam(defaultValue = "scheduling") String group,
+      @Parameter(description = "Quartz job name") @PathVariable String jobName,
+      @Parameter(description = "Quartz job group", example = "scheduling")
+          @RequestParam(defaultValue = "scheduling")
+          String group,
       @RequestBody RescheduleRequest request)
       throws SchedulerException {
     schedulerService.rescheduleJob(jobName, group, request.cronExpression());
@@ -90,12 +102,19 @@ public class BackofficeSchedulerController {
       description = "Get paginated job execution history with optional filters")
   @GetMapping("/history")
   public PageResponse<JobExecutionHistoryResponse> getHistory(
-      @RequestParam Optional<List<String>> jobName,
-      @RequestParam Optional<String> status,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction) {
+      @Parameter(description = "Filter by job name(s)") @RequestParam
+          Optional<List<String>> jobName,
+      @Parameter(description = "Filter by execution status") @RequestParam Optional<String> status,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return schedulerService.getExecutionHistory(
         pageRequest, jobName.orElse(null), status.orElse(null));

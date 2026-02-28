@@ -11,6 +11,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyFinancialsService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class PropertyFinancialsController {
       description = "Get aggregated financial summary for a property")
   @GetMapping
   public PropertyFinancialSummaryResponse getFinancialSummary(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return financialsService.getFinancialSummary(propertyIdentifier, principal);
   }
 }

@@ -25,6 +25,7 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeBuurmyService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -44,18 +45,25 @@ public class BackofficeBuurmyController {
       description = "List Keycloak users with search and pagination")
   @GetMapping
   public PageResponse<BuurmyResponse> listBuurmies(
-      @RequestParam Optional<String> search,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction) {
+      @Parameter(description = "Search term") @RequestParam Optional<String> search,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction) {
     PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
     return buurmyService.listBuurmies(pageRequest, search.orElse(null));
   }
 
   @Operation(summary = "Get buurmy", description = "Get a Keycloak user by ID")
   @GetMapping("/{keycloakId}")
-  public BuurmyResponse getBuurmy(@PathVariable String keycloakId) {
+  public BuurmyResponse getBuurmy(
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId) {
     return buurmyService.getBuurmy(keycloakId);
   }
 
@@ -74,7 +82,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/disable")
   @ResponseStatus(NO_CONTENT)
   public void disableBuurmy(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.disableBuurmy(keycloakId, principal);
   }
 
@@ -82,7 +91,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/enable")
   @ResponseStatus(NO_CONTENT)
   public void enableBuurmy(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.enableBuurmy(keycloakId, principal);
   }
 
@@ -90,7 +100,8 @@ public class BackofficeBuurmyController {
   @DeleteMapping("/{keycloakId}")
   @ResponseStatus(NO_CONTENT)
   public void deleteBuurmy(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.deleteBuurmy(keycloakId, principal);
   }
 
@@ -100,7 +111,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/force-password-update")
   @ResponseStatus(NO_CONTENT)
   public void forcePasswordUpdate(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.forcePasswordUpdate(keycloakId, principal);
   }
 
@@ -110,7 +122,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/force-profile-update")
   @ResponseStatus(NO_CONTENT)
   public void forceProfileUpdate(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.forceProfileUpdate(keycloakId, principal);
   }
 
@@ -120,7 +133,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/remove-password-reset")
   @ResponseStatus(NO_CONTENT)
   public void removePasswordReset(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.removePasswordReset(keycloakId, principal);
   }
 
@@ -130,7 +144,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/remove-profile-reset")
   @ResponseStatus(NO_CONTENT)
   public void removeProfileReset(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.removeProfileReset(keycloakId, principal);
   }
 
@@ -138,7 +153,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/verify")
   @ResponseStatus(NO_CONTENT)
   public void verifyBuurmy(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.verifyBuurmy(keycloakId, principal);
   }
 
@@ -146,7 +162,8 @@ public class BackofficeBuurmyController {
   @PostMapping("/{keycloakId}/unverify")
   @ResponseStatus(NO_CONTENT)
   public void unverifyBuurmy(
-      @PathVariable String keycloakId, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Keycloak user ID") @PathVariable String keycloakId,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     buurmyService.unverifyBuurmy(keycloakId, principal);
   }
 }

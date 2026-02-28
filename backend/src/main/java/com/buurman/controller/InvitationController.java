@@ -17,6 +17,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.TeamService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,8 @@ public class InvitationController {
 
   @Operation(summary = "View invitation", description = "Get invitation details (public)")
   @GetMapping("/{token}")
-  public InvitationResponse getInvitation(@PathVariable String token) {
+  public InvitationResponse getInvitation(
+      @Parameter(description = "Invitation token") @PathVariable String token) {
     return teamService.getInvitation(token);
   }
 
@@ -52,7 +54,8 @@ public class InvitationController {
   @PostMapping("/{token}/accept")
   @ResponseStatus(OK)
   public void acceptInvitation(
-      @PathVariable String token, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Invitation token") @PathVariable String token,
+      @AuthenticationPrincipal UserPrincipal principal) {
     teamService.acceptInvitation(token, principal);
   }
 }

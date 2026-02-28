@@ -23,6 +23,7 @@ import com.buurman.security.BackofficePrincipal;
 import com.buurman.service.backoffice.BackofficeNotificationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -41,17 +42,29 @@ public class BackofficeNotificationController {
       description = "Get all notifications with filtering and pagination")
   @GetMapping
   public PageResponse<BackofficeNotificationResponse> listNotifications(
-      @RequestParam Optional<String> teamIdentifier,
-      @RequestParam Optional<String> type,
-      @RequestParam Optional<String> channel,
-      @RequestParam Optional<String> status,
-      @RequestParam Optional<String> recipientEmail,
-      @RequestParam Optional<String> dateFrom,
-      @RequestParam Optional<String> dateTo,
-      @RequestParam(defaultValue = "0") Integer page,
-      @RequestParam(defaultValue = "25") Integer size,
-      @RequestParam Optional<String> sort,
-      @RequestParam(defaultValue = "DESC") SortDirection direction) {
+      @Parameter(description = "Filter by team ULID identifier") @RequestParam
+          Optional<String> teamIdentifier,
+      @Parameter(description = "Filter by notification type") @RequestParam Optional<String> type,
+      @Parameter(description = "Filter by delivery channel") @RequestParam Optional<String> channel,
+      @Parameter(description = "Filter by status") @RequestParam Optional<String> status,
+      @Parameter(description = "Filter by recipient email") @RequestParam
+          Optional<String> recipientEmail,
+      @Parameter(description = "Filter from date (ISO-8601)", example = "2026-01-01T00:00:00")
+          @RequestParam
+          Optional<String> dateFrom,
+      @Parameter(description = "Filter to date (ISO-8601)", example = "2026-12-31T23:59:59")
+          @RequestParam
+          Optional<String> dateTo,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @RequestParam(defaultValue = "0")
+          Integer page,
+      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
+          Integer size,
+      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
+          Optional<String> sort,
+      @Parameter(description = "Sort direction", example = "DESC")
+          @RequestParam(defaultValue = "DESC")
+          SortDirection direction) {
 
     LocalDateTime from = parseDateTime(dateFrom.orElse(null));
     LocalDateTime to = parseDateTime(dateTo.orElse(null));
@@ -70,14 +83,16 @@ public class BackofficeNotificationController {
 
   @Operation(summary = "Get notification", description = "Get notification details by identifier")
   @GetMapping("/{identifier}")
-  public BackofficeNotificationResponse getNotification(@PathVariable String identifier) {
+  public BackofficeNotificationResponse getNotification(
+      @Parameter(description = "Notification ULID identifier") @PathVariable String identifier) {
     return backofficeNotificationService.getNotification(identifier);
   }
 
   @Operation(summary = "Resend notification", description = "Resend a notification")
   @PostMapping("/{identifier}/resend")
   public BackofficeNotificationResponse resendNotification(
-      @PathVariable String identifier, @AuthenticationPrincipal BackofficePrincipal principal) {
+      @Parameter(description = "Notification ULID identifier") @PathVariable String identifier,
+      @AuthenticationPrincipal BackofficePrincipal principal) {
     return backofficeNotificationService.resendNotification(identifier, principal);
   }
 

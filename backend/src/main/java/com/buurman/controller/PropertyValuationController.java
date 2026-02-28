@@ -24,6 +24,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyValuationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,7 +42,8 @@ public class PropertyValuationController {
   @Operation(summary = "List valuations", description = "Get all valuations for a property")
   @GetMapping
   public List<PropertyValuationResponse> listValuations(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return valuationService.listByProperty(propertyIdentifier, principal);
   }
 
@@ -50,7 +52,8 @@ public class PropertyValuationController {
       description = "Get the most recent valuation for a property")
   @GetMapping("/latest")
   public Optional<PropertyValuationResponse> getLatestValuation(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return valuationService.getLatestByProperty(propertyIdentifier, principal);
   }
 
@@ -60,7 +63,7 @@ public class PropertyValuationController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyValuationResponse createValuation(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreatePropertyValuationRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return valuationService.create(propertyIdentifier, request, principal);
@@ -69,8 +72,8 @@ public class PropertyValuationController {
   @Operation(summary = "Update valuation", description = "Update a valuation record (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PropertyValuationResponse updateValuation(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Valuation ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdatePropertyValuationRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return valuationService.update(identifier, request, principal);
@@ -80,8 +83,8 @@ public class PropertyValuationController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteValuation(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Valuation ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     valuationService.delete(identifier, principal);
   }

@@ -8,8 +8,12 @@ import java.util.Optional;
 
 import com.buurman.domain.Payment;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Payment record with amount, due date, status, and linked contract")
 public record PaymentResponse(
-    String identifier,
+    @Schema(description = "Unique payment identifier", example = "pay_01HZQX7V8B3K5M2N4P6R9T0W")
+        String identifier,
     Optional<ContractSummary> contract,
     Optional<TenantSummary> tenant,
     Optional<PropertySummary> property,

@@ -8,8 +8,14 @@ import java.util.Optional;
 
 import com.buurman.domain.Property;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(
+    description =
+        "Property details including location, construction, energy, and accessibility information")
 public record PropertyResponse(
-    String identifier,
+    @Schema(description = "Unique property identifier", example = "prop_01HZQX7V8B3K5M2N4P6R9T0W")
+        String identifier,
     Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
     Property.PropertyStatus status,

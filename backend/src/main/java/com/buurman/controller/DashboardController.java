@@ -14,6 +14,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.DashboardService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,9 @@ public class DashboardController {
   @GetMapping("/recent-activities")
   public List<RecentActivityResponse> getRecentActivities(
       @AuthenticationPrincipal UserPrincipal principal,
-      @RequestParam(defaultValue = "10") int limit) {
+      @Parameter(description = "Maximum number of items to return", example = "10")
+          @RequestParam(defaultValue = "10")
+          int limit) {
     return dashboardService.getRecentActivities(principal.requireTeamId(), limit);
   }
 }

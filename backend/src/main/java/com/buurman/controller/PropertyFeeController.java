@@ -23,6 +23,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyFeeService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,15 +41,16 @@ public class PropertyFeeController {
   @Operation(summary = "List fees", description = "Get all fees for a property")
   @GetMapping
   public List<PropertyFeeResponse> listFees(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return feeService.listByProperty(propertyIdentifier, principal);
   }
 
   @Operation(summary = "Get fee", description = "Get details of a specific fee")
   @GetMapping("/{identifier}")
   public PropertyFeeResponse getFee(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Fee ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     return feeService.get(identifier, principal);
   }
@@ -57,7 +59,7 @@ public class PropertyFeeController {
   @PostMapping
   @ResponseStatus(CREATED)
   public PropertyFeeResponse createFee(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody CreatePropertyFeeRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return feeService.create(propertyIdentifier, request, principal);
@@ -66,8 +68,8 @@ public class PropertyFeeController {
   @Operation(summary = "Update fee", description = "Update a fee record (Admin/Editor)")
   @PutMapping("/{identifier}")
   public PropertyFeeResponse updateFee(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Fee ULID identifier") @PathVariable String identifier,
       @Valid @RequestBody UpdatePropertyFeeRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return feeService.update(identifier, request, principal);
@@ -77,8 +79,8 @@ public class PropertyFeeController {
   @DeleteMapping("/{identifier}")
   @ResponseStatus(NO_CONTENT)
   public void deleteFee(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String identifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Fee ULID identifier") @PathVariable String identifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     feeService.delete(identifier, principal);
   }

@@ -24,6 +24,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyAmenityService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ public class AmenityController {
       description = "Get all available amenities grouped by category")
   @GetMapping("/amenities")
   public Map<String, List<AmenityResponse>> getAllAmenities(
-      @RequestParam Optional<String> category) {
+      @Parameter(description = "Filter by category") @RequestParam Optional<String> category) {
     return propertyAmenityService.getAllAmenitiesGrouped(category.orElse(null));
   }
 
@@ -52,7 +53,8 @@ public class AmenityController {
       description = "Get amenities linked to a property")
   @GetMapping("/properties/{propertyIdentifier}/amenities")
   public List<PropertyAmenityResponse> getPropertyAmenities(
-      @PathVariable String propertyIdentifier, @AuthenticationPrincipal UserPrincipal principal) {
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @AuthenticationPrincipal UserPrincipal principal) {
     return propertyAmenityService.getPropertyAmenities(propertyIdentifier, principal);
   }
 
@@ -63,7 +65,7 @@ public class AmenityController {
   @PostMapping("/properties/{propertyIdentifier}/amenities")
   @ResponseStatus(CREATED)
   public PropertyAmenityResponse addAmenity(
-      @PathVariable String propertyIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
       @Valid @RequestBody PropertyAmenityRequest request,
       @AuthenticationPrincipal UserPrincipal principal) {
     return propertyAmenityService.addAmenity(propertyIdentifier, request, principal);
@@ -76,8 +78,8 @@ public class AmenityController {
   @DeleteMapping("/properties/{propertyIdentifier}/amenities/{amenityIdentifier}")
   @ResponseStatus(NO_CONTENT)
   public void removeAmenity(
-      @PathVariable String propertyIdentifier,
-      @PathVariable String amenityIdentifier,
+      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
+      @Parameter(description = "Amenity ULID identifier") @PathVariable String amenityIdentifier,
       @AuthenticationPrincipal UserPrincipal principal) {
     propertyAmenityService.removeAmenity(propertyIdentifier, amenityIdentifier, principal);
   }
