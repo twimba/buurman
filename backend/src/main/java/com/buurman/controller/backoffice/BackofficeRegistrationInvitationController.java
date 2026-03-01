@@ -1,18 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.SortDirection;
@@ -23,100 +12,65 @@ import com.buurman.dto.request.backoffice.UpdateRegistrationInvitationNoteReques
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationDetailResponse;
 import com.buurman.dto.response.backoffice.RegistrationInvitationResponse;
+import com.buurman.generated.backoffice.api.BackofficeRegistrationInvitationsApi;
 import com.buurman.security.BackofficePrincipal;
+import com.buurman.security.SecurityUtils;
 import com.buurman.service.RegistrationInvitationService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/backoffice/registration-invitations")
-@Tag(
-    name = "Backoffice - Registration Invitations",
-    description = "Manage registration invitation codes")
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class BackofficeRegistrationInvitationController {
+public class BackofficeRegistrationInvitationController
+    implements BackofficeRegistrationInvitationsApi {
 
   private final RegistrationInvitationService invitationService;
 
-  @GetMapping
-  @Operation(summary = "List registration invitations")
-  public ResponseEntity<PageResponse<RegistrationInvitationResponse>> list(
-      @Parameter(description = "Search term") @RequestParam Optional<String> search,
-      @Parameter(description = "Page number (0-based)", example = "0")
-          @RequestParam(defaultValue = "0")
-          Integer page,
-      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
-          Integer size,
-      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
-          Optional<String> sort,
-      @Parameter(description = "Sort direction", example = "DESC")
-          @RequestParam(defaultValue = "DESC")
-          SortDirection direction,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-
-    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
-    return ResponseEntity.ok(invitationService.list(pageRequest, search.orElse(null)));
+  @Override
+  public PageResponse<RegistrationInvitationResponse> callList(
+      String search, Integer page, Integer size, String sort, String direction) {
+    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    return invitationService.list(pageRequest, search);
   }
 
-  @PostMapping
-  @Operation(summary = "Create a new registration invitation")
-  public ResponseEntity<RegistrationInvitationResponse> create(
-      @RequestBody @Valid CreateRegistrationInvitationRequest request,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(invitationService.create(request, principal));
+  @Override
+  public RegistrationInvitationResponse create(
+      CreateRegistrationInvitationRequest createRegistrationInvitationRequest) {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
+    return invitationService.create(createRegistrationInvitationRequest, principal);
   }
 
-  @GetMapping("/{identifier}")
-  @Operation(summary = "Get registration invitation details")
-  public ResponseEntity<RegistrationInvitationDetailResponse> get(
-      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
-          String identifier,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    return ResponseEntity.ok(invitationService.getByIdentifier(identifier));
+  @Override
+  public RegistrationInvitationDetailResponse get(String identifier) {
+    return invitationService.getByIdentifier(identifier);
   }
 
-  @PostMapping("/{identifier}/revoke")
-  @Operation(summary = "Revoke a registration invitation")
-  public ResponseEntity<Void> revoke(
-      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
-          String identifier,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
+  @Override
+  public void revoke(String identifier) {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     invitationService.revoke(identifier, principal);
-    return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/{identifier}/send")
-  @Operation(summary = "Send registration invitation via email or SMS")
-  public ResponseEntity<Void> send(
-      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
-          String identifier,
-      @RequestBody @Valid SendRegistrationInvitationRequest request,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    invitationService.sendInvitation(identifier, request, principal);
-    return ResponseEntity.noContent().build();
+  @Override
+  public void send(
+      String identifier,
+      SendRegistrationInvitationRequest sendRegistrationInvitationRequest) {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
+    invitationService.sendInvitation(
+        identifier, sendRegistrationInvitationRequest, principal);
   }
 
-  @PutMapping("/{identifier}/note")
-  @Operation(summary = "Update registration invitation note")
-  public ResponseEntity<RegistrationInvitationDetailResponse> updateNote(
-      @Parameter(description = "Registration invitation ULID identifier") @PathVariable
-          String identifier,
-      @RequestBody UpdateRegistrationInvitationNoteRequest request,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    return ResponseEntity.ok(invitationService.updateNote(identifier, request, principal));
+  @Override
+  public RegistrationInvitationDetailResponse updateNote(
+      String identifier,
+      UpdateRegistrationInvitationNoteRequest updateRegistrationInvitationNoteRequest) {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
+    return invitationService.updateNote(
+        identifier, updateRegistrationInvitationNoteRequest, principal);
   }
 
-  @GetMapping("/suggest-code")
-  @Operation(summary = "Generate a suggested invitation code")
-  public ResponseEntity<Map<String, String>> suggestCode(
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    return ResponseEntity.ok(Map.of("code", invitationService.suggestCode()));
+  @Override
+  public Map<String, String> suggestCode() {
+    return Map.of("code", invitationService.suggestCode());
   }
 }

@@ -1,97 +1,64 @@
 package com.buurman.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.request.CreateCalendarFeedRequest;
 import com.buurman.dto.response.CalendarFeedResponse;
+import com.buurman.exception.NotFoundException;
+import com.buurman.generated.api.CalendarFeedsApi;
+import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.CalendarFeedService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/calendar")
-@Tag(name = "Calendar Feeds", description = "iCalendar feed management and serving")
 @RequiredArgsConstructor
-public class CalendarFeedController {
+public class CalendarFeedController implements CalendarFeedsApi {
 
   private final CalendarFeedService calendarFeedService;
+  private final HttpServletResponse httpServletResponse;
 
-  @Operation(
-      summary = "Get iCalendar feed",
-      description = "Public endpoint serving iCal feed content")
-  @GetMapping(value = "/ical/{feedToken}", produces = "text/calendar; charset=utf-8")
-  public ResponseEntity<String> getCalendarFeed(
-      @Parameter(description = "Calendar feed access token") @PathVariable String feedToken) {
+  @Override
+  public String getCalendarFeed(String feedToken) {
     return calendarFeedService
         .generateICalFeed(feedToken)
         .map(
-            ical ->
-                ResponseEntity.ok()
-                    .header("Content-Disposition", "inline; filename=\"buurman-payments.ics\"")
-                    .header("Cache-Control", "no-cache, no-store, must-revalidate")
-                    .body(ical))
-        .orElseGet(() -> ResponseEntity.notFound().build());
+            ical -> {
+              httpServletResponse.setHeader(
+                  "Content-Disposition", "inline; filename=\"buurman-payments.ics\"");
+              httpServletResponse.setHeader(
+                  "Cache-Control", "no-cache, no-store, must-revalidate");
+              return ical;
+            })
+        .orElseThrow(() -> new NotFoundException("Calendar feed not found"));
   }
 
-  @Operation(
-      summary = "List calendar feeds",
-      description = "Get all calendar feeds for the current user")
-  @SecurityRequirement(name = "bearer-jwt")
-  @GetMapping("/feeds")
-  public List<CalendarFeedResponse> getUserFeeds(@AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<CalendarFeedResponse> getUserFeeds() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return calendarFeedService.getUserFeeds(principal);
   }
 
-  @Operation(
-      summary = "Create calendar feed",
-      description = "Create a new iCalendar feed subscription URL")
-  @SecurityRequirement(name = "bearer-jwt")
-  @PostMapping("/feeds")
-  @ResponseStatus(CREATED)
-  public CalendarFeedResponse createFeed(
-      @Valid @RequestBody CreateCalendarFeedRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return calendarFeedService.createFeed(request, principal);
+  @Override
+  public CalendarFeedResponse createFeed(@Valid CreateCalendarFeedRequest createCalendarFeedRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return calendarFeedService.createFeed(createCalendarFeedRequest, principal);
   }
 
-  @Operation(
-      summary = "Rotate feed token",
-      description = "Generate a new URL token, invalidating the previous one")
-  @SecurityRequirement(name = "bearer-jwt")
-  @PostMapping("/feeds/{identifier}/rotate")
-  public CalendarFeedResponse rotateFeedToken(
-      @Parameter(description = "Calendar feed ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public CalendarFeedResponse rotateFeedToken(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return calendarFeedService.rotateFeedToken(identifier, principal);
   }
 
-  @Operation(summary = "Delete calendar feed", description = "Soft delete a calendar feed")
-  @SecurityRequirement(name = "bearer-jwt")
-  @DeleteMapping("/feeds/{identifier}")
-  @ResponseStatus(NO_CONTENT)
-  public void deleteFeed(
-      @Parameter(description = "Calendar feed ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public void deleteFeed(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     calendarFeedService.deleteFeed(identifier, principal);
   }
 }

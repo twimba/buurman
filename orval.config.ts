@@ -2,7 +2,7 @@ import { defineConfig } from 'orval';
 
 export default defineConfig({
   app: {
-    input: { target: './openapi/app.json' },
+    input: { target: './openapi/app.yaml' },
     output: {
       target: './app/src/generated/api',
       schemas: './app/src/generated/models',
@@ -19,7 +19,7 @@ export default defineConfig({
     },
   },
   backoffice: {
-    input: { target: './openapi/backoffice.json' },
+    input: { target: './openapi/backoffice.yaml' },
     output: {
       target: './backoffice/src/generated/api',
       schemas: './backoffice/src/generated/models',

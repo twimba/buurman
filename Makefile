@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats stats-by-file deploy-prod scc openapi-export generate-api openapi-refresh
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -43,16 +43,9 @@ stats:
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
 	
-## Export OpenAPI specs from running backend to openapi/ directory
-openapi-export:
-	bash scripts/export-openapi.sh
-
 ## Generate TypeScript API clients from OpenAPI specs
 generate-api:
 	yarn generate:api
-
-## Export OpenAPI specs from backend + regenerate API clients
-openapi-refresh: openapi-export generate-api
 
 deploy-prod:
 	git fetch origin main

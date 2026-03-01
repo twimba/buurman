@@ -1,48 +1,34 @@
 package com.buurman.controller;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.http.CacheControl;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.response.RegistrationConfigResponse;
 import com.buurman.dto.response.ValidateInvitationCodeResponse;
+import com.buurman.generated.api.RegistrationApi;
 import com.buurman.service.FeatureFlagService;
 import com.buurman.service.RegistrationInvitationService;
 import com.buurman.util.FeatureFlags;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@Tag(name = "Registration", description = "Public registration endpoints")
 @RequiredArgsConstructor
-public class RegistrationInvitationController {
+public class RegistrationInvitationController implements RegistrationApi {
 
   private final RegistrationInvitationService invitationService;
   private final FeatureFlagService featureFlagService;
 
-  @PostMapping("/registration-invitations/validate")
-  @Operation(summary = "Validate a registration invitation code")
-  public ResponseEntity<ValidateInvitationCodeResponse> validate(
-      @RequestBody Map<String, String> body) {
-    String code = body.getOrDefault("code", "");
-    ValidateInvitationCodeResponse response = invitationService.validateCode(code);
-    return ResponseEntity.ok(response);
+  @Override
+  public ValidateInvitationCodeResponse validate(Map<String, String> requestBody) {
+    String code = requestBody.getOrDefault("code", "");
+    return invitationService.validateCode(code);
   }
 
-  @GetMapping("/registration/config")
-  @Operation(summary = "Get registration configuration")
-  public ResponseEntity<RegistrationConfigResponse> getConfig() {
+  @Override
+  public RegistrationConfigResponse getConfig() {
     boolean invitationRequired = featureFlagService.isEnabled(FeatureFlags.INVITATION_REQUIRED);
-    return ResponseEntity.ok()
-        .cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS).cachePublic())
-        .body(new RegistrationConfigResponse(invitationRequired));
+    return new RegistrationConfigResponse(invitationRequired);
   }
 }

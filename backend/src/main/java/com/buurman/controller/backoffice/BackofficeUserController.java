@@ -1,95 +1,48 @@
 package com.buurman.controller.backoffice;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
-import java.util.Optional;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
-import com.buurman.security.BackofficePrincipal;
+import com.buurman.generated.backoffice.api.BackofficeUsersApi;
+import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeUserService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/backoffice/users")
-@Tag(name = "Backoffice - Users", description = "Platform-wide user management")
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class BackofficeUserController {
+public class BackofficeUserController implements BackofficeUsersApi {
 
   private final BackofficeUserService backofficeUserService;
 
-  @Operation(
-      summary = "List users",
-      description = "Get all users with optional search and pagination")
-  @GetMapping
+  @Override
   public PageResponse<BackofficeUserResponse> listUsers(
-      @Parameter(description = "Search term") @RequestParam Optional<String> search,
-      @Parameter(description = "Page number (0-based)", example = "0")
-          @RequestParam(defaultValue = "0")
-          Integer page,
-      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
-          Integer size,
-      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
-          Optional<String> sort,
-      @Parameter(description = "Sort direction", example = "DESC")
-          @RequestParam(defaultValue = "DESC")
-          SortDirection direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
-    return backofficeUserService.listUsers(pageRequest, search.orElse(null));
+      String search, Integer page, Integer size, String sort, String direction) {
+    PageRequest pageRequest =
+        PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    return backofficeUserService.listUsers(pageRequest, search);
   }
 
-  @Operation(summary = "Get user", description = "Get user details by identifier")
-  @GetMapping("/{identifier}")
-  public BackofficeUserResponse getUser(
-      @Parameter(description = "User ULID identifier") @PathVariable String identifier) {
+  @Override
+  public BackofficeUserResponse getUser(String identifier) {
     return backofficeUserService.getUser(identifier);
   }
 
-  @Operation(
-      summary = "Disable user",
-      description = "Disable a user account in both database and Keycloak")
-  @PostMapping("/{identifier}/disable")
-  @ResponseStatus(NO_CONTENT)
-  public void disableUser(
-      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    backofficeUserService.disableUser(identifier, principal);
+  @Override
+  public void disableUser(String identifier) {
+    backofficeUserService.disableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
-  @Operation(summary = "Enable user", description = "Re-enable a disabled user account")
-  @PostMapping("/{identifier}/enable")
-  @ResponseStatus(NO_CONTENT)
-  public void enableUser(
-      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    backofficeUserService.enableUser(identifier, principal);
+  @Override
+  public void enableUser(String identifier) {
+    backofficeUserService.enableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
-  @Operation(
-      summary = "Reset password",
-      description = "Send a password reset email to the user via Keycloak")
-  @PostMapping("/{identifier}/reset-password")
-  @ResponseStatus(NO_CONTENT)
-  public void resetPassword(
-      @Parameter(description = "User ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal BackofficePrincipal principal) {
-    backofficeUserService.resetPassword(identifier, principal);
+  @Override
+  public void resetPassword(String identifier) {
+    backofficeUserService.resetPassword(identifier, SecurityUtils.getBackofficePrincipal());
   }
 }

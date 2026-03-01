@@ -1,0 +1,5045 @@
+openapi: 3.1.0
+info:
+  title: Buurman Backoffice API
+  description: Internal administration API for Buurman platform management
+  contact:
+    name: Buurman Team
+    email: info@buurman.io
+  version: 0.1.0
+servers:
+  - url: http://api.local.buurman.io
+    description: Generated server url
+security:
+  - bearer-jwt: []
+tags:
+  - name: Backoffice - Teams
+    description: Platform-wide team management
+  - name: Backoffice - Settings
+    description: Platform settings management
+  - name: Backoffice - Dashboard
+    description: Platform-wide dashboard statistics
+  - name: Backoffice - Notifications
+    description: Platform-wide notification management
+  - name: Backoffice - Scheduler
+    description: Job and scheduler management
+  - name: Backoffice - System
+    description: System information and health checks
+  - name: Backoffice - Buurmies
+    description: Keycloak user management for buurman realm
+  - name: Backoffice - Loggers
+    description: Runtime log level management
+  - name: Backoffice - Registration Invitations
+    description: Manage registration invitation codes
+  - name: Backoffice - Users
+    description: Platform-wide user management
+  - name: Backoffice - Feature Flags
+    description: Feature flag management
+paths:
+  /backoffice/teams/{identifier}:
+    get:
+      tags:
+        - Backoffice - Teams
+      summary: Get team
+      description: Get detailed team overview by identifier
+      operationId: getTeam
+      parameters:
+        - name: identifier
+          in: path
+          description: Team ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeTeamDetailResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Teams
+      summary: Update team name
+      description: Update the name of a team
+      operationId: updateTeamName
+      parameters:
+        - name: identifier
+          in: path
+          description: Team ULID identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTeamNameRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeTeamResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Teams
+      summary: Delete team
+      description: Soft delete a team
+      operationId: deleteTeam
+      parameters:
+        - name: identifier
+          in: path
+          description: Team ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/settings/rate-limits/{key}:
+    get:
+      tags:
+        - Backoffice - Settings
+      summary: Get rate limit config by key
+      operationId: getRateLimit
+      parameters:
+        - name: key
+          in: path
+          description: Rate limit config key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateLimitConfigResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Settings
+      summary: Update rate limit config
+      operationId: updateRateLimit
+      parameters:
+        - name: key
+          in: path
+          description: Rate limit config key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRateLimitConfigRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RateLimitConfigResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/settings/phone-policy:
+    get:
+      tags:
+        - Backoffice - Settings
+      summary: Get phone number policy
+      description: Get the current phone number policy configuration
+      operationId: getPhonePolicy
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficePhoneNumberPolicyResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Settings
+      summary: Update phone number policy
+      description: Update the phone number policy configuration
+      operationId: updatePhonePolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePhoneNumberPolicyRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficePhoneNumberPolicyResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations/{identifier}/note:
+    put:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Update registration invitation note
+      operationId: updateNote
+      parameters:
+        - name: identifier
+          in: path
+          description: Registration invitation ULID identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRegistrationInvitationNoteRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationInvitationDetailResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/segments/{segmentId}/{flagName}:
+    put:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Create or update a segment override
+      description: Sets a feature flag override for a specific segment
+      operationId: upsertSegmentOverride
+      parameters:
+        - name: segmentId
+          in: path
+          description: Flagsmith segment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFeatureFlagRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagUpdateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Remove a segment override
+      description: Removes a feature flag override so the segment falls back to the global default
+      operationId: deleteSegmentOverride
+      parameters:
+        - name: segmentId
+          in: path
+          description: Flagsmith segment ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/identities/{userIdentifier}/teams/{teamIdentifier}/{flagName}:
+    put:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Create or update an identity override
+      description: Sets a feature flag override for a specific user in a specific team
+      operationId: upsertIdentityOverride
+      parameters:
+        - name: userIdentifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+        - name: teamIdentifier
+          in: path
+          description: Team ULID identifier
+          required: true
+          schema:
+            type: string
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFeatureFlagRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagUpdateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Remove an identity override
+      description: Removes a feature flag override so the user falls back to the global default
+      operationId: deleteIdentityOverride
+      parameters:
+        - name: userIdentifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+        - name: teamIdentifier
+          in: path
+          description: Team ULID identifier
+          required: true
+          schema:
+            type: string
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/users/{identifier}/reset-password:
+    post:
+      tags:
+        - Backoffice - Users
+      summary: Reset password
+      description: Send a password reset email to the user via Keycloak
+      operationId: resetPassword
+      parameters:
+        - name: identifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/users/{identifier}/enable:
+    post:
+      tags:
+        - Backoffice - Users
+      summary: Enable user
+      description: Re-enable a disabled user account
+      operationId: enableUser
+      parameters:
+        - name: identifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/users/{identifier}/disable:
+    post:
+      tags:
+        - Backoffice - Users
+      summary: Disable user
+      description: Disable a user account in both database and Keycloak
+      operationId: disableUser
+      parameters:
+        - name: identifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/jobs/{jobName}/trigger:
+    post:
+      tags:
+        - Backoffice - Scheduler
+      summary: Trigger a job now
+      description: Immediately trigger a job execution
+      operationId: triggerJob
+      parameters:
+        - name: jobName
+          in: path
+          description: Quartz job name
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Quartz job group
+          required: false
+          schema:
+            type: string
+            default: scheduling
+          example: scheduling
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/jobs/{jobName}/resume:
+    post:
+      tags:
+        - Backoffice - Scheduler
+      summary: Resume a job
+      description: Resume a paused job by name and group
+      operationId: resumeJob
+      parameters:
+        - name: jobName
+          in: path
+          description: Quartz job name
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Quartz job group
+          required: false
+          schema:
+            type: string
+            default: scheduling
+          example: scheduling
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/jobs/{jobName}/reschedule:
+    post:
+      tags:
+        - Backoffice - Scheduler
+      summary: Reschedule a cron job
+      description: Update the cron expression for a job
+      operationId: rescheduleJob
+      parameters:
+        - name: jobName
+          in: path
+          description: Quartz job name
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Quartz job group
+          required: false
+          schema:
+            type: string
+            default: scheduling
+          example: scheduling
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RescheduleRequest"
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/jobs/{jobName}/pause:
+    post:
+      tags:
+        - Backoffice - Scheduler
+      summary: Pause a job
+      description: Pause a scheduled job by name and group
+      operationId: pauseJob
+      parameters:
+        - name: jobName
+          in: path
+          description: Quartz job name
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: Quartz job group
+          required: false
+          schema:
+            type: string
+            default: scheduling
+          example: scheduling
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations:
+    get:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: List registration invitations
+      operationId: list
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseRegistrationInvitationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Create a new registration invitation
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRegistrationInvitationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationInvitationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations/{identifier}/send:
+    post:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Send registration invitation via email or SMS
+      operationId: send
+      parameters:
+        - name: identifier
+          in: path
+          description: Registration invitation ULID identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendRegistrationInvitationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations/{identifier}/revoke:
+    post:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Revoke a registration invitation
+      operationId: revoke
+      parameters:
+        - name: identifier
+          in: path
+          description: Registration invitation ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/notifications/{identifier}/resend:
+    post:
+      tags:
+        - Backoffice - Notifications
+      summary: Resend notification
+      description: Resend a notification
+      operationId: resendNotification
+      parameters:
+        - name: identifier
+          in: path
+          description: Notification ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeNotificationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/loggers/{loggerName}/level:
+    post:
+      tags:
+        - Backoffice - Loggers
+      summary: Set log level
+      operationId: setLogLevel
+      parameters:
+        - name: loggerName
+          in: path
+          description: Logger name
+          required: true
+          schema:
+            type: string
+          example: com.buurman
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetLogLevelRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoggerConfigurationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/loggers/reset:
+    post:
+      tags:
+        - Backoffice - Loggers
+      summary: Reset all log levels to defaults
+      operationId: resetAll
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies:
+    get:
+      tags:
+        - Backoffice - Buurmies
+      summary: List buurmies
+      description: List Keycloak users with search and pagination
+      operationId: listBuurmies
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseBuurmyResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Create buurmy
+      description: Create a new user in the buurman Keycloak realm
+      operationId: createBuurmy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBuurmyRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuurmyResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/verify:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Verify email
+      description: Mark a user's email as verified
+      operationId: verifyBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/unverify:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Unverify email
+      description: Mark a user's email as unverified
+      operationId: unverifyBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/remove-profile-reset:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Remove profile reset
+      description: Remove the UPDATE_PROFILE required action from a user
+      operationId: removeProfileReset
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/remove-password-reset:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Remove password reset
+      description: Remove the UPDATE_PASSWORD required action from a user
+      operationId: removePasswordReset
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/force-profile-update:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Force profile update
+      description: Require the user to update their profile on next login
+      operationId: forceProfileUpdate
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/force-password-update:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Force password update
+      description: Require the user to update their password on next login
+      operationId: forcePasswordUpdate
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/enable:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Enable buurmy
+      description: Enable a disabled Keycloak user
+      operationId: enableBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}/disable:
+    post:
+      tags:
+        - Backoffice - Buurmies
+      summary: Disable buurmy
+      description: Disable a Keycloak user
+      operationId: disableBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/{flagName}:
+    patch:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Update a global feature flag
+      description: Toggles enabled state and/or updates the value of an environment-level flag
+      operationId: updateGlobalFlag
+      parameters:
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFeatureFlagRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagUpdateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/users:
+    get:
+      tags:
+        - Backoffice - Users
+      summary: List users
+      description: Get all users with optional search and pagination
+      operationId: listUsers
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseBackofficeUserResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/users/{identifier}:
+    get:
+      tags:
+        - Backoffice - Users
+      summary: Get user
+      description: Get user details by identifier
+      operationId: getUser
+      parameters:
+        - name: identifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeUserResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/teams:
+    get:
+      tags:
+        - Backoffice - Teams
+      summary: List teams
+      description: Get all teams with optional name search and pagination
+      operationId: listTeams
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseBackofficeTeamResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/system/info:
+    get:
+      tags:
+        - Backoffice - System
+      summary: Get system info
+      description: Returns build info, runtime, migrations, and service health.
+      operationId: getSystemInfo
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeSystemInfoResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/settings/rate-limits:
+    get:
+      tags:
+        - Backoffice - Settings
+      summary: List all rate limit configs
+      operationId: listRateLimits
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RateLimitConfigResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/settings/phone-policy/metadata:
+    get:
+      tags:
+        - Backoffice - Settings
+      summary: Get phone policy metadata
+      description: Get static country groups and number types for UI rendering
+      operationId: getPhonePolicyMetadata
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties: {}
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/jobs:
+    get:
+      tags:
+        - Backoffice - Scheduler
+      summary: List all jobs
+      description: Get all configured Quartz jobs with trigger details
+      operationId: listJobs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScheduledJobResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/scheduler/history:
+    get:
+      tags:
+        - Backoffice - Scheduler
+      summary: Get execution history
+      description: Get paginated job execution history with optional filters
+      operationId: getHistory
+      parameters:
+        - name: jobName
+          in: query
+          description: Filter by job name(s)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: status
+          in: query
+          description: Filter by execution status
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseJobExecutionHistoryResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations/{identifier}:
+    get:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Get registration invitation details
+      operationId: get
+      parameters:
+        - name: identifier
+          in: path
+          description: Registration invitation ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationInvitationDetailResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/registration-invitations/suggest-code:
+    get:
+      tags:
+        - Backoffice - Registration Invitations
+      summary: Generate a suggested invitation code
+      operationId: suggestCode
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/notifications:
+    get:
+      tags:
+        - Backoffice - Notifications
+      summary: List notifications
+      description: Get all notifications with filtering and pagination
+      operationId: listNotifications
+      parameters:
+        - name: teamIdentifier
+          in: query
+          description: Filter by team ULID identifier
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by notification type
+          required: false
+          schema:
+            type: string
+        - name: channel
+          in: query
+          description: Filter by delivery channel
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status
+          required: false
+          schema:
+            type: string
+        - name: recipientEmail
+          in: query
+          description: Filter by recipient email
+          required: false
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: Filter from date (ISO-8601)
+          required: false
+          schema:
+            type: string
+          example: "2026-01-01T00:00:00"
+        - name: dateTo
+          in: query
+          description: Filter to date (ISO-8601)
+          required: false
+          schema:
+            type: string
+          example: "2026-12-31T23:59:59"
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseBackofficeNotificationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/notifications/{identifier}:
+    get:
+      tags:
+        - Backoffice - Notifications
+      summary: Get notification
+      description: Get notification details by identifier
+      operationId: getNotification
+      parameters:
+        - name: identifier
+          in: path
+          description: Notification ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeNotificationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/notifications/stats:
+    get:
+      tags:
+        - Backoffice - Notifications
+      summary: Get notification stats
+      description: Get aggregated notification statistics
+      operationId: getStats
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties: {}
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/loggers:
+    get:
+      tags:
+        - Backoffice - Loggers
+      summary: List all loggers
+      operationId: listLoggers
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LoggerConfigurationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags:
+    get:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Get global feature flag status
+      description: Returns all flags at environment level (no identity context)
+      operationId: getGlobalFlags
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties: {}
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/users/{userIdentifier}:
+    get:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Get feature flags for a specific user across all teams
+      description: Evaluates all flags for each team membership the user has
+      operationId: getUserFlags
+      parameters:
+        - name: userIdentifier
+          in: path
+          description: User ULID identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamFlagEvaluation"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/segments:
+    get:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Get all segments with their feature flag overrides
+      description: Returns segments configured in Flagsmith with any feature flag overrides they define
+      operationId: getSegmentOverrides
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SegmentEvaluation"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/admin-status:
+    get:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Check if Flagsmith admin operations are available
+      description: Returns whether the backend has admin credentials configured for flag management
+      operationId: getAdminStatus
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties: {}
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/dashboard/stats:
+    get:
+      tags:
+        - Backoffice - Dashboard
+      summary: Get dashboard stats
+      description: Get aggregated platform statistics
+      operationId: getDashboardStats
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeDashboardResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/buurmies/{keycloakId}:
+    get:
+      tags:
+        - Backoffice - Buurmies
+      summary: Get buurmy
+      description: Get a Keycloak user by ID
+      operationId: getBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuurmyResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Buurmies
+      summary: Delete buurmy
+      description: Permanently delete a Keycloak user
+      operationId: deleteBuurmy
+      parameters:
+        - name: keycloakId
+          in: path
+          description: Keycloak user ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+components:
+  schemas:
+    UpdateTeamNameRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+      required:
+        - name
+    BackofficeTeamResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        teamName:
+          type: string
+        demo:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int64
+        ownerEmail:
+          type:
+            - string
+            - "null"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - createdAt
+        - demo
+        - identifier
+        - memberCount
+        - teamName
+    UpdateRateLimitConfigRequest:
+      type: object
+      properties:
+        maxRequests:
+          type: integer
+          format: int32
+          maximum: 10000
+          minimum: 1
+        periodSeconds:
+          type: integer
+          format: int32
+          maximum: 86400
+          minimum: 10
+        enabled:
+          type: boolean
+      required:
+        - enabled
+        - maxRequests
+        - periodSeconds
+    RateLimitConfigResponse:
+      type: object
+      properties:
+        key:
+          type: string
+        displayName:
+          type: string
+        description:
+          type:
+            - string
+            - "null"
+        maxRequests:
+          type: integer
+          format: int32
+        periodSeconds:
+          type: integer
+          format: int32
+        enabled:
+          type: boolean
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        updatedBy:
+          type:
+            - string
+            - "null"
+      required:
+        - displayName
+        - enabled
+        - key
+        - maxRequests
+        - periodSeconds
+    UpdatePhoneNumberPolicyRequest:
+      type: object
+      properties:
+        policyMatrix:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        maxCodesPerHour:
+          type: integer
+          format: int32
+          maximum: 20
+          minimum: 1
+        verificationCodeExpiryMinutes:
+          type: integer
+          format: int32
+          maximum: 60
+          minimum: 1
+      required:
+        - maxCodesPerHour
+        - policyMatrix
+        - verificationCodeExpiryMinutes
+    BackofficePhoneNumberPolicyResponse:
+      type: object
+      properties:
+        policyMatrix:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        maxCodesPerHour:
+          type: integer
+          format: int32
+        verificationCodeExpiryMinutes:
+          type: integer
+          format: int32
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        updatedBy:
+          type:
+            - string
+            - "null"
+      required:
+        - maxCodesPerHour
+        - policyMatrix
+        - verificationCodeExpiryMinutes
+    UpdateRegistrationInvitationNoteRequest:
+      type: object
+      properties:
+        note:
+          type: string
+      required:
+        - note
+    RegistrationInvitationDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        code:
+          type: string
+        maxUsages:
+          type:
+            - integer
+            - "null"
+          format: int32
+        usageCount:
+          type: integer
+          format: int32
+        expiresAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        revoked:
+          type: boolean
+        revokedBy:
+          type:
+            - string
+            - "null"
+        revokedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        status:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        note:
+          type:
+            - string
+            - "null"
+        usages:
+          type: array
+          items:
+            $ref: "#/components/schemas/UsageRecord"
+      required:
+        - code
+        - createdAt
+        - createdBy
+        - identifier
+        - revoked
+        - status
+        - usageCount
+        - usages
+    UsageRecord:
+      type: object
+      properties:
+        userEmail:
+          type: string
+        userName:
+          type:
+            - string
+            - "null"
+        usedAt:
+          type: string
+          format: date-time
+      required:
+        - usedAt
+        - userEmail
+    UpdateFeatureFlagRequest:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        value:
+          type: string
+    FeatureFlagUpdateResponse:
+      type: object
+      properties:
+        flagName:
+          type: string
+        enabled:
+          type: boolean
+        value: {}
+    RescheduleRequest:
+      type: object
+      properties:
+        cronExpression:
+          type: string
+    CreateRegistrationInvitationRequest:
+      type: object
+      properties:
+        code:
+          type:
+            - string
+            - "null"
+        maxUsages:
+          type:
+            - integer
+            - "null"
+          format: int32
+        expiresAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        note:
+          type:
+            - string
+            - "null"
+    RegistrationInvitationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        code:
+          type: string
+        maxUsages:
+          type:
+            - integer
+            - "null"
+          format: int32
+        usageCount:
+          type: integer
+          format: int32
+        expiresAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        revoked:
+          type: boolean
+        status:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        hasNote:
+          type: boolean
+      required:
+        - code
+        - createdAt
+        - createdBy
+        - hasNote
+        - identifier
+        - revoked
+        - status
+        - usageCount
+    SendRegistrationInvitationRequest:
+      type: object
+      properties:
+        recipient:
+          type: string
+          minLength: 1
+        channel:
+          type: string
+          minLength: 1
+      required:
+        - channel
+        - recipient
+    BackofficeNotificationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        teamIdentifier:
+          type:
+            - string
+            - "null"
+        teamName:
+          type:
+            - string
+            - "null"
+        notificationType:
+          type: string
+        channel:
+          type: string
+        subject:
+          type:
+            - string
+            - "null"
+        body:
+          type:
+            - string
+            - "null"
+        recipientEmail:
+          type:
+            - string
+            - "null"
+        recipientPhone:
+          type:
+            - string
+            - "null"
+        status:
+          type: string
+        providerStatus:
+          type:
+            - string
+            - "null"
+        providerError:
+          type:
+            - string
+            - "null"
+        openCount:
+          type: integer
+          format: int32
+        clickCount:
+          type: integer
+          format: int32
+        firstOpenedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        firstClickedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        resentFromIdentifier:
+          type:
+            - string
+            - "null"
+        resendReason:
+          type:
+            - string
+            - "null"
+        demoBlocked:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        statusUpdatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - channel
+        - clickCount
+        - createdAt
+        - demoBlocked
+        - identifier
+        - notificationType
+        - openCount
+        - status
+    SetLogLevelRequest:
+      type: object
+      properties:
+        level:
+          type:
+            - string
+            - "null"
+    LoggerConfigurationResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        configuredLevel:
+          type:
+            - string
+            - "null"
+        effectiveLevel:
+          type: string
+      required:
+        - effectiveLevel
+        - name
+    CreateBuurmyRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        username:
+          type:
+            - string
+            - "null"
+          maxLength: 50
+          minLength: 3
+        firstName:
+          type: string
+          maxLength: 100
+          minLength: 0
+        lastName:
+          type: string
+          maxLength: 100
+          minLength: 0
+        password:
+          type: string
+          maxLength: 128
+          minLength: 8
+        temporaryPassword:
+          type: boolean
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+        - temporaryPassword
+    BuurmyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type:
+            - string
+            - "null"
+        lastName:
+          type:
+            - string
+            - "null"
+        enabled:
+          type: boolean
+        emailVerified:
+          type: boolean
+        createdAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        lastLogin:
+          type:
+            - string
+            - "null"
+          format: date-time
+        requiredActions:
+          type: array
+          items:
+            type: string
+      required:
+        - email
+        - emailVerified
+        - enabled
+        - id
+        - requiredActions
+        - username
+    BackofficeUserResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        email:
+          type: string
+        firstName:
+          type:
+            - string
+            - "null"
+        lastName:
+          type:
+            - string
+            - "null"
+        phone:
+          type:
+            - string
+            - "null"
+        emailVerified:
+          type: boolean
+        disabled:
+          type: boolean
+        online:
+          type: boolean
+        teamCount:
+          type: integer
+          format: int64
+        demoTeamCount:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - createdAt
+        - demoTeamCount
+        - disabled
+        - email
+        - emailVerified
+        - identifier
+        - online
+        - teamCount
+    PageResponseBackofficeUserResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BackofficeUserResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageResponseBackofficeTeamResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BackofficeTeamResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    BackofficeTeamDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        teamName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/MemberInfo"
+        dataCounts:
+          $ref: "#/components/schemas/DataCounts"
+        financialSnapshot:
+          $ref: "#/components/schemas/FinancialSnapshot"
+        settings:
+          $ref: "#/components/schemas/SettingsInfo"
+      required:
+        - createdAt
+        - dataCounts
+        - financialSnapshot
+        - identifier
+        - members
+        - teamName
+    DataCounts:
+      type: object
+      properties:
+        properties:
+          type: integer
+          format: int64
+        tenants:
+          type: integer
+          format: int64
+        contracts:
+          type: integer
+          format: int64
+        expenses:
+          type: integer
+          format: int64
+        payments:
+          type: integer
+          format: int64
+        documents:
+          type: integer
+          format: int64
+      required:
+        - contracts
+        - documents
+        - expenses
+        - payments
+        - properties
+        - tenants
+    FinancialSnapshot:
+      type: object
+      properties:
+        totalActiveRent:
+          type:
+            - number
+            - "null"
+        currency:
+          type:
+            - string
+            - "null"
+        propertyStatusDistribution:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        propertyCategoryDistribution:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        contractStatusDistribution:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        paymentStatusDistribution:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+      required:
+        - contractStatusDistribution
+        - paymentStatusDistribution
+        - propertyCategoryDistribution
+        - propertyStatusDistribution
+    MemberInfo:
+      type: object
+      properties:
+        email:
+          type:
+            - string
+            - "null"
+        firstName:
+          type:
+            - string
+            - "null"
+        lastName:
+          type:
+            - string
+            - "null"
+        role:
+          type: string
+        isOwner:
+          type: boolean
+        joinedAt:
+          type: string
+          format: date-time
+        disabled:
+          type: boolean
+      required:
+        - disabled
+        - isOwner
+        - joinedAt
+        - role
+    SettingsInfo:
+      type: object
+      properties:
+        paymentsAheadCount:
+          type:
+            - integer
+            - "null"
+          format: int32
+        autoGenerationEnabled:
+          type: boolean
+        defaultCurrency:
+          type:
+            - string
+            - "null"
+        defaultCountry:
+          type:
+            - string
+            - "null"
+        timezone:
+          type:
+            - string
+            - "null"
+        dateFormat:
+          type:
+            - string
+            - "null"
+        fiscalYearStartMonth:
+          type:
+            - string
+            - "null"
+      required:
+        - autoGenerationEnabled
+    BackofficeSystemInfoResponse:
+      type: object
+      properties:
+        build:
+          $ref: "#/components/schemas/BuildInfo"
+        runtime:
+          $ref: "#/components/schemas/RuntimeInfo"
+        migrations:
+          $ref: "#/components/schemas/MigrationInfo"
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceHealth"
+        configuration:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConfigEntry"
+        metrics:
+          $ref: "#/components/schemas/MetricsSnapshot"
+        sessions:
+          $ref: "#/components/schemas/SessionInfo"
+      required:
+        - build
+        - configuration
+        - metrics
+        - migrations
+        - runtime
+        - services
+        - sessions
+    BuildInfo:
+      type: object
+      properties:
+        version:
+          type: string
+        gitCommit:
+          type:
+            - string
+            - "null"
+        gitCommitFull:
+          type:
+            - string
+            - "null"
+        gitBranch:
+          type:
+            - string
+            - "null"
+        gitCommitTime:
+          type:
+            - string
+            - "null"
+          format: date-time
+        gitDirty:
+          type: boolean
+        buildTime:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - gitDirty
+        - version
+    ConfigEntry:
+      type: object
+      properties:
+        category:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+      required:
+        - category
+        - key
+        - value
+    GcInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        collectionCount:
+          type: integer
+          format: int64
+        collectionTimeMs:
+          type: integer
+          format: int64
+      required:
+        - collectionCount
+        - collectionTimeMs
+        - name
+    HttpLatencyStats:
+      type: object
+      properties:
+        meanMs:
+          type: number
+          format: double
+        minMs:
+          type: number
+          format: double
+        maxMs:
+          type: number
+          format: double
+        p50Ms:
+          type: number
+          format: double
+        p75Ms:
+          type: number
+          format: double
+        p95Ms:
+          type: number
+          format: double
+        p99Ms:
+          type: number
+          format: double
+      required:
+        - maxMs
+        - meanMs
+        - minMs
+        - p50Ms
+        - p75Ms
+        - p95Ms
+        - p99Ms
+    MetricEntry:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        value:
+          type: number
+          format: double
+        tags:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - name
+        - tags
+        - type
+        - value
+    MetricsSnapshot:
+      type: object
+      properties:
+        httpRequestCount:
+          type: integer
+          format: int64
+        httpRequestTotalTimeSeconds:
+          type: number
+          format: double
+        httpLatency:
+          $ref: "#/components/schemas/HttpLatencyStats"
+        custom:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetricEntry"
+      required:
+        - custom
+        - httpRequestCount
+        - httpRequestTotalTimeSeconds
+    MigrationEntry:
+      type: object
+      properties:
+        version:
+          type:
+            - string
+            - "null"
+        description:
+          type:
+            - string
+            - "null"
+        state:
+          type: string
+        installedOn:
+          type:
+            - string
+            - "null"
+          format: date-time
+        executionTimeMs:
+          type:
+            - integer
+            - "null"
+          format: int32
+        script:
+          type: string
+      required:
+        - script
+        - state
+    MigrationInfo:
+      type: object
+      properties:
+        currentVersion:
+          type:
+            - string
+            - "null"
+        appliedCount:
+          type: integer
+          format: int32
+        pendingCount:
+          type: integer
+          format: int32
+        failedCount:
+          type: integer
+          format: int32
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/MigrationEntry"
+      required:
+        - appliedCount
+        - entries
+        - failedCount
+        - pendingCount
+    RuntimeInfo:
+      type: object
+      properties:
+        javaVersion:
+          type: string
+        springBootVersion:
+          type: string
+        activeProfiles:
+          type: string
+        uptimeMs:
+          type: integer
+          format: int64
+        heapUsedBytes:
+          type: integer
+          format: int64
+        heapMaxBytes:
+          type: integer
+          format: int64
+        nonHeapUsedBytes:
+          type: integer
+          format: int64
+        nonHeapMaxBytes:
+          type: integer
+          format: int64
+        cpuUsage:
+          type: number
+          format: double
+        availableProcessors:
+          type: integer
+          format: int32
+        threadCount:
+          type: integer
+          format: int32
+        peakThreadCount:
+          type: integer
+          format: int32
+        daemonThreadCount:
+          type: integer
+          format: int32
+        garbageCollectors:
+          type: array
+          items:
+            $ref: "#/components/schemas/GcInfo"
+        pid:
+          type: integer
+          format: int64
+        serverTime:
+          type: string
+          format: date-time
+      required:
+        - activeProfiles
+        - availableProcessors
+        - cpuUsage
+        - daemonThreadCount
+        - garbageCollectors
+        - heapMaxBytes
+        - heapUsedBytes
+        - javaVersion
+        - nonHeapMaxBytes
+        - nonHeapUsedBytes
+        - peakThreadCount
+        - pid
+        - serverTime
+        - springBootVersion
+        - threadCount
+        - uptimeMs
+    ServiceHealth:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - UP
+            - DOWN
+            - DISABLED
+            - UNKNOWN
+        latencyMs:
+          type:
+            - integer
+            - "null"
+          format: int64
+        details:
+          type:
+            - string
+            - "null"
+        error:
+          type:
+            - string
+            - "null"
+      required:
+        - name
+        - status
+    SessionInfo:
+      type: object
+      properties:
+        appActiveUsers:
+          type: integer
+          format: int32
+        backofficeActiveUsers:
+          type: integer
+          format: int32
+      required:
+        - appActiveUsers
+        - backofficeActiveUsers
+    ScheduledJobResponse:
+      type: object
+      properties:
+        jobName:
+          type: string
+        jobGroup:
+          type: string
+        jobClass:
+          type: string
+        triggerName:
+          type:
+            - string
+            - "null"
+        triggerGroup:
+          type:
+            - string
+            - "null"
+        triggerType:
+          type:
+            - string
+            - "null"
+        scheduleExpression:
+          type:
+            - string
+            - "null"
+        triggerState:
+          type: string
+        nextFireTime:
+          type:
+            - string
+            - "null"
+        previousFireTime:
+          type:
+            - string
+            - "null"
+      required:
+        - jobClass
+        - jobGroup
+        - jobName
+        - triggerState
+    JobExecutionHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        jobName:
+          type: string
+        jobGroup:
+          type: string
+        startedAt:
+          type: string
+        endedAt:
+          type:
+            - string
+            - "null"
+        durationMs:
+          type:
+            - integer
+            - "null"
+          format: int64
+        status:
+          type: string
+        errorMessage:
+          type:
+            - string
+            - "null"
+        nodeId:
+          type:
+            - string
+            - "null"
+      required:
+        - id
+        - jobGroup
+        - jobName
+        - startedAt
+        - status
+    PageResponseJobExecutionHistoryResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobExecutionHistoryResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageResponseRegistrationInvitationResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/RegistrationInvitationResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageResponseBackofficeNotificationResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BackofficeNotificationResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    TeamFlagEvaluation:
+      type: object
+      properties:
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+        role:
+          type: string
+        isOwner:
+          type: boolean
+        isActive:
+          type: boolean
+        flags:
+          type: object
+          additionalProperties: {}
+    SegmentEvaluation:
+      type: object
+      properties:
+        segmentId:
+          type: integer
+          format: int64
+        segmentName:
+          type: string
+        description:
+          type: string
+        overrides:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/SegmentFlagOverride"
+    SegmentFlagOverride:
+      type: object
+      properties:
+        flagName:
+          type: string
+        enabled:
+          type: boolean
+        value: {}
+    BackofficeDashboardResponse:
+      type: object
+      properties:
+        totalTeams:
+          type: integer
+          format: int64
+        totalUsers:
+          type: integer
+          format: int64
+        disabledUsers:
+          type: integer
+          format: int64
+        totalNotifications:
+          type: integer
+          format: int64
+        pendingNotifications:
+          type: integer
+          format: int64
+        failedNotifications:
+          type: integer
+          format: int64
+        deliveredNotifications:
+          type: integer
+          format: int64
+        notificationsByChannel:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+      required:
+        - deliveredNotifications
+        - disabledUsers
+        - failedNotifications
+        - notificationsByChannel
+        - pendingNotifications
+        - totalNotifications
+        - totalTeams
+        - totalUsers
+    PageResponseBuurmyResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/BuurmyResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ProblemDetail:
+      description: RFC 7807 Problem Detail response
+      properties:
+        detail:
+          type: string
+          description: Human-readable explanation of the problem
+        status:
+          description: HTTP status code
+          example: 400
+        type:
+          type: string
+          description: Problem type URI
+        instance:
+          type: string
+          description: URI of the request that caused the error
+        title:
+          type: string
+          description: Short human-readable summary
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

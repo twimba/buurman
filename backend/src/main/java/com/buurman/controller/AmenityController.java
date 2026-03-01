@@ -1,86 +1,49 @@
 package com.buurman.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.request.PropertyAmenityRequest;
 import com.buurman.dto.response.AmenityResponse;
 import com.buurman.dto.response.PropertyAmenityResponse;
+import com.buurman.generated.api.AmenitiesApi;
+import com.buurman.generated.api.PropertyAmenitiesApi;
+import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyAmenityService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class AmenityController {
+public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
 
   private final PropertyAmenityService propertyAmenityService;
 
-  @Tag(name = "Amenities", description = "Reference amenity data")
-  @Operation(
-      summary = "List all amenities grouped by category",
-      description = "Get all available amenities grouped by category")
-  @GetMapping("/amenities")
-  public Map<String, List<AmenityResponse>> getAllAmenities(
-      @Parameter(description = "Filter by category") @RequestParam Optional<String> category) {
-    return propertyAmenityService.getAllAmenitiesGrouped(category.orElse(null));
+  @Override
+  public Map<String, List<AmenityResponse>> getAllAmenities(String category) {
+    return propertyAmenityService.getAllAmenitiesGrouped(category);
   }
 
-  @Tag(name = "Property Amenities", description = "Manage amenities for properties")
-  @Operation(
-      summary = "List property amenities",
-      description = "Get amenities linked to a property")
-  @GetMapping("/properties/{propertyIdentifier}/amenities")
-  public List<PropertyAmenityResponse> getPropertyAmenities(
-      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<PropertyAmenityResponse> getPropertyAmenities(String propertyIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyAmenityService.getPropertyAmenities(propertyIdentifier, principal);
   }
 
-  @Tag(name = "Property Amenities")
-  @Operation(
-      summary = "Add amenity to property",
-      description = "Link an amenity to a property (Admin/Editor)")
-  @PostMapping("/properties/{propertyIdentifier}/amenities")
-  @ResponseStatus(CREATED)
+  @Override
   public PropertyAmenityResponse addAmenity(
-      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
-      @Valid @RequestBody PropertyAmenityRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return propertyAmenityService.addAmenity(propertyIdentifier, request, principal);
+      String propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return propertyAmenityService.addAmenity(propertyIdentifier, propertyAmenityRequest, principal);
   }
 
-  @Tag(name = "Property Amenities")
-  @Operation(
-      summary = "Remove amenity from property",
-      description = "Unlink an amenity from a property (Admin/Editor)")
-  @DeleteMapping("/properties/{propertyIdentifier}/amenities/{amenityIdentifier}")
-  @ResponseStatus(NO_CONTENT)
-  public void removeAmenity(
-      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
-      @Parameter(description = "Amenity ULID identifier") @PathVariable String amenityIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public void removeAmenity(String propertyIdentifier, String amenityIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     propertyAmenityService.removeAmenity(propertyIdentifier, amenityIdentifier, principal);
   }
 }
