@@ -6,7 +6,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
@@ -32,8 +31,7 @@ public class DocumentController implements DocumentsApi {
   public PageResponse getAllDocuments(
       String search, String entityType, Integer page, Integer size, String sort, String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return documentService.searchDocumentsPaginated(search, entityType, principal, pageRequest);
   }
 

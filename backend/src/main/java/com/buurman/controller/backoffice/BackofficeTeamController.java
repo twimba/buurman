@@ -2,7 +2,6 @@ package com.buurman.controller.backoffice;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
@@ -23,7 +22,7 @@ public class BackofficeTeamController implements BackofficeTeamsApi {
   @Override
   public PageResponse<BackofficeTeamResponse> listTeams(
       String search, Integer page, Integer size, String sort, String direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeTeamService.listTeams(pageRequest, search);
   }
 

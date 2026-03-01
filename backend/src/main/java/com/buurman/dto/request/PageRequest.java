@@ -1,5 +1,6 @@
 package com.buurman.dto.request;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -20,6 +21,18 @@ public record PageRequest(
     int p = (page != null && page >= 0) ? page : DEFAULT_PAGE;
     int s = (size != null && size > 0) ? Math.min(size, MAX_SIZE) : DEFAULT_SIZE;
     return new PageRequest(p, s, Optional.ofNullable(sort), Optional.ofNullable(direction));
+  }
+
+  public static PageRequest of(
+      @Nullable Integer page,
+      @Nullable Integer size,
+      @Nullable String sort,
+      @Nullable String direction) {
+    SortDirection dir =
+        (direction != null && !direction.isBlank())
+            ? SortDirection.valueOf(direction.toUpperCase(Locale.ROOT))
+            : null;
+    return of(page, size, sort, dir);
   }
 
   public int offset() {

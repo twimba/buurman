@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
@@ -44,8 +43,7 @@ public class TenantController implements TenantsApi {
   public PageResponse getTenants(
       String search, Integer page, Integer size, String sort, String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return tenantService.getTenantsPaginated(principal, search, pageRequest);
   }
 

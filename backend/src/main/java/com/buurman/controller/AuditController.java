@@ -2,7 +2,6 @@ package com.buurman.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.generated.api.AuditLogsApi;
@@ -29,8 +28,7 @@ public class AuditController implements AuditLogsApi {
       String sort,
       String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return auditService.getAllAuditLogsPaginated(
         principal.requireTeamId(), entityType, action, search, pageRequest);
   }

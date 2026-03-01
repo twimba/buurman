@@ -5,7 +5,6 @@ import java.util.List;
 import org.quartz.SchedulerException;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.RescheduleRequest;
 import com.buurman.dto.response.PageResponse;
@@ -75,7 +74,7 @@ public class BackofficeSchedulerController implements BackofficeSchedulerApi {
       Integer size,
       String sort,
       String direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return schedulerService.getExecutionHistory(pageRequest, jobName, status);
   }
 }

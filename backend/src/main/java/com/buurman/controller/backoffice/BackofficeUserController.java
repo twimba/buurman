@@ -2,7 +2,6 @@ package com.buurman.controller.backoffice;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
@@ -21,7 +20,7 @@ public class BackofficeUserController implements BackofficeUsersApi {
   @Override
   public PageResponse<BackofficeUserResponse> listUsers(
       String search, Integer page, Integer size, String sort, String direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeUserService.listUsers(pageRequest, search);
   }
 

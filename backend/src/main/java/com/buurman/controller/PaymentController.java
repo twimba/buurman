@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkCreatePaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
@@ -71,8 +70,7 @@ public class PaymentController implements PaymentsApi {
       String sort,
       String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return paymentService.getPaymentsPaginated(
         principal, status, contractIdentifier, propertyIdentifier, dateFrom, dateTo, pageRequest);
   }

@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkCreateExpensesRequest;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
@@ -61,8 +60,7 @@ public class ExpenseController implements ExpensesApi {
       String sort,
       String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     UUID propertyId = null;
     if (propertyIdentifier != null) {
       propertyId = expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());

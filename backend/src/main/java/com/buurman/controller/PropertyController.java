@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
@@ -45,9 +44,7 @@ public class PropertyController implements PropertiesApi {
       String sort,
       String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection =
-        direction != null ? SortDirection.valueOf(direction) : SortDirection.DESC;
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return propertyService.getPropertiesPaginated(principal, status, category, query, pageRequest);
   }
 

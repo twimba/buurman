@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.ChangePrimaryTenantRequest;
@@ -72,8 +71,7 @@ public class ContractController implements ContractsApi {
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return contractService.getContractsPaginated(principal, status, pageRequest);
   }
 

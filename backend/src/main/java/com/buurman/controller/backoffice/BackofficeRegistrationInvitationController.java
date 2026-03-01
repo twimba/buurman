@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
@@ -29,7 +28,7 @@ public class BackofficeRegistrationInvitationController
   @Override
   public PageResponse<RegistrationInvitationResponse> callList(
       String search, Integer page, Integer size, String sort, String direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return invitationService.list(pageRequest, search);
   }
 

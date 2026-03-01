@@ -2,7 +2,6 @@ package com.buurman.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
 import com.buurman.dto.response.NotificationStatsResponse;
@@ -35,8 +34,7 @@ public class NotificationController implements NotificationsApi {
       String sort,
       String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    SortDirection sortDirection = SortDirection.valueOf(direction);
-    PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     PaginatedResult<NotificationResponse> result =
         centerService.getNotifications(
             principal, type, channel, status, recipientEmail, dateFrom, dateTo, pageRequest);

@@ -8,7 +8,6 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
@@ -42,7 +41,7 @@ public class BackofficeNotificationController implements BackofficeNotifications
     LocalDateTime from = parseDateTime(dateFrom);
     LocalDateTime to = parseDateTime(dateTo);
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeNotificationService.listNotifications(
         pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
   }
