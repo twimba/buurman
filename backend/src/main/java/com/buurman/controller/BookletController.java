@@ -21,10 +21,10 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportPropertyBooklet(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=property-booklet.pdf");
+    httpServletResponse.setHeader(
+        "Content-Disposition", "attachment; filename=property-booklet.pdf");
     httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyBrochurePDF(
-        propertyIdentifier, principal.requireTeamId());
+    return exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
   }
 
   @Override
@@ -41,7 +41,6 @@ public class BookletController implements BookletsApi {
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
     httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
-    return exportService.generateContractReportPDF(
-        contractIdentifier, principal.requireTeamId());
+    return exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
   }
 }

@@ -17,7 +17,12 @@ RUN yarn config set nodeLinker node-modules && yarn install
 COPY packages/ui/ packages/ui/
 COPY scripts/ scripts/
 COPY app/ app/
+COPY orval.config.ts ./
+COPY openapi/ openapi/
 
+# Generate TypeScript API clients from OpenAPI specs, then build
+WORKDIR /monorepo
+RUN yarn generate:api
 WORKDIR /monorepo/app
 RUN rm -rf dist
 RUN GIT_COMMIT="$GIT_COMMIT" GIT_COMMIT_SHORT="$GIT_COMMIT_SHORT" GIT_BRANCH="$GIT_BRANCH" yarn build

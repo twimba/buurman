@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyTax {
 
-  @Schema(description = "Classification of property tax")
   public enum TaxType {
     PROPERTY,
     MUNICIPAL,
@@ -30,7 +28,6 @@ public class PropertyTax {
     OTHER
   }
 
-  @Schema(description = "Current status of the tax obligation")
   public enum TaxStatus {
     ACTIVE,
     EXPIRED,

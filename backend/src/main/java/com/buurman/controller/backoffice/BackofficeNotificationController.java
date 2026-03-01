@@ -42,8 +42,7 @@ public class BackofficeNotificationController implements BackofficeNotifications
     LocalDateTime from = parseDateTime(dateFrom);
     LocalDateTime to = parseDateTime(dateTo);
 
-    PageRequest pageRequest =
-        PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
     return backofficeNotificationService.listNotifications(
         pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
   }

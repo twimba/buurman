@@ -48,8 +48,7 @@ public class PropertyController implements PropertiesApi {
     SortDirection sortDirection =
         direction != null ? SortDirection.valueOf(direction) : SortDirection.DESC;
     PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
-    return propertyService.getPropertiesPaginated(
-        principal, status, category, query, pageRequest);
+    return propertyService.getPropertiesPaginated(principal, status, category, query, pageRequest);
   }
 
   @Override
@@ -72,7 +71,8 @@ public class PropertyController implements PropertiesApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
+  @SuppressWarnings(
+      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadPropertyDocument(
       String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
@@ -110,7 +110,8 @@ public class PropertyController implements PropertiesApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
+  @SuppressWarnings(
+      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public PhotoResponse uploadPropertyPhoto(
       String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();

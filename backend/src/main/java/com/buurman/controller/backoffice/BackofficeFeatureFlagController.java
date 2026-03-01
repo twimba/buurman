@@ -271,9 +271,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     // Update the segment override feature state (uses /features/featurestates/ not /environments/)
     FeatureStateInfo updated =
         flagsmithAdminService.updateSegmentOverrideState(
-            featureStateId,
-            updateFeatureFlagRequest.enabled(),
-            updateFeatureFlagRequest.value());
+            featureStateId, updateFeatureFlagRequest.enabled(), updateFeatureFlagRequest.value());
     return new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value());
   }
 

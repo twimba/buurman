@@ -38,8 +38,7 @@ public class ContractPaymentInstructionController implements ContractPaymentInst
       String contractIdentifier,
       CreateContractPaymentInstructionRequest createContractPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return service.create(
-        contractIdentifier, createContractPaymentInstructionRequest, principal);
+    return service.create(contractIdentifier, createContractPaymentInstructionRequest, principal);
   }
 
   @Override

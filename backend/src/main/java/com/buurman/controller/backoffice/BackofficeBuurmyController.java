@@ -1,5 +1,7 @@
 package com.buurman.controller.backoffice;
 
+import org.springframework.web.bind.annotation.RestController;
+
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateBuurmyRequest;
@@ -11,7 +13,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.service.backoffice.BackofficeBuurmyService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor

@@ -358,7 +358,20 @@
                     <failOnNoGitDirectory>false</failOnNoGitDirectory>
                 </configuration>
             </plugin>
-            <!-- OpenAPI Code Generation (API-first) -->
+            <!--
+                OpenAPI Code Generation (API-first)
+                Generates Spring controller interfaces from OpenAPI specs.
+                Controllers implement these interfaces; DTOs are hand-written
+                and mapped via importMappings/schemaMappings.
+
+                Shared configOptions (both executions use identical settings):
+                  interfaceOnly=true        — generate interfaces, not implementations
+                  useTags=true              — one interface per OpenAPI tag (matches controller structure)
+                  useResponseEntity=false   — return DTOs directly, not ResponseEntity
+                  skipDefaultInterface=true — no default method stubs
+                  openApiNullable=false     — use JSpecify @Nullable, not JsonNullable
+                  hideGenerationTimestamp=true — stable diffs across rebuilds
+            -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -387,13 +400,19 @@
                                 <skipDefaultInterface>true</skipDefaultInterface>
                                 <openApiNullable>false</openApiNullable>
                                 <documentationProvider>none</documentationProvider>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
                             </typeMappings>
                             <schemaMappings>
-                                <!-- Map flattened PageResponse variants to generic PageResponse -->
+                                <!--
+                                    OpenAPI flattens generic types (PageResponse<T>, BulkCreateResult<T>)
+                                    into schema names like PageResponsePropertyResponse. schemaMappings
+                                    redirect these to the hand-written generic classes.
+                                    When adding a new paginated endpoint, add a mapping here.
+                                -->
                                 <schemaMapping>PageResponsePropertyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>
@@ -591,12 +610,14 @@
                                 <skipDefaultInterface>true</skipDefaultInterface>
                                 <openApiNullable>false</openApiNullable>
                                 <documentationProvider>none</documentationProvider>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=java.time.Instant</typeMapping>
                             </typeMappings>
                             <schemaMappings>
+                                <!-- See app execution for convention docs -->
                                 <schemaMapping>PageResponseBackofficeNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeTeamResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseBackofficeUserResponse=com.buurman.dto.response.PageResponse</schemaMapping>
@@ -607,7 +628,6 @@
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
                                 <importMapping>ProblemDetail=org.springframework.http.ProblemDetail</importMapping>
-                                <importMapping>PageResponse=com.buurman.dto.response.PageResponse</importMapping>
                                 <!-- Response DTOs -->
                                 <importMapping>BackofficeDashboardResponse=com.buurman.dto.response.backoffice.BackofficeDashboardResponse</importMapping>
                                 <importMapping>BackofficeNotificationResponse=com.buurman.dto.response.backoffice.BackofficeNotificationResponse</importMapping>

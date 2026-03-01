@@ -65,8 +65,7 @@ public class ExpenseController implements ExpensesApi {
     PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
     UUID propertyId = null;
     if (propertyIdentifier != null) {
-      propertyId =
-          expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());
+      propertyId = expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());
     }
     return expenseService.getExpensesPaginated(
         principal, category, propertyId, dateFrom, dateTo, pageRequest);

@@ -6,9 +6,6 @@ import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.SortDirection;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(description = "Pagination and sorting parameters")
 public record PageRequest(
     int page, int size, Optional<String> sort, Optional<SortDirection> direction) {
   public static final int DEFAULT_PAGE = 0;

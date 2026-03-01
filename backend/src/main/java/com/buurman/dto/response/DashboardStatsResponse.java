@@ -2,11 +2,6 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(
-    description =
-        "Dashboard statistics including property counts, occupancy rates, and monthly income")
 public record DashboardStatsResponse(
     int totalProperties,
     int occupiedUnits,

@@ -59,8 +59,7 @@ public class BackofficeSchedulerController implements BackofficeSchedulerApi {
   }
 
   @Override
-  public void rescheduleJob(
-      String jobName, RescheduleRequest rescheduleRequest, String group) {
+  public void rescheduleJob(String jobName, RescheduleRequest rescheduleRequest, String group) {
     try {
       schedulerService.rescheduleJob(jobName, group, rescheduleRequest.cronExpression());
     } catch (SchedulerException e) {

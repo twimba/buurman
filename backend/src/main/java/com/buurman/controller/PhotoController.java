@@ -30,12 +30,7 @@ public class PhotoController implements PhotosApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getAllPhotos(
-      String search,
-      String entityType,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      String search, String entityType, Integer page, Integer size, String sort, String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     SortDirection sortDirection = SortDirection.valueOf(direction);
     PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
@@ -78,7 +73,8 @@ public class PhotoController implements PhotosApi {
   @Override
   public Resource bulkDownload(BulkDownloadRequest bulkDownloadRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    byte[] zipData = photoService.bulkDownload(bulkDownloadRequest.documentIdentifiers(), principal);
+    byte[] zipData =
+        photoService.bulkDownload(bulkDownloadRequest.documentIdentifiers(), principal);
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=photos.zip");
     httpServletResponse.setContentType("application/octet-stream");
     return new ByteArrayResource(zipData);

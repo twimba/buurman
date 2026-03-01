@@ -21,8 +21,7 @@ public class BackofficeUserController implements BackofficeUsersApi {
   @Override
   public PageResponse<BackofficeUserResponse> listUsers(
       String search, Integer page, Integer size, String sort, String direction) {
-    PageRequest pageRequest =
-        PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
     return backofficeUserService.listUsers(pageRequest, search);
   }
 

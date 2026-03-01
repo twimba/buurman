@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Contract.ContractStatus;
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;

@@ -23,8 +23,7 @@ public class BackofficeTeamController implements BackofficeTeamsApi {
   @Override
   public PageResponse<BackofficeTeamResponse> listTeams(
       String search, Integer page, Integer size, String sort, String direction) {
-    PageRequest pageRequest =
-        PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
+    PageRequest pageRequest = PageRequest.of(page, size, sort, SortDirection.valueOf(direction));
     return backofficeTeamService.listTeams(pageRequest, search);
   }
 

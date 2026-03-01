@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyValuation {
 
-  @Schema(description = "Method or source of the property valuation")
   public enum ValuationType {
     MARKET,
     APPRAISAL,

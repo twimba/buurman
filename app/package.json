@@ -3,9 +3,7 @@
   "version": "0.39.0",
   "type": "module",
   "scripts": {
-    "predev": "cd .. && yarn generate:api",
     "dev": "vite",
-    "prebuild": "cd .. && yarn generate:api",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PropertyAcquisition {
 
-  @Schema(description = "How the property was acquired")
   public enum AcquisitionType {
     PURCHASE,
     INHERITANCE,
@@ -29,7 +27,6 @@ public class PropertyAcquisition {
     OTHER
   }
 
-  @Schema(description = "Accounting method used for property depreciation")
   public enum DepreciationMethod {
     STRAIGHT_LINE,
     DECLINING_BALANCE,

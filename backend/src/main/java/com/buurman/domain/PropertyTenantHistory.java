@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +26,6 @@ public class PropertyTenantHistory {
   private UUID performedBy;
   private Instant performedAt;
 
-  @Schema(description = "Type of tenant-property link action")
   public enum ActionType {
     LINKED,
     UNLINKED

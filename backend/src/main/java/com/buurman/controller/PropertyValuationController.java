@@ -35,11 +35,9 @@ public class PropertyValuationController implements PropertyValuationsApi {
 
   @Override
   public PropertyValuationResponse createValuation(
-      String propertyIdentifier,
-      CreatePropertyValuationRequest createPropertyValuationRequest) {
+      String propertyIdentifier, CreatePropertyValuationRequest createPropertyValuationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return valuationService.create(
-        propertyIdentifier, createPropertyValuationRequest, principal);
+    return valuationService.create(propertyIdentifier, createPropertyValuationRequest, principal);
   }
 
   @Override

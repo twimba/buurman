@@ -34,11 +34,9 @@ public class PropertyInsuranceController implements PropertyInsurancesApi {
 
   @Override
   public PropertyInsuranceResponse createInsurance(
-      String propertyIdentifier,
-      CreatePropertyInsuranceRequest createPropertyInsuranceRequest) {
+      String propertyIdentifier, CreatePropertyInsuranceRequest createPropertyInsuranceRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return insuranceService.create(
-        propertyIdentifier, createPropertyInsuranceRequest, principal);
+    return insuranceService.create(propertyIdentifier, createPropertyInsuranceRequest, principal);
   }
 
   @Override

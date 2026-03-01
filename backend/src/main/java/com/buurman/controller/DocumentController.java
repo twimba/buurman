@@ -30,12 +30,7 @@ public class DocumentController implements DocumentsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getAllDocuments(
-      String search,
-      String entityType,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      String search, String entityType, Integer page, Integer size, String sort, String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     SortDirection sortDirection = SortDirection.valueOf(direction);
     PageRequest pageRequest = PageRequest.of(page, size, sort, sortDirection);
@@ -79,7 +74,8 @@ public class DocumentController implements DocumentsApi {
   @Override
   public Resource bulkDownloadDocuments(BulkDownloadRequest bulkDownloadRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    byte[] zipData = documentService.bulkDownload(bulkDownloadRequest.documentIdentifiers(), principal);
+    byte[] zipData =
+        documentService.bulkDownload(bulkDownloadRequest.documentIdentifiers(), principal);
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=documents.zip");
     httpServletResponse.setContentType("application/octet-stream");
     return new ByteArrayResource(zipData);

@@ -3,9 +3,6 @@ package com.buurman.domain;
 import java.util.Arrays;
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(description = "Type of notification event that triggers delivery")
 public enum NotificationType {
   WELCOME("Welcome", false),
   VERIFICATION_CODE("Verification Code", false),

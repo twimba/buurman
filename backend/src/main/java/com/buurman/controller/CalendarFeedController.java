@@ -31,8 +31,7 @@ public class CalendarFeedController implements CalendarFeedsApi {
             ical -> {
               httpServletResponse.setHeader(
                   "Content-Disposition", "inline; filename=\"buurman-payments.ics\"");
-              httpServletResponse.setHeader(
-                  "Cache-Control", "no-cache, no-store, must-revalidate");
+              httpServletResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
               return ical;
             })
         .orElseThrow(() -> new NotFoundException("Calendar feed not found"));
@@ -45,7 +44,8 @@ public class CalendarFeedController implements CalendarFeedsApi {
   }
 
   @Override
-  public CalendarFeedResponse createFeed(@Valid CreateCalendarFeedRequest createCalendarFeedRequest) {
+  public CalendarFeedResponse createFeed(
+      @Valid CreateCalendarFeedRequest createCalendarFeedRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return calendarFeedService.createFeed(createCalendarFeedRequest, principal);
   }

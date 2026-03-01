@@ -32,7 +32,6 @@ public class GeocodingController implements GeocodingApi {
                     Optional.ofNullable(result.latitude()),
                     Optional.ofNullable(result.longitude()),
                     Optional.ofNullable(result.accuracy())))
-        .orElse(
-            new GeocodeResponse(Optional.empty(), Optional.empty(), Optional.empty()));
+        .orElse(new GeocodeResponse(Optional.empty(), Optional.empty(), Optional.empty()));
   }
 }

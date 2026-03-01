@@ -42,11 +42,9 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
 
   @Override
   public PaymentInstructionResponse updatePaymentInstruction(
-      String identifier,
-      @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
+      String identifier, @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentInstructionService.update(
-        identifier, updatePaymentInstructionRequest, principal);
+    return paymentInstructionService.update(identifier, updatePaymentInstructionRequest, principal);
   }
 
   @Override

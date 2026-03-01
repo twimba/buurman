@@ -53,11 +53,9 @@ public class BackofficeRegistrationInvitationController
 
   @Override
   public void send(
-      String identifier,
-      SendRegistrationInvitationRequest sendRegistrationInvitationRequest) {
+      String identifier, SendRegistrationInvitationRequest sendRegistrationInvitationRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    invitationService.sendInvitation(
-        identifier, sendRegistrationInvitationRequest, principal);
+    invitationService.sendInvitation(identifier, sendRegistrationInvitationRequest, principal);
   }
 
   @Override

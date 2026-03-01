@@ -50,11 +50,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public PropertyFinancingResponse createFinancing(
-      String propertyIdentifier,
-      CreatePropertyFinancingRequest createPropertyFinancingRequest) {
+      String propertyIdentifier, CreatePropertyFinancingRequest createPropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.create(
-        propertyIdentifier, createPropertyFinancingRequest, principal);
+    return financingService.create(propertyIdentifier, createPropertyFinancingRequest, principal);
   }
 
   @Override
@@ -63,8 +61,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String financingIdentifier,
       UpdatePropertyFinancingRequest updatePropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.update(
-        financingIdentifier, updatePropertyFinancingRequest, principal);
+    return financingService.update(financingIdentifier, updatePropertyFinancingRequest, principal);
   }
 
   @Override
@@ -88,8 +85,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String financingIdentifier,
       CreateFinancingPaymentRequest createFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.create(
-        financingIdentifier, createFinancingPaymentRequest, principal);
+    return paymentService.create(financingIdentifier, createFinancingPaymentRequest, principal);
   }
 
   @Override
@@ -99,8 +95,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String financingIdentifier,
       BulkCreateFinancingPaymentsRequest bulkCreateFinancingPaymentsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return (List) paymentService.bulkCreate(
-        financingIdentifier, bulkCreateFinancingPaymentsRequest.items(), principal);
+    return (List)
+        paymentService.bulkCreate(
+            financingIdentifier, bulkCreateFinancingPaymentsRequest.items(), principal);
   }
 
   @Override
@@ -110,8 +107,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String paymentIdentifier,
       UpdateFinancingPaymentRequest updateFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.update(
-        paymentIdentifier, updateFinancingPaymentRequest, principal);
+    return paymentService.update(paymentIdentifier, updateFinancingPaymentRequest, principal);
   }
 
   @Override
@@ -124,7 +120,8 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   // ===== Payment Documents =====
 
   @Override
-  @SuppressWarnings("NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
+  @SuppressWarnings(
+      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadFinancingPaymentDocument(
       String propertyIdentifier,
       String financingIdentifier,
@@ -133,8 +130,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String notes,
       UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.uploadPaymentDocument(
-        paymentIdentifier, null, title, notes, principal);
+    return paymentService.uploadPaymentDocument(paymentIdentifier, null, title, notes, principal);
   }
 
   @Override

@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import com.buurman.domain.metadata.ContractCountryMetadata;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +20,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Contract {
 
-  @Schema(description = "Type of rental contract")
   public enum ContractType {
     FIXED_TERM,
     INDEFINITE,
@@ -29,14 +27,12 @@ public class Contract {
     UNFURNISHED
   }
 
-  @Schema(description = "How often rent payments are due")
   public enum PaymentFrequency {
     MONTHLY,
     QUARTERLY,
     ANNUALLY
   }
 
-  @Schema(description = "Current lifecycle status of the contract")
   public enum ContractStatus {
     DRAFT,
     ACTIVE,

@@ -6,7 +6,6 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -115,7 +114,8 @@ public class ReportController implements ReportsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId());
+    return exportService.generateTransactionHistoryCSV(
+        startDate, endDate, principal.requireTeamId());
   }
 
   @Override
@@ -124,7 +124,8 @@ public class ReportController implements ReportsApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId());
+    return exportService.generateTransactionHistoryPDF(
+        startDate, endDate, principal.requireTeamId());
   }
 
   @SuppressWarnings("NullAway")
