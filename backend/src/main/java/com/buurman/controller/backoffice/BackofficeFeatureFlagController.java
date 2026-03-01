@@ -222,11 +222,20 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   @Override
   public List<SegmentEvaluation> getSegmentOverrides() {
     List<SegmentWithOverrides> raw = flagsmithAdminService.getSegmentOverrides();
+    List<FeatureStateInfo> globalFlags = flagsmithAdminService.listFeatureStates();
 
     return raw.stream()
         .map(
             seg -> {
+              // Start with global defaults for all flags
               Map<String, SegmentFlagOverride> overrides = new HashMap<>();
+              for (FeatureStateInfo global : globalFlags) {
+                overrides.put(
+                    global.featureName(),
+                    new SegmentFlagOverride(
+                        global.featureName(), global.enabled(), global.value()));
+              }
+              // Layer segment overrides on top
               for (SegmentOverrideState state : seg.overrides()) {
                 overrides.put(
                     state.featureName(),
@@ -250,28 +259,36 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    // Check if a feature-segment link already exists
-    var existingFsId =
-        flagsmithAdminService.findFeatureSegmentId(globalState.featureId(), segmentId);
-    if (existingFsId.isEmpty()) {
-      // Create the link (auto-creates a FeatureState with env defaults)
-      flagsmithAdminService.createFeatureSegment(globalState.featureId(), segmentId);
-    }
+    // Ensure a feature-segment link exists, creating one if needed
+    long linkId =
+        flagsmithAdminService
+            .findFeatureSegmentId(globalState.featureId(), segmentId)
+            .orElseGet(
+                () ->
+                    flagsmithAdminService.createFeatureSegment(globalState.featureId(), segmentId));
 
     // Find the feature state for this segment override
-    Long featureStateId =
-        flagsmithAdminService
-            .findSegmentOverrideFeatureStateId(segmentId, globalState.featureId())
-            .orElseThrow(
-                () ->
-                    new IllegalStateException(
-                        "Could not find feature state for segment override (segment=%d, feature=%s)"
-                            .formatted(segmentId, flagName)));
+    var featureStateId =
+        flagsmithAdminService.findSegmentOverrideFeatureStateId(segmentId, globalState.featureId());
 
-    // Update the segment override feature state (uses /features/featurestates/ not /environments/)
-    FeatureStateInfo updated =
-        flagsmithAdminService.updateSegmentOverrideState(
-            featureStateId, updateFeatureFlagRequest.enabled(), updateFeatureFlagRequest.value());
+    FeatureStateInfo updated;
+    if (featureStateId.isPresent()) {
+      // Update existing feature state
+      updated =
+          flagsmithAdminService.updateSegmentOverrideState(
+              featureStateId.get(),
+              segmentId,
+              updateFeatureFlagRequest.enabled(),
+              updateFeatureFlagRequest.value());
+    } else {
+      // No auto-created feature state — create one explicitly with desired values
+      updated =
+          flagsmithAdminService.createSegmentOverrideFeatureState(
+              linkId,
+              globalState.featureId(),
+              updateFeatureFlagRequest.enabled(),
+              updateFeatureFlagRequest.value());
+    }
     return new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value());
   }
 

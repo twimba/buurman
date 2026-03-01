@@ -67,6 +67,7 @@ public class FlagsmithConfig {
     com.flagsmith.config.FlagsmithConfig config =
         com.flagsmith.config.FlagsmithConfig.newBuilder()
             .baseUri(properties.apiUrl())
+            .withLocalEvaluation(true)
             .withEnableAnalytics(properties.enableAnalytics())
             .withEnvironmentRefreshIntervalSeconds(properties.environmentRefreshIntervalSeconds())
             .build();
