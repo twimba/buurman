@@ -6,11 +6,11 @@ export {
   type ExpenseResponseCategory,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds | null to optional fields)
+// Interfaces — kept manual (generated adds to optional fields)
 
 import { ExpenseResponseCategory } from '../generated/models';
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreateExpenseRequest {
   propertyIdentifier: string;

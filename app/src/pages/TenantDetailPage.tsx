@@ -594,8 +594,14 @@ export const TenantDetailPage = () => {
                       Last Updated:
                     </span>{' '}
                     <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {formatDate(tenant.updatedAt)} at{' '}
-                      {new Date(tenant.updatedAt).toLocaleTimeString()}
+                      {tenant.updatedAt ? (
+                        <>
+                          {formatDate(tenant.updatedAt)} at{' '}
+                          {new Date(tenant.updatedAt).toLocaleTimeString()}
+                        </>
+                      ) : (
+                        '—'
+                      )}
                     </span>
                   </div>
                 </div>

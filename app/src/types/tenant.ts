@@ -41,7 +41,7 @@ export interface TenantResponse {
   mainPhotoThumbnailUrl?: string;
   activeProperties?: TenantPropertyAssignment[];
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface TenantSummary {

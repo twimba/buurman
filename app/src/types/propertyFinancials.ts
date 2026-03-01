@@ -243,7 +243,7 @@ export interface PropertyFinancialSummaryResponse {
 }
 
 // ============================================================
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 // ============================================================
 
 export interface UpsertPropertyAcquisitionRequest {
@@ -453,8 +453,10 @@ export const formatDepreciationMethod = (
 ): string => {
   const labels: Record<PropertyAcquisitionResponseDepreciationMethod, string> =
     {
-      [PropertyAcquisitionResponseDepreciationMethod.STRAIGHT_LINE]: 'Straight Line',
-      [PropertyAcquisitionResponseDepreciationMethod.DECLINING_BALANCE]: 'Declining Balance',
+      [PropertyAcquisitionResponseDepreciationMethod.STRAIGHT_LINE]:
+        'Straight Line',
+      [PropertyAcquisitionResponseDepreciationMethod.DECLINING_BALANCE]:
+        'Declining Balance',
       [PropertyAcquisitionResponseDepreciationMethod.NONE]: 'None',
     };
   return labels[method];

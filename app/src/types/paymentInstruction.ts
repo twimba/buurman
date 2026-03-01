@@ -8,7 +8,7 @@ export {
 
 import { CreatePaymentInstructionRequestPaymentMethod } from '../generated/models';
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreatePaymentInstructionRequest {
   name: string;

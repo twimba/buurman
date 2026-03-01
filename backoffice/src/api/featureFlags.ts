@@ -16,6 +16,7 @@ export interface TeamFlagEvaluation {
   flags: FlagMap;
 }
 
+/** Absent fields are interpreted as "clear" (set to null) by the backend. */
 export interface UpdateFlagRequest {
   enabled?: boolean;
   value?: string;

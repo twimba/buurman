@@ -84,7 +84,7 @@ export interface OutdoorAreaResponse {
   identifier: string;
   type: string;
   areaValue?: number;
-  areaUnit: string;
+  areaUnit?: string;
 }
 
 // --- Amenities ---
@@ -158,7 +158,7 @@ export interface PropertyResponse {
   electricityConnectionType?: string;
   electricityCapacityAmps?: number;
   waterConnectionType?: string;
-  hasGasConnection: boolean;
+  hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
   internetMaxSpeedMbps?: number;
@@ -169,29 +169,29 @@ export interface PropertyResponse {
   parkingType?: string;
 
   // Safety & Security
-  hasSmokeDetectors: boolean;
-  hasCoDetectors: boolean;
-  hasFireExtinguisher: boolean;
-  hasSprinklerSystem: boolean;
-  hasAlarmSystem: boolean;
-  hasSecurityCameras: boolean;
-  hasSecureEntry: boolean;
+  hasSmokeDetectors?: boolean;
+  hasCoDetectors?: boolean;
+  hasFireExtinguisher?: boolean;
+  hasSprinklerSystem?: boolean;
+  hasAlarmSystem?: boolean;
+  hasSecurityCameras?: boolean;
+  hasSecureEntry?: boolean;
   safetyNotes?: string;
 
   // Accessibility
-  isWheelchairAccessible: boolean;
-  hasElevator: boolean;
-  hasStepFreeEntrance: boolean;
-  hasAdaptedBathroom: boolean;
+  isWheelchairAccessible?: boolean;
+  hasElevator?: boolean;
+  hasStepFreeEntrance?: boolean;
+  hasAdaptedBathroom?: boolean;
   accessibilityNotes?: string;
 
-  // Category-specific details (only one is non-null based on category)
+  // Category-specific details (only one is present based on category)
   residentialDetails?: ResidentialDetailsResponse;
   commercialDetails?: CommercialDetailsResponse;
   industrialDetails?: IndustrialDetailsResponse;
   agriculturalDetails?: AgriculturalDetailsResponse;
 
-  // Nested collections (only on detail endpoint, null on list)
+  // Nested collections (only on detail endpoint, absent on list)
   outdoorAreas?: OutdoorAreaResponse[];
   amenities?: PropertyAmenityResponse[];
 

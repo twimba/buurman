@@ -120,8 +120,7 @@ const InlineValueEditor = ({
     setEditing(true);
   };
 
-  const hasValue =
-    value != null && String(value) !== "";
+  const hasValue = value != null && String(value) !== "";
 
   const save = () => {
     setEditing(false);

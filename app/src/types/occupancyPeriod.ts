@@ -89,8 +89,12 @@ export const OCCUPANCY_TYPE_LABELS: Record<
   [OccupancyPeriodResponseType.BUSINESS]: 'Business',
 };
 
-export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyPeriodResponseEndReason, string> = {
-  [OccupancyPeriodResponseEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
+export const OCCUPANCY_END_REASON_LABELS: Record<
+  OccupancyPeriodResponseEndReason,
+  string
+> = {
+  [OccupancyPeriodResponseEndReason.CONVERTING_TO_RENTAL]:
+    'Converting to Rental',
   [OccupancyPeriodResponseEndReason.SELLING]: 'Selling',
   [OccupancyPeriodResponseEndReason.RENOVATION]: 'Renovation',
   [OccupancyPeriodResponseEndReason.OTHER]: 'Other',

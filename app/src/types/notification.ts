@@ -38,9 +38,9 @@ export interface NotificationResponse {
   identifier: string;
   notificationType: NotificationType;
   channel: NotificationChannel;
-  subject: string;
+  subject?: string;
   body?: string;
-  recipientEmail: string;
+  recipientEmail?: string;
   recipientPhone?: string;
   status: NotificationStatus;
   providerStatus?: string;

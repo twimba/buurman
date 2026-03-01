@@ -136,10 +136,14 @@ export const PropertyForm = ({
     hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
     accessibilityNotes: property?.accessibilityNotes,
     // Category-specific details
-    residentialDetails: property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
-    commercialDetails: property?.commercialDetails as CreatePropertyRequest['commercialDetails'],
-    industrialDetails: property?.industrialDetails as CreatePropertyRequest['industrialDetails'],
-    agriculturalDetails: property?.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
+    residentialDetails:
+      property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
+    commercialDetails:
+      property?.commercialDetails as CreatePropertyRequest['commercialDetails'],
+    industrialDetails:
+      property?.industrialDetails as CreatePropertyRequest['industrialDetails'],
+    agriculturalDetails:
+      property?.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
   });
 
   const [propertyIdentifier, setPropertyIdentifier] = useState(
@@ -233,10 +237,14 @@ export const PropertyForm = ({
         hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
         hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
         accessibilityNotes: property.accessibilityNotes,
-        residentialDetails: property.residentialDetails as CreatePropertyRequest['residentialDetails'],
-        commercialDetails: property.commercialDetails as CreatePropertyRequest['commercialDetails'],
-        industrialDetails: property.industrialDetails as CreatePropertyRequest['industrialDetails'],
-        agriculturalDetails: property.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
+        residentialDetails:
+          property.residentialDetails as CreatePropertyRequest['residentialDetails'],
+        commercialDetails:
+          property.commercialDetails as CreatePropertyRequest['commercialDetails'],
+        industrialDetails:
+          property.industrialDetails as CreatePropertyRequest['industrialDetails'],
+        agriculturalDetails:
+          property.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
       });
     }
   }, [property, propertyIdentifier]);

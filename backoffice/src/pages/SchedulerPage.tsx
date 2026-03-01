@@ -127,7 +127,7 @@ const selectClass =
 const thClass =
   "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
 
-const formatDuration = (ms?: number | null): string => {
+const formatDuration = (ms?: number): string => {
   if (ms == null) {
     return "-";
   }
@@ -142,7 +142,7 @@ const formatDuration = (ms?: number | null): string => {
   return `${minutes}m ${seconds}s`;
 };
 
-const formatFireTime = (iso?: string | null): string => {
+const formatFireTime = (iso?: string): string => {
   if (!iso) {
     return "-";
   }

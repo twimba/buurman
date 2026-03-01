@@ -10,7 +10,7 @@ export interface GeocodeRequest {
 export interface GeocodeResponse {
   latitude: number;
   longitude: number;
-  accuracy: string | null;
+  accuracy?: string;
 }
 
 export const geocodeAddress = async (

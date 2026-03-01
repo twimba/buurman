@@ -669,7 +669,7 @@ const OutdoorAreasSection = ({
     <CollapsibleSection
       title="Outdoor Areas"
       filledCount={areas.length}
-      totalCount={areas.length ?? 0}
+      totalCount={areas.length}
     >
       {areas.length > 0 && (
         <div className="space-y-2">

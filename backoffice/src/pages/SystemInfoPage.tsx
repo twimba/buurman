@@ -41,7 +41,7 @@ function hasRole(
   return roles?.includes(role) ?? false;
 }
 
-function formatRelativeTime(iso?: string | null): string {
+function formatRelativeTime(iso?: string): string {
   if (!iso) {
     return "\u2014";
   }
@@ -374,7 +374,7 @@ function VersionsCard({
       commit: appBuild?.gitCommit ?? null,
       commitFull: appBuild?.gitCommitFull ?? null,
       branch: appBuild?.gitBranch ?? null,
-      buildTime: appBuild?.buildTime ?? null,
+      buildTime: appBuild?.buildTime,
     },
     {
       component: "Backoffice",

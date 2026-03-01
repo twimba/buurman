@@ -34,6 +34,7 @@ export interface CreateRegistrationInvitationRequest {
   note?: string;
 }
 
+/** Absent fields are interpreted as "clear" (set to null) by the backend. */
 export interface UpdateRegistrationInvitationNoteRequest {
   note?: string;
 }

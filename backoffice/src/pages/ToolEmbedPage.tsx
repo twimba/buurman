@@ -47,7 +47,7 @@ export const ToolEmbedPage = () => {
     );
   }
 
-  const baseUrl = tool.url ?? getToolUrl(tool.subdomain!);
+  const baseUrl = tool.subdomain ? getToolUrl(tool.subdomain) : tool.url;
   const path = searchParams.get("path");
   const url = path ? `${baseUrl}${path}?kiosk` : baseUrl;
 

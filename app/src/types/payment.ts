@@ -8,11 +8,11 @@ export {
   type PaymentResponseStatus,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds | null to optional fields)
+// Interfaces — kept manual (generated adds to optional fields)
 
 import type { PaymentResponseStatus } from '../generated/models';
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreatePaymentRequest {
   contractIdentifier: string;

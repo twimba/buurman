@@ -104,7 +104,10 @@ function getCurrencySymbol(currencyCode: string): string {
   }
 }
 
-function formatCurrency(value: number | null | undefined, currencyCode: string): string {
+function formatCurrency(
+  value: number | null | undefined,
+  currencyCode: string
+): string {
   if (value == null) {
     return 'N/A';
   }

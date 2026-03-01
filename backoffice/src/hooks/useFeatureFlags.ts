@@ -21,7 +21,7 @@ export const useUserFeatureFlags = (userIdentifier: string | null) => {
   return useQuery({
     queryKey: ["feature-flags", "user", userIdentifier],
     queryFn: () =>
-      featureFlagsApi.getForUser(userIdentifier!).then((res) => res.data),
+      featureFlagsApi.getForUser(userIdentifier ?? "").then((res) => res.data),
     enabled: !!userIdentifier,
   });
 };

@@ -41,7 +41,7 @@ export function RegistrationInvitationDetailPage() {
     data: invitation,
     isLoading,
     refetch,
-  } = useRegistrationInvitation(identifier!);
+  } = useRegistrationInvitation(identifier ?? "");
   const revokeMutation = useRevokeRegistrationInvitation();
   const updateNoteMutation = useUpdateRegistrationInvitationNote();
   const [showRevoke, setShowRevoke] = useState(false);

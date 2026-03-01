@@ -26,7 +26,7 @@ export type { EnumValue } from '../generated/models';
 export type { ValidationSchema } from '../generated/models';
 export type { CountryMetadataSchemaResponse } from '../generated/models';
 
-// Interfaces — kept manual (generated adds | null to optional fields)
+// Interfaces — kept manual (generated adds to optional fields)
 
 import type { ContractResponseContractType } from '../generated/models';
 import type { ContractResponsePaymentFrequency } from '../generated/models';
@@ -166,7 +166,7 @@ export interface MetadataGroupSchema {
   label: string;
 }
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface AddContractPartyRequest {
   tenantIdentifier?: string;

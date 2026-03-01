@@ -9,7 +9,7 @@ import type {
 } from '../generated/models';
 
 export interface DataDateRangeResponse {
-  earliestDate: string | null;
+  earliestDate?: string;
 }
 
 export const getDataDateRange = async (): Promise<DataDateRangeResponse> => {
