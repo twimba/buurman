@@ -13,7 +13,7 @@ export const useCurrentTeam = () => {
 export const useTeamMembers = (teamId: string | undefined) => {
   return useQuery({
     queryKey: ['teamMembers', teamId],
-    queryFn: () => teamsApi.getTeamMembers(teamId!),
+    queryFn: () => teamsApi.getTeamMembers(teamId ?? ''),
     enabled: !!teamId,
   });
 };
@@ -21,7 +21,7 @@ export const useTeamMembers = (teamId: string | undefined) => {
 export const useTeamPendingInvitations = (teamId: string | undefined) => {
   return useQuery({
     queryKey: ['teamPendingInvitations', teamId],
-    queryFn: () => teamsApi.getTeamPendingInvitations(teamId!),
+    queryFn: () => teamsApi.getTeamPendingInvitations(teamId ?? ''),
     enabled: !!teamId,
   });
 };
@@ -98,7 +98,7 @@ export const useUpdateMemberRole = (teamId: string) => {
 export const useInvitation = (token: string | undefined) => {
   return useQuery({
     queryKey: ['invitation', token],
-    queryFn: () => teamsApi.getInvitation(token!),
+    queryFn: () => teamsApi.getInvitation(token ?? ''),
     enabled: !!token,
     retry: false,
   });
@@ -163,7 +163,7 @@ export const useUpdateTeam = (teamId: string) => {
 export const useTeamSettings = (teamId: string | undefined) => {
   return useQuery({
     queryKey: ['teamSettings', teamId],
-    queryFn: () => teamsApi.getTeamSettings(teamId!),
+    queryFn: () => teamsApi.getTeamSettings(teamId ?? ''),
     enabled: !!teamId,
   });
 };

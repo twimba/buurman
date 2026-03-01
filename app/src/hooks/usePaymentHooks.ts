@@ -36,7 +36,7 @@ export const usePaymentStats = () => {
 export const usePayment = (id: string | undefined) => {
   return useQuery({
     queryKey: ['payment', id],
-    queryFn: () => paymentsApi.getPayment(id!),
+    queryFn: () => paymentsApi.getPayment(id ?? ''),
     enabled: !!id,
   });
 };
@@ -51,7 +51,7 @@ export const useOverduePayments = () => {
 export const usePaymentsByContract = (contractId: string | undefined) => {
   return useQuery({
     queryKey: ['payments', 'contract', contractId],
-    queryFn: () => paymentsApi.getPaymentsByContract(contractId!),
+    queryFn: () => paymentsApi.getPaymentsByContract(contractId ?? ''),
     enabled: !!contractId,
   });
 };
@@ -188,7 +188,7 @@ export const useBulkGeneratePayments = () => {
 export const usePaymentDocuments = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: ['paymentDocuments', paymentId],
-    queryFn: () => paymentsApi.getPaymentDocuments(paymentId!),
+    queryFn: () => paymentsApi.getPaymentDocuments(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };
@@ -249,7 +249,7 @@ export const useDeletePaymentDocument = (paymentId: string) => {
 export const usePaymentAuditLog = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: ['paymentAuditLog', paymentId],
-    queryFn: () => paymentsApi.getPaymentAuditLog(paymentId!),
+    queryFn: () => paymentsApi.getPaymentAuditLog(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };
@@ -283,7 +283,7 @@ export const useRegisterReceival = (paymentId: string) => {
 export const usePaymentReceivals = (paymentId: string | undefined) => {
   return useQuery({
     queryKey: ['paymentReceivals', paymentId],
-    queryFn: () => paymentsApi.getPaymentReceivals(paymentId!),
+    queryFn: () => paymentsApi.getPaymentReceivals(paymentId ?? ''),
     enabled: !!paymentId,
   });
 };

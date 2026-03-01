@@ -119,7 +119,7 @@ export const CalendarFeedsSection = () => {
         type,
         label: labels[type],
         Icon: icons[type],
-        feeds: grouped.get(type)!,
+        feeds: grouped.get(type) ?? [],
       }));
   }, [feeds]);
 

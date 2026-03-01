@@ -133,7 +133,7 @@ export const DocumentPreviewModal = ({
               </div>
               {showPosition && (
                 <span className="shrink-0 text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] bg-[#f1f3f9] dark:bg-[#1e2130] px-2 py-1 rounded-full">
-                  {currentIndex! + 1} / {totalCount}
+                  {(currentIndex ?? 0) + 1} / {totalCount}
                 </span>
               )}
             </div>

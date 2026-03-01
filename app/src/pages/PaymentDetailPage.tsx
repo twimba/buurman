@@ -331,7 +331,7 @@ const ReceivalsTable = ({
 };
 
 export const PaymentDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -384,13 +384,13 @@ export const PaymentDetailPage = () => {
     error: docsError,
   } = usePaymentDocuments(id);
   const deletePaymentMutation = useDeletePayment();
-  const updatePaymentMutation = useUpdatePayment(id!);
+  const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
-  const uploadDocumentMutation = useUploadPaymentDocument(id!);
-  const deleteDocumentMutation = useDeletePaymentDocument(id!);
-  const registerReceivalMutation = useRegisterReceival(id!);
-  const updateReceivalMutation = useUpdatePaymentReceival(id!);
-  const deleteReceivalMutation = useDeletePaymentReceival(id!);
+  const uploadDocumentMutation = useUploadPaymentDocument(id);
+  const deleteDocumentMutation = useDeletePaymentDocument(id);
+  const registerReceivalMutation = useRegisterReceival(id);
+  const updateReceivalMutation = useUpdatePaymentReceival(id);
+  const deleteReceivalMutation = useDeletePaymentReceival(id);
 
   const handleDelete = async () => {
     if (!id) {
@@ -993,7 +993,7 @@ export const PaymentDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!).map(
+                            {Object.entries(activity.changedFields ?? {}).map(
                               ([field]) => {
                                 const oldVal = activity.oldValues?.[field];
                                 const newVal = activity.newValues?.[field];

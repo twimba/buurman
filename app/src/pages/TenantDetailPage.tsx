@@ -75,7 +75,7 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
 );
 
 export const TenantDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('info', [
@@ -135,10 +135,10 @@ export const TenantDetailPage = () => {
   const documents = allDocuments;
 
   const deleteTenantMutation = useDeleteTenant();
-  const uploadDocumentMutation = useUploadTenantDocument(id!);
-  const uploadPhotoMutation = useUploadTenantPhoto(id!);
-  const setMainPhotoMutation = useSetTenantMainPhoto(id!);
-  const deleteDocumentMutation = useDeleteTenantDocument(id!);
+  const uploadDocumentMutation = useUploadTenantDocument(id);
+  const uploadPhotoMutation = useUploadTenantPhoto(id);
+  const setMainPhotoMutation = useSetTenantMainPhoto(id);
+  const deleteDocumentMutation = useDeleteTenantDocument(id);
   const deletePhotoMutation = useDeletePhoto();
 
   const handleDelete = async () => {
@@ -641,7 +641,7 @@ export const TenantDetailPage = () => {
 
         {activeTab === 'addresses' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <TenantAddressList tenantId={id!} />
+            <TenantAddressList tenantId={id} />
           </div>
         )}
 
@@ -1004,7 +1004,7 @@ export const TenantDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!)
+                            {Object.entries(activity.changedFields ?? {})
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal count fields

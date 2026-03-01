@@ -399,7 +399,7 @@ export const AuditLogPage = () => {
                                 <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase mb-2">
                                   Changed Fields
                                 </h4>
-                                {Object.entries(activity.changedFields!).map(
+                                {Object.entries(activity.changedFields ?? {}).map(
                                   ([field, value]) => {
                                     // Skip internal fields
                                     if (field === 'documentCount') {

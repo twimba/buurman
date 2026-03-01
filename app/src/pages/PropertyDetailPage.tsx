@@ -97,7 +97,7 @@ const statusColors: Record<string, string> = {
 };
 
 export const PropertyDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -188,12 +188,12 @@ export const PropertyDetailPage = () => {
   const activeOccupancyPeriod = occupancyPeriods.find(
     (p) => !p.endDate || new Date(p.endDate) >= new Date()
   );
-  const deleteOccupancyMutation = useDeleteOccupancyPeriod(id!);
+  const deleteOccupancyMutation = useDeleteOccupancyPeriod(id);
   const deletePropertyMutation = useDeleteProperty();
-  const uploadDocumentMutation = useUploadPropertyDocument(id!);
-  const uploadPhotoMutation = useUploadPropertyPhoto(id!);
-  const setMainPhotoMutation = useSetMainPhoto(id!);
-  const deleteDocumentMutation = useDeleteDocument(id!);
+  const uploadDocumentMutation = useUploadPropertyDocument(id);
+  const uploadPhotoMutation = useUploadPropertyPhoto(id);
+  const setMainPhotoMutation = useSetMainPhoto(id);
+  const deleteDocumentMutation = useDeleteDocument(id);
   const deletePhotoMutation = useDeletePhoto();
 
   // Contracts filtering, sorting, and pagination
@@ -682,7 +682,7 @@ export const PropertyDetailPage = () => {
                 </div>
               </div>
               <PropertyLifecycleTimeline
-                propertyIdentifier={id!}
+                propertyIdentifier={id}
                 onSelfOccupancyClick={(identifier) =>
                   setEditOccupancyPeriodId(identifier)
                 }
@@ -1240,7 +1240,7 @@ export const PropertyDetailPage = () => {
                       if (!groups[cat]) {
                         groups[cat] = [];
                       }
-                      groups[cat]!.push(amenity);
+                      groups[cat].push(amenity);
                       return groups;
                     }, {})
                   ).map(([category, items]) => (
@@ -1249,7 +1249,7 @@ export const PropertyDetailPage = () => {
                         {formatEnumValue(category)}
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2">
-                        {items!.map((amenity) => (
+                        {(items ?? []).map((amenity) => (
                           <span
                             key={amenity.amenityIdentifier}
                             className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
@@ -1457,10 +1457,10 @@ export const PropertyDetailPage = () => {
           </div>
         )}
 
-        {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id!} />}
+        {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id} />}
 
         {activeTab === 'financials' && (
-          <PropertyFinancialsTab propertyId={id!} />
+          <PropertyFinancialsTab propertyId={id} />
         )}
 
         {activeTab === 'photos' && (
@@ -2190,7 +2190,7 @@ export const PropertyDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!).map(
+                            {Object.entries(activity.changedFields ?? {}).map(
                               ([field, value]) => {
                                 // Skip internal count fields
                                 if (

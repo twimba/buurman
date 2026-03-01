@@ -65,7 +65,7 @@ import CountryMetadataForm, {
 } from '@/components/contracts/CountryMetadataForm';
 
 export const ContractDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -118,12 +118,12 @@ export const ContractDetailPage = () => {
   } = usePaymentsByContract(id);
 
   const deleteContractMutation = useDeleteContract();
-  const uploadDocumentMutation = useUploadContractDocument(id!);
-  const deleteDocumentMutation = useDeleteContractDocument(id!);
-  const changeStatusMutation = useChangeContractStatus(id!);
-  const reopenContractMutation = useReopenContract(id!);
+  const uploadDocumentMutation = useUploadContractDocument(id);
+  const deleteDocumentMutation = useDeleteContractDocument(id);
+  const changeStatusMutation = useChangeContractStatus(id);
+  const reopenContractMutation = useReopenContract(id);
   const duplicateContractMutation = useDuplicateContract();
-  const generatePaymentsMutation = useGenerateContractPayments(id!);
+  const generatePaymentsMutation = useGenerateContractPayments(id);
 
   // Payments filtering, sorting, and pagination
   const filteredAndSortedPayments = useMemo(() => {
@@ -549,7 +549,7 @@ export const ContractDetailPage = () => {
               </h2>
               <div className="space-y-4">
                 <RentTimeline
-                  contractIdentifier={id!}
+                  contractIdentifier={id}
                   contractStatus={contract.status}
                   currency={contract.rentAmountCurrency}
                   currentRentAmount={contract.rentAmount}
@@ -600,7 +600,7 @@ export const ContractDetailPage = () => {
 
             {/* Payment Instructions */}
             <ContractPaymentInstructionSection
-              contractIdentifier={id!}
+              contractIdentifier={id}
               contractStatus={contract.status}
               contractStartDate={contract.startDate}
               contractSignedDate={contract.signedDate}
@@ -1094,7 +1094,7 @@ export const ContractDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!)
+                            {Object.entries(activity.changedFields ?? {})
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal fields for document operations

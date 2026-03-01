@@ -30,7 +30,7 @@ const formatRole = (role: string) => {
 
 export const InvitationPage = () => {
   const { formatDate } = useFormatDate();
-  const { token } = useParams<{ token: string }>();
+  const { token = "" } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
 
@@ -42,7 +42,7 @@ export const InvitationPage = () => {
     error,
   } = useQuery({
     queryKey: ['invitation', token],
-    queryFn: () => getInvitation(token!),
+    queryFn: () => getInvitation(token),
     enabled: !!token,
     retry: false,
   });
@@ -69,7 +69,7 @@ export const InvitationPage = () => {
       const pendingToken = localStorage.getItem('pendingInvitation');
       if (pendingToken === token) {
         autoAcceptTriggered.current = true;
-        acceptMutation.mutate(token!, {
+        acceptMutation.mutate(token, {
           onSuccess: handleAcceptSuccess,
         });
       }
@@ -78,18 +78,18 @@ export const InvitationPage = () => {
 
   const handleLogin = () => {
     // Store the invitation token for auto-accept after login
-    localStorage.setItem('pendingInvitation', token!);
+    localStorage.setItem('pendingInvitation', token);
     login(`${window.location.origin}/invitation/${token}`);
   };
 
   const handleRegister = () => {
     // Store the invitation token to redirect back after registration
-    localStorage.setItem('pendingInvitation', token!);
+    localStorage.setItem('pendingInvitation', token);
     navigate(`/register?invitation=${token}`);
   };
 
   const handleAccept = () => {
-    acceptMutation.mutate(token!, {
+    acceptMutation.mutate(token, {
       onSuccess: handleAcceptSuccess,
     });
   };

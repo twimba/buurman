@@ -21,7 +21,7 @@ export const usePhotos = (params?: SearchPhotosParams & PageParams) => {
 export const usePhoto = (id: string | undefined) => {
   return useQuery({
     queryKey: ['photo', id],
-    queryFn: () => photosApi.getPhoto(id!),
+    queryFn: () => photosApi.getPhoto(id ?? ''),
     enabled: !!id,
   });
 };

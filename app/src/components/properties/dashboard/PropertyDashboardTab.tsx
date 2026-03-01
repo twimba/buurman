@@ -1091,10 +1091,10 @@ function OccupancyAndTrendChart({
                 <div className="flex w-full justify-between">
                   {indices.map((idx) => (
                     <span
-                      key={months[idx]!.month}
+                      key={months[idx]?.month ?? idx}
                       className="text-[10px] text-[#6b7194] dark:text-[#8b90a8]"
                     >
-                      {formatMonthTick(months[idx]!.month)}
+                      {formatMonthTick(months[idx]?.month ?? '')}
                     </span>
                   ))}
                 </div>

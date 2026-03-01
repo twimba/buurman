@@ -56,7 +56,7 @@ export const TenantForm = ({
     }
     if (
       formData.email?.trim() &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email!)
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email ?? '')
     ) {
       newErrors.email = 'Email must be valid';
     }

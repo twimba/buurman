@@ -17,19 +17,19 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const PropertyEditPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = "" } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: property, isLoading, error } = useProperty(id);
-  const updatePropertyMutation = useUpdateProperty(id!);
+  const updatePropertyMutation = useUpdateProperty(id);
 
   // Characteristics sub-resources
   const { data: outdoorAreas = [] } = useOutdoorAreas(id);
-  const createOutdoorAreaMutation = useCreateOutdoorArea(id!);
-  const deleteOutdoorAreaMutation = useDeleteOutdoorArea(id!);
+  const createOutdoorAreaMutation = useCreateOutdoorArea(id);
+  const deleteOutdoorAreaMutation = useDeleteOutdoorArea(id);
   const { data: allAmenities = {} } = useAmenities(property?.propertyCategory);
   const { data: propertyAmenities = [] } = usePropertyAmenities(id);
-  const addAmenityMutation = useAddPropertyAmenity(id!);
-  const removeAmenityMutation = useRemovePropertyAmenity(id!);
+  const addAmenityMutation = useAddPropertyAmenity(id);
+  const removeAmenityMutation = useRemovePropertyAmenity(id);
 
   const handleSubmit = async (data: UpdatePropertyRequest) => {
     await updatePropertyMutation.mutateAsync(data);

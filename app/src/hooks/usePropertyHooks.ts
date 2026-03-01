@@ -33,7 +33,7 @@ export const useProperties = (
 export const useProperty = (id: string | undefined) => {
   return useQuery({
     queryKey: ['property', id],
-    queryFn: () => propertiesApi.getProperty(id!),
+    queryFn: () => propertiesApi.getProperty(id ?? ''),
     enabled: !!id,
   });
 };
@@ -96,7 +96,7 @@ export const useDeleteProperty = () => {
 export const usePropertyDocuments = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyDocuments', propertyId],
-    queryFn: () => propertiesApi.getPropertyDocuments(propertyId!),
+    queryFn: () => propertiesApi.getPropertyDocuments(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -104,7 +104,7 @@ export const usePropertyDocuments = (propertyId: string | undefined) => {
 export const usePropertyAuditLog = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyAuditLog', propertyId],
-    queryFn: () => propertiesApi.getPropertyAuditLog(propertyId!),
+    queryFn: () => propertiesApi.getPropertyAuditLog(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -112,7 +112,7 @@ export const usePropertyAuditLog = (propertyId: string | undefined) => {
 export const usePropertyPhotos = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyPhotos', propertyId],
-    queryFn: () => propertiesApi.getPropertyPhotos(propertyId!),
+    queryFn: () => propertiesApi.getPropertyPhotos(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -228,7 +228,7 @@ export const useDeleteDocument = (propertyId: string) => {
 export const useOutdoorAreas = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['outdoor-areas', propertyId],
-    queryFn: () => propertiesApi.getOutdoorAreas(propertyId!),
+    queryFn: () => propertiesApi.getOutdoorAreas(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -314,7 +314,7 @@ export const useAmenities = (category?: string) => {
 export const usePropertyAmenities = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['property-amenities', propertyId],
-    queryFn: () => propertiesApi.getPropertyAmenities(propertyId!),
+    queryFn: () => propertiesApi.getPropertyAmenities(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -354,7 +354,7 @@ export const usePropertyDashboard = (
 ) => {
   return useQuery({
     queryKey: ['propertyDashboard', propertyId, months],
-    queryFn: () => propertiesApi.getPropertyDashboard(propertyId!, months),
+    queryFn: () => propertiesApi.getPropertyDashboard(propertyId ?? '', months),
     enabled: !!propertyId,
     staleTime: 60_000,
   });

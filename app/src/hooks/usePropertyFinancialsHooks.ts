@@ -25,7 +25,7 @@ import { getErrorMessage } from '../utils/errorMessages';
 export const useFinancialSummary = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyFinancials', propertyId],
-    queryFn: () => financialsApi.getFinancialSummary(propertyId!),
+    queryFn: () => financialsApi.getFinancialSummary(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -33,7 +33,7 @@ export const useFinancialSummary = (propertyId: string | undefined) => {
 export const useAcquisition = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyAcquisition', propertyId],
-    queryFn: () => financialsApi.getAcquisition(propertyId!),
+    queryFn: () => financialsApi.getAcquisition(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -41,7 +41,7 @@ export const useAcquisition = (propertyId: string | undefined) => {
 export const useValuations = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyValuations', propertyId],
-    queryFn: () => financialsApi.getValuations(propertyId!),
+    queryFn: () => financialsApi.getValuations(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -49,7 +49,7 @@ export const useValuations = (propertyId: string | undefined) => {
 export const useLatestValuation = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyValuation', 'latest', propertyId],
-    queryFn: () => financialsApi.getLatestValuation(propertyId!),
+    queryFn: () => financialsApi.getLatestValuation(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -57,7 +57,7 @@ export const useLatestValuation = (propertyId: string | undefined) => {
 export const useFinancings = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyFinancings', propertyId],
-    queryFn: () => financialsApi.getFinancings(propertyId!),
+    queryFn: () => financialsApi.getFinancings(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -69,7 +69,7 @@ export const useFinancingPayments = (
   return useQuery({
     queryKey: ['financingPayments', propertyId, financingId],
     queryFn: () =>
-      financialsApi.getFinancingPayments(propertyId!, financingId!),
+      financialsApi.getFinancingPayments(propertyId ?? '', financingId ?? ''),
     enabled: !!propertyId && !!financingId,
   });
 };
@@ -77,7 +77,7 @@ export const useFinancingPayments = (
 export const useInsurances = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyInsurances', propertyId],
-    queryFn: () => financialsApi.getInsurances(propertyId!),
+    queryFn: () => financialsApi.getInsurances(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -85,7 +85,7 @@ export const useInsurances = (propertyId: string | undefined) => {
 export const useTaxes = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyTaxes', propertyId],
-    queryFn: () => financialsApi.getTaxes(propertyId!),
+    queryFn: () => financialsApi.getTaxes(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -93,7 +93,7 @@ export const useTaxes = (propertyId: string | undefined) => {
 export const useFees = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['propertyFees', propertyId],
-    queryFn: () => financialsApi.getFees(propertyId!),
+    queryFn: () => financialsApi.getFees(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -404,9 +404,9 @@ export const useFinancingPaymentDocuments = (
     queryKey: ['financingPaymentDocuments', propertyId, financingId, paymentId],
     queryFn: () =>
       financialsApi.getFinancingPaymentDocuments(
-        propertyId!,
-        financingId!,
-        paymentId!
+        propertyId ?? '',
+        financingId ?? '',
+        paymentId ?? ''
       ),
     enabled: !!propertyId && !!financingId && !!paymentId,
   });
