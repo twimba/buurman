@@ -49,7 +49,7 @@ public class BackofficeLoggerService {
   public void resetAll() {
     loggingSystem.getLoggerConfigurations().stream()
         .filter(config -> config.getConfiguredLevel() != null)
-        .filter(config -> !config.getName().isEmpty())
+        .filter(config -> !LoggingSystem.ROOT_LOGGER_NAME.equals(config.getName()))
         .forEach(config -> loggingSystem.setLogLevel(config.getName(), null));
     log.info("Reset all logger levels to defaults");
   }
