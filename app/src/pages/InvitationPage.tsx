@@ -30,7 +30,7 @@ const formatRole = (role: string) => {
 
 export const InvitationPage = () => {
   const { formatDate } = useFormatDate();
-  const { token = "" } = useParams<{ token: string }>();
+  const { token = '' } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
 

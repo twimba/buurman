@@ -97,7 +97,7 @@ const statusColors: Record<string, string> = {
 };
 
 export const PropertyDetailPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();

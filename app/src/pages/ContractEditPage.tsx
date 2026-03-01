@@ -7,7 +7,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const ContractEditPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: contract, isLoading, error } = useContract(id);
   const updateContractMutation = useUpdateContract(id);

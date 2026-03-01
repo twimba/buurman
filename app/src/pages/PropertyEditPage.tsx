@@ -17,7 +17,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const PropertyEditPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: property, isLoading, error } = useProperty(id);
   const updatePropertyMutation = useUpdateProperty(id);

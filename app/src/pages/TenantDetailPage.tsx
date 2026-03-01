@@ -75,7 +75,7 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
 );
 
 export const TenantDetailPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('info', [

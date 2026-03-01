@@ -78,7 +78,7 @@ export const TransactionHistoryPage = () => {
         .forEach((payment) => {
           transactions.push({
             id: payment.identifier,
-            date: payment.paymentDate ?? "",
+            date: payment.paymentDate ?? '',
             type: 'INCOME',
             description: `Rent payment - ${payment.property?.street || 'Property'}`,
             property: payment.property

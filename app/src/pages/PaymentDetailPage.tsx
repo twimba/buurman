@@ -331,7 +331,7 @@ const ReceivalsTable = ({
 };
 
 export const PaymentDetailPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();

@@ -198,7 +198,10 @@ function validateInlineTenant(
   if (!data.firstName.trim()) {
     errs[`${prefix}_firstName`] = 'Required';
   }
-  if (data.email?.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email ?? '')) {
+  if (
+    data.email?.trim() &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email ?? '')
+  ) {
     errs[`${prefix}_email`] = 'Invalid email';
   }
   if (data.phone) {

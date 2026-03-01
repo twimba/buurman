@@ -23,7 +23,10 @@ export const useOccupancyPeriod = (
   return useQuery({
     queryKey: ['occupancyPeriod', propertyIdentifier, periodIdentifier],
     queryFn: () =>
-      occupancyApi.getOccupancyPeriod(propertyIdentifier ?? '', periodIdentifier ?? ''),
+      occupancyApi.getOccupancyPeriod(
+        propertyIdentifier ?? '',
+        periodIdentifier ?? ''
+      ),
     enabled: !!propertyIdentifier && !!periodIdentifier,
   });
 };

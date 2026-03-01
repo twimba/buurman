@@ -65,7 +65,7 @@ import CountryMetadataForm, {
 } from '@/components/contracts/CountryMetadataForm';
 
 export const ContractDetailPage = () => {
-  const { id = "" } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();

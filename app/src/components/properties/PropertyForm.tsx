@@ -511,13 +511,18 @@ export const PropertyForm = ({
             {isEditMode ? (
               <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded flex items-center gap-2 text-[#3d4463] dark:text-[#c4c8db]">
                 {(() => {
-                  const cat = formData.propertyCategory ?? PropertyCategory.RESIDENTIAL;
+                  const cat =
+                    formData.propertyCategory ?? PropertyCategory.RESIDENTIAL;
                   const CatIcon = PROPERTY_CATEGORY_ICONS[cat];
                   return CatIcon ? (
                     <CatIcon size={14} className="text-[#9ca0b8]" />
                   ) : null;
                 })()}
-                {PROPERTY_CATEGORY_LABELS[formData.propertyCategory ?? PropertyCategory.RESIDENTIAL]}
+                {
+                  PROPERTY_CATEGORY_LABELS[
+                    formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+                  ]
+                }
                 <span className="text-xs text-[#9ca0b8] ml-1">
                   (cannot be changed)
                 </span>
