@@ -158,7 +158,7 @@ export const UserDetailPage = () => {
                   {item.label}
                 </p>
                 <p
-                  className={`text-sm font-medium ${item.valueClass || "text-[#1a1d2e] dark:text-[#eef0f6]"}`}
+                  className={`text-sm font-medium ${item.valueClass ?? "text-[#1a1d2e] dark:text-[#eef0f6]"}`}
                 >
                   {item.value}
                 </p>

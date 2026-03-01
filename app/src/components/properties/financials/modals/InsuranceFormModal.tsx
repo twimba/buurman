@@ -244,7 +244,7 @@ export const InsuranceFormModal = ({
             <div className="col-span-2">
               <label className={labelClass}>Notes</label>
               <RichTextEditor
-                value={formData.notes || ''}
+                value={formData.notes ?? ''}
                 onChange={(value) => update('notes', value || undefined)}
                 placeholder="Add notes..."
               />

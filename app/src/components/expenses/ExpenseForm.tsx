@@ -38,12 +38,12 @@ export const ExpenseForm = ({
   const [formData, setFormData] = useState<CreateExpenseRequest>({
     propertyIdentifier:
       prefilledPropertyId || expense?.property.identifier || '',
-    category: expense?.category || ExpenseCategory.MAINTENANCE,
-    amount: expense?.amount || 0,
+    category: expense?.category ?? ExpenseCategory.MAINTENANCE,
+    amount: expense?.amount ?? 0,
     currency: expense?.currency || defaultCurrency || '',
-    expenseDate: expense?.expenseDate || '',
-    description: expense?.description || '',
-    notes: expense?.notes || '',
+    expenseDate: expense?.expenseDate ?? '',
+    description: expense?.description ?? '',
+    notes: expense?.notes ?? '',
   });
 
   const [lastSyncedExpense, setLastSyncedExpense] = useState(expense);
@@ -56,7 +56,7 @@ export const ExpenseForm = ({
       currency: expense.currency,
       expenseDate: expense.expenseDate,
       description: expense.description,
-      notes: expense.notes || '',
+      notes: expense.notes ?? '',
     });
   }
 
@@ -143,11 +143,11 @@ export const ExpenseForm = ({
           Property <span className="text-red-500">*</span>
         </label>
         <PropertySelector
-          value={formData.propertyIdentifier || ''}
+          value={formData.propertyIdentifier ?? ''}
           onChange={(selected) =>
             setFormData({
               ...formData,
-              propertyIdentifier: (selected as string) || '',
+              propertyIdentifier: (selected as string) ?? '',
             })
           }
           disabled={isLoading}
@@ -189,7 +189,7 @@ export const ExpenseForm = ({
           Amount <span className="text-red-500">*</span>
         </label>
         <MoneyInput
-          value={formData.amount || undefined}
+          value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={formData.currency || defaultCurrency || ''}
           onCurrencyChange={(currency) =>
@@ -273,7 +273,7 @@ export const ExpenseForm = ({
           Notes
         </label>
         <RichTextEditor
-          value={formData.notes || ''}
+          value={formData.notes ?? ''}
           onChange={(value) => setFormData({ ...formData, notes: value })}
           placeholder="Add any additional notes about this expense..."
           readOnly={isLoading}

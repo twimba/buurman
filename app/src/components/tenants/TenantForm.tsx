@@ -20,13 +20,13 @@ export const TenantForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<CreateTenantRequest>({
-    firstName: tenant?.firstName || '',
-    lastName: tenant?.lastName || '',
-    email: tenant?.email || '',
-    phone: tenant?.phone || '',
-    taxNumber: tenant?.taxNumber || '',
-    idNumber: tenant?.idNumber || '',
-    additionalInfo: tenant?.additionalInfo || '',
+    firstName: tenant?.firstName ?? '',
+    lastName: tenant?.lastName ?? '',
+    email: tenant?.email ?? '',
+    phone: tenant?.phone ?? '',
+    taxNumber: tenant?.taxNumber ?? '',
+    idNumber: tenant?.idNumber ?? '',
+    additionalInfo: tenant?.additionalInfo ?? '',
   });
   const [tenantIdentifier, setTenantIdentifier] = useState(tenant?.identifier);
 
@@ -37,12 +37,12 @@ export const TenantForm = ({
       setTenantIdentifier(tenant.identifier);
       setFormData({
         firstName: tenant.firstName,
-        lastName: tenant.lastName || '',
+        lastName: tenant.lastName ?? '',
         email: tenant.email,
-        phone: tenant.phone || '',
-        taxNumber: tenant?.taxNumber || '',
-        idNumber: tenant?.idNumber || '',
-        additionalInfo: tenant.additionalInfo || '',
+        phone: tenant.phone ?? '',
+        taxNumber: tenant?.taxNumber ?? '',
+        idNumber: tenant?.idNumber ?? '',
+        additionalInfo: tenant.additionalInfo ?? '',
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -143,7 +143,7 @@ export const TenantForm = ({
             </label>
             <input
               type="text"
-              value={formData.lastName || ''}
+              value={formData.lastName ?? ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="Doe"
@@ -173,8 +173,8 @@ export const TenantForm = ({
               Phone
             </label>
             <PhoneInput
-              value={formData.phone || null}
-              onChange={(e164) => handleChange('phone', e164 || '')}
+              value={formData.phone ?? null}
+              onChange={(e164) => handleChange('phone', e164 ?? '')}
               error={errors.phone}
             />
           </div>
@@ -185,7 +185,7 @@ export const TenantForm = ({
             </label>
             <input
               type="text"
-              value={formData.taxNumber || ''}
+              value={formData.taxNumber ?? ''}
               onChange={(e) => handleChange('taxNumber', e.target.value)}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="123456789"
@@ -198,7 +198,7 @@ export const TenantForm = ({
             </label>
             <input
               type="text"
-              value={formData.idNumber || ''}
+              value={formData.idNumber ?? ''}
               onChange={(e) => handleChange('idNumber', e.target.value)}
               className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
               placeholder="AB123456"
@@ -214,7 +214,7 @@ export const TenantForm = ({
         </h3>
         <div>
           <RichTextEditor
-            value={formData.additionalInfo || ''}
+            value={formData.additionalInfo ?? ''}
             onChange={(value) => handleChange('additionalInfo', value)}
             placeholder="Add any additional information about the tenant"
             onSubmit={submitForm}

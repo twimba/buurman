@@ -114,7 +114,7 @@ const InlineTenantForm = ({
           </label>
           <input
             type="text"
-            value={value.lastName || ''}
+            value={value.lastName ?? ''}
             onChange={(e) => onChange({ ...value, lastName: e.target.value })}
             className={inputClass}
             placeholder="Doe"
@@ -144,8 +144,8 @@ const InlineTenantForm = ({
             Phone
           </label>
           <PhoneInput
-            value={value.phone || null}
-            onChange={(e164) => onChange({ ...value, phone: e164 || '' })}
+            value={value.phone ?? null}
+            onChange={(e164) => onChange({ ...value, phone: e164 ?? '' })}
             error={errors[`${errorPrefix}_phone`]}
           />
         </div>
@@ -155,7 +155,7 @@ const InlineTenantForm = ({
           </label>
           <input
             type="text"
-            value={value.taxNumber || ''}
+            value={value.taxNumber ?? ''}
             onChange={(e) => onChange({ ...value, taxNumber: e.target.value })}
             className={inputClass}
             placeholder="123456789"
@@ -168,7 +168,7 @@ const InlineTenantForm = ({
           </label>
           <input
             type="text"
-            value={value.idNumber || ''}
+            value={value.idNumber ?? ''}
             onChange={(e) => onChange({ ...value, idNumber: e.target.value })}
             className={inputClass}
             placeholder="AB123456"
@@ -225,7 +225,7 @@ export const ContractForm = ({
   // Primary tenant state (create mode)
   const [primaryMode, setPrimaryMode] = useState<'select' | 'create'>('select');
   const [primaryTenantId, setPrimaryTenantId] = useState(
-    prefilledTenantId || ''
+    prefilledTenantId ?? ''
   );
   const [newPrimaryTenant, setNewPrimaryTenant] = useState<CreateTenantRequest>(
     { ...EMPTY_NEW_TENANT }
@@ -241,26 +241,26 @@ export const ContractForm = ({
   >({
     propertyIdentifier:
       prefilledPropertyId || contract?.property.identifier || '',
-    contractType: contract?.contractType || ContractType.FIXED_TERM,
-    startDate: contract?.startDate || '',
-    endDate: contract?.endDate || '',
-    signedDate: contract?.signedDate || '',
+    contractType: contract?.contractType ?? ContractType.FIXED_TERM,
+    startDate: contract?.startDate ?? '',
+    endDate: contract?.endDate ?? '',
+    signedDate: contract?.signedDate ?? '',
     rentAmount: contract?.rentAmount ?? '',
-    depositAmount: contract?.depositAmount || undefined,
-    securityDeposit: contract?.securityDeposit || undefined,
+    depositAmount: contract?.depositAmount ?? undefined,
+    securityDeposit: contract?.securityDeposit ?? undefined,
     rentAmountCurrency: contract?.rentAmountCurrency || defaultCurrency,
     depositAmountCurrency: contract?.depositAmountCurrency || defaultCurrency,
     securityDepositCurrency:
       contract?.securityDepositCurrency || defaultCurrency,
-    paymentFrequency: contract?.paymentFrequency || PaymentFrequency.MONTHLY,
-    paymentDueDay: contract?.paymentDueDay || 1,
-    autoRenewal: contract?.autoRenewal || false,
-    renewalNoticeDays: contract?.renewalNoticeDays || 30,
-    terminationNoticeDays: contract?.terminationNoticeDays || 30,
-    lateFeePercentage: contract?.lateFeePercentage || undefined,
-    termsAndConditions: contract?.termsAndConditions || '',
-    notes: contract?.notes || '',
-    countryMetadata: contract?.countryMetadata || undefined,
+    paymentFrequency: contract?.paymentFrequency ?? PaymentFrequency.MONTHLY,
+    paymentDueDay: contract?.paymentDueDay ?? 1,
+    autoRenewal: contract?.autoRenewal ?? false,
+    renewalNoticeDays: contract?.renewalNoticeDays ?? 30,
+    terminationNoticeDays: contract?.terminationNoticeDays ?? 30,
+    lateFeePercentage: contract?.lateFeePercentage ?? undefined,
+    termsAndConditions: contract?.termsAndConditions ?? '',
+    notes: contract?.notes ?? '',
+    countryMetadata: contract?.countryMetadata ?? undefined,
   });
 
   const [contractIdentifier, setContractIdentifier] = useState(
@@ -316,25 +316,25 @@ export const ContractForm = ({
         propertyIdentifier: contract.property.identifier,
         contractType: contract.contractType,
         startDate: contract.startDate,
-        endDate: contract.endDate || '',
-        signedDate: contract.signedDate || '',
+        endDate: contract.endDate ?? '',
+        signedDate: contract.signedDate ?? '',
         rentAmount: contract.rentAmount ?? '',
-        depositAmount: contract.depositAmount || undefined,
-        securityDeposit: contract.securityDeposit || undefined,
+        depositAmount: contract.depositAmount ?? undefined,
+        securityDeposit: contract.securityDeposit ?? undefined,
         rentAmountCurrency: contract.rentAmountCurrency,
         depositAmountCurrency:
           contract.depositAmountCurrency || defaultCurrency,
         securityDepositCurrency:
           contract.securityDepositCurrency || defaultCurrency,
         paymentFrequency: contract.paymentFrequency,
-        paymentDueDay: contract.paymentDueDay || 1,
+        paymentDueDay: contract.paymentDueDay ?? 1,
         autoRenewal: contract.autoRenewal,
-        renewalNoticeDays: contract.renewalNoticeDays || 30,
-        terminationNoticeDays: contract.terminationNoticeDays || 30,
-        lateFeePercentage: contract.lateFeePercentage || undefined,
-        termsAndConditions: contract.termsAndConditions || '',
-        notes: contract.notes || '',
-        countryMetadata: contract.countryMetadata || undefined,
+        renewalNoticeDays: contract.renewalNoticeDays ?? 30,
+        terminationNoticeDays: contract.terminationNoticeDays ?? 30,
+        lateFeePercentage: contract.lateFeePercentage ?? undefined,
+        termsAndConditions: contract.termsAndConditions ?? '',
+        notes: contract.notes ?? '',
+        countryMetadata: contract.countryMetadata ?? undefined,
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -912,7 +912,7 @@ export const ContractForm = ({
               Deposit Amount
             </label>
             <MoneyInput
-              value={formData.depositAmount || undefined}
+              value={formData.depositAmount ?? undefined}
               onChange={(val) => handleChange('depositAmount', val)}
               currency={formData.depositAmountCurrency || defaultCurrency || ''}
               onCurrencyChange={(value) =>
@@ -933,7 +933,7 @@ export const ContractForm = ({
               Security Deposit
             </label>
             <MoneyInput
-              value={formData.securityDeposit || undefined}
+              value={formData.securityDeposit ?? undefined}
               onChange={(val) => handleChange('securityDeposit', val)}
               currency={
                 formData.securityDepositCurrency || defaultCurrency || ''
@@ -988,7 +988,7 @@ export const ContractForm = ({
               type="number"
               min="1"
               max="31"
-              value={formData.paymentDueDay || ''}
+              value={formData.paymentDueDay ?? ''}
               onChange={(e) =>
                 handleChange(
                   'paymentDueDay',
@@ -1015,7 +1015,7 @@ export const ContractForm = ({
               step="0.01"
               min="0"
               max="100"
-              value={formData.lateFeePercentage || ''}
+              value={formData.lateFeePercentage ?? ''}
               onChange={(e) =>
                 handleChange(
                   'lateFeePercentage',
@@ -1060,7 +1060,7 @@ export const ContractForm = ({
             <input
               type="number"
               min="0"
-              value={formData.renewalNoticeDays || ''}
+              value={formData.renewalNoticeDays ?? ''}
               onChange={(e) =>
                 handleChange(
                   'renewalNoticeDays',
@@ -1080,7 +1080,7 @@ export const ContractForm = ({
             <input
               type="number"
               min="0"
-              value={formData.terminationNoticeDays || ''}
+              value={formData.terminationNoticeDays ?? ''}
               onChange={(e) =>
                 handleChange(
                   'terminationNoticeDays',
@@ -1102,7 +1102,7 @@ export const ContractForm = ({
         </h3>
         <div>
           <RichTextEditor
-            value={formData.termsAndConditions || ''}
+            value={formData.termsAndConditions ?? ''}
             onChange={(value) => handleChange('termsAndConditions', value)}
             placeholder="Enter contract terms and conditions"
             onSubmit={submitForm}
@@ -1117,7 +1117,7 @@ export const ContractForm = ({
         </h3>
         <div>
           <RichTextEditor
-            value={formData.notes || ''}
+            value={formData.notes ?? ''}
             onChange={(value) => handleChange('notes', value)}
             placeholder="Add any additional notes"
             onSubmit={submitForm}
@@ -1138,7 +1138,7 @@ export const ContractForm = ({
           </p>
           <CountryMetadataForm
             countryCode={propertyCountryCode}
-            value={(formData.countryMetadata as Record<string, unknown>) || {}}
+            value={(formData.countryMetadata as Record<string, unknown>) ?? {}}
             onChange={(metadata) =>
               setFormData((prev) => ({
                 ...prev,

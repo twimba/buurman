@@ -109,7 +109,7 @@ export const CalendarFeedsSection = () => {
     };
     const grouped = new Map<CalendarFeedType, CalendarFeedResponse[]>();
     for (const feed of feeds) {
-      const list = grouped.get(feed.feedType) || [];
+      const list = grouped.get(feed.feedType) ?? [];
       list.push(feed);
       grouped.set(feed.feedType, list);
     }

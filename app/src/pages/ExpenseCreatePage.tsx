@@ -66,14 +66,14 @@ export const ExpenseCreatePage = () => {
   const createExpenseMutation = useCreateExpense();
   const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
 
-  const prefilledPropertyId = searchParams.get('propertyId') || undefined;
+  const prefilledPropertyId = searchParams.get('propertyId') ?? undefined;
 
   const [continueAdding, setContinueAdding] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [addedCount, setAddedCount] = useState(0);
   const [mode, setMode] = useState<Mode>('single');
   const [bulkPropertyId, setBulkPropertyId] = useState(
-    prefilledPropertyId || ''
+    prefilledPropertyId ?? ''
   );
   const [bulkCurrency, setBulkCurrency] = useState(defaultCurrency || '');
   const [bulkSubmitting, setBulkSubmitting] = useState(false);
@@ -219,7 +219,7 @@ export const ExpenseCreatePage = () => {
                   </label>
                   <PropertySelector
                     value={bulkPropertyId}
-                    onChange={(val) => setBulkPropertyId((val as string) || '')}
+                    onChange={(val) => setBulkPropertyId((val as string) ?? '')}
                     disabled={bulkSubmitting}
                   />
                 </div>

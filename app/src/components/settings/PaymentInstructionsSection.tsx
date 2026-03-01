@@ -64,15 +64,15 @@ export const PaymentInstructionsSection = () => {
     setFormData({
       name: pi.name,
       paymentMethod: pi.paymentMethod,
-      description: pi.description || '',
-      bankName: pi.bankName || '',
-      accountHolderName: pi.accountHolderName || '',
-      iban: pi.iban || '',
-      bicSwift: pi.bicSwift || '',
-      accountNumber: pi.accountNumber || '',
-      routingNumber: pi.routingNumber || '',
-      paymentReference: pi.paymentReference || '',
-      additionalDetails: pi.additionalDetails || '',
+      description: pi.description ?? '',
+      bankName: pi.bankName ?? '',
+      accountHolderName: pi.accountHolderName ?? '',
+      iban: pi.iban ?? '',
+      bicSwift: pi.bicSwift ?? '',
+      accountNumber: pi.accountNumber ?? '',
+      routingNumber: pi.routingNumber ?? '',
+      paymentReference: pi.paymentReference ?? '',
+      additionalDetails: pi.additionalDetails ?? '',
       isDefault: pi.isDefault,
     });
     setShowForm(true);
@@ -209,7 +209,7 @@ export const PaymentInstructionsSection = () => {
                   Description
                 </label>
                 <RichTextEditor
-                  value={formData.description || ''}
+                  value={formData.description ?? ''}
                   onChange={(val) =>
                     setFormData({ ...formData, description: val })
                   }
@@ -334,7 +334,7 @@ export const PaymentInstructionsSection = () => {
                 <input
                   type="checkbox"
                   id="isDefault"
-                  checked={formData.isDefault || false}
+                  checked={formData.isDefault ?? false}
                   onChange={(e) =>
                     setFormData({ ...formData, isDefault: e.target.checked })
                   }
@@ -540,7 +540,7 @@ const PaymentInstructionEditForm = ({
           </label>
           <input
             type="text"
-            value={formData.name || ''}
+            value={formData.name ?? ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
           />
@@ -550,7 +550,7 @@ const PaymentInstructionEditForm = ({
             Payment Instruction
           </label>
           <select
-            value={formData.paymentMethod || PaymentMethod.BANK_TRANSFER}
+            value={formData.paymentMethod ?? PaymentMethod.BANK_TRANSFER}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -573,7 +573,7 @@ const PaymentInstructionEditForm = ({
           Description
         </label>
         <RichTextEditor
-          value={formData.description || ''}
+          value={formData.description ?? ''}
           onChange={(val) => setFormData({ ...formData, description: val })}
           placeholder="Instructions for the tenant..."
           onSubmit={submitForm}
@@ -588,7 +588,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.bankName || ''}
+              value={formData.bankName ?? ''}
               onChange={(e) =>
                 setFormData({ ...formData, bankName: e.target.value })
               }
@@ -601,7 +601,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.accountHolderName || ''}
+              value={formData.accountHolderName ?? ''}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -617,7 +617,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.iban || ''}
+              value={formData.iban ?? ''}
               onChange={(e) =>
                 setFormData({ ...formData, iban: e.target.value })
               }
@@ -631,7 +631,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.bicSwift || ''}
+              value={formData.bicSwift ?? ''}
               onChange={(e) =>
                 setFormData({ ...formData, bicSwift: e.target.value })
               }
@@ -645,7 +645,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.accountNumber || ''}
+              value={formData.accountNumber ?? ''}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -661,7 +661,7 @@ const PaymentInstructionEditForm = ({
             </label>
             <input
               type="text"
-              value={formData.routingNumber || ''}
+              value={formData.routingNumber ?? ''}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -680,7 +680,7 @@ const PaymentInstructionEditForm = ({
         </label>
         <input
           type="text"
-          value={formData.paymentReference || ''}
+          value={formData.paymentReference ?? ''}
           onChange={(e) =>
             setFormData({ ...formData, paymentReference: e.target.value })
           }
@@ -692,7 +692,7 @@ const PaymentInstructionEditForm = ({
         <input
           type="checkbox"
           id="editIsDefault"
-          checked={formData.isDefault || false}
+          checked={formData.isDefault ?? false}
           onChange={(e) =>
             setFormData({ ...formData, isDefault: e.target.checked })
           }

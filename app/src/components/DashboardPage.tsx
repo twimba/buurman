@@ -99,7 +99,7 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {stats?.totalProperties || 0}
+            {stats?.totalProperties ?? 0}
           </div>
           <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
             Active properties in portfolio
@@ -117,13 +117,13 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {stats?.occupiedUnits || 0}
+            {stats?.occupiedUnits ?? 0}
           </div>
           <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
             {stats?.selfOccupiedUnits
               ? `${stats.selfOccupiedUnits} self-occupied, `
               : ''}
-            {stats?.vacantUnits || 0} vacant, {stats?.maintenanceUnits || 0} in
+            {stats?.vacantUnits ?? 0} vacant, {stats?.maintenanceUnits ?? 0} in
             maintenance
           </div>
         </div>
@@ -139,7 +139,7 @@ export const DashboardPage = () => {
             </div>
           </div>
           <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            {stats?.occupancyRate?.toFixed(1) || 0}%
+            {stats?.occupancyRate?.toFixed(1) ?? 0}%
           </div>
           <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
             Current occupancy level
@@ -163,8 +163,8 @@ export const DashboardPage = () => {
                   currency: stats.monthlyIncome.currency,
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
-                }).format(stats?.monthlyIncome?.amount || 0)
-              : (stats?.monthlyIncome?.amount || 0).toLocaleString('nl-NL', {
+                }).format(stats?.monthlyIncome?.amount ?? 0)
+              : (stats?.monthlyIncome?.amount ?? 0).toLocaleString('nl-NL', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })}

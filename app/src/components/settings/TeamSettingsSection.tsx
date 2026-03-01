@@ -47,12 +47,12 @@ export const TeamSettingsSection = () => {
     team?.identifier
   );
 
-  const createInvitationMutation = useCreateInvitation(team?.identifier || '');
-  const resendInvitationMutation = useResendInvitation(team?.identifier || '');
-  const removeMemberMutation = useRemoveMember(team?.identifier || '');
-  const updateRoleMutation = useUpdateMemberRole(team?.identifier || '');
+  const createInvitationMutation = useCreateInvitation(team?.identifier ?? '');
+  const resendInvitationMutation = useResendInvitation(team?.identifier ?? '');
+  const removeMemberMutation = useRemoveMember(team?.identifier ?? '');
+  const updateRoleMutation = useUpdateMemberRole(team?.identifier ?? '');
   const transferOwnershipMutation = useTransferOwnership(
-    team?.identifier || ''
+    team?.identifier ?? ''
   );
 
   const roleLabels: Record<Role, string> = {
@@ -154,7 +154,7 @@ export const TeamSettingsSection = () => {
                 Team Members
               </h2>
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                {members?.length || 0} member{members?.length !== 1 ? 's' : ''}
+                {members?.length ?? 0} member{members?.length !== 1 ? 's' : ''}
               </p>
             </div>
             {canManageMembers && (

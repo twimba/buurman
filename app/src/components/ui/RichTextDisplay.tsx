@@ -25,5 +25,5 @@ export const stripHtml = (html: string): string => {
     DOMPurify.sanitize(html),
     'text/html'
   );
-  return doc.body.textContent || '';
+  return doc.body.textContent ?? '';
 };

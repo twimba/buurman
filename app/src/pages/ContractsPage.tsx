@@ -130,7 +130,7 @@ export const ContractsPage = () => {
 
         {/* Contract Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {contractsData?.totalElements || 0}{' '}
+          {contractsData?.totalElements ?? 0}{' '}
           {contractsData?.totalElements === 1 ? 'contract' : 'contracts'}
         </p>
 

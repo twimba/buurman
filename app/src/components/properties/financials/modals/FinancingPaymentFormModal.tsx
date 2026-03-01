@@ -191,7 +191,7 @@ export const FinancingPaymentFormModal = ({
               <label className={labelClass}>Principal</label>
               <MoneyInput
                 value={formData.principalAmount as number}
-                onChange={(v) => update('principalAmount', v || undefined)}
+                onChange={(v) => update('principalAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
                 onCurrencyChange={(c) => update('currency', c)}
               />
@@ -202,7 +202,7 @@ export const FinancingPaymentFormModal = ({
               <label className={labelClass}>Interest</label>
               <MoneyInput
                 value={formData.interestAmount as number}
-                onChange={(v) => update('interestAmount', v || undefined)}
+                onChange={(v) => update('interestAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
                 onCurrencyChange={(c) => update('currency', c)}
               />
@@ -213,7 +213,7 @@ export const FinancingPaymentFormModal = ({
               <label className={labelClass}>Escrow</label>
               <MoneyInput
                 value={formData.escrowAmount as number}
-                onChange={(v) => update('escrowAmount', v || undefined)}
+                onChange={(v) => update('escrowAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
                 onCurrencyChange={(c) => update('currency', c)}
               />
@@ -224,7 +224,7 @@ export const FinancingPaymentFormModal = ({
               <label className={labelClass}>Extra Payment</label>
               <MoneyInput
                 value={formData.extraPayment as number}
-                onChange={(v) => update('extraPayment', v || undefined)}
+                onChange={(v) => update('extraPayment', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
                 onCurrencyChange={(c) => update('currency', c)}
               />
@@ -252,7 +252,7 @@ export const FinancingPaymentFormModal = ({
           <div>
             <label className={labelClass}>Notes</label>
             <RichTextEditor
-              value={(formData.notes as string) || ''}
+              value={(formData.notes as string) ?? ''}
               onChange={(value) => update('notes', value || undefined)}
               placeholder="Add notes..."
             />

@@ -28,8 +28,8 @@ import {
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const invitationToken = searchParams.get('invitation') || undefined;
-  const invitationCodeParam = searchParams.get('code') || '';
+  const invitationToken = searchParams.get('invitation') ?? undefined;
+  const invitationCodeParam = searchParams.get('code') ?? '';
   const { data: invitation } = useInvitation(invitationToken);
   const registerMutation = useRegister();
   const { data: registrationConfig } = useRegistrationConfig();

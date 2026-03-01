@@ -105,7 +105,7 @@ export const TenantListPage = () => {
 
         {/* Tenant Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {tenantsData?.totalElements || 0}{' '}
+          {tenantsData?.totalElements ?? 0}{' '}
           {tenantsData?.totalElements === 1 ? 'tenant' : 'tenants'}
         </p>
 

@@ -118,7 +118,7 @@ export const RegisterPaymentForm = ({
           Amount <span className="text-red-500">*</span>
         </label>
         <MoneyInput
-          value={formData.amount || undefined}
+          value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
           onCurrencyChange={(c) => setFormData({ ...formData, currency: c })}

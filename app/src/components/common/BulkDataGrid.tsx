@@ -74,7 +74,7 @@ function parseClipboard(
 
     const row: RowData = {};
     columns.forEach((col, i) => {
-      const val = (parts[i] || '').trim();
+      const val = (parts[i] ?? '').trim();
       if (col.type === 'date' && val) {
         row[col.key] = normalizeDate(val, dateFormat);
       } else if (col.type === 'select' && col.options && val) {
@@ -83,7 +83,7 @@ function parseClipboard(
       } else if (val) {
         row[col.key] = val;
       } else {
-        row[col.key] = col.defaultValue || '';
+        row[col.key] = col.defaultValue ?? '';
       }
     });
     return row;
@@ -208,7 +208,7 @@ function isCellInvalid(
 
 function createEmptyRow(columns: ColumnDef[]): RowData {
   const row: RowData = {};
-  columns.forEach((col) => (row[col.key] = col.defaultValue || ''));
+  columns.forEach((col) => (row[col.key] = col.defaultValue ?? ''));
   return row;
 }
 
