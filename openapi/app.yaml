@@ -14963,9 +14963,7 @@ components:
           maxLength: 100
           minLength: 1
         phone:
-          type:
-            - string
-            - "null"
+          type: string
           pattern: ^\+[1-9]\d{1,14}$
       required:
         - firstName
@@ -14985,9 +14983,7 @@ components:
         lastName:
           type: string
         phone:
-          type:
-            - string
-            - "null"
+          type: string
         phoneVerified:
           type: boolean
       required:
@@ -15043,9 +15039,7 @@ components:
           type: string
           minLength: 1
         postalCode:
-          type:
-            - string
-            - "null"
+          type: string
         country:
           type: string
           minLength: 1
@@ -15065,19 +15059,13 @@ components:
             - ACTIVE
             - INACTIVE
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - addressType
         - city
@@ -15113,26 +15101,18 @@ components:
             - ACTIVE
             - INACTIVE
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - addressType
@@ -15150,31 +15130,19 @@ components:
           type: string
           minLength: 1
         lastName:
-          type:
-            - string
-            - "null"
+          type: string
         email:
-          type:
-            - string
-            - "null"
+          type: string
           format: email
         phone:
-          type:
-            - string
-            - "null"
+          type: string
           pattern: ^\+[1-9]\d{1,14}$
         taxNumber:
-          type:
-            - string
-            - "null"
+          type: string
         idNumber:
-          type:
-            - string
-            - "null"
+          type: string
         additionalInfo:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - firstName
     PropertySummary:
@@ -15261,9 +15229,7 @@ components:
         property:
           $ref: "#/components/schemas/PropertySummary"
         role:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - property
     TenantResponse:
@@ -15279,33 +15245,19 @@ components:
         lastName:
           type: string
         email:
-          type:
-            - string
-            - "null"
+          type: string
         phone:
-          type:
-            - string
-            - "null"
+          type: string
         taxNumber:
-          type:
-            - string
-            - "null"
+          type: string
         idNumber:
-          type:
-            - string
-            - "null"
+          type: string
         additionalInfo:
-          type:
-            - string
-            - "null"
+          type: string
         mainPhotoUrl:
-          type:
-            - string
-            - "null"
+          type: string
         mainPhotoThumbnailUrl:
-          type:
-            - string
-            - "null"
+          type: string
         activeProperties:
           type: array
           items:
@@ -15314,9 +15266,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - activeProperties
@@ -15343,26 +15293,18 @@ components:
         mimeType:
           type: string
         title:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         isMainPhoto:
           type: boolean
         uploadedAt:
           type: string
           format: date-time
         downloadUrl:
-          type:
-            - string
-            - "null"
+          type: string
         thumbnailUrl:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - entityIdentifier
         - entityType
@@ -15420,30 +15362,20 @@ components:
       type: object
       properties:
         defaultCurrency:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 3
           minLength: 3
         defaultCountry:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 100
         timezone:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 50
         dateFormat:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 20
         fiscalYearStartMonth:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 2
           minLength: 2
     UpdateTeamSettingsRequest:
@@ -15508,13 +15440,9 @@ components:
           type: string
           minLength: 1
         areaValue:
-          type:
-            - number
-            - "null"
+          type: number
         areaUnit:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - type
     PropertyOutdoorAreaResponse:
@@ -15525,20 +15453,14 @@ components:
         type:
           type: string
         areaValue:
-          type:
-            - number
-            - "null"
+          type: number
         areaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -15548,38 +15470,26 @@ components:
       type: object
       properties:
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         type:
-          type:
-            - string
-            - "null"
+          type: string
           description: Nature of the self-occupancy period
           enum:
             - PERSONAL
             - FAMILY
             - BUSINESS
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         occupantName:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 255
         monthlyImputedRent:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         notes:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 500
     OccupancyPeriodResponse:
       type: object
@@ -15592,9 +15502,7 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         type:
           type: string
@@ -15604,17 +15512,11 @@ components:
             - FAMILY
             - BUSINESS
         occupantName:
-          type:
-            - string
-            - "null"
+          type: string
         monthlyImputedRent:
-          type:
-            - number
-            - "null"
+          type: number
         endReason:
-          type:
-            - string
-            - "null"
+          type: string
           description: Reason for ending the self-occupancy period
           enum:
             - CONVERTING_TO_RENTAL
@@ -15622,16 +15524,12 @@ components:
             - RENOVATION
             - OTHER
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -15643,9 +15541,7 @@ components:
       type: object
       properties:
         valuationType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Method or source of the property valuation
           enum:
             - MARKET
@@ -15655,27 +15551,17 @@ components:
             - INSURANCE
             - USER_ESTIMATE
         valuationDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         amount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         source:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyValuationResponse:
       type: object
       properties:
@@ -15699,13 +15585,9 @@ components:
         currency:
           type: string
         source:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -15724,9 +15606,7 @@ components:
       type: object
       properties:
         taxType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Classification of property tax
           enum:
             - PROPERTY
@@ -15737,56 +15617,36 @@ components:
             - SPECIAL_ASSESSMENT
             - OTHER
         authority:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
-          type:
-            - string
-            - "null"
+          type: string
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         taxYear:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           maximum: 2100
           minimum: 1900
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the tax obligation
           enum:
             - ACTIVE
             - EXPIRED
             - EXEMPT
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyTaxResponse:
       type: object
       properties:
@@ -15806,9 +15666,7 @@ components:
             - SPECIAL_ASSESSMENT
             - OTHER
         authority:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
           type: number
         currency:
@@ -15816,23 +15674,15 @@ components:
         paymentFrequency:
           type: string
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         taxYear:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
           type: string
@@ -15842,16 +15692,12 @@ components:
             - EXPIRED
             - EXEMPT
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - annualAmount
@@ -15865,9 +15711,7 @@ components:
       type: object
       properties:
         insuranceType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Type of insurance coverage for the property
           enum:
             - BUILDING
@@ -15879,58 +15723,36 @@ components:
             - RENT_GUARANTEE
             - OTHER
         provider:
-          type:
-            - string
-            - "null"
+          type: string
         policyNumber:
-          type:
-            - string
-            - "null"
+          type: string
         coverageAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         coverageAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         annualPremium:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         annualPremiumCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
-          type:
-            - string
-            - "null"
+          type: string
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the insurance policy
           enum:
             - ACTIVE
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyInsuranceResponse:
       type: object
       properties:
@@ -15951,21 +15773,13 @@ components:
             - RENT_GUARANTEE
             - OTHER
         provider:
-          type:
-            - string
-            - "null"
+          type: string
         policyNumber:
-          type:
-            - string
-            - "null"
+          type: string
         coverageAmount:
-          type:
-            - number
-            - "null"
+          type: number
         coverageAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         annualPremium:
           type: number
         annualPremiumCurrency:
@@ -15973,14 +15787,10 @@ components:
         paymentFrequency:
           type: string
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
           type: string
@@ -15990,16 +15800,12 @@ components:
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - annualPremium
@@ -16013,9 +15819,7 @@ components:
       type: object
       properties:
         financingType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Type of financing instrument
           enum:
             - MORTGAGE
@@ -16025,9 +15829,7 @@ components:
             - PRIVATE_FINANCING
             - OTHER
         rateType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Interest rate structure of the financing
           enum:
             - FIXED
@@ -16035,69 +15837,41 @@ components:
             - INTEREST_ONLY
             - HYBRID
         lenderName:
-          type:
-            - string
-            - "null"
+          type: string
         loanNumber:
-          type:
-            - string
-            - "null"
+          type: string
         originalAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         originalAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         currentBalance:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         currentBalanceCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         interestRate:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         monthlyPayment:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         monthlyPaymentCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentVariable:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         termMonths:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           exclusiveMinimum: 0
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the financing arrangement
           enum:
             - ACTIVE
@@ -16105,9 +15879,7 @@ components:
             - REFINANCED
             - DEFAULTED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyFinancingResponse:
       type: object
       properties:
@@ -16134,51 +15906,33 @@ components:
             - INTEREST_ONLY
             - HYBRID
         lenderName:
-          type:
-            - string
-            - "null"
+          type: string
         loanNumber:
-          type:
-            - string
-            - "null"
+          type: string
         originalAmount:
           type: number
         originalAmountCurrency:
           type: string
         currentBalance:
-          type:
-            - number
-            - "null"
+          type: number
         currentBalanceCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         interestRate:
-          type:
-            - number
-            - "null"
+          type: number
         monthlyPayment:
-          type:
-            - number
-            - "null"
+          type: number
         monthlyPaymentCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentVariable:
           type: boolean
         startDate:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         termMonths:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         status:
           type: string
@@ -16189,16 +15943,12 @@ components:
             - REFINANCED
             - DEFAULTED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -16215,43 +15965,27 @@ components:
       type: object
       properties:
         paymentDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         totalAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         principalAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         interestAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         escrowAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         extraPayment:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Status of a financing installment payment
           enum:
             - SCHEDULED
@@ -16259,13 +15993,9 @@ components:
             - MISSED
             - LATE
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         deductFromBalance:
-          type:
-            - boolean
-            - "null"
+          type: boolean
     FinancingPaymentResponse:
       type: object
       properties:
@@ -16279,21 +16009,13 @@ components:
         totalAmount:
           type: number
         principalAmount:
-          type:
-            - number
-            - "null"
+          type: number
         interestAmount:
-          type:
-            - number
-            - "null"
+          type: number
         escrowAmount:
-          type:
-            - number
-            - "null"
+          type: number
         extraPayment:
-          type:
-            - number
-            - "null"
+          type: number
         currency:
           type: string
         status:
@@ -16305,18 +16027,14 @@ components:
             - MISSED
             - LATE
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         balanceDeducted:
           type: boolean
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - balanceDeducted
@@ -16331,9 +16049,7 @@ components:
       type: object
       properties:
         feeType:
-          type:
-            - string
-            - "null"
+          type: string
           description: Type of recurring property fee
           enum:
             - HOA
@@ -16347,49 +16063,31 @@ components:
             - UTILITIES
             - OTHER
         name:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
-          type:
-            - string
-            - "null"
+          type: string
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the fee obligation
           enum:
             - ACTIVE
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyFeeResponse:
       type: object
       properties:
@@ -16412,9 +16110,7 @@ components:
             - UTILITIES
             - OTHER
         name:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
           type: number
         currency:
@@ -16422,18 +16118,12 @@ components:
         paymentFrequency:
           type: string
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
           type: string
@@ -16443,16 +16133,12 @@ components:
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - annualAmount
@@ -16476,65 +16162,41 @@ components:
             - AUCTION
             - OTHER
         acquisitionDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         purchasePrice:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         purchasePriceCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         closingCosts:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         closingCostsCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         renovationCosts:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         renovationCostsCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         landValue:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         landValueCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         depreciationMethod:
-          type:
-            - string
-            - "null"
+          type: string
           description: Accounting method used for property depreciation
           enum:
             - STRAIGHT_LINE
             - DECLINING_BALANCE
             - NONE
         depreciationYears:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           exclusiveMinimum: 0
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - acquisitionType
     PropertyAcquisitionResponse:
@@ -16553,60 +16215,36 @@ components:
             - AUCTION
             - OTHER
         acquisitionDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         purchasePrice:
-          type:
-            - number
-            - "null"
+          type: number
         purchasePriceCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         closingCosts:
-          type:
-            - number
-            - "null"
+          type: number
         closingCostsCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         renovationCosts:
-          type:
-            - number
-            - "null"
+          type: number
         renovationCostsCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         landValue:
-          type:
-            - number
-            - "null"
+          type: number
         landValueCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         depreciationMethod:
-          type:
-            - string
-            - "null"
+          type: string
           description: Accounting method used for property depreciation
           enum:
             - STRAIGHT_LINE
             - DECLINING_BALANCE
             - NONE
         depreciationYears:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -16622,214 +16260,126 @@ components:
       type: object
       properties:
         totalLandAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         totalLandAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         arableAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         arableAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         soilType:
-          type:
-            - string
-            - "null"
+          type: string
         hasWaterRights:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         waterSource:
-          type:
-            - string
-            - "null"
+          type: string
         irrigationType:
-          type:
-            - string
-            - "null"
+          type: string
         fencingType:
-          type:
-            - string
-            - "null"
+          type: string
         hasOutbuildings:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         outbuildingDetails:
-          type:
-            - string
-            - "null"
+          type: string
         currentUse:
-          type:
-            - string
-            - "null"
+          type: string
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
     CommercialDetailsRequest:
       type: object
       properties:
         usableAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         usableAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         commonAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         commonAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         floorLevel:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         ceilingHeightM:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         hasStorefront:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSignageRights:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
         maxOccupancy:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           exclusiveMinimum: 0
         restroomCount:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           minimum: 0
         hasKitchenFacility:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         accessibilityCompliant:
-          type:
-            - boolean
-            - "null"
+          type: boolean
     IndustrialDetailsRequest:
       type: object
       properties:
         clearHeightM:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         loadingDocks:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           minimum: 0
         driveInDoors:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           minimum: 0
         floorLoadCapacityKgSqm:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         powerCapacityKva:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           exclusiveMinimum: 0
         hasThreePhasePower:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasCrane:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         craneCapacityTons:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         hasHazmatCertification:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasVentilationSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasClimateControl:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         yardAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         yardAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
     ResidentialDetailsRequest:
       type: object
       properties:
         bedrooms:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           minimum: 0
         bathrooms:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           minimum: 0
         furnished:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         petPolicy:
-          type:
-            - string
-            - "null"
+          type: string
     UpdatePropertyRequest:
       type: object
       properties:
@@ -16896,189 +16446,101 @@ components:
           type: string
           minLength: 1
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
         areaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         areaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         yearBuilt:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         yearLastRenovated:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         constructionType:
-          type:
-            - string
-            - "null"
+          type: string
         foundationType:
-          type:
-            - string
-            - "null"
+          type: string
         roofType:
-          type:
-            - string
-            - "null"
+          type: string
         wallConstruction:
-          type:
-            - string
-            - "null"
+          type: string
         flooringType:
-          type:
-            - string
-            - "null"
+          type: string
         windowType:
-          type:
-            - string
-            - "null"
+          type: string
         numberOfFloors:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         structuralNotes:
-          type:
-            - string
-            - "null"
+          type: string
         energyEfficiencyRating:
-          type:
-            - string
-            - "null"
+          type: string
         energyCertificateExpiryDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         heatingType:
-          type:
-            - string
-            - "null"
+          type: string
         coolingType:
-          type:
-            - string
-            - "null"
+          type: string
         hotWaterSystem:
-          type:
-            - string
-            - "null"
+          type: string
         insulationNotes:
-          type:
-            - string
-            - "null"
+          type: string
         electricityConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         electricityCapacityAmps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         waterConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         hasGasConnection:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         sewageType:
-          type:
-            - string
-            - "null"
+          type: string
         internetConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         internetMaxSpeedMbps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         internetStatus:
-          type:
-            - string
-            - "null"
+          type: string
         parkingSpaces:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         parkingType:
-          type:
-            - string
-            - "null"
+          type: string
         hasSmokeDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasCoDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasFireExtinguisher:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSprinklerSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAlarmSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecurityCameras:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecureEntry:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         safetyNotes:
-          type:
-            - string
-            - "null"
+          type: string
         isWheelchairAccessible:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasElevator:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasStepFreeEntrance:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAdaptedBathroom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         accessibilityNotes:
-          type:
-            - string
-            - "null"
+          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -17098,177 +16560,97 @@ components:
       type: object
       properties:
         totalLandAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
         totalLandAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         arableAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
         arableAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         soilType:
-          type:
-            - string
-            - "null"
+          type: string
         hasWaterRights:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         waterSource:
-          type:
-            - string
-            - "null"
+          type: string
         irrigationType:
-          type:
-            - string
-            - "null"
+          type: string
         fencingType:
-          type:
-            - string
-            - "null"
+          type: string
         hasOutbuildings:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         outbuildingDetails:
-          type:
-            - string
-            - "null"
+          type: string
         currentUse:
-          type:
-            - string
-            - "null"
+          type: string
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
     CommercialDetailsResponse:
       type: object
       properties:
         usableAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
         usableAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         commonAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
         commonAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         floorLevel:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         ceilingHeightM:
-          type:
-            - number
-            - "null"
+          type: number
         hasStorefront:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSignageRights:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
         maxOccupancy:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         restroomCount:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         hasKitchenFacility:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         accessibilityCompliant:
-          type:
-            - boolean
-            - "null"
+          type: boolean
     IndustrialDetailsResponse:
       type: object
       properties:
         clearHeightM:
-          type:
-            - number
-            - "null"
+          type: number
         loadingDocks:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         driveInDoors:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         floorLoadCapacityKgSqm:
-          type:
-            - number
-            - "null"
+          type: number
         powerCapacityKva:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         hasThreePhasePower:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasCrane:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         craneCapacityTons:
-          type:
-            - number
-            - "null"
+          type: number
         hasHazmatCertification:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasVentilationSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasClimateControl:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         yardAreaValue:
-          type:
-            - number
-            - "null"
+          type: number
         yardAreaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         zoningClassification:
-          type:
-            - string
-            - "null"
+          type: string
     PropertyAmenityResponse:
       type: object
       properties:
@@ -17279,13 +16661,9 @@ components:
         amenityCategory:
           type: string
         amenityIcon:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amenityCategory
         - amenityIdentifier
@@ -17366,196 +16744,104 @@ components:
         country:
           type: string
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
         areaValue:
-          type:
-            - number
-            - "null"
+          type: number
         areaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         mainPhotoUrl:
-          type:
-            - string
-            - "null"
+          type: string
         mainPhotoThumbnailUrl:
-          type:
-            - string
-            - "null"
+          type: string
         yearBuilt:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         yearLastRenovated:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         constructionType:
-          type:
-            - string
-            - "null"
+          type: string
         foundationType:
-          type:
-            - string
-            - "null"
+          type: string
         roofType:
-          type:
-            - string
-            - "null"
+          type: string
         wallConstruction:
-          type:
-            - string
-            - "null"
+          type: string
         flooringType:
-          type:
-            - string
-            - "null"
+          type: string
         windowType:
-          type:
-            - string
-            - "null"
+          type: string
         numberOfFloors:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         structuralNotes:
-          type:
-            - string
-            - "null"
+          type: string
         energyEfficiencyRating:
-          type:
-            - string
-            - "null"
+          type: string
         energyCertificateExpiryDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         heatingType:
-          type:
-            - string
-            - "null"
+          type: string
         coolingType:
-          type:
-            - string
-            - "null"
+          type: string
         hotWaterSystem:
-          type:
-            - string
-            - "null"
+          type: string
         insulationNotes:
-          type:
-            - string
-            - "null"
+          type: string
         electricityConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         electricityCapacityAmps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         waterConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         hasGasConnection:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         sewageType:
-          type:
-            - string
-            - "null"
+          type: string
         internetConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         internetMaxSpeedMbps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         internetStatus:
-          type:
-            - string
-            - "null"
+          type: string
         parkingSpaces:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         parkingType:
-          type:
-            - string
-            - "null"
+          type: string
         hasSmokeDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasCoDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasFireExtinguisher:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSprinklerSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAlarmSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecurityCameras:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecureEntry:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         safetyNotes:
-          type:
-            - string
-            - "null"
+          type: string
         isWheelchairAccessible:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasElevator:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasStepFreeEntrance:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAdaptedBathroom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         accessibilityNotes:
-          type:
-            - string
-            - "null"
+          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsResponse"
         commercialDetails:
@@ -17565,24 +16851,18 @@ components:
         agriculturalDetails:
           $ref: "#/components/schemas/AgriculturalDetailsResponse"
         outdoorAreas:
-          type:
-            - array
-            - "null"
+          type: array
           items:
             $ref: "#/components/schemas/PropertyOutdoorAreaResponse"
         amenities:
-          type:
-            - array
-            - "null"
+          type: array
           items:
             $ref: "#/components/schemas/PropertyAmenityResponse"
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - city
@@ -17598,55 +16878,35 @@ components:
       type: object
       properties:
         bedrooms:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         bathrooms:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         furnished:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         petPolicy:
-          type:
-            - string
-            - "null"
+          type: string
     UpdatePhotoRequest:
       type: object
       properties:
         title:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     UpdatePaymentRequest:
       type: object
       properties:
         amount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         dueDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current payment collection status
           enum:
             - PENDING
@@ -17655,9 +16915,7 @@ components:
             - OVERDUE
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     ContractSummary:
       type: object
       properties:
@@ -17671,9 +16929,7 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         rentAmount:
           type: number
@@ -17709,29 +16965,19 @@ components:
         fileName:
           type: string
         fileSize:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int64
         mimeType:
-          type:
-            - string
-            - "null"
+          type: string
         title:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         uploadedAt:
           type: string
           format: date-time
         downloadUrl:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - entityIdentifier
         - entityType
@@ -17752,9 +16998,7 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -17783,17 +17027,11 @@ components:
         currency:
           type: string
         receivedAmount:
-          type:
-            - number
-            - "null"
+          type: number
         balance:
-          type:
-            - number
-            - "null"
+          type: number
         paymentDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         dueDate:
           type: string
@@ -17808,9 +17046,7 @@ components:
             - OVERDUE
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         proofOfPayment:
           $ref: "#/components/schemas/DocumentResponse"
         receipt:
@@ -17823,9 +17059,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - amount
@@ -17845,13 +17079,9 @@ components:
         lastName:
           type: string
         email:
-          type:
-            - string
-            - "null"
+          type: string
         phone:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - firstName
         - identifier
@@ -17865,9 +17095,7 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amount
         - receivalDate
@@ -17878,26 +17106,18 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - paymentDate
     UpdatePaymentInstructionRequest:
       type: object
       properties:
         name:
-          type:
-            - string
-            - "null"
+          type: string
         description:
-          type:
-            - string
-            - "null"
+          type: string
         paymentMethod:
-          type:
-            - string
-            - "null"
+          type: string
           description: Supported payment method for rent collection
           enum:
             - BANK_TRANSFER
@@ -17909,43 +17129,25 @@ components:
             - ZELLE
             - OTHER
         bankName:
-          type:
-            - string
-            - "null"
+          type: string
         accountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         iban:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 34
         bicSwift:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 11
         accountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         routingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         paymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         additionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         isDefault:
-          type:
-            - boolean
-            - "null"
+          type: boolean
     PaymentInstructionResponse:
       type: object
       properties:
@@ -17954,54 +17156,32 @@ components:
         name:
           type: string
         description:
-          type:
-            - string
-            - "null"
+          type: string
         paymentMethod:
           type: string
         bankName:
-          type:
-            - string
-            - "null"
+          type: string
         accountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         iban:
-          type:
-            - string
-            - "null"
+          type: string
         bicSwift:
-          type:
-            - string
-            - "null"
+          type: string
         accountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         routingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         paymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         additionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         isDefault:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -18012,9 +17192,7 @@ components:
       type: object
       properties:
         category:
-          type:
-            - string
-            - "null"
+          type: string
           description: Category of the property-related expense
           enum:
             - MAINTENANCE
@@ -18031,29 +17209,19 @@ components:
             - PROPERTY_TAX
             - OTHER
         amount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         expenseDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         description:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 500
           minLength: 1
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -18089,13 +17257,9 @@ components:
           type: string
           format: date
         description:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         documents:
           type: array
           items:
@@ -18104,9 +17268,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - amount
@@ -18120,13 +17282,9 @@ components:
       type: object
       properties:
         title:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
     UpdateContractRequest:
       type: object
       properties:
@@ -18144,39 +17302,25 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         signedDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         rentAmount:
           type: number
         depositAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         securityDeposit:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         rentAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         depositAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         securityDepositCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
           type: string
           description: How often rent payments are due
@@ -18185,37 +17329,23 @@ components:
             - QUARTERLY
             - ANNUALLY
         paymentDueDay:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         autoRenewal:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         renewalNoticeDays:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         terminationNoticeDays:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         lateFeePercentage:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         termsAndConditions:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -18491,35 +17621,23 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         signedDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         rentAmount:
           type: number
         depositAmount:
-          type:
-            - number
-            - "null"
+          type: number
         securityDeposit:
-          type:
-            - number
-            - "null"
+          type: number
         rentAmountCurrency:
           type: string
         depositAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         securityDepositCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
           type: string
           description: How often rent payments are due
@@ -18528,9 +17646,7 @@ components:
             - QUARTERLY
             - ANNUALLY
         paymentDueDay:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         autoRenewal:
           type: boolean
@@ -18541,9 +17657,7 @@ components:
           type: integer
           format: int32
         lateFeePercentage:
-          type:
-            - number
-            - "null"
+          type: number
         status:
           type: string
           description: Current lifecycle status of the contract
@@ -18554,17 +17668,11 @@ components:
             - TERMINATED
             - PENDING_SIGNATURE
         termsAndConditions:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         countryCode:
-          type:
-            - string
-            - "null"
+          type: string
         countryMetadata:
           oneOf:
             - $ref: "#/components/schemas/AlContractMetadata"
@@ -18617,9 +17725,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - autoRenewal
@@ -19333,9 +18439,7 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - effectiveFrom
         - rentAmount
@@ -19352,18 +18456,12 @@ components:
           type: string
           format: date
         effectiveTo:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         percentageChange:
-          type:
-            - number
-            - "null"
+          type: number
         createdAt:
           type: string
           format: date-time
@@ -19377,66 +18475,38 @@ components:
       type: object
       properties:
         paymentInstructionIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         isCustom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         customName:
-          type:
-            - string
-            - "null"
+          type: string
         customDescription:
-          type:
-            - string
-            - "null"
+          type: string
         customPaymentMethod:
-          type:
-            - string
-            - "null"
+          type: string
         customBankName:
-          type:
-            - string
-            - "null"
+          type: string
         customAccountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         customIban:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 34
         customBicSwift:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 11
         customAccountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         customRoutingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         customPaymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         customAdditionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         effectiveFrom:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - effectiveFrom
     ContractPaymentInstructionResponse:
@@ -19445,78 +18515,44 @@ components:
         identifier:
           type: string
         paymentInstructionIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         isCustom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         name:
-          type:
-            - string
-            - "null"
+          type: string
         description:
-          type:
-            - string
-            - "null"
+          type: string
         paymentMethod:
-          type:
-            - string
-            - "null"
+          type: string
         bankName:
-          type:
-            - string
-            - "null"
+          type: string
         accountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         iban:
-          type:
-            - string
-            - "null"
+          type: string
         bicSwift:
-          type:
-            - string
-            - "null"
+          type: string
         accountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         routingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         paymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         additionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         effectiveFrom:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         effectiveTo:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -19589,31 +18625,19 @@ components:
           type: string
           minLength: 1
         lastName:
-          type:
-            - string
-            - "null"
+          type: string
         email:
-          type:
-            - string
-            - "null"
+          type: string
           format: email
         phone:
-          type:
-            - string
-            - "null"
+          type: string
           pattern: ^\+[1-9]\d{1,14}$
         taxNumber:
-          type:
-            - string
-            - "null"
+          type: string
         idNumber:
-          type:
-            - string
-            - "null"
+          type: string
         additionalInfo:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - firstName
     CreateTenantAddressRequest:
@@ -19626,9 +18650,7 @@ components:
           type: string
           minLength: 1
         postalCode:
-          type:
-            - string
-            - "null"
+          type: string
         country:
           type: string
           minLength: 1
@@ -19642,27 +18664,19 @@ components:
             - WORK
             - HISTORIC
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Whether the address is currently in use
           enum:
             - ACTIVE
             - INACTIVE
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
           format: double
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - addressType
         - city
@@ -19674,9 +18688,7 @@ components:
         propertyIdentifier:
           type: string
         movedInAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - propertyIdentifier
@@ -19718,16 +18730,12 @@ components:
         role:
           type: string
         inviterName:
-          type:
-            - string
-            - "null"
+          type: string
         invitedAt:
           type: string
           format: date-time
         expiresAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         invitationUrl:
           type: string
@@ -19828,189 +18836,101 @@ components:
           type: string
           minLength: 1
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
         geocodeAccuracy:
-          type:
-            - string
-            - "null"
+          type: string
         areaValue:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         areaUnit:
-          type:
-            - string
-            - "null"
+          type: string
         yearBuilt:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         yearLastRenovated:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         constructionType:
-          type:
-            - string
-            - "null"
+          type: string
         foundationType:
-          type:
-            - string
-            - "null"
+          type: string
         roofType:
-          type:
-            - string
-            - "null"
+          type: string
         wallConstruction:
-          type:
-            - string
-            - "null"
+          type: string
         flooringType:
-          type:
-            - string
-            - "null"
+          type: string
         windowType:
-          type:
-            - string
-            - "null"
+          type: string
         numberOfFloors:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         structuralNotes:
-          type:
-            - string
-            - "null"
+          type: string
         energyEfficiencyRating:
-          type:
-            - string
-            - "null"
+          type: string
         energyCertificateExpiryDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         heatingType:
-          type:
-            - string
-            - "null"
+          type: string
         coolingType:
-          type:
-            - string
-            - "null"
+          type: string
         hotWaterSystem:
-          type:
-            - string
-            - "null"
+          type: string
         insulationNotes:
-          type:
-            - string
-            - "null"
+          type: string
         electricityConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         electricityCapacityAmps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         waterConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         hasGasConnection:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         sewageType:
-          type:
-            - string
-            - "null"
+          type: string
         internetConnectionType:
-          type:
-            - string
-            - "null"
+          type: string
         internetMaxSpeedMbps:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         internetStatus:
-          type:
-            - string
-            - "null"
+          type: string
         parkingSpaces:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         parkingType:
-          type:
-            - string
-            - "null"
+          type: string
         hasSmokeDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasCoDetectors:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasFireExtinguisher:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSprinklerSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAlarmSystem:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecurityCameras:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasSecureEntry:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         safetyNotes:
-          type:
-            - string
-            - "null"
+          type: string
         isWheelchairAccessible:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasElevator:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasStepFreeEntrance:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         hasAdaptedBathroom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         accessibilityNotes:
-          type:
-            - string
-            - "null"
+          type: string
         residentialDetails:
           $ref: "#/components/schemas/ResidentialDetailsRequest"
         commercialDetails:
@@ -20041,24 +18961,16 @@ components:
             - FAMILY
             - BUSINESS
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         occupantName:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 255
         monthlyImputedRent:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         notes:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 500
       required:
         - startDate
@@ -20070,9 +18982,7 @@ components:
           type: string
           format: date
         endReason:
-          type:
-            - string
-            - "null"
+          type: string
           description: Reason for ending the self-occupancy period
           enum:
             - CONVERTING_TO_RENTAL
@@ -20080,9 +18990,7 @@ components:
             - RENOVATION
             - OTHER
         notes:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 500
       required:
         - endDate
@@ -20108,13 +19016,9 @@ components:
           type: string
           minLength: 1
         source:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amount
         - currency
@@ -20135,9 +19039,7 @@ components:
             - SPECIAL_ASSESSMENT
             - OTHER
         authority:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
           type: number
         currency:
@@ -20147,39 +19049,27 @@ components:
           type: string
           minLength: 1
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         taxYear:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           maximum: 2100
           minimum: 1900
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the tax obligation
           enum:
             - ACTIVE
             - EXPIRED
             - EXEMPT
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - annualAmount
         - currency
@@ -20201,22 +19091,14 @@ components:
             - RENT_GUARANTEE
             - OTHER
         provider:
-          type:
-            - string
-            - "null"
+          type: string
         policyNumber:
-          type:
-            - string
-            - "null"
+          type: string
         coverageAmount:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         coverageAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         annualPremium:
           type: number
         annualPremiumCurrency:
@@ -20226,28 +19108,20 @@ components:
           type: string
           minLength: 1
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the insurance policy
           enum:
             - ACTIVE
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - annualPremium
         - annualPremiumCurrency
@@ -20275,63 +19149,41 @@ components:
             - INTEREST_ONLY
             - HYBRID
         lenderName:
-          type:
-            - string
-            - "null"
+          type: string
         loanNumber:
-          type:
-            - string
-            - "null"
+          type: string
         originalAmount:
           type: number
         originalAmountCurrency:
           type: string
           minLength: 1
         currentBalance:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         currentBalanceCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         interestRate:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         monthlyPayment:
-          type:
-            - number
-            - "null"
+          type: number
           exclusiveMinimum: 0
         monthlyPaymentCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentVariable:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         startDate:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         termMonths:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
           exclusiveMinimum: 0
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the financing arrangement
           enum:
             - ACTIVE
@@ -20339,9 +19191,7 @@ components:
             - REFINANCED
             - DEFAULTED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - financingType
         - originalAmount
@@ -20357,32 +19207,22 @@ components:
         totalAmount:
           type: number
         principalAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         interestAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         escrowAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         extraPayment:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         currency:
           type: string
           minLength: 1
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Status of a financing installment payment
           enum:
             - SCHEDULED
@@ -20390,13 +19230,9 @@ components:
             - MISSED
             - LATE
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         deductFromBalance:
-          type:
-            - boolean
-            - "null"
+          type: boolean
       required:
         - currency
         - paymentDate
@@ -20442,9 +19278,7 @@ components:
             - UTILITIES
             - OTHER
         name:
-          type:
-            - string
-            - "null"
+          type: string
         annualAmount:
           type: number
         currency:
@@ -20454,32 +19288,22 @@ components:
           type: string
           minLength: 1
         dueMonths:
-          type:
-            - string
-            - "null"
+          type: string
         startDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         status:
-          type:
-            - string
-            - "null"
+          type: string
           description: Current status of the fee obligation
           enum:
             - ACTIVE
             - EXPIRED
             - CANCELLED
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - annualAmount
         - currency
@@ -20492,9 +19316,7 @@ components:
           type: string
           minLength: 1
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amenityIdentifier
     BulkDownloadRequest:
@@ -20523,17 +19345,11 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         markAsPaid:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         paymentDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
       required:
         - amount
@@ -20549,9 +19365,7 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amount
         - receivalDate
@@ -20593,9 +19407,7 @@ components:
           type: string
           minLength: 1
         description:
-          type:
-            - string
-            - "null"
+          type: string
         paymentMethod:
           type: string
           description: Supported payment method for rent collection
@@ -20609,43 +19421,25 @@ components:
             - ZELLE
             - OTHER
         bankName:
-          type:
-            - string
-            - "null"
+          type: string
         accountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         iban:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 34
         bicSwift:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 11
         accountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         routingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         paymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         additionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         isDefault:
-          type:
-            - boolean
-            - "null"
+          type: boolean
       required:
         - name
         - paymentMethod
@@ -20662,31 +19456,19 @@ components:
         channel:
           type: string
         subject:
-          type:
-            - string
-            - "null"
+          type: string
         body:
-          type:
-            - string
-            - "null"
+          type: string
         recipientEmail:
-          type:
-            - string
-            - "null"
+          type: string
         recipientPhone:
-          type:
-            - string
-            - "null"
+          type: string
         status:
           type: string
         providerStatus:
-          type:
-            - string
-            - "null"
+          type: string
         providerError:
-          type:
-            - string
-            - "null"
+          type: string
         openCount:
           type: integer
           format: int32
@@ -20694,32 +19476,22 @@ components:
           type: integer
           format: int32
         firstOpenedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         firstClickedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         resentFromIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         resendReason:
-          type:
-            - string
-            - "null"
+          type: string
         demoBlocked:
           type: boolean
         createdAt:
           type: string
           format: date-time
         statusUpdatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - channel
@@ -20740,9 +19512,7 @@ components:
           type: string
           minLength: 1
         postalCode:
-          type:
-            - string
-            - "null"
+          type: string
         country:
           type: string
           minLength: 1
@@ -20754,17 +19524,11 @@ components:
       type: object
       properties:
         latitude:
-          type:
-            - number
-            - "null"
+          type: number
         longitude:
-          type:
-            - number
-            - "null"
+          type: number
         accuracy:
-          type:
-            - string
-            - "null"
+          type: string
     CreateExpenseRequest:
       type: object
       description: Request to create a new property expense
@@ -20801,9 +19565,7 @@ components:
           maxLength: 500
           minLength: 1
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - amount
         - category
@@ -20838,9 +19600,7 @@ components:
       type: object
       properties:
         tenantIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         newTenant:
           $ref: "#/components/schemas/CreateTenantRequest"
         role:
@@ -20879,39 +19639,25 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         signedDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         rentAmount:
           type: number
         depositAmount:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         securityDeposit:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         rentAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         depositAmountCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         securityDepositCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         paymentFrequency:
           type: string
           description: How often rent payments are due
@@ -20920,37 +19666,23 @@ components:
             - QUARTERLY
             - ANNUALLY
         paymentDueDay:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         autoRenewal:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         renewalNoticeDays:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         terminationNoticeDays:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         lateFeePercentage:
-          type:
-            - number
-            - "null"
+          type: number
           minimum: 0
         termsAndConditions:
-          type:
-            - string
-            - "null"
+          type: string
         notes:
-          type:
-            - string
-            - "null"
+          type: string
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -20970,9 +19702,7 @@ components:
       type: object
       properties:
         tenantIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         newTenant:
           $ref: "#/components/schemas/CreateTenantRequest"
         role:
@@ -20991,9 +19721,7 @@ components:
       type: object
       properties:
         tenantIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         newTenant:
           $ref: "#/components/schemas/CreateTenantRequest"
         validPartySource:
@@ -21007,13 +19735,9 @@ components:
           maximum: 24
           minimum: 1
         markAsPaid:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         paymentDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
       required:
         - count
@@ -21030,9 +19754,7 @@ components:
             - TERMINATED
             - PENDING_SIGNATURE
         reason:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - status
     CreateRentPeriodRequest:
@@ -21045,9 +19767,7 @@ components:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - effectiveFrom
         - rentAmount
@@ -21055,66 +19775,38 @@ components:
       type: object
       properties:
         paymentInstructionIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         isCustom:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         customName:
-          type:
-            - string
-            - "null"
+          type: string
         customDescription:
-          type:
-            - string
-            - "null"
+          type: string
         customPaymentMethod:
-          type:
-            - string
-            - "null"
+          type: string
         customBankName:
-          type:
-            - string
-            - "null"
+          type: string
         customAccountHolderName:
-          type:
-            - string
-            - "null"
+          type: string
         customIban:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 34
         customBicSwift:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 11
         customAccountNumber:
-          type:
-            - string
-            - "null"
+          type: string
         customRoutingNumber:
-          type:
-            - string
-            - "null"
+          type: string
         customPaymentReference:
-          type:
-            - string
-            - "null"
+          type: string
         customAdditionalDetails:
-          type:
-            - string
-            - "null"
+          type: string
         effectiveFrom:
           type: string
           format: date
         notes:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - effectiveFrom
     CreateCalendarFeedRequest:
@@ -21129,17 +19821,11 @@ components:
             - PROPERTY_PAYMENTS
             - TENANT_PAYMENTS
         contractIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         propertyIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         tenantIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - feedType
     CalendarFeedResponse:
@@ -21156,21 +19842,13 @@ components:
             - PROPERTY_PAYMENTS
             - TENANT_PAYMENTS
         contractIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         propertyIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         tenantIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         entityLabel:
-          type:
-            - string
-            - "null"
+          type: string
         enabled:
           type: boolean
         feedUrl:
@@ -21179,9 +19857,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -21217,13 +19893,9 @@ components:
           maxLength: 2147483647
           minLength: 8
         invitationToken:
-          type:
-            - string
-            - "null"
+          type: string
         registrationInvitationCode:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - email
         - firstName
@@ -21233,58 +19905,34 @@ components:
       type: object
       properties:
         theme:
-          type:
-            - string
-            - "null"
+          type: string
           pattern: light|dark|system
         language:
-          type:
-            - string
-            - "null"
+          type: string
           pattern: "[a-z]{2}"
         timezone:
-          type:
-            - string
-            - "null"
+          type: string
         dateFormat:
-          type:
-            - string
-            - "null"
+          type: string
         currencyFormat:
-          type:
-            - string
-            - "null"
+          type: string
         emailNotifications:
-          type:
-            - boolean
-            - "null"
+          type: boolean
         smsNotifications:
-          type:
-            - boolean
-            - "null"
+          type: boolean
     UserPreferencesResponse:
       type: object
       properties:
         theme:
-          type:
-            - string
-            - "null"
+          type: string
         language:
-          type:
-            - string
-            - "null"
+          type: string
         timezone:
-          type:
-            - string
-            - "null"
+          type: string
         dateFormat:
-          type:
-            - string
-            - "null"
+          type: string
         currencyFormat:
-          type:
-            - string
-            - "null"
+          type: string
         emailNotifications:
           type: boolean
         smsNotifications:
@@ -21338,14 +19986,10 @@ components:
         property:
           $ref: "#/components/schemas/PropertySummary"
         movedInAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         movedOutAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         actionType:
           type: string
@@ -21354,9 +19998,7 @@ components:
             - LINKED
             - UNLINKED
         performedBy:
-          type:
-            - string
-            - "null"
+          type: string
         performedAt:
           type: string
           format: date-time
@@ -21376,16 +20018,12 @@ components:
         action:
           type: string
         userName:
-          type:
-            - string
-            - "null"
+          type: string
         timestamp:
           type: string
           format: date-time
         description:
-          type:
-            - string
-            - "null"
+          type: string
         changedFields:
           type: object
           additionalProperties: {}
@@ -21536,9 +20174,7 @@ components:
       type: object
       properties:
         earliestDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
     PropertyComparisonResponse:
       type: object
@@ -21700,26 +20336,20 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         financingType:
           type: string
         status:
           type: string
         lenderName:
-          type:
-            - string
-            - "null"
+          type: string
         originalAmount:
           type: number
         originalAmountCurrency:
           type: string
         interestRate:
-          type:
-            - number
-            - "null"
+          type: number
       required:
         - financingType
         - identifier
@@ -21731,9 +20361,7 @@ components:
       type: object
       properties:
         acquisitionDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         entries:
           type: array
@@ -21761,18 +20389,12 @@ components:
           type: string
           format: date
         endDate:
-          type:
-            - string
-            - "null"
+          type: string
           format: date
         description:
-          type:
-            - string
-            - "null"
+          type: string
         metadata:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - identifier
         - startDate
@@ -21805,33 +20427,19 @@ components:
           items:
             $ref: "#/components/schemas/PropertyFeeResponse"
         totalFinancingBalance:
-          type:
-            - number
-            - "null"
+          type: number
         totalAnnualInsurance:
-          type:
-            - number
-            - "null"
+          type: number
         totalAnnualTaxes:
-          type:
-            - number
-            - "null"
+          type: number
         totalAnnualFees:
-          type:
-            - number
-            - "null"
+          type: number
         totalAnnualCosts:
-          type:
-            - number
-            - "null"
+          type: number
         netWorth:
-          type:
-            - number
-            - "null"
+          type: number
         currency:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - fees
         - financings
@@ -21890,17 +20498,11 @@ components:
       type: object
       properties:
         purchasePrice:
-          type:
-            - number
-            - "null"
+          type: number
         currentMarketValue:
-          type:
-            - number
-            - "null"
+          type: number
         mortgageBalance:
-          type:
-            - number
-            - "null"
+          type: number
     ExpenseBreakdownChartData:
       type: object
       properties:
@@ -22022,49 +20624,27 @@ components:
       type: object
       properties:
         totalRoiPercent:
-          type:
-            - number
-            - "null"
+          type: number
         annualizedRoiPercent:
-          type:
-            - number
-            - "null"
+          type: number
         capRatePercent:
-          type:
-            - number
-            - "null"
+          type: number
         cashOnCashPercent:
-          type:
-            - number
-            - "null"
+          type: number
         monthlyCashFlow:
-          type:
-            - number
-            - "null"
+          type: number
         annualNoi:
-          type:
-            - number
-            - "null"
+          type: number
         totalEquity:
-          type:
-            - number
-            - "null"
+          type: number
         equityGrowthPercent:
-          type:
-            - number
-            - "null"
+          type: number
         occupancyRatePercent:
-          type:
-            - number
-            - "null"
+          type: number
         grossRentMultiplier:
-          type:
-            - number
-            - "null"
+          type: number
         currency:
-          type:
-            - string
-            - "null"
+          type: string
     PageResponsePhotoResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
@@ -22147,9 +20727,7 @@ components:
         overdueAmount:
           type: number
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         monthlyTrend:
           type: array
           items:
@@ -22484,13 +21062,9 @@ components:
         group:
           type: string
         helpText:
-          type:
-            - string
-            - "null"
+          type: string
         unit:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - enumValues
         - group
@@ -22513,19 +21087,13 @@ components:
       type: object
       properties:
         min:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         max:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         pattern:
-          type:
-            - string
-            - "null"
+          type: string
     PageResponseRecentActivityResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata

@@ -34,12 +34,7 @@ export const PropertyMap = ({
 
   useEffect(() => {
     // If coordinates are already provided, use them directly
-    if (
-      latitude !== null &&
-      latitude !== undefined &&
-      longitude !== null &&
-      longitude !== undefined
-    ) {
+    if (latitude != null && longitude != null) {
       setCoordinates({ lat: latitude, lng: longitude });
       setLoading(false);
       setError(null);

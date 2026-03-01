@@ -3693,16 +3693,12 @@ components:
           type: integer
           format: int64
         ownerEmail:
-          type:
-            - string
-            - "null"
+          type: string
         createdAt:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -3737,9 +3733,7 @@ components:
         displayName:
           type: string
         description:
-          type:
-            - string
-            - "null"
+          type: string
         maxRequests:
           type: integer
           format: int32
@@ -3749,14 +3743,10 @@ components:
         enabled:
           type: boolean
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         updatedBy:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - displayName
         - enabled
@@ -3802,14 +3792,10 @@ components:
           type: integer
           format: int32
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         updatedBy:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - maxCodesPerHour
         - policyMatrix
@@ -3829,28 +3815,20 @@ components:
         code:
           type: string
         maxUsages:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         usageCount:
           type: integer
           format: int32
         expiresAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         revoked:
           type: boolean
         revokedBy:
-          type:
-            - string
-            - "null"
+          type: string
         revokedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         status:
           type: string
@@ -3860,14 +3838,10 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         note:
-          type:
-            - string
-            - "null"
+          type: string
         usages:
           type: array
           items:
@@ -3887,9 +3861,7 @@ components:
         userEmail:
           type: string
         userName:
-          type:
-            - string
-            - "null"
+          type: string
         usedAt:
           type: string
           format: date-time
@@ -3920,23 +3892,15 @@ components:
       type: object
       properties:
         code:
-          type:
-            - string
-            - "null"
+          type: string
         maxUsages:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         expiresAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         note:
-          type:
-            - string
-            - "null"
+          type: string
     RegistrationInvitationResponse:
       type: object
       properties:
@@ -3945,17 +3909,13 @@ components:
         code:
           type: string
         maxUsages:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         usageCount:
           type: integer
           format: int32
         expiresAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         revoked:
           type: boolean
@@ -3995,43 +3955,27 @@ components:
         identifier:
           type: string
         teamIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         teamName:
-          type:
-            - string
-            - "null"
+          type: string
         notificationType:
           type: string
         channel:
           type: string
         subject:
-          type:
-            - string
-            - "null"
+          type: string
         body:
-          type:
-            - string
-            - "null"
+          type: string
         recipientEmail:
-          type:
-            - string
-            - "null"
+          type: string
         recipientPhone:
-          type:
-            - string
-            - "null"
+          type: string
         status:
           type: string
         providerStatus:
-          type:
-            - string
-            - "null"
+          type: string
         providerError:
-          type:
-            - string
-            - "null"
+          type: string
         openCount:
           type: integer
           format: int32
@@ -4039,32 +3983,22 @@ components:
           type: integer
           format: int32
         firstOpenedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         firstClickedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         resentFromIdentifier:
-          type:
-            - string
-            - "null"
+          type: string
         resendReason:
-          type:
-            - string
-            - "null"
+          type: string
         demoBlocked:
           type: boolean
         createdAt:
           type: string
           format: date-time
         statusUpdatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - channel
@@ -4079,18 +4013,14 @@ components:
       type: object
       properties:
         level:
-          type:
-            - string
-            - "null"
+          type: string
     LoggerConfigurationResponse:
       type: object
       properties:
         name:
           type: string
         configuredLevel:
-          type:
-            - string
-            - "null"
+          type: string
         effectiveLevel:
           type: string
       required:
@@ -4104,9 +4034,7 @@ components:
           format: email
           minLength: 1
         username:
-          type:
-            - string
-            - "null"
+          type: string
           maxLength: 50
           minLength: 3
         firstName:
@@ -4139,26 +4067,18 @@ components:
         email:
           type: string
         firstName:
-          type:
-            - string
-            - "null"
+          type: string
         lastName:
-          type:
-            - string
-            - "null"
+          type: string
         enabled:
           type: boolean
         emailVerified:
           type: boolean
         createdAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         lastLogin:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         requiredActions:
           type: array
@@ -4179,17 +4099,11 @@ components:
         email:
           type: string
         firstName:
-          type:
-            - string
-            - "null"
+          type: string
         lastName:
-          type:
-            - string
-            - "null"
+          type: string
         phone:
-          type:
-            - string
-            - "null"
+          type: string
         emailVerified:
           type: boolean
         disabled:
@@ -4206,9 +4120,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - createdAt
@@ -4288,9 +4200,7 @@ components:
           type: string
           format: date-time
         updatedAt:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         members:
           type: array
@@ -4341,13 +4251,9 @@ components:
       type: object
       properties:
         totalActiveRent:
-          type:
-            - number
-            - "null"
+          type: number
         currency:
-          type:
-            - string
-            - "null"
+          type: string
         propertyStatusDistribution:
           type: object
           additionalProperties:
@@ -4377,17 +4283,11 @@ components:
       type: object
       properties:
         email:
-          type:
-            - string
-            - "null"
+          type: string
         firstName:
-          type:
-            - string
-            - "null"
+          type: string
         lastName:
-          type:
-            - string
-            - "null"
+          type: string
         role:
           type: string
         isOwner:
@@ -4406,32 +4306,20 @@ components:
       type: object
       properties:
         paymentsAheadCount:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         autoGenerationEnabled:
           type: boolean
         defaultCurrency:
-          type:
-            - string
-            - "null"
+          type: string
         defaultCountry:
-          type:
-            - string
-            - "null"
+          type: string
         timezone:
-          type:
-            - string
-            - "null"
+          type: string
         dateFormat:
-          type:
-            - string
-            - "null"
+          type: string
         fiscalYearStartMonth:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - autoGenerationEnabled
     BackofficeSystemInfoResponse:
@@ -4469,28 +4357,18 @@ components:
         version:
           type: string
         gitCommit:
-          type:
-            - string
-            - "null"
+          type: string
         gitCommitFull:
-          type:
-            - string
-            - "null"
+          type: string
         gitBranch:
-          type:
-            - string
-            - "null"
+          type: string
         gitCommitTime:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         gitDirty:
           type: boolean
         buildTime:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
       required:
         - gitDirty
@@ -4597,24 +4475,16 @@ components:
       type: object
       properties:
         version:
-          type:
-            - string
-            - "null"
+          type: string
         description:
-          type:
-            - string
-            - "null"
+          type: string
         state:
           type: string
         installedOn:
-          type:
-            - string
-            - "null"
+          type: string
           format: date-time
         executionTimeMs:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int32
         script:
           type: string
@@ -4625,9 +4495,7 @@ components:
       type: object
       properties:
         currentVersion:
-          type:
-            - string
-            - "null"
+          type: string
         appliedCount:
           type: integer
           format: int32
@@ -4725,18 +4593,12 @@ components:
             - DISABLED
             - UNKNOWN
         latencyMs:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int64
         details:
-          type:
-            - string
-            - "null"
+          type: string
         error:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - name
         - status
@@ -4762,31 +4624,19 @@ components:
         jobClass:
           type: string
         triggerName:
-          type:
-            - string
-            - "null"
+          type: string
         triggerGroup:
-          type:
-            - string
-            - "null"
+          type: string
         triggerType:
-          type:
-            - string
-            - "null"
+          type: string
         scheduleExpression:
-          type:
-            - string
-            - "null"
+          type: string
         triggerState:
           type: string
         nextFireTime:
-          type:
-            - string
-            - "null"
+          type: string
         previousFireTime:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - jobClass
         - jobGroup
@@ -4804,24 +4654,16 @@ components:
         startedAt:
           type: string
         endedAt:
-          type:
-            - string
-            - "null"
+          type: string
         durationMs:
-          type:
-            - integer
-            - "null"
+          type: integer
           format: int64
         status:
           type: string
         errorMessage:
-          type:
-            - string
-            - "null"
+          type: string
         nodeId:
-          type:
-            - string
-            - "null"
+          type: string
       required:
         - id
         - jobGroup

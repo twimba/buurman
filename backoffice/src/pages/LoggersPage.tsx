@@ -121,7 +121,7 @@ export const LoggersPage = () => {
   }, [loggers, debouncedSearch, isRegex, levelFilter]);
 
   const configuredCount = useMemo(
-    () => loggers?.filter((l) => l.configuredLevel !== null).length ?? 0,
+    () => loggers?.filter((l) => l.configuredLevel != null).length ?? 0,
     [loggers],
   );
 

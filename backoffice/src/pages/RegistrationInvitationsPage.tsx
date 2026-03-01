@@ -141,7 +141,7 @@ export function RegistrationInvitationsPage() {
   };
 
   const formatUsage = (inv: RegistrationInvitation) => {
-    if (inv.maxUsages === null) {
+    if (inv.maxUsages == null) {
       return `${inv.usageCount} / \u221E`;
     }
     return `${inv.usageCount} / ${inv.maxUsages}`;

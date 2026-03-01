@@ -48,9 +48,7 @@ function humanize(val: string): string {
 }
 
 function countFilled(values: (unknown | null | undefined)[]): number {
-  return values.filter(
-    (v) => v !== null && v !== undefined && v !== '' && v !== false
-  ).length;
+  return values.filter((v) => v != null && v !== '' && v !== false).length;
 }
 
 /** Build dropdown options from a readonly const array */

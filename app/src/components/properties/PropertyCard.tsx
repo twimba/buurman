@@ -97,7 +97,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               <span className="text-sm">{bathrooms}</span>
             </div>
           )}
-          {property.areaValue !== null && (
+          {property.areaValue != null && (
             <div className="flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]">
               <Ruler className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
               <span className="text-sm">

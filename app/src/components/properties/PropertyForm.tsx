@@ -342,11 +342,7 @@ export const PropertyForm = ({
       newErrors.country = 'Country is required';
     }
 
-    if (
-      formData.areaValue !== null &&
-      formData.areaValue !== undefined &&
-      formData.areaValue <= 0
-    ) {
+    if (formData.areaValue != null && formData.areaValue <= 0) {
       newErrors.areaValue = 'Area must be greater than 0';
     }
 
