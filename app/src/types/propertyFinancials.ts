@@ -7,12 +7,10 @@ export {
   type PropertyAcquisitionResponseAcquisitionType,
 } from '../generated/models';
 
-// DepreciationMethod — generated type includes | null; re-export value and non-nullable type
-import { PropertyAcquisitionResponseDepreciationMethod as _DepreciationMethodConst } from '../generated/models';
-export const DepreciationMethod = _DepreciationMethodConst;
-export type DepreciationMethod =
-  (typeof _DepreciationMethodConst)[keyof typeof _DepreciationMethodConst];
-export type PropertyAcquisitionResponseDepreciationMethod = DepreciationMethod;
+export {
+  PropertyAcquisitionResponseDepreciationMethod as DepreciationMethod,
+  type PropertyAcquisitionResponseDepreciationMethod,
+} from '../generated/models';
 
 export {
   PropertyValuationResponseValuationType as ValuationType,
@@ -84,6 +82,7 @@ export enum PaymentFrequency {
 // ============================================================
 
 import { PropertyAcquisitionResponseAcquisitionType } from '../generated/models';
+import { PropertyAcquisitionResponseDepreciationMethod } from '../generated/models';
 import { PropertyValuationResponseValuationType } from '../generated/models';
 import { PropertyFinancingResponseFinancingType } from '../generated/models';
 import { PropertyFinancingResponseRateType } from '../generated/models';
@@ -454,9 +453,9 @@ export const formatDepreciationMethod = (
 ): string => {
   const labels: Record<PropertyAcquisitionResponseDepreciationMethod, string> =
     {
-      [_DepreciationMethodConst.STRAIGHT_LINE]: 'Straight Line',
-      [_DepreciationMethodConst.DECLINING_BALANCE]: 'Declining Balance',
-      [_DepreciationMethodConst.NONE]: 'None',
+      [PropertyAcquisitionResponseDepreciationMethod.STRAIGHT_LINE]: 'Straight Line',
+      [PropertyAcquisitionResponseDepreciationMethod.DECLINING_BALANCE]: 'Declining Balance',
+      [PropertyAcquisitionResponseDepreciationMethod.NONE]: 'None',
     };
   return labels[method];
 };

@@ -2,18 +2,16 @@
 export {
   OccupancyPeriodResponseType as OccupancyType,
   type OccupancyPeriodResponseType,
+  OccupancyPeriodResponseEndReason as OccupancyEndReason,
+  type OccupancyPeriodResponseEndReason,
 } from '../generated/models';
-
-// EndReason — generated type includes | null; re-export value and non-nullable type
-import { OccupancyPeriodResponseEndReason as _OccupancyEndReasonConst } from '../generated/models';
-export const OccupancyEndReason = _OccupancyEndReasonConst;
-export type OccupancyEndReason =
-  (typeof _OccupancyEndReasonConst)[keyof typeof _OccupancyEndReasonConst];
-export type OccupancyPeriodResponseEndReason = OccupancyEndReason;
 
 // Interfaces — kept manual (generated adds | null to optional fields)
 
-import { OccupancyPeriodResponseType } from '../generated/models';
+import {
+  OccupancyPeriodResponseType,
+  OccupancyPeriodResponseEndReason,
+} from '../generated/models';
 
 // Request interfaces — manual (generated adds | null to all optional fields)
 
@@ -37,7 +35,7 @@ export interface UpdateOccupancyPeriodRequest {
 
 export interface EndOccupancyPeriodRequest {
   endDate: string;
-  endReason?: OccupancyEndReason;
+  endReason?: OccupancyPeriodResponseEndReason;
   notes?: string;
 }
 
@@ -91,9 +89,9 @@ export const OCCUPANCY_TYPE_LABELS: Record<
   [OccupancyPeriodResponseType.BUSINESS]: 'Business',
 };
 
-export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyEndReason, string> = {
-  [OccupancyEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
-  [OccupancyEndReason.SELLING]: 'Selling',
-  [OccupancyEndReason.RENOVATION]: 'Renovation',
-  [OccupancyEndReason.OTHER]: 'Other',
+export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyPeriodResponseEndReason, string> = {
+  [OccupancyPeriodResponseEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
+  [OccupancyPeriodResponseEndReason.SELLING]: 'Selling',
+  [OccupancyPeriodResponseEndReason.RENOVATION]: 'Renovation',
+  [OccupancyPeriodResponseEndReason.OTHER]: 'Other',
 };
