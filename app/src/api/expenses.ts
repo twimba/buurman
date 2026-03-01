@@ -7,12 +7,8 @@ import {
   GetExpensesParams,
 } from '../types/expense';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
-import {
-  PageResponse,
-  PageParams,
-  ExpenseStatsResponse,
-  BulkCreateResult,
-} from '@/types/common';
+import type { ExpenseStatsResponse } from '@/generated/models';
+import { PageResponse, PageParams, BulkCreateResult } from '@/types/common';
 
 export const getExpenses = async (
   params?: GetExpensesParams & PageParams

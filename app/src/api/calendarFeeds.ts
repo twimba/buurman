@@ -1,8 +1,8 @@
 import client from './client';
-import {
+import type {
   CalendarFeedResponse,
   CreateCalendarFeedRequest,
-} from '../types/calendarFeed';
+} from '../generated/models';
 
 export const getCalendarFeeds = async (): Promise<CalendarFeedResponse[]> => {
   const response = await client.get('/calendar/feeds');

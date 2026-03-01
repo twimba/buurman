@@ -19,7 +19,7 @@ import {
 } from '@/hooks/usePaymentHooks';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
-import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';

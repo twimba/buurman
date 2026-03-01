@@ -1,5 +1,5 @@
 import client from './client';
-import { HealthResponse, InfoResponse } from '@/types/health';
+import type { HealthResponse, InfoResponse } from '@/generated/models';
 
 export const getHealth = async (): Promise<HealthResponse> => {
   const { data } = await client.get<HealthResponse>('/health');

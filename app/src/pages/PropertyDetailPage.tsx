@@ -15,7 +15,7 @@ import {
 } from '@/hooks/usePropertyHooks';
 import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
-import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import {

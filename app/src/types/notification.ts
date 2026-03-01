@@ -1,5 +1,3 @@
-export type { NotificationStatsResponse } from '../generated/models';
-
 // Enums — generated NotificationResponse uses untyped `string` for these fields,
 // so we keep manual enums for stronger typing throughout the app.
 

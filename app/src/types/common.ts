@@ -1,10 +1,3 @@
-export type {
-  PaymentStatsResponse,
-  ExpenseStatsResponse,
-  MonthlyTrend,
-  CategoryTotal,
-} from '../generated/models';
-
 // Generic wrappers — not in OpenAPI spec, kept manually
 export interface ApiResponse<T> {
   data: T;

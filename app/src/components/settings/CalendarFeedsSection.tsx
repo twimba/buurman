@@ -22,9 +22,9 @@ import {
   useDeleteCalendarFeed,
 } from '../../hooks/useCalendarFeedHooks';
 import {
-  CalendarFeedType,
-  CalendarFeedResponse,
-} from '../../types/calendarFeed';
+  CalendarFeedResponseFeedType as CalendarFeedType,
+  type CalendarFeedResponse,
+} from '../../generated/models';
 import { useToast } from '../../context/ToastContext';
 
 export const CalendarFeedsSection = () => {

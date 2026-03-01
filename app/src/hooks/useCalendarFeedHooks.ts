@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as calendarFeedsApi from '../api/calendarFeeds';
-import { CreateCalendarFeedRequest } from '../types/calendarFeed';
+import type { CreateCalendarFeedRequest } from '../generated/models';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
