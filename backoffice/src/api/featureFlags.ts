@@ -18,7 +18,7 @@ export interface TeamFlagEvaluation {
 
 export interface UpdateFlagRequest {
   enabled?: boolean;
-  value?: string | null;
+  value?: string;
 }
 
 export interface FeatureFlagUpdateResponse {
@@ -36,7 +36,7 @@ export interface SegmentFlagOverride {
 export interface SegmentEvaluation {
   segmentId: number;
   segmentName: string;
-  description: string | null;
+  description?: string;
   overrides: Record<string, SegmentFlagOverride>;
 }
 

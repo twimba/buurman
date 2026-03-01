@@ -46,9 +46,9 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
     try {
       await createMutation.mutateAsync({
         code: code.trim().toLowerCase(),
-        maxUsages: unlimited ? null : parseInt(maxUsages, 10) || 1,
-        expiresAt: neverExpires ? null : expiresAt || null,
-        note: note || null,
+        maxUsages: unlimited ? undefined : parseInt(maxUsages, 10) || 1,
+        expiresAt: neverExpires ? undefined : expiresAt || undefined,
+        note: note || undefined,
       });
       onClose();
     } catch (err: unknown) {

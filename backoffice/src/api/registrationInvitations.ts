@@ -3,9 +3,9 @@ import client from "./client";
 export interface RegistrationInvitation {
   identifier: string;
   code: string;
-  maxUsages: number | null;
+  maxUsages?: number;
   usageCount: number;
-  expiresAt: string | null;
+  expiresAt?: string;
   revoked: boolean;
   status: "ACTIVE" | "EXPIRED" | "EXHAUSTED" | "REVOKED";
   createdBy: string;
@@ -20,22 +20,22 @@ export interface UsageRecord {
 }
 
 export interface RegistrationInvitationDetail extends RegistrationInvitation {
-  revokedBy: string | null;
-  revokedAt: string | null;
+  revokedBy?: string;
+  revokedAt?: string;
   updatedAt: string;
-  note: string | null;
+  note?: string;
   usages: UsageRecord[];
 }
 
 export interface CreateRegistrationInvitationRequest {
   code?: string;
-  maxUsages?: number | null;
-  expiresAt?: string | null;
-  note?: string | null;
+  maxUsages?: number;
+  expiresAt?: string;
+  note?: string;
 }
 
 export interface UpdateRegistrationInvitationNoteRequest {
-  note: string | null;
+  note?: string;
 }
 
 export interface SendRegistrationInvitationRequest {

@@ -6,14 +6,14 @@ export {
   type OccupancyPeriodResponseEndReason,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds | null to optional fields)
+// Interfaces — kept manual (generated adds to optional fields)
 
 import {
   OccupancyPeriodResponseType,
   OccupancyPeriodResponseEndReason,
 } from '../generated/models';
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreateOccupancyPeriodRequest {
   startDate: string;
@@ -43,39 +43,39 @@ export interface OccupancyPeriodResponse {
   identifier: string;
   propertyIdentifier: string;
   startDate: string;
-  endDate?: string | null;
+  endDate?: string;
   type: OccupancyPeriodResponseType;
-  occupantName?: string | null;
-  monthlyImputedRent?: number | null;
-  endReason?: OccupancyPeriodResponseEndReason | null;
-  notes?: string | null;
+  occupantName?: string;
+  monthlyImputedRent?: number;
+  endReason?: OccupancyPeriodResponseEndReason;
+  notes?: string;
   createdAt: string;
-  updatedAt?: string | null;
+  updatedAt?: string;
 }
 
 export interface TimelineEntry {
   type: 'SELF_OCCUPANCY' | 'CONTRACT' | 'VACANCY';
   identifier: string;
   startDate: string;
-  endDate?: string | null;
-  description?: string | null;
-  metadata?: string | null;
+  endDate?: string;
+  description?: string;
+  metadata?: string;
 }
 
 export interface FinancingTimelineEntry {
   identifier: string;
   startDate: string;
-  endDate?: string | null;
+  endDate?: string;
   financingType: string;
   status: string;
-  lenderName?: string | null;
+  lenderName?: string;
   originalAmount: number;
   originalAmountCurrency: string;
-  interestRate?: number | null;
+  interestRate?: number;
 }
 
 export interface PropertyTimelineResponse {
-  acquisitionDate?: string | null;
+  acquisitionDate?: string;
   entries: TimelineEntry[];
   financings: FinancingTimelineEntry[];
 }

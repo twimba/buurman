@@ -35,7 +35,7 @@ interface PropertyFormProps {
   outdoorAreas?: OutdoorAreaResponse[];
   onCreateOutdoorArea?: (area: {
     type: string;
-    areaValue: number | null;
+    areaValue?: number;
     areaUnit?: string;
   }) => void;
   onDeleteOutdoorArea?: (id: string) => void;
@@ -85,43 +85,43 @@ export const PropertyForm = ({
   const [formData, setFormData] = useState<CreatePropertyRequest>({
     propertyCategory: resolveCategory(),
     propertyType: resolveType(),
-    status: (property?.status as PropertyStatus) || PropertyStatus.VACANT,
-    street: property?.street || '',
-    city: property?.city || '',
-    postalCode: property?.postalCode || '',
+    status: (property?.status as PropertyStatus) ?? PropertyStatus.VACANT,
+    street: property?.street ?? '',
+    city: property?.city ?? '',
+    postalCode: property?.postalCode ?? '',
     country: property?.country || defaultCountry || '',
-    latitude: property?.latitude || null,
-    longitude: property?.longitude || null,
-    geocodeAccuracy: property?.geocodeAccuracy || null,
-    areaValue: property?.areaValue || null,
-    areaUnit: property?.areaUnit || 'sqm',
+    latitude: property?.latitude ?? undefined,
+    longitude: property?.longitude ?? undefined,
+    geocodeAccuracy: property?.geocodeAccuracy ?? undefined,
+    areaValue: property?.areaValue ?? undefined,
+    areaUnit: property?.areaUnit ?? 'sqm',
     // Characteristics
-    yearBuilt: property?.yearBuilt ?? null,
-    yearLastRenovated: property?.yearLastRenovated ?? null,
-    constructionType: property?.constructionType ?? null,
-    foundationType: property?.foundationType ?? null,
-    roofType: property?.roofType ?? null,
-    wallConstruction: property?.wallConstruction ?? null,
-    flooringType: property?.flooringType ?? null,
-    windowType: property?.windowType ?? null,
-    numberOfFloors: property?.numberOfFloors ?? null,
-    structuralNotes: property?.structuralNotes ?? null,
-    energyEfficiencyRating: property?.energyEfficiencyRating ?? null,
-    energyCertificateExpiryDate: property?.energyCertificateExpiryDate ?? null,
-    heatingType: property?.heatingType ?? null,
-    coolingType: property?.coolingType ?? null,
-    hotWaterSystem: property?.hotWaterSystem ?? null,
-    insulationNotes: property?.insulationNotes ?? null,
-    electricityConnectionType: property?.electricityConnectionType ?? null,
-    electricityCapacityAmps: property?.electricityCapacityAmps ?? null,
-    waterConnectionType: property?.waterConnectionType ?? null,
+    yearBuilt: property?.yearBuilt,
+    yearLastRenovated: property?.yearLastRenovated,
+    constructionType: property?.constructionType,
+    foundationType: property?.foundationType,
+    roofType: property?.roofType,
+    wallConstruction: property?.wallConstruction,
+    flooringType: property?.flooringType,
+    windowType: property?.windowType,
+    numberOfFloors: property?.numberOfFloors,
+    structuralNotes: property?.structuralNotes,
+    energyEfficiencyRating: property?.energyEfficiencyRating,
+    energyCertificateExpiryDate: property?.energyCertificateExpiryDate,
+    heatingType: property?.heatingType,
+    coolingType: property?.coolingType,
+    hotWaterSystem: property?.hotWaterSystem,
+    insulationNotes: property?.insulationNotes,
+    electricityConnectionType: property?.electricityConnectionType,
+    electricityCapacityAmps: property?.electricityCapacityAmps,
+    waterConnectionType: property?.waterConnectionType,
     hasGasConnection: property?.hasGasConnection ?? false,
-    sewageType: property?.sewageType ?? null,
-    internetConnectionType: property?.internetConnectionType ?? null,
-    internetMaxSpeedMbps: property?.internetMaxSpeedMbps ?? null,
-    internetStatus: property?.internetStatus ?? null,
-    parkingSpaces: property?.parkingSpaces ?? null,
-    parkingType: property?.parkingType ?? null,
+    sewageType: property?.sewageType,
+    internetConnectionType: property?.internetConnectionType,
+    internetMaxSpeedMbps: property?.internetMaxSpeedMbps,
+    internetStatus: property?.internetStatus,
+    parkingSpaces: property?.parkingSpaces,
+    parkingType: property?.parkingType,
     hasSmokeDetectors: property?.hasSmokeDetectors ?? false,
     hasCoDetectors: property?.hasCoDetectors ?? false,
     hasFireExtinguisher: property?.hasFireExtinguisher ?? false,
@@ -129,17 +129,17 @@ export const PropertyForm = ({
     hasAlarmSystem: property?.hasAlarmSystem ?? false,
     hasSecurityCameras: property?.hasSecurityCameras ?? false,
     hasSecureEntry: property?.hasSecureEntry ?? false,
-    safetyNotes: property?.safetyNotes ?? null,
+    safetyNotes: property?.safetyNotes,
     isWheelchairAccessible: property?.isWheelchairAccessible ?? false,
     hasElevator: property?.hasElevator ?? false,
     hasStepFreeEntrance: property?.hasStepFreeEntrance ?? false,
     hasAdaptedBathroom: property?.hasAdaptedBathroom ?? false,
-    accessibilityNotes: property?.accessibilityNotes ?? null,
+    accessibilityNotes: property?.accessibilityNotes,
     // Category-specific details
-    residentialDetails: property?.residentialDetails ?? null,
-    commercialDetails: property?.commercialDetails ?? null,
-    industrialDetails: property?.industrialDetails ?? null,
-    agriculturalDetails: property?.agriculturalDetails ?? null,
+    residentialDetails: property?.residentialDetails as CreatePropertyRequest['residentialDetails'],
+    commercialDetails: property?.commercialDetails as CreatePropertyRequest['commercialDetails'],
+    industrialDetails: property?.industrialDetails as CreatePropertyRequest['industrialDetails'],
+    agriculturalDetails: property?.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
   });
 
   const [propertyIdentifier, setPropertyIdentifier] = useState(
@@ -193,34 +193,33 @@ export const PropertyForm = ({
         longitude: property.longitude,
         geocodeAccuracy: property.geocodeAccuracy,
         areaValue: property.areaValue,
-        areaUnit: property.areaUnit || 'sqm',
-        yearBuilt: property.yearBuilt ?? null,
-        yearLastRenovated: property.yearLastRenovated ?? null,
-        constructionType: property.constructionType ?? null,
-        foundationType: property.foundationType ?? null,
-        roofType: property.roofType ?? null,
-        wallConstruction: property.wallConstruction ?? null,
-        flooringType: property.flooringType ?? null,
-        windowType: property.windowType ?? null,
-        numberOfFloors: property.numberOfFloors ?? null,
-        structuralNotes: property.structuralNotes ?? null,
-        energyEfficiencyRating: property.energyEfficiencyRating ?? null,
-        energyCertificateExpiryDate:
-          property.energyCertificateExpiryDate ?? null,
-        heatingType: property.heatingType ?? null,
-        coolingType: property.coolingType ?? null,
-        hotWaterSystem: property.hotWaterSystem ?? null,
-        insulationNotes: property.insulationNotes ?? null,
-        electricityConnectionType: property.electricityConnectionType ?? null,
-        electricityCapacityAmps: property.electricityCapacityAmps ?? null,
-        waterConnectionType: property.waterConnectionType ?? null,
+        areaUnit: property.areaUnit ?? 'sqm',
+        yearBuilt: property.yearBuilt,
+        yearLastRenovated: property.yearLastRenovated,
+        constructionType: property.constructionType,
+        foundationType: property.foundationType,
+        roofType: property.roofType,
+        wallConstruction: property.wallConstruction,
+        flooringType: property.flooringType,
+        windowType: property.windowType,
+        numberOfFloors: property.numberOfFloors,
+        structuralNotes: property.structuralNotes,
+        energyEfficiencyRating: property.energyEfficiencyRating,
+        energyCertificateExpiryDate: property.energyCertificateExpiryDate,
+        heatingType: property.heatingType,
+        coolingType: property.coolingType,
+        hotWaterSystem: property.hotWaterSystem,
+        insulationNotes: property.insulationNotes,
+        electricityConnectionType: property.electricityConnectionType,
+        electricityCapacityAmps: property.electricityCapacityAmps,
+        waterConnectionType: property.waterConnectionType,
         hasGasConnection: property.hasGasConnection ?? false,
-        sewageType: property.sewageType ?? null,
-        internetConnectionType: property.internetConnectionType ?? null,
-        internetMaxSpeedMbps: property.internetMaxSpeedMbps ?? null,
-        internetStatus: property.internetStatus ?? null,
-        parkingSpaces: property.parkingSpaces ?? null,
-        parkingType: property.parkingType ?? null,
+        sewageType: property.sewageType,
+        internetConnectionType: property.internetConnectionType,
+        internetMaxSpeedMbps: property.internetMaxSpeedMbps,
+        internetStatus: property.internetStatus,
+        parkingSpaces: property.parkingSpaces,
+        parkingType: property.parkingType,
         hasSmokeDetectors: property.hasSmokeDetectors ?? false,
         hasCoDetectors: property.hasCoDetectors ?? false,
         hasFireExtinguisher: property.hasFireExtinguisher ?? false,
@@ -228,16 +227,16 @@ export const PropertyForm = ({
         hasAlarmSystem: property.hasAlarmSystem ?? false,
         hasSecurityCameras: property.hasSecurityCameras ?? false,
         hasSecureEntry: property.hasSecureEntry ?? false,
-        safetyNotes: property.safetyNotes ?? null,
+        safetyNotes: property.safetyNotes,
         isWheelchairAccessible: property.isWheelchairAccessible ?? false,
         hasElevator: property.hasElevator ?? false,
         hasStepFreeEntrance: property.hasStepFreeEntrance ?? false,
         hasAdaptedBathroom: property.hasAdaptedBathroom ?? false,
-        accessibilityNotes: property.accessibilityNotes ?? null,
-        residentialDetails: property.residentialDetails ?? null,
-        commercialDetails: property.commercialDetails ?? null,
-        industrialDetails: property.industrialDetails ?? null,
-        agriculturalDetails: property.agriculturalDetails ?? null,
+        accessibilityNotes: property.accessibilityNotes,
+        residentialDetails: property.residentialDetails as CreatePropertyRequest['residentialDetails'],
+        commercialDetails: property.commercialDetails as CreatePropertyRequest['commercialDetails'],
+        industrialDetails: property.industrialDetails as CreatePropertyRequest['industrialDetails'],
+        agriculturalDetails: property.agriculturalDetails as CreatePropertyRequest['agriculturalDetails'],
       });
     }
   }, [property, propertyIdentifier]);
@@ -282,14 +281,14 @@ export const PropertyForm = ({
                     ...prev,
                     latitude: result.latitude,
                     longitude: result.longitude,
-                    geocodeAccuracy: result.accuracy,
+                    geocodeAccuracy: result.accuracy ?? undefined,
                   }));
                 } else {
                   setFormData((prev) => ({
                     ...prev,
-                    latitude: null,
-                    longitude: null,
-                    geocodeAccuracy: null,
+                    latitude: undefined,
+                    longitude: undefined,
+                    geocodeAccuracy: undefined,
                   }));
                 }
               },
@@ -319,10 +318,10 @@ export const PropertyForm = ({
       propertyCategory: category,
       propertyType: types[0],
       // Clear detail objects when switching category
-      residentialDetails: null,
-      commercialDetails: null,
-      industrialDetails: null,
-      agriculturalDetails: null,
+      residentialDetails: undefined,
+      commercialDetails: undefined,
+      industrialDetails: undefined,
+      agriculturalDetails: undefined,
     }));
   };
 
@@ -381,7 +380,7 @@ export const PropertyForm = ({
 
   const handleChange = (
     field: keyof CreatePropertyRequest,
-    value: string | number | boolean | null | unknown
+    value: string | number | boolean | undefined | unknown
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field as string]) {
@@ -568,7 +567,7 @@ export const PropertyForm = ({
                 onChange={(e) =>
                   handleChange(
                     'areaValue',
-                    e.target.value ? parseFloat(e.target.value) : null
+                    e.target.value ? parseFloat(e.target.value) : undefined
                   )
                 }
                 className={`flex-1 ${inputCls}`}

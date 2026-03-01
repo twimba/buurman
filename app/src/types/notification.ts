@@ -39,21 +39,21 @@ export interface NotificationResponse {
   notificationType: NotificationType;
   channel: NotificationChannel;
   subject: string;
-  body: string | null;
+  body?: string;
   recipientEmail: string;
-  recipientPhone: string | null;
+  recipientPhone?: string;
   status: NotificationStatus;
-  providerStatus: string | null;
-  providerError: string | null;
+  providerStatus?: string;
+  providerError?: string;
   openCount: number;
   clickCount: number;
-  firstOpenedAt: string | null;
-  firstClickedAt: string | null;
-  resentFromIdentifier: string | null;
-  resendReason: string | null;
+  firstOpenedAt?: string;
+  firstClickedAt?: string;
+  resentFromIdentifier?: string;
+  resendReason?: string;
   demoBlocked: boolean;
   createdAt: string;
-  statusUpdatedAt: string | null;
+  statusUpdatedAt?: string;
 }
 
 export interface NotificationFilterParams {

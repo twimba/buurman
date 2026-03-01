@@ -103,7 +103,7 @@ const SelectField = ({
 interface NumberFieldProps {
   label: string;
   value: number | null | undefined;
-  onChange: (v: number | null) => void;
+  onChange: (v: number | undefined) => void;
   min?: number;
   step?: number;
   tooltip?: string;
@@ -131,7 +131,7 @@ const NumberField = ({
         step={step}
         value={value ?? ''}
         onChange={(e) =>
-          onChange(e.target.value ? parseFloat(e.target.value) : null)
+          onChange(e.target.value ? parseFloat(e.target.value) : undefined)
         }
         className={inputCls}
       />
@@ -206,7 +206,7 @@ interface PropertyCharacteristicsFormProps {
   outdoorAreas?: OutdoorAreaResponse[];
   onCreateOutdoorArea?: (area: {
     type: string;
-    areaValue: number | null;
+    areaValue?: number;
     areaUnit?: string;
   }) => void;
   onDeleteOutdoorArea?: (id: string) => void;
@@ -641,7 +641,7 @@ interface OutdoorAreasSectionProps {
   areas: OutdoorAreaResponse[];
   onCreate?: (area: {
     type: string;
-    areaValue: number | null;
+    areaValue?: number;
     areaUnit?: string;
   }) => void;
   onDelete?: (id: string) => void;
@@ -653,14 +653,14 @@ const OutdoorAreasSection = ({
   onDelete,
 }: OutdoorAreasSectionProps) => {
   const [newType, setNewType] = useState('GARDEN');
-  const [newValue, setNewValue] = useState<number | null>(null);
+  const [newValue, setNewValue] = useState<number | undefined>(undefined);
   const [newUnit, setNewUnit] = useState('sqm');
   const [showAdd, setShowAdd] = useState(false);
 
   const handleAdd = () => {
     onCreate?.({ type: newType, areaValue: newValue, areaUnit: newUnit });
     setNewType('GARDEN');
-    setNewValue(null);
+    setNewValue(undefined);
     setNewUnit('sqm');
     setShowAdd(false);
   };
@@ -669,7 +669,7 @@ const OutdoorAreasSection = ({
     <CollapsibleSection
       title="Outdoor Areas"
       filledCount={areas.length}
-      totalCount={areas.length || 0}
+      totalCount={areas.length ?? 0}
     >
       {areas.length > 0 && (
         <div className="space-y-2">

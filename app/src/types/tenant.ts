@@ -17,7 +17,7 @@ export {
   type TenantAddressResponseStatus,
 } from '../generated/models';
 
-// Interfaces — kept manual (generated adds | null to optional fields)
+// Interfaces — kept manual (generated adds to optional fields)
 
 import type { TenantAddressResponseAddressType } from '../generated/models';
 import type { TenantAddressResponseStatus } from '../generated/models';
@@ -61,7 +61,7 @@ export interface PropertyTenantHistoryResponse {
   performedAt: string;
 }
 
-// Request interfaces — manual (generated adds | null to all optional fields)
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreateTenantRequest {
   firstName: string;
@@ -95,9 +95,9 @@ export interface CreateTenantAddressRequest {
   country: string;
   addressType: TenantAddressResponseAddressType;
   status?: TenantAddressResponseStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
 }
 
 export interface UpdateTenantAddressRequest {
@@ -107,9 +107,9 @@ export interface UpdateTenantAddressRequest {
   country: string;
   addressType: TenantAddressResponseAddressType;
   status: TenantAddressResponseStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
 }
 
 export interface TenantAddressResponse {
@@ -120,9 +120,9 @@ export interface TenantAddressResponse {
   country: string;
   addressType: TenantAddressResponseAddressType;
   status: TenantAddressResponseStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
   createdAt: string;
   updatedAt: string;
 }

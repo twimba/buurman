@@ -129,7 +129,7 @@ const InlineValueEditor = ({
     const oldValue = hasValue ? String(value) : "";
     if (newValue !== oldValue) {
       // Send "" to clear, non-empty to set
-      onSave(newValue || "");
+      onSave(newValue ?? "");
     }
   };
 
@@ -713,7 +713,7 @@ export const UserFeatureFlags = ({
           userIdentifier: uid,
           teamIdentifier: tid,
           flagName,
-          data: { enabled, value },
+          data: { enabled, value: value ?? undefined },
         },
         {
           onSettled: () => setMutatingFlag(null),
@@ -1122,7 +1122,7 @@ export const SegmentFeatureFlags = () => {
     ) => {
       setMutatingFlag(flagName);
       upsertOverride.mutate(
-        { segmentId, flagName, data: { enabled, value } },
+        { segmentId, flagName, data: { enabled, value: value ?? undefined } },
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),

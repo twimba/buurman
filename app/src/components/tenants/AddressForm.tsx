@@ -37,15 +37,15 @@ export const AddressForm = ({
   const [addressDirty, setAddressDirty] = useState(false);
 
   const [formData, setFormData] = useState({
-    street: address?.street || '',
-    city: address?.city || '',
-    postalCode: address?.postalCode || '',
+    street: address?.street ?? '',
+    city: address?.city ?? '',
+    postalCode: address?.postalCode ?? '',
     country: address?.country || defaultCountry || '',
-    addressType: address?.addressType || AddressType.CURRENT,
-    status: address?.status || AddressStatus.ACTIVE,
-    latitude: address?.latitude || null,
-    longitude: address?.longitude || null,
-    geocodeAccuracy: address?.geocodeAccuracy || null,
+    addressType: address?.addressType ?? AddressType.CURRENT,
+    status: address?.status ?? AddressStatus.ACTIVE,
+    latitude: address?.latitude ?? undefined,
+    longitude: address?.longitude ?? undefined,
+    geocodeAccuracy: address?.geocodeAccuracy ?? undefined,
   });
 
   // Debounce address changes for geocoding via backend (2 seconds)
@@ -88,14 +88,14 @@ export const AddressForm = ({
                     ...prev,
                     latitude: result.latitude,
                     longitude: result.longitude,
-                    geocodeAccuracy: result.accuracy,
+                    geocodeAccuracy: result.accuracy ?? undefined,
                   }));
                 } else {
                   setFormData((prev) => ({
                     ...prev,
-                    latitude: null,
-                    longitude: null,
-                    geocodeAccuracy: null,
+                    latitude: undefined,
+                    longitude: undefined,
+                    geocodeAccuracy: undefined,
                   }));
                 }
               },
