@@ -29,6 +29,7 @@ export default tseslint.config(
   {
     rules: {
       'react/prop-types': 'off', // Using TypeScript for type checking
+      '@typescript-eslint/no-non-null-assertion': 'warn',
     },
   },
   {
