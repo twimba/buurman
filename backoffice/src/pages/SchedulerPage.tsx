@@ -746,7 +746,6 @@ export const SchedulerPage = () => {
                   onSortChange={handleSortChange}
                 />
                 <th className={`${thClass} w-[1%]`} />
-
               </tr>
             </thead>
             <tbody>
