@@ -22,7 +22,7 @@ COPY openapi/ openapi/
 
 # Generate TypeScript API clients from OpenAPI specs, then build
 WORKDIR /monorepo
-RUN yarn generate:api
+RUN npx orval --project backoffice
 WORKDIR /monorepo/backoffice
 RUN rm -rf dist && GIT_COMMIT="$GIT_COMMIT" GIT_COMMIT_SHORT="$GIT_COMMIT_SHORT" GIT_BRANCH="$GIT_BRANCH" yarn build
 
