@@ -1,46 +1,23 @@
-export enum OccupancyType {
-  PERSONAL = 'PERSONAL',
-  FAMILY = 'FAMILY',
-  BUSINESS = 'BUSINESS',
-}
+// Enums — re-exported from generated
+export {
+  OccupancyPeriodResponseType as OccupancyType,
+  type OccupancyPeriodResponseType,
+  OccupancyPeriodResponseEndReason as OccupancyEndReason,
+  type OccupancyPeriodResponseEndReason,
+} from '../generated/models';
 
-export const OCCUPANCY_TYPE_LABELS: Record<OccupancyType, string> = {
-  [OccupancyType.PERSONAL]: 'Personal',
-  [OccupancyType.FAMILY]: 'Family',
-  [OccupancyType.BUSINESS]: 'Business',
-};
+// Interfaces — kept manual (generated adds to optional fields)
 
-export enum OccupancyEndReason {
-  CONVERTING_TO_RENTAL = 'CONVERTING_TO_RENTAL',
-  SELLING = 'SELLING',
-  RENOVATION = 'RENOVATION',
-  OTHER = 'OTHER',
-}
+import {
+  OccupancyPeriodResponseType,
+  OccupancyPeriodResponseEndReason,
+} from '../generated/models';
 
-export const OCCUPANCY_END_REASON_LABELS: Record<OccupancyEndReason, string> = {
-  [OccupancyEndReason.CONVERTING_TO_RENTAL]: 'Converting to Rental',
-  [OccupancyEndReason.SELLING]: 'Selling',
-  [OccupancyEndReason.RENOVATION]: 'Renovation',
-  [OccupancyEndReason.OTHER]: 'Other',
-};
-
-export interface OccupancyPeriodResponse {
-  identifier: string;
-  propertyIdentifier: string;
-  startDate: string;
-  endDate?: string | null;
-  type: OccupancyType;
-  occupantName?: string | null;
-  monthlyImputedRent?: number | null;
-  endReason?: OccupancyEndReason | null;
-  notes?: string | null;
-  createdAt: string;
-  updatedAt?: string | null;
-}
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreateOccupancyPeriodRequest {
   startDate: string;
-  type: OccupancyType;
+  type: OccupancyPeriodResponseType;
   endDate?: string;
   occupantName?: string;
   monthlyImputedRent?: number;
@@ -49,7 +26,7 @@ export interface CreateOccupancyPeriodRequest {
 
 export interface UpdateOccupancyPeriodRequest {
   startDate?: string;
-  type?: OccupancyType;
+  type?: OccupancyPeriodResponseType;
   endDate?: string;
   occupantName?: string;
   monthlyImputedRent?: number;
@@ -58,33 +35,67 @@ export interface UpdateOccupancyPeriodRequest {
 
 export interface EndOccupancyPeriodRequest {
   endDate: string;
-  endReason?: OccupancyEndReason;
+  endReason?: OccupancyPeriodResponseEndReason;
   notes?: string;
+}
+
+export interface OccupancyPeriodResponse {
+  identifier: string;
+  propertyIdentifier: string;
+  startDate: string;
+  endDate?: string;
+  type: OccupancyPeriodResponseType;
+  occupantName?: string;
+  monthlyImputedRent?: number;
+  endReason?: OccupancyPeriodResponseEndReason;
+  notes?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface TimelineEntry {
   type: 'SELF_OCCUPANCY' | 'CONTRACT' | 'VACANCY';
   identifier: string;
   startDate: string;
-  endDate?: string | null;
-  description?: string | null;
-  metadata?: string | null;
+  endDate?: string;
+  description?: string;
+  metadata?: string;
 }
 
 export interface FinancingTimelineEntry {
   identifier: string;
   startDate: string;
-  endDate?: string | null;
+  endDate?: string;
   financingType: string;
   status: string;
-  lenderName?: string | null;
+  lenderName?: string;
   originalAmount: number;
   originalAmountCurrency: string;
-  interestRate?: number | null;
+  interestRate?: number;
 }
 
 export interface PropertyTimelineResponse {
-  acquisitionDate?: string | null;
+  acquisitionDate?: string;
   entries: TimelineEntry[];
   financings: FinancingTimelineEntry[];
 }
+
+export const OCCUPANCY_TYPE_LABELS: Record<
+  OccupancyPeriodResponseType,
+  string
+> = {
+  [OccupancyPeriodResponseType.PERSONAL]: 'Personal',
+  [OccupancyPeriodResponseType.FAMILY]: 'Family',
+  [OccupancyPeriodResponseType.BUSINESS]: 'Business',
+};
+
+export const OCCUPANCY_END_REASON_LABELS: Record<
+  OccupancyPeriodResponseEndReason,
+  string
+> = {
+  [OccupancyPeriodResponseEndReason.CONVERTING_TO_RENTAL]:
+    'Converting to Rental',
+  [OccupancyPeriodResponseEndReason.SELLING]: 'Selling',
+  [OccupancyPeriodResponseEndReason.RENOVATION]: 'Renovation',
+  [OccupancyPeriodResponseEndReason.OTHER]: 'Other',
+};

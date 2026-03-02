@@ -220,6 +220,10 @@ public class FeatureFlagService {
     traits.put("is_owner", principal.isOwner());
     principal.getTeamIdentifier().ifPresent(team -> traits.put("team", team));
     principal.getRole().ifPresent(r -> traits.put("role", r.name()));
+    principal
+        .getTeamId()
+        .flatMap(teamRepository::findById)
+        .ifPresent(team -> traits.put("demo", team.isDemo()));
     return traits;
   }
 }

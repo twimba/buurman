@@ -72,7 +72,7 @@ export const DocumentsPage = () => {
     ...pageParams,
   });
 
-  const documents = documentsData?.content || [];
+  const documents = documentsData?.content ?? [];
 
   const {
     selectedDocuments,
@@ -419,7 +419,7 @@ export const DocumentsPage = () => {
                             </button>
                           )}
                           <a
-                            href={doc.downloadUrl || undefined}
+                            href={doc.downloadUrl ?? undefined}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1.5 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded-md transition-colors"

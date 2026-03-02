@@ -33,7 +33,9 @@ const FIELD_LABELS: Record<string, string> = {
 
 function formatFieldName(field: string): string {
   // Handle nested paths like "parties[0].newTenant.phone" → "Phone"
-  const lastPart = field.includes('.') ? field.split('.').pop()! : field;
+  const lastPart = field.includes('.')
+    ? (field.split('.').pop() ?? field)
+    : field;
   // Strip array indices like "parties[0]" → "parties"
   const clean = lastPart.replace(/\[\d+\]/g, '');
   return (

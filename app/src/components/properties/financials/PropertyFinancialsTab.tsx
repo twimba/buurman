@@ -226,14 +226,14 @@ function sortRecurringCosts<
       return aActive - bActive;
     }
     // Then by startDate descending (newest first)
-    const aStart = a.startDate || '';
-    const bStart = b.startDate || '';
+    const aStart = a.startDate ?? '';
+    const bStart = b.startDate ?? '';
     if (aStart !== bStart) {
       return bStart.localeCompare(aStart);
     }
     // Then by endDate descending
-    const aEnd = a.endDate || '';
-    const bEnd = b.endDate || '';
+    const aEnd = a.endDate ?? '';
+    const bEnd = b.endDate ?? '';
     return bEnd.localeCompare(aEnd);
   });
 }

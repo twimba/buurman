@@ -7,13 +7,11 @@ import java.util.Optional;
 
 import com.buurman.domain.Property;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@Schema(description = "Request to create a new property")
 public record CreatePropertyRequest(
     @NotNull(message = "Property category is required") Property.PropertyCategory propertyCategory,
     @NotNull(message = "Property type is required") Property.PropertyType propertyType,

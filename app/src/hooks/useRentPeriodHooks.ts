@@ -10,7 +10,7 @@ import { getErrorMessage } from '../utils/errorMessages';
 export const useRentPeriods = (contractId: string | undefined) => {
   return useQuery({
     queryKey: ['rentPeriods', contractId],
-    queryFn: () => rentPeriodsApi.getRentPeriods(contractId!),
+    queryFn: () => rentPeriodsApi.getRentPeriods(contractId ?? ''),
     enabled: !!contractId,
   });
 };

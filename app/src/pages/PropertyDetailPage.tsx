@@ -15,7 +15,7 @@ import {
 } from '@/hooks/usePropertyHooks';
 import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
-import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import {
@@ -97,7 +97,7 @@ const statusColors: Record<string, string> = {
 };
 
 export const PropertyDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -188,12 +188,12 @@ export const PropertyDetailPage = () => {
   const activeOccupancyPeriod = occupancyPeriods.find(
     (p) => !p.endDate || new Date(p.endDate) >= new Date()
   );
-  const deleteOccupancyMutation = useDeleteOccupancyPeriod(id!);
+  const deleteOccupancyMutation = useDeleteOccupancyPeriod(id);
   const deletePropertyMutation = useDeleteProperty();
-  const uploadDocumentMutation = useUploadPropertyDocument(id!);
-  const uploadPhotoMutation = useUploadPropertyPhoto(id!);
-  const setMainPhotoMutation = useSetMainPhoto(id!);
-  const deleteDocumentMutation = useDeleteDocument(id!);
+  const uploadDocumentMutation = useUploadPropertyDocument(id);
+  const uploadPhotoMutation = useUploadPropertyPhoto(id);
+  const setMainPhotoMutation = useSetMainPhoto(id);
+  const deleteDocumentMutation = useDeleteDocument(id);
   const deletePhotoMutation = useDeletePhoto();
 
   // Contracts filtering, sorting, and pagination
@@ -439,7 +439,7 @@ export const PropertyDetailPage = () => {
   };
 
   const formatFieldValue = (value: unknown): string => {
-    if (value === null || value === undefined) {
+    if (value == null) {
       return 'N/A';
     }
     if (typeof value === 'boolean') {
@@ -682,7 +682,7 @@ export const PropertyDetailPage = () => {
                 </div>
               </div>
               <PropertyLifecycleTimeline
-                propertyIdentifier={id!}
+                propertyIdentifier={id}
                 onSelfOccupancyClick={(identifier) =>
                   setEditOccupancyPeriodId(identifier)
                 }
@@ -774,7 +774,7 @@ export const PropertyDetailPage = () => {
                   </div>
                 )}
 
-                {property.areaValue !== null && (
+                {property.areaValue != null && (
                   <div>
                     <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
                       <Ruler className="h-5 w-5" />
@@ -855,22 +855,22 @@ export const PropertyDetailPage = () => {
             </div>
 
             {/* Construction & Structure */}
-            {(property.yearBuilt !== null ||
-              property.yearLastRenovated !== null ||
+            {(property.yearBuilt != null ||
+              property.yearLastRenovated != null ||
               property.constructionType ||
               property.foundationType ||
               property.roofType ||
               property.wallConstruction ||
               property.flooringType ||
               property.windowType ||
-              property.numberOfFloors !== null ||
+              property.numberOfFloors != null ||
               property.structuralNotes) && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
                   Construction &amp; Structure
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {property.yearBuilt !== null && (
+                  {property.yearBuilt != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Year Built
@@ -880,7 +880,7 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.yearLastRenovated !== null && (
+                  {property.yearLastRenovated != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Last Renovated
@@ -950,7 +950,7 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.numberOfFloors !== null && (
+                  {property.numberOfFloors != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Floors
@@ -1076,11 +1076,11 @@ export const PropertyDetailPage = () => {
 
             {/* Utilities & Connections */}
             {(property.electricityConnectionType ||
-              property.electricityCapacityAmps !== null ||
+              property.electricityCapacityAmps != null ||
               property.waterConnectionType ||
               property.sewageType ||
               property.internetConnectionType ||
-              property.internetMaxSpeedMbps !== null ||
+              property.internetMaxSpeedMbps != null ||
               property.internetStatus) && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
@@ -1097,7 +1097,7 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.electricityCapacityAmps !== null && (
+                  {property.electricityCapacityAmps != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Capacity
@@ -1145,7 +1145,7 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.internetMaxSpeedMbps !== null && (
+                  {property.internetMaxSpeedMbps != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Internet Speed
@@ -1170,13 +1170,13 @@ export const PropertyDetailPage = () => {
             )}
 
             {/* Parking */}
-            {(property.parkingSpaces !== null || property.parkingType) && (
+            {(property.parkingSpaces != null || property.parkingType) && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
                   Parking
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {property.parkingSpaces !== null && (
+                  {property.parkingSpaces != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Parking Spaces
@@ -1216,7 +1216,7 @@ export const PropertyDetailPage = () => {
                         {'\u2713'}
                       </span>
                       {formatEnumValue(area.type)}
-                      {area.areaValue !== null
+                      {area.areaValue != null
                         ? ` - ${area.areaValue} m\u00B2`
                         : ''}
                     </span>
@@ -1240,7 +1240,7 @@ export const PropertyDetailPage = () => {
                       if (!groups[cat]) {
                         groups[cat] = [];
                       }
-                      groups[cat]!.push(amenity);
+                      groups[cat].push(amenity);
                       return groups;
                     }, {})
                   ).map(([category, items]) => (
@@ -1249,7 +1249,7 @@ export const PropertyDetailPage = () => {
                         {formatEnumValue(category)}
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2">
-                        {items!.map((amenity) => (
+                        {(items ?? []).map((amenity) => (
                           <span
                             key={amenity.amenityIdentifier}
                             className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
@@ -1457,10 +1457,10 @@ export const PropertyDetailPage = () => {
           </div>
         )}
 
-        {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id!} />}
+        {activeTab === 'dashboard' && <PropertyDashboardTab propertyId={id} />}
 
         {activeTab === 'financials' && (
-          <PropertyFinancialsTab propertyId={id!} />
+          <PropertyFinancialsTab propertyId={id} />
         )}
 
         {activeTab === 'photos' && (
@@ -2190,7 +2190,7 @@ export const PropertyDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!).map(
+                            {Object.entries(activity.changedFields ?? {}).map(
                               ([field, value]) => {
                                 // Skip internal count fields
                                 if (

@@ -105,7 +105,7 @@ const ReceivalsTable = ({
     setEditingId(r.identifier);
     setEditAmount(r.amount.toString());
     setEditDate(r.receivalDate);
-    setEditNotes(r.notes || '');
+    setEditNotes(r.notes ?? '');
   };
 
   const cancelEdit = () => {
@@ -331,7 +331,7 @@ const ReceivalsTable = ({
 };
 
 export const PaymentDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -384,13 +384,13 @@ export const PaymentDetailPage = () => {
     error: docsError,
   } = usePaymentDocuments(id);
   const deletePaymentMutation = useDeletePayment();
-  const updatePaymentMutation = useUpdatePayment(id!);
+  const updatePaymentMutation = useUpdatePayment(id);
   const markPaidMutation = useMarkPaymentAsPaid();
-  const uploadDocumentMutation = useUploadPaymentDocument(id!);
-  const deleteDocumentMutation = useDeletePaymentDocument(id!);
-  const registerReceivalMutation = useRegisterReceival(id!);
-  const updateReceivalMutation = useUpdatePaymentReceival(id!);
-  const deleteReceivalMutation = useDeletePaymentReceival(id!);
+  const uploadDocumentMutation = useUploadPaymentDocument(id);
+  const deleteDocumentMutation = useDeletePaymentDocument(id);
+  const registerReceivalMutation = useRegisterReceival(id);
+  const updateReceivalMutation = useUpdatePaymentReceival(id);
+  const deleteReceivalMutation = useDeletePaymentReceival(id);
 
   const handleDelete = async () => {
     if (!id) {
@@ -793,7 +793,7 @@ export const PaymentDetailPage = () => {
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Receivals ({payment.receivals?.length || 0})
+                Receivals ({payment.receivals?.length ?? 0})
               </h2>
               {canRegisterReceival && (
                 <Button
@@ -993,7 +993,7 @@ export const PaymentDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!).map(
+                            {Object.entries(activity.changedFields ?? {}).map(
                               ([field]) => {
                                 const oldVal = activity.oldValues?.[field];
                                 const newVal = activity.newValues?.[field];
@@ -1021,7 +1021,7 @@ export const PaymentDetailPage = () => {
                                   if (v == null) {
                                     return (
                                       <span
-                                        className={`${color} ${extra || ''}`}
+                                        className={`${color} ${extra ?? ''}`}
                                       >
                                         N/A
                                       </span>
@@ -1031,7 +1031,7 @@ export const PaymentDetailPage = () => {
                                     if (v.length === 0) {
                                       return (
                                         <span
-                                          className={`${color} ${extra || ''}`}
+                                          className={`${color} ${extra ?? ''}`}
                                         >
                                           None
                                         </span>
@@ -1039,7 +1039,7 @@ export const PaymentDetailPage = () => {
                                     }
                                     return (
                                       <ul
-                                        className={`${color} ${extra || ''} list-disc list-inside`}
+                                        className={`${color} ${extra ?? ''} list-disc list-inside`}
                                       >
                                         {v.map((item, i) => (
                                           <li key={i}>
@@ -1085,7 +1085,7 @@ export const PaymentDetailPage = () => {
                                     ) {
                                       return (
                                         <span
-                                          className={`${color} ${extra || ''}`}
+                                          className={`${color} ${extra ?? ''}`}
                                         >
                                           {renderReceival(obj)}
                                         </span>
@@ -1098,7 +1098,7 @@ export const PaymentDetailPage = () => {
                                     ) {
                                       return (
                                         <span
-                                          className={`${color} ${extra || ''}`}
+                                          className={`${color} ${extra ?? ''}`}
                                         >
                                           {String(
                                             obj.name ??
@@ -1110,7 +1110,7 @@ export const PaymentDetailPage = () => {
                                     }
                                     return (
                                       <span
-                                        className={`${color} ${extra || ''}`}
+                                        className={`${color} ${extra ?? ''}`}
                                       >
                                         {Object.entries(obj)
                                           .filter(
@@ -1133,7 +1133,7 @@ export const PaymentDetailPage = () => {
                                   if (isHtml(v)) {
                                     return (
                                       <div
-                                        className={`${color} ${extra || ''} mt-1`}
+                                        className={`${color} ${extra ?? ''} mt-1`}
                                       >
                                         <RichTextDisplay
                                           content={String(v)}
@@ -1143,7 +1143,7 @@ export const PaymentDetailPage = () => {
                                     );
                                   }
                                   return (
-                                    <span className={`${color} ${extra || ''}`}>
+                                    <span className={`${color} ${extra ?? ''}`}>
                                       {String(v)}
                                     </span>
                                   );

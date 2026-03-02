@@ -1,47 +1,19 @@
-export enum PaymentMethod {
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  PAYPAL = 'PAYPAL',
-  CASH = 'CASH',
-  CHECK = 'CHECK',
-  DIRECT_DEBIT = 'DIRECT_DEBIT',
-  IDEAL_WERO = 'IDEAL_WERO',
-  ZELLE = 'ZELLE',
-  OTHER = 'OTHER',
-}
+// Enum — re-exported from generated
+export {
+  CreatePaymentInstructionRequestPaymentMethod as PaymentMethod,
+  type CreatePaymentInstructionRequestPaymentMethod,
+} from '../generated/models';
 
-export const PaymentMethodLabels: Record<PaymentMethod, string> = {
-  [PaymentMethod.BANK_TRANSFER]: 'Bank Transfer',
-  [PaymentMethod.PAYPAL]: 'PayPal',
-  [PaymentMethod.CASH]: 'Cash',
-  [PaymentMethod.CHECK]: 'Check',
-  [PaymentMethod.DIRECT_DEBIT]: 'Direct Debit',
-  [PaymentMethod.IDEAL_WERO]: 'iDEAL / Wero',
-  [PaymentMethod.ZELLE]: 'Zelle',
-  [PaymentMethod.OTHER]: 'Other',
-};
+// Interfaces — kept manual (generated uses `string` for enum fields)
 
-export interface PaymentInstructionResponse {
-  identifier: string;
-  name: string;
-  description?: string;
-  paymentMethod: PaymentMethod;
-  bankName?: string;
-  accountHolderName?: string;
-  iban?: string;
-  bicSwift?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paymentReference?: string;
-  additionalDetails?: string;
-  isDefault: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { CreatePaymentInstructionRequestPaymentMethod } from '../generated/models';
+
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreatePaymentInstructionRequest {
   name: string;
   description?: string;
-  paymentMethod: PaymentMethod;
+  paymentMethod: CreatePaymentInstructionRequestPaymentMethod;
   bankName?: string;
   accountHolderName?: string;
   iban?: string;
@@ -56,7 +28,7 @@ export interface CreatePaymentInstructionRequest {
 export interface UpdatePaymentInstructionRequest {
   name?: string;
   description?: string;
-  paymentMethod?: PaymentMethod;
+  paymentMethod?: CreatePaymentInstructionRequestPaymentMethod;
   bankName?: string;
   accountHolderName?: string;
   iban?: string;
@@ -66,6 +38,45 @@ export interface UpdatePaymentInstructionRequest {
   paymentReference?: string;
   additionalDetails?: string;
   isDefault?: boolean;
+}
+
+export interface CreateContractPaymentInstructionRequest {
+  paymentInstructionIdentifier?: string;
+  isCustom?: boolean;
+  customName?: string;
+  customDescription?: string;
+  customPaymentMethod?: string;
+  customBankName?: string;
+  customAccountHolderName?: string;
+  customIban?: string;
+  customBicSwift?: string;
+  customAccountNumber?: string;
+  customRoutingNumber?: string;
+  customPaymentReference?: string;
+  customAdditionalDetails?: string;
+  effectiveFrom: string;
+  notes?: string;
+}
+
+export type UpdateContractPaymentInstructionRequest =
+  CreateContractPaymentInstructionRequest;
+
+export interface PaymentInstructionResponse {
+  identifier: string;
+  name: string;
+  description?: string;
+  paymentMethod: CreatePaymentInstructionRequestPaymentMethod;
+  bankName?: string;
+  accountHolderName?: string;
+  iban?: string;
+  bicSwift?: string;
+  accountNumber?: string;
+  routingNumber?: string;
+  paymentReference?: string;
+  additionalDetails?: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ContractPaymentInstructionResponse {
@@ -90,23 +101,16 @@ export interface ContractPaymentInstructionResponse {
   updatedAt: string;
 }
 
-export interface CreateContractPaymentInstructionRequest {
-  paymentInstructionIdentifier?: string;
-  isCustom?: boolean;
-  customName?: string;
-  customDescription?: string;
-  customPaymentMethod?: string;
-  customBankName?: string;
-  customAccountHolderName?: string;
-  customIban?: string;
-  customBicSwift?: string;
-  customAccountNumber?: string;
-  customRoutingNumber?: string;
-  customPaymentReference?: string;
-  customAdditionalDetails?: string;
-  effectiveFrom: string;
-  notes?: string;
-}
-
-export type UpdateContractPaymentInstructionRequest =
-  CreateContractPaymentInstructionRequest;
+export const PaymentMethodLabels: Record<
+  CreatePaymentInstructionRequestPaymentMethod,
+  string
+> = {
+  [CreatePaymentInstructionRequestPaymentMethod.BANK_TRANSFER]: 'Bank Transfer',
+  [CreatePaymentInstructionRequestPaymentMethod.PAYPAL]: 'PayPal',
+  [CreatePaymentInstructionRequestPaymentMethod.CASH]: 'Cash',
+  [CreatePaymentInstructionRequestPaymentMethod.CHECK]: 'Check',
+  [CreatePaymentInstructionRequestPaymentMethod.DIRECT_DEBIT]: 'Direct Debit',
+  [CreatePaymentInstructionRequestPaymentMethod.IDEAL_WERO]: 'iDEAL / Wero',
+  [CreatePaymentInstructionRequestPaymentMethod.ZELLE]: 'Zelle',
+  [CreatePaymentInstructionRequestPaymentMethod.OTHER]: 'Other',
+};

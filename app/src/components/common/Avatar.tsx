@@ -21,8 +21,8 @@ export const Avatar = ({
   className = '',
 }: AvatarProps) => {
   const getInitials = () => {
-    const firstInitial = firstName?.charAt(0).toUpperCase() || '';
-    const lastInitial = lastName?.charAt(0).toUpperCase() || '';
+    const firstInitial = firstName?.charAt(0).toUpperCase() ?? '';
+    const lastInitial = lastName?.charAt(0).toUpperCase() ?? '';
     return firstInitial + lastInitial;
   };
 
@@ -49,7 +49,7 @@ export const Avatar = ({
     return (
       <img
         src={photoUrl}
-        alt={`${firstName} ${lastName || ''}`}
+        alt={`${firstName} ${lastName ?? ''}`}
         className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
       />
     );

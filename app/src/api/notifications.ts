@@ -1,8 +1,8 @@
 import client from './client';
 import { PageParams, PageResponse } from '../types/common';
+import type { NotificationStatsResponse } from '../generated/models';
 import {
   NotificationResponse,
-  NotificationStatsResponse,
   NotificationFilterParams,
 } from '../types/notification';
 

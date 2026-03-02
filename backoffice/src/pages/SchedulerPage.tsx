@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import {
   Pause,
@@ -8,9 +8,11 @@ import {
   Clock,
   Check,
   ChevronDown,
+  ChevronRight,
   Pencil,
   Loader2,
   X,
+  AlertCircle,
 } from "lucide-react";
 import { format } from "date-fns";
 import cronstrue from "cronstrue";
@@ -127,7 +129,7 @@ const selectClass =
 const thClass =
   "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
 
-const formatDuration = (ms: number | null): string => {
+const formatDuration = (ms?: number): string => {
   if (ms == null) {
     return "-";
   }
@@ -142,7 +144,7 @@ const formatDuration = (ms: number | null): string => {
   return `${minutes}m ${seconds}s`;
 };
 
-const formatFireTime = (iso: string | null): string => {
+const formatFireTime = (iso?: string): string => {
   if (!iso) {
     return "-";
   }
@@ -285,6 +287,7 @@ export const SchedulerPage = () => {
   // Execution history
   const [selectedJobs, setSelectedJobs] = useState<string[] | null>(null);
   const [historyStatusFilter, setHistoryStatusFilter] = useState("");
+  const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
   const [jobDropdownOpen, setJobDropdownOpen] = useState(false);
   const jobDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -742,7 +745,8 @@ export const SchedulerPage = () => {
                   direction={direction}
                   onSortChange={handleSortChange}
                 />
-                <th className={thClass}>Error</th>
+                <th className={`${thClass} w-[1%]`} />
+
               </tr>
             </thead>
             <tbody>
@@ -756,56 +760,85 @@ export const SchedulerPage = () => {
                   </td>
                 </tr>
               ) : (
-                historyRecords.map((exec) => (
-                  <tr
-                    key={exec.id}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                        {exec.jobName}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        {exec.jobGroup}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
-                        {format(
-                          new Date(exec.startedAt),
-                          "dd MMM yyyy HH:mm:ss",
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
-                        {formatDuration(exec.durationMs)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge
-                        status={exec.status}
-                        config={execStatusBadgeConfig}
-                      />
-                    </td>
-                    <td className="px-4 py-3 max-w-[300px]">
-                      {exec.errorMessage ? (
-                        <span
-                          className="text-sm text-red-600 dark:text-red-400 truncate block"
-                          title={exec.errorMessage}
-                        >
-                          {exec.errorMessage}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-[#9ca0b8] dark:text-[#5c6180]">
-                          -
-                        </span>
+                historyRecords.map((exec) => {
+                  const isExpanded = expandedErrors.has(exec.id);
+                  const hasError = !!exec.errorMessage;
+                  return (
+                    <Fragment key={exec.id}>
+                      <tr
+                        className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors ${hasError ? "cursor-pointer" : ""} ${isExpanded ? "!border-b-0" : ""}`}
+                        onClick={
+                          hasError
+                            ? () => {
+                                setExpandedErrors((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(exec.id)) {
+                                    next.delete(exec.id);
+                                  } else {
+                                    next.add(exec.id);
+                                  }
+                                  return next;
+                                });
+                              }
+                            : undefined
+                        }
+                      >
+                        <td className="px-4 py-3">
+                          <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                            {exec.jobName}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                            {exec.jobGroup}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
+                            {format(
+                              new Date(exec.startedAt),
+                              "dd MMM yyyy HH:mm:ss",
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
+                            {formatDuration(exec.durationMs)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge
+                            status={exec.status}
+                            config={execStatusBadgeConfig}
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          {hasError && (
+                            <div className="flex items-center gap-1.5 text-red-500 dark:text-red-400">
+                              <AlertCircle className="h-4 w-4 shrink-0" />
+                              {isExpanded ? (
+                                <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+                              ) : (
+                                <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0">
+                          <td colSpan={6} className="px-4 pb-4 pt-0">
+                            <div className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 p-4">
+                              <pre className="text-xs font-mono text-red-700 dark:text-red-300 whitespace-pre-wrap break-words leading-relaxed">
+                                {exec.errorMessage}
+                              </pre>
+                            </div>
+                          </td>
+                        </tr>
                       )}
-                    </td>
-                  </tr>
-                ))
+                    </Fragment>
+                  );
+                })
               )}
             </tbody>
           </table>

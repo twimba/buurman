@@ -18,7 +18,6 @@ import com.buurman.service.RateLimitConfigService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
-import io.github.bucket4j.Refill;
 import io.github.bucket4j.distributed.BucketProxy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.FilterChain;
@@ -104,10 +103,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
   private BucketConfiguration buildBucketConfiguration(RateLimitConfig config) {
     return BucketConfiguration.builder()
         .addLimit(
-            Bandwidth.classic(
-                config.getMaxRequests(),
-                Refill.intervally(
-                    config.getMaxRequests(), Duration.ofSeconds(config.getPeriodSeconds()))))
+            Bandwidth.builder()
+                .capacity(config.getMaxRequests())
+                .refillIntervally(
+                    config.getMaxRequests(), Duration.ofSeconds(config.getPeriodSeconds()))
+                .build())
         .build();
   }
 

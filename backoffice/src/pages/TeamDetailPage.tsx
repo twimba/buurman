@@ -48,7 +48,7 @@ export const TeamDetailPage = () => {
     isFetching,
     error,
     refetch,
-  } = useTeam(identifier!);
+  } = useTeam(identifier ?? "");
   const updateTeam = useUpdateTeam();
   const deleteTeam = useDeleteTeam();
 
@@ -89,7 +89,7 @@ export const TeamDetailPage = () => {
       return;
     }
     updateTeam.mutate(
-      { identifier: identifier!, data: { name: editName.trim() } },
+      { identifier: identifier ?? "", data: { name: editName.trim() } },
       {
         onSuccess: () => setIsEditing(false),
       },
@@ -97,7 +97,7 @@ export const TeamDetailPage = () => {
   };
 
   const handleDelete = () => {
-    deleteTeam.mutate(identifier!, {
+    deleteTeam.mutate(identifier ?? "", {
       onSuccess: () => navigate("/teams"),
     });
   };

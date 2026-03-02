@@ -2,9 +2,6 @@ package com.buurman.dto.response;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-@Schema(description = "Paginated response wrapper with content and pagination metadata")
 public record PageResponse<T>(
     List<T> content,
     int page,

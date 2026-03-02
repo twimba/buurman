@@ -11,12 +11,8 @@ import {
   GetPaymentsParams,
 } from '../types/payment';
 import { DocumentResponse, AuditLogEntry } from '../types/property';
-import {
-  PageResponse,
-  PageParams,
-  PaymentStatsResponse,
-  BulkCreateResult,
-} from '@/types/common';
+import type { PaymentStatsResponse } from '@/generated/models';
+import { PageResponse, PageParams, BulkCreateResult } from '@/types/common';
 
 export const getPayments = async (
   params?: GetPaymentsParams & PageParams

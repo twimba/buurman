@@ -44,7 +44,7 @@ export const ChangeContractStatusModal = ({
 }: ChangeContractStatusModalProps) => {
   const validTransitions = getValidTransitions(currentStatus);
   const [selectedStatus, setSelectedStatus] = useState<ContractStatus>(
-    validTransitions[0] || currentStatus
+    validTransitions[0] ?? currentStatus
   );
   const [reason, setReason] = useState('');
 

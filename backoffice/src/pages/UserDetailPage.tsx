@@ -22,9 +22,9 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { UserFeatureFlags } from "../components/UserFeatureFlags";
 
 export const UserDetailPage = () => {
-  const { identifier } = useParams<{ identifier: string }>();
+  const { identifier = "" } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
-  const { data: user, isLoading, error } = useUser(identifier!);
+  const { data: user, isLoading, error } = useUser(identifier);
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
   const resetPassword = useResetPassword();
@@ -52,13 +52,13 @@ export const UserDetailPage = () => {
 
   const handleToggleDisable = () => {
     const mutation = user.disabled ? enableUser : disableUser;
-    mutation.mutate(identifier!, {
+    mutation.mutate(identifier, {
       onSuccess: () => setShowDisableDialog(false),
     });
   };
 
   const handleResetPassword = () => {
-    resetPassword.mutate(identifier!, {
+    resetPassword.mutate(identifier, {
       onSuccess: () => setShowResetDialog(false),
     });
   };
@@ -158,7 +158,7 @@ export const UserDetailPage = () => {
                   {item.label}
                 </p>
                 <p
-                  className={`text-sm font-medium ${item.valueClass || "text-[#1a1d2e] dark:text-[#eef0f6]"}`}
+                  className={`text-sm font-medium ${item.valueClass ?? "text-[#1a1d2e] dark:text-[#eef0f6]"}`}
                 >
                   {item.value}
                 </p>
@@ -170,7 +170,7 @@ export const UserDetailPage = () => {
 
       {/* Feature Flags */}
       <div className="mt-6">
-        <UserFeatureFlags userIdentifier={identifier!} />
+        <UserFeatureFlags userIdentifier={identifier} />
       </div>
 
       {/* Disable/Enable confirmation dialog */}

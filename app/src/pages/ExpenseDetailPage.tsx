@@ -40,7 +40,7 @@ import {
 } from '@/types/expense';
 
 export const ExpenseDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -68,9 +68,9 @@ export const ExpenseDetailPage = () => {
     error: docsError,
   } = useExpenseDocuments(id);
   const deleteExpenseMutation = useDeleteExpense();
-  const updateExpenseMutation = useUpdateExpense(id!);
-  const uploadDocumentMutation = useUploadExpenseDocument(id!);
-  const deleteDocumentMutation = useDeleteExpenseDocument(id!);
+  const updateExpenseMutation = useUpdateExpense(id);
+  const uploadDocumentMutation = useUploadExpenseDocument(id);
+  const deleteDocumentMutation = useDeleteExpenseDocument(id);
 
   const handleDelete = async () => {
     if (!id) {
@@ -443,7 +443,7 @@ export const ExpenseDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!).map(
+                            {Object.entries(activity.changedFields ?? {}).map(
                               ([field]) => (
                                 <div
                                   key={field}

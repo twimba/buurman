@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -93,7 +92,6 @@ public class Property {
   private UUID updatedBy;
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
-  @Schema(description = "High-level property classification")
   public enum PropertyCategory {
     RESIDENTIAL,
     COMMERCIAL,
@@ -102,7 +100,6 @@ public class Property {
     MIXED_USE
   }
 
-  @Schema(description = "Specific property type within a category")
   public enum PropertyType {
     // Residential
     APARTMENT,
@@ -146,7 +143,6 @@ public class Property {
     COMMERCIAL
   }
 
-  @Schema(description = "Current occupancy or availability status of the property")
   public enum PropertyStatus {
     VACANT,
     OCCUPIED,

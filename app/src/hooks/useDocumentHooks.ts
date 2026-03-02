@@ -21,7 +21,7 @@ export const useDocuments = (params?: SearchDocumentsParams & PageParams) => {
 export const useDocument = (id: string | undefined) => {
   return useQuery({
     queryKey: ['document', id],
-    queryFn: () => documentsApi.getDocument(id!),
+    queryFn: () => documentsApi.getDocument(id ?? ''),
     enabled: !!id,
   });
 };

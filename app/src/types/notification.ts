@@ -1,3 +1,6 @@
+// Enums — generated NotificationResponse uses untyped `string` for these fields,
+// so we keep manual enums for stronger typing throughout the app.
+
 export enum NotificationType {
   WELCOME = 'WELCOME',
   VERIFICATION_CODE = 'VERIFICATION_CODE',
@@ -35,32 +38,22 @@ export interface NotificationResponse {
   identifier: string;
   notificationType: NotificationType;
   channel: NotificationChannel;
-  subject: string;
-  body: string | null;
-  recipientEmail: string;
-  recipientPhone: string | null;
+  subject?: string;
+  body?: string;
+  recipientEmail?: string;
+  recipientPhone?: string;
   status: NotificationStatus;
-  providerStatus: string | null;
-  providerError: string | null;
+  providerStatus?: string;
+  providerError?: string;
   openCount: number;
   clickCount: number;
-  firstOpenedAt: string | null;
-  firstClickedAt: string | null;
-  resentFromIdentifier: string | null;
-  resendReason: string | null;
+  firstOpenedAt?: string;
+  firstClickedAt?: string;
+  resentFromIdentifier?: string;
+  resendReason?: string;
   demoBlocked: boolean;
   createdAt: string;
-  statusUpdatedAt: string | null;
-}
-
-export interface NotificationStatsResponse {
-  totalCount: number;
-  pendingCount: number;
-  sentCount: number;
-  deliveredCount: number;
-  failedCount: number;
-  demoBlockedCount: number;
-  byChannel: Record<string, number>;
+  statusUpdatedAt?: string;
 }
 
 export interface NotificationFilterParams {

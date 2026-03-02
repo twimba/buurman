@@ -22,9 +22,9 @@ import {
   useDeleteCalendarFeed,
 } from '../../hooks/useCalendarFeedHooks';
 import {
-  CalendarFeedType,
-  CalendarFeedResponse,
-} from '../../types/calendarFeed';
+  CalendarFeedResponseFeedType as CalendarFeedType,
+  type CalendarFeedResponse,
+} from '../../generated/models';
 import { useToast } from '../../context/ToastContext';
 
 export const CalendarFeedsSection = () => {
@@ -109,7 +109,7 @@ export const CalendarFeedsSection = () => {
     };
     const grouped = new Map<CalendarFeedType, CalendarFeedResponse[]>();
     for (const feed of feeds) {
-      const list = grouped.get(feed.feedType) || [];
+      const list = grouped.get(feed.feedType) ?? [];
       list.push(feed);
       grouped.set(feed.feedType, list);
     }
@@ -119,7 +119,7 @@ export const CalendarFeedsSection = () => {
         type,
         label: labels[type],
         Icon: icons[type],
-        feeds: grouped.get(type)!,
+        feeds: grouped.get(type) ?? [],
       }));
   }, [feeds]);
 

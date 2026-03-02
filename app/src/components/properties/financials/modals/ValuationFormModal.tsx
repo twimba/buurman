@@ -155,7 +155,7 @@ export const ValuationFormModal = ({
               Amount <span className="text-red-500">*</span>
             </label>
             <MoneyInput
-              value={formData.amount || undefined}
+              value={formData.amount ?? undefined}
               onChange={(v) => setFormData({ ...formData, amount: v ?? 0 })}
               currency={formData.currency}
               onCurrencyChange={(c) =>
@@ -184,7 +184,7 @@ export const ValuationFormModal = ({
               Notes
             </label>
             <RichTextEditor
-              value={formData.notes || ''}
+              value={formData.notes ?? ''}
               onChange={(value) =>
                 setFormData({ ...formData, notes: value || undefined })
               }

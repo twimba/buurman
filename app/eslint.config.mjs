@@ -29,9 +29,10 @@ export default tseslint.config(
   {
     rules: {
       'react/prop-types': 'off', // Using TypeScript for type checking
+      '@typescript-eslint/no-non-null-assertion': 'warn',
     },
   },
   {
-    ignores: ['dist/', 'build/', 'node_modules/', '*.config.js', '*.config.ts', '.pnp.cjs', '.pnp.loader.mjs'],
+    ignores: ['dist/', 'build/', 'node_modules/', 'src/generated/', '*.config.js', '*.config.ts', '.pnp.cjs', '.pnp.loader.mjs'],
   }
 );

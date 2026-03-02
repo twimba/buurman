@@ -23,7 +23,7 @@ export const useNotifications = (
 export const useNotification = (identifier: string | undefined) => {
   return useQuery({
     queryKey: ['notification', identifier],
-    queryFn: () => notificationsApi.getNotification(identifier!),
+    queryFn: () => notificationsApi.getNotification(identifier ?? ''),
     enabled: !!identifier,
   });
 };

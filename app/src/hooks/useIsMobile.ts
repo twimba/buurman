@@ -8,11 +8,11 @@ const mql =
   typeof window !== 'undefined' ? window.matchMedia(MOBILE_QUERY) : null;
 
 const subscribe = (callback: () => void) => {
-  mql!.addEventListener('change', callback);
-  return () => mql!.removeEventListener('change', callback);
+  mql?.addEventListener('change', callback);
+  return () => mql?.removeEventListener('change', callback);
 };
 
-const getSnapshot = () => mql!.matches;
+const getSnapshot = () => mql?.matches ?? false;
 const getServerSnapshot = () => false;
 
 /**

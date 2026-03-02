@@ -1,6 +1,28 @@
 import { ContractPartyRole } from './contract';
 import { PropertySummary } from './property';
 
+// Enums — re-exported from generated
+export {
+  PropertyTenantHistoryResponseActionType as PropertyTenantActionType,
+  type PropertyTenantHistoryResponseActionType,
+} from '../generated/models';
+
+export {
+  TenantAddressResponseAddressType as AddressType,
+  type TenantAddressResponseAddressType,
+} from '../generated/models';
+
+export {
+  TenantAddressResponseStatus as AddressStatus,
+  type TenantAddressResponseStatus,
+} from '../generated/models';
+
+// Interfaces — kept manual (generated adds to optional fields)
+
+import type { TenantAddressResponseAddressType } from '../generated/models';
+import type { TenantAddressResponseStatus } from '../generated/models';
+import type { PropertyTenantHistoryResponseActionType } from '../generated/models';
+
 export interface TenantPropertyAssignment {
   property: PropertySummary;
   role?: ContractPartyRole;
@@ -19,7 +41,7 @@ export interface TenantResponse {
   mainPhotoThumbnailUrl?: string;
   activeProperties?: TenantPropertyAssignment[];
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface TenantSummary {
@@ -29,6 +51,17 @@ export interface TenantSummary {
   email?: string;
   phone?: string;
 }
+
+export interface PropertyTenantHistoryResponse {
+  property: PropertySummary;
+  movedInAt?: string;
+  movedOutAt?: string;
+  actionType: PropertyTenantHistoryResponseActionType;
+  performedBy: string;
+  performedAt: string;
+}
+
+// Request interfaces — manual (generated adds to all optional fields)
 
 export interface CreateTenantRequest {
   firstName: string;
@@ -55,31 +88,28 @@ export interface LinkTenantToPropertyRequest {
   movedInAt?: string;
 }
 
-export enum PropertyTenantActionType {
-  LINKED = 'LINKED',
-  UNLINKED = 'UNLINKED',
+export interface CreateTenantAddressRequest {
+  street: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+  addressType: TenantAddressResponseAddressType;
+  status?: TenantAddressResponseStatus;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
 }
 
-export interface PropertyTenantHistoryResponse {
-  property: PropertySummary;
-  movedInAt?: string;
-  movedOutAt?: string;
-  actionType: PropertyTenantActionType;
-  performedBy: string;
-  performedAt: string;
-}
-
-export enum AddressType {
-  CURRENT = 'CURRENT',
-  MAILING = 'MAILING',
-  RELATIVE = 'RELATIVE',
-  WORK = 'WORK',
-  HISTORIC = 'HISTORIC',
-}
-
-export enum AddressStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+export interface UpdateTenantAddressRequest {
+  street: string;
+  city: string;
+  postalCode?: string;
+  country: string;
+  addressType: TenantAddressResponseAddressType;
+  status: TenantAddressResponseStatus;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
 }
 
 export interface TenantAddressResponse {
@@ -88,35 +118,11 @@ export interface TenantAddressResponse {
   city: string;
   postalCode?: string;
   country: string;
-  addressType: AddressType;
-  status: AddressStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
+  addressType: TenantAddressResponseAddressType;
+  status: TenantAddressResponseStatus;
+  latitude?: number;
+  longitude?: number;
+  geocodeAccuracy?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface CreateTenantAddressRequest {
-  street: string;
-  city: string;
-  postalCode?: string;
-  country: string;
-  addressType: AddressType;
-  status?: AddressStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
-}
-
-export interface UpdateTenantAddressRequest {
-  street: string;
-  city: string;
-  postalCode?: string;
-  country: string;
-  addressType: AddressType;
-  status: AddressStatus;
-  latitude?: number | null;
-  longitude?: number | null;
-  geocodeAccuracy?: string | null;
 }

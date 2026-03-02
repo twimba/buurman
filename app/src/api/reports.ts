@@ -1,15 +1,15 @@
 import client from './client';
-import {
+import type {
   FinancialOverviewResponse,
   IncomeTrendResponse,
   ExpenseBreakdownResponse,
   PropertyComparisonResponse,
   OccupancyTrendResponse,
   TaxSummaryResponse,
-} from '../types/report';
+} from '../generated/models';
 
 export interface DataDateRangeResponse {
-  earliestDate: string | null;
+  earliestDate?: string;
 }
 
 export const getDataDateRange = async (): Promise<DataDateRangeResponse> => {

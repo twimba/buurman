@@ -320,7 +320,9 @@ export const NotificationDetailModal = ({
                     {onViewNotification ? (
                       <button
                         onClick={() =>
-                          onViewNotification(notification.resentFromIdentifier!)
+                          onViewNotification(
+                            notification.resentFromIdentifier ?? ''
+                          )
                         }
                         className="text-[#5c7cfa] hover:text-[#4c6ef5] hover:underline transition-colors"
                       >

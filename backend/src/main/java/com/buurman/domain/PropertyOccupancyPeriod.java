@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,14 +37,12 @@ public class PropertyOccupancyPeriod {
   private UUID updatedBy;
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
-  @Schema(description = "Nature of the self-occupancy period")
   public enum OccupancyType {
     PERSONAL,
     FAMILY,
     BUSINESS
   }
 
-  @Schema(description = "Reason for ending the self-occupancy period")
   public enum OccupancyEndReason {
     CONVERTING_TO_RENTAL,
     SELLING,

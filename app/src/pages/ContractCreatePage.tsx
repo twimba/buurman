@@ -9,8 +9,8 @@ export const ContractCreatePage = () => {
   const [searchParams] = useSearchParams();
   const createContractMutation = useCreateContract();
 
-  const prefilledPropertyId = searchParams.get('propertyId') || undefined;
-  const prefilledTenantId = searchParams.get('tenantId') || undefined;
+  const prefilledPropertyId = searchParams.get('propertyId') ?? undefined;
+  const prefilledTenantId = searchParams.get('tenantId') ?? undefined;
 
   const handleSubmit = async (data: CreateContractRequest) => {
     await createContractMutation.mutateAsync(data);

@@ -222,7 +222,7 @@ export const PropertyListPage = () => {
 
         {/* Property Count */}
         <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-          {propertiesData?.totalElements || 0}{' '}
+          {propertiesData?.totalElements ?? 0}{' '}
           {propertiesData?.totalElements === 1 ? 'property' : 'properties'}
         </p>
 

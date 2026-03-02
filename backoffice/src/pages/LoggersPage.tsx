@@ -43,7 +43,7 @@ const levelBadgeConfig: Record<string, { label: string; className: string }> = {
   },
 };
 
-const LevelBadge = ({ level }: { level: string | null }) => {
+const LevelBadge = ({ level }: { level?: string }) => {
   if (!level) {
     return (
       <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">---</span>
@@ -121,7 +121,7 @@ export const LoggersPage = () => {
   }, [loggers, debouncedSearch, isRegex, levelFilter]);
 
   const configuredCount = useMemo(
-    () => loggers?.filter((l) => l.configuredLevel !== null).length ?? 0,
+    () => loggers?.filter((l) => l.configuredLevel != null).length ?? 0,
     [loggers],
   );
 

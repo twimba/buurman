@@ -44,7 +44,7 @@ export const PaymentCreatePage = () => {
   const createPaymentMutation = useCreatePayment();
   const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
 
-  const prefilledContractId = searchParams.get('contractId') || '';
+  const prefilledContractId = searchParams.get('contractId') ?? '';
   const registerMode = searchParams.get('register') === 'true';
 
   const { data: activeContracts } = useQuery({

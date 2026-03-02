@@ -104,7 +104,10 @@ function getCurrencySymbol(currencyCode: string): string {
   }
 }
 
-function formatCurrency(value: number | null, currencyCode: string): string {
+function formatCurrency(
+  value: number | null | undefined,
+  currencyCode: string
+): string {
   if (value == null) {
     return 'N/A';
   }
@@ -494,8 +497,8 @@ export const PropertyDashboardTab = ({
 
 function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
   const cur = metrics.currency || '';
-  const fmtMoney = (val: number | null) => formatCurrency(val, cur);
-  const fmtPct = (val: number | null) =>
+  const fmtMoney = (val: number | null | undefined) => formatCurrency(val, cur);
+  const fmtPct = (val: number | null | undefined) =>
     val != null ? `${val >= 0 ? '+' : ''}${val.toFixed(2)}%` : 'N/A';
 
   const cards = [
@@ -1088,10 +1091,10 @@ function OccupancyAndTrendChart({
                 <div className="flex w-full justify-between">
                   {indices.map((idx) => (
                     <span
-                      key={months[idx]!.month}
+                      key={months[idx]?.month ?? idx}
                       className="text-[10px] text-[#6b7194] dark:text-[#8b90a8]"
                     >
-                      {formatMonthTick(months[idx]!.month)}
+                      {formatMonthTick(months[idx]?.month ?? '')}
                     </span>
                   ))}
                 </div>
@@ -1389,10 +1392,10 @@ function EquityBreakdownCard({
   currency,
 }: {
   data: EquityChartData;
-  currency: string | null;
+  currency: string | null | undefined;
 }) {
   const cur = currency || '';
-  const fmt = (v: number | null) => formatCurrency(v, cur);
+  const fmt = (v: number | null | undefined) => formatCurrency(v, cur);
 
   const { purchasePrice, currentMarketValue, mortgageBalance } = data;
 

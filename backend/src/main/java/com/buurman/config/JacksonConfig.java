@@ -3,6 +3,7 @@ package com.buurman.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -15,12 +16,15 @@ public class JacksonConfig {
 
   @Bean
   public ObjectMapper objectMapper() {
-    return JsonMapper.builder()
-        .addModule(new JavaTimeModule())
-        .addModule(new Jdk8Module())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-        .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
-        .build();
+    ObjectMapper mapper =
+        JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .addModule(new Jdk8Module())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
+            .build();
+    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_ABSENT);
+    return mapper;
   }
 }

@@ -177,14 +177,14 @@ export const SmsPolicyPage = () => {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   if (data && !synced) {
-    setMatrix(data.policyMatrix || {});
+    setMatrix(data.policyMatrix ?? {});
     setMaxCodesPerHour(data.maxCodesPerHour);
     setVerificationCodeExpiryMinutes(data.verificationCodeExpiryMinutes);
     setSynced(true);
   }
 
-  const numberTypes = metadata?.numberTypes || [];
-  const groups = metadata?.countryGroups || [];
+  const numberTypes = metadata?.numberTypes ?? [];
+  const groups = metadata?.countryGroups ?? [];
   const allCountryCodes = groups.flatMap((g) => g.countries.map((c) => c.code));
 
   const toggleExpanded = (groupId: string) => {

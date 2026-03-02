@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TenantAddress {
 
-  @Schema(description = "Purpose or classification of the tenant address")
   public enum AddressType {
     CURRENT,
     MAILING,
@@ -26,7 +24,6 @@ public class TenantAddress {
     HISTORIC
   }
 
-  @Schema(description = "Whether the address is currently in use")
   public enum AddressStatus {
     ACTIVE,
     INACTIVE

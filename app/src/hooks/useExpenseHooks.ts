@@ -32,7 +32,7 @@ export const useExpenseStats = () => {
 export const useExpense = (id: string | undefined) => {
   return useQuery({
     queryKey: ['expense', id],
-    queryFn: () => expensesApi.getExpense(id!),
+    queryFn: () => expensesApi.getExpense(id ?? ''),
     enabled: !!id,
   });
 };
@@ -40,7 +40,7 @@ export const useExpense = (id: string | undefined) => {
 export const useExpensesByProperty = (propertyId: string | undefined) => {
   return useQuery({
     queryKey: ['expenses', 'property', propertyId],
-    queryFn: () => expensesApi.getExpensesByProperty(propertyId!),
+    queryFn: () => expensesApi.getExpensesByProperty(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
@@ -135,7 +135,7 @@ export const useDeleteExpense = () => {
 export const useExpenseDocuments = (expenseId: string | undefined) => {
   return useQuery({
     queryKey: ['expenseDocuments', expenseId],
-    queryFn: () => expensesApi.getExpenseDocuments(expenseId!),
+    queryFn: () => expensesApi.getExpenseDocuments(expenseId ?? ''),
     enabled: !!expenseId,
   });
 };
@@ -196,7 +196,7 @@ export const useDeleteExpenseDocument = (expenseId: string) => {
 export const useExpenseAuditLog = (expenseId: string | undefined) => {
   return useQuery({
     queryKey: ['expenseAuditLog', expenseId],
-    queryFn: () => expensesApi.getExpenseAuditLog(expenseId!),
+    queryFn: () => expensesApi.getExpenseAuditLog(expenseId ?? ''),
     enabled: !!expenseId,
   });
 };

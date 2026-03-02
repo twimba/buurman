@@ -94,7 +94,7 @@ export const FeatureFlagsPage = () => {
       setErrorMessage(null);
       setMutatingFlag(flagName);
       updateGlobalFlag.mutate(
-        { flagName, data: { value } },
+        { flagName, data: { value: value ?? undefined } },
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),

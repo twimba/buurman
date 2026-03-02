@@ -93,7 +93,7 @@ export const FinancialReportsPage = () => {
   // Calculate date range based on period type
   const dateRange = useMemo(() => {
     const today = new Date();
-    let startDate: Date;
+    let startDate: Date = today;
     let endDate = today;
 
     switch (periodType) {
@@ -124,7 +124,7 @@ export const FinancialReportsPage = () => {
     }
 
     return {
-      startDate: startDate!.toISOString().split('T')[0],
+      startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
     };
   }, [periodType, customStartDate, customEndDate, earliestDataDate]);

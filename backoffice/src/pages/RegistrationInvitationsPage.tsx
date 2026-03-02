@@ -141,7 +141,7 @@ export function RegistrationInvitationsPage() {
   };
 
   const formatUsage = (inv: RegistrationInvitation) => {
-    if (inv.maxUsages === null) {
+    if (inv.maxUsages == null) {
       return `${inv.usageCount} / \u221E`;
     }
     return `${inv.usageCount} / ${inv.maxUsages}`;
@@ -366,7 +366,7 @@ export function RegistrationInvitationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[inv.status] || ""}`}
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[inv.status] ?? ""}`}
                       >
                         {inv.status}
                       </span>

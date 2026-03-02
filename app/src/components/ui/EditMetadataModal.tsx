@@ -4,8 +4,8 @@ import { RichTextEditor } from '../common/RichTextEditor';
 
 interface EditMetadataModalProps {
   title: string;
-  currentTitle: string | null;
-  currentNotes: string | null;
+  currentTitle?: string;
+  currentNotes?: string;
   onSave: (title: string | null, notes: string | null) => void;
   onCancel: () => void;
   isLoading: boolean;

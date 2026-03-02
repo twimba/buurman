@@ -7,10 +7,10 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const TenantEditPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: tenant, isLoading, error } = useTenant(id);
-  const updateTenantMutation = useUpdateTenant(id!);
+  const updateTenantMutation = useUpdateTenant(id);
 
   const handleSubmit = async (data: UpdateTenantRequest) => {
     await updateTenantMutation.mutateAsync(data);

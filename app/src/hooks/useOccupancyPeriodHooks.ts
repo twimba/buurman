@@ -11,7 +11,7 @@ import { getErrorMessage } from '../utils/errorMessages';
 export const useOccupancyPeriods = (propertyIdentifier: string | undefined) => {
   return useQuery({
     queryKey: ['occupancyPeriods', propertyIdentifier],
-    queryFn: () => occupancyApi.getOccupancyPeriods(propertyIdentifier!),
+    queryFn: () => occupancyApi.getOccupancyPeriods(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });
 };
@@ -23,7 +23,10 @@ export const useOccupancyPeriod = (
   return useQuery({
     queryKey: ['occupancyPeriod', propertyIdentifier, periodIdentifier],
     queryFn: () =>
-      occupancyApi.getOccupancyPeriod(propertyIdentifier!, periodIdentifier!),
+      occupancyApi.getOccupancyPeriod(
+        propertyIdentifier ?? '',
+        periodIdentifier ?? ''
+      ),
     enabled: !!propertyIdentifier && !!periodIdentifier,
   });
 };
@@ -156,7 +159,7 @@ export const useDeleteOccupancyPeriod = (propertyIdentifier: string) => {
 export const usePropertyTimeline = (propertyIdentifier: string | undefined) => {
   return useQuery({
     queryKey: ['propertyTimeline', propertyIdentifier],
-    queryFn: () => occupancyApi.getPropertyTimeline(propertyIdentifier!),
+    queryFn: () => occupancyApi.getPropertyTimeline(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });
 };

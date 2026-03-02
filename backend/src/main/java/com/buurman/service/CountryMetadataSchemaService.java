@@ -4042,17 +4042,6 @@ public class CountryMetadataSchemaService {
       boolean required,
       @Nullable List<EnumValue> enumValues,
       @Nullable ValidationSchema validation,
-      String group) {
-    return field(name, label, type, required, enumValues, validation, group, null, null);
-  }
-
-  private static FieldSchema field(
-      String name,
-      String label,
-      FieldType type,
-      boolean required,
-      @Nullable List<EnumValue> enumValues,
-      @Nullable ValidationSchema validation,
       String group,
       @Nullable String helpText,
       @Nullable String unit) {

@@ -21,8 +21,8 @@ export const TeamPreferencesSection = () => {
   const { canEditTeamSettings } = useTeam();
   const { data: team } = useCurrentTeam();
   const { data: settingsData, isLoading } = useTeamSettings(team?.identifier);
-  const updateSettingsMutation = useUpdateTeamSettings(team?.identifier || '');
-  const updateTeamMutation = useUpdateTeam(team?.identifier || '');
+  const updateSettingsMutation = useUpdateTeamSettings(team?.identifier ?? '');
+  const updateTeamMutation = useUpdateTeam(team?.identifier ?? '');
 
   const [hasChanges, setHasChanges] = useState(false);
   const [teamName, setTeamName] = useState('');
@@ -43,9 +43,9 @@ export const TeamPreferencesSection = () => {
   if (settingsData?.regional && settingsData !== lastSyncedSettings) {
     setLastSyncedSettings(settingsData);
     setPreferences({
-      defaultCurrency: settingsData.regional.defaultCurrency || '',
-      defaultCountry: settingsData.regional.defaultCountry || '',
-      fiscalYearStart: settingsData.regional.fiscalYearStartMonth || '01',
+      defaultCurrency: settingsData.regional.defaultCurrency ?? '',
+      defaultCountry: settingsData.regional.defaultCountry ?? '',
+      fiscalYearStart: settingsData.regional.fiscalYearStartMonth ?? '01',
     });
   }
 

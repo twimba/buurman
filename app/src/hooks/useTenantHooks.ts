@@ -27,7 +27,7 @@ export const useTenants = (params?: { search?: string } & PageParams) => {
 export const useTenant = (id: string | undefined) => {
   return useQuery({
     queryKey: ['tenant', id],
-    queryFn: () => tenantsApi.getTenant(id!),
+    queryFn: () => tenantsApi.getTenant(id ?? ''),
     enabled: !!id,
   });
 };
@@ -124,7 +124,7 @@ export const useUnlinkTenantFromProperty = (tenantId: string) => {
 export const useTenantHistory = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantHistory', tenantId],
-    queryFn: () => tenantsApi.getTenantHistory(tenantId!),
+    queryFn: () => tenantsApi.getTenantHistory(tenantId ?? ''),
     enabled: !!tenantId,
   });
 };
@@ -132,7 +132,7 @@ export const useTenantHistory = (tenantId: string | undefined) => {
 export const useTenantAuditLog = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantAuditLog', tenantId],
-    queryFn: () => tenantsApi.getTenantAuditLog(tenantId!),
+    queryFn: () => tenantsApi.getTenantAuditLog(tenantId ?? ''),
     enabled: !!tenantId,
   });
 };
@@ -140,7 +140,7 @@ export const useTenantAuditLog = (tenantId: string | undefined) => {
 export const useTenantDocuments = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantDocuments', tenantId],
-    queryFn: () => tenantsApi.getTenantDocuments(tenantId!),
+    queryFn: () => tenantsApi.getTenantDocuments(tenantId ?? ''),
     enabled: !!tenantId,
   });
 };
@@ -148,7 +148,7 @@ export const useTenantDocuments = (tenantId: string | undefined) => {
 export const useTenantPhotos = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantPhotos', tenantId],
-    queryFn: () => tenantsApi.getTenantPhotos(tenantId!),
+    queryFn: () => tenantsApi.getTenantPhotos(tenantId ?? ''),
     enabled: !!tenantId,
   });
 };
@@ -256,7 +256,7 @@ export const useDeleteTenantDocument = (tenantId: string) => {
 export const useTenantAddresses = (tenantId: string | undefined) => {
   return useQuery({
     queryKey: ['tenantAddresses', tenantId],
-    queryFn: () => tenantsApi.getTenantAddresses(tenantId!),
+    queryFn: () => tenantsApi.getTenantAddresses(tenantId ?? ''),
     enabled: !!tenantId,
   });
 };

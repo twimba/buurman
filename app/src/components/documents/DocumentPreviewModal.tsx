@@ -133,7 +133,7 @@ export const DocumentPreviewModal = ({
               </div>
               {showPosition && (
                 <span className="shrink-0 text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] bg-[#f1f3f9] dark:bg-[#1e2130] px-2 py-1 rounded-full">
-                  {currentIndex! + 1} / {totalCount}
+                  {(currentIndex ?? 0) + 1} / {totalCount}
                 </span>
               )}
             </div>
@@ -148,7 +148,7 @@ export const DocumentPreviewModal = ({
                 </button>
               )}
               <a
-                href={document.downloadUrl || undefined}
+                href={document.downloadUrl ?? undefined}
                 download
                 className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
                 title="Download"
@@ -156,7 +156,7 @@ export const DocumentPreviewModal = ({
                 <Download className="h-5 w-5" />
               </a>
               <a
-                href={document.downloadUrl || undefined}
+                href={document.downloadUrl ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md"
@@ -184,7 +184,7 @@ export const DocumentPreviewModal = ({
                 {isImage && (
                   <div className="flex justify-center">
                     <img
-                      src={document.downloadUrl || undefined}
+                      src={document.downloadUrl ?? undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
                       crossOrigin="anonymous"
@@ -194,7 +194,7 @@ export const DocumentPreviewModal = ({
                 {isPDF && (
                   <div className="w-full h-full min-h-[600px]">
                     <iframe
-                      src={document.downloadUrl || undefined}
+                      src={document.downloadUrl ?? undefined}
                       title={document.title || document.fileName}
                       className="w-full h-full border-0 rounded-lg shadow-lg"
                       style={{ minHeight: '600px' }}
@@ -208,7 +208,7 @@ export const DocumentPreviewModal = ({
                   Preview not available for this file type ({document.mimeType})
                 </p>
                 <a
-                  href={document.downloadUrl || undefined}
+                  href={document.downloadUrl ?? undefined}
                   download
                   className="inline-flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-blue-700"
                 >

@@ -92,7 +92,7 @@ export const BulkFinancingPaymentModal = ({
       escrowAmount: row.escrow ? parseFloat(row.escrow) : undefined,
       extraPayment: row.extraPayment ? parseFloat(row.extraPayment) : undefined,
       currency,
-      status: (row.status as PaymentStatus) || PaymentStatus.COMPLETED,
+      status: (row.status as PaymentStatus) ?? PaymentStatus.COMPLETED,
       deductFromBalance,
     }));
 

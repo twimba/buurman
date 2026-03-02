@@ -131,9 +131,9 @@ const SmsBodyPreview = ({ body }: { body: string }) => (
 );
 
 export const NotificationDetailPage = () => {
-  const { identifier } = useParams<{ identifier: string }>();
+  const { identifier = "" } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
-  const { data: notif, isLoading, error } = useNotification(identifier!);
+  const { data: notif, isLoading, error } = useNotification(identifier);
   const resendMutation = useResendNotification();
   const [showResendDialog, setShowResendDialog] = useState(false);
 
@@ -160,7 +160,7 @@ export const NotificationDetailPage = () => {
   const canResend = ["FAILED", "BOUNCED", "REJECTED"].includes(notif.status);
 
   const handleResend = () => {
-    resendMutation.mutate(identifier!, {
+    resendMutation.mutate(identifier, {
       onSuccess: () => setShowResendDialog(false),
     });
   };

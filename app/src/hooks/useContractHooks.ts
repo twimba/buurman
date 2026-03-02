@@ -28,7 +28,7 @@ export const useContracts = (params?: GetContractsParams & PageParams) => {
 export const useContract = (id: string | undefined) => {
   return useQuery({
     queryKey: ['contract', id],
-    queryFn: () => contractsApi.getContract(id!),
+    queryFn: () => contractsApi.getContract(id ?? ''),
     enabled: !!id,
   });
 };
@@ -204,7 +204,7 @@ export const useDuplicateContract = () => {
 export const useContractDocuments = (contractId: string | undefined) => {
   return useQuery({
     queryKey: ['contractDocuments', contractId],
-    queryFn: () => contractsApi.getContractDocuments(contractId!),
+    queryFn: () => contractsApi.getContractDocuments(contractId ?? ''),
     enabled: !!contractId,
   });
 };
@@ -259,7 +259,7 @@ export const useDeleteContractDocument = (contractId: string) => {
 export const useContractAuditLog = (contractId: string | undefined) => {
   return useQuery({
     queryKey: ['contractAuditLog', contractId],
-    queryFn: () => contractsApi.getContractAuditLog(contractId!),
+    queryFn: () => contractsApi.getContractAuditLog(contractId ?? ''),
     enabled: !!contractId,
   });
 };
@@ -313,7 +313,7 @@ export const useGenerateContractPayments = (contractId: string) => {
 export const useContractMetadataSchema = (countryCode?: string) => {
   return useQuery({
     queryKey: ['contract-metadata-schema', countryCode],
-    queryFn: () => contractsApi.getContractMetadataSchema(countryCode!),
+    queryFn: () => contractsApi.getContractMetadataSchema(countryCode ?? ''),
     enabled: !!countryCode,
     staleTime: Infinity, // Schemas don't change during a session
   });

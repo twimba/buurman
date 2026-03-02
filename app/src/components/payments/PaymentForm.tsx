@@ -31,18 +31,18 @@ export const PaymentForm = ({
 }: PaymentFormProps) => {
   const { defaultCurrency } = useTeamDefaults();
   const { data: currencies } = useCurrencies();
-  const { data: rentPeriods } = useRentPeriods(contractIdentifier || undefined);
+  const { data: rentPeriods } = useRentPeriods(contractIdentifier ?? undefined);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<
     CreatePaymentRequest & { paymentDate?: string }
   >({
     contractIdentifier: contractIdentifier,
-    amount: payment?.amount || 0,
+    amount: payment?.amount ?? 0,
     currency: payment?.currency || defaultCurrency || '',
-    dueDate: payment?.dueDate || new Date().toISOString().split('T')[0],
-    notes: payment?.notes || '',
-    paymentDate: payment?.paymentDate || '',
+    dueDate: payment?.dueDate ?? new Date().toISOString().split('T')[0],
+    notes: payment?.notes ?? '',
+    paymentDate: payment?.paymentDate ?? '',
   });
 
   const [lastSyncedPayment, setLastSyncedPayment] = useState(payment);
@@ -53,8 +53,8 @@ export const PaymentForm = ({
       amount: payment.amount,
       currency: payment.currency,
       dueDate: payment.dueDate,
-      notes: payment.notes || '',
-      paymentDate: payment.paymentDate || '',
+      notes: payment.notes ?? '',
+      paymentDate: payment.paymentDate ?? '',
     });
   }
 
@@ -179,7 +179,7 @@ export const PaymentForm = ({
           Amount <span className="text-red-500">*</span>
         </label>
         <MoneyInput
-          value={formData.amount || undefined}
+          value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
           onCurrencyChange={handleCurrencyChange}
@@ -262,7 +262,7 @@ export const PaymentForm = ({
           <div className="flex gap-2">
             <input
               type="date"
-              value={formData.paymentDate || ''}
+              value={formData.paymentDate ?? ''}
               onChange={(e) =>
                 setFormData({ ...formData, paymentDate: e.target.value })
               }
@@ -289,7 +289,7 @@ export const PaymentForm = ({
           Notes
         </label>
         <RichTextEditor
-          value={formData.notes || ''}
+          value={formData.notes ?? ''}
           onChange={(value) => setFormData({ ...formData, notes: value })}
           placeholder="Add any additional notes about this payment..."
           readOnly={isLoading}

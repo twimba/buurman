@@ -116,12 +116,11 @@ const InlineValueEditor = ({
   }, [editing]);
 
   const startEdit = () => {
-    setDraft(value !== null && value !== undefined ? String(value) : "");
+    setDraft(value != null ? String(value) : "");
     setEditing(true);
   };
 
-  const hasValue =
-    value !== null && value !== undefined && String(value) !== "";
+  const hasValue = value != null && String(value) !== "";
 
   const save = () => {
     setEditing(false);
@@ -129,7 +128,7 @@ const InlineValueEditor = ({
     const oldValue = hasValue ? String(value) : "";
     if (newValue !== oldValue) {
       // Send "" to clear, non-empty to set
-      onSave(newValue || "");
+      onSave(newValue ?? "");
     }
   };
 
@@ -234,7 +233,7 @@ const RoleBadge = ({ role }: { role: string }) => {
 
 const ValueCell = ({ value }: { value: unknown }) => (
   <td className="px-5 py-3.5 text-sm text-[#6b7194] dark:text-[#8b90a8] font-mono">
-    {value !== null && value !== undefined ? (
+    {value != null ? (
       String(value)
     ) : (
       <Minus className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
@@ -358,9 +357,7 @@ const UserFlagRow = ({
                 userIdentifier,
                 teamIdentifier,
                 enabled,
-                flag.value !== null && flag.value !== undefined
-                  ? String(flag.value)
-                  : null,
+                flag.value != null ? String(flag.value) : null,
               )
             }
           />
@@ -405,9 +402,7 @@ const UserFlagRow = ({
                   userIdentifier,
                   teamIdentifier,
                   !flag.enabled,
-                  flag.value !== null && flag.value !== undefined
-                    ? String(flag.value)
-                    : null,
+                  flag.value != null ? String(flag.value) : null,
                 )
               }
               disabled={mutating}
@@ -717,7 +712,7 @@ export const UserFeatureFlags = ({
           userIdentifier: uid,
           teamIdentifier: tid,
           flagName,
-          data: { enabled, value },
+          data: { enabled, value: value ?? undefined },
         },
         {
           onSettled: () => setMutatingFlag(null),
@@ -888,9 +883,7 @@ const SegmentOverrideRow = ({
                 name,
                 segmentId,
                 enabled,
-                flag.value !== null && flag.value !== undefined
-                  ? String(flag.value)
-                  : null,
+                flag.value != null ? String(flag.value) : null,
               )
             }
           />
@@ -1128,7 +1121,7 @@ export const SegmentFeatureFlags = () => {
     ) => {
       setMutatingFlag(flagName);
       upsertOverride.mutate(
-        { segmentId, flagName, data: { enabled, value } },
+        { segmentId, flagName, data: { enabled, value: value ?? undefined } },
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),

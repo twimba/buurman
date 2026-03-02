@@ -5,10 +5,11 @@ export interface UserProfileResponse {
   email: string;
   firstName: string;
   lastName: string;
-  phone: string | null;
+  phone?: string;
   phoneVerified: boolean;
 }
 
+/** Absent fields are interpreted as "clear" (set to null) by the backend. */
 export interface UpdateUserProfileRequest {
   firstName: string;
   lastName: string;

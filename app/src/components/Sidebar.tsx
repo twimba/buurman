@@ -86,7 +86,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   const location = useLocation();
 
   const visibleNavigation = navigation.filter(
-    (item) => !('featureFlag' in item) || isEnabled(item.featureFlag!)
+    (item) => !('featureFlag' in item) || isEnabled(item.featureFlag ?? '')
   );
 
   const isOnAdminPage = location.pathname.startsWith('/admin');

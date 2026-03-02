@@ -41,7 +41,7 @@ export function RegistrationInvitationDetailPage() {
     data: invitation,
     isLoading,
     refetch,
-  } = useRegistrationInvitation(identifier!);
+  } = useRegistrationInvitation(identifier ?? "");
   const revokeMutation = useRevokeRegistrationInvitation();
   const updateNoteMutation = useUpdateRegistrationInvitationNote();
   const [showRevoke, setShowRevoke] = useState(false);
@@ -90,7 +90,7 @@ export function RegistrationInvitationDetailPage() {
               {invitation.code}
             </h1>
             <span
-              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium mt-1 ${STATUS_STYLES[invitation.status] || ""}`}
+              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium mt-1 ${STATUS_STYLES[invitation.status] ?? ""}`}
             >
               {invitation.status}
             </span>
@@ -190,7 +190,7 @@ export function RegistrationInvitationDetailPage() {
           {!editingNote ? (
             <button
               onClick={() => {
-                setNoteValue(invitation.note || "");
+                setNoteValue(invitation.note ?? "");
                 setEditingNote(true);
               }}
               className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors"
@@ -212,7 +212,7 @@ export function RegistrationInvitationDetailPage() {
                   }
                   await updateNoteMutation.mutateAsync({
                     identifier,
-                    data: { note: noteValue || null },
+                    data: { note: noteValue || undefined },
                   });
                   setEditingNote(false);
                 }}

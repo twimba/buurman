@@ -21,7 +21,7 @@ export const usePaymentInstructions = () => {
 export const usePaymentInstruction = (id: string | undefined) => {
   return useQuery({
     queryKey: ['paymentInstruction', id],
-    queryFn: () => api.getPaymentInstruction(id!),
+    queryFn: () => api.getPaymentInstruction(id ?? ''),
     enabled: !!id,
   });
 };
@@ -81,7 +81,7 @@ export const useContractPaymentInstructions = (
 ) => {
   return useQuery({
     queryKey: ['contractPaymentInstructions', contractId],
-    queryFn: () => api.getContractPaymentInstructions(contractId!),
+    queryFn: () => api.getContractPaymentInstructions(contractId ?? ''),
     enabled: !!contractId,
   });
 };
@@ -91,7 +91,7 @@ export const useCurrentContractPaymentInstruction = (
 ) => {
   return useQuery({
     queryKey: ['currentContractPaymentInstruction', contractId],
-    queryFn: () => api.getCurrentContractPaymentInstruction(contractId!),
+    queryFn: () => api.getCurrentContractPaymentInstruction(contractId ?? ''),
     enabled: !!contractId,
   });
 };

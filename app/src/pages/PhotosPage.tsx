@@ -47,7 +47,7 @@ export const PhotosPage = () => {
     ...pageParams,
   });
 
-  const photos = photosData?.content || [];
+  const photos = photosData?.content ?? [];
 
   const { selectedPhotos, handleSelectPhoto, handleSelectAll, clearSelection } =
     usePhotoSelection(photos);

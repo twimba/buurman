@@ -1,3 +1,4 @@
+// Generic wrappers — not in OpenAPI spec, kept manually
 export interface ApiResponse<T> {
   data: T;
   message?: string;
@@ -29,35 +30,8 @@ export interface PageParams {
   direction?: 'asc' | 'desc';
 }
 
-export interface PaymentStatsResponse {
-  pendingCount: number;
-  pendingAmount: number;
-  overdueCount: number;
-  overdueAmount: number;
-  currency: string;
-  monthlyTrend: MonthlyTrend[];
-}
-
-export interface ExpenseStatsResponse {
-  totalAmount: number;
-  currency: string;
-  topCategories: CategoryTotal[];
-  monthlyTrend: MonthlyTrend[];
-}
-
 export interface BulkCreateResult<T> {
   index: number;
   result?: T;
   error?: string;
-}
-
-export interface MonthlyTrend {
-  month: string;
-  total: number;
-}
-
-export interface CategoryTotal {
-  category: string;
-  total: number;
-  count: number;
 }

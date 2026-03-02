@@ -1,69 +1,49 @@
 package com.buurman.controller;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.request.UpdateNotificationTypePreferencesRequest;
 import com.buurman.dto.request.UpdateUserPreferencesRequest;
 import com.buurman.dto.response.NotificationTypePreferencesResponse;
 import com.buurman.dto.response.UserPreferencesResponse;
+import com.buurman.generated.api.UserPreferencesApi;
+import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.UserPreferencesService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/users/preferences")
-@Tag(name = "User Preferences", description = "User preferences and notification channel settings")
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class UserPreferencesController {
+public class UserPreferencesController implements UserPreferencesApi {
 
   private final UserPreferencesService preferencesService;
 
-  @Operation(
-      summary = "Get user preferences",
-      description = "Get the current user's global preferences")
-  @GetMapping
-  public UserPreferencesResponse getPreferences(@AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public UserPreferencesResponse getPreferences() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return preferencesService.getPreferences(principal);
   }
 
-  @Operation(
-      summary = "Update user preferences",
-      description = "Update the current user's global preferences")
-  @PatchMapping
+  @Override
   public UserPreferencesResponse updatePreferences(
-      @AuthenticationPrincipal UserPrincipal principal,
-      @Valid @RequestBody UpdateUserPreferencesRequest request) {
-    return preferencesService.updatePreferences(principal, request);
+      @Valid UpdateUserPreferencesRequest updateUserPreferencesRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return preferencesService.updatePreferences(principal, updateUserPreferencesRequest);
   }
 
-  @Operation(
-      summary = "Get notification type preferences",
-      description = "Get per-type notification channel preferences with global toggles")
-  @GetMapping("/notifications")
-  public NotificationTypePreferencesResponse getNotificationTypePreferences(
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public NotificationTypePreferencesResponse getNotificationTypePreferences() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return preferencesService.getNotificationTypePreferences(principal);
   }
 
-  @Operation(
-      summary = "Update notification type preferences",
-      description = "Update per-type notification channel preferences")
-  @PutMapping("/notifications")
+  @Override
   public NotificationTypePreferencesResponse updateNotificationTypePreferences(
-      @AuthenticationPrincipal UserPrincipal principal,
-      @Valid @RequestBody UpdateNotificationTypePreferencesRequest request) {
-    return preferencesService.updateNotificationTypePreferences(principal, request);
+      @Valid UpdateNotificationTypePreferencesRequest updateNotificationTypePreferencesRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return preferencesService.updateNotificationTypePreferences(
+        principal, updateNotificationTypePreferencesRequest);
   }
 }

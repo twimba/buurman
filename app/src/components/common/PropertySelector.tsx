@@ -79,13 +79,14 @@ export const PropertySelector = ({
       if (!groups.has(cat)) {
         groups.set(cat, []);
       }
-      groups.get(cat)!.push(p);
+      groups.get(cat)?.push(p);
     }
     // Sort groups by category order
     const sorted: { category: string; items: PropertyResponse[] }[] = [];
     for (const cat of categoryOrder) {
-      if (groups.has(cat)) {
-        sorted.push({ category: cat, items: groups.get(cat)! });
+      const items = groups.get(cat);
+      if (items) {
+        sorted.push({ category: cat, items });
         groups.delete(cat);
       }
     }
@@ -193,7 +194,11 @@ export const PropertySelector = ({
       >
         {(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl) ? (
           <img
-            src={(property.mainPhotoThumbnailUrl ?? property.mainPhotoUrl)!}
+            src={
+              property.mainPhotoThumbnailUrl ??
+              property.mainPhotoUrl ??
+              undefined
+            }
             alt={property.street}
             className="w-10 h-10 rounded object-cover flex-shrink-0"
             loading="lazy"

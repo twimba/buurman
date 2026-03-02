@@ -8,9 +8,9 @@ import {
   useCreateCalendarFeed,
 } from '../../hooks/useCalendarFeedHooks';
 import {
-  CalendarFeedType,
-  CreateCalendarFeedRequest,
-} from '../../types/calendarFeed';
+  CalendarFeedResponseFeedType as CalendarFeedType,
+  type CreateCalendarFeedRequest,
+} from '../../generated/models';
 import { useTeam } from '../../context/TeamContext';
 
 interface CalendarFeedPopoverProps {

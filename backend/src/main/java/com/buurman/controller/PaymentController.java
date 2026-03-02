@@ -1,29 +1,12 @@
 package com.buurman.controller;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.buurman.domain.Payment;
-import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.BulkCreatePaymentsRequest;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
@@ -39,244 +22,156 @@ import com.buurman.dto.response.PaymentReceivalResponse;
 import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.generated.api.PaymentsApi;
+import com.buurman.generated.model.UploadPhotoRequest;
+import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PaymentService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/payments")
-@Tag(name = "Payments", description = "Rent payment tracking and management")
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class PaymentController {
+public class PaymentController implements PaymentsApi {
 
   private final PaymentService paymentService;
 
-  @Operation(summary = "Create payment", description = "Create a new payment record (Admin/Editor)")
-  @PostMapping
-  @ResponseStatus(CREATED)
-  public PaymentResponse createPayment(
-      @Valid @RequestBody CreatePaymentRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.createPayment(request, principal);
+  @Override
+  public PaymentResponse createPayment(CreatePaymentRequest createPaymentRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.createPayment(createPaymentRequest, principal);
   }
 
-  @Operation(
-      summary = "Bulk create payments",
-      description =
-          "Create multiple payments in a single request with per-item error handling"
-              + " (Admin/Editor)")
-  @PostMapping("/bulk")
-  @ResponseStatus(CREATED)
-  public List<BulkCreateResult<PaymentResponse>> bulkCreatePayments(
-      @Valid @RequestBody BulkCreatePaymentsRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.bulkCreatePayments(request.items(), principal);
+  @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public List<BulkCreateResult> bulkCreatePayments(
+      BulkCreatePaymentsRequest bulkCreatePaymentsRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return (List) paymentService.bulkCreatePayments(bulkCreatePaymentsRequest.items(), principal);
   }
 
-  @Operation(
-      summary = "Bulk generate payments",
-      description = "Generate payments for all active contracts for a given month (Admin/Editor)")
-  @PostMapping("/bulk-generate")
-  @ResponseStatus(CREATED)
+  @Override
   public List<PaymentResponse> bulkGeneratePayments(
-      @Valid @RequestBody BulkGeneratePaymentsRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.bulkGeneratePayments(request, principal);
+      BulkGeneratePaymentsRequest bulkGeneratePaymentsRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.bulkGeneratePayments(bulkGeneratePaymentsRequest, principal);
   }
 
-  @Operation(
-      summary = "List payments",
-      description = "Get all payments with optional filters and pagination")
-  @GetMapping
-  public PageResponse<PaymentResponse> getPayments(
-      @Parameter(description = "Filter by status") @RequestParam
-          Optional<Payment.PaymentStatus> status,
-      @Parameter(description = "Contract ULID identifier") @RequestParam
-          Optional<String> contractIdentifier,
-      @Parameter(description = "Property ULID identifier") @RequestParam
-          Optional<String> propertyIdentifier,
-      @Parameter(description = "Start date filter (inclusive)", example = "2026-01-01")
-          @RequestParam
-          Optional<LocalDate> dateFrom,
-      @Parameter(description = "End date filter (inclusive)", example = "2026-12-31") @RequestParam
-          Optional<LocalDate> dateTo,
-      @Parameter(description = "Page number (0-based)", example = "0")
-          @RequestParam(defaultValue = "0")
-          Integer page,
-      @Parameter(description = "Page size", example = "25") @RequestParam(defaultValue = "25")
-          Integer size,
-      @Parameter(description = "Sort field name", example = "createdAt") @RequestParam
-          Optional<String> sort,
-      @Parameter(description = "Sort direction", example = "DESC")
-          @RequestParam(defaultValue = "DESC")
-          SortDirection direction,
-      @AuthenticationPrincipal UserPrincipal principal) {
-
-    PageRequest pageRequest = PageRequest.of(page, size, sort.orElse(null), direction);
+  @Override
+  @SuppressWarnings("rawtypes")
+  public PageResponse getPayments(
+      String status,
+      String contractIdentifier,
+      String propertyIdentifier,
+      LocalDate dateFrom,
+      LocalDate dateTo,
+      Integer page,
+      Integer size,
+      String sort,
+      String direction) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return paymentService.getPaymentsPaginated(
-        principal,
-        status.map(Payment.PaymentStatus::name).orElse(null),
-        contractIdentifier.orElse(null),
-        propertyIdentifier.orElse(null),
-        dateFrom.orElse(null),
-        dateTo.orElse(null),
-        pageRequest);
+        principal, status, contractIdentifier, propertyIdentifier, dateFrom, dateTo, pageRequest);
   }
 
-  @Operation(
-      summary = "Get overdue payments",
-      description = "Get all overdue payments for the team")
-  @GetMapping("/overdue")
-  public List<PaymentResponse> getOverduePayments(
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<PaymentResponse> getOverduePayments() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getOverduePayments(principal);
   }
 
-  @Operation(summary = "Get payment stats", description = "Get payment statistics for the team")
-  @GetMapping("/stats")
-  public PaymentStatsResponse getPaymentStats(@AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public PaymentStatsResponse getPaymentStats() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getPaymentStats(principal);
   }
 
-  @Operation(summary = "Get payment details", description = "Get details of a specific payment")
-  @GetMapping("/{identifier}")
-  public PaymentResponse getPayment(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public PaymentResponse getPayment(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getPayment(identifier, principal);
   }
 
-  @Operation(summary = "Update payment", description = "Update payment information (Admin/Editor)")
-  @PutMapping("/{identifier}")
+  @Override
   public PaymentResponse updatePayment(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Valid @RequestBody UpdatePaymentRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.updatePayment(identifier, request, principal);
+      String identifier, UpdatePaymentRequest updatePaymentRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.updatePayment(identifier, updatePaymentRequest, principal);
   }
 
-  @Operation(
-      summary = "Mark payment as paid",
-      description = "Mark a payment as paid with payment date (Admin/Editor)")
-  @PutMapping("/{identifier}/mark-paid")
-  public PaymentResponse markPaymentAsPaid(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Valid @RequestBody MarkPaidRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.markPaymentAsPaid(identifier, request, principal);
+  @Override
+  public PaymentResponse markPaymentAsPaid(String identifier, MarkPaidRequest markPaidRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.markPaymentAsPaid(identifier, markPaidRequest, principal);
   }
 
-  // --- Receival endpoints ---
-
-  @Operation(
-      summary = "Register receival",
-      description = "Register a partial or full payment receival (Admin/Editor)")
-  @PostMapping("/{identifier}/receivals")
-  @ResponseStatus(CREATED)
+  @Override
   public PaymentResponse registerReceival(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Valid @RequestBody CreatePaymentReceivalRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.registerReceival(identifier, request, principal);
+      String identifier, CreatePaymentReceivalRequest createPaymentReceivalRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.registerReceival(identifier, createPaymentReceivalRequest, principal);
   }
 
-  @Operation(summary = "List receivals", description = "Get all receivals for a payment")
-  @GetMapping("/{identifier}/receivals")
-  public List<PaymentReceivalResponse> getReceivals(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<PaymentReceivalResponse> getReceivals(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getReceivalsForPayment(identifier, principal);
   }
 
-  @Operation(
-      summary = "Update receival",
-      description = "Update a receival's amount, date, or notes (Admin/Editor)")
-  @PutMapping("/{identifier}/receivals/{receivalIdentifier}")
+  @Override
   public PaymentResponse updateReceival(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Parameter(description = "Receival ULID identifier") @PathVariable String receivalIdentifier,
-      @Valid @RequestBody UpdatePaymentReceivalRequest request,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.updateReceival(identifier, receivalIdentifier, request, principal);
+      String identifier,
+      String receivalIdentifier,
+      UpdatePaymentReceivalRequest updatePaymentReceivalRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return paymentService.updateReceival(
+        identifier, receivalIdentifier, updatePaymentReceivalRequest, principal);
   }
 
-  @Operation(summary = "Delete receival", description = "Soft delete a receival (Admin/Editor)")
-  @DeleteMapping("/{identifier}/receivals/{receivalIdentifier}")
-  public PaymentResponse deleteReceival(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Parameter(description = "Receival ULID identifier") @PathVariable String receivalIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public PaymentResponse deleteReceival(String identifier, String receivalIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.deleteReceival(identifier, receivalIdentifier, principal);
   }
 
-  // --- End receival endpoints ---
-
-  @Operation(
-      summary = "Delete payment",
-      description = "Soft delete a payment (Admin only, cannot delete paid payments)")
-  @DeleteMapping("/{identifier}")
-  @ResponseStatus(NO_CONTENT)
-  public void deletePayment(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public void deletePayment(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     paymentService.deletePayment(identifier, principal);
   }
 
-  @Operation(
-      summary = "Upload document",
-      description = "Upload a document for a payment (Admin/Editor)")
-  @PostMapping("/{identifier}/documents")
-  @ResponseStatus(CREATED)
-  public DocumentResponse uploadDocument(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
-      @Parameter(description = "Document title") @RequestParam Optional<String> title,
-      @Parameter(description = "Additional notes") @RequestParam Optional<String> notes,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    return paymentService.uploadDocument(
-        identifier, file, title.orElse(null), notes.orElse(null), principal);
+  @Override
+  @SuppressWarnings("NullAway")
+  public DocumentResponse uploadPaymentDocument(
+      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    // Generated interface mismodels multipart upload as JSON body
+    return paymentService.uploadDocument(identifier, null, title, notes, principal);
   }
 
-  @Operation(summary = "List documents", description = "Get all documents for a payment")
-  @GetMapping("/{identifier}/documents")
-  public List<DocumentResponse> getDocuments(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<DocumentResponse> getPaymentDocuments(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getDocuments(identifier, principal);
   }
 
-  @Operation(
-      summary = "Get download URL",
-      description = "Get presigned download URL for a document")
-  @GetMapping("/documents/{documentIdentifier}/download")
-  public Map<String, String> getDownloadUrl(
-      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public Map<String, String> getPaymentDocumentDownloadUrl(String documentIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     URL url = paymentService.getDocumentDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
-  @Operation(summary = "Delete document", description = "Delete a document (Admin/Editor)")
-  @DeleteMapping("/documents/{documentIdentifier}")
-  @ResponseStatus(NO_CONTENT)
-  public void deleteDocument(
-      @Parameter(description = "Document ULID identifier") @PathVariable String documentIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public void deletePaymentDocument(String documentIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     paymentService.deleteDocument(documentIdentifier, principal);
   }
 
-  @Operation(summary = "Get audit log", description = "Get audit history for a payment")
-  @GetMapping("/{identifier}/audit-log")
-  public List<RecentActivityResponse> getPaymentAuditLog(
-      @Parameter(description = "Payment ULID identifier") @PathVariable String identifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
+  @Override
+  public List<RecentActivityResponse> getPaymentAuditLog(String identifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getAuditLog(identifier, principal);
   }
 }

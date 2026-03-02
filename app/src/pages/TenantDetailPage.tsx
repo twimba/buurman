@@ -15,7 +15,7 @@ import {
 } from '@/hooks/useTenantHooks';
 import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
-import { CalendarFeedType } from '@/types/calendarFeed';
+import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -75,7 +75,7 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
 );
 
 export const TenantDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const [activeTab, setActiveTab] = useTabState('info', [
@@ -135,10 +135,10 @@ export const TenantDetailPage = () => {
   const documents = allDocuments;
 
   const deleteTenantMutation = useDeleteTenant();
-  const uploadDocumentMutation = useUploadTenantDocument(id!);
-  const uploadPhotoMutation = useUploadTenantPhoto(id!);
-  const setMainPhotoMutation = useSetTenantMainPhoto(id!);
-  const deleteDocumentMutation = useDeleteTenantDocument(id!);
+  const uploadDocumentMutation = useUploadTenantDocument(id);
+  const uploadPhotoMutation = useUploadTenantPhoto(id);
+  const setMainPhotoMutation = useSetTenantMainPhoto(id);
+  const deleteDocumentMutation = useDeleteTenantDocument(id);
   const deletePhotoMutation = useDeletePhoto();
 
   const handleDelete = async () => {
@@ -594,8 +594,14 @@ export const TenantDetailPage = () => {
                       Last Updated:
                     </span>{' '}
                     <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {formatDate(tenant.updatedAt)} at{' '}
-                      {new Date(tenant.updatedAt).toLocaleTimeString()}
+                      {tenant.updatedAt ? (
+                        <>
+                          {formatDate(tenant.updatedAt)} at{' '}
+                          {new Date(tenant.updatedAt).toLocaleTimeString()}
+                        </>
+                      ) : (
+                        '—'
+                      )}
                     </span>
                   </div>
                 </div>
@@ -635,7 +641,7 @@ export const TenantDetailPage = () => {
 
         {activeTab === 'addresses' && (
           <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <TenantAddressList tenantId={id!} />
+            <TenantAddressList tenantId={id} />
           </div>
         )}
 
@@ -998,7 +1004,7 @@ export const TenantDetailPage = () => {
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
-                            {Object.entries(activity.changedFields!)
+                            {Object.entries(activity.changedFields ?? {})
                               .filter(([field]) => field !== 'updatedAt')
                               .map(([field, value]) => {
                                 // Skip internal count fields

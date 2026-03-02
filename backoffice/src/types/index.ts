@@ -20,12 +20,12 @@ export interface BackofficeTeamDetail {
 }
 
 export interface TeamMemberInfo {
-  email: string | null;
-  firstName: string | null;
-  lastName: string | null;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
   role: string;
   isOwner: boolean;
-  joinedAt: string | null;
+  joinedAt?: string;
   disabled: boolean;
 }
 
@@ -40,7 +40,7 @@ export interface DataCounts {
 
 export interface FinancialSnapshot {
   totalActiveRent: number;
-  currency: string | null;
+  currency?: string;
   propertyStatusDistribution: Record<string, number>;
   propertyCategoryDistribution: Record<string, number>;
   contractStatusDistribution: Record<string, number>;
@@ -74,7 +74,7 @@ export interface BackofficeUser {
   email: string;
   firstName: string;
   lastName: string;
-  phone: string | null;
+  phone?: string;
   emailVerified: boolean;
   disabled: boolean;
   online: boolean;
@@ -92,19 +92,19 @@ export interface BackofficeNotification {
   channel: string;
   subject: string;
   body: string;
-  recipientEmail: string | null;
-  recipientPhone: string | null;
+  recipientEmail?: string;
+  recipientPhone?: string;
   status: string;
-  providerStatus: string | null;
-  providerError: string | null;
+  providerStatus?: string;
+  providerError?: string;
   openCount: number;
   clickCount: number;
-  firstOpenedAt: string | null;
-  firstClickedAt: string | null;
-  resentFromIdentifier: string | null;
-  resendReason: string | null;
+  firstOpenedAt?: string;
+  firstClickedAt?: string;
+  resentFromIdentifier?: string;
+  resendReason?: string;
   createdAt: string;
-  statusUpdatedAt: string | null;
+  statusUpdatedAt?: string;
 }
 
 export interface BackofficeDashboardStats {
@@ -131,13 +131,13 @@ export interface ScheduledJob {
   jobName: string;
   jobGroup: string;
   jobClass: string;
-  triggerName: string | null;
-  triggerGroup: string | null;
-  triggerType: "cron" | "simple" | null;
-  scheduleExpression: string | null;
+  triggerName?: string;
+  triggerGroup?: string;
+  triggerType?: "cron" | "simple";
+  scheduleExpression?: string;
   triggerState: string;
-  nextFireTime: string | null;
-  previousFireTime: string | null;
+  nextFireTime?: string;
+  previousFireTime?: string;
 }
 
 export interface JobExecutionHistory {
@@ -145,16 +145,16 @@ export interface JobExecutionHistory {
   jobName: string;
   jobGroup: string;
   startedAt: string;
-  endedAt: string | null;
-  durationMs: number | null;
+  endedAt?: string;
+  durationMs?: number;
   status: "RUNNING" | "SUCCESS" | "FAILED";
-  errorMessage: string | null;
-  nodeId: string | null;
+  errorMessage?: string;
+  nodeId?: string;
 }
 
 export interface LoggerConfiguration {
   name: string;
-  configuredLevel: string | null;
+  configuredLevel?: string;
   effectiveLevel: string;
 }
 
@@ -166,8 +166,8 @@ export interface Buurmy {
   lastName: string;
   enabled: boolean;
   emailVerified: boolean;
-  createdAt: string | null;
-  lastLogin: string | null;
+  createdAt?: string;
+  lastLogin?: string;
   requiredActions: string[];
 }
 
@@ -186,17 +186,17 @@ export type ServiceHealthStatus = "UP" | "DOWN" | "DISABLED" | "UNKNOWN";
 export interface ServiceHealth {
   name: string;
   status: ServiceHealthStatus;
-  latencyMs: number | null;
-  details: string | null;
-  error: string | null;
+  latencyMs?: number;
+  details?: string;
+  error?: string;
 }
 
 export interface MigrationEntry {
-  version: string | null;
+  version?: string;
   description: string;
   state: string;
-  installedOn: string | null;
-  executionTimeMs: number | null;
+  installedOn?: string;
+  executionTimeMs?: number;
   script: string;
 }
 
@@ -244,12 +244,12 @@ export interface SessionInfo {
 export interface SystemInfoResponse {
   build: {
     version: string;
-    gitCommit: string | null;
-    gitCommitFull: string | null;
-    gitBranch: string | null;
-    gitCommitTime: string | null;
+    gitCommit?: string;
+    gitCommitFull?: string;
+    gitBranch?: string;
+    gitCommitTime?: string;
     gitDirty: boolean;
-    buildTime: string | null;
+    buildTime?: string;
   };
   runtime: {
     javaVersion: string;
@@ -270,7 +270,7 @@ export interface SystemInfoResponse {
     serverTime: string;
   };
   migrations: {
-    currentVersion: string | null;
+    currentVersion?: string;
     appliedCount: number;
     pendingCount: number;
     failedCount: number;

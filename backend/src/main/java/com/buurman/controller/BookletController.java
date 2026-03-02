@@ -1,80 +1,46 @@
 package com.buurman.controller;
 
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
-import static org.springframework.http.MediaType.APPLICATION_PDF;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.generated.api.BookletsApi;
+import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/booklets")
-@Tag(name = "Booklets", description = "Entity booklet PDF exports")
-@SecurityRequirement(name = "bearer-jwt")
 @RequiredArgsConstructor
-public class BookletController {
+public class BookletController implements BookletsApi {
 
   private final ExportService exportService;
+  private final HttpServletResponse httpServletResponse;
 
-  @Operation(
-      summary = "Export property booklet to PDF",
-      description = "Download detailed property booklet as PDF")
-  @GetMapping("/property/{propertyIdentifier}")
-  public ResponseEntity<byte[]> exportPropertyBooklet(
-      @Parameter(description = "Property ULID identifier") @PathVariable String propertyIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf =
-        exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
-
-    return ResponseEntity.ok()
-        .header(CONTENT_DISPOSITION, "attachment; filename=property-booklet.pdf")
-        .contentType(APPLICATION_PDF)
-        .body(pdf);
+  @Override
+  public byte[] exportPropertyBooklet(String propertyIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader(
+        "Content-Disposition", "attachment; filename=property-booklet.pdf");
+    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    return exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
   }
 
-  @Operation(
-      summary = "Export tenant booklet to PDF",
-      description = "Download detailed tenant booklet as PDF")
-  @GetMapping("/tenant/{tenantIdentifier}")
-  public ResponseEntity<byte[]> exportTenantBooklet(
-      @Parameter(description = "Tenant ULID identifier") @PathVariable String tenantIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf = exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
-
-    return ResponseEntity.ok()
-        .header(CONTENT_DISPOSITION, "attachment; filename=tenant-booklet.pdf")
-        .contentType(APPLICATION_PDF)
-        .body(pdf);
+  @Override
+  public byte[] exportTenantBooklet(String tenantIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=tenant-booklet.pdf");
+    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    return exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
   }
 
-  @Operation(
-      summary = "Export contract booklet to PDF",
-      description = "Download detailed contract booklet as PDF")
-  @GetMapping("/contract/{contractIdentifier}")
-  public ResponseEntity<byte[]> exportContractBooklet(
-      @Parameter(description = "Contract ULID identifier") @PathVariable String contractIdentifier,
-      @AuthenticationPrincipal UserPrincipal principal) {
-
-    byte[] pdf =
-        exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
-
-    return ResponseEntity.ok()
-        .header(CONTENT_DISPOSITION, "attachment; filename=contract-booklet.pdf")
-        .contentType(APPLICATION_PDF)
-        .body(pdf);
+  @Override
+  public byte[] exportContractBooklet(String contractIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader(
+        "Content-Disposition", "attachment; filename=contract-booklet.pdf");
+    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    return exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
   }
 }

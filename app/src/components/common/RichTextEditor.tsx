@@ -115,7 +115,7 @@ export const RichTextEditor = ({
         },
       }),
     ],
-    content: value || '',
+    content: value ?? '',
     editable: !readOnly,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
@@ -148,7 +148,7 @@ export const RichTextEditor = ({
     if (!editor) {
       return;
     }
-    const previousUrl = editor.getAttributes('link').href || '';
+    const previousUrl = editor.getAttributes('link').href ?? '';
     setLinkUrl(previousUrl);
     setShowLinkInput(true);
   }, [editor]);

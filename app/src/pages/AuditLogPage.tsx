@@ -399,98 +399,96 @@ export const AuditLogPage = () => {
                                 <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase mb-2">
                                   Changed Fields
                                 </h4>
-                                {Object.entries(activity.changedFields!).map(
-                                  ([field, value]) => {
-                                    // Skip internal fields
-                                    if (field === 'documentCount') {
-                                      return null;
-                                    }
+                                {Object.entries(
+                                  activity.changedFields ?? {}
+                                ).map(([field, value]) => {
+                                  // Skip internal fields
+                                  if (field === 'documentCount') {
+                                    return null;
+                                  }
 
-                                    // Special handling for document operations
-                                    if (
-                                      field === 'documentAdded' ||
-                                      field === 'documentRemoved'
-                                    ) {
-                                      return (
-                                        <div
-                                          key={field}
-                                          className="bg-white dark:bg-[#14161f] rounded p-3 text-xs"
-                                        >
-                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                                            File Name
-                                          </div>
-                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                                            {String(value)}
-                                          </div>
-                                        </div>
-                                      );
-                                    }
-
-                                    const oldValue =
-                                      activity.oldValues?.[field];
-                                    const newValue =
-                                      activity.newValues?.[field];
-
+                                  // Special handling for document operations
+                                  if (
+                                    field === 'documentAdded' ||
+                                    field === 'documentRemoved'
+                                  ) {
                                     return (
                                       <div
                                         key={field}
                                         className="bg-white dark:bg-[#14161f] rounded p-3 text-xs"
                                       >
-                                        <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 capitalize">
-                                          {field.replace(/([A-Z])/g, ' $1')}
+                                        <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                          File Name
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                          <div>
-                                            <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                                              Before
-                                            </div>
-                                            <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                                              {oldValue !== null &&
-                                              oldValue !== undefined ? (
-                                                typeof oldValue === 'string' &&
-                                                /<[a-z][\s\S]*>/i.test(
-                                                  oldValue
-                                                ) ? (
-                                                  <RichTextDisplay
-                                                    content={oldValue}
-                                                    className="text-xs [&_p]:m-0"
-                                                  />
-                                                ) : (
-                                                  String(oldValue)
-                                                )
-                                              ) : (
-                                                '\u2014'
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div>
-                                            <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                                              After
-                                            </div>
-                                            <div className="text-[#1a1d2e] dark:text-[#eef0f6] font-semibold">
-                                              {newValue !== null &&
-                                              newValue !== undefined ? (
-                                                typeof newValue === 'string' &&
-                                                /<[a-z][\s\S]*>/i.test(
-                                                  newValue
-                                                ) ? (
-                                                  <RichTextDisplay
-                                                    content={newValue}
-                                                    className="text-xs [&_p]:m-0"
-                                                  />
-                                                ) : (
-                                                  String(newValue)
-                                                )
-                                              ) : (
-                                                '\u2014'
-                                              )}
-                                            </div>
-                                          </div>
+                                        <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                          {String(value)}
                                         </div>
                                       </div>
                                     );
                                   }
-                                )}
+
+                                  const oldValue = activity.oldValues?.[field];
+                                  const newValue = activity.newValues?.[field];
+
+                                  return (
+                                    <div
+                                      key={field}
+                                      className="bg-white dark:bg-[#14161f] rounded p-3 text-xs"
+                                    >
+                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 capitalize">
+                                        {field.replace(/([A-Z])/g, ' $1')}
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                                            Before
+                                          </div>
+                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                            {oldValue !== null &&
+                                            oldValue !== undefined ? (
+                                              typeof oldValue === 'string' &&
+                                              /<[a-z][\s\S]*>/i.test(
+                                                oldValue
+                                              ) ? (
+                                                <RichTextDisplay
+                                                  content={oldValue}
+                                                  className="text-xs [&_p]:m-0"
+                                                />
+                                              ) : (
+                                                String(oldValue)
+                                              )
+                                            ) : (
+                                              '\u2014'
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                                            After
+                                          </div>
+                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6] font-semibold">
+                                            {newValue !== null &&
+                                            newValue !== undefined ? (
+                                              typeof newValue === 'string' &&
+                                              /<[a-z][\s\S]*>/i.test(
+                                                newValue
+                                              ) ? (
+                                                <RichTextDisplay
+                                                  content={newValue}
+                                                  className="text-xs [&_p]:m-0"
+                                                />
+                                              ) : (
+                                                String(newValue)
+                                              )
+                                            ) : (
+                                              '\u2014'
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </td>
                           </tr>

@@ -97,10 +97,10 @@ export const UserProfileSection = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(() => ({
-    firstName: currentUser?.firstName || '',
-    lastName: currentUser?.lastName || '',
-    email: currentUser?.email || '',
-    phone: currentUser?.phone || '',
+    firstName: currentUser?.firstName ?? '',
+    lastName: currentUser?.lastName ?? '',
+    email: currentUser?.email ?? '',
+    phone: currentUser?.phone ?? '',
     avatarUrl: null as string | null,
   }));
 
@@ -108,10 +108,10 @@ export const UserProfileSection = () => {
   if (currentUser && currentUser !== lastSyncedUser) {
     setLastSyncedUser(currentUser);
     setUserData({
-      firstName: currentUser.firstName || '',
-      lastName: currentUser.lastName || '',
-      email: currentUser.email || '',
-      phone: currentUser.phone || '',
+      firstName: currentUser.firstName ?? '',
+      lastName: currentUser.lastName ?? '',
+      email: currentUser.email ?? '',
+      phone: currentUser.phone ?? '',
       avatarUrl: null,
     });
   }
@@ -122,7 +122,7 @@ export const UserProfileSection = () => {
   const COOLDOWN_KEY = 'buurman-phone-verify-cooldown';
   const [cooldown, setCooldown] = useState(() => {
     try {
-      const expiresAt = Number(localStorage.getItem(COOLDOWN_KEY) || 0);
+      const expiresAt = Number(localStorage.getItem(COOLDOWN_KEY) ?? 0);
       const remaining = Math.ceil((expiresAt - Date.now()) / 1000);
       return remaining > 0 ? remaining : 0;
     } catch {
@@ -204,10 +204,10 @@ export const UserProfileSection = () => {
   const handleCancelEdit = () => {
     if (currentUser) {
       setUserData({
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
+        firstName: currentUser.firstName ?? '',
+        lastName: currentUser.lastName ?? '',
+        email: currentUser.email ?? '',
+        phone: currentUser.phone ?? '',
         avatarUrl: null,
       });
     }
@@ -471,9 +471,9 @@ export const UserProfileSection = () => {
                   ))}
               </div>
               <PhoneInput
-                value={userData.phone || null}
+                value={userData.phone ?? null}
                 onChange={(e164) => {
-                  setUserData({ ...userData, phone: e164 || '' });
+                  setUserData({ ...userData, phone: e164 ?? '' });
                   if (phoneError) {
                     setPhoneError('');
                   }

@@ -398,7 +398,7 @@ export const TaxFormModal = ({
                 Notes
               </label>
               <RichTextEditor
-                value={formData.notes || ''}
+                value={formData.notes ?? ''}
                 onChange={(value) =>
                   setFormData({ ...formData, notes: value || undefined })
                 }

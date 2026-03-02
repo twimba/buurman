@@ -20,8 +20,8 @@ export interface PhoneNumberPolicyResponse {
   policyMatrix: Record<string, string[]>;
   maxCodesPerHour: number;
   verificationCodeExpiryMinutes: number;
-  updatedAt: string | null;
-  updatedBy: string | null;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 export interface UpdatePhoneNumberPolicyRequest {
@@ -53,12 +53,12 @@ export const updatePhonePolicy = async (
 export interface RateLimitConfigResponse {
   key: string;
   displayName: string;
-  description: string | null;
+  description?: string;
   maxRequests: number;
   periodSeconds: number;
   enabled: boolean;
-  updatedAt: string | null;
-  updatedBy: string | null;
+  updatedAt?: string;
+  updatedBy?: string;
 }
 
 export interface UpdateRateLimitConfigRequest {
