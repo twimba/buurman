@@ -57,8 +57,11 @@ public class PropertyCommercialDetailsRepository {
               details.getCommonAreaUnit().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel().orElse(null))
           .set(
-              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M,
-              details.getCeilingHeightM().orElse(null))
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_VALUE,
+              details.getCeilingHeightValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_UNIT,
+              details.getCeilingHeightUnit().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront().orElse(null))
           .set(
               PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS,
@@ -98,8 +101,11 @@ public class PropertyCommercialDetailsRepository {
               details.getCommonAreaUnit().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, details.getFloorLevel().orElse(null))
           .set(
-              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M,
-              details.getCeilingHeightM().orElse(null))
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_VALUE,
+              details.getCeilingHeightValue().orElse(null))
+          .set(
+              PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_UNIT,
+              details.getCeilingHeightUnit().orElse(null))
           .set(PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT, details.getHasStorefront().orElse(null))
           .set(
               PROPERTY_COMMERCIAL_DETAILS.HAS_SIGNAGE_RIGHTS,
@@ -148,7 +154,8 @@ public class PropertyCommercialDetailsRepository {
     d.setCommonAreaValue(Optional.ofNullable(record.getCommonAreaValue()));
     d.setCommonAreaUnit(Optional.ofNullable(record.getCommonAreaUnit()));
     d.setFloorLevel(Optional.ofNullable(record.getFloorLevel()));
-    d.setCeilingHeightM(Optional.ofNullable(record.getCeilingHeightM()));
+    d.setCeilingHeightValue(Optional.ofNullable(record.getCeilingHeightValue()));
+    d.setCeilingHeightUnit(Optional.ofNullable(record.getCeilingHeightUnit()));
     d.setHasStorefront(Optional.ofNullable(record.getHasStorefront()));
     d.setHasSignageRights(Optional.ofNullable(record.getHasSignageRights()));
     d.setZoningClassification(Optional.ofNullable(record.getZoningClassification()));

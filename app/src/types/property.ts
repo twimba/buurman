@@ -35,7 +35,8 @@ export interface CommercialDetailsResponse {
   commonAreaValue?: number;
   commonAreaUnit?: string;
   floorLevel?: number;
-  ceilingHeightM?: number;
+  ceilingHeightValue?: number;
+  ceilingHeightUnit?: string;
   hasStorefront?: boolean;
   hasSignageRights?: boolean;
   zoningClassification?: string;
@@ -46,14 +47,17 @@ export interface CommercialDetailsResponse {
 }
 
 export interface IndustrialDetailsResponse {
-  clearHeightM?: number;
+  clearHeightValue?: number;
+  clearHeightUnit?: string;
   loadingDocks?: number;
   driveInDoors?: number;
-  floorLoadCapacityKgSqm?: number;
+  floorLoadCapacityValue?: number;
+  floorLoadCapacityUnit?: string;
   powerCapacityKva?: number;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
-  craneCapacityTons?: number;
+  craneCapacityValue?: number;
+  craneCapacityUnit?: string;
   hasHazmatCertification?: boolean;
   hasVentilationSystem?: boolean;
   hasClimateControl?: boolean;
@@ -257,7 +261,8 @@ export interface CommercialDetailsRequest {
   commonAreaValue?: number;
   commonAreaUnit?: string;
   floorLevel?: number;
-  ceilingHeightM?: number;
+  ceilingHeightValue?: number;
+  ceilingHeightUnit?: string;
   hasStorefront?: boolean;
   hasSignageRights?: boolean;
   zoningClassification?: string;
@@ -268,14 +273,17 @@ export interface CommercialDetailsRequest {
 }
 
 export interface IndustrialDetailsRequest {
-  clearHeightM?: number;
+  clearHeightValue?: number;
+  clearHeightUnit?: string;
   loadingDocks?: number;
   driveInDoors?: number;
-  floorLoadCapacityKgSqm?: number;
+  floorLoadCapacityValue?: number;
+  floorLoadCapacityUnit?: string;
   powerCapacityKva?: number;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
-  craneCapacityTons?: number;
+  craneCapacityValue?: number;
+  craneCapacityUnit?: string;
   hasHazmatCertification?: boolean;
   hasVentilationSystem?: boolean;
   hasClimateControl?: boolean;

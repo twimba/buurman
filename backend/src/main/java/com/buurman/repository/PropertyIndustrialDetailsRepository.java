@@ -43,12 +43,20 @@ public class PropertyIndustrialDetailsRepository {
           .set(PROPERTY_INDUSTRIAL_DETAILS.ID, newId)
           .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, details.getPropertyId())
           .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, details.getTeamId())
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_VALUE,
+              details.getClearHeightValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_UNIT,
+              details.getClearHeightUnit().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-              details.getFloorLoadCapacityKgSqm().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_VALUE,
+              details.getFloorLoadCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT,
+              details.getFloorLoadCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
               details.getPowerCapacityKva().orElse(null))
@@ -57,8 +65,11 @@ public class PropertyIndustrialDetailsRepository {
               details.getHasThreePhasePower().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
-              details.getCraneCapacityTons().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_VALUE,
+              details.getCraneCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_UNIT,
+              details.getCraneCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION,
               details.getHasHazmatCertification().orElse(null))
@@ -83,12 +94,20 @@ public class PropertyIndustrialDetailsRepository {
       details.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(PROPERTY_INDUSTRIAL_DETAILS)
-          .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M, details.getClearHeightM().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_VALUE,
+              details.getClearHeightValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_UNIT,
+              details.getClearHeightUnit().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, details.getLoadingDocks().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, details.getDriveInDoors().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
-              details.getFloorLoadCapacityKgSqm().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_VALUE,
+              details.getFloorLoadCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT,
+              details.getFloorLoadCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
               details.getPowerCapacityKva().orElse(null))
@@ -97,8 +116,11 @@ public class PropertyIndustrialDetailsRepository {
               details.getHasThreePhasePower().orElse(null))
           .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, details.getHasCrane().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
-              details.getCraneCapacityTons().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_VALUE,
+              details.getCraneCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_UNIT,
+              details.getCraneCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION,
               details.getHasHazmatCertification().orElse(null))
@@ -141,14 +163,17 @@ public class PropertyIndustrialDetailsRepository {
     d.setId(record.getId());
     d.setPropertyId(record.getPropertyId());
     d.setTeamId(record.getTeamId());
-    d.setClearHeightM(Optional.ofNullable(record.getClearHeightM()));
+    d.setClearHeightValue(Optional.ofNullable(record.getClearHeightValue()));
+    d.setClearHeightUnit(Optional.ofNullable(record.getClearHeightUnit()));
     d.setLoadingDocks(Optional.ofNullable(record.getLoadingDocks()));
     d.setDriveInDoors(Optional.ofNullable(record.getDriveInDoors()));
-    d.setFloorLoadCapacityKgSqm(Optional.ofNullable(record.getFloorLoadCapacityKgSqm()));
+    d.setFloorLoadCapacityValue(Optional.ofNullable(record.getFloorLoadCapacityValue()));
+    d.setFloorLoadCapacityUnit(Optional.ofNullable(record.getFloorLoadCapacityUnit()));
     d.setPowerCapacityKva(Optional.ofNullable(record.getPowerCapacityKva()));
     d.setHasThreePhasePower(Optional.ofNullable(record.getHasThreePhasePower()));
     d.setHasCrane(Optional.ofNullable(record.getHasCrane()));
-    d.setCraneCapacityTons(Optional.ofNullable(record.getCraneCapacityTons()));
+    d.setCraneCapacityValue(Optional.ofNullable(record.getCraneCapacityValue()));
+    d.setCraneCapacityUnit(Optional.ofNullable(record.getCraneCapacityUnit()));
     d.setHasHazmatCertification(Optional.ofNullable(record.getHasHazmatCertification()));
     d.setHasVentilationSystem(Optional.ofNullable(record.getHasVentilationSystem()));
     d.setHasClimateControl(Optional.ofNullable(record.getHasClimateControl()));

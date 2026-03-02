@@ -833,7 +833,7 @@ const CommercialDetailsSection = ({
     details.usableAreaValue,
     details.commonAreaValue,
     details.floorLevel,
-    details.ceilingHeightM,
+    details.ceilingHeightValue,
     details.hasStorefront,
     details.hasSignageRights,
     details.zoningClassification,
@@ -874,11 +874,11 @@ const CommercialDetailsSection = ({
         />
         <NumberField
           label="Ceiling Height"
-          value={details.ceilingHeightM}
-          onChange={(v) => update('ceilingHeightM', v)}
+          value={details.ceilingHeightValue}
+          onChange={(v) => update('ceilingHeightValue', v)}
           min={0}
           step={0.1}
-          suffix="m"
+          suffix={details.ceilingHeightUnit === 'ft' ? 'ft' : 'm'}
         />
         <NumberField
           label="Max Occupancy"
@@ -948,14 +948,14 @@ const IndustrialDetailsSection = ({
     onChange({ ...details, [field]: value } as IndustrialDetailsRequest);
 
   const fields = [
-    details.clearHeightM,
+    details.clearHeightValue,
     details.loadingDocks,
     details.driveInDoors,
-    details.floorLoadCapacityKgSqm,
+    details.floorLoadCapacityValue,
     details.powerCapacityKva,
     details.hasThreePhasePower,
     details.hasCrane,
-    details.craneCapacityTons,
+    details.craneCapacityValue,
     details.hasHazmatCertification,
     details.hasVentilationSystem,
     details.hasClimateControl,
@@ -972,11 +972,11 @@ const IndustrialDetailsSection = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NumberField
           label="Clear Height"
-          value={details.clearHeightM}
-          onChange={(v) => update('clearHeightM', v)}
+          value={details.clearHeightValue}
+          onChange={(v) => update('clearHeightValue', v)}
           min={0}
           step={0.1}
-          suffix="m"
+          suffix={details.clearHeightUnit === 'ft' ? 'ft' : 'm'}
         />
         <NumberField
           label="Loading Docks"
@@ -994,11 +994,11 @@ const IndustrialDetailsSection = ({
         />
         <NumberField
           label="Floor Load Capacity"
-          value={details.floorLoadCapacityKgSqm}
-          onChange={(v) => update('floorLoadCapacityKgSqm', v)}
+          value={details.floorLoadCapacityValue}
+          onChange={(v) => update('floorLoadCapacityValue', v)}
           min={0}
           step={1}
-          suffix="kg/m²"
+          suffix={details.floorLoadCapacityUnit === 'lbs_sqft' ? 'lbs/ft²' : 'kg/m²'}
         />
         <NumberField
           label="Power Capacity"
@@ -1010,11 +1010,11 @@ const IndustrialDetailsSection = ({
         />
         <NumberField
           label="Crane Capacity"
-          value={details.craneCapacityTons}
-          onChange={(v) => update('craneCapacityTons', v)}
+          value={details.craneCapacityValue}
+          onChange={(v) => update('craneCapacityValue', v)}
           min={0}
           step={0.1}
-          suffix="tons"
+          suffix={details.craneCapacityUnit === 'us_tons' ? 'US tons' : 't'}
           tooltip="Only relevant if crane is available"
         />
         <NumberField

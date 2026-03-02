@@ -419,7 +419,8 @@ public class PropertyService {
                 d.setCommonAreaValue(c.commonAreaValue());
                 d.setCommonAreaUnit(c.commonAreaUnit());
                 d.setFloorLevel(c.floorLevel());
-                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setCeilingHeightValue(c.ceilingHeightValue());
+                d.setCeilingHeightUnit(c.ceilingHeightUnit());
                 d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
                 d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
                 d.setZoningClassification(c.zoningClassification());
@@ -437,14 +438,17 @@ public class PropertyService {
                 PropertyIndustrialDetails d = new PropertyIndustrialDetails();
                 d.setPropertyId(propertyId);
                 d.setTeamId(teamId);
-                d.setClearHeightM(i.clearHeightM());
+                d.setClearHeightValue(i.clearHeightValue());
+                d.setClearHeightUnit(i.clearHeightUnit());
                 d.setLoadingDocks(i.loadingDocks());
                 d.setDriveInDoors(i.driveInDoors());
-                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setFloorLoadCapacityValue(i.floorLoadCapacityValue());
+                d.setFloorLoadCapacityUnit(i.floorLoadCapacityUnit());
                 d.setPowerCapacityKva(i.powerCapacityKva());
                 d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
                 d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
-                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setCraneCapacityValue(i.craneCapacityValue());
+                d.setCraneCapacityUnit(i.craneCapacityUnit());
                 d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
                 d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
                 d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
@@ -525,7 +529,8 @@ public class PropertyService {
                 d.setCommonAreaValue(c.commonAreaValue());
                 d.setCommonAreaUnit(c.commonAreaUnit());
                 d.setFloorLevel(c.floorLevel());
-                d.setCeilingHeightM(c.ceilingHeightM());
+                d.setCeilingHeightValue(c.ceilingHeightValue());
+                d.setCeilingHeightUnit(c.ceilingHeightUnit());
                 d.setHasStorefront(Optional.of(c.hasStorefront().orElse(false)));
                 d.setHasSignageRights(Optional.of(c.hasSignageRights().orElse(false)));
                 d.setZoningClassification(c.zoningClassification());
@@ -547,14 +552,17 @@ public class PropertyService {
                 PropertyIndustrialDetails d = existing.orElseGet(PropertyIndustrialDetails::new);
                 d.setPropertyId(propertyId);
                 d.setTeamId(teamId);
-                d.setClearHeightM(i.clearHeightM());
+                d.setClearHeightValue(i.clearHeightValue());
+                d.setClearHeightUnit(i.clearHeightUnit());
                 d.setLoadingDocks(i.loadingDocks());
                 d.setDriveInDoors(i.driveInDoors());
-                d.setFloorLoadCapacityKgSqm(i.floorLoadCapacityKgSqm());
+                d.setFloorLoadCapacityValue(i.floorLoadCapacityValue());
+                d.setFloorLoadCapacityUnit(i.floorLoadCapacityUnit());
                 d.setPowerCapacityKva(i.powerCapacityKva());
                 d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
                 d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
-                d.setCraneCapacityTons(i.craneCapacityTons());
+                d.setCraneCapacityValue(i.craneCapacityValue());
+                d.setCraneCapacityUnit(i.craneCapacityUnit());
                 d.setHasHazmatCertification(Optional.of(i.hasHazmatCertification().orElse(false)));
                 d.setHasVentilationSystem(Optional.of(i.hasVentilationSystem().orElse(false)));
                 d.setHasClimateControl(Optional.of(i.hasClimateControl().orElse(false)));
@@ -623,7 +631,8 @@ public class PropertyService {
                     d.getCommonAreaValue(),
                     d.getCommonAreaUnit(),
                     d.getFloorLevel(),
-                    d.getCeilingHeightM(),
+                    d.getCeilingHeightValue(),
+                    d.getCeilingHeightUnit(),
                     d.getHasStorefront(),
                     d.getHasSignageRights(),
                     d.getZoningClassification(),
@@ -640,14 +649,17 @@ public class PropertyService {
         .map(
             d ->
                 new IndustrialDetailsResponse(
-                    d.getClearHeightM(),
+                    d.getClearHeightValue(),
+                    d.getClearHeightUnit(),
                     d.getLoadingDocks(),
                     d.getDriveInDoors(),
-                    d.getFloorLoadCapacityKgSqm(),
+                    d.getFloorLoadCapacityValue(),
+                    d.getFloorLoadCapacityUnit(),
                     d.getPowerCapacityKva(),
                     d.getHasThreePhasePower(),
                     d.getHasCrane(),
-                    d.getCraneCapacityTons(),
+                    d.getCraneCapacityValue(),
+                    d.getCraneCapacityUnit(),
                     d.getHasHazmatCertification(),
                     d.getHasVentilationSystem(),
                     d.getHasClimateControl(),

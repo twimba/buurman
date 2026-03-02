@@ -351,7 +351,12 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(
-        html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
+        html,
+        "Ceiling Height",
+        buildMeasureDisplay(
+            details.getCeilingHeightValue().orElse(null),
+            details.getCeilingHeightUnit().orElse(null),
+            "m"));
     appendCoverCell(html, "Reference", property.getIdentifier());
     html.append("</tr>");
   }
@@ -371,7 +376,13 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Location", location);
     html.append("</tr><tr>");
     appendCoverCell(html, "Total Area", area);
-    appendCoverCell(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
+    appendCoverCell(
+        html,
+        "Clear Height",
+        buildMeasureDisplay(
+            details.getClearHeightValue().orElse(null),
+            details.getClearHeightUnit().orElse(null),
+            "m"));
     html.append("</tr><tr>");
     appendCoverCell(
         html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
@@ -514,7 +525,13 @@ public class PropertyBookletExporter {
             details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendField(html, "Floor Level", details.getFloorLevel().map(Object::toString).orElse("—"));
-    appendField(html, "Ceiling Height", details.getCeilingHeightM().map(v -> v + " m").orElse("—"));
+    appendField(
+        html,
+        "Ceiling Height",
+        buildMeasureDisplay(
+            details.getCeilingHeightValue().orElse(null),
+            details.getCeilingHeightUnit().orElse(null),
+            "m"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -551,7 +568,13 @@ public class PropertyBookletExporter {
     appendSectionTitle(html, "Industrial Details");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Clear Height", details.getClearHeightM().map(v -> v + " m").orElse("—"));
+    appendField(
+        html,
+        "Clear Height",
+        buildMeasureDisplay(
+            details.getClearHeightValue().orElse(null),
+            details.getClearHeightUnit().orElse(null),
+            "m"));
     appendField(html, "Loading Docks", details.getLoadingDocks().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
@@ -559,7 +582,10 @@ public class PropertyBookletExporter {
     appendField(
         html,
         "Floor Load Capacity",
-        details.getFloorLoadCapacityKgSqm().map(v -> v + " kg/sqm").orElse("—"));
+        buildMeasureDisplay(
+            details.getFloorLoadCapacityValue().orElse(null),
+            details.getFloorLoadCapacityUnit().orElse(null),
+            "kg/m²"));
     html.append("</tr><tr>");
     appendField(
         html, "Power Capacity", details.getPowerCapacityKva().map(v -> v + " kVA").orElse("—"));
@@ -578,8 +604,14 @@ public class PropertyBookletExporter {
                     isTrue(v)
                         ? "Yes"
                             + details
-                                .getCraneCapacityTons()
-                                .map(t -> " (" + t + " tons)")
+                                .getCraneCapacityValue()
+                                .map(
+                                    t ->
+                                        " ("
+                                            + t
+                                            + " "
+                                            + details.getCraneCapacityUnit().orElse("metric_tons")
+                                            + ")")
                                 .orElse("")
                         : "No")
             .orElse("—"));
@@ -1296,10 +1328,15 @@ public class PropertyBookletExporter {
   }
 
   private String buildAreaDisplay(@Nullable BigDecimal value, @Nullable String unit) {
+    return buildMeasureDisplay(value, unit, "sqm");
+  }
+
+  private String buildMeasureDisplay(
+      @Nullable BigDecimal value, @Nullable String unit, String defaultUnit) {
     if (value == null) {
       return "—";
     }
-    return value + " " + (unit != null ? unit : "sqm");
+    return value + " " + (unit != null ? unit : defaultUnit);
   }
 
   private @Nullable String photoToBase64DataUri(Photo photo) {

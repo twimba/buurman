@@ -632,8 +632,9 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_COMMERCIAL_DETAILS.COMMON_AREA_UNIT, "sqm")
             .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, random.nextInt(0, 5))
             .set(
-                PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_M,
+                PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_VALUE,
                 BigDecimal.valueOf(2.7 + random.nextDouble() * 1.3))
+            .set(PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_UNIT, "m")
             .set(
                 PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT,
                 "RETAIL".equals(propertyType)
@@ -659,19 +660,24 @@ public class DemoPropertyGenerator {
               .set(PROPERTY_INDUSTRIAL_DETAILS.PROPERTY_ID, propertyId)
               .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
               .set(
-                  PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_M,
+                  PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_VALUE,
                   BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_UNIT, "m")
               .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
               .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
               .set(
-                  PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_KG_SQM,
+                  PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_VALUE,
                   BigDecimal.valueOf(1000 + random.nextInt(4000)))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT, "kg_sqm")
               .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
               .set(
-                  PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_TONS,
+                  PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_VALUE,
                   random.nextInt(3) == 0 ? BigDecimal.valueOf(5 + random.nextInt(20)) : null)
+              .set(
+                  PROPERTY_INDUSTRIAL_DETAILS.CRANE_CAPACITY_UNIT,
+                  random.nextInt(3) == 0 ? "metric_tons" : null)
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_HAZMAT_CERTIFICATION, random.nextInt(4) == 0)
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_VENTILATION_SYSTEM, true)
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CLIMATE_CONTROL, random.nextBoolean())
