@@ -32,6 +32,7 @@ public class EmailVerificationCodeRepository {
         .set(EMAIL_VERIFICATION_CODES.ID, id)
         .set(EMAIL_VERIFICATION_CODES.USER_ID, code.getUserId())
         .set(EMAIL_VERIFICATION_CODES.CODE, code.getCode())
+        .set(EMAIL_VERIFICATION_CODES.TOKEN, code.getToken().orElse(null))
         .set(EMAIL_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), UTC))
         .set(EMAIL_VERIFICATION_CODES.CREATED_AT, createdAt)
         .execute();
@@ -57,6 +58,29 @@ public class EmailVerificationCodeRepository {
               evc.setId(record.getId());
               evc.setUserId(record.getUserId());
               evc.setCode(record.getCode());
+              evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
+              evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
+              evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+              return evc;
+            });
+  }
+
+  public Optional<EmailVerificationCode> findValidToken(String token) {
+    LocalDateTime now = LocalDateTime.now(clock);
+
+    return dsl.selectFrom(EMAIL_VERIFICATION_CODES)
+        .where(EMAIL_VERIFICATION_CODES.TOKEN.eq(token))
+        .and(EMAIL_VERIFICATION_CODES.USED_AT.isNull())
+        .and(EMAIL_VERIFICATION_CODES.EXPIRES_AT.gt(now))
+        .limit(1)
+        .fetchOptional()
+        .map(
+            record -> {
+              EmailVerificationCode evc = new EmailVerificationCode();
+              evc.setId(record.getId());
+              evc.setUserId(record.getUserId());
+              evc.setCode(record.getCode());
+              evc.setToken(Optional.ofNullable(record.getToken()));
               evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
               evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
               evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));

@@ -9,6 +9,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -313,11 +314,16 @@ public class AuthService {
   }
 
   private void createAndSendVerificationCode(User user, String code) {
+    String token = generateVerificationToken();
+
     EmailVerificationCode verificationCode = new EmailVerificationCode();
     verificationCode.setUserId(user.getId());
     verificationCode.setCode(code);
+    verificationCode.setToken(Optional.of(token));
     verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
     verificationCodeRepository.save(verificationCode);
+
+    String verifyUrl = baseUrl + "/verify-email?token=" + token;
 
     user.getActiveTeamId()
         .ifPresent(
@@ -337,6 +343,8 @@ public class AuthService {
                                 user.getFirstName(),
                                 "verificationCode",
                                 code,
+                                "verifyUrl",
+                                verifyUrl,
                                 "expiresMinutes",
                                 15))
                         .build()));
@@ -406,8 +414,51 @@ public class AuthService {
     }
   }
 
+  @Transactional
+  public void verifyEmailByToken(String token) {
+    EmailVerificationCode validCode =
+        verificationCodeRepository
+            .findValidToken(token)
+            .orElseThrow(
+                () -> new VerificationCodeException("Invalid or expired verification link"));
+
+    User user = userRepository.getById(validCode.getUserId());
+
+    if (user.getEmailVerifiedAt().isPresent()) {
+      // Already verified — silently succeed
+      return;
+    }
+
+    verificationCodeRepository.markUsed(validCode.getId());
+    userRepository.updateEmailVerifiedAt(validCode.getUserId());
+
+    // Send welcome notification
+    user.setEmailVerifiedAt(Optional.of(clock.instant()));
+    user.getActiveTeamId()
+        .ifPresent(
+            welcomeTeamId ->
+                notificationService.send(
+                    SendNotificationRequest.builder()
+                        .teamId(welcomeTeamId)
+                        .notificationType(NotificationType.WELCOME)
+                        .recipientUserId(user.getId())
+                        .recipientEmail(user.getEmail())
+                        .recipientPhone(user.getPhone().orElse(null))
+                        .createdBy(user.getId())
+                        .templateName("welcome")
+                        .templateVariables(
+                            Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
+                        .build()));
+  }
+
   private String generateVerificationCode() {
     return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+  }
+
+  private String generateVerificationToken() {
+    byte[] bytes = new byte[32];
+    SECURE_RANDOM.nextBytes(bytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
   }
 
   /**

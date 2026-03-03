@@ -10232,6 +10232,29 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /auth/verify-email-token:
+    get:
+      tags:
+        - Authentication
+      summary: Verify email by token
+      description: Verify email address via one-click link token (no authentication required)
+      operationId: verifyEmailByToken
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Verification token from email link
+      responses:
+        "204":
+          description: Email verified successfully
+        "400":
+          description: Bad request - invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
   /auth/resend-verification:
     post:
       tags:
