@@ -1,15 +1,23 @@
-import { User, Bell, Users, Settings as SettingsIcon } from 'lucide-react';
+import {
+  User,
+  Bell,
+  Users,
+  Download,
+  Settings as SettingsIcon,
+} from 'lucide-react';
 import { useTabState } from '@/hooks/useTabState';
 import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
 import { MyTeamsSection } from '@/components/settings/MyTeamsSection';
+import { DataExportSection } from '@/components/settings/DataExportSection';
 
-type SettingsTab = 'profile' | 'preferences' | 'teams';
+type SettingsTab = 'profile' | 'preferences' | 'teams' | 'data-export';
 
 const tabs = [
   { id: 'profile' as const, label: 'Profile & Security', icon: User },
   { id: 'preferences' as const, label: 'My Preferences', icon: Bell },
   { id: 'teams' as const, label: 'My Teams', icon: Users },
+  { id: 'data-export' as const, label: 'Data Export', icon: Download },
 ];
 
 export const SettingsPage = () => {
@@ -17,6 +25,7 @@ export const SettingsPage = () => {
     'profile',
     'preferences',
     'teams',
+    'data-export',
   ] as const);
 
   return (
@@ -75,6 +84,7 @@ export const SettingsPage = () => {
           {activeTab === 'profile' && <UserProfileSection />}
           {activeTab === 'preferences' && <UserPreferencesSection />}
           {activeTab === 'teams' && <MyTeamsSection />}
+          {activeTab === 'data-export' && <DataExportSection />}
         </div>
       </div>
     </div>

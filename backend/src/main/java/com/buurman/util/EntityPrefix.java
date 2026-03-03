@@ -30,7 +30,8 @@ public enum EntityPrefix {
   FPY("FPY", "Financing Payments"),
   INS("INS", "Property Insurances"),
   PTX("PTX", "Property Taxes"),
-  FEE("FEE", "Property Fees");
+  FEE("FEE", "Property Fees"),
+  TKO("TKO", "Data Takeouts");
 
   private final String code;
   private final String entityName;

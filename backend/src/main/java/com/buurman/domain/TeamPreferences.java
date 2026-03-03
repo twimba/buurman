@@ -30,6 +30,9 @@ public class TeamPreferences {
   @Builder.Default private String dateFormat = "DD/MM/YYYY";
   @Builder.Default private String fiscalYearStartMonth = "01";
 
+  // Takeout settings
+  @Builder.Default private int takeoutRetentionDays = 30;
+
   // Audit
   private Instant createdAt;
   private Instant updatedAt;

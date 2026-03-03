@@ -53,6 +53,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
+          .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
           .set(TEAM_PREFERENCES.CREATED_AT, createdAt)
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .execute();
@@ -68,6 +69,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
+          .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .where(TEAM_PREFERENCES.ID.eq(prefs.getId()))
           .execute();
@@ -102,6 +104,7 @@ public class TeamPreferencesRepository {
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
+    prefs.setTakeoutRetentionDays(record.getTakeoutRetentionDays());
     prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     prefs.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     return prefs;
