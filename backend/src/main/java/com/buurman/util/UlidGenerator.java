@@ -26,6 +26,10 @@ public class UlidGenerator {
     return generate(EntityPrefix.AMN);
   }
 
+  public static Ulid newBroadcastMessageId() {
+    return generate(EntityPrefix.BCM);
+  }
+
   public static Ulid newCalendarFeedId() {
     return generate(EntityPrefix.CAL);
   }

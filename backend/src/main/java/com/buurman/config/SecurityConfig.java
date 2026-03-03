@@ -129,6 +129,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/webhooks/**")
                     .permitAll()
+                    .requestMatchers(GET, "/broadcasts/public")
+                    .permitAll()
                     // All other endpoints require authentication
                     .anyRequest()
                     .authenticated())

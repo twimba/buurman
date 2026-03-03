@@ -13,6 +13,7 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
+import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 
 const DEMO_EMAIL = 'demo.user@demo.buurman.io';
 const DEMO_PASSWORD = 'buurman';
@@ -113,6 +114,7 @@ const LoginPage: React.FC = () => {
       {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
+          <PublicBroadcastBanner context="login" />
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
             <img

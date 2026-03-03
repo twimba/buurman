@@ -2,6 +2,7 @@ package com.buurman.util;
 
 public enum EntityPrefix {
   AMN("AMN", "Amenities"),
+  BCM("BCM", "Broadcast Messages"),
   CPI("CPI", "Contract Payment Instructions"),
   CTP("CTP", "Contract Parties"),
   CAL("CAL", "Calendar Feeds"),

@@ -64,6 +64,11 @@ const RegistrationInvitationDetailPage = lazy(() =>
     default: m.RegistrationInvitationDetailPage,
   })),
 );
+const BroadcastsPage = lazy(() =>
+  import("./pages/BroadcastsPage").then((m) => ({
+    default: m.BroadcastsPage,
+  })),
+);
 
 function App() {
   return (
@@ -104,6 +109,7 @@ function App() {
                     path="/registration-invitations/:identifier"
                     element={<RegistrationInvitationDetailPage />}
                   />
+                  <Route path="/broadcasts" element={<BroadcastsPage />} />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
                   <Route path="/scheduler" element={<SchedulerPage />} />
                   <Route path="/loggers" element={<LoggersPage />} />
