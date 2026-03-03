@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Info, Plus, Trash2 } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
+import { MeasurementInput } from '@/components/common/MeasurementInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   CreatePropertyRequest,
@@ -108,9 +109,6 @@ interface NumberFieldProps {
   step?: number;
   tooltip?: string;
   suffix?: string;
-  unitOptions?: Record<string, string>;
-  unitValue?: string;
-  onUnitChange?: (unit: string) => void;
 }
 
 const NumberField = ({
@@ -121,9 +119,6 @@ const NumberField = ({
   step,
   tooltip,
   suffix,
-  unitOptions,
-  unitValue,
-  onUnitChange,
 }: NumberFieldProps) => (
   <div>
     <label className={labelCls}>
@@ -141,23 +136,69 @@ const NumberField = ({
         }
         className={inputCls}
       />
-      {unitOptions && onUnitChange ? (
-        <select
-          value={unitValue ?? ''}
-          onChange={(e) => onUnitChange(e.target.value)}
-          className="absolute right-1 top-1/2 -translate-y-1/2 text-xs text-[#6b7094] dark:text-[#8b90b0] bg-white/80 dark:bg-[#1e2030]/80 rounded px-1.5 py-0.5 cursor-pointer focus:outline-none border border-[#d1d5e4] dark:border-[#3b3f5c] hover:border-[#9ca0b8] dark:hover:border-[#5c6180] transition-colors"
-          title={`Change ${label} unit`}
-        >
-          {Object.entries(unitOptions).map(([k, v]) => (
-            <option key={k} value={k}>{v}</option>
-          ))}
-        </select>
-      ) : suffix ? (
+      {suffix && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
           {suffix}
         </span>
-      ) : null}
+      )}
     </div>
+  </div>
+);
+
+const AREA_UNITS = [
+  { value: 'sqm', label: 'm²' },
+  { value: 'sqft', label: 'ft²' },
+];
+const HEIGHT_UNITS = [
+  { value: 'm', label: 'm' },
+  { value: 'ft', label: 'ft' },
+];
+const FLOOR_LOAD_UNITS = [
+  { value: 'kg_sqm', label: 'kg/m²' },
+  { value: 'lbs_sqft', label: 'lbs/ft²' },
+];
+const WEIGHT_UNITS = [
+  { value: 'metric_tons', label: 't' },
+  { value: 'us_tons', label: 'US tons' },
+];
+
+interface MeasurementFieldProps {
+  label: string;
+  value: number | null | undefined;
+  onChange: (v: number | undefined) => void;
+  unit: string;
+  unitOptions: { value: string; label: string }[];
+  onUnitChange: (unit: string) => void;
+  min?: number;
+  step?: number;
+  tooltip?: string;
+}
+
+const MeasurementField = ({
+  label,
+  value,
+  onChange,
+  unit,
+  unitOptions,
+  onUnitChange,
+  min,
+  step,
+  tooltip,
+}: MeasurementFieldProps) => (
+  <div>
+    <label className={labelCls}>
+      {label}
+      {tooltip && <Tooltip text={tooltip} />}
+    </label>
+    <MeasurementInput
+      value={value}
+      onChange={onChange}
+      unit={unit}
+      unitOptions={unitOptions}
+      onUnitChange={onUnitChange}
+      min={min}
+      step={step}
+    />
   </div>
 );
 
@@ -867,24 +908,24 @@ const CommercialDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Usable Area"
           value={details.usableAreaValue}
           onChange={(v) => update('usableAreaValue', v)}
           min={0}
           step={0.01}
-          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
-          unitValue={details.usableAreaUnit ?? 'sqm'}
+          unit={details.usableAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
           onUnitChange={(u) => update('usableAreaUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Common Area"
           value={details.commonAreaValue}
           onChange={(v) => update('commonAreaValue', v)}
           min={0}
           step={0.01}
-          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
-          unitValue={details.commonAreaUnit ?? 'sqm'}
+          unit={details.commonAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
           onUnitChange={(u) => update('commonAreaUnit', u)}
         />
         <NumberField
@@ -893,14 +934,14 @@ const CommercialDetailsSection = ({
           onChange={(v) => update('floorLevel', v)}
           step={1}
         />
-        <NumberField
+        <MeasurementField
           label="Ceiling Height"
           value={details.ceilingHeightValue}
           onChange={(v) => update('ceilingHeightValue', v)}
           min={0}
           step={0.1}
-          unitOptions={{ m: 'm', ft: 'ft' }}
-          unitValue={details.ceilingHeightUnit ?? 'm'}
+          unit={details.ceilingHeightUnit ?? 'm'}
+          unitOptions={HEIGHT_UNITS}
           onUnitChange={(u) => update('ceilingHeightUnit', u)}
         />
         <NumberField
@@ -993,14 +1034,14 @@ const IndustrialDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Clear Height"
           value={details.clearHeightValue}
           onChange={(v) => update('clearHeightValue', v)}
           min={0}
           step={0.1}
-          unitOptions={{ m: 'm', ft: 'ft' }}
-          unitValue={details.clearHeightUnit ?? 'm'}
+          unit={details.clearHeightUnit ?? 'm'}
+          unitOptions={HEIGHT_UNITS}
           onUnitChange={(u) => update('clearHeightUnit', u)}
         />
         <NumberField
@@ -1017,14 +1058,14 @@ const IndustrialDetailsSection = ({
           min={0}
           step={1}
         />
-        <NumberField
+        <MeasurementField
           label="Floor Load Capacity"
           value={details.floorLoadCapacityValue}
           onChange={(v) => update('floorLoadCapacityValue', v)}
           min={0}
           step={1}
-          unitOptions={{ kg_sqm: 'kg/m²', lbs_sqft: 'lbs/ft²' }}
-          unitValue={details.floorLoadCapacityUnit ?? 'kg_sqm'}
+          unit={details.floorLoadCapacityUnit ?? 'kg_sqm'}
+          unitOptions={FLOOR_LOAD_UNITS}
           onUnitChange={(u) => update('floorLoadCapacityUnit', u)}
         />
         <NumberField
@@ -1035,25 +1076,25 @@ const IndustrialDetailsSection = ({
           step={1}
           suffix="kVA"
         />
-        <NumberField
+        <MeasurementField
           label="Crane Capacity"
           value={details.craneCapacityValue}
           onChange={(v) => update('craneCapacityValue', v)}
           min={0}
           step={0.1}
-          unitOptions={{ metric_tons: 't', us_tons: 'US tons' }}
-          unitValue={details.craneCapacityUnit ?? 'metric_tons'}
+          unit={details.craneCapacityUnit ?? 'metric_tons'}
+          unitOptions={WEIGHT_UNITS}
           onUnitChange={(u) => update('craneCapacityUnit', u)}
           tooltip="Only relevant if crane is available"
         />
-        <NumberField
+        <MeasurementField
           label="Yard Area"
           value={details.yardAreaValue}
           onChange={(v) => update('yardAreaValue', v)}
           min={0}
           step={0.01}
-          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
-          unitValue={details.yardAreaUnit ?? 'sqm'}
+          unit={details.yardAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
           onUnitChange={(u) => update('yardAreaUnit', u)}
         />
         <div>
@@ -1172,24 +1213,24 @@ const AgriculturalDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Total Land Area"
           value={details.totalLandAreaValue}
           onChange={(v) => update('totalLandAreaValue', v)}
           min={0}
           step={0.01}
-          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
-          unitValue={details.totalLandAreaUnit ?? 'sqm'}
+          unit={details.totalLandAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
           onUnitChange={(u) => update('totalLandAreaUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Arable Area"
           value={details.arableAreaValue}
           onChange={(v) => update('arableAreaValue', v)}
           min={0}
           step={0.01}
-          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
-          unitValue={details.arableAreaUnit ?? 'sqm'}
+          unit={details.arableAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
           onUnitChange={(u) => update('arableAreaUnit', u)}
         />
         <SelectField
