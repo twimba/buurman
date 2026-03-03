@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -90,7 +91,7 @@ public class TenantService {
                         }));
 
     Tenant tenant = tenantMapper.toEntity(request);
-    tenant.setIdentifier(newTenantId().value());
+    tenant.setIdentifier(Optional.of(newTenantId()));
     tenant.setTeamId(principal.requireTeamId());
     tenant.setCreatedBy(principal.getUserId());
     tenant.setUpdatedBy(principal.getUserId());
@@ -100,7 +101,7 @@ public class TenantService {
     metricsService.incrementCounter("tenant.total");
 
     log.info(
-        "Tenant created: {} for team {}", savedTenant.getIdentifier(), principal.requireTeamId());
+        "Tenant created: {} for team {}", savedTenant.getIdentifier().orElseThrow(), principal.requireTeamId());
 
     auditService.logCreate(
         principal.requireTeamId(),
@@ -134,7 +135,7 @@ public class TenantService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public TenantResponse getTenant(String identifier, UserPrincipal principal) {
+  public TenantResponse getTenant(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -144,7 +145,7 @@ public class TenantService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse updateTenant(
-      String identifier, UpdateTenantRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdateTenantRequest request, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -169,7 +170,7 @@ public class TenantService {
 
     Tenant updatedTenant = tenantRepository.save(tenant);
     log.info(
-        "Tenant updated: {} for team {}", updatedTenant.getIdentifier(), principal.requireTeamId());
+        "Tenant updated: {} for team {}", updatedTenant.getIdentifier().orElseThrow(), principal.requireTeamId());
 
     auditService.logUpdate(
         principal.requireTeamId(),
@@ -185,7 +186,7 @@ public class TenantService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteTenant(String identifier, UserPrincipal principal) {
+  public void deleteTenant(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -203,7 +204,7 @@ public class TenantService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public TenantResponse linkTenantToProperty(
-      String identifier, LinkTenantToPropertyRequest request, UserPrincipal principal) {
+      Ulid identifier, LinkTenantToPropertyRequest request, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -240,7 +241,7 @@ public class TenantService {
     log.info(
         "Tenant {} linked to property {} for team {}",
         identifier,
-        property.getIdentifier(),
+        property.getIdentifier().orElseThrow(),
         principal.requireTeamId());
 
     auditService.logCreate(
@@ -255,7 +256,7 @@ public class TenantService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public TenantResponse unlinkTenantFromProperty(String identifier, UserPrincipal principal) {
+  public TenantResponse unlinkTenantFromProperty(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -298,7 +299,7 @@ public class TenantService {
   }
 
   public List<PropertyTenantHistoryResponse> getTenantHistory(
-      String identifier, UserPrincipal principal) {
+      Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -307,14 +308,14 @@ public class TenantService {
     return history.stream().map(h -> toHistoryResponse(h, principal.requireTeamId())).toList();
   }
 
-  public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
+  public List<RecentActivityResponse> getAuditLog(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "TENANT", tenant.getId());
   }
 
   public DocumentResponse uploadDocument(
-      String identifier,
+      Ulid identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -322,32 +323,32 @@ public class TenantService {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
+        file, "TENANT", tenant.getId(), tenant.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("TENANT", tenant.getId(), principal);
   }
 
-  public Map<String, String> getDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+  public Map<String, String> getDownloadUrl(Ulid documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
-  public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(Ulid documentIdentifier, UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
-  public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
+  public List<PhotoResponse> getPhotos(Ulid identifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("TENANT", tenant.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier,
+      Ulid identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -355,11 +356,11 @@ public class TenantService {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
-        file, "TENANT", tenant.getId(), tenant.getIdentifier(), title, notes, principal);
+        file, "TENANT", tenant.getId(), tenant.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
   public PhotoResponse setMainPhoto(
-      String identifier, String photoIdentifier, UserPrincipal principal) {
+      Ulid identifier, Ulid photoIdentifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     Photo photo =
@@ -368,21 +369,21 @@ public class TenantService {
   }
 
   public TenantAddressResponse createAddress(
-      String tenantIdentifier, CreateTenantAddressRequest request, UserPrincipal principal) {
+      Ulid tenantIdentifier, CreateTenantAddressRequest request, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     return addressService.createAddress(tenant.getId(), request, principal);
   }
 
   public List<TenantAddressResponse> getAddresses(
-      String tenantIdentifier, UserPrincipal principal) {
+      Ulid tenantIdentifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     return addressService.getAddresses(tenant.getId(), principal);
   }
 
   public TenantAddressResponse getAddress(
-      String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
+      Ulid tenantIdentifier, Ulid addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     TenantAddress address =
@@ -391,8 +392,8 @@ public class TenantService {
   }
 
   public TenantAddressResponse updateAddress(
-      String tenantIdentifier,
-      String addressIdentifier,
+      Ulid tenantIdentifier,
+      Ulid addressIdentifier,
       UpdateTenantAddressRequest request,
       UserPrincipal principal) {
     Tenant tenant =
@@ -403,7 +404,7 @@ public class TenantService {
   }
 
   public void deleteAddress(
-      String tenantIdentifier, String addressIdentifier, UserPrincipal principal) {
+      Ulid tenantIdentifier, Ulid addressIdentifier, UserPrincipal principal) {
     Tenant tenant =
         tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     TenantAddress address =
@@ -449,7 +450,7 @@ public class TenantService {
                 .orElse(null);
         PropertySummary summary =
             new PropertySummary(
-                property.getIdentifier(),
+                property.getIdentifier().orElseThrow(),
                 property.getStreet(),
                 property.getCity(),
                 property.getPostalCode(),
@@ -482,7 +483,7 @@ public class TenantService {
 
     PropertySummary propertySummary =
         new PropertySummary(
-            property.getIdentifier(),
+            property.getIdentifier().orElseThrow(),
             property.getStreet(),
             property.getCity(),
             property.getPostalCode(),

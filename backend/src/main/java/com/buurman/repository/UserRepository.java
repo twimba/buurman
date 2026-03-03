@@ -26,6 +26,7 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class UserRepository {
   private final UserRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<User> findByIdentifier(String identifier) {
+  public Optional<User> findByIdentifier(Ulid identifier) {
     return dsl.selectFrom(USERS)
         .where(USERS.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -50,7 +51,7 @@ public class UserRepository {
     return findById(id).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
-  public User getByIdentifier(String identifier) {
+  public User getByIdentifier(Ulid identifier) {
     return findByIdentifier(identifier).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
@@ -60,7 +61,7 @@ public class UserRepository {
     if (user.getId() == null) {
       // INSERT
       UUID newId = UUID.randomUUID();
-      String identifier = newUserId().value();
+      Ulid identifier = newUserId();
       LocalDateTime createdAt =
           user.getCreatedAt() != null ? LocalDateTime.ofInstant(user.getCreatedAt(), UTC) : now;
       LocalDateTime updatedAt =
@@ -87,7 +88,7 @@ public class UserRepository {
           .execute();
 
       user.setId(newId);
-      user.setIdentifier(identifier);
+      user.setIdentifier(java.util.Optional.of(identifier));
       user.setCreatedAt(createdAt.toInstant(UTC));
       user.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
@@ -216,7 +217,7 @@ public class UserRepository {
         dsl, USERS, condition, sortableFields, USERS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
-  public Optional<User> findByIdentifierUnscoped(String identifier) {
+  public Optional<User> findByIdentifierUnscoped(Ulid identifier) {
     return dsl.selectFrom(USERS)
         .where(USERS.IDENTIFIER.eq(identifier))
         .and(USERS.DELETED_AT.isNull())
@@ -224,7 +225,7 @@ public class UserRepository {
         .map(mapper::toDomain);
   }
 
-  public User getByIdentifierUnscoped(String identifier) {
+  public User getByIdentifierUnscoped(Ulid identifier) {
     return findByIdentifierUnscoped(identifier)
         .orElseThrow(() -> new NotFoundException("User not found"));
   }

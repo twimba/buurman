@@ -3,8 +3,10 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record RegistrationInvitationResponse(
-    String identifier,
+    Ulid identifier,
     String code,
     Optional<Integer> maxUsages,
     int usageCount,

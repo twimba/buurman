@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.BulkCreateFinancingPaymentsRequest;
 import com.buurman.dto.request.CreateFinancingPaymentRequest;
 import com.buurman.dto.request.CreatePropertyFinancingRequest;
@@ -38,21 +39,21 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   @Override
   public List<PropertyFinancingResponse> listFinancings(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.listByProperty(propertyIdentifier, principal);
+    return financingService.listByProperty(Ulid.of(propertyIdentifier), principal);
   }
 
   @Override
   public PropertyFinancingResponse getFinancing(
       String propertyIdentifier, String financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.getFinancing(financingIdentifier, principal);
+    return financingService.getFinancing(Ulid.of(financingIdentifier), principal);
   }
 
   @Override
   public PropertyFinancingResponse createFinancing(
       String propertyIdentifier, CreatePropertyFinancingRequest createPropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.create(propertyIdentifier, createPropertyFinancingRequest, principal);
+    return financingService.create(Ulid.of(propertyIdentifier), createPropertyFinancingRequest, principal);
   }
 
   @Override
@@ -61,13 +62,13 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String financingIdentifier,
       UpdatePropertyFinancingRequest updatePropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.update(financingIdentifier, updatePropertyFinancingRequest, principal);
+    return financingService.update(Ulid.of(financingIdentifier), updatePropertyFinancingRequest, principal);
   }
 
   @Override
   public void deleteFinancing(String propertyIdentifier, String financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    financingService.delete(financingIdentifier, principal);
+    financingService.delete(Ulid.of(financingIdentifier), principal);
   }
 
   // ===== Financing Payments =====
@@ -76,7 +77,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   public List<FinancingPaymentResponse> listPayments(
       String propertyIdentifier, String financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.listByFinancing(financingIdentifier, principal);
+    return paymentService.listByFinancing(Ulid.of(financingIdentifier), principal);
   }
 
   @Override
@@ -85,7 +86,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String financingIdentifier,
       CreateFinancingPaymentRequest createFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.create(financingIdentifier, createFinancingPaymentRequest, principal);
+    return paymentService.create(Ulid.of(financingIdentifier), createFinancingPaymentRequest, principal);
   }
 
   @Override
@@ -97,7 +98,7 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return (List)
         paymentService.bulkCreate(
-            financingIdentifier, bulkCreateFinancingPaymentsRequest.items(), principal);
+            Ulid.of(financingIdentifier), bulkCreateFinancingPaymentsRequest.items(), principal);
   }
 
   @Override
@@ -107,14 +108,14 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String paymentIdentifier,
       UpdateFinancingPaymentRequest updateFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.update(paymentIdentifier, updateFinancingPaymentRequest, principal);
+    return paymentService.update(Ulid.of(paymentIdentifier), updateFinancingPaymentRequest, principal);
   }
 
   @Override
   public void deleteFinancingPayment(
       String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentService.delete(paymentIdentifier, principal);
+    paymentService.delete(Ulid.of(paymentIdentifier), principal);
   }
 
   // ===== Payment Documents =====
@@ -130,21 +131,21 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       String notes,
       UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.uploadPaymentDocument(paymentIdentifier, null, title, notes, principal);
+    return paymentService.uploadPaymentDocument(Ulid.of(paymentIdentifier), null, title, notes, principal);
   }
 
   @Override
   public List<DocumentResponse> getFinancingPaymentDocuments(
       String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getPaymentDocuments(paymentIdentifier, principal);
+    return paymentService.getPaymentDocuments(Ulid.of(paymentIdentifier), principal);
   }
 
   @Override
   public Map<String, String> getFinancingPaymentDocumentDownloadUrl(
       String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL url = documentService.getDownloadUrl(documentIdentifier, principal);
+    URL url = documentService.getDownloadUrl(Ulid.of(documentIdentifier), principal);
     return Map.of("url", url.toString());
   }
 
@@ -152,6 +153,6 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   public void deleteFinancingPaymentDocument(
       String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    documentService.deleteDocument(documentIdentifier, principal);
+    documentService.deleteDocument(Ulid.of(documentIdentifier), principal);
   }
 }

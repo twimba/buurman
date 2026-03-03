@@ -17,6 +17,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.EmailVerificationCode;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Team;
@@ -139,7 +140,7 @@ public class AuthService {
 
       // Create team
       Team team = new Team();
-      team.setIdentifier(newTeamId().value());
+      team.setIdentifier(Optional.of(newTeamId()));
       team.setName(teamName);
       team.setCreatedAt(clock.instant());
       team.setUpdatedAt(clock.instant());
@@ -181,7 +182,7 @@ public class AuthService {
       metricsService.incrementCounter("team.registered.total");
       metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
 
-      return userMapper.toResponse(user, team.getIdentifier(), TEAM_ADMIN.name());
+      return userMapper.toResponse(user, team.getIdentifier().map(Ulid::value).orElse(null), TEAM_ADMIN.name());
     } catch (Exception e) {
       // Compensate: remove orphaned Keycloak user if DB operations fail
       log.error("Registration failed after Keycloak user creation, compensating", e);
@@ -221,7 +222,7 @@ public class AuthService {
   }
 
   private Optional<String> resolveTeamIdentifier(Optional<TeamMember> member) {
-    return member.flatMap(m -> teamRepository.findById(m.getTeamId()).map(Team::getIdentifier));
+    return member.flatMap(m -> teamRepository.findById(m.getTeamId()).flatMap(Team::getIdentifier).map(Ulid::value));
   }
 
   private Optional<TeamMember> getActiveMembership(User user) {

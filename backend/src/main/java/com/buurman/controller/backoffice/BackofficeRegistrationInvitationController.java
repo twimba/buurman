@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
@@ -41,20 +42,20 @@ public class BackofficeRegistrationInvitationController
 
   @Override
   public RegistrationInvitationDetailResponse get(String identifier) {
-    return invitationService.getByIdentifier(identifier);
+    return invitationService.getByIdentifier(Ulid.of(identifier));
   }
 
   @Override
   public void revoke(String identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    invitationService.revoke(identifier, principal);
+    invitationService.revoke(Ulid.of(identifier), principal);
   }
 
   @Override
   public void send(
       String identifier, SendRegistrationInvitationRequest sendRegistrationInvitationRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    invitationService.sendInvitation(identifier, sendRegistrationInvitationRequest, principal);
+    invitationService.sendInvitation(Ulid.of(identifier), sendRegistrationInvitationRequest, principal);
   }
 
   @Override
@@ -63,7 +64,7 @@ public class BackofficeRegistrationInvitationController
       UpdateRegistrationInvitationNoteRequest updateRegistrationInvitationNoteRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     return invitationService.updateNote(
-        identifier, updateRegistrationInvitationNoteRequest, principal);
+        Ulid.of(identifier), updateRegistrationInvitationNoteRequest, principal);
   }
 
   @Override

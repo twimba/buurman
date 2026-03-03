@@ -26,7 +26,7 @@ public class FinancingPayment {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private UUID financingId;
   private UUID teamId;
   private LocalDate paymentDate;

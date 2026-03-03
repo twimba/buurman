@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
@@ -73,7 +74,7 @@ public class UserTeamService {
 
   private UserProfileResponse toProfileResponse(User user) {
     return new UserProfileResponse(
-        java.util.Objects.requireNonNull(user.getIdentifier()),
+        user.getIdentifier().orElseThrow(),
         user.getEmail(),
         user.getFirstName(),
         user.getLastName(),
@@ -93,7 +94,7 @@ public class UserTeamService {
               int memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
 
               return new UserTeamResponse(
-                  team.getIdentifier(),
+                  team.getIdentifier().orElseThrow(),
                   team.getName(),
                   membership.getRole().name(),
                   membership.isOwner(),
@@ -106,7 +107,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public UserTeamResponse switchTeam(String teamIdentifier, UserPrincipal principal) {
+  public UserTeamResponse switchTeam(Ulid teamIdentifier, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
@@ -121,7 +122,7 @@ public class UserTeamService {
     int memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
 
     return new UserTeamResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         membership.getRole().name(),
         membership.isOwner(),
@@ -132,7 +133,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public UserTeamResponse setDefaultTeam(String teamIdentifier, UserPrincipal principal) {
+  public UserTeamResponse setDefaultTeam(Ulid teamIdentifier, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
@@ -147,7 +148,7 @@ public class UserTeamService {
     int memberCount = teamMemberRepository.findByTeamId(team.getId()).size();
 
     return new UserTeamResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         membership.getRole().name(),
         membership.isOwner(),
@@ -158,7 +159,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public void leaveTeam(String teamIdentifier, UserPrincipal principal) {
+  public void leaveTeam(Ulid teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is member of target team
@@ -192,7 +193,7 @@ public class UserTeamService {
     }
   }
 
-  private Team resolveTeam(String teamIdentifier) {
+  private Team resolveTeam(Ulid teamIdentifier) {
     return teamRepository.getByIdentifier(teamIdentifier);
   }
 }

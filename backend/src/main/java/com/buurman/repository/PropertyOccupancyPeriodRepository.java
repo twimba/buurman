@@ -20,6 +20,7 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyOccupancyPeriodRecordMapper;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class PropertyOccupancyPeriodRepository {
   private final Clock clock;
 
   public Optional<PropertyOccupancyPeriod> findByIdentifierAndTeamId(
-      String identifier, UUID teamId) {
+      Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_OCCUPANCY_PERIODS)
         .where(
             PROPERTY_OCCUPANCY_PERIODS
@@ -42,7 +43,7 @@ public class PropertyOccupancyPeriodRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyOccupancyPeriod getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyOccupancyPeriod getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Occupancy period not found"));
   }
@@ -144,7 +145,7 @@ public class PropertyOccupancyPeriodRepository {
 
       dsl.insertInto(PROPERTY_OCCUPANCY_PERIODS)
           .set(PROPERTY_OCCUPANCY_PERIODS.ID, id)
-          .set(PROPERTY_OCCUPANCY_PERIODS.IDENTIFIER, period.getIdentifier())
+          .set(PROPERTY_OCCUPANCY_PERIODS.IDENTIFIER, period.getIdentifier().orElseThrow())
           .set(PROPERTY_OCCUPANCY_PERIODS.TEAM_ID, period.getTeamId())
           .set(PROPERTY_OCCUPANCY_PERIODS.PROPERTY_ID, period.getPropertyId())
           .set(PROPERTY_OCCUPANCY_PERIODS.START_DATE, period.getStartDate())

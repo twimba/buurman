@@ -21,7 +21,7 @@ public class PropertyTaxRecordMapper {
 
     PropertyTax tax = new PropertyTax();
     tax.setId(record.getId());
-    tax.setIdentifier(record.getIdentifier());
+    tax.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     tax.setPropertyId(record.getPropertyId());
     tax.setTeamId(record.getTeamId());
     tax.setTaxType(PropertyTax.TaxType.valueOf(record.getTaxType()));

@@ -6,6 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePhotoRequest;
@@ -38,13 +39,13 @@ public class PhotoController implements PhotosApi {
   @Override
   public PhotoResponse getPhoto(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return photoService.getPhoto(identifier, principal);
+    return photoService.getPhoto(Ulid.of(identifier), principal);
   }
 
   @Override
   public String getPhotoDownloadUrl(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL downloadUrl = photoService.getDownloadUrl(identifier, principal);
+    URL downloadUrl = photoService.getDownloadUrl(Ulid.of(identifier), principal);
     return downloadUrl.toString();
   }
 
@@ -52,20 +53,20 @@ public class PhotoController implements PhotosApi {
   public String getPreviewUrl(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // For now, preview URL is same as download URL
-    URL previewUrl = photoService.getDownloadUrl(identifier, principal);
+    URL previewUrl = photoService.getDownloadUrl(Ulid.of(identifier), principal);
     return previewUrl.toString();
   }
 
   @Override
   public PhotoResponse updatePhoto(String identifier, UpdatePhotoRequest updatePhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return photoService.updatePhoto(identifier, updatePhotoRequest, principal);
+    return photoService.updatePhoto(Ulid.of(identifier), updatePhotoRequest, principal);
   }
 
   @Override
   public void deletePhoto(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    photoService.deletePhoto(identifier, principal);
+    photoService.deletePhoto(Ulid.of(identifier), principal);
   }
 
   @Override

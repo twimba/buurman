@@ -128,7 +128,7 @@ public class DemoExpenseGenerator {
 
           dsl.insertInto(EXPENSES)
               .set(EXPENSES.ID, UUID.randomUUID())
-              .set(EXPENSES.IDENTIFIER, newExpenseId().value())
+              .set(EXPENSES.IDENTIFIER, newExpenseId())
               .set(EXPENSES.TEAM_ID, teamId)
               .set(EXPENSES.PROPERTY_ID, propertyId)
               .set(EXPENSES.CATEGORY, category)

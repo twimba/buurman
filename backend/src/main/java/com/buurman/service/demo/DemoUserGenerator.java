@@ -1,5 +1,7 @@
 package com.buurman.service.demo;
 
+import com.buurman.domain.Ulid;
+
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
@@ -29,7 +31,7 @@ public class DemoUserGenerator {
 
     for (DemoUsers.DemoUser user : ALL_USERS) {
       UUID userId = UUID.randomUUID();
-      String identifier = newUserId().value();
+      Ulid identifier = newUserId();
       String keycloakId = ctx.getKeycloakIds().get(user.email());
 
       dsl.insertInto(USERS)

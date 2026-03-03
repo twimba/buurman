@@ -4,9 +4,10 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.Ulid;
 
 public record TenantAddressResponse(
-    String identifier,
+    Ulid identifier,
     String street,
     String city,
     String postalCode,

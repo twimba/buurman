@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
 import com.buurman.domain.Expense;
@@ -90,7 +91,7 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyDashboardResponse getDashboard(
-      String propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
+      Ulid propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
     int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
     return getDashboardData(propertyIdentifier, effectiveMonths, principal.requireTeamId());
   }
@@ -98,7 +99,7 @@ public class PropertyDashboardService {
   /** Internal method for use by other services (authorization handled by caller). */
   @Transactional(readOnly = true)
   public PropertyDashboardResponse getDashboardData(
-      String propertyIdentifier, int months, UUID teamId) {
+      Ulid propertyIdentifier, int months, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 

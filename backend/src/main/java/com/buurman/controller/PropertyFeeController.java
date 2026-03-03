@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreatePropertyFeeRequest;
 import com.buurman.dto.request.UpdatePropertyFeeRequest;
 import com.buurman.dto.response.PropertyFeeResponse;
@@ -23,20 +24,20 @@ public class PropertyFeeController implements PropertyFeesApi {
   @Override
   public List<PropertyFeeResponse> listFees(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.listByProperty(propertyIdentifier, principal);
+    return feeService.listByProperty(Ulid.of(propertyIdentifier), principal);
   }
 
   @Override
   public PropertyFeeResponse getFee(String propertyIdentifier, String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.get(identifier, principal);
+    return feeService.get(Ulid.of(identifier), principal);
   }
 
   @Override
   public PropertyFeeResponse createFee(
       String propertyIdentifier, CreatePropertyFeeRequest createPropertyFeeRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.create(propertyIdentifier, createPropertyFeeRequest, principal);
+    return feeService.create(Ulid.of(propertyIdentifier), createPropertyFeeRequest, principal);
   }
 
   @Override
@@ -45,12 +46,12 @@ public class PropertyFeeController implements PropertyFeesApi {
       String identifier,
       UpdatePropertyFeeRequest updatePropertyFeeRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.update(identifier, updatePropertyFeeRequest, principal);
+    return feeService.update(Ulid.of(identifier), updatePropertyFeeRequest, principal);
   }
 
   @Override
   public void deleteFee(String propertyIdentifier, String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    feeService.delete(identifier, principal);
+    feeService.delete(Ulid.of(identifier), principal);
   }
 }

@@ -19,6 +19,7 @@ import com.buurman.mapper.FinancingPaymentRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class FinancingPaymentRepository {
   private final FinancingPaymentRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<FinancingPayment> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<FinancingPayment> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(FINANCING_PAYMENTS)
         .where(
             FINANCING_PAYMENTS
@@ -40,7 +41,7 @@ public class FinancingPaymentRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public FinancingPayment getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public FinancingPayment getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Financing payment not found"));
   }
@@ -115,7 +116,7 @@ public class FinancingPaymentRepository {
       String currency = payment.getCurrency();
       dsl.insertInto(FINANCING_PAYMENTS)
           .set(FINANCING_PAYMENTS.ID, id)
-          .set(FINANCING_PAYMENTS.IDENTIFIER, payment.getIdentifier())
+          .set(FINANCING_PAYMENTS.IDENTIFIER, payment.getIdentifier().orElseThrow())
           .set(FINANCING_PAYMENTS.FINANCING_ID, payment.getFinancingId())
           .set(FINANCING_PAYMENTS.TEAM_ID, payment.getTeamId())
           .set(FINANCING_PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class PropertyOutdoorArea {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private UUID propertyId;
   private UUID teamId;
   private String type;

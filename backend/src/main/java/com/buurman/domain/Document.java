@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Document {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private UUID teamId;
   private String entityType;
   private UUID entityId;

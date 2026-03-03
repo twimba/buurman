@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.BroadcastMessage;
 import com.buurman.domain.Team;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.User;
 import com.buurman.dto.request.backoffice.CreateBroadcastMessageRequest;
 import com.buurman.dto.request.backoffice.UpdateBroadcastMessageRequest;
@@ -69,7 +70,7 @@ public class BackofficeBroadcastMessageService {
     log.info(
         "Backoffice user {} created broadcast message {} (title={}, scope={})",
         principal.getEmail().orElse("unknown"),
-        saved.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
         saved.getTitle(),
         saved.getScope());
 
@@ -78,7 +79,7 @@ public class BackofficeBroadcastMessageService {
 
   @Transactional
   public BackofficeBroadcastMessageResponse update(
-      String identifier, UpdateBroadcastMessageRequest request, BackofficePrincipal principal) {
+      Ulid identifier, UpdateBroadcastMessageRequest request, BackofficePrincipal principal) {
     String scope = request.scope();
     validateScope(
         scope,
@@ -107,7 +108,7 @@ public class BackofficeBroadcastMessageService {
     log.info(
         "Backoffice user {} updated broadcast message {} (title={}, scope={})",
         principal.getEmail().orElse("unknown"),
-        updated.getIdentifier(),
+        updated.getIdentifier().orElseThrow(),
         updated.getTitle(),
         updated.getScope());
 
@@ -115,14 +116,14 @@ public class BackofficeBroadcastMessageService {
   }
 
   @Transactional
-  public void delete(String identifier, BackofficePrincipal principal) {
+  public void delete(Ulid identifier, BackofficePrincipal principal) {
     BroadcastMessage existing = repository.getByIdentifier(identifier);
     repository.delete(existing.getId());
 
     log.info(
         "Backoffice user {} deleted broadcast message {} (title={})",
         principal.getEmail().orElse("unknown"),
-        existing.getIdentifier(),
+        existing.getIdentifier().orElseThrow(),
         existing.getTitle());
   }
 
@@ -131,7 +132,7 @@ public class BackofficeBroadcastMessageService {
     List<String> userIdentifiers = resolveUserIdentifiers(msg.getTargetUserIds());
 
     return new BackofficeBroadcastMessageResponse(
-        msg.getIdentifier(),
+        msg.getIdentifier().orElseThrow(),
         msg.getTitle(),
         msg.getBody(),
         msg.getSeverity(),
@@ -159,13 +160,13 @@ public class BackofficeBroadcastMessageService {
 
   private List<UUID> resolveTeamIds(List<String> identifiers) {
     return identifiers.stream()
-        .map(id -> teamRepository.getByIdentifierForBackoffice(id).getId())
+        .map(id -> teamRepository.getByIdentifierForBackoffice(Ulid.of(id)).getId())
         .toList();
   }
 
   private List<UUID> resolveUserIds(List<String> identifiers) {
     return identifiers.stream()
-        .map(id -> userRepository.getByIdentifierUnscoped(id).getId())
+        .map(id -> userRepository.getByIdentifierUnscoped(Ulid.of(id)).getId())
         .toList();
   }
 
@@ -177,7 +178,11 @@ public class BackofficeBroadcastMessageService {
         teamRepository.findByIds(ids).stream()
             .collect(Collectors.toMap(Team::getId, Function.identity()));
     return ids.stream()
-        .map(id -> teams.containsKey(id) ? teams.get(id).getIdentifier() : id.toString())
+        .map(
+            id ->
+                teams.containsKey(id)
+                    ? teams.get(id).getIdentifier().map(Ulid::value).orElse(id.toString())
+                    : id.toString())
         .toList();
   }
 
@@ -189,7 +194,11 @@ public class BackofficeBroadcastMessageService {
         userRepository.findByIds(ids).stream()
             .collect(Collectors.toMap(User::getId, Function.identity()));
     return ids.stream()
-        .map(id -> users.containsKey(id) ? users.get(id).getIdentifier() : id.toString())
+        .map(
+            id ->
+                users.containsKey(id)
+                    ? users.get(id).getIdentifier().map(Ulid::value).orElse(id.toString())
+                    : id.toString())
         .toList();
   }
 }

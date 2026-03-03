@@ -4,13 +4,14 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.buurman.domain.CalendarFeed;
+import com.buurman.domain.Ulid;
 
 public record CalendarFeedResponse(
-    String identifier,
+    Ulid identifier,
     CalendarFeed.FeedType feedType,
-    Optional<String> contractIdentifier,
-    Optional<String> propertyIdentifier,
-    Optional<String> tenantIdentifier,
+    Optional<Ulid> contractIdentifier,
+    Optional<Ulid> propertyIdentifier,
+    Optional<Ulid> tenantIdentifier,
     Optional<String> entityLabel,
     Boolean enabled,
     String feedUrl,

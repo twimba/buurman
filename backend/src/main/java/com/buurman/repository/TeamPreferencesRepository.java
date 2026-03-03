@@ -16,6 +16,7 @@ import com.buurman.domain.TeamPreferences;
 import com.buurman.jooq.generated.tables.records.TeamPreferencesRecord;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

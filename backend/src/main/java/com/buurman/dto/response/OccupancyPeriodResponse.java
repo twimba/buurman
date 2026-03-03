@@ -7,10 +7,11 @@ import java.util.Optional;
 
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyEndReason;
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
+import com.buurman.domain.Ulid;
 
 public record OccupancyPeriodResponse(
-    String identifier,
-    String propertyIdentifier,
+    Ulid identifier,
+    Ulid propertyIdentifier,
     LocalDate startDate,
     Optional<LocalDate> endDate,
     OccupancyType type,

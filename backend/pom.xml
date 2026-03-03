@@ -798,6 +798,14 @@
                                         <inputSchema>public</inputSchema>
                                         <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
                                         <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
+                                        <forcedTypes>
+                                            <forcedType>
+                                                <userType>com.buurman.domain.Ulid</userType>
+                                                <converter>com.buurman.config.jooq.UlidJooqConverter</converter>
+                                                <includeExpression>.*\.IDENTIFIER</includeExpression>
+                                                <includeTypes>VARCHAR</includeTypes>
+                                            </forcedType>
+                                        </forcedTypes>
                                     </database>
                                     <target>
                                         <packageName>com.buurman.jooq.generated</packageName>

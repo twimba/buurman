@@ -37,6 +37,7 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class PaymentRepository {
   private final PaymentRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Payment> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Payment> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PAYMENTS)
         .where(
             PAYMENTS
@@ -58,7 +59,7 @@ public class PaymentRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Payment getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Payment getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Payment not found"));
   }
@@ -179,7 +180,7 @@ public class PaymentRepository {
       String currency = payment.getCurrency();
       dsl.insertInto(PAYMENTS)
           .set(PAYMENTS.ID, id)
-          .set(PAYMENTS.IDENTIFIER, payment.getIdentifier())
+          .set(PAYMENTS.IDENTIFIER, payment.getIdentifier().orElseThrow())
           .set(PAYMENTS.TEAM_ID, payment.getTeamId())
           .set(PAYMENTS.CONTRACT_ID, payment.getContractId())
           .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))

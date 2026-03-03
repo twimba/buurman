@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record ContractPaymentInstructionResponse(
-    String identifier,
-    Optional<String> paymentInstructionIdentifier,
+    Ulid identifier,
+    Optional<Ulid> paymentInstructionIdentifier,
     Optional<Boolean> isCustom,
     Optional<String> name,
     Optional<String> description,

@@ -41,7 +41,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piBank = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piBank)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "Primary Bank Account")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "Main bank account for rent collection")
@@ -63,7 +63,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piDebit = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piDebit)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "Direct Debit Account")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "SEPA direct debit for automatic rent collection")
@@ -85,7 +85,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piPaypal = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piPaypal)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "PayPal")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "PayPal for international tenants")
@@ -123,7 +123,7 @@ public class DemoPaymentInstructionGenerator {
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
               .set(
                   CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER,
-                  newContractPaymentInstructionId().value())
+                  newContractPaymentInstructionId())
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.IS_CUSTOM, true)
@@ -150,7 +150,7 @@ public class DemoPaymentInstructionGenerator {
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
               .set(
                   CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER,
-                  newContractPaymentInstructionId().value())
+                  newContractPaymentInstructionId())
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.PAYMENT_INSTRUCTION_ID, piId)

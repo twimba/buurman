@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -142,7 +143,7 @@ public class PropertyService {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
 
     Property property = propertyMapper.toEntity(request);
-    property.setIdentifier(newPropertyId().value());
+    property.setIdentifier(Optional.of(newPropertyId()));
     property.setTeamId(principal.requireTeamId());
     property.setCreatedBy(principal.getUserId());
     property.setUpdatedBy(principal.getUserId());
@@ -176,7 +177,7 @@ public class PropertyService {
 
     log.info(
         "Property created: {} ({}) for team {}",
-        savedProperty.getIdentifier(),
+        savedProperty.getIdentifier().orElseThrow(),
         request.propertyCategory(),
         principal.requireTeamId());
 
@@ -226,7 +227,7 @@ public class PropertyService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public PropertyResponse getProperty(String identifier, UserPrincipal principal) {
+  public PropertyResponse getProperty(Ulid identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -236,7 +237,7 @@ public class PropertyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse updateProperty(
-      String identifier, UpdatePropertyRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -304,7 +305,7 @@ public class PropertyService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteProperty(String identifier, UserPrincipal principal) {
+  public void deleteProperty(Ulid identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -316,7 +317,7 @@ public class PropertyService {
   }
 
   public DocumentResponse uploadDocument(
-      String identifier,
+      Ulid identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -324,38 +325,38 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
+        file, "PROPERTY", property.getId(), property.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(Ulid identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
-  public Map<String, String> getDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+  public Map<String, String> getDownloadUrl(Ulid documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
-  public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(Ulid documentIdentifier, UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
-  public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
+  public List<RecentActivityResponse> getAuditLog(Ulid identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
   }
 
-  public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
+  public List<PhotoResponse> getPhotos(Ulid identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier,
+      Ulid identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -363,11 +364,11 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
-        file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
+        file, "PROPERTY", property.getId(), property.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
   public PhotoResponse setMainPhoto(
-      String identifier, String photoIdentifier, UserPrincipal principal) {
+      Ulid identifier, Ulid photoIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     Photo photo =
@@ -720,7 +721,7 @@ public class PropertyService {
                     .map(
                         a ->
                             new PropertyOutdoorAreaResponse(
-                                a.getIdentifier(),
+                                a.getIdentifier().orElseThrow(),
                                 a.getType(),
                                 a.getAreaValue(),
                                 Optional.of(a.getAreaUnit()),

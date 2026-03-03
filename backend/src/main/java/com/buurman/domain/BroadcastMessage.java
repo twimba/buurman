@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class BroadcastMessage {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private String title;
   private String body;
   private String severity;

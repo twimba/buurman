@@ -4,8 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record RegistrationInvitationDetailResponse(
-    String identifier,
+    Ulid identifier,
     String code,
     Optional<Integer> maxUsages,
     int usageCount,

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.RegistrationInvitation;
 import com.buurman.domain.RegistrationInvitationUsage;
@@ -107,7 +108,7 @@ public class RegistrationInvitationService {
   }
 
   @Transactional(readOnly = true)
-  public RegistrationInvitationDetailResponse getByIdentifier(String identifier) {
+  public RegistrationInvitationDetailResponse getByIdentifier(Ulid identifier) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     List<RegistrationInvitationUsage> usages =
@@ -117,7 +118,7 @@ public class RegistrationInvitationService {
   }
 
   @Transactional
-  public void revoke(String identifier, BackofficePrincipal principal) {
+  public void revoke(Ulid identifier, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (invitation.getRevokedAt().isPresent()) {
@@ -166,7 +167,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public void sendInvitation(
-      String identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
+      Ulid identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (!invitation.isValid()) {
@@ -193,7 +194,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public RegistrationInvitationDetailResponse updateNote(
-      String identifier,
+      Ulid identifier,
       UpdateRegistrationInvitationNoteRequest request,
       BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
@@ -274,7 +275,7 @@ public class RegistrationInvitationService {
 
   private RegistrationInvitationResponse toResponse(RegistrationInvitation inv) {
     return new RegistrationInvitationResponse(
-        inv.getIdentifier(),
+        inv.getIdentifier().orElseThrow(),
         inv.getCode(),
         inv.getMaxUsages(),
         inv.getUsageCount(),
@@ -298,7 +299,7 @@ public class RegistrationInvitationService {
             .toList();
 
     return new RegistrationInvitationDetailResponse(
-        inv.getIdentifier(),
+        inv.getIdentifier().orElseThrow(),
         inv.getCode(),
         inv.getMaxUsages(),
         inv.getUsageCount(),

@@ -5,9 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Payment;
+import com.buurman.domain.Ulid;
 
 public record PaymentSummary(
-    String identifier,
+    Ulid identifier,
     BigDecimal amount,
     String currency,
     LocalDate dueDate,

@@ -30,6 +30,7 @@ public interface PhotoRecordMapper {
       expression = "java(java.util.Optional.ofNullable(record.getThumbnailFileKey()))")
   @Mapping(target = "title", expression = "java(java.util.Optional.ofNullable(record.getTitle()))")
   @Mapping(target = "notes", expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
+  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Photo toDomain(PhotosRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(photo.getUploadedAt()))")
@@ -43,6 +44,7 @@ public interface PhotoRecordMapper {
       expression = "java(photo.getThumbnailFileKey().orElse(null))")
   @Mapping(target = "title", expression = "java(photo.getTitle().orElse(null))")
   @Mapping(target = "notes", expression = "java(photo.getNotes().orElse(null))")
+  @Mapping(target = "identifier", expression = "java(photo.getIdentifier().orElse(null))")
   PhotosRecord toRecord(Photo photo);
 
   List<Photo> toDomainList(List<PhotosRecord> records);

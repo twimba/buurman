@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class User {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private String keycloakId;
   private String email;
   private String firstName;

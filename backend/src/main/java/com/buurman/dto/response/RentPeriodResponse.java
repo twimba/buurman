@@ -5,8 +5,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record RentPeriodResponse(
-    String identifier,
+    Ulid identifier,
     BigDecimal rentAmount,
     String currency,
     LocalDate effectiveFrom,

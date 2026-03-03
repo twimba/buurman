@@ -18,6 +18,7 @@ import com.buurman.domain.OutboxStatus;
 import com.buurman.mapper.NotificationOutboxRecordMapper;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

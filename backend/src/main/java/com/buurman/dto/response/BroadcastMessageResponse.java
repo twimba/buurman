@@ -3,8 +3,10 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record BroadcastMessageResponse(
-    String identifier,
+    Ulid identifier,
     String title,
     String body,
     String severity,

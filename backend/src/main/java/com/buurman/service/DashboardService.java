@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.ContractIncomeEntry;
 import com.buurman.domain.Property;
 import com.buurman.dto.response.DashboardStatsResponse;
@@ -109,10 +110,10 @@ public class DashboardService {
               // Get entity name and identifier based on type
               String entityName =
                   auditLogRepository.findEntityName(entityType, entityId, teamId).orElse("Unknown");
-              String entityIdentifier =
+              Ulid entityIdentifier =
                   auditLogRepository
                       .findEntityIdentifier(entityType, entityId, teamId)
-                      .orElse(entityId.toString());
+                      .orElse(Ulid.of(entityId.toString()));
 
               // Build description
               String description =

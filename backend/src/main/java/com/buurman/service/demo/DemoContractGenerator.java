@@ -1,5 +1,7 @@
 package com.buurman.service.demo;
 
+import com.buurman.domain.Ulid;
+
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.UlidGenerator.newContractId;
@@ -185,7 +187,7 @@ public class DemoContractGenerator {
         ContractCountryMetadata metadata =
             countryCode != null ? buildDemoMetadata(countryCode) : null;
 
-        String contractIdentifier = newContractId().value();
+        Ulid contractIdentifier = newContractId();
         dsl.insertInto(CONTRACTS)
             .set(CONTRACTS.ID, contractId)
             .set(CONTRACTS.IDENTIFIER, contractIdentifier)

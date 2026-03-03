@@ -18,6 +18,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
@@ -191,7 +192,7 @@ public class NotificationService {
 
   @Transactional
   public Notification resend(
-      @Nullable UUID teamId, String notificationIdentifier, @Nullable UUID userId) {
+      @Nullable UUID teamId, Ulid notificationIdentifier, @Nullable UUID userId) {
     Notification original =
         notificationRepository.getByIdentifierAndTeamId(notificationIdentifier, teamId);
 

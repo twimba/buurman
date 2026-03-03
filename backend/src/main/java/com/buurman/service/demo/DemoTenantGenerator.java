@@ -1,5 +1,7 @@
 package com.buurman.service.demo;
 
+import com.buurman.domain.Ulid;
+
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
 import static com.buurman.util.UlidGenerator.newTenantAddressId;
@@ -148,7 +150,7 @@ public class DemoTenantGenerator {
           taxNumber = "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01";
         }
 
-        String tenantIdentifier = newTenantId().value();
+        Ulid tenantIdentifier = newTenantId();
         dsl.insertInto(TENANTS)
             .set(TENANTS.ID, tenantId)
             .set(TENANTS.IDENTIFIER, tenantIdentifier)
@@ -177,7 +179,7 @@ public class DemoTenantGenerator {
 
         dsl.insertInto(TENANT_ADDRESSES)
             .set(TENANT_ADDRESSES.ID, UUID.randomUUID())
-            .set(TENANT_ADDRESSES.IDENTIFIER, newTenantAddressId().value())
+            .set(TENANT_ADDRESSES.IDENTIFIER, newTenantAddressId())
             .set(TENANT_ADDRESSES.TENANT_ID, tenantId)
             .set(TENANT_ADDRESSES.TEAM_ID, teamId)
             .set(TENANT_ADDRESSES.STREET, faker.address().streetName() + " " + houseNum)

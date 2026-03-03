@@ -27,6 +27,7 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class TenantRepository {
   private final TenantRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Tenant> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Tenant> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(TENANTS)
         .where(
             TENANTS
@@ -55,7 +56,7 @@ public class TenantRepository {
         .map(mapper::toDomain);
   }
 
-  public Tenant getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Tenant getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Tenant not found"));
   }
@@ -132,7 +133,7 @@ public class TenantRepository {
 
       dsl.insertInto(TENANTS)
           .set(TENANTS.ID, newId)
-          .set(TENANTS.IDENTIFIER, tenant.getIdentifier())
+          .set(TENANTS.IDENTIFIER, tenant.getIdentifier().orElseThrow())
           .set(TENANTS.TEAM_ID, tenant.getTeamId())
           .set(TENANTS.FIRST_NAME, tenant.getFirstName())
           .set(TENANTS.LAST_NAME, tenant.getLastName().orElse(null))

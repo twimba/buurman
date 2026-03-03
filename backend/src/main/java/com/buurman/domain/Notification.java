@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Notification {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   @Builder.Default private Optional<UUID> teamId = Optional.empty();
   private NotificationType notificationType;
   @Builder.Default private Optional<String> subject = Optional.empty();

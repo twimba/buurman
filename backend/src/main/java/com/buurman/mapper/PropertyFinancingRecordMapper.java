@@ -21,7 +21,7 @@ public class PropertyFinancingRecordMapper {
 
     PropertyFinancing financing = new PropertyFinancing();
     financing.setId(record.getId());
-    financing.setIdentifier(record.getIdentifier());
+    financing.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     financing.setPropertyId(record.getPropertyId());
     financing.setTeamId(record.getTeamId());
     financing.setFinancingType(PropertyFinancing.FinancingType.valueOf(record.getFinancingType()));

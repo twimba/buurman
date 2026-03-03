@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Document;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
@@ -66,7 +67,7 @@ public class DocumentService {
       MultipartFile file,
       String entityType,
       UUID entityId,
-      String entityIdentifier,
+      Ulid entityIdentifier,
       @Nullable String title,
       @Nullable String notes,
       UserPrincipal principal) {
@@ -98,7 +99,7 @@ public class DocumentService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
+            file, Ulid.of(principal.requireTeamIdentifier()), entityType, entityIdentifier);
 
     // Save document metadata
     Document document = new Document();
@@ -123,7 +124,7 @@ public class DocumentService {
 
     log.info(
         "Document uploaded: {} for entity {}/{}",
-        savedDocument.getIdentifier(),
+        savedDocument.getIdentifier().orElseThrow(),
         entityType,
         entityId);
 
@@ -153,7 +154,7 @@ public class DocumentService {
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public URL getDownloadUrl(String identifier, UserPrincipal principal) {
+  public URL getDownloadUrl(Ulid identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -164,7 +165,7 @@ public class DocumentService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public void deleteDocument(String identifier, UserPrincipal principal) {
+  public void deleteDocument(Ulid identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -177,7 +178,7 @@ public class DocumentService {
     metricsService.incrementCounter(
         "document.delete.total", "entity_type", document.getEntityType());
 
-    log.info("Document deleted: {}", document.getIdentifier());
+    log.info("Document deleted: {}", document.getIdentifier().orElseThrow());
 
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
@@ -195,7 +196,7 @@ public class DocumentService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse updateDocument(
-      String identifier, UpdateDocumentRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdateDocumentRequest request, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -281,13 +282,13 @@ public class DocumentService {
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public DocumentResponse getDocument(String identifier, UserPrincipal principal) {
+  public DocumentResponse getDocument(Ulid identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(document);
   }
 
-  public byte[] bulkDownload(List<String> documentIdentifiers, UserPrincipal principal) {
+  public byte[] bulkDownload(List<Ulid> documentIdentifiers, UserPrincipal principal) {
     if (documentIdentifiers == null || documentIdentifiers.isEmpty()) {
       throw new IllegalArgumentException("No documents selected for download");
     }
@@ -327,7 +328,7 @@ public class DocumentService {
           log.debug("Added document to zip: {}", fileName);
         } catch (Exception e) {
           log.error(
-              "Failed to add document {} to zip: {}", document.getIdentifier(), e.getMessage());
+              "Failed to add document {} to zip: {}", document.getIdentifier().orElseThrow(), e.getMessage());
           // Continue with other documents even if one fails
         }
       }

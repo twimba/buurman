@@ -23,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Expense;
 import com.buurman.domain.NotificationType;
@@ -137,7 +138,7 @@ public class ExpenseService {
 
     Expense expense = expenseMapper.toEntity(request);
     expense.setPropertyId(property.getId());
-    expense.setIdentifier(newExpenseId().value());
+    expense.setIdentifier(Optional.of(newExpenseId()));
     expense.setTeamId(principal.requireTeamId());
     expense.setCreatedBy(principal.getUserId());
     expense.setUpdatedBy(principal.getUserId());
@@ -152,8 +153,8 @@ public class ExpenseService {
 
     log.info(
         "Created expense {} for property {} by user {}",
-        savedExpense.getIdentifier(),
-        property.getIdentifier(),
+        savedExpense.getIdentifier().orElseThrow(),
+        property.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     auditService.logCreate(
@@ -167,7 +168,7 @@ public class ExpenseService {
   }
 
   @Transactional(readOnly = true)
-  public ExpenseResponse getExpense(String identifier, UserPrincipal principal) {
+  public ExpenseResponse getExpense(Ulid identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -202,7 +203,7 @@ public class ExpenseService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public UUID resolvePropertyId(String propertyIdentifier, UUID teamId) {
+  public UUID resolvePropertyId(Ulid propertyIdentifier, UUID teamId) {
     return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId).getId();
   }
 
@@ -243,7 +244,7 @@ public class ExpenseService {
 
   @Transactional(readOnly = true)
   public List<ExpenseResponse> getExpensesByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     // Resolve property identifier to UUID
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -269,7 +270,7 @@ public class ExpenseService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ExpenseResponse updateExpense(
-      String identifier, UpdateExpenseRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdateExpenseRequest request, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -283,7 +284,7 @@ public class ExpenseService {
     ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());
 
     log.info(
-        "Updated expense {} by user {}", updatedExpense.getIdentifier(), principal.getUserId());
+        "Updated expense {} by user {}", updatedExpense.getIdentifier().orElseThrow(), principal.getUserId());
 
     auditService.logUpdate(
         principal.requireTeamId(),
@@ -299,7 +300,7 @@ public class ExpenseService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteExpense(String identifier, UserPrincipal principal) {
+  public void deleteExpense(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID expenseId = expense.getId();
@@ -318,14 +319,14 @@ public class ExpenseService {
     // Soft-delete the expense itself
     expenseRepository.softDeleteByIdAndTeamId(expenseId, teamId);
 
-    log.info("Deleted expense {} by user {}", expense.getIdentifier(), principal.getUserId());
+    log.info("Deleted expense {} by user {}", expense.getIdentifier().orElseThrow(), principal.getUserId());
 
     auditService.logDelete(teamId, "EXPENSE", expenseId, principal.getUserId(), expense);
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadExpenseDocument(
-      String identifier,
+      Ulid identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -334,10 +335,10 @@ public class ExpenseService {
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return documentService.uploadDocument(
-        file, "EXPENSE", expense.getId(), expense.getIdentifier(), title, notes, principal);
+        file, "EXPENSE", expense.getId(), expense.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getExpenseDocuments(String identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getExpenseDocuments(Ulid identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -345,7 +346,7 @@ public class ExpenseService {
   }
 
   public List<RecentActivityResponse> getExpenseAuditLog(
-      String identifier, UserPrincipal principal) {
+      Ulid identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -407,7 +408,7 @@ public class ExpenseService {
 
   private static String formatPropertyName(Optional<PropertySummary> property) {
     return property
-        .map(p -> p.street() != null ? p.street() + ", " + p.city() : p.identifier())
+        .map(p -> p.street() != null ? p.street() + ", " + p.city() : p.identifier().value())
         .orElse("N/A");
   }
 

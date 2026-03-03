@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record PropertyOutdoorAreaResponse(
-    String identifier,
+    Ulid identifier,
     String type,
     Optional<BigDecimal> areaValue,
     Optional<String> areaUnit,

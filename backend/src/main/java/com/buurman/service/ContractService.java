@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -121,7 +122,7 @@ public class ContractService {
 
     Contract contract = contractMapper.toEntity(request);
     contract.setPropertyId(property.getId());
-    contract.setIdentifier(newContractId().value());
+    contract.setIdentifier(Optional.of(newContractId()));
     contract.setTeamId(teamId);
     contract.setStatus(DRAFT);
     contract.setCreatedBy(principal.getUserId());
@@ -220,7 +221,7 @@ public class ContractService {
   }
 
   public List<ContractResponse> getContractsByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
@@ -230,7 +231,7 @@ public class ContractService {
   }
 
   public List<ContractResponse> getContractsByTenant(
-      String tenantIdentifier, UserPrincipal principal) {
+      Ulid tenantIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
@@ -245,7 +246,7 @@ public class ContractService {
     return toResponses(contracts, principal.requireTeamId());
   }
 
-  public ContractResponse getContract(String identifier, UserPrincipal principal) {
+  public ContractResponse getContract(Ulid identifier, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponse(contract, principal.requireTeamId());
@@ -254,7 +255,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse updateContract(
-      String identifier, UpdateContractRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdateContractRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -449,7 +450,7 @@ public class ContractService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteContract(String identifier, UserPrincipal principal) {
+  public void deleteContract(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -471,7 +472,7 @@ public class ContractService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractResponse changeContractStatus(
-      String identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
+      Ulid identifier, ChangeContractStatusRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -579,7 +580,7 @@ public class ContractService {
     String scPropertyName =
         statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
-            : identifier;
+            : identifier.value();
     String scTenantName =
         primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
@@ -602,7 +603,7 @@ public class ContractService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public ContractResponse reopenContract(String identifier, UserPrincipal principal) {
+  public ContractResponse reopenContract(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -682,7 +683,7 @@ public class ContractService {
     String reopenPropertyName =
         reopenProperty != null
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
-            : identifier;
+            : identifier.value();
     String reopenTenantName =
         primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
@@ -708,7 +709,7 @@ public class ContractService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public ContractResponse duplicateContract(String identifier, UserPrincipal principal) {
+  public ContractResponse duplicateContract(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -718,7 +719,7 @@ public class ContractService {
     Contract newContract =
         new Contract(
             null, // New ID will be generated
-            newContractId().value(), // New identifier
+            Optional.of(newContractId()), // New identifier
             teamId,
             sourceContract.getPropertyId(),
             sourceContract.getContractType(),
@@ -775,7 +776,7 @@ public class ContractService {
   // --- Document delegation methods (resolve identifier to UUID) ---
 
   public DocumentResponse uploadDocument(
-      String contractIdentifier,
+      Ulid contractIdentifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -783,36 +784,36 @@ public class ContractService {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "CONTRACT", contract.getId(), contract.getIdentifier(), title, notes, principal);
+        file, "CONTRACT", contract.getId(), contract.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getDocuments(String contractIdentifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(Ulid contractIdentifier, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.getDocuments("CONTRACT", contract.getId(), principal);
   }
 
-  public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+  public URL getDocumentDownloadUrl(Ulid documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
-    return documentService.getDownloadUrl(document.getIdentifier(), principal);
+    return documentService.getDownloadUrl(document.getIdentifier().orElseThrow(), principal);
   }
 
-  public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(Ulid documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
-    documentService.deleteDocument(document.getIdentifier(), principal);
+    documentService.deleteDocument(document.getIdentifier().orElseThrow(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
-      String contractIdentifier, UserPrincipal principal) {
+      Ulid contractIdentifier, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "CONTRACT", contract.getId());
   }
 
   public Map<String, Object> generatePayments(
-      String contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
+      Ulid contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     boolean markAsPaid = request.markAsPaid().map(Boolean.TRUE::equals).orElse(false);
@@ -872,7 +873,7 @@ public class ContractService {
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
     return new ContractResponse(
-        contract.getIdentifier(),
+        contract.getIdentifier().orElseThrow(),
         Optional.ofNullable(propertySummary),
         partyResponses,
         primaryTenant,
@@ -946,7 +947,7 @@ public class ContractService {
                             Optional<TenantSummary> summary =
                                 Optional.ofNullable(tenant).map(tenantMapper::toSummary);
                             return new ContractPartyResponse(
-                                party.getIdentifier(), summary, party.getRole());
+                                party.getIdentifier().orElseThrow(), summary, party.getRole());
                           })
                       .toList();
 
@@ -958,7 +959,7 @@ public class ContractService {
                       .findFirst();
 
               return new ContractResponse(
-                  contract.getIdentifier(),
+                  contract.getIdentifier().orElseThrow(),
                   propertySummary,
                   partyResponses,
                   primaryTenant,

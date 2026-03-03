@@ -21,7 +21,7 @@ public class PropertyInsuranceRecordMapper {
 
     PropertyInsurance insurance = new PropertyInsurance();
     insurance.setId(record.getId());
-    insurance.setIdentifier(record.getIdentifier());
+    insurance.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     insurance.setPropertyId(record.getPropertyId());
     insurance.setTeamId(record.getTeamId());
     insurance.setInsuranceType(PropertyInsurance.InsuranceType.valueOf(record.getInsuranceType()));

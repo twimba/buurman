@@ -1,5 +1,7 @@
 package com.buurman.service.demo;
 
+import com.buurman.domain.Ulid;
+
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
 import static com.buurman.util.UlidGenerator.newTeamId;
@@ -42,7 +44,7 @@ public class DemoTeamGenerator {
 
     for (var entry : TEAMS_MAP.entrySet()) {
       UUID teamId = UUID.randomUUID();
-      String identifier = newTeamId().value();
+      Ulid identifier = newTeamId();
 
       dsl.insertInto(TEAMS)
           .set(TEAMS.ID, teamId)

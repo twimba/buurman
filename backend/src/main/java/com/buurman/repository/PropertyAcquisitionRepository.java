@@ -17,6 +17,7 @@ import com.buurman.mapper.PropertyAcquisitionRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class PropertyAcquisitionRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Optional<PropertyAcquisition> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyAcquisition> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_ACQUISITIONS)
         .where(
             PROPERTY_ACQUISITIONS
@@ -50,7 +51,7 @@ public class PropertyAcquisitionRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyAcquisition getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyAcquisition getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property acquisition not found"));
   }
@@ -68,7 +69,7 @@ public class PropertyAcquisitionRepository {
 
       dsl.insertInto(PROPERTY_ACQUISITIONS)
           .set(PROPERTY_ACQUISITIONS.ID, id)
-          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, acq.getIdentifier())
+          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, acq.getIdentifier().orElseThrow())
           .set(PROPERTY_ACQUISITIONS.PROPERTY_ID, acq.getPropertyId())
           .set(PROPERTY_ACQUISITIONS.TEAM_ID, acq.getTeamId())
           .set(PROPERTY_ACQUISITIONS.ACQUISITION_TYPE, acq.getAcquisitionType().name())

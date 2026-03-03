@@ -42,7 +42,7 @@ public class Contract {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
   private ContractType contractType;

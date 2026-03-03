@@ -28,7 +28,7 @@ public class ContractRecordMapper {
 
     Contract contract = new Contract();
     contract.setId(record.getId());
-    contract.setIdentifier(record.getIdentifier());
+    contract.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     contract.setTeamId(record.getTeamId());
     contract.setPropertyId(record.getPropertyId());
     contract.setContractType(Contract.ContractType.valueOf(record.getContractType()));

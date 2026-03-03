@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.UpdateRentPeriodRequest;
 import com.buurman.dto.response.RentPeriodResponse;
@@ -23,14 +24,14 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
   @Override
   public List<RentPeriodResponse> getRentTimeline(String contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return rentPeriodService.getRentTimeline(contractIdentifier, principal);
+    return rentPeriodService.getRentTimeline(Ulid.of(contractIdentifier), principal);
   }
 
   @Override
   public RentPeriodResponse addRentPeriod(
       String contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return rentPeriodService.addRentPeriod(contractIdentifier, createRentPeriodRequest, principal);
+    return rentPeriodService.addRentPeriod(Ulid.of(contractIdentifier), createRentPeriodRequest, principal);
   }
 
   @Override
@@ -40,12 +41,12 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
       UpdateRentPeriodRequest updateRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentPeriodService.updateRentPeriod(
-        contractIdentifier, periodIdentifier, updateRentPeriodRequest, principal);
+        Ulid.of(contractIdentifier), Ulid.of(periodIdentifier), updateRentPeriodRequest, principal);
   }
 
   @Override
   public void deleteRentPeriod(String contractIdentifier, String periodIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    rentPeriodService.deleteRentPeriod(contractIdentifier, periodIdentifier, principal);
+    rentPeriodService.deleteRentPeriod(Ulid.of(contractIdentifier), Ulid.of(periodIdentifier), principal);
   }
 }

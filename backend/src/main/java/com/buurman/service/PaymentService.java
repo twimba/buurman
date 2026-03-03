@@ -36,6 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
@@ -171,7 +172,7 @@ public class PaymentService {
 
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
-    payment.setIdentifier(newPaymentId().value());
+    payment.setIdentifier(Optional.of(newPaymentId()));
     payment.setTeamId(teamId);
     payment.setStatus(markAsPaid ? PAID : PENDING);
     payment.setCreatedBy(principal.getUserId());
@@ -191,7 +192,7 @@ public class PaymentService {
 
     if (markAsPaid) {
       PaymentReceival receival = new PaymentReceival();
-      receival.setIdentifier(newPaymentReceivalId().value());
+      receival.setIdentifier(Optional.of(newPaymentReceivalId()));
       receival.setTeamId(teamId);
       receival.setPaymentId(savedPayment.getId());
       receival.setAmount(savedPayment.getAmount());
@@ -215,8 +216,8 @@ public class PaymentService {
 
     log.info(
         "Created payment {} for contract {} by user {}",
-        savedPayment.getIdentifier(),
-        contract.getIdentifier(),
+        savedPayment.getIdentifier().orElseThrow(),
+        contract.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     auditService.logCreate(
@@ -234,7 +235,7 @@ public class PaymentService {
   }
 
   @Transactional(readOnly = true)
-  public PaymentResponse getPayment(String identifier, UserPrincipal principal) {
+  public PaymentResponse getPayment(Ulid identifier, UserPrincipal principal) {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -255,8 +256,8 @@ public class PaymentService {
   public PageResponse<PaymentResponse> getPaymentsPaginated(
       UserPrincipal principal,
       @Nullable String status,
-      @Nullable String contractIdentifier,
-      @Nullable String propertyIdentifier,
+      @Nullable Ulid contractIdentifier,
+      @Nullable Ulid propertyIdentifier,
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
@@ -328,7 +329,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse updatePayment(
-      String identifier, UpdatePaymentRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdatePaymentRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -356,7 +357,7 @@ public class PaymentService {
     PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
 
     log.info(
-        "Updated payment {} by user {}", updatedPayment.getIdentifier(), principal.getUserId());
+        "Updated payment {} by user {}", updatedPayment.getIdentifier().orElseThrow(), principal.getUserId());
 
     auditService.logUpdate(
         teamId,
@@ -373,7 +374,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse markPaymentAsPaid(
-      String identifier, MarkPaidRequest request, UserPrincipal principal) {
+      Ulid identifier, MarkPaidRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -394,7 +395,7 @@ public class PaymentService {
 
     if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
       PaymentReceival receival = new PaymentReceival();
-      receival.setIdentifier(newPaymentReceivalId().value());
+      receival.setIdentifier(Optional.of(newPaymentReceivalId()));
       receival.setTeamId(teamId);
       receival.setPaymentId(payment.getId());
       receival.setAmount(remainingBalance);
@@ -426,7 +427,7 @@ public class PaymentService {
 
     log.info(
         "Marked payment {} as PAID on {} by user {}",
-        updatedPayment.getIdentifier(),
+        updatedPayment.getIdentifier().orElseThrow(),
         request.paymentDate(),
         principal.getUserId());
 
@@ -449,7 +450,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse registerReceival(
-      String paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
+      Ulid paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
@@ -482,7 +483,7 @@ public class PaymentService {
     }
 
     PaymentReceival receival = new PaymentReceival();
-    receival.setIdentifier(newPaymentReceivalId().value());
+    receival.setIdentifier(Optional.of(newPaymentReceivalId()));
     receival.setTeamId(teamId);
     receival.setPaymentId(paymentId);
     receival.setAmount(request.amount());
@@ -506,7 +507,7 @@ public class PaymentService {
     log.info(
         "Registered receival of {} for payment {} by user {}",
         request.amount(),
-        payment.getIdentifier(),
+        payment.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
@@ -525,7 +526,7 @@ public class PaymentService {
 
   @Transactional(readOnly = true)
   public List<PaymentReceivalResponse> getReceivalsForPayment(
-      String paymentIdentifier, UserPrincipal principal) {
+      Ulid paymentIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
@@ -538,8 +539,8 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse updateReceival(
-      String paymentIdentifier,
-      String receivalIdentifier,
+      Ulid paymentIdentifier,
+      Ulid receivalIdentifier,
       UpdatePaymentReceivalRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -589,7 +590,7 @@ public class PaymentService {
     log.info(
         "Updated receival {} for payment {} by user {}",
         receivalIdentifier,
-        payment.getIdentifier(),
+        payment.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
@@ -604,7 +605,7 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse deleteReceival(
-      String paymentIdentifier, String receivalIdentifier, UserPrincipal principal) {
+      Ulid paymentIdentifier, Ulid receivalIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
@@ -628,7 +629,7 @@ public class PaymentService {
     log.info(
         "Deleted receival {} for payment {} by user {}",
         receivalIdentifier,
-        payment.getIdentifier(),
+        payment.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     Map<String, Object> changedFields = auditService.getChangedFields(oldState, newState);
@@ -684,7 +685,7 @@ public class PaymentService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deletePayment(String identifier, UserPrincipal principal) {
+  public void deletePayment(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Payment payment = paymentRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID paymentId = payment.getId();
@@ -706,7 +707,7 @@ public class PaymentService {
     // Soft-delete the payment itself
     paymentRepository.softDeleteByIdAndTeamId(paymentId, teamId);
 
-    log.info("Deleted payment {} by user {}", payment.getIdentifier(), principal.getUserId());
+    log.info("Deleted payment {} by user {}", payment.getIdentifier().orElseThrow(), principal.getUserId());
 
     auditService.logDelete(teamId, "PAYMENT", paymentId, principal.getUserId(), payment);
   }
@@ -737,13 +738,13 @@ public class PaymentService {
       if (paymentExists) {
         log.debug(
             "Payment already exists for contract {} on {}, skipping",
-            contract.getIdentifier(),
+            contract.getIdentifier().orElseThrow(),
             dueDate);
         continue;
       }
 
       Payment payment = new Payment();
-      payment.setIdentifier(newPaymentId().value());
+      payment.setIdentifier(Optional.of(newPaymentId()));
       payment.setTeamId(teamId);
       payment.setContractId(contract.getId());
       payment.setAmount(contract.getRentAmount());
@@ -761,8 +762,8 @@ public class PaymentService {
 
       log.info(
           "Generated payment {} for contract {} due on {}",
-          savedPayment.getIdentifier(),
-          contract.getIdentifier(),
+          savedPayment.getIdentifier().orElseThrow(),
+          contract.getIdentifier().orElseThrow(),
           dueDate);
     }
 
@@ -784,7 +785,7 @@ public class PaymentService {
   // --- Document delegation methods (resolve identifier to UUID) ---
 
   public DocumentResponse uploadDocument(
-      String paymentIdentifier,
+      Ulid paymentIdentifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -792,29 +793,29 @@ public class PaymentService {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "PAYMENT", payment.getId(), payment.getIdentifier(), title, notes, principal);
+        file, "PAYMENT", payment.getId(), payment.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getDocuments(String paymentIdentifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(Ulid paymentIdentifier, UserPrincipal principal) {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.getDocuments("PAYMENT", payment.getId(), principal);
   }
 
-  public URL getDocumentDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+  public URL getDocumentDownloadUrl(Ulid documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
-    return documentService.getDownloadUrl(document.getIdentifier(), principal);
+    return documentService.getDownloadUrl(document.getIdentifier().orElseThrow(), principal);
   }
 
-  public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(Ulid documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
-    documentService.deleteDocument(document.getIdentifier(), principal);
+    documentService.deleteDocument(document.getIdentifier().orElseThrow(), principal);
   }
 
   public List<RecentActivityResponse> getAuditLog(
-      String paymentIdentifier, UserPrincipal principal) {
+      Ulid paymentIdentifier, UserPrincipal principal) {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "PAYMENT", payment.getId());

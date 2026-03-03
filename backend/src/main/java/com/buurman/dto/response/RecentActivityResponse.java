@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record RecentActivityResponse(
     String entityType,
-    String entityIdentifier,
+    Ulid entityIdentifier,
     String entityName,
     String action,
     Optional<String> userName,
@@ -17,7 +19,7 @@ public record RecentActivityResponse(
     Map<String, Object> newValues) {
   public RecentActivityResponse(
       String entityType,
-      String entityIdentifier,
+      Ulid entityIdentifier,
       String entityName,
       String action,
       String userName,

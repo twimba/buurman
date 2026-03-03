@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
@@ -45,13 +46,13 @@ public class TakeoutController {
   @GetMapping("/{identifier}")
   public TakeoutResponse getTakeout(@PathVariable String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return takeoutService.getTakeout(identifier, principal.requireTeamId());
+    return takeoutService.getTakeout(Ulid.of(identifier), principal.requireTeamId());
   }
 
   @DeleteMapping("/{identifier}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteTakeout(@PathVariable String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    takeoutService.deleteTakeout(identifier, principal.requireTeamId());
+    takeoutService.deleteTakeout(Ulid.of(identifier), principal.requireTeamId());
   }
 }

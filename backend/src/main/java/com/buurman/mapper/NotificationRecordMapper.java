@@ -32,7 +32,7 @@ public class NotificationRecordMapper {
 
     Notification notification = new Notification();
     notification.setId(record.getId());
-    notification.setIdentifier(record.getIdentifier());
+    notification.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     notification.setTeamId(Optional.ofNullable(record.getTeamId()));
     notification.setNotificationType(NotificationType.valueOf(record.getNotificationType()));
     notification.setSubject(Optional.ofNullable(record.getSubject()));

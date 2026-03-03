@@ -28,7 +28,7 @@ public class ContractRentPeriodMapper {
                         .setScale(2, RoundingMode.HALF_UP));
 
     return new RentPeriodResponse(
-        period.getIdentifier(),
+        period.getIdentifier().orElseThrow(),
         period.getRentAmount(),
         period.getCurrency(),
         period.getEffectiveFrom(),

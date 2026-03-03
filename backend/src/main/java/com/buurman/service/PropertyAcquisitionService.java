@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.UpsertPropertyAcquisitionRequest;
 import com.buurman.dto.response.PropertyAcquisitionResponse;
 import com.buurman.mapper.PropertyAcquisitionMapper;
@@ -33,7 +34,7 @@ public class PropertyAcquisitionService {
 
   @Transactional(readOnly = true)
   public Optional<PropertyAcquisitionResponse> getByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -45,7 +46,7 @@ public class PropertyAcquisitionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyAcquisitionResponse upsert(
-      String propertyIdentifier,
+      Ulid propertyIdentifier,
       UpsertPropertyAcquisitionRequest request,
       UserPrincipal principal) {
     Property property =
@@ -65,13 +66,13 @@ public class PropertyAcquisitionService {
 
       log.info(
           "Updated property acquisition {} for property {} by user {}",
-          acquisition.getIdentifier(),
+          acquisition.getIdentifier().orElseThrow(),
           propertyIdentifier,
           principal.getUserId());
     } else {
       // Create
       acquisition = acquisitionMapper.toEntity(request);
-      acquisition.setIdentifier(newAcquisitionId().value());
+      acquisition.setIdentifier(Optional.of(newAcquisitionId()));
       acquisition.setPropertyId(property.getId());
       acquisition.setTeamId(principal.requireTeamId());
       acquisition.setCreatedBy(principal.getUserId());
@@ -81,7 +82,7 @@ public class PropertyAcquisitionService {
 
       log.info(
           "Created property acquisition {} for property {} by user {}",
-          acquisition.getIdentifier(),
+          acquisition.getIdentifier().orElseThrow(),
           propertyIdentifier,
           principal.getUserId());
     }

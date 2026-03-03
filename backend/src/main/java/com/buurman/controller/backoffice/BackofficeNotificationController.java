@@ -8,6 +8,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
@@ -43,18 +44,18 @@ public class BackofficeNotificationController implements BackofficeNotifications
 
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeNotificationService.listNotifications(
-        pageRequest, teamIdentifier, type, channel, status, recipientEmail, from, to);
+        pageRequest, teamIdentifier != null ? Ulid.of(teamIdentifier) : null, type, channel, status, recipientEmail, from, to);
   }
 
   @Override
   public BackofficeNotificationResponse getNotification(String identifier) {
-    return backofficeNotificationService.getNotification(identifier);
+    return backofficeNotificationService.getNotification(Ulid.of(identifier));
   }
 
   @Override
   public BackofficeNotificationResponse resendNotification(String identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    return backofficeNotificationService.resendNotification(identifier, principal);
+    return backofficeNotificationService.resendNotification(Ulid.of(identifier), principal);
   }
 
   @Override

@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
@@ -58,7 +59,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeTeamDetailResponse getTeam(String identifier) {
+  public BackofficeTeamDetailResponse getTeam(Ulid identifier) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     // Members + batch user lookup
@@ -115,7 +116,7 @@ public class BackofficeTeamService {
             Optional.ofNullable(prefs.getFiscalYearStartMonth()));
 
     return new BackofficeTeamDetailResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         team.getCreatedAt(),
         Optional.ofNullable(team.getUpdatedAt()),
@@ -127,7 +128,7 @@ public class BackofficeTeamService {
 
   @Transactional
   public BackofficeTeamResponse updateTeamName(
-      String identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
+      Ulid identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     team.setName(request.name());
@@ -142,7 +143,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional
-  public void deleteTeam(String identifier, BackofficePrincipal principal) {
+  public void deleteTeam(Ulid identifier, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     teamRepository.softDeleteById(team.getId());
@@ -166,7 +167,7 @@ public class BackofficeTeamService {
             .orElse(null);
 
     return new BackofficeTeamResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         team.isDemo(),
         memberCount,

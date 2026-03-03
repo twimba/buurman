@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.RateLimitConfig;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

@@ -2,8 +2,10 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 
+import com.buurman.domain.Ulid;
+
 public record UserTeamResponse(
-    String identifier,
+    Ulid identifier,
     String teamName,
     String role,
     boolean isOwner,

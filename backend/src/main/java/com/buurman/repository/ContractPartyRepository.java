@@ -22,6 +22,7 @@ import com.buurman.domain.ContractPartyRole;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -52,7 +53,7 @@ public class ContractPartyRepository {
 
     dsl.insertInto(CONTRACT_PARTIES)
         .set(ID, id)
-        .set(IDENTIFIER, party.getIdentifier())
+        .set(IDENTIFIER, party.getIdentifier().orElseThrow().value())
         .set(TEAM_ID, party.getTeamId())
         .set(CONTRACT_ID, party.getContractId())
         .set(TENANT_ID, party.getTenantId().orElse(null))
@@ -90,7 +91,7 @@ public class ContractPartyRepository {
             .fetch(this::toDomain));
   }
 
-  public ContractParty getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public ContractParty getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
@@ -100,10 +101,10 @@ public class ContractPartyRepository {
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
 
-  public Optional<ContractParty> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<ContractParty> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.select()
         .from(CONTRACT_PARTIES)
-        .where(IDENTIFIER.eq(identifier).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .where(IDENTIFIER.eq(identifier.value()).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .fetchOptional(this::toDomain);
   }
 
@@ -165,7 +166,7 @@ public class ContractPartyRepository {
   private ContractParty toDomain(Record record) {
     ContractParty party = new ContractParty();
     party.setId(record.get(ID));
-    party.setIdentifier(record.get(IDENTIFIER));
+    party.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
     party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));

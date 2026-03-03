@@ -65,8 +65,16 @@ public class DemoDataContext {
     identifiers.put(id, identifier);
   }
 
-  public String getIdentifier(UUID id) {
+  public void putIdentifier(UUID id, com.buurman.domain.Ulid identifier) {
+    identifiers.put(id, identifier.value());
+  }
+
+  public String getIdentifierString(UUID id) {
     return identifiers.getOrDefault(id, id.toString());
+  }
+
+  public com.buurman.domain.Ulid getIdentifier(UUID id) {
+    return com.buurman.domain.Ulid.of(identifiers.getOrDefault(id, id.toString()));
   }
 
   public void putTeamCurrency(String teamKey, String currency) {

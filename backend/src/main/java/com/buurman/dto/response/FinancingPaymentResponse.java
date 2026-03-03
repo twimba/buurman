@@ -6,10 +6,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.FinancingPayment;
+import com.buurman.domain.Ulid;
 
 public record FinancingPaymentResponse(
-    String identifier,
-    String financingIdentifier,
+    Ulid identifier,
+    Ulid financingIdentifier,
     LocalDate paymentDate,
     BigDecimal totalAmount,
     Optional<BigDecimal> principalAmount,

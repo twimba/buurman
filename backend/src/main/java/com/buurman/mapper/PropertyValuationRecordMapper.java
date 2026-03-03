@@ -21,7 +21,7 @@ public class PropertyValuationRecordMapper {
 
     PropertyValuation val = new PropertyValuation();
     val.setId(record.getId());
-    val.setIdentifier(record.getIdentifier());
+    val.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     val.setPropertyId(record.getPropertyId());
     val.setTeamId(record.getTeamId());
     val.setValuationType(PropertyValuation.ValuationType.valueOf(record.getValuationType()));

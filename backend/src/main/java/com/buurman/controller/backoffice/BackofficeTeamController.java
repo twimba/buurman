@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
@@ -28,18 +29,18 @@ public class BackofficeTeamController implements BackofficeTeamsApi {
 
   @Override
   public BackofficeTeamDetailResponse getTeam(String identifier) {
-    return backofficeTeamService.getTeam(identifier);
+    return backofficeTeamService.getTeam(Ulid.of(identifier));
   }
 
   @Override
   public BackofficeTeamResponse updateTeamName(
       String identifier, UpdateTeamNameRequest updateTeamNameRequest) {
     return backofficeTeamService.updateTeamName(
-        identifier, updateTeamNameRequest, SecurityUtils.getBackofficePrincipal());
+        Ulid.of(identifier), updateTeamNameRequest, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
   public void deleteTeam(String identifier) {
-    backofficeTeamService.deleteTeam(identifier, SecurityUtils.getBackofficePrincipal());
+    backofficeTeamService.deleteTeam(Ulid.of(identifier), SecurityUtils.getBackofficePrincipal());
   }
 }

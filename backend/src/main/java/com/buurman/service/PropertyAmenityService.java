@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAmenity;
@@ -48,7 +49,7 @@ public class PropertyAmenityService {
         .map(
             a ->
                 new AmenityResponse(
-                    a.getIdentifier(),
+                    a.getIdentifier().orElseThrow(),
                     a.getName(),
                     a.getCategory(),
                     a.getIcon(),
@@ -57,7 +58,7 @@ public class PropertyAmenityService {
   }
 
   public List<PropertyAmenityResponse> getPropertyAmenities(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     Property property = resolveProperty(propertyIdentifier, principal);
     return buildPropertyAmenityResponses(property.getId(), principal.requireTeamId());
   }
@@ -65,7 +66,7 @@ public class PropertyAmenityService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyAmenityResponse addAmenity(
-      String propertyIdentifier, PropertyAmenityRequest request, UserPrincipal principal) {
+      Ulid propertyIdentifier, PropertyAmenityRequest request, UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
     Amenity amenity = amenityRepository.getByIdentifier(request.amenityIdentifier());
@@ -94,7 +95,7 @@ public class PropertyAmenityService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void removeAmenity(
-      String propertyIdentifier, String amenityIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, Ulid amenityIdentifier, UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
     Amenity amenity = amenityRepository.getByIdentifier(amenityIdentifier);
@@ -127,14 +128,14 @@ public class PropertyAmenityService {
 
   private PropertyAmenityResponse toPropertyAmenityResponse(Amenity amenity, PropertyAmenity pa) {
     return new PropertyAmenityResponse(
-        amenity.getIdentifier(),
+        amenity.getIdentifier().orElseThrow(),
         amenity.getName(),
         amenity.getCategory(),
         Optional.ofNullable(amenity.getIcon()),
         pa.getNotes());
   }
 
-  private Property resolveProperty(String propertyIdentifier, UserPrincipal principal) {
+  private Property resolveProperty(Ulid propertyIdentifier, UserPrincipal principal) {
     return propertyRepository.getByIdentifierAndTeamId(
         propertyIdentifier, principal.requireTeamId());
   }

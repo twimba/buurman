@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 
 public record ContractResponse(
-    String identifier,
+    Ulid identifier,
     Optional<PropertySummary> property,
     List<ContractPartyResponse> parties,
     Optional<TenantSummary> primaryTenant,

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.PaymentInstruction;
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreatePaymentInstructionRequest;
 import com.buurman.dto.request.UpdatePaymentInstructionRequest;
 import com.buurman.dto.response.PaymentInstructionResponse;
@@ -37,7 +38,7 @@ public class PaymentInstructionService {
         .toList();
   }
 
-  public PaymentInstructionResponse getByIdentifier(String identifier, UserPrincipal principal) {
+  public PaymentInstructionResponse getByIdentifier(Ulid identifier, UserPrincipal principal) {
     PaymentInstruction pi =
         repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return mapper.toResponse(pi);
@@ -61,7 +62,7 @@ public class PaymentInstructionService {
     PaymentInstruction saved = repository.save(pi);
     log.info(
         "Payment instruction created: {} in team {}",
-        saved.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
         principal.requireTeamId());
 
     auditService.logCreate(
@@ -77,7 +78,7 @@ public class PaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentInstructionResponse update(
-      String identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
     PaymentInstruction pi =
         repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -124,7 +125,7 @@ public class PaymentInstructionService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public void delete(String identifier, UserPrincipal principal) {
+  public void delete(Ulid identifier, UserPrincipal principal) {
     PaymentInstruction pi =
         repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

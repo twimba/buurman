@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class NotificationRepository {
   public Notification save(Notification notification) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    String identifier = newNotificationId().value();
+    Ulid identifier = newNotificationId();
     LocalDateTime createdAt =
         notification.getCreatedAt() != null
             ? LocalDateTime.ofInstant(notification.getCreatedAt(), UTC)
@@ -84,7 +85,7 @@ public class NotificationRepository {
         .execute();
 
     notification.setId(id);
-    notification.setIdentifier(identifier);
+    notification.setIdentifier(java.util.Optional.of(identifier));
     notification.setCreatedAt(createdAt.toInstant(UTC));
 
     return notification;
@@ -95,7 +96,7 @@ public class NotificationRepository {
    * use only). For tenant-scoped lookups, always pass a non-null teamId.
    */
   public Optional<Notification> findByIdentifierAndTeamId(
-      String identifier, @Nullable UUID teamId) {
+      Ulid identifier, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);
     if (teamId != null) {
       condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
@@ -103,7 +104,7 @@ public class NotificationRepository {
     return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
-  public Notification getByIdentifierAndTeamId(String identifier, @Nullable UUID teamId) {
+  public Notification getByIdentifierAndTeamId(Ulid identifier, @Nullable UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
@@ -314,14 +315,14 @@ public class NotificationRepository {
                 .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
-  public Optional<Notification> findByIdentifierUnscoped(String identifier) {
+  public Optional<Notification> findByIdentifierUnscoped(Ulid identifier) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
 
-  public Notification getByIdentifierUnscoped(String identifier) {
+  public Notification getByIdentifierUnscoped(Ulid identifier) {
     return findByIdentifierUnscoped(identifier)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }

@@ -2,8 +2,10 @@ package com.buurman.dto.response;
 
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record TenantSummary(
-    String identifier,
+    Ulid identifier,
     String firstName,
     String lastName,
     Optional<String> email,

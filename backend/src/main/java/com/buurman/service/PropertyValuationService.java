@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyValuation;
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreatePropertyValuationRequest;
 import com.buurman.dto.request.UpdatePropertyValuationRequest;
 import com.buurman.dto.response.PropertyValuationResponse;
@@ -36,12 +37,12 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse create(
-      String propertyIdentifier, CreatePropertyValuationRequest request, UserPrincipal principal) {
+      Ulid propertyIdentifier, CreatePropertyValuationRequest request, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
     PropertyValuation valuation = valuationMapper.toEntity(request);
-    valuation.setIdentifier(newValuationId().value());
+    valuation.setIdentifier(Optional.of(newValuationId()));
     valuation.setPropertyId(property.getId());
     valuation.setTeamId(principal.requireTeamId());
     valuation.setCreatedBy(principal.getUserId());
@@ -53,7 +54,7 @@ public class PropertyValuationService {
 
     log.info(
         "Created property valuation {} for property {} by user {}",
-        saved.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
         propertyIdentifier,
         principal.getUserId());
 
@@ -63,7 +64,7 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse update(
-      String identifier, UpdatePropertyValuationRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdatePropertyValuationRequest request, UserPrincipal principal) {
     PropertyValuation valuation =
         valuationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -74,14 +75,14 @@ public class PropertyValuationService {
     PropertyValuation saved = valuationRepository.save(valuation);
 
     log.info(
-        "Updated property valuation {} by user {}", saved.getIdentifier(), principal.getUserId());
+        "Updated property valuation {} by user {}", saved.getIdentifier().orElseThrow(), principal.getUserId());
 
     return valuationMapper.toResponse(saved);
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String identifier, UserPrincipal principal) {
+  public void delete(Ulid identifier, UserPrincipal principal) {
     PropertyValuation valuation =
         valuationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -89,13 +90,13 @@ public class PropertyValuationService {
 
     log.info(
         "Deleted property valuation {} by user {}",
-        valuation.getIdentifier(),
+        valuation.getIdentifier().orElseThrow(),
         principal.getUserId());
   }
 
   @Transactional(readOnly = true)
   public List<PropertyValuationResponse> listByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -108,7 +109,7 @@ public class PropertyValuationService {
 
   @Transactional(readOnly = true)
   public Optional<PropertyValuationResponse> getLatestByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 

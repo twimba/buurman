@@ -18,6 +18,7 @@ import com.buurman.mapper.PropertyFeeRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class PropertyFeeRepository {
   private final PropertyFeeRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyFee> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyFee> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_FEES)
         .where(
             PROPERTY_FEES
@@ -39,7 +40,7 @@ public class PropertyFeeRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyFee getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyFee getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property fee not found"));
   }
@@ -93,7 +94,7 @@ public class PropertyFeeRepository {
       String currency = fee.getCurrency();
       dsl.insertInto(PROPERTY_FEES)
           .set(PROPERTY_FEES.ID, id)
-          .set(PROPERTY_FEES.IDENTIFIER, fee.getIdentifier())
+          .set(PROPERTY_FEES.IDENTIFIER, fee.getIdentifier().orElseThrow())
           .set(PROPERTY_FEES.PROPERTY_ID, fee.getPropertyId())
           .set(PROPERTY_FEES.TEAM_ID, fee.getTeamId())
           .set(PROPERTY_FEES.FEE_TYPE, fee.getFeeType().name())

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PropertyOutdoorAreaRequest;
 import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.generated.api.PropertyOutdoorAreasApi;
@@ -22,7 +23,7 @@ public class PropertyOutdoorAreaController implements PropertyOutdoorAreasApi {
   @Override
   public List<PropertyOutdoorAreaResponse> getOutdoorAreas(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return outdoorAreaService.getOutdoorAreas(propertyIdentifier, principal);
+    return outdoorAreaService.getOutdoorAreas(Ulid.of(propertyIdentifier), principal);
   }
 
   @Override
@@ -30,7 +31,7 @@ public class PropertyOutdoorAreaController implements PropertyOutdoorAreasApi {
       String propertyIdentifier, PropertyOutdoorAreaRequest propertyOutdoorAreaRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return outdoorAreaService.createOutdoorArea(
-        propertyIdentifier, propertyOutdoorAreaRequest, principal);
+        Ulid.of(propertyIdentifier), propertyOutdoorAreaRequest, principal);
   }
 
   @Override
@@ -40,12 +41,12 @@ public class PropertyOutdoorAreaController implements PropertyOutdoorAreasApi {
       PropertyOutdoorAreaRequest propertyOutdoorAreaRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return outdoorAreaService.updateOutdoorArea(
-        propertyIdentifier, areaIdentifier, propertyOutdoorAreaRequest, principal);
+        Ulid.of(propertyIdentifier), Ulid.of(areaIdentifier), propertyOutdoorAreaRequest, principal);
   }
 
   @Override
   public void deleteOutdoorArea(String propertyIdentifier, String areaIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    outdoorAreaService.deleteOutdoorArea(propertyIdentifier, areaIdentifier, principal);
+    outdoorAreaService.deleteOutdoorArea(Ulid.of(propertyIdentifier), Ulid.of(areaIdentifier), principal);
   }
 }

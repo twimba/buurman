@@ -21,7 +21,7 @@ public class PaymentRecordMapper {
 
     Payment payment = new Payment();
     payment.setId(record.getId());
-    payment.setIdentifier(record.getIdentifier());
+    payment.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     payment.setTeamId(record.getTeamId());
     payment.setContractId(record.getContractId());
     payment.setAmount(CurrencyUtils.toMajorUnits(record.getAmount(), record.getCurrency()));

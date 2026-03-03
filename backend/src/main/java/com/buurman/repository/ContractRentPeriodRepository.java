@@ -24,6 +24,7 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class ContractRentPeriodRepository {
       UUID id = UUID.randomUUID();
       dsl.insertInto(TABLE)
           .set(ID, id)
-          .set(IDENTIFIER, period.getIdentifier())
+          .set(IDENTIFIER, period.getIdentifier().orElseThrow().value())
           .set(TEAM_ID, period.getTeamId())
           .set(CONTRACT_ID, period.getContractId())
           .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
@@ -100,14 +101,14 @@ public class ContractRentPeriodRepository {
             .fetch(this::toDomain));
   }
 
-  public Optional<ContractRentPeriod> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<ContractRentPeriod> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.select()
         .from(TABLE)
-        .where(IDENTIFIER.eq(identifier).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .where(IDENTIFIER.eq(identifier.value()).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .fetchOptional(this::toDomain);
   }
 
-  public ContractRentPeriod getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public ContractRentPeriod getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Rent period not found"));
   }
@@ -189,7 +190,7 @@ public class ContractRentPeriodRepository {
     String currency = record.get(CURRENCY);
     ContractRentPeriod period = new ContractRentPeriod();
     period.setId(record.get(ID));
-    period.setIdentifier(record.get(IDENTIFIER));
+    period.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
     period.setTeamId(record.get(TEAM_ID));
     period.setContractId(record.get(CONTRACT_ID));
     period.setRentAmount(CurrencyUtils.toMajorUnits(record.get(RENT_AMOUNT), currency));

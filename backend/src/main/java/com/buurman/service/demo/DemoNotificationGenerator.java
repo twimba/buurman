@@ -726,7 +726,7 @@ public class DemoNotificationGenerator {
 
     dsl.insertInto(NOTIFICATIONS)
         .set(NOTIFICATIONS.ID, UUID.randomUUID())
-        .set(NOTIFICATIONS.IDENTIFIER, newNotificationId().value())
+        .set(NOTIFICATIONS.IDENTIFIER, newNotificationId())
         .set(NOTIFICATIONS.TEAM_ID, teamId)
         .set(NOTIFICATIONS.NOTIFICATION_TYPE, type)
         .set(NOTIFICATIONS.CHANNEL, channel)

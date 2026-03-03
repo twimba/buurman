@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.NotificationType;
@@ -59,7 +60,7 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse addRentPeriod(
-      String contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
+      Ulid contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -79,7 +80,7 @@ public class ContractRentPeriodService {
 
     // Create new period
     ContractRentPeriod period = new ContractRentPeriod();
-    period.setIdentifier(newContractRentPeriodId().value());
+    period.setIdentifier(Optional.of(newContractRentPeriodId()));
     period.setTeamId(teamId);
     period.setContractId(contract.getId());
     period.setRentAmount(request.rentAmount());
@@ -136,7 +137,7 @@ public class ContractRentPeriodService {
   }
 
   public List<RentPeriodResponse> getRentTimeline(
-      String contractIdentifier, UserPrincipal principal) {
+      Ulid contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     List<ContractRentPeriod> periods =
@@ -155,8 +156,8 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse updateRentPeriod(
-      String contractIdentifier,
-      String periodIdentifier,
+      Ulid contractIdentifier,
+      Ulid periodIdentifier,
       UpdateRentPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -225,7 +226,7 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteRentPeriod(
-      String contractIdentifier, String periodIdentifier, UserPrincipal principal) {
+      Ulid contractIdentifier, Ulid periodIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
@@ -270,7 +271,7 @@ public class ContractRentPeriodService {
   @Transactional
   public void createInitialRentPeriod(Contract contract, UserPrincipal principal) {
     ContractRentPeriod period = new ContractRentPeriod();
-    period.setIdentifier(newContractRentPeriodId().value());
+    period.setIdentifier(Optional.of(newContractRentPeriodId()));
     period.setTeamId(contract.getTeamId());
     period.setContractId(contract.getId());
     period.setRentAmount(contract.getRentAmount());
@@ -283,7 +284,7 @@ public class ContractRentPeriodService {
     period.setUpdatedAt(clock.instant());
 
     rentPeriodRepository.save(period);
-    log.debug("Initial rent period created for contract {}", contract.getIdentifier());
+    log.debug("Initial rent period created for contract {}", contract.getIdentifier().orElseThrow());
   }
 
   /** Updates the initial rent period when a DRAFT contract's rent is edited. */
@@ -345,7 +346,7 @@ public class ContractRentPeriodService {
             contract.setUpdatedAt(clock.instant());
             contractRepository.save(contract);
             log.debug(
-                "Synced contract {} rent_amount to {}", contract.getIdentifier(), currentRent);
+                "Synced contract {} rent_amount to {}", contract.getIdentifier().orElseThrow(), currentRent);
           }
         });
   }
@@ -370,7 +371,7 @@ public class ContractRentPeriodService {
 
         log.debug(
             "Updated payment {} amount from {} to {}",
-            payment.getIdentifier(),
+            payment.getIdentifier().orElseThrow(),
             oldAmount,
             newAmount);
       }
@@ -393,7 +394,7 @@ public class ContractRentPeriodService {
       String propertyName =
           property != null
               ? property.getStreet() + ", " + property.getCity()
-              : contract.getIdentifier();
+              : contract.getIdentifier().orElseThrow().toString();
       String tenantName =
           primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
 

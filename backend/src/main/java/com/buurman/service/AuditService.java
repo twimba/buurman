@@ -19,6 +19,7 @@ import org.jooq.JSONB;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.AuditLogEntry;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.dto.request.PageRequest;
@@ -207,10 +208,10 @@ public class AuditService {
 
     // Resolve entity identifier from entity UUID
     UUID entityId = record.entityId();
-    String entityIdentifier =
+    Ulid entityIdentifier =
         auditLogRepository
             .findEntityIdentifier(entityType, entityId, teamId)
-            .orElse(entityId.toString());
+            .orElse(Ulid.of(entityId.toString()));
 
     return new RecentActivityResponse(
         entityType,

@@ -2,8 +2,10 @@ package com.buurman.dto.response;
 
 import java.util.Optional;
 
+import com.buurman.domain.Ulid;
+
 public record PropertyAmenityResponse(
-    String amenityIdentifier,
+    Ulid amenityIdentifier,
     String amenityName,
     String amenityCategory,
     Optional<String> amenityIcon,

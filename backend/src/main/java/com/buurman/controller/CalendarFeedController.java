@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreateCalendarFeedRequest;
 import com.buurman.dto.response.CalendarFeedResponse;
 import com.buurman.exception.NotFoundException;
@@ -53,12 +54,12 @@ public class CalendarFeedController implements CalendarFeedsApi {
   @Override
   public CalendarFeedResponse rotateFeedToken(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return calendarFeedService.rotateFeedToken(identifier, principal);
+    return calendarFeedService.rotateFeedToken(Ulid.of(identifier), principal);
   }
 
   @Override
   public void deleteFeed(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    calendarFeedService.deleteFeed(identifier, principal);
+    calendarFeedService.deleteFeed(Ulid.of(identifier), principal);
   }
 }

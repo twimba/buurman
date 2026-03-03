@@ -5,6 +5,8 @@ import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 
+import com.buurman.domain.Ulid;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

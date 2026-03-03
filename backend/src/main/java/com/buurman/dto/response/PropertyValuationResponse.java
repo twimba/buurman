@@ -6,9 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyValuation;
+import com.buurman.domain.Ulid;
 
 public record PropertyValuationResponse(
-    String identifier,
+    Ulid identifier,
     PropertyValuation.ValuationType valuationType,
     LocalDate valuationDate,
     BigDecimal amount,

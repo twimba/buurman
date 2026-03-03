@@ -33,6 +33,7 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class ExpenseRepository {
   private final ExpenseRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Expense> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Expense> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(EXPENSES)
         .where(
             EXPENSES
@@ -54,7 +55,7 @@ public class ExpenseRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Expense getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Expense getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Expense not found"));
   }
@@ -148,7 +149,7 @@ public class ExpenseRepository {
       String currency = expense.getCurrency();
       dsl.insertInto(EXPENSES)
           .set(EXPENSES.ID, id)
-          .set(EXPENSES.IDENTIFIER, expense.getIdentifier())
+          .set(EXPENSES.IDENTIFIER, expense.getIdentifier().orElseThrow())
           .set(EXPENSES.TEAM_ID, expense.getTeamId())
           .set(EXPENSES.PROPERTY_ID, expense.getPropertyId())
           .set(EXPENSES.CATEGORY, expense.getCategory().name())

@@ -112,12 +112,12 @@ public class NotificationSchedulerService {
               log.info(
                   "Found {} expiring contracts for team {}",
                   expiringContracts.size(),
-                  team.getIdentifier());
+                  team.getIdentifier().orElseThrow());
             }
           } catch (Exception e) {
             log.error(
                 "Failed to check contract expiry for team {}: {}",
-                team.getIdentifier(),
+                team.getIdentifier().orElseThrow(),
                 e.getMessage(),
                 e);
           }
@@ -176,12 +176,12 @@ public class NotificationSchedulerService {
               log.info(
                   "Found {} overdue payments for team {}",
                   overduePayments.size(),
-                  team.getIdentifier());
+                  team.getIdentifier().orElseThrow());
             }
           } catch (Exception e) {
             log.error(
                 "Failed to check payment reminders for team {}: {}",
-                team.getIdentifier(),
+                team.getIdentifier().orElseThrow(),
                 e.getMessage(),
                 e);
           }

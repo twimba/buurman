@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.service.export.ContractBookletExporter;
 import com.buurman.service.export.PropertyBookletExporter;
@@ -47,17 +48,17 @@ public class ExportService {
         "transaction_pdf", () -> transactionPdfExporter.generate(startDate, endDate, teamId));
   }
 
-  public byte[] generatePropertyBrochurePDF(String propertyIdentifier, UUID teamId) {
+  public byte[] generatePropertyBrochurePDF(Ulid propertyIdentifier, UUID teamId) {
     return withMetrics(
         "property_brochure", () -> propertyBookletExporter.generate(propertyIdentifier, teamId));
   }
 
-  public byte[] generateContractReportPDF(String contractIdentifier, UUID teamId) {
+  public byte[] generateContractReportPDF(Ulid contractIdentifier, UUID teamId) {
     return withMetrics(
         "contract_report", () -> contractBookletExporter.generate(contractIdentifier, teamId));
   }
 
-  public byte[] generateTenantReportPDF(String tenantIdentifier, UUID teamId) {
+  public byte[] generateTenantReportPDF(Ulid tenantIdentifier, UUID teamId) {
     return withMetrics(
         "tenant_report", () -> tenantBookletExporter.generate(tenantIdentifier, teamId));
   }

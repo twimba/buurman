@@ -37,6 +37,7 @@ public interface TenantRecordMapper {
   @Mapping(
       target = "currentPropertyId",
       expression = "java(java.util.Optional.ofNullable(record.getCurrentPropertyId()))")
+  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Tenant toDomain(TenantsRecord record);
 
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(tenant.getCreatedAt()))")
@@ -55,6 +56,7 @@ public interface TenantRecordMapper {
   @Mapping(
       target = "currentPropertyId",
       expression = "java(tenant.getCurrentPropertyId().orElse(null))")
+  @Mapping(target = "identifier", expression = "java(tenant.getIdentifier().orElse(null))")
   TenantsRecord toRecord(Tenant tenant);
 
   List<Tenant> toDomainList(List<TenantsRecord> records);

@@ -18,6 +18,7 @@ import com.buurman.mapper.PropertyInsuranceRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class PropertyInsuranceRepository {
   private final PropertyInsuranceRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyInsurance> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyInsurance> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_INSURANCES)
         .where(
             PROPERTY_INSURANCES
@@ -39,7 +40,7 @@ public class PropertyInsuranceRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyInsurance getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyInsurance getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property insurance not found"));
   }
@@ -97,7 +98,7 @@ public class PropertyInsuranceRepository {
       String premiumCurrency = insurance.getAnnualPremiumCurrency();
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, id)
-          .set(PROPERTY_INSURANCES.IDENTIFIER, insurance.getIdentifier())
+          .set(PROPERTY_INSURANCES.IDENTIFIER, insurance.getIdentifier().orElseThrow())
           .set(PROPERTY_INSURANCES.PROPERTY_ID, insurance.getPropertyId())
           .set(PROPERTY_INSURANCES.TEAM_ID, insurance.getTeamId())
           .set(PROPERTY_INSURANCES.INSURANCE_TYPE, insurance.getInsuranceType().name())

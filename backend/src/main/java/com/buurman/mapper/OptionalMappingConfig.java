@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Ulid;
+
 /** Provides type-specific conversion methods for MapStruct to map nullable values to Optional. */
 @Component
 public class OptionalMappingConfig {
@@ -42,6 +44,14 @@ public class OptionalMappingConfig {
 
   public Optional<Double> mapDouble(@Nullable Double value) {
     return Optional.ofNullable(value);
+  }
+
+  public Optional<Ulid> mapStringToOptionalUlid(@Nullable String value) {
+    return Optional.ofNullable(value).map(Ulid::of);
+  }
+
+  public Optional<Ulid> mapUlid(Ulid value) {
+    return Optional.of(value);
   }
 
   /** Generic fallback for enum types and other objects (e.g. Optional&lt;MortgageType&gt;). */
@@ -81,6 +91,14 @@ public class OptionalMappingConfig {
   }
 
   public @Nullable Instant unwrapInstant(Optional<Instant> value) {
+    return value.orElse(null);
+  }
+
+  public Ulid unwrapUlid(Optional<Ulid> value) {
+    return value.orElseThrow(() -> new IllegalStateException("Ulid identifier must be present"));
+  }
+
+  public @Nullable Ulid unwrapOptionalUlid(Optional<Ulid> value) {
     return value.orElse(null);
   }
 

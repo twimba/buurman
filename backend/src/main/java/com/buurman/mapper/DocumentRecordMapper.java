@@ -24,6 +24,7 @@ public interface DocumentRecordMapper {
               + " dt.toInstant(java.time.ZoneOffset.UTC)))")
   @Mapping(target = "title", expression = "java(java.util.Optional.ofNullable(record.getTitle()))")
   @Mapping(target = "notes", expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
+  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Document toDomain(DocumentsRecord record);
 
   @Mapping(target = "uploadedAt", expression = "java(toLocalDateTime(document.getUploadedAt()))")
@@ -34,6 +35,7 @@ public interface DocumentRecordMapper {
               + " java.time.ZoneOffset.UTC)).orElse(null))")
   @Mapping(target = "title", expression = "java(document.getTitle().orElse(null))")
   @Mapping(target = "notes", expression = "java(document.getNotes().orElse(null))")
+  @Mapping(target = "identifier", expression = "java(document.getIdentifier().orElse(null))")
   DocumentsRecord toRecord(Document document);
 
   List<Document> toDomainList(List<DocumentsRecord> records);

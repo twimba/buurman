@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
@@ -36,32 +37,32 @@ public class TeamController implements TeamsApi {
   @Override
   public List<TeamMemberResponse> getTeamMembers(String teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamMembers(teamIdentifier, principal);
+    return teamService.getTeamMembers(Ulid.of(teamIdentifier), principal);
   }
 
   @Override
   public InvitationResponse createInvitation(
       String teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.createInvitation(teamIdentifier, createInvitationRequest, principal);
+    return teamService.createInvitation(Ulid.of(teamIdentifier), createInvitationRequest, principal);
   }
 
   @Override
   public List<InvitationResponse> getTeamPendingInvitations(String teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamPendingInvitations(teamIdentifier, principal);
+    return teamService.getTeamPendingInvitations(Ulid.of(teamIdentifier), principal);
   }
 
   @Override
   public InvitationResponse resendInvitation(String teamIdentifier, String token) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.resendInvitation(teamIdentifier, token, principal);
+    return teamService.resendInvitation(Ulid.of(teamIdentifier), token, principal);
   }
 
   @Override
   public void removeMember(String teamIdentifier, String userIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    teamService.removeMember(teamIdentifier, userIdentifier, principal);
+    teamService.removeMember(Ulid.of(teamIdentifier), Ulid.of(userIdentifier), principal);
   }
 
   @Override
@@ -71,27 +72,27 @@ public class TeamController implements TeamsApi {
       @Valid UpdateMemberRoleRequest updateMemberRoleRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateMemberRole(
-        teamIdentifier, userIdentifier, updateMemberRoleRequest, principal);
+        Ulid.of(teamIdentifier), Ulid.of(userIdentifier), updateMemberRoleRequest, principal);
   }
 
   @Override
   public TeamResponse updateTeam(
       String teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.updateTeam(teamIdentifier, updateTeamRequest, principal);
+    return teamService.updateTeam(Ulid.of(teamIdentifier), updateTeamRequest, principal);
   }
 
   @Override
   public TeamPreferencesResponse updateTeamSettings(
       String teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
+    return teamService.updateTeamPreferences(Ulid.of(teamIdentifier), updateTeamSettingsRequest, principal);
   }
 
   @Override
   public TeamPreferencesResponse getTeamSettings(String teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamPreferences(teamIdentifier, principal);
+    return teamService.getTeamPreferences(Ulid.of(teamIdentifier), principal);
   }
 
   @Override
@@ -99,6 +100,6 @@ public class TeamController implements TeamsApi {
       String teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.transferOwnership(
-        teamIdentifier, transferOwnershipRequest.newOwnerIdentifier(), principal);
+        Ulid.of(teamIdentifier), transferOwnershipRequest.newOwnerIdentifier(), principal);
   }
 }

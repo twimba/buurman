@@ -20,7 +20,7 @@ public class TeamRecordMapper {
 
     Team team = new Team();
     team.setId(record.getId());
-    team.setIdentifier(record.getIdentifier());
+    team.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     team.setName(record.getName());
     team.setDemo(record.getDemo());
     team.setCreatedAt(record.getCreatedAt().toInstant(UTC));

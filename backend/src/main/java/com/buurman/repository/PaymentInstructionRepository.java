@@ -23,6 +23,7 @@ import com.buurman.domain.PaymentInstruction;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -59,13 +60,13 @@ public class PaymentInstructionRepository {
 
     if (pi.getId() == null) {
       UUID id = UUID.randomUUID();
-      String identifier = newPaymentInstructionId().value();
+      Ulid identifier = newPaymentInstructionId();
       LocalDateTime createdAt = now;
       LocalDateTime updatedAt = now;
 
       dsl.insertInto(TABLE)
           .set(ID, id)
-          .set(IDENTIFIER, identifier)
+          .set(IDENTIFIER, identifier.value())
           .set(TEAM_ID, pi.getTeamId())
           .set(NAME, pi.getName())
           .set(DESCRIPTION, pi.getDescription())
@@ -86,7 +87,7 @@ public class PaymentInstructionRepository {
           .execute();
 
       pi.setId(id);
-      pi.setIdentifier(identifier);
+      pi.setIdentifier(java.util.Optional.of(identifier));
       pi.setCreatedAt(createdAt.toInstant(UTC));
       pi.setUpdatedAt(updatedAt.toInstant(UTC));
     } else {
@@ -122,14 +123,14 @@ public class PaymentInstructionRepository {
             .map(this::toDomain));
   }
 
-  public Optional<PaymentInstruction> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PaymentInstruction> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(TABLE)
-        .where(IDENTIFIER.eq(identifier).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .where(IDENTIFIER.eq(identifier.value()).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
   }
 
-  public PaymentInstruction getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PaymentInstruction getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Payment instruction not found"));
   }
@@ -170,7 +171,7 @@ public class PaymentInstructionRepository {
   private PaymentInstruction toDomain(Record record) {
     PaymentInstruction pi = new PaymentInstruction();
     pi.setId(record.get(ID));
-    pi.setIdentifier(record.get(IDENTIFIER));
+    pi.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
     pi.setTeamId(record.get(TEAM_ID));
     pi.setName(record.get(NAME));
     pi.setDescription(record.get(DESCRIPTION));

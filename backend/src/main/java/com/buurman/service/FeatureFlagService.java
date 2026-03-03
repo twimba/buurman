@@ -58,7 +58,7 @@ public class FeatureFlagService {
         .findById(teamId)
         .map(
             team -> {
-              String identity = "team:" + team.getIdentifier();
+              String identity = "team:" + team.getIdentifier().orElseThrow();
               Map<String, Object> traits = Map.of("demo", team.isDemo());
               return flagsmithClient
                   .map(

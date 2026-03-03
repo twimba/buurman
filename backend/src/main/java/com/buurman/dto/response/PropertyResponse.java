@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.Ulid;
 
 public record PropertyResponse(
-    String identifier,
+    Ulid identifier,
     Property.PropertyCategory propertyCategory,
     Property.PropertyType propertyType,
     Property.PropertyStatus status,

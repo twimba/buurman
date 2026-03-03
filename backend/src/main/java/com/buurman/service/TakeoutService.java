@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -50,6 +51,7 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
@@ -119,7 +121,7 @@ public class TakeoutService {
 
     DataTakeout takeout =
         DataTakeout.builder()
-            .identifier(UlidGenerator.newTakeoutId().value())
+            .identifier(Optional.of(UlidGenerator.newTakeoutId()))
             .teamId(teamId)
             .status(TakeoutStatus.PENDING)
             .createdBy(userId)
@@ -127,7 +129,7 @@ public class TakeoutService {
             .build();
 
     takeout = takeoutRepository.save(takeout);
-    log.info("Data takeout requested: {} for team {}", takeout.getIdentifier(), teamIdentifier);
+    log.info("Data takeout requested: {} for team {}", takeout.getIdentifier().orElseThrow(), teamIdentifier);
     metricsService.incrementCounter("takeout.requested.total");
 
     // Trigger async processing (via proxy so @Async is honoured)
@@ -194,9 +196,9 @@ public class TakeoutService {
         };
 
         // Collect identifiers for booklet generation
-        List<String> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
-        List<String> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
-        List<String> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
+        List<Ulid> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
+        List<Ulid> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
+        List<Ulid> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
         int totalBooklets =
             propertyIdentifiers.size() + tenantIdentifiers.size() + contractIdentifiers.size();
         int totalSteps = categories.length + totalBooklets + 2; // +2 for team.json and manifest
@@ -212,30 +214,30 @@ public class TakeoutService {
 
         // Generate booklet PDFs
         String bookletFolder = folderName + "/booklets";
-        for (String identifier : propertyIdentifiers) {
+        for (Ulid identifier : propertyIdentifiers) {
           try {
             byte[] pdf = propertyBookletExporter.generate(identifier, teamId);
-            addZipEntry(zos, bookletFolder + "/properties/" + identifier + ".pdf", pdf);
+            addZipEntry(zos, bookletFolder + "/properties/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate property booklet for {}: {}", identifier, e.getMessage());
           }
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
-        for (String identifier : tenantIdentifiers) {
+        for (Ulid identifier : tenantIdentifiers) {
           try {
             byte[] pdf = tenantBookletExporter.generate(identifier, teamId);
-            addZipEntry(zos, bookletFolder + "/tenants/" + identifier + ".pdf", pdf);
+            addZipEntry(zos, bookletFolder + "/tenants/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate tenant booklet for {}: {}", identifier, e.getMessage());
           }
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
-        for (String identifier : contractIdentifiers) {
+        for (Ulid identifier : contractIdentifiers) {
           try {
             byte[] pdf = contractBookletExporter.generate(identifier, teamId);
-            addZipEntry(zos, bookletFolder + "/contracts/" + identifier + ".pdf", pdf);
+            addZipEntry(zos, bookletFolder + "/contracts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate contract booklet for {}: {}", identifier, e.getMessage());
           }
@@ -263,13 +265,14 @@ public class TakeoutService {
 
       // Upload to S3
       byte[] zipBytes = baos.toByteArray();
+      Ulid teamUlid = Ulid.of(teamIdentifier);
       String fileKey =
           s3StorageService.uploadFile(
               zipBytes,
               "application/zip",
-              teamIdentifier,
+              teamUlid,
               "takeout",
-              teamIdentifier,
+              teamUlid,
               "takeout-" + dateSuffix + ".zip");
 
       // Calculate expiry
@@ -293,7 +296,7 @@ public class TakeoutService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public TakeoutResponse getTakeout(String identifier, UUID teamId) {
+  public TakeoutResponse getTakeout(Ulid identifier, UUID teamId) {
     DataTakeout takeout = takeoutRepository.getByIdentifierAndTeamId(identifier, teamId);
     return toResponse(takeout);
   }
@@ -307,7 +310,7 @@ public class TakeoutService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteTakeout(String identifier, UUID teamId) {
+  public void deleteTakeout(Ulid identifier, UUID teamId) {
     DataTakeout takeout = takeoutRepository.getByIdentifierAndTeamId(identifier, teamId);
     takeout
         .getFileKey()
@@ -372,9 +375,9 @@ public class TakeoutService {
     }
   }
 
-  private <R extends Record> List<String> fetchIdentifiers(Table<R> table, UUID teamId) {
+  private <R extends Record> List<Ulid> fetchIdentifiers(Table<R> table, UUID teamId) {
     Field<UUID> teamIdField = table.field("team_id", UUID.class);
-    Field<String> identifierField = table.field("identifier", String.class);
+    Field<Ulid> identifierField = table.field("identifier", Ulid.class);
     Field<?> deletedAtField = table.field("deleted_at");
 
     if (teamIdField == null || identifierField == null) {
@@ -467,7 +470,7 @@ public class TakeoutService {
                     } catch (Exception e) {
                       log.warn(
                           "Failed to generate presigned URL for takeout {}",
-                          takeout.getIdentifier(),
+                          takeout.getIdentifier().orElseThrow(),
                           e);
                       return null;
                     }
@@ -476,7 +479,7 @@ public class TakeoutService {
     }
 
     return new TakeoutResponse(
-        takeout.getIdentifier(),
+        takeout.getIdentifier().orElseThrow(),
         takeout.getStatus().name(),
         takeout.getProgress(),
         takeout.getFileSize().orElse(null),

@@ -28,6 +28,7 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -73,11 +74,11 @@ public class PaymentReceivalRepository {
   }
 
   public Optional<PaymentReceival> findByIdentifierAndPaymentIdAndTeamId(
-      String identifier, UUID paymentId, UUID teamId) {
+      Ulid identifier, UUID paymentId, UUID teamId) {
     return dsl.selectFrom(TABLE)
         .where(
             IDENTIFIER
-                .eq(identifier)
+                .eq(identifier.value())
                 .and(PAYMENT_ID.eq(paymentId))
                 .and(TEAM_ID.eq(teamId))
                 .and(DELETED_AT.isNull()))
@@ -86,7 +87,7 @@ public class PaymentReceivalRepository {
   }
 
   public PaymentReceival getByIdentifierAndPaymentIdAndTeamId(
-      String identifier, UUID paymentId, UUID teamId) {
+      Ulid identifier, UUID paymentId, UUID teamId) {
     return findByIdentifierAndPaymentIdAndTeamId(identifier, paymentId, teamId)
         .orElseThrow(() -> new NotFoundException("Payment receival not found"));
   }
@@ -121,7 +122,7 @@ public class PaymentReceivalRepository {
 
     dsl.insertInto(TABLE)
         .set(ID, id)
-        .set(IDENTIFIER, receival.getIdentifier())
+        .set(IDENTIFIER, receival.getIdentifier().orElseThrow().value())
         .set(TEAM_ID, receival.getTeamId())
         .set(PAYMENT_ID, receival.getPaymentId())
         .set(AMOUNT, CurrencyUtils.toMinorUnits(receival.getAmount(), currency))
@@ -175,7 +176,7 @@ public class PaymentReceivalRepository {
     String currency = record.get(CURRENCY);
     PaymentReceival receival = new PaymentReceival();
     receival.setId(record.get(ID));
-    receival.setIdentifier(record.get(IDENTIFIER));
+    receival.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
     receival.setTeamId(record.get(TEAM_ID));
     receival.setPaymentId(record.get(PAYMENT_ID));
     receival.setAmount(CurrencyUtils.toMajorUnits(record.get(AMOUNT), currency));

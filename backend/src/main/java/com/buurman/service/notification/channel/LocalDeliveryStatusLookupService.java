@@ -17,7 +17,7 @@ public class LocalDeliveryStatusLookupService implements DeliveryStatusLookupSer
   public Notification refreshStatus(Notification notification) {
     log.debug(
         "Status refresh not available in local profile for notification {}",
-        notification.getIdentifier());
+        notification.getIdentifier().orElseThrow());
 
     return notification;
   }

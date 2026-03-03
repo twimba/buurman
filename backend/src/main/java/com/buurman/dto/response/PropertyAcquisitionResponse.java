@@ -6,9 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyAcquisition;
+import com.buurman.domain.Ulid;
 
 public record PropertyAcquisitionResponse(
-    String identifier,
+    Ulid identifier,
     PropertyAcquisition.AcquisitionType acquisitionType,
     Optional<LocalDate> acquisitionDate,
     Optional<BigDecimal> purchasePrice,

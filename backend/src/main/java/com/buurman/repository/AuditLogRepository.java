@@ -30,6 +30,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -148,23 +149,23 @@ public class AuditLogRepository {
                   .or(lower(AUDIT_LOG.ENTITY_TYPE).like(searchPattern))
                   .or(lower(AUDIT_LOG.ACTION).like(searchPattern))
                   // Property search (address: street, city, postal code, identifier)
-                  .or(lower(PROPERTIES.IDENTIFIER).like(searchPattern))
+                  .or(lower(PROPERTIES.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(PROPERTIES.STREET).like(searchPattern))
                   .or(lower(PROPERTIES.CITY).like(searchPattern))
                   .or(lower(PROPERTIES.POSTAL_CODE).like(searchPattern))
                   .or(lower(PROPERTIES.COUNTRY).like(searchPattern))
                   // Tenant search (name, email, phone, identifier)
-                  .or(lower(TENANTS.IDENTIFIER).like(searchPattern))
+                  .or(lower(TENANTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(TENANTS.FIRST_NAME).like(searchPattern))
                   .or(lower(TENANTS.LAST_NAME).like(searchPattern))
                   .or(lower(TENANTS.EMAIL).like(searchPattern))
                   .or(lower(TENANTS.PHONE).like(searchPattern))
                   // Contract search
-                  .or(lower(CONTRACTS.IDENTIFIER).like(searchPattern))
+                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   // Payment search
-                  .or(lower(PAYMENTS.IDENTIFIER).like(searchPattern))
+                  .or(lower(PAYMENTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   // Expense search
-                  .or(lower(EXPENSES.IDENTIFIER).like(searchPattern))
+                  .or(lower(EXPENSES.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(EXPENSES.DESCRIPTION).like(searchPattern)));
     }
 
@@ -209,15 +210,15 @@ public class AuditLogRepository {
                   .or(lower(USERS.LAST_NAME).like(searchPattern))
                   .or(lower(AUDIT_LOG.ENTITY_TYPE).like(searchPattern))
                   .or(lower(AUDIT_LOG.ACTION).like(searchPattern))
-                  .or(lower(PROPERTIES.IDENTIFIER).like(searchPattern))
+                  .or(lower(PROPERTIES.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(PROPERTIES.STREET).like(searchPattern))
                   .or(lower(PROPERTIES.CITY).like(searchPattern))
-                  .or(lower(TENANTS.IDENTIFIER).like(searchPattern))
+                  .or(lower(TENANTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(TENANTS.FIRST_NAME).like(searchPattern))
                   .or(lower(TENANTS.LAST_NAME).like(searchPattern))
-                  .or(lower(CONTRACTS.IDENTIFIER).like(searchPattern))
-                  .or(lower(PAYMENTS.IDENTIFIER).like(searchPattern))
-                  .or(lower(EXPENSES.IDENTIFIER).like(searchPattern))
+                  .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
+                  .or(lower(PAYMENTS.IDENTIFIER.cast(String.class)).like(searchPattern))
+                  .or(lower(EXPENSES.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(EXPENSES.DESCRIPTION).like(searchPattern)));
     }
 
@@ -337,7 +338,7 @@ public class AuditLogRepository {
                     Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
 
-  public Optional<String> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {
+  public Optional<Ulid> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {
     return switch (entityType.toLowerCase(Locale.ROOT)) {
       case "property" ->
           dsl.select(PROPERTIES.IDENTIFIER)

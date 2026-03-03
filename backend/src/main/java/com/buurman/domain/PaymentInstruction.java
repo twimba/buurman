@@ -28,7 +28,7 @@ public class PaymentInstruction {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
   private UUID teamId;
   private String name;
   private String description;

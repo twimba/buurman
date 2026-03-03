@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyTax;
+import com.buurman.domain.Ulid;
 import com.buurman.dto.request.CreatePropertyTaxRequest;
 import com.buurman.dto.request.UpdatePropertyTaxRequest;
 import com.buurman.dto.response.PropertySummary;
@@ -40,13 +41,13 @@ public class PropertyTaxService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyTaxResponse create(
-      String propertyIdentifier, CreatePropertyTaxRequest request, UserPrincipal principal) {
+      Ulid propertyIdentifier, CreatePropertyTaxRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     PropertyTax tax = taxMapper.toEntity(request);
     tax.setPropertyId(property.getId());
-    tax.setIdentifier(newPropertyTaxId().value());
+    tax.setIdentifier(Optional.of(newPropertyTaxId()));
     tax.setTeamId(teamId);
     tax.setCreatedBy(principal.getUserId());
     tax.setUpdatedBy(principal.getUserId());
@@ -61,15 +62,15 @@ public class PropertyTaxService {
 
     log.info(
         "Created property tax {} for property {} by user {}",
-        saved.getIdentifier(),
-        property.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
+        property.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     return enrichResponse(saved, teamId);
   }
 
   @Transactional(readOnly = true)
-  public PropertyTaxResponse get(String identifier, UserPrincipal principal) {
+  public PropertyTaxResponse get(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyTax tax = taxRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(tax, teamId);
@@ -77,7 +78,7 @@ public class PropertyTaxService {
 
   @Transactional(readOnly = true)
   public List<PropertyTaxResponse> listByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      Ulid propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -89,7 +90,7 @@ public class PropertyTaxService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyTaxResponse update(
-      String identifier, UpdatePropertyTaxRequest request, UserPrincipal principal) {
+      Ulid identifier, UpdatePropertyTaxRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyTax tax = taxRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -99,20 +100,20 @@ public class PropertyTaxService {
 
     PropertyTax updated = taxRepository.save(tax);
 
-    log.info("Updated property tax {} by user {}", updated.getIdentifier(), principal.getUserId());
+    log.info("Updated property tax {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String identifier, UserPrincipal principal) {
+  public void delete(Ulid identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyTax tax = taxRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     taxRepository.softDeleteByIdAndTeamId(tax.getId(), teamId);
 
-    log.info("Deleted property tax {} by user {}", tax.getIdentifier(), principal.getUserId());
+    log.info("Deleted property tax {} by user {}", tax.getIdentifier().orElseThrow(), principal.getUserId());
   }
 
   private PropertyTaxResponse enrichResponse(PropertyTax tax, UUID teamId) {

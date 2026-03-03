@@ -18,6 +18,7 @@ import com.buurman.mapper.PropertyTaxRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class PropertyTaxRepository {
   private final PropertyTaxRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyTax> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyTax> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_TAXES)
         .where(
             PROPERTY_TAXES
@@ -39,7 +40,7 @@ public class PropertyTaxRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyTax getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyTax getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property tax not found"));
   }
@@ -93,7 +94,7 @@ public class PropertyTaxRepository {
       String currency = tax.getCurrency();
       dsl.insertInto(PROPERTY_TAXES)
           .set(PROPERTY_TAXES.ID, id)
-          .set(PROPERTY_TAXES.IDENTIFIER, tax.getIdentifier())
+          .set(PROPERTY_TAXES.IDENTIFIER, tax.getIdentifier().orElseThrow())
           .set(PROPERTY_TAXES.PROPERTY_ID, tax.getPropertyId())
           .set(PROPERTY_TAXES.TEAM_ID, tax.getTeamId())
           .set(PROPERTY_TAXES.TAX_TYPE, tax.getTaxType().name())

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Ulid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
@@ -60,7 +60,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   public List<TeamFlagEvaluation> getUserFlags(String userIdentifier) {
     User user =
         userRepository
-            .findByIdentifierUnscoped(userIdentifier)
+            .findByIdentifierUnscoped(Ulid.of(userIdentifier))
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
@@ -74,13 +74,13 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
         continue;
       }
 
-      String identity =
-          FeatureFlagService.buildIdentity(
-              Objects.requireNonNull(team.getIdentifier()),
-              Objects.requireNonNull(user.getIdentifier()));
+      Ulid teamId = team.getIdentifier().orElseThrow();
+      Ulid userId = user.getIdentifier().orElseThrow();
+
+      String identity = FeatureFlagService.buildIdentity(teamId.value(), userId.value());
 
       Map<String, Object> traits = new HashMap<>();
-      traits.put("team", team.getIdentifier());
+      traits.put("team", teamId);
       traits.put("role", membership.getRole());
       traits.put("is_owner", membership.isOwner());
 
@@ -88,7 +88,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
 
       evaluations.add(
           new TeamFlagEvaluation(
-              team.getIdentifier(),
+              teamId,
               team.getName(),
               membership.getRole().name(),
               membership.isOwner(),
