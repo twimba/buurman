@@ -4,14 +4,18 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 public record IndustrialDetailsResponse(
-    Optional<BigDecimal> clearHeightM,
+    Optional<BigDecimal> clearHeightValue,
+    Optional<String> clearHeightUnit,
     Optional<Integer> loadingDocks,
     Optional<Integer> driveInDoors,
-    Optional<BigDecimal> floorLoadCapacityKgSqm,
-    Optional<Integer> powerCapacityKva,
+    Optional<BigDecimal> floorLoadCapacityValue,
+    Optional<String> floorLoadCapacityUnit,
+    Optional<Integer> powerCapacityValue,
+    Optional<String> powerCapacityUnit,
     Optional<Boolean> hasThreePhasePower,
     Optional<Boolean> hasCrane,
-    Optional<BigDecimal> craneCapacityTons,
+    Optional<BigDecimal> craneCapacityValue,
+    Optional<String> craneCapacityUnit,
     Optional<Boolean> hasHazmatCertification,
     Optional<Boolean> hasVentilationSystem,
     Optional<Boolean> hasClimateControl,

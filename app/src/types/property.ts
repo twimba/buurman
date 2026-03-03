@@ -35,7 +35,8 @@ export interface CommercialDetailsResponse {
   commonAreaValue?: number;
   commonAreaUnit?: string;
   floorLevel?: number;
-  ceilingHeightM?: number;
+  ceilingHeightValue?: number;
+  ceilingHeightUnit?: string;
   hasStorefront?: boolean;
   hasSignageRights?: boolean;
   zoningClassification?: string;
@@ -46,14 +47,18 @@ export interface CommercialDetailsResponse {
 }
 
 export interface IndustrialDetailsResponse {
-  clearHeightM?: number;
+  clearHeightValue?: number;
+  clearHeightUnit?: string;
   loadingDocks?: number;
   driveInDoors?: number;
-  floorLoadCapacityKgSqm?: number;
-  powerCapacityKva?: number;
+  floorLoadCapacityValue?: number;
+  floorLoadCapacityUnit?: string;
+  powerCapacityValue?: number;
+  powerCapacityUnit?: string;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
-  craneCapacityTons?: number;
+  craneCapacityValue?: number;
+  craneCapacityUnit?: string;
   hasHazmatCertification?: boolean;
   hasVentilationSystem?: boolean;
   hasClimateControl?: boolean;
@@ -156,12 +161,14 @@ export interface PropertyResponse {
 
   // Utilities & Connections
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
 
   // Parking
@@ -257,7 +264,8 @@ export interface CommercialDetailsRequest {
   commonAreaValue?: number;
   commonAreaUnit?: string;
   floorLevel?: number;
-  ceilingHeightM?: number;
+  ceilingHeightValue?: number;
+  ceilingHeightUnit?: string;
   hasStorefront?: boolean;
   hasSignageRights?: boolean;
   zoningClassification?: string;
@@ -268,14 +276,18 @@ export interface CommercialDetailsRequest {
 }
 
 export interface IndustrialDetailsRequest {
-  clearHeightM?: number;
+  clearHeightValue?: number;
+  clearHeightUnit?: string;
   loadingDocks?: number;
   driveInDoors?: number;
-  floorLoadCapacityKgSqm?: number;
-  powerCapacityKva?: number;
+  floorLoadCapacityValue?: number;
+  floorLoadCapacityUnit?: string;
+  powerCapacityValue?: number;
+  powerCapacityUnit?: string;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
-  craneCapacityTons?: number;
+  craneCapacityValue?: number;
+  craneCapacityUnit?: string;
   hasHazmatCertification?: boolean;
   hasVentilationSystem?: boolean;
   hasClimateControl?: boolean;
@@ -341,12 +353,14 @@ export interface CreatePropertyRequest {
   hotWaterSystem?: string;
   insulationNotes?: string;
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
   parkingSpaces?: number;
   parkingType?: string;
@@ -398,12 +412,14 @@ export interface UpdatePropertyRequest {
   hotWaterSystem?: string;
   insulationNotes?: string;
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
   parkingSpaces?: number;
   parkingType?: string;

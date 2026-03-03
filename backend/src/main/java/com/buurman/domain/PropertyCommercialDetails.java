@@ -25,7 +25,8 @@ public class PropertyCommercialDetails {
   @Builder.Default private Optional<BigDecimal> commonAreaValue = Optional.empty();
   @Builder.Default private Optional<String> commonAreaUnit = Optional.empty();
   @Builder.Default private Optional<Integer> floorLevel = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> ceilingHeightM = Optional.empty();
+  @Builder.Default private Optional<BigDecimal> ceilingHeightValue = Optional.empty();
+  @Builder.Default private Optional<String> ceilingHeightUnit = Optional.empty();
   @Builder.Default private Optional<Boolean> hasStorefront = Optional.empty();
   @Builder.Default private Optional<Boolean> hasSignageRights = Optional.empty();
   @Builder.Default private Optional<String> zoningClassification = Optional.empty();

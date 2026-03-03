@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Info, Plus, Trash2 } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
+import { MeasurementInput } from '@/components/common/MeasurementInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   CreatePropertyRequest,
@@ -144,6 +145,77 @@ const NumberField = ({
   </div>
 );
 
+const AREA_UNITS = [
+  { value: 'sqm', label: 'm²' },
+  { value: 'sqft', label: 'ft²' },
+];
+const HEIGHT_UNITS = [
+  { value: 'm', label: 'm' },
+  { value: 'ft', label: 'ft' },
+];
+const FLOOR_LOAD_UNITS = [
+  { value: 'kg_sqm', label: 'kg/m²' },
+  { value: 'lbs_sqft', label: 'lbs/ft²' },
+];
+const WEIGHT_UNITS = [
+  { value: 'metric_tons', label: 't' },
+  { value: 'us_tons', label: 'US tons' },
+];
+const ELECTRICITY_UNITS = [
+  { value: 'a', label: 'A' },
+  { value: 'ka', label: 'kA' },
+];
+const INTERNET_SPEED_UNITS = [
+  { value: 'mbps', label: 'Mbps' },
+  { value: 'gbps', label: 'Gbps' },
+  { value: 'tbps', label: 'Tbps' },
+];
+const POWER_UNITS = [
+  { value: 'kva', label: 'kVA' },
+  { value: 'mva', label: 'MVA' },
+  { value: 'hp', label: 'HP' },
+];
+
+interface MeasurementFieldProps {
+  label: string;
+  value: number | null | undefined;
+  onChange: (v: number | undefined) => void;
+  unit: string;
+  unitOptions: { value: string; label: string }[];
+  onUnitChange: (unit: string) => void;
+  min?: number;
+  step?: number;
+  tooltip?: string;
+}
+
+const MeasurementField = ({
+  label,
+  value,
+  onChange,
+  unit,
+  unitOptions,
+  onUnitChange,
+  min,
+  step,
+  tooltip,
+}: MeasurementFieldProps) => (
+  <div>
+    <label className={labelCls}>
+      {label}
+      {tooltip && <Tooltip text={tooltip} />}
+    </label>
+    <MeasurementInput
+      value={value}
+      onChange={onChange}
+      unit={unit}
+      unitOptions={unitOptions}
+      onUnitChange={onUnitChange}
+      min={min}
+      step={step}
+    />
+  </div>
+);
+
 interface ToggleFieldProps {
   label: string;
   value: boolean | undefined;
@@ -251,12 +323,12 @@ export const PropertyCharacteristicsForm = ({
   ];
   const utilityFields = [
     formData.electricityConnectionType,
-    formData.electricityCapacityAmps,
+    formData.electricityCapacityValue,
     formData.waterConnectionType,
     formData.hasGasConnection,
     formData.sewageType,
     formData.internetConnectionType,
-    formData.internetMaxSpeedMbps,
+    formData.internetMaxSpeedValue,
     formData.internetStatus,
   ];
   const parkingFields = [formData.parkingSpaces, formData.parkingType];
@@ -430,13 +502,15 @@ export const PropertyCharacteristicsForm = ({
             options={arrayOptions(ELECTRICITY_CONNECTION_TYPES)}
             onChange={(v) => onChange('electricityConnectionType', v)}
           />
-          <NumberField
+          <MeasurementField
             label="Electricity Capacity"
-            value={formData.electricityCapacityAmps}
-            onChange={(v) => onChange('electricityCapacityAmps', v)}
+            value={formData.electricityCapacityValue}
+            onChange={(v) => onChange('electricityCapacityValue', v)}
+            unit={formData.electricityCapacityUnit ?? 'a'}
+            unitOptions={ELECTRICITY_UNITS}
+            onUnitChange={(u) => onChange('electricityCapacityUnit', u)}
             min={0}
-            suffix="Amps"
-            tooltip="Main fuse capacity in amperes"
+            tooltip="Main fuse capacity"
           />
           <SelectField
             label="Water Connection"
@@ -461,12 +535,14 @@ export const PropertyCharacteristicsForm = ({
             options={arrayOptions(INTERNET_CONNECTION_TYPES)}
             onChange={(v) => onChange('internetConnectionType', v)}
           />
-          <NumberField
+          <MeasurementField
             label="Internet Max Speed"
-            value={formData.internetMaxSpeedMbps}
-            onChange={(v) => onChange('internetMaxSpeedMbps', v)}
+            value={formData.internetMaxSpeedValue}
+            onChange={(v) => onChange('internetMaxSpeedValue', v)}
+            unit={formData.internetMaxSpeedUnit ?? 'mbps'}
+            unitOptions={INTERNET_SPEED_UNITS}
+            onUnitChange={(u) => onChange('internetMaxSpeedUnit', u)}
             min={0}
-            suffix="Mbps"
           />
           <SelectField
             label="Internet Status"
@@ -833,7 +909,7 @@ const CommercialDetailsSection = ({
     details.usableAreaValue,
     details.commonAreaValue,
     details.floorLevel,
-    details.ceilingHeightM,
+    details.ceilingHeightValue,
     details.hasStorefront,
     details.hasSignageRights,
     details.zoningClassification,
@@ -850,21 +926,25 @@ const CommercialDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Usable Area"
           value={details.usableAreaValue}
           onChange={(v) => update('usableAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.usableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unit={details.usableAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
+          onUnitChange={(u) => update('usableAreaUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Common Area"
           value={details.commonAreaValue}
           onChange={(v) => update('commonAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.commonAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unit={details.commonAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
+          onUnitChange={(u) => update('commonAreaUnit', u)}
         />
         <NumberField
           label="Floor Level"
@@ -872,13 +952,15 @@ const CommercialDetailsSection = ({
           onChange={(v) => update('floorLevel', v)}
           step={1}
         />
-        <NumberField
+        <MeasurementField
           label="Ceiling Height"
-          value={details.ceilingHeightM}
-          onChange={(v) => update('ceilingHeightM', v)}
+          value={details.ceilingHeightValue}
+          onChange={(v) => update('ceilingHeightValue', v)}
           min={0}
           step={0.1}
-          suffix="m"
+          unit={details.ceilingHeightUnit ?? 'm'}
+          unitOptions={HEIGHT_UNITS}
+          onUnitChange={(u) => update('ceilingHeightUnit', u)}
         />
         <NumberField
           label="Max Occupancy"
@@ -948,14 +1030,14 @@ const IndustrialDetailsSection = ({
     onChange({ ...details, [field]: value } as IndustrialDetailsRequest);
 
   const fields = [
-    details.clearHeightM,
+    details.clearHeightValue,
     details.loadingDocks,
     details.driveInDoors,
-    details.floorLoadCapacityKgSqm,
-    details.powerCapacityKva,
+    details.floorLoadCapacityValue,
+    details.powerCapacityValue,
     details.hasThreePhasePower,
     details.hasCrane,
-    details.craneCapacityTons,
+    details.craneCapacityValue,
     details.hasHazmatCertification,
     details.hasVentilationSystem,
     details.hasClimateControl,
@@ -970,13 +1052,15 @@ const IndustrialDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Clear Height"
-          value={details.clearHeightM}
-          onChange={(v) => update('clearHeightM', v)}
+          value={details.clearHeightValue}
+          onChange={(v) => update('clearHeightValue', v)}
           min={0}
           step={0.1}
-          suffix="m"
+          unit={details.clearHeightUnit ?? 'm'}
+          unitOptions={HEIGHT_UNITS}
+          onUnitChange={(u) => update('clearHeightUnit', u)}
         />
         <NumberField
           label="Loading Docks"
@@ -992,38 +1076,46 @@ const IndustrialDetailsSection = ({
           min={0}
           step={1}
         />
-        <NumberField
+        <MeasurementField
           label="Floor Load Capacity"
-          value={details.floorLoadCapacityKgSqm}
-          onChange={(v) => update('floorLoadCapacityKgSqm', v)}
+          value={details.floorLoadCapacityValue}
+          onChange={(v) => update('floorLoadCapacityValue', v)}
           min={0}
           step={1}
-          suffix="kg/m²"
+          unit={details.floorLoadCapacityUnit ?? 'kg_sqm'}
+          unitOptions={FLOOR_LOAD_UNITS}
+          onUnitChange={(u) => update('floorLoadCapacityUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Power Capacity"
-          value={details.powerCapacityKva}
-          onChange={(v) => update('powerCapacityKva', v)}
+          value={details.powerCapacityValue}
+          onChange={(v) => update('powerCapacityValue', v)}
+          unit={details.powerCapacityUnit ?? 'kva'}
+          unitOptions={POWER_UNITS}
+          onUnitChange={(u) => update('powerCapacityUnit', u)}
           min={0}
           step={1}
-          suffix="kVA"
         />
-        <NumberField
+        <MeasurementField
           label="Crane Capacity"
-          value={details.craneCapacityTons}
-          onChange={(v) => update('craneCapacityTons', v)}
+          value={details.craneCapacityValue}
+          onChange={(v) => update('craneCapacityValue', v)}
           min={0}
           step={0.1}
-          suffix="tons"
+          unit={details.craneCapacityUnit ?? 'metric_tons'}
+          unitOptions={WEIGHT_UNITS}
+          onUnitChange={(u) => update('craneCapacityUnit', u)}
           tooltip="Only relevant if crane is available"
         />
-        <NumberField
+        <MeasurementField
           label="Yard Area"
           value={details.yardAreaValue}
           onChange={(v) => update('yardAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.yardAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unit={details.yardAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
+          onUnitChange={(u) => update('yardAreaUnit', u)}
         />
         <div>
           <label className={labelCls}>Zoning Classification</label>
@@ -1141,21 +1233,25 @@ const AgriculturalDetailsSection = ({
       totalCount={fields.length}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NumberField
+        <MeasurementField
           label="Total Land Area"
           value={details.totalLandAreaValue}
           onChange={(v) => update('totalLandAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.totalLandAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unit={details.totalLandAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
+          onUnitChange={(u) => update('totalLandAreaUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Arable Area"
           value={details.arableAreaValue}
           onChange={(v) => update('arableAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.arableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unit={details.arableAreaUnit ?? 'sqm'}
+          unitOptions={AREA_UNITS}
+          onUnitChange={(u) => update('arableAreaUnit', u)}
         />
         <SelectField
           label="Soil Type"

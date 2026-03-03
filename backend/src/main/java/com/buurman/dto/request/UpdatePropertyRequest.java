@@ -47,12 +47,14 @@ public record UpdatePropertyRequest(
 
     // Utilities & Connections
     Optional<String> electricityConnectionType,
-    Optional<Integer> electricityCapacityAmps,
+    Optional<Integer> electricityCapacityValue,
+    Optional<String> electricityCapacityUnit,
     Optional<String> waterConnectionType,
     Optional<Boolean> hasGasConnection,
     Optional<String> sewageType,
     Optional<String> internetConnectionType,
-    Optional<Integer> internetMaxSpeedMbps,
+    Optional<Integer> internetMaxSpeedValue,
+    Optional<String> internetMaxSpeedUnit,
     Optional<String> internetStatus,
 
     // Parking

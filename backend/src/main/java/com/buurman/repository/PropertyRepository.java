@@ -151,15 +151,20 @@ public class PropertyRepository {
               PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
               property.getElectricityConnectionType().orElse(null))
           .set(
-              PROPERTIES.ELECTRICITY_CAPACITY_AMPS,
-              property.getElectricityCapacityAmps().orElse(null))
+              PROPERTIES.ELECTRICITY_CAPACITY_VALUE,
+              property.getElectricityCapacityValue().orElse(null))
+          .set(
+              PROPERTIES.ELECTRICITY_CAPACITY_UNIT,
+              property.getElectricityCapacityUnit().orElse(null))
           .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType().orElse(null))
           .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection().orElse(null))
           .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType().orElse(null))
           .set(
               PROPERTIES.INTERNET_CONNECTION_TYPE,
               property.getInternetConnectionType().orElse(null))
-          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps().orElse(null))
+          .set(
+              PROPERTIES.INTERNET_MAX_SPEED_VALUE, property.getInternetMaxSpeedValue().orElse(null))
+          .set(PROPERTIES.INTERNET_MAX_SPEED_UNIT, property.getInternetMaxSpeedUnit().orElse(null))
           .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus().orElse(null))
           // Parking
           .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
@@ -238,15 +243,20 @@ public class PropertyRepository {
               PROPERTIES.ELECTRICITY_CONNECTION_TYPE,
               property.getElectricityConnectionType().orElse(null))
           .set(
-              PROPERTIES.ELECTRICITY_CAPACITY_AMPS,
-              property.getElectricityCapacityAmps().orElse(null))
+              PROPERTIES.ELECTRICITY_CAPACITY_VALUE,
+              property.getElectricityCapacityValue().orElse(null))
+          .set(
+              PROPERTIES.ELECTRICITY_CAPACITY_UNIT,
+              property.getElectricityCapacityUnit().orElse(null))
           .set(PROPERTIES.WATER_CONNECTION_TYPE, property.getWaterConnectionType().orElse(null))
           .set(PROPERTIES.HAS_GAS_CONNECTION, property.getHasGasConnection().orElse(null))
           .set(PROPERTIES.SEWAGE_TYPE, property.getSewageType().orElse(null))
           .set(
               PROPERTIES.INTERNET_CONNECTION_TYPE,
               property.getInternetConnectionType().orElse(null))
-          .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, property.getInternetMaxSpeedMbps().orElse(null))
+          .set(
+              PROPERTIES.INTERNET_MAX_SPEED_VALUE, property.getInternetMaxSpeedValue().orElse(null))
+          .set(PROPERTIES.INTERNET_MAX_SPEED_UNIT, property.getInternetMaxSpeedUnit().orElse(null))
           .set(PROPERTIES.INTERNET_STATUS, property.getInternetStatus().orElse(null))
           // Parking
           .set(PROPERTIES.PARKING_SPACES, property.getParkingSpaces().orElse(null))
