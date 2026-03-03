@@ -15,7 +15,7 @@ export const getActiveBroadcasts = async (): Promise<BroadcastMessage[]> => {
 };
 
 export const getPublicBroadcasts = async (
-  context: 'login' | 'register',
+  context: 'login' | 'register'
 ): Promise<BroadcastMessage[]> => {
   const response = await client.get('/broadcasts/public', {
     params: { context },

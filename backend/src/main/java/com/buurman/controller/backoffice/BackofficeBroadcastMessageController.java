@@ -43,8 +43,7 @@ public class BackofficeBroadcastMessageController {
 
   @PutMapping("/backoffice/broadcasts/{identifier}")
   public BackofficeBroadcastMessageResponse update(
-      @PathVariable String identifier,
-      @Valid @RequestBody UpdateBroadcastMessageRequest request) {
+      @PathVariable String identifier, @Valid @RequestBody UpdateBroadcastMessageRequest request) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     return backofficeBroadcastMessageService.update(identifier, request, principal);
   }

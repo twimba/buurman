@@ -5,6 +5,8 @@ import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -137,6 +139,22 @@ public class TeamRepository {
   public Team getByIdentifierForBackoffice(String identifier) {
     return findByIdentifierForBackoffice(identifier)
         .orElseThrow(() -> new NotFoundException("Team not found"));
+  }
+
+  public List<Team> findByIds(Collection<UUID> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(TEAMS)
+            .where(TEAMS.ID.in(ids).and(TEAMS.DELETED_AT.isNull()))
+            .fetch()
+            .map(
+                r ->
+                    mapper
+                        .toDomain(r)
+                        .orElseThrow(
+                            () -> new IllegalStateException("Failed to map team record"))));
   }
 
   public long countAll() {

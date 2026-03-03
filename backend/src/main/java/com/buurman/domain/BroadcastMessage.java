@@ -1,6 +1,7 @@
 package com.buurman.domain;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,11 +22,14 @@ public class BroadcastMessage {
   private String title;
   private String body;
   private String severity;
+  @Builder.Default private String scope = "GLOBAL";
   private Instant startAt;
   @Builder.Default private Optional<Instant> endAt = Optional.empty();
   private boolean showOnLogin;
   private boolean showOnRegister;
   private boolean showInApp;
+  @Builder.Default private List<UUID> targetTeamIds = List.of();
+  @Builder.Default private List<UUID> targetUserIds = List.of();
   private Instant createdAt;
   private Instant updatedAt;
   @Builder.Default private Optional<UUID> createdBy = Optional.empty();

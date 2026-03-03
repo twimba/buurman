@@ -180,6 +180,55 @@ export interface CreateBuurmyRequest {
   temporaryPassword: boolean;
 }
 
+// Broadcast types
+export type BroadcastSeverity = "INFO" | "WARNING" | "CRITICAL";
+export type BroadcastScope = "GLOBAL" | "TEAMS" | "USERS";
+
+export interface BroadcastMessage {
+  identifier: string;
+  title: string;
+  body: string;
+  severity: BroadcastSeverity;
+  scope: BroadcastScope;
+  startAt: string;
+  endAt?: string;
+  showOnLogin: boolean;
+  showOnRegister: boolean;
+  showInApp: boolean;
+  targetTeamIdentifiers: string[];
+  targetUserIdentifiers: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBroadcastMessageRequest {
+  title: string;
+  body: string;
+  severity: BroadcastSeverity;
+  scope: BroadcastScope;
+  startAt: string;
+  endAt?: string;
+  showOnLogin: boolean;
+  showOnRegister: boolean;
+  showInApp: boolean;
+  targetTeamIdentifiers?: string[];
+  targetUserIdentifiers?: string[];
+}
+
+export interface UpdateBroadcastMessageRequest {
+  title: string;
+  body: string;
+  severity: BroadcastSeverity;
+  scope: BroadcastScope;
+  startAt: string;
+  endAt?: string;
+  showOnLogin: boolean;
+  showOnRegister: boolean;
+  showInApp: boolean;
+  targetTeamIdentifiers?: string[];
+  targetUserIdentifiers?: string[];
+}
+
 // System Info types
 export type ServiceHealthStatus = "UP" | "DOWN" | "DISABLED" | "UNKNOWN";
 

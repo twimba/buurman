@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react';
 import {
   useActiveBroadcasts,
@@ -48,7 +49,10 @@ const BroadcastItem = ({
       <Icon className={`h-5 w-5 ${config.iconColor} shrink-0 mt-0.5`} />
       <div className={`flex-1 min-w-0 ${config.text}`}>
         <p className="text-sm font-semibold">{message.title}</p>
-        <p className="text-sm mt-0.5">{message.body}</p>
+        <div
+          className="text-sm mt-0.5 prose prose-sm max-w-none [&>p]:m-0"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message.body) }}
+        />
       </div>
       <button
         type="button"

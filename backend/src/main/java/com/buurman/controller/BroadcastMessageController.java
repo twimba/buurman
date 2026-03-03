@@ -26,7 +26,7 @@ public class BroadcastMessageController {
   @GetMapping("/broadcasts")
   public List<BroadcastMessageResponse> getActive() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return broadcastMessageService.getActiveMessages(principal.getUserId());
+    return broadcastMessageService.getActiveMessages(principal.getUserId(), principal.getTeamId());
   }
 
   @GetMapping("/broadcasts/public")

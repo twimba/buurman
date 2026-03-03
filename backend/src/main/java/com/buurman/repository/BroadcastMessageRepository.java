@@ -2,16 +2,21 @@ package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGES;
 import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_DISMISSALS;
+import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_TEAMS;
+import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_USERS;
 import static com.buurman.util.UlidGenerator.newBroadcastMessageId;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.exists;
 import static org.jooq.impl.DSL.notExists;
 import static org.jooq.impl.DSL.selectOne;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -39,8 +44,11 @@ public class BroadcastMessageRepository {
         .set(BROADCAST_MESSAGES.TITLE, msg.getTitle())
         .set(BROADCAST_MESSAGES.BODY, msg.getBody())
         .set(BROADCAST_MESSAGES.SEVERITY, msg.getSeverity())
+        .set(BROADCAST_MESSAGES.SCOPE, msg.getScope())
         .set(BROADCAST_MESSAGES.START_AT, LocalDateTime.ofInstant(msg.getStartAt(), UTC))
-        .set(BROADCAST_MESSAGES.END_AT, msg.getEndAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
+        .set(
+            BROADCAST_MESSAGES.END_AT,
+            msg.getEndAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(BROADCAST_MESSAGES.SHOW_ON_LOGIN, msg.isShowOnLogin())
         .set(BROADCAST_MESSAGES.SHOW_ON_REGISTER, msg.isShowOnRegister())
         .set(BROADCAST_MESSAGES.SHOW_IN_APP, msg.isShowInApp())
@@ -55,6 +63,9 @@ public class BroadcastMessageRepository {
     msg.setCreatedAt(now.toInstant(UTC));
     msg.setUpdatedAt(now.toInstant(UTC));
 
+    insertTeamTargets(id, msg.getTargetTeamIds());
+    insertUserTargets(id, msg.getTargetUserIds());
+
     return msg;
   }
 
@@ -65,8 +76,11 @@ public class BroadcastMessageRepository {
         .set(BROADCAST_MESSAGES.TITLE, msg.getTitle())
         .set(BROADCAST_MESSAGES.BODY, msg.getBody())
         .set(BROADCAST_MESSAGES.SEVERITY, msg.getSeverity())
+        .set(BROADCAST_MESSAGES.SCOPE, msg.getScope())
         .set(BROADCAST_MESSAGES.START_AT, LocalDateTime.ofInstant(msg.getStartAt(), UTC))
-        .set(BROADCAST_MESSAGES.END_AT, msg.getEndAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
+        .set(
+            BROADCAST_MESSAGES.END_AT,
+            msg.getEndAt().map(i -> LocalDateTime.ofInstant(i, UTC)).orElse(null))
         .set(BROADCAST_MESSAGES.SHOW_ON_LOGIN, msg.isShowOnLogin())
         .set(BROADCAST_MESSAGES.SHOW_ON_REGISTER, msg.isShowOnRegister())
         .set(BROADCAST_MESSAGES.SHOW_IN_APP, msg.isShowInApp())
@@ -77,20 +91,34 @@ public class BroadcastMessageRepository {
 
     msg.setUpdatedAt(now.toInstant(UTC));
 
+    // Replace junction rows
+    dsl.deleteFrom(BROADCAST_MESSAGE_TEAMS)
+        .where(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID.eq(msg.getId()))
+        .execute();
+    dsl.deleteFrom(BROADCAST_MESSAGE_USERS)
+        .where(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID.eq(msg.getId()))
+        .execute();
+    insertTeamTargets(msg.getId(), msg.getTargetTeamIds());
+    insertUserTargets(msg.getId(), msg.getTargetUserIds());
+
     return msg;
   }
 
   public void delete(UUID id) {
-    dsl.deleteFrom(BROADCAST_MESSAGES)
-        .where(BROADCAST_MESSAGES.ID.eq(id))
-        .execute();
+    dsl.deleteFrom(BROADCAST_MESSAGES).where(BROADCAST_MESSAGES.ID.eq(id)).execute();
   }
 
   public Optional<BroadcastMessage> findByIdentifier(String identifier) {
     return dsl.selectFrom(BROADCAST_MESSAGES)
         .where(BROADCAST_MESSAGES.IDENTIFIER.eq(identifier))
         .fetchOptional()
-        .map(this::toDomain);
+        .map(this::toDomain)
+        .map(
+            msg -> {
+              msg.setTargetTeamIds(loadTeamTargets(msg.getId()));
+              msg.setTargetUserIds(loadUserTargets(msg.getId()));
+              return msg;
+            });
   }
 
   public BroadcastMessage getByIdentifier(String identifier) {
@@ -99,19 +127,60 @@ public class BroadcastMessageRepository {
   }
 
   public List<BroadcastMessage> findAll() {
-    return dsl.selectFrom(BROADCAST_MESSAGES)
-        .orderBy(BROADCAST_MESSAGES.CREATED_AT.desc())
-        .fetch()
-        .map(this::toDomain);
+    List<BroadcastMessage> messages =
+        dsl.selectFrom(BROADCAST_MESSAGES)
+            .orderBy(BROADCAST_MESSAGES.CREATED_AT.desc())
+            .fetch()
+            .map(this::toDomain);
+
+    if (!messages.isEmpty()) {
+      loadTargets(messages);
+    }
+    return messages;
   }
 
-  public List<BroadcastMessage> findActiveForUser(UUID userId) {
+  public List<BroadcastMessage> findActiveForUser(UUID userId, Optional<UUID> teamId) {
     LocalDateTime now = LocalDateTime.now(clock);
+
+    // Scope filter: GLOBAL, or TEAMS with matching team, or USERS with matching user
+    var scopeCondition =
+        BROADCAST_MESSAGES
+            .SCOPE
+            .eq("GLOBAL")
+            .or(
+                BROADCAST_MESSAGES
+                    .SCOPE
+                    .eq("USERS")
+                    .and(
+                        exists(
+                            selectOne()
+                                .from(BROADCAST_MESSAGE_USERS)
+                                .where(
+                                    BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID.eq(
+                                        BROADCAST_MESSAGES.ID))
+                                .and(BROADCAST_MESSAGE_USERS.USER_ID.eq(userId)))));
+
+    if (teamId.isPresent()) {
+      scopeCondition =
+          scopeCondition.or(
+              BROADCAST_MESSAGES
+                  .SCOPE
+                  .eq("TEAMS")
+                  .and(
+                      exists(
+                          selectOne()
+                              .from(BROADCAST_MESSAGE_TEAMS)
+                              .where(
+                                  BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID.eq(
+                                      BROADCAST_MESSAGES.ID))
+                              .and(BROADCAST_MESSAGE_TEAMS.TEAM_ID.eq(teamId.get())))));
+    }
 
     return dsl.selectFrom(BROADCAST_MESSAGES)
         .where(BROADCAST_MESSAGES.SHOW_IN_APP.isTrue())
         .and(BROADCAST_MESSAGES.START_AT.le(now))
         .and(BROADCAST_MESSAGES.END_AT.isNull().or(BROADCAST_MESSAGES.END_AT.gt(now)))
+        .and(scopeCondition)
         .and(
             notExists(
                 selectOne()
@@ -127,12 +196,20 @@ public class BroadcastMessageRepository {
   public List<BroadcastMessage> findActivePublic(boolean login, boolean register) {
     LocalDateTime now = LocalDateTime.now(clock);
 
-    var condition = BROADCAST_MESSAGES.START_AT.le(now)
-        .and(BROADCAST_MESSAGES.END_AT.isNull().or(BROADCAST_MESSAGES.END_AT.gt(now)));
+    var condition =
+        BROADCAST_MESSAGES
+            .START_AT
+            .le(now)
+            .and(BROADCAST_MESSAGES.END_AT.isNull().or(BROADCAST_MESSAGES.END_AT.gt(now)))
+            .and(BROADCAST_MESSAGES.SCOPE.eq("GLOBAL"));
 
     if (login && register) {
-      condition = condition.and(
-          BROADCAST_MESSAGES.SHOW_ON_LOGIN.isTrue().or(BROADCAST_MESSAGES.SHOW_ON_REGISTER.isTrue()));
+      condition =
+          condition.and(
+              BROADCAST_MESSAGES
+                  .SHOW_ON_LOGIN
+                  .isTrue()
+                  .or(BROADCAST_MESSAGES.SHOW_ON_REGISTER.isTrue()));
     } else if (login) {
       condition = condition.and(BROADCAST_MESSAGES.SHOW_ON_LOGIN.isTrue());
     } else if (register) {
@@ -154,6 +231,7 @@ public class BroadcastMessageRepository {
         .title(r.getTitle())
         .body(r.getBody())
         .severity(r.getSeverity())
+        .scope(r.getScope())
         .startAt(r.getStartAt().toInstant(UTC))
         .endAt(Optional.ofNullable(r.getEndAt()).map(dt -> dt.toInstant(UTC)))
         .showOnLogin(r.getShowOnLogin())
@@ -164,5 +242,79 @@ public class BroadcastMessageRepository {
         .createdBy(Optional.ofNullable(r.getCreatedBy()))
         .updatedBy(Optional.ofNullable(r.getUpdatedBy()))
         .build();
+  }
+
+  private void insertTeamTargets(UUID broadcastMessageId, List<UUID> teamIds) {
+    if (teamIds == null || teamIds.isEmpty()) {
+      return;
+    }
+    for (UUID teamId : teamIds) {
+      dsl.insertInto(BROADCAST_MESSAGE_TEAMS)
+          .set(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID, broadcastMessageId)
+          .set(BROADCAST_MESSAGE_TEAMS.TEAM_ID, teamId)
+          .execute();
+    }
+  }
+
+  private void insertUserTargets(UUID broadcastMessageId, List<UUID> userIds) {
+    if (userIds == null || userIds.isEmpty()) {
+      return;
+    }
+    for (UUID userId : userIds) {
+      dsl.insertInto(BROADCAST_MESSAGE_USERS)
+          .set(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID, broadcastMessageId)
+          .set(BROADCAST_MESSAGE_USERS.USER_ID, userId)
+          .execute();
+    }
+  }
+
+  private List<UUID> loadTeamTargets(UUID broadcastMessageId) {
+    return dsl.select(BROADCAST_MESSAGE_TEAMS.TEAM_ID)
+        .from(BROADCAST_MESSAGE_TEAMS)
+        .where(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID.eq(broadcastMessageId))
+        .fetch(BROADCAST_MESSAGE_TEAMS.TEAM_ID);
+  }
+
+  private List<UUID> loadUserTargets(UUID broadcastMessageId) {
+    return dsl.select(BROADCAST_MESSAGE_USERS.USER_ID)
+        .from(BROADCAST_MESSAGE_USERS)
+        .where(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID.eq(broadcastMessageId))
+        .fetch(BROADCAST_MESSAGE_USERS.USER_ID);
+  }
+
+  /** Batch-load targets for a list of messages (avoids N+1). */
+  private void loadTargets(List<BroadcastMessage> messages) {
+    List<UUID> ids = messages.stream().map(BroadcastMessage::getId).toList();
+
+    Map<UUID, List<UUID>> teamTargets =
+        dsl
+            .select(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID, BROADCAST_MESSAGE_TEAMS.TEAM_ID)
+            .from(BROADCAST_MESSAGE_TEAMS)
+            .where(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID.in(ids))
+            .fetch()
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    r -> r.get(BROADCAST_MESSAGE_TEAMS.BROADCAST_MESSAGE_ID),
+                    Collectors.mapping(
+                        r -> r.get(BROADCAST_MESSAGE_TEAMS.TEAM_ID), Collectors.toList())));
+
+    Map<UUID, List<UUID>> userTargets =
+        dsl
+            .select(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID, BROADCAST_MESSAGE_USERS.USER_ID)
+            .from(BROADCAST_MESSAGE_USERS)
+            .where(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID.in(ids))
+            .fetch()
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    r -> r.get(BROADCAST_MESSAGE_USERS.BROADCAST_MESSAGE_ID),
+                    Collectors.mapping(
+                        r -> r.get(BROADCAST_MESSAGE_USERS.USER_ID), Collectors.toList())));
+
+    for (BroadcastMessage msg : messages) {
+      msg.setTargetTeamIds(teamTargets.getOrDefault(msg.getId(), List.of()));
+      msg.setTargetUserIds(userTargets.getOrDefault(msg.getId(), List.of()));
+    }
   }
 }
