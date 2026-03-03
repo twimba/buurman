@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   XCircle,
 } from 'lucide-react';
+import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -279,6 +280,7 @@ const RegisterPage: React.FC = () => {
       {/* Right Side - Register Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
+          <PublicBroadcastBanner context="register" />
           {/* Mobile Logo */}
           <div className="lg:hidden flex flex-col items-center mb-8">
             <img

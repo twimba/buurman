@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Sidebar } from './Sidebar';
+import { AuthenticatedBroadcastBanner } from './common/BroadcastBanner';
 
 const STORAGE_KEY = 'buurman-sidebar-collapsed';
 
@@ -38,7 +39,10 @@ export const Layout = ({ children }: LayoutProps) => {
       <main
         className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
       >
-        <div className="p-4 lg:p-8">{children}</div>
+        <div className="p-4 lg:p-8">
+          <AuthenticatedBroadcastBanner />
+          {children}
+        </div>
       </main>
     </div>
   );
