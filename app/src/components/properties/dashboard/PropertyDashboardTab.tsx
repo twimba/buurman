@@ -1514,6 +1514,11 @@ function FutureTrendChart({
   isDark: boolean;
   currency: string;
 }) {
+  const chartData = data.months.map((d) => ({
+    ...d,
+    expectedExpenses: -d.expectedExpenses,
+  }));
+
   return (
     <div>
       <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-2 font-medium">
@@ -1522,7 +1527,7 @@ function FutureTrendChart({
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart
-          data={data.months}
+          data={chartData}
           margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
         >
           <CartesianGrid
@@ -1542,7 +1547,7 @@ function FutureTrendChart({
             contentStyle={tooltipStyle}
             labelFormatter={(label) => formatMonthTick(String(label))}
             formatter={(value?: number | string, name?: string) => [
-              formatCurrency(Number(value ?? 0), currency),
+              formatCurrency(Math.abs(Number(value ?? 0)), currency),
               name,
             ]}
           />

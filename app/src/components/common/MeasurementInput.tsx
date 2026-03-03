@@ -28,8 +28,7 @@ export const MeasurementInput = ({
   disabled = false,
   placeholder,
 }: MeasurementInputProps) => {
-  const currentLabel =
-    unitOptions.find((o) => o.value === unit)?.label ?? unit;
+  const currentLabel = unitOptions.find((o) => o.value === unit)?.label ?? unit;
 
   return (
     <div className="flex">

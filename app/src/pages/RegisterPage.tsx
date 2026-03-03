@@ -645,7 +645,9 @@ const RegisterPage: React.FC = () => {
                         registerMutation.isPending ||
                         !allRulesMet ||
                         !passwordsMatch ||
-                        (invitationRequired && !codeValidated && !invitationToken)
+                        (invitationRequired &&
+                          !codeValidated &&
+                          !invitationToken)
                       }
                       className="group w-full mt-3 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                     >

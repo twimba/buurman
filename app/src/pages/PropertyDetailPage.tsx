@@ -1103,7 +1103,10 @@ export const PropertyDetailPage = () => {
                         Capacity
                       </div>
                       <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                        {property.electricityCapacityValue} {(property.electricityCapacityUnit ?? 'A').toUpperCase()}
+                        {property.electricityCapacityValue}{' '}
+                        {(
+                          property.electricityCapacityUnit ?? 'A'
+                        ).toUpperCase()}
                       </div>
                     </div>
                   )}
@@ -1151,7 +1154,10 @@ export const PropertyDetailPage = () => {
                         Internet Speed
                       </div>
                       <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                        {property.internetMaxSpeedValue} {(property.internetMaxSpeedUnit ?? 'Mbps').toUpperCase()}
+                        {property.internetMaxSpeedValue}{' '}
+                        {(
+                          property.internetMaxSpeedUnit ?? 'Mbps'
+                        ).toUpperCase()}
                       </div>
                     </div>
                   )}
